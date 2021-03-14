@@ -1,0 +1,539 @@
+:: Wolf Cave [nobr]
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+
+<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 20)>>
+<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 20)>><<set $bus to "wolfcave">>
+당신은 늑대굴에 있다. 천장이 낮게 매달려 있고, 뒤쪽에서 바람이 불어오고 있다.
+<<if $exposed gte 1>>
+	<<wolf_cave_plural>>는 신경쓰지 않는 것 같지만, 노출하는 것은 역시 부끄럽게 느껴진다.
+<</if>>
+<<storeon "wolfcave" "check">>
+<<if _store_check is 1>>
+	당신의 옷은 바위 뒤에 숨겨져 있다.
+<</if>>
+<<if $wolfstate is "hunt">>
+	대부분의 무리가 사냥중이다.
+<<else>>
+	<<if $weather is "rain">>
+		무리는 비를 피하고 있다.
+	<<elseif $weather is "snow">>
+		무리는 눈을 피하고 있다.
+	<<else>>
+		무리는 휴식을 취하고 있다.
+	<</if>>
+	<<wolfcavestate>>
+<</if>>
+<br><br>
+<<if $wolfevent gte 1>>
+	<<set $wolfevent to 0>>
+	<<wolfcaveselect>>
+<<else>>
+	<<storeactions "wolfcave">>
+	<<if $wolfcavedig gte 13>>
+		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>>
+		<br>
+	<<elseif $wolfcavedig gte 12 and $physiquesize lte 12000>>
+		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
+		<br>
+	<<elseif $wolfcavedig gte 11 and $physiquesize lte 10000>>
+		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
+		<br>
+	<<elseif $wolfcaevdig gte 10 and $physiquesize lte 6000>>
+		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
+		<br>
+	<<elseif $wolfcavedig gte 1>>
+		<<link [[동굴 뒤쪽을 파낸다 (1:00)|Forest Wolf Cave Dig]]>><<pass 1 hour>><<set $wolfcavedig += 1>><</link>>
+		<br>
+	<<else>>
+		<<link [[동굴 뒤쪽을 살펴본다|Forest Wolf Cave Examine]]>><<set $wolfcavedig to 1>><</link>>
+		<br>
+	<</if>>
+	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+		<<link [[묶은 것을 푼다|Wolf Cave Unbind]]>><</link>>
+		<br>
+	<</if>>
+	<!-- Modified for monster people -->
+	<<if $bestialitydisable is "f" and $breastfeedingdisable is "f" and $lactating is 1 and $deviancy gte 35 and ($monsterchance lt 100 or ($monsterhallucinations is "t" and $hallucinations is 0))>>
+		<<if $wolfcavebreast is 3>>
+			<span class="blue">The pups are full of milk.</span>
+			<br>
+		<<else>>
+			<<link [[새끼에게 모유를 먹인다 (0:05)|Wolf Cave Breastfeed]]>><<set $phase to 0>><</link>><<deviant3>>
+			<br>
+		<</if>>
+	<</if>>
+	<<link [[잔다|Wolf Cave Bed]]>><</link>>
+	<br>
+	<<link [[밖으로 나간다|Wolf Cave Clearing]]>><</link>>
+	<br><br>
+	<<link [[설정|Wolf Cave Settings]]>><</link>>
+	<br>
+	<<attitudesControlCheck>>
+	<<if $attitudesControl.showGoldLink is true>>
+		<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>  </span><span class="red">!!</span>
+	<<else>>
+		<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+	<</if>>
+	<br><br><br>
+<</if>>
+<<storecleanup>>
+
+:: Wolf Cave Clearing [nobr]
+<<set $outside to 1>><<set $location to "wolf_cave">><<effects>>
+
+<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 20)>>
+<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 20)>><<set $bus to "wolfcaveclearing">>
+당신은 늑대굴 밖에 있는 공터에 있다. 개울이 옆에서 흐르고 있다.
+<<if $exposed gte 1>>
+	<<wolf_cave_plural>>는 신경쓰지 않는 것 같지만, 노출하는 것은 역시 부끄럽게 느껴진다.
+<</if>>
+
+<<if $wolfstate is "hunt">>
+	대부분의 무리가 사냥중이다.
+<<else>>
+	<<if $weather is "rain">>
+		무리는 비를 피하고 있다.
+	<<elseif $weather is "snow">>
+		무리는 눈을 피하고 있다.
+	<<else>>
+		무리는 휴식을 취하고 있다.
+	<</if>>
+	<<wolfcavestate>>
+<</if>>
+<br><br>
+<<if $foresthunt gte 1>>
+	<span class="lblue">동굴은 안전하다. 어떠한 것이 사냥을 했든 아마 포기했을 것이다.</span>
+	<br><br>
+	<<set $foresthunt to 0>>
+<</if>>
+<<if $wolfevent gte 1>><<set $wolfevent to 0>>
+	<<wolfcaveselect>>
+<<else>>
+	<<link [[논다 (1:00)|Wolf Cave Play]]>><<stress -12>><<pass 1 hour>><</link>><<lstress>>
+	<br>
+	<<link [[개울에서 씻는다 (0:20)|Wolf Cave Wash]]>><<pass 20>><</link>>
+	<br>
+	<<if $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1
+	or $worn.upper.exposed gte 2 and $underupperwetstage gte 3
+	or $upperwetstage gte 3 and $worn.under_upper.exposed gte 1
+	or $upperwetstage gte 3 and $underupperwetstage gte 3>>
+		<<link [[식물과 나뭇가지로 상의를 만든다 (0:20)|Wolf Cave Plant]]>><<set $phase to 1>><<pass 20>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1
+	or $worn.lower.exposed gte 2 and $underlowerwetstage gte 3
+	or $lowerwetstage gte 3 and $worn.under_lower.exposed gte 1
+	or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
+		<<link [[식물과 나뭇가지로 하의를 만든다 (0:20)|Wolf Cave Plant]]>><<set $phase to 2>><<pass 20>><</link>>
+		<br>
+	<</if>>
+	<br>
+	개울 근처의 토양은 질이 좋아보이고, 아직 야생 식물도 없다.
+	<br>
+	<<link [[조사한다|Wolf Cave Plots]]>><</link>>
+	<br>
+	<br>
+	<<link [[안으로 들어간다|Wolf Cave]]>><</link>>
+	<br><br>
+	<<foresticon>><<link [[숲속으로 들어간다 (0:10)|Forest]]>><<pass 10>><<set $eventskip to 1>><<set $forest to 60>><</link>>
+	<br>
+<</if>>
+
+:: Wolf Cave Plots [nobr]
+<<effects>>
+
+<<plot_effects>>
+
+<<if $wolf_plot_intro is 1>><<unset $wolf_plot_intro>>
+	<<plots_init wolf 3 earth 2 medium>>
+<</if>>
+
+<<display_plot wolf>>
+
+<br>
+
+<<link [[떠난다|Wolf Cave Clearing]]>><</link>>
+<br>
+
+<<unset $event_trigger>>
+
+:: Wolf Cave Returned [nobr]
+
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+<<pass 30>>
+<<npc "Black Wolf">>
+검은 늑대가 숲을 지나 동굴로 들어간다. <<bHePost "은">> 당신을 뒤에 처박고선 돌아서 으르렁대며 경고한다.
+<<if $monster is 1>>
+	"여기 있어. 너는 무리에 머물러야 한다."
+<</if>>
+<br><br>
+<<link [[다음|Wolf Cave]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Wolf Cave Unbind [nobr]
+
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+당신은 날카로운 바위에 끈을 문지르고, 곧 끈이 느슨해진다.
+<br><br>
+<<unbind>>
+<<link [[다음|Wolf Cave]]>><</link>>
+<br>
+
+:: Wolf Cave Bed [nobr]
+
+<<effects>>
+<<if $wolfpackharmony gte 10>>
+	당신은 따뜻함을 위해 <<beastNEWinit 1 wolf>><<beasttypePost "을">><<endevent>> 옆에 껴안고 눈을 감는다.
+<<else>>
+	당신은 비어있는 잠자리를 찾는다.
+<</if>>
+<br><br>
+<<if $sleeptrouble is 1 and $controlled is 0>>
+	<<link [[10시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 10>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
+	<br>
+	<<link [[9시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 9>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
+	<br>
+<</if>>
+<<link [[8시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 8>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
+<br>
+<<link [[7시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 7>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
+<br>
+<<link [[6시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 6>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
+<br>
+<<link [[5시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 5>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
+<br>
+<<link [[4시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 4>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
+<br>
+<<link [[3시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 3>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
+<br>
+<<link [[2시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 2>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
+<br>
+<<link [[1시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 1>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 1>>)<<ltiredness>>
+<br><br>
+<<link [[침대에서 일어난다|Wolf Cave]]>><</link>>
+<br><br>
+
+:: Wolf Cave Settings [nobr]
+<<set $settingsExitPassage to "Wolf Cave">>
+<<settings>>
+
+:: Wolf Cave Descent [nobr]
+
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+당신은 가장자리에 앉아 몸을 낮추려고 노력하지만, 바위가 무너지고 당신은 어두운 물 속으로 빠진다.
+<br><br>
+<<link [[다음|Underground Lake]]>><</link>>
+<br>
+
+:: Wolf Cave Sleep [nobr]
+<<run Save.autosave.save(null, {"saveId":$saveId, "saveName":$saveName})>>
+<<if _preventUpdate is undefined>>
+	<<run setSaveDetail("autosave",{"saveId":$saveId,"saveName":$saveName})>>
+<</if>>
+<<sleep>><<effects>>
+<<if $nightmares gte 1 and $controlled is 0>>
+	당신은 어둡고 끔찍한 무언가에 의해 사냥당하는 꿈을 꾼다.
+<<else>>
+	<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+		당신은 저속한 꿈에 시달린다.
+		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+		<<arousal `100 * $sleepHoursTotal`>>
+		<<if $arousal gte $arousalmax>>
+			그들은 당신을 가장자리 위로 밀어낸다.
+			<<orgasmpassage>>
+		<<else>>
+			<br><br>
+		<</if>>
+	<<else>>
+		당신은 숙면을 취한다.
+	<</if>>
+<</if>>
+<<sleepeffects>>
+<<if $schoolwake is 1>>
+	<<set $schoolwake to 0>>
+	<<beastNEWinit 1 wolf>>
+	당신은 당신을 자극하는 무언가에 의해 깨어난다.
+	<br><br>
+	<<link [[내버려둔다|Wolf Cave Sleep Sex]]>><<set $sexstart to 1>><</link>><<deviant1>>
+	<br>
+	<<link [[밀어낸다|Wolf Cave Sleep Push]]>><</link>>
+	<br>
+<<else>>
+	<br><br>
+	<<link [[일어난다|Wolf Cave]]>><</link>>
+	<br><br>
+<</if>>
+
+:: Wolf Cave Sleep Sex [nobr]
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	당신은 <<beasttypePost "을">> 더 쉽게 흥분시키기 위해서 몸을 움직인다.
+	<<deviancy1>><<set $enemytrust -= 20>>
+	<<if $wolfpackharmony gte 1>>
+		<<set $rescue to 1>>
+	<</if>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>>
+	<<if $wolfpackharmony gte 1>>
+		<<set $rescue to 1>>
+	<</if>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<if $alarm is 1 and $rescue is 0>>
+	<<set $alarm to 0>>
+	<span class="red"><<beastspluralPost "은">> 자기 일로 너무 바빠서 당신을 도와줄 수 없다.</span>
+	<br><br>
+<</if>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $rescue is 1 and $alarm is 1>>
+	<span id="next"><<link [[다음|Wolf Cave Sleep Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $finish is 1>>
+	<span id="next"><<link [[다음|Wolf Cave Sleep Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음|Wolf Cave Sleep Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[다음|Wolf Cave Sleep Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음|Wolf Cave Sleep Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Sleep Push [nobr]
+
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+당신은 <<beasttypePost "을">> 멀리 떨어뜨린다.
+<<lharmony>>
+<br><br>
+<<if $wolfpackferocity lte 19>>
+	<<bHe>> leaves you in peace. <<endevent>>
+	<br><br>
+	<<link [[다시 잠든다|Wolf Cave Bed]]>><</link>>
+	<br>
+	<<link [[일어난다|Wolf Cave]]>><</link>>
+	<br>
+<<else>>
+	<<bHePost "이">> 으르렁거리며 <<bhimselfPost "을">> 밀어붙힌다!
+	<br><br>
+	<<link [[다음|Wolf Cave Sleep Sex]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Wolf Cave Sleep Sex Finish [nobr]
+
+<<set $outside to 1>><<set $location to "wolf_cave">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+	<<beasttypePost "은">> 하품하고 드러눕는다.
+	<br><br>
+	<<tearful>> 당신은 다시 편안한 위치를 찾으려고 한다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	<<beasttypePost "이">> 당신에게서 멀어진다.
+	<br><br>
+	<<tearful>> 당신은 다시 편안한 위치를 찾으려고 한다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $rescue is 1 and $alarm is 1>>
+	<<set $rescued += 1>>
+	다른 <<beastspluralPost "이">> 으르렁대며 <<beasttypePost "이">> 당신을 공격한다. <<bHePost "은">> 처음에 으르렁대다 뒤로 물러서 당신을 내버려둔다.
+	<<lharmony>>
+	<br><br>
+	<<tearful>> 당신은 다시 편안한 위치를 찾으려고 한다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<else>>
+	<<beasttypePost "은">> 하품하며 누워있다.
+	<br><br>
+	<<tearful>> 당신은 다시 편안한 위치를 찾으려고 한다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+<<link [[다음|Wolf Cave Bed]]>><</link>>
+<br>
+
+:: Wolf Cave Play [nobr]
+<<beastNEWinit 1 wolf>>
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+<<if $rng gte 51>>
+	당신은 어린 <<beastspluralPost>> 하나와 싸움을 한다. <<bHePost "이">> 점프해서 입으로 <<bhisPost "을">> 입으로 팔을 잡지만, <<bhePost "이">> 당신을 땅으로 끌어 당길 때까지 세게 물지 않는다. <<bHePost "이">> 사타구니의 냄새를 맡는다.
+	<br><br>
+	<<link [[내버려둔다|Wolf Cave Play Sex]]>><<set $sexstart to 1>><</link>><<deviant1>>
+	<br>
+	<<link [[밀어낸다|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	당신은 젊은 <<beastspluralPost "와">> 숨바꼭질을 한다. 그들은 너무 멀리 떨어져 나가는 것을 주저하지만, 근처에 숨을 곳이 많이 있다. 후각은 그들에게 이점을 주고 그들은 당신을 빨리 찾아내지만, 그래도 재미있다.
+	<br><br>
+	<<link [[다음|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Wolf Cave Wash [nobr]
+
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+당신은 개울에서 씻는다. 물은 차갑지만 깨끗하다.
+<br><br>
+<<wash>>
+<<link [[다음|Wolf Cave Clearing]]>><</link>>
+<br>
+
+:: Wolf Cave Play Sex [nobr]
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	The <<beasttype>> becomes more bold.
+	<<deviancy1>><<set $enemytrust -= 20>>
+	<<if $wolfpackharmony gte 1>>
+		<<set $rescue to 1>>
+	<</if>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>>
+	<<if $wolfpackharmony gte 1>>
+		<<set $rescue to 1>>
+	<</if>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<if $alarm is 1 and $rescue is 0>>
+	<<set $alarm to 0>>
+	<span class="red"><<beastspluralPost "은">> 자기 일로 너무 바빠서 당신을 도와줄 수 없다.</span>
+	<br><br>
+<</if>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $rescue is 1 and $alarm is 1>>
+	<span id="next"><<link [[다음|Wolf Cave Play Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $finish is 1>>
+	<span id="next"><<link [[다음|Wolf Cave Play Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음|Wolf Cave Play Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[다음|Wolf Cave Play Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음|Wolf Cave Play Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Play Sex Finish [nobr]
+
+<<set $outside to 1>><<set $location to "wolf_cave">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+	<<beasttypePost "은">> 하품하고 드러눕는다.
+	<br><br>
+	<<tearful>> 당신은 일어선다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	<<beasttypePost "은">> 당신에게서 멀어진다.
+	<br><br>
+	<<tearful>> 당신은 일어선다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $rescue is 1 and $alarm is 1>>
+	<<set $rescued += 1>>
+	다른 <<beastspluralPost "이">> 으르렁대며 <<beasttypePost "이">> 당신을 공격한다. <<bHePost "은">> 처음에 으르렁대다 뒤로 물러서 당신을 내버려둔다.
+	<<lharmony>>
+	<br><br>
+	<<tearful>> 당신은 일어선다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<else>>
+	<<beasttypePost "은">> 하품하고 드러눕는다.
+	<br><br>
+	<<tearful>> 당신은 일어선다.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+<<link [[다음|Wolf Cave Clearing]]>><</link>>
+<br>
+
+:: Wolf Cave Breastfeed [nobr]
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 1>>
+
+당신은 덜 적극적인 늑대도 젖을 빨도록 도와준다.
+
+<<else>>
+	<<if $worn.upper.exposed lte 0 or $worn.under_upper.exposed lte 0>>
+	<<upperstrip>><<underupperstrip>>당신은 당신의 <<breastsPost "을">> 드러내며 늑대 새끼들이 젖을 빨도록 부추긴다.
+	<<else>>
+	당신은 늑대 새끼들에게 젖을 빨도록 부추긴다.
+	<</if>>
+<</if>>
+<<pass 5>>
+<<if $milk_amount gte 1>>
+	<<if $wolfcavebreast is undefined>>
+		<<set $wolfcavebreast to 1>>
+	<<else>>
+		<<set $wolfcavebreast += 1>>
+	<</if>>
+
+	늑대들이 당신에게서 젖 냄새를 맡는다. 한 마리씩 각 꼭지를 차지하고, 서투른 핥기로 당신을 괴롭힌다. <<deviancy3>>
+
+	<<if $wolfcavebreast is 3>>
+		마지막 새끼가 만족한다. 그들은 낮잠을 자려고 웅크린다.
+		<<gharmony>>
+	<<else>>
+		다른 늑대들이 차례를 위해 서로 다툰다.
+	<</if>>
+	<br><br>
+	<<transform wolf 1>>
+	<<breastfeed>><<breastfeed>>
+	<<if $wolfcavebreast isnot 3>>
+		<<link [[계속 먹인다 (0:05)|Wolf Cave Breastfeed]]>><<set $phase to 1>><</link>><<deviant3>>
+		<br>
+	<</if>>
+	<<link [[그만한다|Wolf Cave]]>><<clotheson>><<set $phase to 0>><</link>>
+	<br>
+<<else>>
+
+젖꼭지에서 우유가 나오지 않는다. <span class="pink">당신의 우유가 다 떨어진 것 같다.</span> 늑대들은 좌절감을 느끼며 깨문다.
+<<gpain>><<pain 6>><<milkvolume 1>>
+<br><br>
+
+<<link [[다음|Wolf Cave]]>><<clotheson>><<set $phase to 0>><</link>>
+<br>
+
+<</if>>

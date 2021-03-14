@@ -1,0 +1,111 @@
+:: Widgets trClothes [widget nobr]
+<<widget "trClothes_init">>
+	<<set _trClothes to {}>>
+	<<if $args[0] isnot undefined>>
+		<<switch $args[0]>>
+			<<case "face">>
+				<<init_trFace>>
+			<<case "feet">>
+				<<init_trFeet>>
+			<<case "genitals">>
+				<<init_trGenitals>>
+			<<case "hands">>
+				<<init_trHands>>
+			<<case "head">>
+				<<init_trHead>>
+			<<case "legs">>
+				<<init_trLegs>>
+			<<case "lower">>
+				<<init_trLower>>
+			<<case "neck">>
+				<<init_trNeck>>
+			<<case "over_head">>
+				<<init_trOverHead>>
+			<<case "over_lower">>
+				<<init_trOverLower>>
+			<<case "over_upper">>
+				<<init_trOverUpper>>
+			<<case "under_lower">>
+				<<init_trUnder>>
+			<<case "under_upper">>
+				<<init_trUnderUpper>>
+			<<case "upper">>
+				<<init_trUpper>>
+		<</switch>>
+	<<else>>
+		<<init_trFace>>
+		<<init_trFeet>>
+		<<init_trGenitals>>
+		<<init_trHands>>
+		<<init_trHead>>
+		<<init_trLegs>>
+		<<init_trLower>>
+		<<init_trNeck>>
+		<<init_trOverHead>>
+		<<init_trOverLower>>
+		<<init_trOverUpper>>
+		<<init_trUnder>>
+		<<init_trUnderUpper>>
+		<<init_trUpper>>
+	<</if>>
+<</widget>>
+
+
+<<widget "trClothes">>
+	<<trClothes_init $args[0]>>
+	
+	<<if _trClothes[$args[0]] isnot undefined>>
+		<<set _trTemp to _trClothes[$args[0]].find(function(select){
+					if(select.name == $args[1] or select.variable == $args[1]){return true;
+					}})>>
+	<<else>>
+		<<set _trResult to "partSelectionErr:"+$args[0]>>
+	<</if>>
+
+	<<if _trTemp is undefined>>
+		<<set _trResult to "clothesSelectionErr:"+$args[1]>>
+	<<else>>
+		<<if $args[2] is undefined>>
+				<<set _trResult to _trTemp.name_ko>>
+		<<else>>
+			<<switch $args[2]>>
+				<<case "name">>
+					<<set _trResult to _trTemp.name_ko>>
+					<<if $args[3] isnot undefined>>
+						<<trPost _trTemp.post $args[3] $args[4]>>
+					<</if>>
+				<<case "desc" "description">>
+					<<set _trResult to _trTemp.description>>
+				<<default>>
+					<<set _trResult to "ModeSelectionErr:"+$args[2]>>
+			<</switch>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+
+<<widget "trSearchClothes">>
+	<<trClothes_init>>
+	<<set _trClothesIndexTemp to Object.getOwnPropertyNames(_trClothes)>>
+	<<for _trIndexTemp, _trClothesTypeTemp range _trClothesIndexTemp>>
+		<<set _trTemp to _trClothes[_trClothesTypeTemp].find(function(select){
+					if(select.name == $args[0] or select.variable == $args[0]){return true;
+					}})>>
+		<<if _trTemp is undefined>>
+			<<continue>>
+		<<else>>
+			<<break>>
+		<</if>>
+	<</for>>
+	<<if $args[1] is undefined or $args[1] is "name">>
+		<<set _trResult to _trTemp.name_ko>>
+	<<elseif $args[1] is "desc" or $args[1] is "description">>
+		<<set _trResult to _trTemp.description>>
+	<<else>>
+		<<set _trResult to "modeSelectionErr: "+$args[1]>>
+	<</if>>
+
+	<<if $args[2] isnot undefined>>
+		<<trPost $args[2] $args[3]>>
+	<</if>>
+<</widget>>

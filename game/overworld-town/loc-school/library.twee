@@ -1,0 +1,498 @@
+:: School Library [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoollibrary">>
+당신은 학교 도서관에 있다.
+<<if $schoolday is 1>>
+/* indev - double <br> replaced with single */
+	<<if $schoolstate is "early">>
+	너무 이른 시간이기에 도서관에는 사람이 전혀 없다.
+	<br>
+	<<elseif $schoolstate is "late">>
+	학생들이나 선생님들은 이미 다 집에 갔기 때문에 도서관에는 사람이 전혀 없다.
+	<br>
+	<<elseif $schoolstate is "lunch">>
+	도서관은 점심 시간 동안 숙제를 하는 학생들로 가득하다.
+	<br>
+	<<else>>
+	여러 학생들이 도서관에서 과제를 하거나 책을 찾아 돌아다니고 있다.
+	<br>
+	<</if>>
+<<elseif $schoolday isnot 1>>
+도서관에는 사람이 전혀 없다.
+<br>
+<</if>>
+/*indev - Extra library description*/
+여러 책장에 대표적인 학술 서적들이 있다. 공학, 생물학, 사회 과학과 언어 학습에 대한 책들이 보인다. 모든 책이 수업을 따라가는 데에 도움이 된다.
+<br>
+옆에는 반납되었거나 아직 정리되지 않은 책들이 담긴 작은 바구니가 있다.
+<<if $english lt 200>>
+	만약 당신이 책벌레였다면 더 흥미롭다고 느낄만한 책이 있을지도 모르겠다.
+<</if>>
+<br><br>
+<<if $exposed gte 1>>
+	<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+	당신은 최대한 <<nudityPost "을">> 감춰보면서 책장 사이에 숨는다.<<nudityPostend>>
+	<br>
+	<<else>>
+	<<exhibitionclassroom>>
+	<</if>>
+<</if>>
+
+<<if $stress gte 10000>>
+<<link [[모든 것이 암흑 속으로 사라져간다...|School Passout]]>><</link>>
+<<else>>
+	<<if $exposed gte 1 and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+	<<else>>
+<<projectoptions>>
+		<<if $exposed lte 0 and $schoolday is 1 and ($schoolstate is "morning" or $schoolstate is "afternoon" or $schoolstate is "lunch") and $mathsproject is "ongoing" and $mathslibrarystudent isnot 1 and $mathslibraryknown isnot 1>>
+
+			한 학생이 수학 경시대회 답안에 열중하고 있는 것이 보인다.
+			<br>
+
+			<<link [[다가간다|Maths Library Student]]>><</link>>
+			<br><br>
+
+		<</if>>
+		<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $weather is "rain" and $schoolstate is "lunch" and $luncheaten is 1>>
+		카일라가 책상에 앉아서, 뭔가를 끄적이고 있다.
+		<br>
+		<<link [[다가간다|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
+		<br><br>
+		<</if>>
+		<<if $exposed gte 1>>
+			<<link [[과학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+			<br>
+			<<link [[수학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+			<br>
+			<<link [[영어 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+			<br>
+			<<link [[역사 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+			<br>
+		<<else>>
+			<<link [[과학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+			<br>
+			<<link [[수학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+			<br>
+			<<link [[영어 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+			<br>
+			<<link [[역사 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+			<br>
+		<</if>>
+		/*indev - scarlet book possible to be taken. English 200+ required*/
+		<<if $english gte 300>>
+			<<link [[바구니에서 "라울과 재닛"을 집어든다 (0:01)|ScarletBook1]]>><<pass 1>><</link>>
+			<br>
+		<<elseif $english gte 200>>
+			<<link [[바구니에서 중간 크기의 진홍색 책을 집어든다 (0:01)|ScarletBook1]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+	<br>
+	<</if>>
+<<link [[도서관에서 나온다 (0:01)|Hallways]]>><<pass 1>><</link>>
+<br>
+<</if>>
+
+:: Library Study [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>><<scienceskill>>
+당신은 과학 교과서를 가지고 책상에 앉아 읽어나간다.
+<<elseif $phase is 2>><<mathsskill>>
+당신은 수학 교과서를 가지고 책상에 앉아 읽어나간다.
+<<elseif $phase is 3>><<englishskill>>
+당신은 영어 교과서를 가지고 책상에 앉아 읽어나간다.
+<<elseif $phase is 4>><<historyskill>>
+당신은 역사 교과서를 가지고 책상에 앉아 읽어나간다.
+<</if>>
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure) and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+		<<if $rng gte 51>>
+		<<generatey1>><<generatey2>>할일을 하고 있자니, <<person1>><<personPost "과">> <<person2>><<personPost "이">> 괴롭히기 시작한다.
+		<br><br>
+
+		<<link [[무시한다|School Library Harass]]>><<set $phase to 0>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
+		<br>
+		<<link [[사서에게 도움을 구한다|School Library Harass]]>><<set $phase to 1>><<status -10>><</link>><<lcool>>
+		<br>
+		<<else>>
+			<<if !$worn.over_lower.type.includes("naked")>>
+				<<set $worn.over_lower.integrity -= 10>>
+				<<if $worn.over_lower.integrity lte 0>>
+					As you rise from the chair, you hear a tear. Your $worn.over_lower.name <<overlowerplural>> caught on the desk. You try to free them, but <<overloweritis>> torn clean off your body<<if !$worn.lower.type.includes("naked")>>, exposing your <<undies>><</if>>.
+					<<overlowerruined>><<trauma 3>>
+					<br><br>
+				<<elseif $worn.over_lower.integrity gte 0>>
+					As you rise from the seat, you hear a tear. Your $worn.over_lower.name <<overlowerplural>> caught on the desk.
+					<br><br>
+				<</if>>
+			<<else>>
+				<<set $worn.lower.integrity -= 10>>
+				<<if $worn.lower.integrity lte 0>>
+					의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상에 걸렸다. 빼내려고 하나, 되려 깔끔하게 뜯겨나가며 <<undiesPost "이">> 노출된다.
+					<<lowerruined>><<trauma 3>>
+					<br><br>
+				<<elseif $worn.lower.integrity gte 0>>
+				의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상에 걸렸다.
+					<br><br>
+				<</if>>
+			<</if>>
+		<<link [[다음|School Library]]>><</link>>
+		<br>
+		<</if>>
+	<<else>>
+	<<link [[다음|School Library]]>><</link>>
+	<br>
+	<</if>>
+
+:: Library Study Exposed [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+당신은 과학 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
+<<gscience>><<scienceskill>><<garousal>><<arousal 300>>
+<<elseif $phase is 2>>
+당신은 수학 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
+<<gmaths>><<mathsskill>><<garousal>><<arousal 300>>
+<<elseif $phase is 3>>
+당신은 영어 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
+<<genglish>><<englishskill>><<garousal>><<arousal 300>>
+<<elseif $phase is 4>>
+당신은 역사 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
+<<ghistory>><<historyskill>><<garousal>><<arousal 300>>
+<</if>>
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - ($allure / 2))>>
+		<<if $rng gte 51>>
+		<<generate1>><<person1>>당신은 책장에 책을 돌려놓으려 하다가 그만 떨군다. 책은 쿵 하는 소리와 함께 바닥에 떨어진다. "또 고양이 녀석이 들어온 건 아니겠지." 도서관 밖의 복도에서 목소리가 들려온다. 당신은 책장 뒤에 숨어서는 책 사이로 훔쳐본다. 경비원 제복을 입은 <<personPost "이">> 들어온다. "거기 누구야?"
+		<br><br>
+
+			<<if $exposed gte 2>>
+				<<if $exhibitionism gte 75>>
+				<<link [[나온다|Library Study Show]]>><<set $phase to 0>><</link>><<exhibitionist5>>
+				<br>
+				<</if>>
+			<<elseif $exposed is 1>>
+				<<if $exhibitionism gte 15>>
+				<<link [[나온다|Library Study Show]]>><<set $phase to 1>><</link>><<exhibitionist2>>
+				<br>
+				<</if>>
+			<</if>>
+		<<link [[숨어있는다 (0:10)|Library Study Hide]]>><<stress 3>><<pass 10>><</link>><<gstress>>
+		<br>
+		<<else>>
+		<<generate1>><<generate2>><<person1>><<personPost "과">> <<person2>><<personPost "이">> 창 밖의 길을 걷고 있다. 창문 안을 들여다보면 당신을 보고 말 것이다.
+		<br><br>
+
+		<<link [[감수한다|Library Study Risk]]>><</link>>
+		<br>
+		<<link [[숨는다 (0:20)|Library Study Pair Hide]]>><<pass 20>><</link>>
+		<br>
+
+		<</if>>
+	<<else>>
+	<<link [[다음|School Library]]>><</link>>
+	<br>
+	<</if>>
+
+:: Library Study Risk [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $rng gte 81>>
+
+당신은 그 둘을 무시하고는 공부를 계속한다. <<person1>><<personPost "이">> 어깨 너머로 당신을 본다. <<HePost "은">> <<person2>><<personPost "의">> 팔을 잡고, 둘 다 창문 너머에서 당신을 보며 씩 웃는다. <<covered>> 얼굴이 빨갛게 달아오른다.
+<<gstress>><<garousal>><<stress 3>><<arousal 600>><<fameexhibitionism 2>>
+<br><br>
+
+둘은 여전히 웃는 채로 가던 길을 간다.
+<br><br>
+
+<<else>>
+
+당신은 둘을 무시하고는 공부를 계속한다. 그 둘도 당신을 눈치채지 못한다.
+<br><br>
+
+<</if>>
+
+<<endevent>>
+<<link [[다음|School Library]]>><</link>>
+<br>
+
+:: Library Study Pair Hide [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 사서 책상 뒤쪽의 어둠 속에 몸을 숨긴다. 둘은 창문 쪽에서 멈춰서더니, 몸을 돌려서 잡담을 나눈다. 당신은 둘이 떠날 때까지 기다린다.
+<br><br>
+
+<<endevent>>
+<<link [[다음|School Library]]>><</link>>
+<br>
+
+:: Library Study Hide [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 계속 숨어있는다. <<HePost "은">> 도서관 내부를 순찰하나, 당신은 <<hePost "을">> 피해낸다. <<HePost "은">> 얼굴을 찌푸리고는 어깨 너머를 쳐다보고는 도서관을 나간다.
+<br><br>
+<<endevent>>
+<<link [[다음|School Library]]>><</link>>
+<br>
+
+:: Library Study Show [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 숨어있던 곳에서 나온다. <<personPost "은">> 당신을 보고는 입을 떡 벌린다.
+<<if $phase is 0>>
+<<exhibitionism5>>
+<<else>>
+<<exhibitionism2>>
+<</if>>
+
+<<if $rng gte 51>>
+
+"너-너 여기 있으면 안되지." <<hePost "이">> 말을 더듬는다. "나-나랑 함께 와줘야 겠다."
+<br><br>
+
+<<link [[따른다|Library Study Comply]]>><</link>>
+<br>
+<<link [[거부한다 (0:20)|Library Study Refuse]]>><<pass 20>><</link>>
+<br>
+
+<<else>>
+
+"이거 잘됐군." <<hePost "이">> 말한다. <<HePost "은">> 경찰봉을 탁탁 치며 다가오더니, 곧 당신을 향해 달려든다.
+<br><br>
+
+<<link [[다음|Library Exposed Molestation]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+<</if>>
+
+:: Library Exposed Molestation [nobr]
+<<if $molestationstart is 1>>
+<<set $molestationstart to 0>>
+<<controlloss>>
+<<violence 1>>
+<<neutral 1>>
+<<molested>>
+
+<<maninit>>
+
+<</if>>
+
+<<effects>>
+
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $enemyhealth lte 0>>
+	<span id="next"><<link [[다음|Library Exposed Molestation Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음|Library Exposed Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음|Library Exposed Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Library Exposed Molestation Finish [nobr]
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+"내가 널 잡아가지 않은 걸 다행이라 여기렴." <<hePost "이">> 말한다. "거기선 너 같은 <<girlPost "은">> 산 채로 잡아먹을 테니까 말이야." <<HePost "은">> 휘파람을 불며 도서관에서 나간다.
+<br><br>
+
+<<tearful>> 당신은 어떻게든 자리에서 일어난다.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[다음|School Library]]>><</link>>/*Point links wherever you want the player to end up*/
+
+<<elseif $enemyhealth lte 0>>
+
+<<HePost "은">> 비틀거리며 당신에게서 떨어지고는 경찰봉을 찾아 주변을 더듬거린다. 경찰봉은 <<hisPost "의">> 손가락 사이로 빠져나간다. "시발." <<hePost "은">> 그렇게 말하고는 도서관에서 뛰쳐나간다.
+<br><br>
+
+<<tearful>> 당신은 <<hisPost "의">> 발소리가 멀어져가는 걸 듣고 있는다.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[다음|School Library]]>><</link>>
+
+<</if>>
+
+:: Library Study Comply [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 고개를 끄덕이고는 전혀 개의치 않고 <<personPost "의">> 옆으로 걸어간다. <<HePost "은">> 얼굴을 붉히며 고개를 돌린다. "바-밖에까지 안내해줄게." <<hePost "이">> 말한다. "제-제발."
+<br><br>
+
+당신은 <<hePost "을">> 따라 복도로 나가서 출입구까지 따라간다. "여-여기." <<hePost "이">> 학교 정문에서 말한다. <<HePost "은">> 당신에게 수건 몇 장을 건네준다. "감기 걸릴지도 몰라." <<HePost "은">> 정문을 잠근다.
+<br><br>
+
+<<towelup>>
+<<endevent>>
+<<link [[다음|Oxford Street]]>><</link>>
+<br>
+
+:: Library Study Refuse [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<HePost "은">> 책장 사이로 당신을 쫓아온다. 당신은 손쉽게 <<hePost "을">> 따돌린다. <<HePost "은">> 당신을 건드리는 것이 두렵기라도 한 것 같다. 마치 조우하지 않았어야 하는 것과 만난 모습이다. 조금 뒤, <<hePost "은">> 헐떡이며 멈춘다. "마-만약 누가 묻는다면 말이야." <<hePost "이">> 말한다. "난 널 본 적 없는 거야." <<HePost "은">> 도서관에서 나간다.
+<br><br>
+
+<<endevent>>
+<<link [[다음|School Library]]>><</link>>
+
+:: School Library Harass [nobr]
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 0>>
+	<<if $rng gte 81>>
+	<<person1>><<personPost "은">> <<person2>><<personPost "을">> 보고는 웃는다. "우릴 무시할 수 있을 거라 생각하나봐." <<person1>><<HePost "이">> 손으로 당신의 입을 막는다.
+	<br><br>
+
+	<<link [[다음|School Library Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+	<<else>>
+	당신은 둘이 성가시게 구는 걸 무시하고, 곧 그들은 지쳤는지 당신을 내버려둔다.
+	<br><br>
+
+	<<link [[다음|School Library]]>><<endevent>><</link>>
+	<</if>>
+<<elseif $phase is 1>>
+<<generate3>><<person3>>당신은 도와달라 외친다. 몇 사람이 무슨 일인지 보러 온다. 사서도 거기에 껴있다. <<HePost "은">> 둘을 노려본다. "또 너네 둘이구나. 나가."
+<br>
+<<person2>><<personPost "은">> 분한 모양이다. "우린 그냥 장난-"
+<br>
+사서가 말을 자른다. "나가랬지." 둘은 그 말을 따르며, 당신을 내버려둔다.
+<br><br>
+
+<<person3>>사서는 당신에게 괜찮냐고 묻고, 당신은 고개를 끄덕인다. 당신이 괜찬하는 것을 확인한 뒤, 사서는 하던 일로 돌아간다.
+<br><br>
+
+<<link [[다음|School Library]]>><<endevent>><</link>>
+
+<</if>>
+
+:: School Library Molestation [nobr]
+<<if $molestationstart is 1>>
+<<set $molestationstart to 0>>
+<<controlloss>>
+<<violence 1>>
+<<neutral 1>>
+<<molested>>
+
+<<maninit>><<npcidlegenitals>><<hand_gag 0 left>>
+<<if $delinquency lt 400>><<set $rescue to 1>><</if>>
+<<set $timer to 20>>
+<</if>>
+
+<<effects>>
+
+<<if $alarm is 1 and $rescue is 0>>
+<<set $alarm to 0>>
+당신의 불량학생으로서의 명성 때문에 아무도 당신을 도와주지 않는다.
+<br><br>
+<</if>>
+
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $enemyhealth lte 0>>
+	<span id="next"><<link [[다음|School Library Molestation Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음|School Library Molestation Finish]]>><</link>></span><<nexttext>>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<span id="next"><<link [[다음|School Library Molestation Finish]]>><</link>></span><<nexttext>>
+<<elseif $timer lte 0>>
+	<span id="next"><<link [[다음|School Library Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음|School Library Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: School Library Molestation Finish [nobr]
+<<if $enemyhealth lte 0>>
+
+그들은 고통에 몸을 움찔거린다. 눈에서 언뜻 공포감이 보인다. "미친 싸이코 새끼!" 그들은 당신을 내버려둔다. <<tearful>> 당신은 몸을 추스른다.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[다음|School Library]]>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+<<person1>><<personPost "은">> <<person2>><<personPost "을">> 바라본다. "내가 먼저 갔어. 돈 내!"
+<br><br>
+
+<<personPost "은">> 고개를 흔든다. "아냐, 내가 너보다 먼저 떨었어."
+<br><br>
+
+둘은 책상 위에 널부러진 당신을 두고 나간다. 계속해서 말싸움을 하는 목소리가 곧 멀어져간다. <<tearful>> 당신은 몸을 추스른다.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[다음|School Library]]>><</link>>
+<<elseif $alarm is 1 and $rescue is 1>>
+<<set $rescued += 1>>
+
+<<endevent>>
+
+당신의 외침에 깜짝 놀란 사서가 무슨 일인지 확인하러 온다.
+<br><br>
+
+둘은 공격을 멈추고는 책장 사이로 도망가고, 사서는 당신에게로 달려온다.
+
+<<clotheson>>
+<<endcombat>>
+<<exposure>>
+<<generate1>><<person1>>
+<<if $exposed gte 1>>
+<<HePost "은">> 당신에게 몸을 가릴 수건 몇 장을 건네준다.<<towelup>>
+<</if>>
+"괜찮니?" <<HePost "이">> 묻는다.
+	<<if $stress gte 10000>>
+	하지만 당신의 의식은 이미 멀어져가고 있었다.
+	<br><br>
+	<<endevent>>
+	<<ambulance>>
+	<<elseif $pain gte 100 and $willpowerpain is 0>>
+당신은 뭔가 말하려 하나, 대신 눈물이 터져나온다. 정신이 흐려져가며 사서의 팔이 몸을 감싸는 것만이 느껴진다.
+	<br><br>
+	<<endevent>>
+	<<ambulance>>
+	<<elseif $pain gte 20>>
+<<tearful>> 당신은 고개를 끄덕이며 눈물 사이로 사서에게 미소를 지어보인다. 어디 다친 곳은 없다는 것을 확인하자, <<hePost "은">> 하던 일로 돌아간다.
+<<endevent>>
+<br><br>
+<<link [[다음|School Library]]>><</link>>
+	<<else>>
+<<tearful>> 당신은 고개를 끄덕이고는 얼굴을 붉힌 사서에게 미소를 지어보인다. 일단 어디 다친 곳은 없다는 걸 확인하자, <<hePost "은">> 하던 일로 돌아간다.
+<br><br>
+<<endevent>>
+<<link [[다음|School Library]]>><</link>>
+	<</if>>
+<<elseif $timer lte 0>>
+
+지루해졌는지, 둘은 당신을 내버려둔다. <<tearful>> 당신은 몸을 추스른다.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[다음|School Library]]>><</link>>
+<</if>>

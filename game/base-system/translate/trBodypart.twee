@@ -1,0 +1,32 @@
+:: Widgets trBodypart [widget nobr]
+<<widget "trBodypart">>
+    <<set _koPre to {"left":"왼쪽", "right":"오른쪽"}>>
+    <<trinit_bodypartList>>
+    
+    <<set _LowerCase to $args[0].toLowerCase()>>
+    <<set _LowerCase to _LowerCase.replace('_',' ')>>
+    <<set _trTemp to _LowerCase.split(' ')>>
+
+    <<if _trTemp[1] isnot undefined>>
+        <<set _trResult to _koPre[_trTemp[0]]>>
+        <<set _trTemp1 to _koBodyparts.find(function(select){
+                    if(select.part == _trTemp[1] or select.plural == _trTemp[1]){return true;
+                    }})>>
+        <<if _trTemp1 isnot undefined>>
+            <<set _trResult to _trResult+" "+_trTemp1.koPart>>
+            <<trPost _trTemp1.post $args[1] $args[2]>>
+        <<else>>
+            <<print "BodypartSelectionErr: "+$args[0]>>
+        <</if>>
+    <<else>>
+        <<set _trTemp1 to _koBodyparts.find(function(select){
+                    if(select.part == _LowerCase or select.plural == _LowerCase){return true;
+                    }})>>
+        <<if _trTemp1 isnot undefined>>
+            <<set _trResult to _trTemp1.koPart>>
+            <<trPost _trTemp1.post $args[1] $args[2]>>
+        <<else>>
+            <<print "BodypartSelectionErr: "+$args[0]>>
+        <</if>>
+    <</if>>
+<</widget>>
