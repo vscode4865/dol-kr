@@ -950,3 +950,50 @@
         e.g.
         <<trWeather "rain">>                //  "비"
     ```
+
+===============================================
+# EasyPost
+
+위의 매크로들을 좀 더 직관적으로 쉽게 사용하기 위해 추가한 매크로입니다.
+
+* 규칙
+	- <<(명사 | 대명사)_(조사 | 어미) [옵션]>>
+		예: <<He_nun>> - 그는, <<weather_ga "rain">> - 비가
+	- 조사/어미 종류는 trinit_post 에 정의된 것에 준해 만들었음
+		은/는 - _un/_nun
+		이/가 - _i/_ga
+		을/를 -  _ul/_rul
+		과/와 -  _gwa/_wa
+		이랑/랑 - _irang/_rang
+		아/야 - _a/_ya
+		이여/여 - _iyo/_yo
+		이야/야 - _iya/_ya
+		으로/로 - _uro/_ro
+		으로서/로서 - _uroseo/_roseo
+		으로써/로써 - _urosseo/_rosseo
+		으로부터/로부터 - _urobuter/_robuter
+		이라/라 - _ira/_ra
+		이라고/라고 - _irago/_rago
+		이나/나 - _ina/_na
+		이란/란 - _iran/_ran
+		이든가/든가 - _idunga/_dunga
+		이던가/던가 - _idonga/_donga
+		이든지/든지 - _idunji/_dunji
+		이던지/던지 - _idonji/_donji
+		이야말로/야말로 - _iyamalro/_yamalro
+		이구나/구나 - _iguna/_guna
+		이다/다 - _ida/_da
+		이지/지	- _iji/_ji
+		의 - _yi
+	- 붙는 조사/어미는 명사/대명사의 영어발음에 준해 붙임
+		예: He_nun - 히_는, bottom_un - 바텀_은
+	- 옷의 경우 $worn.(위치).name 식의 사용이 대부분으로 보여 이를 대체하는 매크로만 만들었음
+		예: $worn.under_lower.name은 - <<worn_under_lower_name_un>>
+
+* 예시
+	원본: <<He>> ripped your $worn.under_lower.name and shove <<his>> <<penis>> into your <<pussy>>.
+	기존번역: <<HePost "은">> 당신의 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 찢고 <<hisPost "의">> <<penisPost "을">> 당신의 <<pussyPost "으로">> 집어넣는다.
+	EasyPost: <<He_nun>> 당신의 <<worn_under_lower_name_ul>> 찢고 <<his_yi>> <<penis_rul>> 당신의 <<pussy_ro>> 집어넣는다.
+	출력: 그는 당신의 평범한 팬티를 찢고 그의 조그마한 자지를 당신의 보지로 집어넣는다.
+
+
