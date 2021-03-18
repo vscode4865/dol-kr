@@ -122,11 +122,11 @@ function underlowerintegrity() {
 	var V = State.variables.worn.under_lower;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -139,11 +139,11 @@ function underupperintegrity() {
 	var V = State.variables.worn.under_upper;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -156,11 +156,11 @@ function overlowerintegrity() {
 	var V = State.variables.worn.over_lower;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -173,11 +173,11 @@ function lowerintegrity() {
 	var V = State.variables.worn.lower;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -190,11 +190,11 @@ function overupperintegrity() {
 	var V = State.variables.worn.over_upper;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -207,11 +207,11 @@ function upperintegrity() {
 	var V = State.variables.worn.upper;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -224,11 +224,11 @@ function genitalsintegrity() {
 	var V = State.variables.worn.genitals;
 	if (V.integrity_max !== 0) {
 		if (V.integrity <= (V.integrity_max / 10) * 2) {
-			output += "tattered \t";
+			output += "너덜너덜한 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 5) {
-			output += "torn \t";
+			output += "찢긴 \t";
 		} else if (V.integrity <= (V.integrity_max / 10) * 9) {
-			output += "frayed \t";
+			output += "해어진 \t";
 		} else {
 		}
 	}
@@ -318,7 +318,7 @@ window.AvsAn = (function () {
 			aCount: n[0],
 			anCount: n[1],
 			prefix: prefix,
-			article: n[0] >= n[1] ? "a" : "an"
+			article: n[0] >= n[1] ? "" : ""
 		}
 		dict = dict.substr(1 + a.join(';').length);
 		for (var i = 0; i < n[2]; i++)
