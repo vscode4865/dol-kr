@@ -999,6 +999,7 @@
 * 현재 등록된 매크로
 	- trClothes 계열
 		<<worn_(착용부위)_name_(조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
+		<<worn_(착용부위)_name>> 시리즈. 조사 없이 이름만 가져오게 함
 	- beasttypePost 계열
 		<<beasttype_(조사)>>, <<beastsplural_(조사)>>
 	- bodyPost 계열
