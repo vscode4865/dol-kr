@@ -1,7 +1,7 @@
 window.ctf = {
     "defficulty" : 20,
     "accept" : false,
-    "key" : 'e',
+    "key" : 'b',
     "answer" : ""
 }
 
