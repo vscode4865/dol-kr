@@ -268,6 +268,18 @@
         당신은 당신의 <<nudityPost "을">> 의식한다.<<nudityPostend>>
     ```
 
+    <<allTopsPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+    <<allBottomsPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+    <<allTopsUnderwearPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+    <<allBottomsUnderwearPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
 
 * HePost
     ```
@@ -641,7 +653,42 @@
         슬라임 이밴트를 번역한다.
         # 바로 출력하기 때문에 _trResult를 사용하지 않음
     ```
+	
+-----------------
+# ListboxItems
 
+* trListboxItemsFromArray
+	```
+	<<trListboxItemsFromArray>>
+		<<trListboxItemsFromArray *arrayname>>
+		
+		<<listbox>> 에 배열이 들어갈 때 배열을 번역하여 _trListboxItems 에 설정한다.
+		
+		필수사항
+		- arrayname 원본 배열 이름 (따옴표를 붙여줄것)
+		- 해당 arrayname 에 대한 번역표가 trListboxItems.twee 의 <<trListboxItemsInit>> 매크로 안에 존재할것
+		
+		e.g.
+		/* 원본 */
+		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		
+		<<listbox "_defaultActions" autoselect>>
+			<<optionsfrom _options>>	
+		<</listbox>>
+		
+		/* 번역 */
+		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		
+		<<trListboxItemsFromArray "_options">><<listbox "_defaultActions" autoselect>>	/* listbox 앞에 배열이름을 따옴표로 붙여서 매크로 부름 */
+			<<optionsfrom _trListboxItems>>	/* 원래 배열 대신 _trListboxItems 를 사용 */
+		<</listbox>>
+
+		note
+		- listbox 에 들어가는 옵션이 배열 ([] 안에 정의되는 것) 이 아니라 오브젝트 모음 ({} 안에 "이름":"값" 형식으로 정의되는 것) 인 경우 그냥 
+			앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.
+		
+	```
+	
 -----------------
 # Other
 
@@ -1012,7 +1059,7 @@
 		<<himself_(조사)>>, <<Herself_(조사)>>, <<herself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>
-		<<His_yi>>, <<his_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<pher_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
 	- otherPost 계열
 		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
