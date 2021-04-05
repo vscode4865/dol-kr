@@ -557,7 +557,7 @@
     <<personPost>>
         <<personPost post "sep">>
 
-        <<personPost "의">> 대체 위젯. 조사를 붙일 수 있다.
+        <<person>>의 대체 위젯. 조사를 붙일 수 있다.
 
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
@@ -596,6 +596,45 @@
     ```
     <<personyPost>>
         + <<personPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+	<<handtoolPost>>
+		<<handtoolPost *target *post 'sep'>>
+
+		손에 있는 도구 이름을 번역한다.
+		+ trinit.twee의 _handtoolList에 미리 정의되어 있어야 함.
+
+		필수사항
+		- target: 툴 이름
+		
+		선택사항
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<handtoolPost "marker" "을">>              // "마커펜을"
+    ```
+
+	<<lefttoolPost>>
+		<<lefttoolPost [num] *post 'sep'>>
+
+		NPC 손에 있는 도구 이름을 번역한다.
+		(내부적으로 handtoolPost 를 부름)
+
+		
+		선택사항
+		- num: NPCList 의 번호. 생략시 0번.
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<lefttoolPost 0 "을">>              // $NPCList[0].lefttool을
+    ```
+
+    ```
+	<<righttoolPost>>
+        + <<lefttoolPost>>와 용도 및 방식 같음. 생략
     ```
 
 
@@ -1065,7 +1104,8 @@
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
-		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>
+		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
+		<<lefttool_(조사)>>, <<righttool_(조사)>>
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 	- personPost 계열
 		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>
