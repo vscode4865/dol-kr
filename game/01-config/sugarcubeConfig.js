@@ -131,8 +131,8 @@ function widgetHandler(widgetName, contents) {
 			const resFrag = document.createDocumentFragment();
 			const errList = [];
 
-			// Wikify the widget contents.
-			new Wikifier(resFrag, contents);
+			// Wikify the widget contents. add nobr behavior -ng
+			new Wikifier(resFrag, contents.replace(/^\n+|\n+$/g, '').replace(/\n+/g, ' '));
 
 			// Carry over the output, unless there were errors.
 			Array.from(resFrag.querySelectorAll('.error')).forEach(errEl => {
@@ -217,17 +217,19 @@ Macro.add('widget', {
 		}
 	}
 });
+// delete parser that adds unneeded line breaks -ng
+Wikifier.Parser.delete("lineBreak");
 
-/* ToDo: imprement the dolls system, uncomment during and when its setup
+/* ToDo: implement the dolls system, uncomment during and when its setup
 importScripts([
-    "img/dolls/NameValueMaps.js",
-    "img/dolls/dollUpdater.js",
-    "img/dolls/dollLoader.js",
-    "img/dolls/DollHouse.js",
-    "img/dolls/FDoll.js",
+	"img/dolls/NameValueMaps.js",
+	"img/dolls/dollUpdater.js",
+	"img/dolls/dollLoader.js",
+	"img/dolls/DollHouse.js",
+	"img/dolls/FDoll.js",
 ]).then(function () {
-    console.log("Dolls scripts running");
+	console.log("Dolls scripts running");
 })
 .catch(function (err) {
-    console.log(err);
+	console.log(err);
 });*/

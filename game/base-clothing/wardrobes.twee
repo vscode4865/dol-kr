@@ -1,6 +1,6 @@
 :: Widgets Wardrobe [widget]
 
-<<widget "wardrobewear">><<nobr>>
+<<widget "wardrobewear">>
 <<if $runWardrobeSanityChecker is true>>
 	<<wardrobeSanityCheck>>
 	<<set $runWardrobeSanityChecker to false>>
@@ -246,18 +246,22 @@
 <<set $wear_feet to "none">>
 <<set $wear_outfit to "none">>
 <<exposure>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobe">><<nobr>>
+<<widget "wardrobe">>
 <<unset $tempDisable>>
 <<clotheson>> /*Fixes perma pulled aside clothes introduced by 0.2.3.0 bug.*/
 <<temperature>>
 
-<<warmth_description>>
+<span>Warmth:</span>
+<<warmthscale>>
+<div id="warmth-description">
+	<<warmth_description>>
+</div>
 <br><br>
 <<if $upperwet gte 1 or $lowerwet gte 1 or $underlowerwet or $underupperwet gte 1>>
-<<link [[옷을 말린다|$passage]]>><<set $wear to "dry">><<script>>state.display(state.active.title, null)<</script>><!--</script>--><</link>>
-<br>
+	<<link [[옷을 말린다|$passage]]>><<set $wear to "dry">><<script>>state.display(state.active.title, null)<</script>><!--</script>--><</link>>
+	<br>
 <</if>>
 
 <<link [[전부 벗는다|$passage]]>><<set $wear to "strip">><</link>> | 
@@ -337,17 +341,17 @@ __옷__
 <<set $underupperoff to 0>>
 <<exposure>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeContents">><<nobr>>
+<<widget "wardrobeContents">>
 	<<if $lastWardrobeSlot is "NewOutfit">>
 		<<wardrobeNewOutfit>>
 	<<else>>
 		<<wardrobeList $lastWardrobeSlot>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeLinks">><<nobr>>
+<<widget "wardrobeLinks">>
 <<set _wardrobeLinks=[
 	{ id: 'over_head', label: '머리 위', disabled: !$debug },
 	{ id: 'over_upper', label: '상의 위', disabled: !$debug },
@@ -374,9 +378,9 @@ __옷__
 		>_wardrobeLink.label</a><<if _i < _wardrobeLinks.length - 1>> | <</if>>
 	<</if>>
 <</for>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeClothingOptions">><<nobr>>
+<<widget "wardrobeClothingOptions">>
 <br>
 <<if $wardrobeOption is undefined or $wardrobeOption is 0>><<set $wardrobeOption to "wear">><</if>>
 <<if $wardrobeRepeat isnot true or ($wardrobeOption is "repair" and $location isnot "home")>><<set $wardrobeOption to "wear">><</if>>
@@ -393,9 +397,9 @@ __옷__
 <<else>>
 	<br><br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeNewOutfit">><<nobr>>
+<<widget "wardrobeNewOutfit">>
 <br>
 새 세트 추가:
 <br>
@@ -411,7 +415,7 @@ __옷__
 <<link [[새로운 세트에 현재 입은 옷 추가|$passage]]>>
 	<<script>>
 		SugarCube.State.variables.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
-	<</script>><!--</script>-->
+	<</script>>
 	<<set $outfit.push(
 		{index: $outfit.length,
 		name: $outfit_name,
@@ -452,9 +456,9 @@ __옷__
 		<<set $outfit.last().colors to false>>
 	<</if>>
 <</link>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeintegrity">><<nobr>>
+<<widget "wardrobeintegrity">>
 <<set _war_int to $args[0]>>
 <<if $wardrobe[_war_int][_i].integrity gt (($wardrobe[_war_int][_i].integrity_max / 10) * 9)>>
 <<elseif $wardrobe[_war_int][_i].integrity gt (($wardrobe[_war_int][_i].integrity_max / 10) * 5)>>
@@ -464,9 +468,9 @@ __옷__
 <<else>>
 (너덜너덜함)
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeList">><<nobr>>
+<<widget "wardrobeList">>
 <<wardrobeClothingOptions>>
 <<set _wardrobe_list to $args[0]>>
 <<set _errorPrevent to false>>
@@ -566,6 +570,24 @@ __옷__
 			<<set _temp_choice to $worn[_wardrobe_list]>>
 			<<shoptraits>>
 		</div>
+		
+		<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItem.notuck>>
+			<<if $upperTucked>>
+				<<link [[Untuck|$passage]]>><<set $upperTucked = 0>><</link>>
+			<<else>>
+				<<link [[Tuck in|$passage]]>><<set $upperTucked = 1>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+		<<if (_wornItem.hood and _wornItem.outfitSecondary) or (_wornItem.outfitPrimary and Object.keys(_wornItem.outfitPrimary).some(x => $worn[x].hood))>>
+		<!-- If selected item is a hood or selected item has a secondary hood piece -->
+			<<if $hoodDown>>
+				<<link [[Pull hood up|$passage]]>><<set $hoodDown = 0>><</link>>
+			<<else>>
+				<<link [[Pull hood down|$passage]]>><<set $hoodDown = 1>><</link>>
+			<</if>>
+			<br>
+		<</if>>
 	<<else>>
 		없음
 		<br>
@@ -629,9 +651,9 @@ __옷__
 <</if>>
 
 <<temperature>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "oldWardrobeListDisplay">><<nobr>>
+<<widget "oldWardrobeListDisplay">>
 <<wardrobeClothingOptions>>
 <<if $debug is 1>>
 	<<oldWardrobeList "over_upper">>
@@ -654,9 +676,9 @@ __옷__
 <<oldWardrobeList "feet">>
 <div style="clear:both;"></div>
 <<wardrobeNewOutfit>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "oldWardrobeList">><<nobr>>
+<<widget "oldWardrobeList">>
 
 <<set _wardrobe_list to $args[0]>>
 <<set _showType to $args[1]>>
@@ -710,9 +732,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 </ul>
 </div></div>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeListReorder">><<nobr>>
+<<widget "wardrobeListReorder">>
 <<if $args[0] and $args[1]>>
 	<<set _slot to $args[0]>>
 	<<set _orderType to $args[1]>>
@@ -820,9 +842,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 	<</if>>
 	<<run Dynamic.render()>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeSanityCheck">><<nobr>>
+<<widget "wardrobeSanityCheck">>
 /*Fixes invisible outfit bottoms caused by bugs in previous versions*/
 <<set $lastWardrobeSanityCheck to $saveVersions.last()>>
 /*Update _equip as required*/
@@ -876,9 +898,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 		<</if>>
 	<</for>>
 <</for>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wardrobeGetRepairedClothes">><<nobr>>
+<<widget "wardrobeGetRepairedClothes">>
 <<set _equip to ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
 <<set _takenAway to 0>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
@@ -920,9 +942,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 	당신에겐 충분한 공간이 없다. 운전기사가 당신의 _takenAway개의 물건의 기부에 고마워 한다.
 <</if>>
 <<unset $wardrobeRepair>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "randomWear">><<nobr>>
+<<widget "randomWear">>
 <<set $wardrobeOption to "wear">>
 <<set $_equip to []>>
 <<set _equipped to []>>
@@ -959,9 +981,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 	<</if>>
 <</for>>
 <<unset $randomWear>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "warmth_description">><<nobr>>
+<<widget "warmth_description">>
 <<switch $body_temperature_outside>>
 <<case "hot">>
 	<span class="red">바깥은 매우 더울 것이다.</span>
@@ -978,7 +1000,7 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 $warmth 따뜻함 | $chill 추위
 <br>
 온열 범위: <<print ($chill + 1)>> - <<print Math.trunc(($chill * 1.3) + 70)>>
-<</nobr>><</widget>>
+<</widget>>
 
 :: Wardrobe [nobr]
 <<effects>>
@@ -1041,27 +1063,27 @@ $warmth 따뜻함 | $chill 추위
 <<wardrobewear>>
 <<if $exhibitionism lte 54>>
 	<<if $exposed lte 0>>
-	<<link [[마친다|Asylum Cell]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
+		<<link [[마친다|Asylum Cell]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+		<br><br>
 	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
+		지금처럼 아무 것도 안 입고 있을 순 없다!
 		<br><br>
 	<</if>>
 <<elseif $exhibitionism gte 75>>
-<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-<br><br>
-<<else>>
-	<<if $exposed lte 1>>
 	<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 	<br><br>
+<<else>>
+	<<if $exposed lte 1>>
+		<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+		<br><br>
 	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
+		지금처럼 아무 것도 안 입고 있을 순 없다!
 		<br><br>
 	<</if>>
 <</if>>
 <<wardrobe>>
 
-:: Strip Club Dressing Room [nobr]
+:: Strip Club Dressing Room
 
 <<effects>><<set $outside to 0>><<set $location to "strip_club">>
 <<set $wardrobe_location to "wardrobe">>
@@ -1090,7 +1112,7 @@ $warmth 따뜻함 | $chill 추위
 <</if>>
 <<wardrobe>>
 
-:: Brothel Dressing Room [nobr]
+:: Brothel Dressing Room
 
 <<effects>><<set $outside to 0>><<set $location to "brothel">>
 <<set $wardrobe_location to "wardrobe">>
@@ -1119,7 +1141,7 @@ $warmth 따뜻함 | $chill 추위
 <</if>>
 <<wardrobe>>
 
-:: School Boy Wardrobe [nobr]
+:: School Boy Wardrobe
 
 <<effects>><<set $outside to 0>><<set $location to "pool">>
 <<set $wardrobe_location to "wardrobe">>
@@ -1127,10 +1149,10 @@ $warmth 따뜻함 | $chill 추위
 <br><br>
 <<wardrobewear>>
 <<if $exposed gte 2 and $exhibitionism lt 75>>
-이 꼴로 나갈 순 없다!
-<br><br>
+	이 꼴로 나갈 순 없다!
+	<br><br>
 <<else>>
-<<link [[나간다|School Boy Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+	<<link [[나간다|School Boy Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 	<br><br>
 <</if>>
 <<wardrobe>>
@@ -1143,15 +1165,15 @@ $warmth 따뜻함 | $chill 추위
 <br><br>
 <<wardrobewear>>
 <<if $exposed gte 2 and $exhibitionism lt 75>>
-이 꼴로 나갈 순 없다!
-<br><br>
+	이 꼴로 나갈 순 없다!
+	<br><br>
 <<else>>
-<<link [[나간다|School Girl Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+	<<link [[나간다|School Girl Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 	<br><br>
 <</if>>
 <<wardrobe>>
 
-:: Wardrobe Sale Crate [nobr]
+:: Wardrobe Sale Crate
 
 정말 당신의 모든 
 <<if $crateContents is "all">>
@@ -1185,7 +1207,7 @@ $warmth 따뜻함 | $chill 추위
 	<<unset $crateContents>>
 <</link>>
 
-:: Wardrobe Sale Crate Result [nobr]
+:: Wardrobe Sale Crate Result
 
 <<set $tailorMonthlyService to 30>>
 <<set _value to 0>>
@@ -1203,7 +1225,7 @@ $warmth 따뜻함 | $chill 추위
 		<<if $wardrobe[_equip[$_i]][$_j].outfitPrimary is undefined and $crateContents is "outfits">>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor($wardrobe[_equip[$_i]][$_j].cost * ($wardrobe[_equip[$_i]][$_j].integrity / $wardrobe[_equip[$_i]][$_j].integrity_max) / 3)>>
+		<<set _value += Math.floor(getClothingCost($wardrobe[_equip[$_i]][$_j]) * ($wardrobe[_equip[$_i]][$_j].integrity / $wardrobe[_equip[$_i]][$_j].integrity_max) / 3)>>
 		<<run _toDelete.push(clone($_j))>>
 	<</for>>
 	<<for $_j to $wardrobe[_equip[$_i]].length; $_j gte 0; $_j-->>
@@ -1220,7 +1242,7 @@ $warmth 따뜻함 | $chill 추위
 	<<unset $crateContents>>
 <</link>>
 
-:: Wardrobe Repair Crate [nobr]
+:: Wardrobe Repair Crate
 
 정말 당신의 모든 
 <<if $crateContents is "all">>
@@ -1260,7 +1282,7 @@ $warmth 따뜻함 | $chill 추위
 	<<unset $crateContents>>
 <</link>>
 
-:: Wardrobe Repair Crate Result [nobr]
+:: Wardrobe Repair Crate Result
 
 <<set $tailorMonthlyService to 30>>
 <<set $wardrobeRepair to {timeLeft: 1}>>
@@ -1276,7 +1298,7 @@ $warmth 따뜻함 | $chill 추위
 		<<if $wardrobe[_equip[$_i]][$_j].outfitPrimary is undefined and $crateContents is "outfits">>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor($wardrobe[_equip[$_i]][$_j].cost * (1 - ($wardrobe[_equip[$_i]][$_j].integrity / $wardrobe[_equip[$_i]][$_j].integrity_max)) * 1.25)>>
+		<<set _value += Math.floor(getClothingCost($wardrobe[_equip[$_i]][$_j]) * (1 - ($wardrobe[_equip[$_i]][$_j].integrity / $wardrobe[_equip[$_i]][$_j].integrity_max)) * 1.25)>>
 
 		<<if $wardrobeRepair[_equip[$_i]] is undefined>>
 			<<set $wardrobeRepair[_equip[$_i]] to []>>

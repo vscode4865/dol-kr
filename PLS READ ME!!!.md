@@ -25,5 +25,4 @@ loc-domus-homes 번역 필요
 loc-home 번역 필요
 
 업데이트 구간
-game/overworld-town/loc-shop/widgets.twee
-https://gitgud.io/Vrelnir/degrees-of-lewdity/-/commit/7654ebad1dd01ab82c3624c63e3227573c52f07b#73e48a34180c2c8be3faaee0585e7b9adb88af93 
+base-combat/actions-penis

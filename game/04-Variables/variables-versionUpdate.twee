@@ -1,5 +1,5 @@
 :: Widgets variablesVersionUpdate [widget]
-<<widget "variablesVersionUpdate">><<nobr>>
+<<widget "variablesVersionUpdate">>
 /*Variable that you need to check on every new version, page load/refresh or save load*/
 
 <<if $objectVersion is undefined>>
@@ -624,8 +624,16 @@
 	<<set $kylarraped to 0>>
 <</if>>
 
-<<if $averyrage is undefined>>
-	<<set $averyrage to 0>>
+<<if $averyrage isnot undefined>>
+	<<unset $averyrage>>
+<</if>>
+
+<<if ($NPCName[$NPCNameList.indexOf("Avery")].state is undefined or $NPCName[$NPCNameList.indexOf("Avery")].state is "") and $NPCName[$NPCNameList.indexOf("Avery")].init is 1>>
+	<<npcset Avery state "active">>
+<</if>>
+
+<<if ($NPCName[$NPCNameList.indexOf("Robin")].state is undefined or $NPCName[$NPCNameList.indexOf("Robin")].state is "") and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+	<<npcset Robin state "active">>
 <</if>>
 
 <<if $crimemax is undefined>>
@@ -1316,9 +1324,9 @@
 	<<set $wear_hands to "none">>
 <</if>>
 
-<<if $objectVersion.updateClothes lt 21 or $objectVersion.updateClothes is undefined>>
+<<if $objectVersion.updateClothes lt 23 or $objectVersion.updateClothes is undefined>>
 	<<updateClothes>>
-	<<set $objectVersion.updateClothes to 21>>
+	<<set $objectVersion.updateClothes to 23>>
 	<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 	Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 <</if>>
@@ -1637,15 +1645,11 @@
 <</if>>
 
 <<if $pbdisable is undefined>>
-	<<set $pbdisable to "t">>
+	<<set $pbdisable to "f">>
 <</if>>
 
 <<if $facestyle is undefined>>
 	<<set $facestyle to "default">>
-<</if>>
-
-<<if $browsOverHair is undefined>>
-	<<set $browsOverHair to "t">>
 <</if>>
 
 <<if $blinkingdisable is undefined>>
@@ -1689,6 +1693,36 @@
 	<<set $home_gone to 0>>
 <</if>>
 
+<<if $hirsutedisable>>
+	<<if $hirsutedisable is "f">>
+		<<if $wolfgirl gte 4>>
+			<<set $transformationParts.wolf.pubes to "default">>
+			<<set $transformationParts.wolf.pits to "default">>
+		<<else>>
+			<<set $transformationParts.wolf.pubes to "disabled">>
+			<<set $transformationParts.wolf.pits to "disabled">>
+		<</if>>
+		<<if $harpy gte 6>>
+			<<set $transformationParts.bird.pubes to "default">>
+		<<else>>
+			<<set $transformationParts.bird.pubes to "disabled">>
+		<</if>>
+	<<else>>
+		<<if $wolfgirl gte 4>>
+			<<set $transformationParts.wolf.pubes to "hidden">>
+			<<set $transformationParts.wolf.pits to "hidden">>
+		<<else>>
+			<<set $transformationParts.wolf.pubes to "disabled">>
+			<<set $transformationParts.wolf.pits to "disabled">>
+		<</if>>
+		<<if $harpy gte 6>>
+			<<set $transformationParts.bird.pubes to "hidden">>
+		<<else>>
+			<<set $transformationParts.bird.pubes to "disabled">>
+		<</if>>
+	<</if>>
+<<unset $hirsutedisable>>
+<</if>>
 <<hirsuteHideCheck>>
 
 <<if $per_npc.janitor isnot undefined>>
@@ -1891,8 +1925,8 @@
 */
 
 
-<<if $clothing_number isnot 12>>
-	<<set $clothing_number to 12>>
+<<if $clothing_number isnot 13>>
+	<<set $clothing_number to 13>>
 <</if>>
 
 <<if $warmth is undefined>>
@@ -1979,6 +2013,26 @@
 	<<set $money to 0>>
 <</if>>
 
+<<if $mannequinHasPenis is undefined>>
+	<<set $mannequinHasPenis = $player.penisexist ? 1 : 0>>
+	<<set $mannequinBreastsSize = $mannequinHasPenis ? 0 : 3>>
+<</if>>
+<<if $shopDefaults.mannequinGender is undefined>>
+	<<set $shopDefaults.mannequinGender = "same">>
+<</if>>
+<<if $shopPage is undefined>>
+	<<set $shopPage = 0>>
+<</if>>
+<<if $shopClothingFilter is undefined>>
+	<<shopClothingFilterReset>>
+<</if>>
+<<if $shopItemsPerPage is undefined>>
+	<<set $shopItemsPerPage = 12>>
+<</if>>
+<<if $shopDefaults.colourItems is undefined>>
+	<<set $shopDefaults.colourItems = "random">>
+<</if>>
+	
 <<if $saveDetails is undefined>>
 	<<set $saveDetails to {
 		exported:{
@@ -2013,12 +2067,24 @@
 	<<else>>
 		<<set $greathawkmonster to 0>>
 	<</if>>
-<<set $bird to {}>>
+	<<set $bird to {}>>
 <</if>>
 
 <<if $harpy is undefined>>
 	<<set $harpy to 0>>
 <</if>>
 
-<</nobr>><</widget>>
+<<if $NPCName[$NPCNameList.indexOf("Great Hawk")].type is "bird">>
+	<<set $NPCName[$NPCNameList.indexOf("Great Hawk")].type to "hawk">>
+<</if>>
 
+<<if $clothesPrice is undefined>>
+	<<set $clothesPrice to 1>>
+<</if>>
+<<if $clothesPriceUnderwear is undefined>>
+	<<set $clothesPriceUnderwear to 1>>
+	<<set $clothesPriceSchool to 1>>
+	<<set $clothesPriceLewd to 1>>
+<</if>>
+
+<</widget>>
