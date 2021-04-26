@@ -295,18 +295,18 @@ window.isImageOk = function (id) {
 }
 
 window.beastTogglesCheck = function () {
-	let vars = SugarCube.State.variables; 
+	let vars = SugarCube.State.variables;
 	let temp = SugarCube.State.temporary;
-	temp.beastVars = [ 
-		"bestialitydisable", 
-		"swarmdisable", 
-		"parasitedisable", 
-		"analpregdisable", 
-		"tentacledisable", 
-		"slimedisable", 
-		"voredisable", 
-		"spiderdisable", 
-		"slugdisable", 
+	temp.beastVars = [
+		"bestialitydisable",
+		"swarmdisable",
+		"parasitedisable",
+		"analpregdisable",
+		"tentacledisable",
+		"slimedisable",
+		"voredisable",
+		"spiderdisable",
+		"slugdisable",
 		"waspdisable"
 	];
 	temp.anyBeastOn = temp.beastVars.some(x => vars[x] == 'f');
@@ -343,14 +343,14 @@ window.settingsAsphyxiation = function () {
 	});
 }
 
-window.settingsNamedNpcBreastSize = function () {	
+window.settingsNamedNpcBreastSize = function () {
 	const breastSizes = ["유두","약간 솟아오른","조그마한","작은","앙증맞은","평범한","봉긋한","큰","풍만한","커다란","매우 큰","엄청난","거대한"];
-	
+
 	let updateText = () => {
 		const npcId = SugarCube.State.temporary.npcId;
 		const npc = SugarCube.State.variables.NPCName[npcId];
 		const val = npc.breastsize;
-		
+
 		const text = breastSizes[val];
 
 		if (val > 0) {

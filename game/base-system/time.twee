@@ -1,5 +1,5 @@
 :: Widgets Time [widget]
-<<widget "day">><<nobr>>
+<<widget "day">>
 <<set $comb to 0>>
 
 <<earnAllFeats true>>
@@ -39,6 +39,11 @@
 <</if>>
 <<set $bullygate to 0>>
 <<set $whitney_toilet_check to 0>>
+<<unset $whitney_park>>
+<<unset $whitney_text_trigger>>
+<<unset $whitneyFlirt>>
+<<unset $whitneyChat>>
+<<unset $whitneyAsk>>
 <<set $policecollarseduceattempt to 0>>
 <<set $tenyclusPlayed to 0>>
 <<unset $beachstrip>>
@@ -57,8 +62,6 @@
 <<set $robinschoolafternoon to 0>>
 <<set $baileyvisit to 0>>
 <<set $robinwalk to 0>>
-<<set $robinwakeday to 0>>
-<<set $wolfwake to 0>>
 <<if $weekday is 7 and $brothelshow isnot "none" and $brothelshowdone isnot 1 and $brothelshowintro is 1>>
 	<<set $brothelshowmissed to 1>><<set $brothelshow to "none">>
 <</if>>
@@ -185,6 +188,7 @@
 <<if $syndromewolves is 1>>
 	<<wolf_cave_update>>
 <</if>>
+<<unset $blackWolfMonsterRoll>>
 <<unset $temple_pray>>
 <<unset $lake_meditate>>
 <<unset $ex_day>>
@@ -204,6 +208,9 @@
 <<set $bird.satisfied to undefined>>
 <<unset $bird_wash>>
 <<unset $birdDailyGreeting>>
+<<unset $greatHawkMonsterRoll>>
+<<unset $estate_bluffed>>
+<<unset $estate_chaos>>
 <<if $stall_rejected gte 1>>
 	<<set $stall_rejected -= 1>>
 	<<set $stall_rejected = Math.clamp($stall_rejected, 0, 100)>>
@@ -224,6 +231,7 @@
 <<if $lake_ice_broken lte 0>>
 	<<unset $lake_ice_broken>>
 <</if>>
+<<unset $estate_done>>
 
 <<unset $pharmTriedSeduction>>
 <<unset $pharmSexFinished>>
@@ -499,13 +507,16 @@
 	<<unset $christmas_robin_lewd>>
 	<<unset $christmas_robin_gift_received>>
 	<<unset $christmas_gift_robin_given>>
+	<<unset $christmas_gift_eden>>
+	<<unset $christmas_gift_eden_given>>
+	<<unset $edenmeal>>
+	<<unset $eden_christmas_dinner>>
 <</if>>
 <<if $bell_timer>>
 	<<set $bell_timer -= 1>>
 <</if>>
 <<if $weekday isnot 1>>
-	<<if $robindebtevent gte 1>>
-	<<else>>
+	<<if $robindebtevent is 0>>
 		<<set $robinmissing to 0>>
 	<</if>>
 <</if>>
@@ -794,10 +805,40 @@
 	<<set $milkdranktrait to 1>>
 <</if>>
 
-<<set $edenbreakfast to 0>>
-<<set $edenbath to 0>>
-<<set $edenchoplust to 0>>
-<<set $edenhunting to 0>>
+<<unset $edenbreakfast>>
+<<unset $edenbath>>
+<<unset $edenwalk>>
+<<unset $edenwash>>
+<<unset $edenchoplust>>
+<<unset $edenhunting>>
+<<unset $edenlunch>>
+<<unset $edendinner>>
+<<unset $edentowelrescue>>
+<<unset $eden_asylum_rescue>>
+<<set $edenhuntcaught to 0>>
+<<set $edenfarmrescue to 0>>
+<<if $edenradio is 1>>
+	<<set $edenradio to 1>>
+<<else>>
+	<<set $edenradio to 0>>
+<</if>>
+<<if $edenradiointro is 2>>
+	<<set $edenradiointro to 2>>
+<<elseif $edenradiointro is 1>>
+	<<set $edenradiointro to 1>>
+<<else>>
+	<<set $edenradiointro to 0>>
+<</if>>
+<<if $edenwhip is 1>>
+	<<set $edenwhip to 1>>
+<<else>>
+	<<set $edenwhip to 0>>
+<</if>>
+<<if $edenshoutrescue is 1>>
+	<<set $edenshoutrescue to 1>>
+<<else>>
+	<<set $edenwhip to 0>>
+<</if>>
 <<set $edendays += 1>>
 <<if $edengarden gte 1>>
 	<<set $edengarden -= 1>>
@@ -808,7 +849,6 @@
 <<if $edenspring gte 1>>
 	<<set $edenspring -= 1>>
 <</if>>
-<<set $edenwake to 0>>
 
 <<npcincr Kylar lust 1>>
 <<set $NPCName[$NPCNameList.indexOf("Kylar")].lust to Math.clamp($NPCName[$NPCNameList.indexOf("Kylar")].lust, 0, 100)>>
@@ -820,6 +860,11 @@
 <<set $kylarstreettimer += (10 + ($NPCName[$NPCNameList.indexOf("Kylar")].lust / 4))>>
 <<unset $kylar_bodywriting>>
 <<unset $kylar_invite>>
+<<if $kylar_riddle is 1>>
+	<<set $kylar_riddle to 2>>
+<<else>>
+	<<unset $kylar_riddle>>
+<</if>>
 <<set $kylarwalk to 0>>
 <<if $kylarFountainIntro is 1 and random(1,100) gte 20>>
 	<<set $kylarFountain to 1>>
@@ -827,16 +872,25 @@
 	<<set $kylarFountain to 0>>
 <</if>>
 
-<<set $averyschoolpickup to 0>>
-<<set $averyseen to 0>>
-<<if $averydate is 1>>
-	<<set $averydate to 0>>
-	<<if $averydateattended isnot 1>>
-		<<set $averydatemissed to 1>>
+<<if $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
+	<<set $averyschoolpickup to 0>>
+	<<set $averyseen to 0>>
+	<<if $averydate is 1>>
+		<<set $averydate to 0>>
+		<<if $averydateattended isnot 1>>
+			<<set $averydatemissed to 1>>
+		<</if>>
+		<<set $averydateattended to 0>>
 	<</if>>
-	<<set $averydateattended to 0>>
+	<<unset $averydatedone>>
+	<<if $averyPub is 1>>
+		<<unset $averyPub>>
+		<<clearNPC 1 avery_sidepiece>>
+	<</if>>
+<<else>>
+	<<unset $averyDismissalSceneWait>>
 <</if>>
-<<unset $averydatedone>>
+
 
 <<if $skulduggery gte 100 and $skulduggeryday lt 100>>
 	<span class="gold">속임수가 </span><span class="pink">F+</span><span class="gold">로 발전하였다.</span>
@@ -976,9 +1030,10 @@
 <<if $moorLuck gt 0>>
 	<<set $moorLuck-->>
 <</if>>
-<</nobr>><</widget>>
+<<unset $glideScared>>
+<</widget>>
 
-<<widget "noon">><<nobr>>
+<<widget "noon">>
 <<set $noon_check to 1>>
 <<unset $bartend_info>>
 <<unset $bartend_info_other>>
@@ -993,16 +1048,20 @@
 	<<unset $lake_ice_broken>>
 <</if>>
 <<unset $birdSleep>>
-<</nobr>><</widget>>
+<<unset $glideScared>>
+<</widget>>
 
-<<widget "dawn">><<nobr>>
+<<widget "dawn">>
 <<set $dawn_check to 1>>
 <<unset $skul_dock_init>>
 <<unset $skul_dock>>
 <<unset $dock_security>>
-<</nobr>><</widget>>
+<<set $robinwakeday to 0>>
+<<set $wolfwake to 0>>
+<<set $edenwake to 0>>
+<</widget>>
 
-<<widget "hour">><<nobr>>
+<<widget "hour">>
 <<for $minute gte 60>>
 	<<set $minute -= 60>><<orgasmhour>>
 	<<if $innocencestate is 1 and $control lte 0>>
@@ -1058,9 +1117,9 @@
 <<temperature_hour>>
 
 <<set $home_gone += 1>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "temperature_hour">><<nobr>>
+<<widget "temperature_hour">>
 <<set $chill to $chill_day>>
 <<if $hour gte 21 or $hour lte 5>>
 	<<if $weather is "clear">>
@@ -1087,14 +1146,14 @@
 		<<set $chill += 0>>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "advancetohour">><<nobr>>
+<<widget "advancetohour">>
 <<set _min to $time - ($hour * 60)>>
 <<pass _min>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "week">><<nobr>>
+<<widget "week">>
 
 <<if $science_exam gte 200 and $sciencetrait lt 4>>
 	<<set $effectsmessage to 1>><<set $science_up_message to 1>>
@@ -1182,9 +1241,9 @@
 <<unset $school_pool_swap>>
 <<unset $beach_cave_compass>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "year">><<nobr>>
+<<widget "year">>
 
 <<if $year % 4 is 0>>
 	<<set $yeardays -= 366>>
@@ -1198,9 +1257,9 @@
 <<set $scienceproject to "none">>
 <<set $mathsproject to "none">>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "moonstate">><<nobr>>
+<<widget "moonstate">>
 
 <<switch $month>>
 	<<case "february">>
@@ -1225,4 +1284,4 @@
 	<<unset $moonEvent>>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>

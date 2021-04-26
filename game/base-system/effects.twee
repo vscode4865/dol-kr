@@ -1,6 +1,6 @@
 :: Widgets Effects [widget]
 
-<<widget "effectstime">><<nobr>>
+<<widget "effectstime">>
 	<<time>>
 	<<if $time gte 1440>>
 		<<set $time -= 1440>><<set $days += 1>><<set $weekday += 1>>
@@ -13,9 +13,9 @@
 	<<if $minute gte 60>>
 		<<hour>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "effectswater">><<nobr>>
+<<widget "effectswater">>
 <<set $wetintro to 0>>
 
 <<if $squidcount is 1>>
@@ -36,7 +36,7 @@
 	<<arousal _arousal>>
 <</if>>
 
-<<if !$worn.upper.type.includes("naked") and !$worn.upper.type.includes("swim")>>
+<<if !$worn.upper.type.includes("naked") and !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("stealthy")>>
 	<<if $upperwet gte 100 and $upperwetstage lt 3>>
 		<<set $upperwetstage to 3>><<set $wetintro to 2>>
 		<span class="lewd">Water soaks through your $worn.upper.name, exposing your <<breasts>>.</span>
@@ -58,7 +58,7 @@
 	<</if>>
 <</if>>
 
-<<if !$worn.lower.type.includes("naked") and !$worn.lower.type.includes("swim")>>
+<<if !$worn.lower.type.includes("naked") and !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("stealthy")>>
 	<<if $lowerwet gte 100 and $lowerwetstage lt 3>>
 		<<set $lowerwetstage to 3>><<set $wetintro to 2>>
 		<span class="lewd">Water soaks through your $worn.lower.name, exposing your <<undies>>.</span>
@@ -80,7 +80,7 @@
 	<</if>>
 <</if>>
 
-<<if !$worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("chastity") and !$worn.under_lower.type.includes("swim")>>
+<<if !$worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("chastity") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("stealthy")>>
 	<<if $underlowerwet gte 100 and $underlowerwetstage lt 3>>
 		<<set $underlowerwetstage to 3>><<set $wetintro to 2>>
 		<span class="lewd"><<if $pantiesSoaked is 1>>Your bodily fluids soak<<else>>Water soaks<</if>> through your $worn.under_lower.name, exposing your <<genitals>>.</span>
@@ -102,7 +102,7 @@
 	<</if>>
 <</if>>
 
-<<if !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity") and !$worn.under_upper.type.includes("swim")>>
+<<if !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity") and !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("stealthy")>>
 	<<if $underupperwet gte 100 and $underupperwetstage lt 3>>
 		<<set $underupperwetstage to 3>><<set $wetintro to 2>>
 		<span class="lewd">Water soaks through your $worn.under_upper.name, exposing your <<breasts>>.</span>
@@ -142,16 +142,16 @@
 	<br><br>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "effectsmakeup">><<nobr>>
+<<widget "effectsmakeup">>
 <<if $makeupWashed>>
 	<<unset $makeupWashed>>
 	<span class="teal">Your makeup is washed away<<if $beauty gte ($beautymax / 7) * 4>> revealing your natural beauty<</if>>.</span><br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "effects">><<nobr>>
+<<widget "effects">>
 <<compatibility>>
 
 <<effectstime>>
@@ -166,7 +166,7 @@
 
 <<if $inwater isnot 1 and $squidcount isnot 0>>
 	<<if $squidcount gte 2>>
-		<span class="blue">오징어가 물을 찾아 당신에게서 떨어진다.</span>
+		<span class="blue">오징어들이 물을 찾아 당신에게서 떨어진다.</span>
 	<<elseif $squidcount is 1>>
 		<span class="blue">오징어가 물을 찾아 당신에게서 떨어진다.</span>
 	<</if>>
@@ -574,20 +574,22 @@
 
 <br>
 <<set $menu to 0>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "temperature">><<nobr>>
+<<widget "temperature">>
 <<set $warmth to 0>>
 <<for _e to 0; _e lt $clothing_number; _e++>>
 	<<activeclothes>>
 	<<if $inwater is 1>>
-		<<if $worn[_active_clothes].warmth isnot undefined and $worn[_active_clothes].type.includes("diving")>>	
+		<<if $worn[_active_clothes].warmth isnot undefined and $worn[_active_clothes].type.includes("diving")>>
 			<<set $warmth += $worn[_active_clothes].warmth>>
 		<</if>>
 	<<else>>
 		<<if $worn[_active_clothes].warmth isnot undefined>>
 			<<if _active_clothes is "upper" and $worn.upper.warmth lte $upperwet or _active_clothes is "lower" and $worn.lower.warmth lte $lowerwet or _active_clothes is "under_upper" and $worn.under_upper.warmth lte $underupperwet or _active_clothes is "under_lower" and $worn.under_lower.warmth lte $underlowerwet>>
 				/*Do nothing*/
+			<<elseif $hoodDown and (_active_clothes is "head" or _active_clothes is "over_head") and $worn[_active_clothes].hood and $worn[_active_clothes].outfitSecondary isnot undefined>>
+				/* Don't add warmth if it's a hood and it has been pulled down */
 			<<else>>
 				<<set $warmth += $worn[_active_clothes].warmth>>
 			<</if>>
@@ -627,9 +629,9 @@
 <<else>>
 	<<set $body_temperature to "comfy">>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
 :: Widgets Compatibility [widget]
 
-<<widget "compatibility">><<nobr>>
-<</nobr>><</widget>>
+<<widget "compatibility">>
+<</widget>>

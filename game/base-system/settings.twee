@@ -1,6 +1,6 @@
 :: Widgets Settings [widget]
 
-<<widget "initsettings">><<nobr>>
+<<widget "initsettings">>
 <<set $player.gender to "f">>
 <<set $player.sex to "f">>
 <<set $player.gender_body to "a">>
@@ -38,7 +38,7 @@
 <<set $tentacledisable to "f">>
 <<set $analdisable to "f">>
 <<set $transformdisable to "f">>
-<<set $hirsutedisable to "t">>
+/*<<set $hirsutedisable to "t">>*/
 <<set $breastfeedingdisable to "f">>
 <<set $analpregdisable to "f">>
 <<set $asphyxiaLvl to 3>>
@@ -69,10 +69,16 @@
 <<set $reducedLineHeight to false>>
 <<set $sidebarAnimations to true>>
 <<set $combatAnimations to true>>
-<<startingPlayerImageReset>>
-<<init_customSetting>><</nobr>><</widget>>
+<<set $clothesPrice to 1>>
+<<set $clothesPriceUnderwear to 1>>
+<<set $clothesPriceSchool to 1>>
+<<set $clothesPriceLewd to 1>>
+<<set $rentmod to 1>>
 
-<<widget "displaySettings">><<nobr>>
+<<startingPlayerImageReset>>
+<</widget>>
+
+<<widget "displaySettings">>
 <<if $args[0]>>
 	<<set $currentSettings to $args[0]>>
 <</if>>
@@ -97,20 +103,21 @@
 <<if $currentSettings isnot "importConfirmDetails">>
 	<<unset $importString>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "displaySubsection">><<nobr>>
+<<widget "displaySubsection">>
 <<if $args[0]>>
 	<<set $currentSubsection to $args[0]>>
 <</if>>
 <<switch $currentSubsection>>
 	<<case "humanSettings">><<replace #subsectionDiv>><<humanSettings>><</replace>>
 	<<case "beastSettings">><<replace #subsectionDiv>><<beastSettings>><</replace>>
+	<<case "priceSettings">><<replace #subsectionDiv>><<priceSettings>><</replace>>
 	<<default>><<replace #subsectionDiv>><<humanSettings>><</replace>>
 <</switch>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "settings">><<nobr>>
+<<widget "settings">>
 <<if $passage is "Start" or $passage is "certification_event_start">>
 <div id="settingsExit">
 	<<settingsExit>>
@@ -173,24 +180,24 @@
 </div>
 <</if>>
 <br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "settingsExit">><<nobr>>
+<<widget "settingsExit">>
 <<if $passage is "Start" or $passage is "certification_event_start">>
 	<<set _buttonName to "시작">>
 <<else>>
 	<<set _buttonName to "확인">>
 <</if>>
 <<link _buttonName>>
-	<<if ($feats.locked is true or $cheatdisable is "t") and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1))>>
+	<<if ($feats.locked is true or $cheatdisable is "t") and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1) and $rentmod gte 1)>>
 		<<settingsExitFunction>>
 	<<else>>
 		<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
 	<</if>>
 <</link>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "settingsExitConfirm">><<nobr>>
+<<widget "settingsExitConfirm">>
 <span class="red">일부 설정은 특정 도전과제를 비활성화시킬 수 있습니다. 괜찮습니까?</span>
 <br>
 <<link "아뇨, 해당 설정들을 원래대로 되돌려주세요">>
@@ -201,16 +208,22 @@
 	<<if $alluremod lt 1>>
 		<<set $alluremod to 1>>
 	<</if>>
+	<<if $rentmod lt 1>>
+		<<set $rentmod to 1>>
+	<</if>>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<displaySettings>>
 <</link>>
 <br><br><br>
 <<link "네">>
+	<<if $rentmod lt 1>>
+		<<set $cheatdisable to "f">>
+	<</if>>
 	<<settingsExitFunction>>
 <</link>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "settingsExitFunction">><<nobr>>
+<<widget "settingsExitFunction">>
 	<<if $settingsExitPassage is "Start2">>
 		<<setSkinColorBase>>
 	<</if>>
@@ -231,14 +244,23 @@
 	<<if $facestyle is "" or isImageOk("#testImage")>>
 		<<set $facestyle = "default">>
 	<</if>>
+	<!-- Init shop mannequin gender -->
+	<<if $mannequinHasPenis is undefined>>
+		<<set $mannequinHasPenis = $player.penisexist ? 1 : 0>>
+		<<set $mannequinBreastsSize = $mannequinHasPenis ? 0 : 3>>
+	<</if>>
+	<<if $clothesPriceLewd lt Math.ceil(10 / $clothesPrice) * 0.1>>
+		<<set $clothesPriceLewd to parseFloat((Math.ceil(10 / $clothesPrice) * 0.1).toFixed(1))>>
+	<</if>>
 	<<set _settingsExitPassage to clone($settingsExitPassage)>>
 	<<unset $settingsExitPassage>>
 	<<run State.display(_settingsExitPassage)>>
 	<<set $saveName to $saveName.replace(/[^a-zA-Z 0-9]+/g,"")>>
 	<<unset $importString>>
-<</nobr>><</widget>>
+<</widget>>
+
 /*complete:{"Vrelnir (Default)":"vrelDefault","Lollipop Scythe":"lollipopScythe","PurityGuy":"purityGuy","Fangi":"fangi"},*/
-<<widget "quickStartOptions">><<nobr>>
+<<widget "quickStartOptions">>
 <<if _quickStartOptions is undefined>>
 	<<set _quickStartOptions to {
 		player:{"Female Waif":"femaleWaif","Male Waif":"maleWaif", "Hermaphrodite Waif":"hermaphroditeWaif", "Vrelnir PC":"vrel", "Crossdresser":"crossdresser","Tough Guy":"toughGuy"},
@@ -254,9 +276,9 @@
 		settings:{"PC, Tips":"settingPCTip","PC, no Tips":"settingPCNoTip","Mobile, Tips":"settingMobileTips","Mobile, no Tips":"settingMobileNoTips"}
 	}>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "quickStart">><<nobr>>
+<<widget "quickStart">>
 <<quickStartOptions>>
 <i>Gender ratios and kinks can be fine-tuned in the Game Settings Tab.</i>
 <br><br>
@@ -301,12 +323,12 @@
 <span class="gold">Settings Preset:</span> <<listbox "_settingsPreset" autoselect>><<optionsfrom _quickStartOptions.settings>><</listbox>> |
 <<link Set>><<presets _settingsPreset>><</link>>
 <br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "characterSettings">><<nobr>>
+<<widget "characterSettings">>
 
 	<<if StartConfig.enableImages is true>>
-		<span class="gold">사이드 바에서 미리보기.</span> <label>겉옷 보기 <<print '<<checkbox "_showClothes" false true '+(_showClothes isnot false ? "checked" : "")+'>>'>></label> <label>속옷 보기 <<print '<<checkbox "_showUnderwear" false true '+(_showUnderwear isnot false ? "checked" : "")+'>>'>></label> 
+		<span class="gold">사이드 바에서 미리보기.</span> <label>겉옷 보기 <<print '<<checkbox "_showClothes" false true '+(_showClothes isnot false ? "checked" : "")+'>>'>></label> <label>속옷 보기 <<print '<<checkbox "_showUnderwear" false true '+(_showUnderwear isnot false ? "checked" : "")+'>>'>></label>
 		<br>
 		<span class="red">'플레이어 캐릭터의 피부색 시각적으로 표현' 기능은 일반 탭에서 활성화해야 정상적으로 게임 플레이 중에 피부색을 볼 수 있습니다.</span>
 		<br>
@@ -505,9 +527,9 @@
 	<br>
 	<label>그린썸 <<print '<<radiobutton "$background" "greenthumb" ' + ($background is "greenthumb" ? "checked" : "") + '>>'>> - 비료를 사용할떄 수확량이 많아지며 부패하지 않습니다.</label>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "featSettings">><<nobr>>
+<<widget "featSettings">>
 
 	<<if $feats.allSaves.points is undefined or $feats.allSaves.points is 0>>
 		<span class="red">현재 부스트에 사용할 Vrel코인이 0개 있습니다. 잘못된 정보라면, 가장 마지막 세이브 파일을 불러온 뒤 재시작 해주세요.</span>
@@ -545,9 +567,9 @@
 		</div>
 		<<featsPointsMenuReset>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "gameSettings">><<nobr>>
+<<widget "gameSettings">>
 	<span class="gold">게임 모드</span>
 	<br>
 	<label><span class = "green">노말 모드</span> <<print '<<radiobutton "$gamemode" "normal" ' + ($gamemode is "normal" ? "checked" : "") + '>>'>> - 이 위험한 세상에서 살아남으세요.</label>
@@ -562,15 +584,28 @@
 		- 야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕) 트라우마와 통제력 관리가 매우 어려워집니다. 게임 시작에만 선택 가능하고, 수용소에 감금된다면 노말 모드로 바뀝니다. <span class="red">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</span></label>
 		<br>
 	<</if>>
-	<br><br>
+	<br>
 
 	<span class="gold">매력에 의해 이밴트가 트리거되는 비율</span> - 기본값: 1.0
 	<br>
-	<span class="red">이 설정을 1 미만으로 변경하면, 다시 이상으로 변경할 때까지 업적을 얻을 수 없습니다. 이렇게 하면 일부 업적의 획득을 영구적으로 막을 수 있습니다.</span>
+	<span class="red">이 설정을 1 미만으로 변경하면, 다시 1 이상으로 변경할 때까지 업적을 얻을 수 없습니다. 또한, 일부 업적의 획득이 영구적으로 막힐 수 있습니다.</span>
 	<br>
 	<<numberslider "$alluremod" $alluremod 0.2 2 0.1>>
 	<br><br>
 
+	<span class="gold">Clothing Price</span> - Default is 1, 2 is recommended for hard mode.
+	<br>
+	Will multiply the clothing cost by the number set. This includes the cost for buying, the automatic re-buy and repairing. Towels are still free.
+	<<numberslider "$clothesPrice" $clothesPrice 1 10 1>>
+	<br><br>
+
+	<span class="gold">Bailey's Rent</span> - Default is 1.
+	<br>
+	Multiplies Bailey's rent by the number set.
+	<br>
+	<span class="red">Setting this below 1 will permanently prevent you from earning feats and will count as enabling cheat mode!</span>
+	<<numberslider "$rentmod" $rentmod 0.1 6 0.1>>
+	<br><br>
 
 	<div class="gold widerButton">
 	<<button "사람형 NPC 세팅">>
@@ -579,6 +614,9 @@
 	<<button "짐승형 NPC 세팅 및 토글">>
 		<<displaySubsection "beastSettings">>
 	<</button>>
+	<<button "Price Settings">>
+		<<displaySubsection "priceSettings">>
+	<</button>>
 	</div>
 
 	<div id="subsectionDiv">
@@ -586,7 +624,7 @@
 	<br>
 
 
-	<<widget "humanSettings">><<nobr>>
+	<<widget "humanSettings">>
 		<div class="solidBorderContainer">
 		<br>
 			<span class="gold">당신에게 끌리는 인물 중 남성 비율</span>
@@ -639,9 +677,9 @@
 			<<numberslider "$blackchance" $blackchance 0 100 1>>
 			<br><br>
 		</div>
-	<</nobr>><</widget>>
+	<</widget>>
 
-	<<widget "beastSettings">><<nobr>>
+	<<widget "beastSettings">>
 		<div class="solidBorderContainer">
 		<br>
 			<span class="gold">당신에게 끌리는 짐승이나 몬스터가 남성일 비율</span>
@@ -706,7 +744,70 @@
 			</div></label>
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-	<</nobr>><</widget>>
+	<</widget>>
+
+	<<widget "priceSettings">>
+		<div class="solidBorderContainer clothes-price-container">
+			<span class="bold gold">Clothing Price</span>
+			<div class="small-description">Modify cost of clothing items. This includes the cost for buying, the automatic re-buy and repairing. Towels are still free.</div>
+			<div class="numberslider-group">
+				<div class="numberslider-inline">
+					<span class="gold">All Clothes</span>
+					<div class="small-description">For hard mode 200% is recommended.</div>
+					<<numberslider "$clothesPrice" $clothesPrice 1 10 0.5>>
+				</div>
+			</div>
+			<div class="numberslider-group">
+				<div class="numberslider-inline">
+					<span class="gold">Underwear</span>
+					<<numberslider "$clothesPriceUnderwear" $clothesPriceUnderwear 1 2 0.1>>
+				</div>
+				<div class="numberslider-inline">
+					<span class="gold">School Clothes</span>
+					<<numberslider "$clothesPriceSchool" $clothesPriceSchool 1 2 0.1>>
+				</div>
+				<div class="numberslider-inline">
+					<span class="gold">Lewd Clothes</span>
+					<<numberslider "$clothesPriceLewd" $clothesPriceLewd 0.1 2 0.1>>
+				</div>
+			</div>
+			<div class="numberslider-group">
+				<span class="gold">Bailey's Rent</span>
+				<div class="small-description">Default is 100%, will multiply Bailey's rent by the percent set, forcing you to take drastic measures in order to earn enough money or make the game much easier.</div>
+				<span class="red">Leaving the settings with it set below 100% will prevent you from earning feats in a save.</span>
+				<<numberslider "$rentmod" $rentmod 0.1 3 0.1>>
+			</div>
+
+			<!-- Make it show % instead of fractions and add some colour -->
+			<<run $(() => { $('.clothes-price-container input').on('input change', e => {
+					let valSpan = $(e.currentTarget).siblings().first();
+					let value = valSpan.text();
+
+					valSpan.text((i, value) => Math.round(value * 100) + '%');
+
+					if (value > 1)
+						valSpan.css('color', 'gold');
+					else if (value < 1)
+						valSpan.css('color', 'green');
+					else
+						valSpan.css('color', 'unset');
+				}).trigger('change') })>>
+			<!-- Set the initial minimum -->
+			<<run $(() => {
+				let newmin = parseFloat((Math.ceil(10 / $('#numberslider-input-clothesprice').val()) * 0.1).toFixed(1));
+				let oldval = State.variables.clothesPriceLewd;
+				$('#numberslider-input-clothespricelewd').attr('min', newmin).val(oldval).trigger('change');
+			})>>
+			<!-- Limit lewd slider so that all coef * lewd coef >= 100% -->
+			<<run $(() => {
+				$('#numberslider-input-clothesprice').on('input change', e => {
+					let newmin = parseFloat((Math.ceil(10 / $(e.currentTarget).val()) * 0.1).toFixed(1));
+					let oldval = State.variables.clothesPriceLewd;
+					$('#numberslider-input-clothespricelewd').attr('min', newmin).val(oldval).trigger('change');
+				})
+			})>>
+		</div>
+	<</widget>>
 
 	<span class="gold">기능 토글</span>
 	<br>
@@ -719,9 +820,9 @@
 	<label><div class="settingsToggle">
 	<<print '<<checkbox "$transformdisable" "t" "f" ' + ($transformdisable is "f" ? "checked" : "") + '>>'>> 변신 활성화
 	</div></label>
-	<label><div class="settingsToggle">
+	/*<label><div class="settingsToggle">
 	<<print '<<checkbox "$hirsutedisable" "t" "f" ' + ($hirsutedisable is "f" ? "checked" : "") + '>>'>> 추가 음모/털복숭이 늑대로 변신
-	</div></label>
+	</div></label>*/
 	<label><div class="settingsToggle">
 	<<print '<<checkbox "$breastfeedingdisable" "t" "f" ' + ($breastfeedingdisable is "f" ? "checked" : "") + '>>'>> 젖 분비 활성화
 	</div></label>
@@ -737,9 +838,9 @@
 	<<run settingsAsphyxiation()>>
 	</div>
 	<div style="clear:both;">/*Keep at end of toggles*/</div><<customSettingToggle>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "sizeLimitsSettings">><<nobr>>
+<<widget "sizeLimitsSettings">>
 	<span class="gold">플레이어 캐릭터 최대 가슴 크기</span> - 이미 이 이상으로 설정된 가슴은 자동으로 작아지거나 하지 않습니다. 당신의 가슴은 성별 관계 없이 자라납니다. 남성이나 순결도가 높은 캐릭터는 성장 속도가 느려집니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다. 가슴을 갖고 놀아지거나 기생충이 기생하게 될 경우 성장이 빨라집니다.
 	<br>
 	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
@@ -772,9 +873,9 @@
 	<</for>>
 	<br><br>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "generalSettings">><<nobr>>
+<<widget "generalSettings">>
 	<span class="gold">이미지</span>
 	<br>
 	<<if StartConfig.enableImages is true>>
@@ -861,7 +962,7 @@
 		<</if>>
 		<<if $debug is 1>>
 			<label><div class="settingsToggleBig"><div style="display: inline-flex;">
-			Face style 
+			Face style
 			<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
 			<div class="description">This setting works only if you have installed face styles other than default.</div>
 			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>><!--</script>-->
@@ -950,9 +1051,9 @@
 		- 캐릭터 스프라이트를 갖고 놀 수 있으며, 세이브 파일에는 어떤 식으로도 영향을 주지 않습니다.
 	<</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "npcSettings">><<nobr>>
+<<widget "npcSettings">>
 <<set _penisNames to ["조그마함", "평균", "두꺼움", "커다람"]>>
 <<if $passage is "Start" or $passage is "certification_event_start">>
 <span class="red">설정되지 않은 옵션은 자동으로 설정될 것입니다.</span>
@@ -1013,9 +1114,9 @@
 	<<set _listActive to true>>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "exportsettings">><<nobr>>
+<<widget "exportsettings">>
 
 <span class="yellow">"저장/옵션" 오버레이의 설정도 불러오기/내보내기 하게 됩니다.</span>
 
@@ -1056,9 +1157,9 @@
 	자동 선택 비활성화.
 </label>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "npcSettingsMenu">><<nobr>>
+<<widget "npcSettingsMenu">>
 <<listbox "_npcId" autoselect>>
 	<<optionsfrom _npcList>>
 <</listbox>>
@@ -1141,12 +1242,12 @@
 	<br><br>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-:: Settings [nobr]
+:: Settings
 <<settings>>
 
-:: Attitudes [nobr]
+:: Attitudes
 <<attitudes>>
 <<set $attitudesControl.showGoldLink to "false">>
 <br><br>
