@@ -81,6 +81,19 @@
         <<trClothesType "upper">>               //  "상의"
     ```
 
+* trClothingTrait
+    ```
+    <<trClothingTrait>>
+        <<trClothingTrait *clothingTrait>>
+
+        옷의 특성을 번역합니다.
+
+        필수사항
+        - *clothingTrait: 옷의 특성
+
+        e.g.
+        <<trClothingTrait "holy">>               //  "신성함"
+    ```
 
 
 -----------------

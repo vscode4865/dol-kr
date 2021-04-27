@@ -175,8 +175,8 @@ window.loadCustomColourPreset = function (slot = "primary") {
 
 // adjusts available options for reveal dropdowns (makes sure upper bound is not below lower bound and vice versa)
 window.getFilterRevealOptions = function (type) {
-	let optionsFrom = { unassuming: 0, smart: 100, tasteful: 200, comfy: 300, seductive: 500, risqué: 700, lewd: 900 };
-	let optionsTo = { unassuming: 100, smart: 200, tasteful: 300, comfy: 500, seductive: 700, risqué: 900, lewd: 9999 };
+	let optionsFrom = { '얌전한': 0, '지적인': 100, '우아한': 200, '편안한': 300, '유혹적인': 500, '음란한': 700, '야한': 900 };
+	let optionsTo = { '얌전한': 100, '지적인': 200, '우아한': 300, '편안한': 500, '유혹적인': 700, '음란한': 900, '야한': 9999 };
 
 	if (type == 'from') {
 		// this line removes values that are larger than reveal.to

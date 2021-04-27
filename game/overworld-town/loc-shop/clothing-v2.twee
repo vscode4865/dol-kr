@@ -1,11 +1,23 @@
 :: Clothing Shop v2 Widgets [widget]
 
+<<widget "exitclothingshop">>
+	<div class="button-back-to-shop div-link">
+		<<if $clothes_choice and $shopDefaults.alwaysBackToShopButton is false>>
+			<<link "뒤로">>
+				<<unset $clothes_choice>><<updateclotheslist>><</link>>
+		<<else>>
+			<<link "매장으로 돌아간다">><<unset $clothes_choice>><<updateclothingshop>><</link>>
+		<</if>>
+	</div>
+<</widget>>
+
 /*
 	args[0] should be "clothing" or "forest"
 	args[1] is a slot: "upper", "lower", "under_upper", etc.
 	args[2] should be "outfits" or missing. Combination of "over_upper", "upper" or "under_upper" in args[1] with "outfits" provides respective outfits category
 */
 <<widget "clothingShopv2">>
+	<<exitclothingshop>>
 	<<if $args[0]>>
 		<<set _shopLocation to $args[0]>>
 	<</if>>
@@ -22,8 +34,8 @@
 	<</if>>
 
 	<<if $shopClothingFilter.active>>
-		<span class="green">The filter is currently active!</span>
-		<<link "Reset it">>
+		<span class="green">필터가 현재 적용되어 있습니다!</span>
+		<<link "초기화">>
 			<<shopClothingFilterReset>>
 			<<updateclotheslist>>
 		<</link>>
@@ -84,7 +96,7 @@
 	<div id="shop-pagination" class="shop-pagination">
 		<<set _disabled = $shopPage > 0 ? "" : "disabled">>
 		<div @class="'div-link btn-pagination prev ' + _disabled">
-			<<link "Previous">>
+			<<link "이전">>
 				<<if $shopPage > 0>>
 					<<set $shopPage -= 1>>
 					<<clothingshopChangePage>>
@@ -110,7 +122,7 @@
 		</div>
 		<<set _disabled = $shopPage < _maxPage - 1 ? "" : "disabled">>
 		<div @class="'div-link btn-pagination next ' + _disabled">
-			<<link "Next">>
+			<<link "다음">>
 				<<if $shopPage < _maxPage - 1>>
 					<<set $shopPage += 1>>
 					<<clothingshopChangePage>>
@@ -136,7 +148,7 @@
 		<<if $images is 1>>
 			<span class="button-icon"><img src="img/misc/icon/filter.png"></span>
 		<<else>>
-			Filters
+			필터
 		<</if>>
 		<<link "">>
 			<<replace '#filters'>><<loadFiltersMenu>><</replace>>
@@ -276,12 +288,12 @@
 					<<if !$shopDefaults.compactMode>>
 						<div class="pricetag-placeholder"></div>
 					<</if>>
-					<span class="clothing-name">
+					<span class="clothing-name"><<trSearchClothes _item.name>>
 						<<if _locked>>
-							<span class="lblue">_item.name_cap</span><span class="black">&nbsp;| Locked</span>
+							<span class="lblue">_trResult</span><span class="black">&nbsp;| 잠김</span>
 						<<else>>
 							<<capture _item _shopLocation $clothingShopSlot _outfits>>
-								<<link _item.name_cap>>
+								<<link _trResult>>
 									<<set $clothes_choice = _item.index>>
 									<<set $clothes_choice_reveal = _item.reveal>>
 									<<set $clothes_choice_integrity = _item.integrity_max>>
@@ -292,7 +304,7 @@
 								<</link>>
 							<</capture>>
 							<<if _unlocked>>
-								<span class="gold">&nbsp;| Unlocked</span>
+								<span class="gold">&nbsp;| 풀림</span>
 							<</if>>
 						<</if>>
 					</span>
@@ -393,7 +405,7 @@
 		<<if $specialClothes[_temp_choice.name.replace(/ /g,"")] is "unlocked">>
 			<<specialClothesHint>>
 			<div class="unlocked-hint">
-				<span class="gold">Unlocked | </span><span class="grey"><<print _specialClothesHint[_temp_choice.name.replace(/ /g,"")]>></span>
+				<span class="gold">풀림 | </span><span class="grey"><<print _specialClothesHint[_temp_choice.name.replace(/ /g,"")]>></span>
 			</div>
 			<br>
 		<</if>>
@@ -401,15 +413,15 @@
 		<<if _temp_choice.plural is 1>>
 			<<integrity $clothes_choice_integrity "cap">>
 		<<else>>
-			A <<integrity $clothes_choice_integrity>>
+			<<integrity $clothes_choice_integrity>>
 		<</if>>
-		and <<reveal $clothes_choice_reveal>> <<print _temp_choice.name>>.
+		<<reveal $clothes_choice_reveal>> <<print '<<trSearchClothes _temp_choice.name>>_trResult'>>.
 		<<if _temp_choice.gender is "m">>
-			<span class="lblue">For boys.</span>
+			<span class="lblue">남성용.</span>
 		<<elseif _temp_choice.gender is "f">>
-			<span class="pink">For girls.</span>
+			<span class="pink">여성용.</span>
 		<</if>>
-		<<print _temp_choice.description>> Costs <span class="gold">£<<print getClothingCost(_temp_choice) / 100>>.</span>
+		<<print '<<trSearchClothes _temp_choice.name "desc">>_trResult'>> 가격 <span class="gold">£<<print getClothingCost(_temp_choice) / 100>>.</span>
 		<br>
 		<<set _truewarmth = getTrueWarmth(_temp_choice)>>
 		<<warmth _truewarmth>>
@@ -429,14 +441,14 @@
 					<div @class="'mannequin-placeholder ' + _hiddenMannequin"></div>
 					<<if _temp_choice.colour_options.length gt 1>>
 						<<run _temp_choice.colour_options.pushUnique("random")>>
-						There's a range of colours to choose from:
+						첫번째 색상 선택:
 						<br>
 						<<printShopColourOptions>>
 					<</if>>
 					<<if _temp_choice.accessory_colour_options.length isnot 0>>
 						<<run _temp_choice.accessory_colour_options.pushUnique("random")>>
 						<br>
-						Secondary colour:
+						두번째 색상 선택:
 						<br>
 						<<printShopColourOptions "secondary">>
 					<</if>>
@@ -462,7 +474,7 @@
 				<</for>>
 			<</if>>
 
-			<span>Warmth:</span>
+			<span>따뜻함:</span>
 			<<warmthscale>>
 			<div id="warmth-description">
 				<<warmth_description>>
@@ -470,19 +482,23 @@
 			<br><br>
 			<<shopBuyItemStatus _wardrobeSlots>>
 			<<if _spaceLeft < 1>>
-				<span class="blue">Your wardrobe is full.</span>
+				<span class="blue">당신의 옷장은 가득 찼다.</span>
 				<br>
 			<<elseif $daystate is "night">>
 				<<if $clothingShop.stolenClothes lte 20>>
 					<<if $worn[$clothingShopSlot].cursed is 1>>
 						<<printcursed>>
 					<<else>>
-						<<link "Steal and wear">>
-							<<shopbuyv2 $clothingShopSlot "steal" "wear" $clothes_choice>><<crimeup `getClothingCost(_temp_choice) / 100`>><<unset $clothes_choice>>
+						<<link "훔쳐 입는다">>
+							<<shopbuyv2 $clothingShopSlot "steal" "wear" $clothes_choice>><<crimeup `getClothingCost(_temp_choice) / 100`>>
 							<<set $clothingShop.stolenClothes++>>
 							<<set $clothingShop.totalStolenClothes++>>
+							<<if $shopDefaults.disableReturn is false>>
+								<<unset $clothes_choice>>
+							<</if>>
 							<<updateclotheslist>>
 							<<updatesidebarimg>>
+							<<updatesidebarmoney>>
 							<<updatesidebardescription>>
 							<<updateallure>>
 							<<if $shopDefaults.disableReturn>>
@@ -493,7 +509,7 @@
 						<</link>><<crime>>
 						<br>
 					<</if>>
-					<<link "Steal and take home">>
+					<<link "훔쳐 집으로 가져간다">>
 						<<shopbuyv2 $clothingShopSlot "steal" "send" $clothes_choice>><<crimeup `getClothingCost(_temp_choice) / 100`>>
 						<<set $clothingShop.stolenClothes++>>
 						<<set $clothingShop.totalStolenClothes++>>
@@ -506,7 +522,7 @@
 					<</link>><<crime>>
 					<br>
 				<<else>>
-					<span class="red">You can't carry any more clothes with you.</span> You should take them to your wardrobe.
+					<span class="red">당신은 이 이상 옷을 가지고 다닐 수 없다.</span> 당신은 옷들을 옷장에 가져가야 한다.
 					<br>
 				<</if>>
 			<<elseif $money >= getClothingCost(_temp_choice)>>
@@ -521,11 +537,13 @@
 							<<if _cursedPrevent>>
 								Buy and wear
 							<<else>>
-								<<link "Buy and wear">>
+								<<link "옷을 산다">>
 									<<clothingReset $clothingShopSlot>>
 									<<shopbuyv2 $clothingShopSlot "buy" "wear" $clothes_choice>>
 									<<set $money -= getClothingCost(_temp_choice)>>
-									<<unset $clothes_choice>>
+									<<if $shopDefaults.disableReturn is "false">>
+										<<unset $clothes_choice>>
+									<</if>>
 									<<updateclotheslist>>
 									<<updatesidebarimg>>
 									<<updatesidebarmoney>>
@@ -549,14 +567,14 @@
 					</div>
 				</div>
 			<<else>>
-				<span class="pink">You cannot afford this item.</span>
+				<span class="pink">이것을 구입할 돈이 없다.</span>
 				<br>
 			<</if>>
 
 			<<if _cursedPrevent != true and $tryOn.tryingOn>>
 				<div class="try-buttons">
 					<div class="try-button div-link">
-						<<link "Try On">>
+						<<link "입어본다">>
 							<<shopbuyv2 $clothingShopSlot "try" null $clothes_choice>>
 							<<updateclotheslist>>
 							<<updatesidebarimg>>
@@ -569,7 +587,7 @@
 					</div>
 					<<if $tryOn.tryingOn[$clothingShopSlot] isnot null>>
 						<div class="try-button div-link">
-							<<link "Return">>
+							<<link "돌려준다">>
 								<<shopbuyv2 $clothingShopSlot "return" null $clothes_choice>>
 								<<updateclotheslist>>
 								<<updatesidebarimg>>
@@ -584,7 +602,7 @@
 				</div>
 			<</if>>
 		<<else>>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name.</span>
+			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않습니다.</span>
 			<br>
 		<</if>>
 	<</if>>
@@ -594,7 +612,7 @@
 	<<set _canAfford = ($money >= getClothingCost(_temp_choice) * $buyMultiple and _spaceLeft >= $buyMultiple) ? "" : "disabled">>
 	<div class="buy-button">
 		<div @class="'buy-button-inner buy-multiple div-link ' + _canAfford">
-				<<link `'Buy and send home × ' + $buyMultiple`>>
+				<<link `'옷을 사서 집으로 보낸다 × ' + $buyMultiple`>>
 					<<if $money >= getClothingCost(_temp_choice) * $buyMultiple and _spaceLeft >= $buyMultiple>>
 						<<clothingReset $clothingShopSlot>>
 						<<shopbuyv2 $clothingShopSlot "buy" "send" $clothes_choice $buyMultiple>>
@@ -662,7 +680,7 @@
 							<img src="img/misc/icon/random.png">
 						<</if>>
 					<</if>>
-					<span @class="'capitalize ' + _highContrast">_buttonName</span>
+					<span @class="'capitalize ' + _highContrast"><<trColour _buttonName>>_trResult</span>
 					<<capture _buttonName $args[0] _acc $clothingShopSlot>>
 						<<link "">>
 							<<if _buttonName == "random">>
@@ -714,10 +732,10 @@
 				<<set _varBri = "$customColors.brightness." + _acc>>
 				<<set _varSat = "$customColors.saturation." + _acc>>
 				<<set _varCon = "$customColors.contrast." + _acc>>
-				<div class="colour-slider"><span class="colour-slider-caption">Hue</span><<numberslider _varHue $customColors.color[_acc] 0 360 1>></div>
-				<div class="colour-slider"><span class="colour-slider-caption">Brightness</span><<numberslider _varBri $customColors.brightness[_acc] 0 4 0.01>></div>
-				<div class="colour-slider"><span class="colour-slider-caption">Saturation</span><<numberslider _varSat $customColors.saturation[_acc] 0 4 0.01>></div>
-				<div class="colour-slider"><span class="colour-slider-caption">Contrast</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>
+				<div class="colour-slider"><span class="colour-slider-caption">색조</span><<numberslider _varHue $customColors.color[_acc] 0 360 1>></div>
+				<div class="colour-slider"><span class="colour-slider-caption">명도</span><<numberslider _varBri $customColors.brightness[_acc] 0 4 0.01>></div>
+				<div class="colour-slider"><span class="colour-slider-caption">채도</span><<numberslider _varSat $customColors.saturation[_acc] 0 4 0.01>></div>
+				<div class="colour-slider"><span class="colour-slider-caption">대비</span><<numberslider _varCon $customColors.contrast[_acc] 0 4 0.01>></div>
 			</div>
 			<div class="custom-colour-presets no-numberify">
 				<div class="presets-dropdown">
@@ -728,7 +746,7 @@
 					<</listbox>>
 					<<set _delDisabled = Object.keys($customColors.presets).contains(_preset_choice[_acc]) ? "" : "disabled">>
 					<div @class="'delete-preset div-link ' + _delDisabled">
-						<<if $images is 1>><img src="img/misc/icon/delete.png"><<else>>Del<</if>>
+						<<if $images is 1>><img src="img/misc/icon/delete.png"><<else>>삭제<</if>>
 						<<link "">>
 							<<if _preset_choice[_acc] and $customColors.presets[_preset_choice[_acc]] and confirm('Delete preset "' + _preset_choice[_acc] + '"?')>>
 								<<run delete $customColors.presets[_preset_choice[_acc]]>>
@@ -739,7 +757,7 @@
 					</div>
 				</div>
 				<div class="save-preset div-link">
-					<<if $images is 1>><img src="img/misc/icon/save.png"><<else>>Save<</if>>
+					<<if $images is 1>><img src="img/misc/icon/save.png"><<else>>저장<</if>>
 					<<link "">>
 						<<run saveCustomColourPreset(_acc)>>
 						<<updateclotheslist>>
@@ -752,10 +770,10 @@
 <</widget>>
 
 <<widget "printcursed">>
-	<span class="blue">You can't wear this item without first removing your
+	<span class="blue">먼저 당신의
 	<<set _preventClothes = _preventSlots.map(x => $worn[x].name)>>
-	<<if _preventClothes.length > 1>><<print _preventClothes.slice(0, -1).join(', ') + ' and '>><</if>>
-	<<print _preventClothes.slice(-1)>>.</span>
+	<<if _preventClothes.length > 1>><<trSearchClothes _preventClothes.slice(0, -1) "name" "와">>_trResult <</if>>
+	<<trSearchClothes _preventClothes.slice(-1) "name" "을">>_trResult <<print _preventClothes.slice(-1)>> 벗지 않으면 입을 수 없다.</span>
 	<br>
 <</widget>>
 
@@ -994,7 +1012,7 @@
 	<div class="filters-div" onclick="event.stopPropagation()">
 		<div id="filter-buttons" class="filter-buttons-div">
 			<div class="filter-button button-apply div-link">
-				<<link "Apply and Close">>
+				<<link "적용하고 닫는다">>
 					<<set $shopClothingFilter.active = true>>
 					<<addclass '#filters' 'hidden'>>
 					<<updateclotheslist>>
@@ -1002,14 +1020,14 @@
 				<</link>>
 			</div>
 			<div class="filter-button button-reset div-link">
-				<<link "Reset All and Close">>
+				<<link "전부 초기화하고 닫는다">>
 					<<shopClothingFilterReset>>
 					<<updateclotheslist>>
 					<<run updateMoment()>>
 				<</link>>
 			</div>
 			<div class="filter-button button-toggle-traits div-link">
-				<<link "Select / Deselect All Traits">>
+				<<link "전체 특성을 선택 / 해제 한다">>
 					<<run toggleAllTraitsFilter()>>
 				<</link>>
 			</div>
@@ -1020,10 +1038,10 @@
 					<<set $shopClothingFilter.gender = { female: true, neutral: true, male: true }>>
 				<</if>>
 
-				<span class="bold gold">Gender</span>
-				<label><<checkbox "$shopClothingFilter.gender.female" false true `$shopClothingFilter.gender.female ? "checked" : ""`>> Female</label>
-				<label><<checkbox "$shopClothingFilter.gender.neutral" false true `$shopClothingFilter.gender.neutral ? "checked" : ""`>> Unisex</label>
-				<label><<checkbox "$shopClothingFilter.gender.male" false true `$shopClothingFilter.gender.male ? "checked" : ""`>> Male</label>
+				<span class="bold gold">성별</span>
+				<label><<checkbox "$shopClothingFilter.gender.female" false true `$shopClothingFilter.gender.female ? "checked" : ""`>> 여성용</label>
+				<label><<checkbox "$shopClothingFilter.gender.neutral" false true `$shopClothingFilter.gender.neutral ? "checked" : ""`>> 남녀 공용</label>
+				<label><<checkbox "$shopClothingFilter.gender.male" false true `$shopClothingFilter.gender.male ? "checked" : ""`>> 남성용</label>
 			</div>
 
 			<div id="filter-reveal" class="filter-block">
@@ -1035,15 +1053,15 @@
 					<<set $shopClothingFilter.warmth = { from: 0, to: 200 }>>
 				<</if>>
 
-				<span class="bold gold">Warmth</span>
+				<span class="bold gold">온열</span>
 				<div class="filter-warmth-fromto">
-					<label>from <<numberbox "$shopClothingFilter.warmth.from" $shopClothingFilter.warmth.from>></label>
-					<label>to <<numberbox "$shopClothingFilter.warmth.to" $shopClothingFilter.warmth.to>></label>
+					<label><<numberbox "$shopClothingFilter.warmth.from" $shopClothingFilter.warmth.from>>에서 </label>
+					<label><<numberbox "$shopClothingFilter.warmth.to" $shopClothingFilter.warmth.to>>까지</label>
 				</div>
 			</div>
 
 			<div id="filter-traits" class="filter-block">
-				<span class="bold gold">Traits</span>
+				<span class="bold gold">특성</span>
 				<div class="traits-list">
 					<<set _traitsInThisShop = [...new Set(Object.keys(setup.clothes).flatMap(x => setup.clothes[x]).filter(x => x.shop.contains(_shopLocation)).flatMap(x => x.type))]>>
 					<<for _trait range _traitsInThisShop>>
@@ -1052,7 +1070,7 @@
 								<<set _checked = $shopClothingFilter.traits.contains(_trait) ? 'checked="checked"' : ''>>
 								<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
 								<<clothingtrait _trait 'display_normal'>>
-								<span class="capitalize"><<print _trait.replace('_', ' ')>></span>
+								<span class="capitalize"><<trClothingTrait _trait>></span>
 							</label>
 						</div>
 					<</for>>
@@ -1069,10 +1087,10 @@
 	<<if $shopClothingFilter.reveal.to is undefined>>
 		<<set $shopClothingFilter.reveal.to = 9999>>
 	<</if>>
-	<span class="bold gold">Reveal</span>
+	<span class="bold gold">노출 정도</span>
 	<div class="filter-reveal-fromto">
-		<label>from <<listbox "$shopClothingFilter.reveal.from" autoselect>><<optionsfrom getFilterRevealOptions('from')>><</listbox>></label>
-		<label>to <<listbox "$shopClothingFilter.reveal.to" autoselect>><<optionsfrom getFilterRevealOptions('to')>><</listbox>></label>
+		<label><<listbox "$shopClothingFilter.reveal.from" autoselect>><<optionsfrom getFilterRevealOptions('from')>><</listbox>>에서 </label>
+		<label><<listbox "$shopClothingFilter.reveal.to" autoselect>><<optionsfrom getFilterRevealOptions('to')>><</listbox>>까지</label>
 	</div>
 
 	<<run $(() => { $('#filter-reveal select').on('change', (e) => { new Wikifier(null, "<<replace '#filter-reveal'>><<filterreveal>><</replace>>"); }) })>>
@@ -1082,7 +1100,7 @@
 	<div class="options-div" onclick="event.stopPropagation()">
 		<div id="options-buttons" class="options-buttons-div">
 			<div class="options-button button-apply div-link">
-				<<link "Save and Close">>
+				<<link "저장하고 닫는다">>
 					<<addclass '#shop-options' 'hidden'>>
 					<<updateclotheslist>>
 					<<run updateMoment()>>
@@ -1093,22 +1111,22 @@
 			<<set _colorOptions to ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"]>>
 
 			<br>
-			Default primary colour:
+			기본 첫번째 색상:
 			<br>
-			<<for _col range _colorOptions>>
+			<<for _col range _colorOptions>><<trColour _col>>
 				<label>
-					<<print '<<radiobutton "$shopDefaults.color" "'+ _col +'" ' + ($shopDefaults.color is _col ? "checked" : "") + '>>'>>
-					<<print '<span class="'+ _col +'">' + _col + '</span>'>>
+					<<print '<<radiobutton "$shopDefaults.color" "'+ _trResult +'" ' + ($shopDefaults.color is _col ? "checked" : "") + '>>'>>
+					<<print '<span class="'+ _col +'">' + _trResult + '</span>'>>
 				</label>
 				|
 			<</for>>
 			<br><br>
-			Default secondary colour:
+			기본 두번째 색상:
 			<br>
-			<<for _col range _colorOptions>>
+			<<for _col range _colorOptions>><<trColour _col>>
 				<label>
-					<<print '<<radiobutton "$shopDefaults.secColor" "'+ _col +'" ' + ($shopDefaults.secColor is _col ? "checked" : "") + '>>'>>
-					<<print '<span class="'+ _col +'">' + _col + '</span>'>>
+					<<print '<<radiobutton "$shopDefaults.secColor" "'+ _trResult +'" ' + ($shopDefaults.secColor is _col ? "checked" : "") + '>>'>>
+					<<print '<span class="'+ _col +'">' + _trResult + '</span>'>>
 				</label>
 				|
 			<</for>>
@@ -1116,7 +1134,13 @@
 
 			<label>
 				<<print '<<checkbox "$shopDefaults.disableReturn" false true ' + ($shopDefaults.disableReturn is true? "checked" : "")+'>>'>>
-				Don't return to catalogue after buying an item.
+				옷을 산 후 목록으로 돌아가지 않는다.
+			</label>
+			<br><hr>
+
+			<label>
+				<<print '<<checkbox "$shopDefaults.alwaysBackToShopButton" false true ' + ($shopDefaults.alwaysBackToShopButton is true? "checked" : "")+'>>'>>
+				항상 "매장으로 돌아간다" 버튼을 보여준다.
 			</label>
 			<br><hr>
 
@@ -1124,17 +1148,17 @@
 				<<set $shopDefaults.colourItems = "random">>
 			<</if>>
 			<label>
-				Colour items in catalogue:
+				목록의 색상표 표시:
 				<<listbox "$shopDefaults.colourItems" autoselect>>
-					<<option "Disable" "disable">>
-					<<option "Use random colours" "random">>
-					<<option "Use default colour" "default">>
+					<<option "표시하지 않는다" "disable">>
+					<<option "임의의 색상을 사용한다" "random">>
+					<<option "기본 색상을 사용한다" "default">>
 				<</listbox>>
 			</label>
 			<br><hr>
 
 			<label>
-				Amount of items on each page of catalogue:
+				목록의 각 페이지에서 표시할 옷의 갯수:
 				<<listbox "$shopItemsPerPage" autoselect>>
 					<<optionsfrom [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32]>>
 				<</listbox>>
@@ -1144,51 +1168,51 @@
 			<div class="high-contrast-example">
 				<label>
 					<<print '<<checkbox "$shopDefaults.highContrast" false true ' + ($shopDefaults.highContrast is true? "checked" : "")+'>>'>>
-					Use high contrast text on colour buttons.
+					색상 이름을 고대비로 표시한다.
 				</label>
-				&nbsp;&nbsp;Example:&nbsp;&nbsp;
-				<div class="colour-button"><div class="bg-pink"><span class="capitalize colour-name-span">pink</span></div></div>
-				&nbsp;<span style="margin-right:0.25em">vs</span>&nbsp;
-				<div class="colour-button"><div class="bg-pink"><span class="capitalize colour-name-span-highcontrast">pink</span></div></div>
+				&nbsp;&nbsp;예:&nbsp;&nbsp;
+				<div class="colour-button"><div class="bg-pink"><span class="capitalize colour-name-span">분홍색</span></div></div>
+				&nbsp;<span style="margin-right:0.25em">대</span>&nbsp;
+				<div class="colour-button"><div class="bg-pink"><span class="capitalize colour-name-span-highcontrast">분홍색</span></div></div>
 			</div>
 			<hr>
 
 			<label>
 				<<print '<<checkbox "$shopDefaults.mannequinGenderFromClothes" false true ' + ($shopDefaults.mannequinGenderFromClothes is true? "checked" : "")+'>>'>>
-				Set mannequin's gender to that of a clothing item (fallback to setting below for unisex).
+				마네킹의 성별을 옷의 성별과 맞춘다 (남녀 공용의 경우 아래의 성별을 따라감).
 			</label>
 			<br>
 			<label>
-				Gender of the mannequin:
+				마네킹의 성별:
 				<<listbox "$shopDefaults.mannequinGender" autoselect>>
-					<<option "Same as player" "same">>
-					<<option "Opposite of player" "opposite">>
-					<<option "Always male" "male">>
-					<<option "Always female" "female">>
+					<<option "플레이어와 동일" "same">>
+					<<option "플레이어와 반대" "opposite">>
+					<<option "항상 남성" "male">>
+					<<option "항상 여성" "female">>
 				<</listbox>>
 			</label>
 			<br>
 			<label>
-				Mannequin chest size:
+				마네킹 가슴 크기:
 				<<listbox "$mannequinBreastsSize" autoselect>>
-					<<optionsfrom {"Flat": 0 , "Tiny": 1, "Small": 2, "Full": 3, "Large": 4, "Huge": 5}>>
+					<<optionsfrom {"평평함": 0 , "조그마함": 1, "작음": 2, "봉긋함": 3, "큼": 4, "매우 큼": 5}>>
 				<</listbox>>
 			</label>
 			<br><hr>
 
 			<label>
 				<<print '<<checkbox "$shopDefaults.compactMode" false true ' + ($shopDefaults.compactMode is true? "checked" : "")+'>>'>>
-				Display less information to make catalogue more compact.
+				목록에 표시되는 정보를 줄여 목록을 작게 한다.
 			</label>
 			<br>
 			<label>
 				<<print '<<checkbox "$shopDefaults.noTraits" false true ' + ($shopDefaults.noTraits is true? "checked" : "")+'>>'>>
-				Hide clothing trait icons.
+				옷의 특성 아이콘을 숨긴다.
 			</label>
 			<br>
 			<label>
 				<<print '<<checkbox "$shopDefaults.noHelp" false true ' + ($shopDefaults.noHelp is true? "checked" : "")+'>>'>>
-				Don't show help / legend button in catalogue.
+				목록의 도움말 / 범례 버튼을 보이지 않게 한다.
 			</label>
 		</div>
 	</div>
@@ -1196,31 +1220,31 @@
 
 <<widget "clothingShopLegend">>
 	<div id="shop-legend" class="shop-legend hidden">
-		<div class="legend-caption bold gold">Legend</div>
+		<div class="legend-caption bold gold">범례</div>
 		<br>
 
 		<<if $images is 1>>
 			<div>
 				<img src="img/misc/icon/integrity.png">
-				Integrity rating. How hard it is to tear clothing into scraps.
+				내구도 등급. 옷이 얼마나 잘 찢어져 조각나지 않는가.
 			</div>
 			<div>
 				<img src="img/misc/icon/reveal.png">
-				Reveal rating. How alluring clothing makes you.
+				노출 등급. 옷이 얼마나 당신을 색기있게 보여주는가.
 			</div>
 			<div>
 				<img src="img/misc/icon/warmth.png">
-				Warmth rating. How good clothing protects you from cold.
+				온열 등급. 옷이 얼마나 당신을 추위에서 보호해 주는가.
 			</div>
 			<br>
 
 			<div class="legend-2em">
 				<img src="img/misc/icon/options.png">
-				Clothing shop options.
+				옷가게 옵션.
 			</div>
 			<div class="legend-2em">
 				<img src="img/misc/icon/filter.png">
-				Clothing shop filters.
+				옷가게 필터.
 			</div>
 			<br>
 		<</if>>
@@ -1229,23 +1253,23 @@
 			<div class="legend-warmth-div">
 				<<warmthscale $warmth+25>>
 			</div>
-			Warmth indicator.
+			온열 지표.
 			<br>
-			Displays comfortable temperature range, depends on weather.
+			날씨에 따라 편안함을 느끼는 온도 범위를 표시한다.
 			<br>
-			<div class="legend-colour-sample" style="background-color: dodgerblue"></div> - you will be too cold at this temperature
+			<div class="legend-colour-sample" style="background-color: dodgerblue"></div> - 이 온도에서는 당신은 무척 추울 것이다
 			<br>
-			<div class="legend-colour-sample" style="background-color: lightskyblue"></div> - you will be a bit chilly at this temperature
+			<div class="legend-colour-sample" style="background-color: lightskyblue"></div> - 이 온도에서는 당신은 약간 쌀쌀함을 느낄 것이다
 			<br>
-			<div class="legend-colour-sample" style="background-color: lemonchiffon"></div> - perfect temperature
+			<div class="legend-colour-sample" style="background-color: lemonchiffon"></div> - 완벽한 온도이다
 			<br>
-			<div class="legend-colour-sample" style="background-color: orange"></div> - you will be a bit too warm at this temperature
+			<div class="legend-colour-sample" style="background-color: orange"></div> - 이 온도에서는 당신은 약간 덥다고 느낄 것이다
 			<br>
-			<div class="legend-colour-sample" style="background-color: orangered"></div> - you will be way too hot at this temperature
+			<div class="legend-colour-sample" style="background-color: orangered"></div> - 이 온도에서는 당신은 무척 더울 것이다
 			<br>
-			<div class="legend-icon"><img src="img/misc/icon/warmth_indicator.png"></div> - your warmth with your current clothes on
+			<div class="legend-icon"><img src="img/misc/icon/warmth_indicator.png"></div> - 당신이 현재 입고 있는 옷으로 느끼는 따뜻함
 			<br>
-			<div class="legend-icon"><img src="img/misc/icon/small_uarrow.png"></div> - warmth you'd have would you put other clothing on instead
+			<div class="legend-icon"><img src="img/misc/icon/small_uarrow.png"></div> - 다른 옷으로 갈아입었을 때 당신이 느낄 따뜻함
 		</div>
 	</div>
 <</widget>>
