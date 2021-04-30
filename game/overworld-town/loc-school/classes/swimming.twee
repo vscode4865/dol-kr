@@ -79,7 +79,7 @@
 			<<link [[알몸으로 수영한다|Swimming Lesson]]>><<undress "school pool">><<endevent>><</link>>
 		<</if>>
 	<<elseif ($worn.under_lower.type.includes("swim") or $worn.lower.type.includes("swim"))
-	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and $player.gender_appearance is "m"))
+	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and ($player.gender_appearance is "m" or $swimCrossdressPermission is true)))
 	and (($worn.upper.type.includes("naked") or $worn.upper.type.includes("swim")) and ($worn.lower.type.includes("naked") or $worn.lower.type.includes("swim")))>>
 		<<npc Mason>><<person1>>
 		<<if $swimmingattended is 1>>
@@ -133,14 +133,18 @@
 			<<link [[알몸으로 수영해도 되냐고 물어본다|School Pool Ask Naked]]>><<fameexhibitionism 15>><<endevent>><<set $swimnudecounter += 1>><</link>><<exhibitionist5>>
 			<br>
 		<</if>>
-		<<if $player.gender is "f" or ($player.gender is "h" and $breastsize gte 3)>>
-			<<link [[남학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><</link>>
-			<br>
+		<<if $player.gender is "f" or ($player.gender is "h" and $player.gender_appearance is "f")>>
+			<<if $swimCrossdressPermission is undefined>>
+				<<link [[남학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><</link>>
+				<br>
+		<</if>>
 			<<link [[갈아입을 수영복이 없다고 한다|School Pool Spare]]>><</link>>
 			<br>
 		<<else>>
-			<<link [[여학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><</link>>
-			<br>
+			<<if $swimCrossdressPermission is undefined>>
+				<<link [[여학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><</link>>
+				<br>
+		<</if>>
 			<<link [[갈아입을 수영복이 없다고 한다|School Pool Spare]]>><</link>>
 			<br>
 		<</if>>
@@ -224,7 +228,7 @@
 	<</if>>
 	<br><br>
 
-	<<person1>>다른 학생들이 흥분의 환호성을 내지르는 동안, <<hisPost "의">> 얼굴은 더욱 붉어진다. "이-이번에도?" <<hePost "이">> 간신히 입을 연다. 메이슨이 뒤로 돌기도 전에,
+	<<person1>><<His>> blush deepens as the class breaks into excitement. "A-again?" <<he>> squeaks. Before <<he>> can turn around,
 	<<person2>><<personPost>>도 알몸으로 탈의실에서 나온다.
 	<br><br>
 
@@ -365,21 +369,33 @@
 <</if>>
 
 :: School Pool Wrong
-<<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
+<<set $outside to 0>><<set $location to "pool">><<set $swimCrossdressPermission to true>><<set _alreadyWearing to false>><<schooleffects>><<effects>>
 
 당신은 선생님만이 들을 수 있도록 낮은 목소리로 말한다.
 
-<<if $player.gender is "f" or ($player.gender is "h" and $breastsize gte 3)>>
+<<if $player.gender is "f" or ($player.gender is "h" and $player.gender_appearance is "f")>>
 	<<if $player.gender_appearance is "f" or $genderknown.includes("Mason")>>
 		"남학생용 반바지 수영복 밖에 없어요, 선생님."
 		<br><br>
-		<<HePost "은">> 얼굴을 붉힌다. "아. 그래도 없는 것 보단 낫잖니. 가서 갈아입고 오렴." <<HePost "은">> 몸을 돌려 다른 학생들을 바라본다.
+		<<He>> blushes. "Oh. That's better than nothing. 
+		<<if ($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked")) and 
+			($worn.lower.type.includes("swim") or ($worn.lower.type.includes("naked") and $worn.under_lower.type.includes("swim")))>>
+			Go ahead." You join the rest of the class.<<set _alreadyWearing to true>>
+		<<else>>
+			Go get changed." <<He>> turns back to <<his>> class.
+		<</if>>
 		<br><br>
 	<<else>>
 		"남학생용 반바지 수영복 밖에 없어요, 선생님."
 		<br><br>
 		<<HePost "은">> 멍하니 당신을 바라본다. "그게 뭐가 문제..." <<HePost "은">> 뭔가를 깨닿고는 앳된 얼굴을 붉힌다.
-		"아. 그래도 없는 것 보단 낫잖니. 게다가 남자애처럼 입고 다니는 것도 익숙할 거고 말이야. 가서 갈아입고 오렴." <<HePost "은">> 몸을 돌려 다른 학생들을 바라본다.
+		"Oh. That's better than nothing, and it's not like you have a problem dressing as a boy.
+		<<if ($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked")) and 
+			($worn.lower.type.includes("swim") or ($worn.lower.type.includes("naked") and $worn.under_lower.type.includes("swim")))>>
+			Go ahead." You join the rest of the class.<<set _alreadyWearing to true>>
+		<<else>>
+			Go get changed." <<He>> turns back to <<his>> class.
+		<</if>>
 		<<set $genderknown.pushUnique("Mason")>>
 		<br><br>
 	<</if>>
@@ -399,10 +415,14 @@
 	<</if>>
 <</if>>
 
-<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><<endevent>><</link>>
-<br>
-<<femaleicon>><<link [[여학생 탈의실|School Girl Changing Room]]>><<endevent>><</link>>
-<br>
+<<if _alreadyWearing>>
+	<<link [[다음|Swimming Lesson]]>><<endevent>><</link>>
+<<else>>
+	<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><<endevent>><</link>>
+	<br>
+	<<femaleicon>><<link [[여학생 탈의실|School Girl Changing Room]]>><<endevent>><</link>>
+	<br>
+<</if>>
 
 :: School Pool Spare
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
