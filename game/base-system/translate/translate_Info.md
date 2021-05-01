@@ -615,7 +615,7 @@
 	<<handtoolPost>>
 		<<handtoolPost *target *post 'sep'>>
 
-		손에 있는 도구 이름을 번역한다.
+		손에 있는 도구 이름을 번역한다. + 메이크업 이름도 번역한다.
 		+ trinit.twee의 _handtoolList에 미리 정의되어 있어야 함.
 
 		필수사항
@@ -626,7 +626,7 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<handtoolPost "marker" "을">>              // "마커펜을"
+		<<handtoolPost "marker" "을">>_trResult              // "마커펜을"
     ```
 
 	<<lefttoolPost>>
@@ -642,7 +642,7 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<lefttoolPost 0 "을">>              // $NPCList[0].lefttool을
+		<<lefttoolPost 0 "을">>_trResult              // $NPCList[0].lefttool을
     ```
 
     ```
