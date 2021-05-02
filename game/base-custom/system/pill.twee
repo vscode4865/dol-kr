@@ -4,6 +4,32 @@
 <<set _pillNames to ["Growth", "Reduction", "Blocker", "None"]>>
 <<set _pillTypes to ["growth", "reduction", "blocker", null]>>
 
+
+<<if $pillstaken is 1>>
+	<<unset $pillstaken>>
+	당신은 의사 하퍼가 처방해 준 약을 먹었다. 당신은 어지러움을 느낀다.
+	<<awareness -1>><<control 10>>
+	<br><br>
+<</if>>
+<<if $asylumpillstaken is 1>>
+	<<unset $asylumpillstaken>>
+	당신은 정신병원에서 처방해 준 약을 먹었다. 당신은 정신이 흐릿해 지는 것을 느낀다.
+	<<awareness -5>><<control 25>>
+	<br><br>
+<</if>>
+<<if $pills gte 1 and $medicated is 0 or $asylumpills gte 1 and $asylummedicated is 0>>
+	처방약
+	<br>
+<</if>>
+<<if $pills gte 1 and $medicated is 0>>
+	<<icon "pills">><<link "약을 먹는다">><<set $medicated += 1>><<set $pillstaken to 1>><<script>>state.display(state.active.title, null)<</script>><</link>><<gcontrol>><<lawareness>>
+	<br>
+<</if>>
+<<if $asylumpills gte 1 and $asylummedicated is 0>>
+	<<icon "strong pills">><<link "강한 약을 먹는다">><<set $asylummedicated += 1>><<set $asylumpillstaken to 1>><<script>>state.display(state.active.title, null)<</script>><</link>><<ggcontrol>><<llawareness>>
+	<br>
+<</if>>
+<hr>
 가슴약
 <br>
 <<if _pills.breast.owned[_pillTypes[0]] gt 0 or _pills.breast.owned[_pillTypes[1]] gt 0>>
@@ -13,6 +39,11 @@
 	<<for _i to 0; _i lt _pillNames.length; _i += 1>>
 		<<if _pills.breast.owned[_pillTypes[_i]] isnot 0>>
 			<li><label>
+				<<if _pillNames[_i] is "None">>
+					<<ind>>
+				<<else>>
+					<<icon `"breast" + _pillNames[_i]`>>
+				<</if>>
 				<<print '<<radiobutton "_checked" _i ' + (_pills.breast.type is _pillTypes[_i] ? "checked" : "") + '>>'>>
 				<<trPill _pillNames[_i]>><<print _trResult>>
 				<<if _pillNames[_i] isnot "None">><<print '['+_pills.breast.owned[_pillTypes[_i]]+']'>><</if>>
@@ -49,6 +80,11 @@
 		<<for _i to 0; _i lt _pillNames.length; _i += 1>>
 			<<if _pills.penis.owned[_pillTypes[_i]] isnot 0>>
 				<li><label>
+				<<if _pillNames[_i] is "None">>
+					<<ind>>
+				<<else>>
+					<<icon `"penis" + _pillNames[_i]`>>
+				<</if>>
 				<<print '<<radiobutton "_checked2" _i ' + (_pills.penis.type is _pillTypes[_i] ? "checked" : "") + '>>'>>
 				<<trPill _pillNames[_i]>><<print _trResult>>
 				<<if _pillNames[_i] isnot "None">><<print '['+_pills.penis.owned[_pillTypes[_i]]+']'>><</if>>
@@ -85,13 +121,18 @@
 	<<for _i to 0; _i lt _pillNames.length; _i += 1>>
 		<<if _pills.bottom.owned[_pillTypes[_i]] isnot 0>>
 			<li><label>
+				<<if _pillNames[_i] is "None">>
+					<<ind>>
+				<<else>>
+					<<icon `"bottom" + _pillNames[_i]`>>
+				<</if>>
 				<<print '<<radiobutton "_checked" _i ' + (_pills.bottom.type is _pillTypes[_i] ? "checked" : "") + '>>'>>
-				<<print _pillNames[_i]>>
+				<<trPill _pillNames[_i]>><<print _trResult>>
 				<<if _pillNames[_i] isnot "None">><<print '['+_pills.bottom.owned[_pillTypes[_i]]+']'>><</if>>
 				<<if _pills.bottom.type is _pillTypes[_i] and _pillTypes[_i] isnot null>>
-					<<print '[Taken ' + _pills.bottom.doseTaken + ' dose' + (_pills.bottom.doseTaken gt 1 ? "s" : "") +']'>>
+					<<print '[' + _pills.bottom.doseTaken + '개 먹음]'>>
 				<</if>>
-				<<if _pills.bottom.autoTake is _pillTypes[_i] and _pillTypes[_i] isnot null>>[Auto]<</if>>
+				<<if _pills.bottom.autoTake is _pillTypes[_i] and _pillTypes[_i] isnot null>>[자동]<</if>>
 			</label></li>
 		<</if>>
 	<</for>>
@@ -100,7 +141,7 @@
 <<if _pills.bottom.type is null>>
 	<<link [[약을 먹는다|customPillCollection]]>><<managePill "bottom" _pillTypes[_checked] -1 true false>><</link>>
 <<elseif _pills.bottom.doseTaken is 1 and _pills.bottom.type isnot "blocker" and _pills.bottom.owned[_pills.bottom.type] gt 0>>
-	<<print'<<link [[Take a second dose of '+ _pills.bottom.type +' pills|customPillCollectionSecondDose]]>><<managePill "bottom" _pills.bottom.type -1 true false>><<set $secondDose to "bottom">><</link>>'>>
+	<<trPill _pills.bottom.type>><<print'<<link [[두번째 '+_trResult+'약을 먹는다|customPillCollectionSecondDose]]>><<managePill "bottom" _pills.bottom.type -1 true false>><<set $secondDose to "bottom">><</link>>'>>
 <<elseif _pills.bottom.type is "blocker" or _pills.bottom.owned[_pills.bottom.type] is 0>>
 	당신은 오늘 이미 첫번째 엉덩이 <<print '<<trPill _pills.bottom.type>>_trResult'>> 약을 먹었다.
 <<else>>
@@ -144,7 +185,7 @@
 <<else>>
 	<<set _risk to 0>>
 <</if>>
-당신은 라벨을 무시하고, 두번째 <<print '<<trBodypart $secondDose>>_trResult'>><<set _trsecondDose to _trResult>><<print '<<trPill _pills[$secondDose].type>>_trResult'>>약을 먹었다.
+당신은 라벨을 무시하고, 두번째 <<print ($secondDose is "bottom" ? '엉덩이' : '<<trBodypart $secondDose>>_trResult')>><<set _trsecondDose to _trResult>><<print '<<trPill _pills[$secondDose].type>>_trResult'>>약을 먹었다.
 <br>
 
 <<set _result to random(0, 100)>>
