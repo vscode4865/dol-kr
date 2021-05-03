@@ -1066,7 +1066,7 @@
 		이랑/랑 - _irang/_rang
 		아/야 - _a/_ya
 		이여/여 - _iyo/_yo
-		이야/야 - _iya/_ya
+		이야/야 - _iya (_ya 는 아/야 에서 이미 사용하고 있어서 _iya로 통일시킴)
 		으로/로 - _uro/_ro
 		으로서/로서 - _uroseo/_roseo
 		으로써/로써 - _urosseo/_rosseo
