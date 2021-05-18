@@ -989,8 +989,8 @@
         조사를 번역하여 _trResult의 뒤에 붙인다.
 
         필수사항
-        - *postNum: 1이면 입력받은 조사의 형태를 변경한다.
-        - *post: 조사
+        - *postNum: 종성이 있을 경우 (단, ㄹ 제외) 0, 종성이 없을 경우 1, 종성이 ㄹ일 경우 2.
+        - *post: 종성이 있을 경우의 일반 조사 (예: "은", "을", "으로" 등)
 
         선택사항
         - sep: 조사를 _trPost에 따로 저장한다.
@@ -1002,6 +1002,28 @@
         <<trPost 1 '을'>>                   //  'abc를'
         /* _trResult = "123" */
         <<trPost 1 '이' 'sep'>>             //  _trReulst:'123', _trPost: "가"
+    ```
+
+    ```
+    <<getPostNum>>
+        <<getPostNum *txt>>
+        
+        문자열에서 조사 번호를 찾아 _postNum에 넣는다
+
+        필수사항
+        - *txt: 문자열
+
+        주의점
+        - 현재 한글과 숫자만 가능
+
+        e.g.
+
+        <<getPostNum '가'>>                   //  _postNum = 1
+		<<getPostNum '가능'>>                   //  _postNum = 0
+		<<getPostNum '팔'>>                   //  _postNum = 2
+		<<getPostNum '11'>>                   //  _postNum = 2 (십일)
+		<<getPostNum 'ABC'>>                   //  _postNum = undefined
+		<<getPostNum>>                   //  _postNum = undefined
     ```
 
 * trVirginity
