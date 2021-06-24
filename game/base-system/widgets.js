@@ -30,7 +30,7 @@ DefineMacro("addfemininityfromfactor", addfemininityfromfactor);
 
 function addfemininityofclothingarticle(clothing_article, no_overwear_check) {
 	if (clothing_article.femininity) {
-		addfemininityfromfactor(clothing_article.femininity, clothing_article.name_cap, no_overwear_check);
+		Wikifier.wikifyEval(' <<trSearchClothes "' + clothing_article.name + '">>'); addfemininityfromfactor(clothing_article.femininity, State.temporary.trResult, no_overwear_check);
 	}
 }
 DefineMacro("addfemininityofclothingarticle", addfemininityofclothingarticle);
@@ -78,21 +78,21 @@ function genderappearancecheck() {
 	addfemininityofclothingarticle(V.worn.feet);
 	/* Hair length */
 	if (V.worn.over_head.hood !== 1 && V.worn.head.hood !== 1 && V.hoodDown !== 1) {
-		addfemininityfromfactor(Math.trunc((V.hairlength - 200) / 2), "Hair length");
+		addfemininityfromfactor(Math.trunc((V.hairlength - 200) / 2), "머리 길이");
 	}
 	/* Makeup */
-	addfemininityfromfactor(V.makeup.lipstick == 0 ? 0 : 50, "Lipstick");
-	addfemininityfromfactor(V.makeup.eyeshadow == 0 ? 0 : 50, "Eye shadow");
-	addfemininityfromfactor(V.makeup.mascara == 0 ? 0 : 50, "Mascara");
+	addfemininityfromfactor(V.makeup.lipstick == 0 ? 0 : 50, "립스틱");
+	addfemininityfromfactor(V.makeup.eyeshadow == 0 ? 0 : 50, "아이섀도우");
+	addfemininityfromfactor(V.makeup.mascara == 0 ? 0 : 50, "마스카라");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
+	addfemininityfromfactor(Math.trunc(V.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
-	addfemininityfromfactor(T.femininity_multiplier * 200, "Natural features");
-	addfemininityfromfactor(Math.trunc((-1 * (V.physique + V.physiquesize / 2) / V.physiquesize) * 100), "Toned muscles");
+	addfemininityfromfactor(T.femininity_multiplier * 200, "체형");
+	addfemininityfromfactor(Math.trunc((-1 * (V.physique + V.physiquesize / 2) / V.physiquesize) * 100), "탄탄한 근육");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
 	T.acting_multiplier = V.englishtrait + 1;
-	addfemininityfromfactor(T.femininity_multiplier * 100 * T.acting_multiplier, "Posture (x" + T.acting_multiplier + " effectiveness due to English skill)");
+	addfemininityfromfactor(T.femininity_multiplier * 100 * T.acting_multiplier, "태도 (영어 기술로 인해 효과 x" + T.acting_multiplier + ")");
 	/* Special handling for calculating topless gender */
 	T.over_lower_protected = V.worn.over_lower.exposed < 2;
 	T.lower_protected = V.worn.lower.exposed < 2;
@@ -103,17 +103,17 @@ function genderappearancecheck() {
 	T.lower_femininity = (V.worn.lower.femininity ? V.worn.lower.femininity : 0);
 	T.under_lower_femininity = (V.worn.under_lower.femininity ? V.worn.under_lower.femininity : 0);;
 	/* find maximum possible femininity of the last lower piece you can strip down to, and add it to the counter */
-	addfemininityfromfactor(Math.max(T.over_lower_femininity, T.lower_femininity, T.under_lower_femininity), "Lower clothes", "noow");
+	addfemininityfromfactor(Math.max(T.over_lower_femininity, T.lower_femininity, T.under_lower_femininity), "아래옷", "noow");
 	/* bulge and genitals checks for topless gender */
 	if (T.under_lower_protected) {
-		addfemininityfromfactor(-T.bulge_size * 100, "Bulge visible through underwear", "noow");
+		addfemininityfromfactor(-T.bulge_size * 100, "속옷 너머로 발기한 것이 보임", "noow");
 	} else if (T.over_lower_protected || T.lower_protected) {
-		addfemininityfromfactor(-Math.clamp((T.bulge_size - 3) * 100, 0, Infinity), "Bulge visible through clothing", "noow");
+		addfemininityfromfactor(-Math.clamp((T.bulge_size - 3) * 100, 0, Infinity), "옷 너머로 발기한 것이 보임", "noow");
 	} else if (V.worn.genitals.exposed) {
-		addfemininityfromfactor(V.vaginaexist * 100000 - V.penisexist * 100000, "Genitals exposed", "noow");
+		addfemininityfromfactor(V.vaginaexist * 100000 - V.penisexist * 100000, "성기가 보임", "noow");
 	}
 	/* plain breasts factor */
-	addfemininityfromfactor((V.breastsize - 0.5) * 100, "Exposed breasts", "noow");
+	addfemininityfromfactor((V.breastsize - 0.5) * 100, "노출된 가슴", "noow");
 	/* Lower clothing, bulge, and genitals */
 	addfemininityofclothingarticle(V.worn.over_lower);
 	if (!T.over_lower_protected) {
@@ -128,23 +128,23 @@ function genderappearancecheck() {
 			if (V.worn.genitals.exposed) {
 				/* Bare genitals are visible */
 				if (V.penisexist) {
-					addfemininityfromfactor(-100000, "Penis visible");
+					addfemininityfromfactor(-100000, "자지가 보임");
 				}
 				if (V.vaginaexist) {
-					addfemininityfromfactor(100000, "Vagina visible");
+					addfemininityfromfactor(100000, "보지가 보임");
 				}
 			}
 		} else {
 			/* Bottom visible through underwear */
 			T.bottom_visibility *= 0.75;
 			/* Bulge visible through underwear */
-			addfemininityfromfactor(-T.bulge_size * 100, "Bulge visible through underwear");
+			addfemininityfromfactor(-T.bulge_size * 100, "속옷 너머로 발기한 것이 보임");
 		}
 	} else {
 		/* Bottom covered by lower clothes */
 		T.bottom_visibility *= 0.75;
 		/* Bulge covered by lower clothes */
-		addfemininityfromfactor(-Math.clamp((T.bulge_size - 3) * 100, 0, Infinity), "Bulge visible through clothing");
+		addfemininityfromfactor(-Math.clamp((T.bulge_size - 3) * 100, 0, Infinity), "옷 너머로 발기한 것이 보임");
 	}
 	/* Upper clothing and breasts */
 	addfemininityofclothingarticle(V.worn.over_upper);
@@ -157,18 +157,18 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.breastsize - 0.5) * 100, "Exposed breasts");
+			addfemininityfromfactor((V.breastsize - 0.5) * 100, "노출된 가슴");
 		} else if (!V.worn.under_upper.type.includes("chest_bind")) {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp(
 				(V.breastsize - 2) * 100, 0, Infinity
-			), "Breast size visible through underwear");
+			), "속옷 너머로 가슴 크기 확인 가능");
 		}
 	} else if (!V.worn.under_upper.type.includes("chest_bind")) {
 		/* Breast fully covered */
 		addfemininityfromfactor(Math.clamp(
 			(V.breastsize - 4) * 100, 0, Infinity
-		), "Breast size visible through clothing");
+		), "옷 너머로 가슴 크기 확인 가능");
 	}
 	/* Body writing */
 	Wikifier.wikifyEval("<<bodywriting_exposure_check>>"); // TODO convert to JS when possible
@@ -190,8 +190,8 @@ function genderappearancecheck() {
 			}
 		}
 	});
-	addfemininityfromfactor(T.skinValue, "Visible skin markings");
-	addfemininityfromfactor(T.skinValue + T.skinValue_noow, "Visible skin markings", "noow");
+	addfemininityfromfactor(T.skinValue, "피부에 글자/그림 보임");
+	addfemininityfromfactor(T.skinValue + T.skinValue_noow, "피부에 글자/그림 보임", "noow");
 	if (T.apparent_femininity > 0) {
 		T.gender_appearance = "f";
 	} else if (T.apparent_femininity < 0) {
