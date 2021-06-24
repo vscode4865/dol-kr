@@ -3,7 +3,6 @@
 <<if $intro is 0>>
 	<<effectstime>>
 	<<weatherdisplay>>
-	<<exposure>>
 	<<if $gamemode is "soft">>
 		<<set $pain to 0>>
 	<</if>>
@@ -18,7 +17,7 @@
 		<<addclass body no-images>>
 	<</if>>
 	<<combateffects>>
-
+	
 
 	<<if $endeventerror isnot undefined>>
 		<<if $debugdisable is "f">>
@@ -58,14 +57,9 @@
 			<<statsCaption>>
 		</div>
 	<<else>>
-		<<if $dev is 1>>
-			<<set $money = Math.trunc($money)>>
-			£<<print ($money / 100)>>를 갖고 있다
-			<br>
-		<<else>>
-			£<<print Math.trunc($money / 100)>>.<<if $money % 100 lte 9>>0<</if>><<print $money % 100>>를 갖고 있다
-			<br>
-		<</if>>
+		<div id="money-noimg">
+			<<statsMoneyNoImg>>
+		</div>
 		<br>
 
 		<<if $timestyle is "ampm">>
@@ -214,27 +208,39 @@
 	<<button 정보>>
 		<<overlayReplace "characteristics">>
 	<</button>>
-
-	<<button 특성>>
-		<<overlayReplace "traits">>
-	<</button>>
-
 	<<button 관계>>
 		<<overlayReplace "social">>
 	<</button>>
-
-	<<button 통계/도전과제>>
-		<<overlayReplace "statistics">>
-	<</button>>
-	<br><br>
-	<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
-		<<button 치트>>
-			<<overlayReplace "cheats">>
+	<div class="sidebarButtonSplit">
+		<<button 특성>>
+			<<overlayReplace "traits">>
 		<</button>>
-	<</if>>
+		<<button 일지>>
+			<<overlayReplace "journal">>
+		<</button>>
+	</div>
+	<div class="sidebarButtonSplit">
+		<<button 통계>>
+			<<overlayReplace "statistics">>
+		<</button>>
+		<<button 도전과제>>
+			<<overlayReplace "gameFeats">>
+		<</button>>
+	</div>
+	<br>
+	<div class="sidebarButtonSplit">
+		<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
+			<<button 치트>>
+				<<overlayReplace "cheats">>
+			<</button>>
+		<</if>>
+		<<if $debug is 1>>
+			<<debug>>
+		<</if>>
+	</div>
 
-	<<if $debug is 1>>
-		<<debug>>
+	<<if $showDebugRenderer>>
+		<<button "DEBUG RENDERER">><<overlayReplace "canvasModel">><</button>>
 	<</if>>
 
 <<else>>
@@ -247,16 +253,19 @@
 		<<overlayReplace "startFeats">>
 	<</button>>
 <</if>>
-
-<<if passage() is "certification_start">><<certification_optionsButton>><<else>><<button 저장/옵션>>
-	<<overlayReplace "options">>
-<</button>><</if>>
-<br><br>
+<div class="sidebarButtonSplit">
+	<<button 옵션>>
+		<<overlayReplace "options">>
+	<</button>><</if>>
+	<<button 저장>>
+		<<overlayReplace "saves">>
+	<</button>>
+</div>
+<br>
 
 <<set $currentOverlay to null>>
 <div id="customOverlay" class="customOverlay hidden">
 	<div id="customOverlayTitle" class="fixedClose"></div>
-	<div id="customOverlaySaveContent"></div>
 	<div id="customOverlayContent"></div>
 </div>
 </div>
@@ -737,7 +746,7 @@
 		<<set $money = Math.trunc($money)>>
 		£<<print ($money / 100)>>.
 	<<else>>
-		£<<print Math.trunc($money / 100)>>.<<if $money % 100 lte 9>>0<</if>><<print $money % 100>>
+		<<printmoney $money true>>
 	<</if>>
 	&nbsp;
 
@@ -764,6 +773,16 @@
 	<</if>>
 <</widget>>
 
+<<widget "statsMoneyNoImg">>
+	<<if $dev is 1>>
+		<<set $money = Math.trunc($money)>>
+		£<<print ($money / 100)>>를 갖고 있다
+		<br>
+	<<else>>
+		<<printmoney $money true>>를 갖고 있다
+		<br>
+	<</if>>
+<</widget>>
 
 <<widget "startingPlayerImage">>
 <<set $naturalhaircolour to $hairselect>>
@@ -844,6 +863,72 @@
 	<</if>>
 	<<set _disabled to ["disabled","hidden"]>>
 
+	<<if $sidebarRenderer is undefined>>
+		<<set $sidebarRenderer to 'canvas'>>
+	<</if>>
+	<<if $sidebarRenderer isnot 'img'>>
+		<<selectmodel "main" "sidebar">> <!-- reuse sidebar cache slot -->
+		<<twinescript>>
+			_modeloptions.breast_size = _breastSize;
+			_modeloptions.breasts = (!_showUnderwear && !_showClothes) ? "default" : "cleavage";
+			if (_penisSize isnot undefined) {
+				_modeloptions.penis = $player.virginity.penile is true ? "virgin" : "default";
+				_modeloptions.penis_size = _penisSize;
+				_modeloptions.balls = $player.ballsExist;
+			}
+
+			_modeloptions.skin_type = $skinColor.natural;
+			_modeloptions.skin_tone = $skinColor.range/100;
+
+			_modeloptions.hair_colour = $hairselect;
+			_modeloptions.hair_sides_position = $hairposition;
+			_modeloptions.hair_sides_length = _hairlengthstage;
+			_modeloptions.hair_fringe_length = _hairlengthstage;
+
+			_modeloptions.eyes_colour = $eyeselect;
+			_modeloptions.mouth = "neutral";
+			_modeloptions.freckles = $player.freckles is true;
+
+			_modeloptions.demon_wings_type = $transformationParts.demon.wings;
+			_modeloptions.angel_wings_type = $transformationParts.angel.wings;
+			_modeloptions.fallen_wings_type = $transformationParts.fallenAngel.wings;
+
+			if (_clothesType is "male") {
+				if (_showClothes) {
+					_modeloptions.worn_upper = 4; /* t-shirt */
+					_modeloptions.worn_upper_colour = "tangerine";
+					_modeloptions.worn_lower = 5; /* shorts */
+					_modeloptions.worn_lower_colour = "blue";
+					_modeloptions.worn_legs = 2; /* boysgymsocks */
+					_modeloptions.worn_feet = 1; /* schoolshoes */
+				}
+				if (_showUnderwear) {
+					_modeloptions.worn_under_lower = 4; /* briefs */
+					_modeloptions.worn_under_lower_colour = "black";
+				}
+			} else if (_clothesType is "female") {
+				if (_showClothes) {
+					_modeloptions.worn_upper = 1; /* sundress */
+					_modeloptions.worn_upper_colour = "white";
+					_modeloptions.worn_lower = 1; /* sundress */
+					_modeloptions.worn_lower_colour = "white";
+					_modeloptions.worn_legs = 3; /* girlsgymsocks */
+					_modeloptions.worn_feet = 1; /* schoolshoes */
+				}
+				if (_showUnderwear) {
+					if ($breastsize > 3) {
+						_modeloptions.worn_under_upper = 12; /* plainbra */
+						_modeloptions.worn_under_upper_colour = "pale white";
+					}
+					_modeloptions.worn_under_lower = 1; /* plainpanties */
+					_modeloptions.worn_under_lower_colour = "pale white";
+				}
+			}
+			_modeloptions.crotch_visible = !_showClothes && !_showUnderwear;
+		<</twinescript>>
+		<<rendermodel `($sidebarRenderer is 'both' ? 'canvasimg-both' : '')`>>
+	<</if>>
+	<<if $sidebarRenderer isnot 'canvas'>>
 	<img class="layer-base" @src="_img.basenoarms" @style="'filter: '+_filters.body">
 	<img class="layer-basehead" @src="_img.basehead" @style="'filter: '+_filters.body">
 
@@ -956,6 +1041,7 @@
 			</div>
 		<</if>>
 	<</if>>
+	<</if>> <!-- renderer switch -->
 </div>
 <</widget>>
 

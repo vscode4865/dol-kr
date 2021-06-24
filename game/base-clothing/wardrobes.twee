@@ -228,6 +228,7 @@
 <<if $wear is "dry">><<set $wear to 0>>
 	<<set $upperwet to 0>><<set $lowerwet to 0>><<set $underlowerwet to 0>><<set $underupperwet to 0>>
 	당신은 옷에서 물기를 짜낸다.
+	<<effectswater>>
 	<br><br>
 <</if>>
 <<set $wear to 0>>
@@ -249,8 +250,9 @@
 <</widget>>
 
 <<widget "wardrobe">>
+<div id="action-popup">여기를 보지 마세요.</div>
 <<unset $tempDisable>>
-<<clotheson>> /*Fixes perma pulled aside clothes introduced by 0.2.3.0 bug.*/
+<div id="clotheson"><<clotheson>></div> /*Fixes perma pulled aside clothes introduced by 0.2.3.0 bug.*/
 <<temperature>>
 
 <span>따뜻함:</span>
@@ -258,15 +260,30 @@
 <div id="warmth-description">
 	<<warmth_description>>
 </div>
-<br><br>
+<br>
 <<if $upperwet gte 1 or $lowerwet gte 1 or $underlowerwet or $underupperwet gte 1>>
-<<link [[옷을 말린다|$passage]]>><<set $wear to "dry">><<script>>state.display(state.active.title, null)<</script>><!--</script>--><</link>>
+	<<link "옷을 말린다">>
+		<<set $wear to "dry">>
+		<<updatewardrobe>>
+	<</link>>
 <br>
 <</if>>
 
-<<link [[전부 벗는다|$passage]]>><<set $wear to "strip">><</link>> | 
-<<link [[아무 옷이나 입는다|$passage]]>><<set $randomWear to true>><</link>> |
-<<link 설정>><<toggleclass "#randomClothingConfigure" "hidden">><</link>> |
+<div class="wardrobe-action">
+	<<link "전부 벗는다">>
+		<<set $wear to "strip">>
+		<<updatewardrobe>>
+	<</link>>
+</div> |
+<div class="wardrobe-action">
+	<<link "아무 옷이나 입는다">>
+		<<set $randomWear to true>>
+		<<updatewardrobe>>
+	<</link>>
+</div> |
+<div class="wardrobe-action">
+	<<link 설정>><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
+</div> |
 <div id="randomClothingConfigure" class="hidden">
 	<<if $randomEquipConfigure is undefined>>
 		<<set $randomEquipConfigure to {face: true, feet: true, head: true, hands: true, legs: true, lower: true, neck: true, under_lower: true, under_upper: true, upper: true}>>
@@ -322,7 +339,7 @@
 
 __복장 세트__
 <br>
-<<listoutfits>>
+<div id="listoutfits"><<listoutfits>></div>
 
 <hr>
 __옷__
@@ -341,6 +358,12 @@ __옷__
 <<set $underupperoff to 0>>
 <<exposure>>
 
+<!-- Code responsible for brief highlighting of links in wardrobe when you click them -->
+<<run $(document).on('mousedown', '.wardrobe-action a', (e) => {
+	let target = $(e.currentTarget).parent();
+	target.addClass('notransition action-flash');
+	setTimeout(() => { target.removeClass('notransition action-flash') }, 100);
+})>>
 <</widget>>
 
 <<widget "wardrobeContents">>
@@ -412,50 +435,54 @@ __옷__
 	<<print '<<checkbox "$saveColor" false true '+($saveColor is true ? "checked" : "")+'>>'>>
 </label>
 <br>
-<<link [[새로운 세트에 현재 입은 옷 추가|$passage]]>>
-	<<script>>
-		SugarCube.State.variables.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
-	<</script>><!--</script>-->
-	<<set $outfit.push(
-		{index: $outfit.length,
-		name: $outfit_name,
-		over_upper: clone($worn.over_upper.name),
-		over_lower: clone($worn.over_lower.name),
-		upper: clone($worn.upper.name),
-		lower: clone($worn.lower.name),
-		under_upper: clone($worn.under_upper.name),
-		under_lower: clone($worn.under_lower.name),
-		over_head: clone($worn.over_head.name),
-		head: clone($worn.head.name),
-		face: clone($worn.face.name),
-		neck: clone($worn.neck.name),
-		hands: clone($worn.hands.name),
-		legs: clone($worn.legs.name),
-		feet: clone($worn.feet.name),
-		type: ["normal"]
-		},
-	)>>
+<div class="wardrobe-action">
+	<<link "새로운 세트에 현재 입은 옷 추가">>
+		<<script>>
+			SugarCube.State.variables.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
+		<</script>><!--</script>-->
+		<<set $outfit.push(
+			{index: $outfit.length,
+			name: $outfit_name,
+			over_upper: clone($worn.over_upper.name),
+			over_lower: clone($worn.over_lower.name),
+			upper: clone($worn.upper.name),
+			lower: clone($worn.lower.name),
+			under_upper: clone($worn.under_upper.name),
+			under_lower: clone($worn.under_lower.name),
+			over_head: clone($worn.over_head.name),
+			head: clone($worn.head.name),
+			face: clone($worn.face.name),
+			neck: clone($worn.neck.name),
+			hands: clone($worn.hands.name),
+			legs: clone($worn.legs.name),
+			feet: clone($worn.feet.name),
+			type: ["normal"]
+			},
+		)>>
 
-	<<if $outfit_name is "" or $outfit_name is "Custom" or $outfit_name is "커스텀">><<print '<<set $outfit_name to "커스텀 ' + $outfit.length + '">>'>><</if>>
-	<<set $outfit.last().name to $outfit_name>>
-	<<if $outfit_type>>
-		<<set $outfit.last().type.push($outfit_type)>>
-	<</if>>
+		<<if $outfit_name is "" or $outfit_name is "Custom" or $outfit_name is "커스텀">><<print '<<set $outfit_name to "커스텀 ' + $outfit.length + '">>'>><</if>>
+		<<set $outfit.last().name to $outfit_name>>
+		<<if $outfit_type>>
+			<<set $outfit.last().type.push($outfit_type)>>
+		<</if>>
 
-	<<if $saveColor is true>>
-		<<set _equip to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
-		<<set _colors to {}>>
-		<<for _ie to 0; _ie lt _equip.length; _ie++>>
-			<<set _colors[_equip[_ie]] to [clone($worn[_equip[_ie]].colour),clone($worn[_equip[_ie]].accessory_colour)]>>
-			<<if $worn[_equip[_ie]].colour is "custom" or $worn[_equip[_ie]].accessory_colour is "custom">>
-				<<run _colors[_equip[_ie]+"custom"] to [clone($worn[_equip[_ie]].colourCustom),clone($worn[_equip[_ie]].accessory_colourCustom)]>>
-			<</if>>
-		<</for>>
-		<<set $outfit.last().colors to clone(_colors)>>
-	<<else>>
-		<<set $outfit.last().colors to false>>
-	<</if>>
-<</link>>
+		<<if $saveColor is true>>
+			<<set _equip to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
+			<<set _colors to {}>>
+			<<for _ie to 0; _ie lt _equip.length; _ie++>>
+				<<set _colors[_equip[_ie]] to [clone($worn[_equip[_ie]].colour),clone($worn[_equip[_ie]].accessory_colour)]>>
+				<<if $worn[_equip[_ie]].colour is "custom" or $worn[_equip[_ie]].accessory_colour is "custom">>
+					<<run _colors[_equip[_ie]+"custom"] to [clone($worn[_equip[_ie]].colourCustom),clone($worn[_equip[_ie]].accessory_colourCustom)]>>
+				<</if>>
+			<</for>>
+			<<set $outfit.last().colors to clone(_colors)>>
+		<<else>>
+			<<set $outfit.last().colors to false>>
+		<</if>>
+
+		<<updatewardrobe "outfits">>
+	<</link>>
+</div>
 <</widget>>
 
 <<widget "wardrobeintegrity">>
@@ -499,22 +526,22 @@ __옷__
 	<br>
 	정렬:
 	/*Undefined error for unknown reason*/
-	/*<a @onclick="`wikifier('wardrobeListReorder', '`+ $lastWardrobeSlot + `', 'name');`">Name</a> |*/
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name');">이름</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color');">색상</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd');">음란도</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity');">내구도</a> |
+	/*<a @onclick="`wikifier('wardrobeListReorder', '`+ $lastWardrobeSlot + `', 'name');`">이름</a> |*/
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name');">이름</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color');">색상</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd');">음란도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity');">내구도</a></div> |
 	<<if _outfitTypes.includes(_wardrobe_list)>>
-		<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit');">옷 상태</a> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit');">옷 상태</a></div> |
 	<</if>>
 	<br>
 	역순 정렬:
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name', true);">이름</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color', true);">색상</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd', true);">음란도</a> |
-	<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity', true);">내구도</a> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name', true);">이름</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color', true);">색상</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd', true);">음란도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity', true);">내구도</a></div> |
 	<<if _outfitTypes.includes(_wardrobe_list)>>
-		<a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit', true);">옷 상태</a> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit', true);">옷 상태</a></div> |
 	<</if>>
 	<br><br>
 	현재 입은 옷:
@@ -573,18 +600,30 @@ __옷__
 
 		<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItem.notuck>>
 			<<if $upperTucked>>
-				<<link [[Untuck|$passage]]>><<set $upperTucked = 0>><</link>>
+				<<link "밖으로 뺀다">>
+					<<set $upperTucked = 0>>
+					<<updatewardrobe>>
+				<</link>>
 			<<else>>
-				<<link [[Tuck in|$passage]]>><<set $upperTucked = 1>><</link>>
+				<<link "안으로 집어넣는다">>
+					<<set $upperTucked = 1>>
+					<<updatewardrobe>>
+				<</link>>
 			<</if>>
 			<br>
 		<</if>>
 		<<if (_wornItem.hood and _wornItem.outfitSecondary) or (_wornItem.outfitPrimary and Object.keys(_wornItem.outfitPrimary).some(x => $worn[x].hood))>>
 		<!-- If selected item is a hood or selected item has a secondary hood piece -->
 			<<if $hoodDown>>
-				<<link [[Pull hood up|$passage]]>><<set $hoodDown = 0>><</link>>
+				<<link "후드를 올린다">>
+					<<set $hoodDown = 0>>
+					<<updatewardrobe>>
+				<</link>>
 			<<else>>
-				<<link [[Pull hood down|$passage]]>><<set $hoodDown = 1>><</link>>
+				<<link "후드를 내린다">>
+					<<set $hoodDown = 1>>
+					<<updatewardrobe>>
+				<</link>>
 			<</if>>
 			<br>
 		<</if>>
@@ -594,13 +633,13 @@ __옷__
 	<</if>>
 	<br>
 	<<if $worn[_wardrobe_list].name isnot "naked">>
-		<div class="wardrobeItem"><a @onclick="`SugarCube.State.variables.`+_wear+` = 'strip';SugarCube.State.display(SugarCube.State.variables.passage)`">벗기</a></div>
+		<div class="wardrobeItem wardrobe-action no-numberify"><<wearlink_norefresh "벗기" 'strip'>></div>
 	<</if>>
 	<<if _wardrobe_list is "upper">>
-		<div class="wardrobeItem"><a onclick="SugarCube.State.variables.wear_upper='large_towel';SugarCube.State.display(SugarCube.State.variables.passage)">큰 수건</a></div>
+		<div class="wardrobeItem wardrobe-action no-numberify"><<wearlink_norefresh "큰 수건" 'large_towel'>></div>
 	<</if>>
 	<<if _wardrobe_list is "upper" or _wardrobe_list is "lower" >>
-		<div class="wardrobeItem"><a @onclick="`SugarCube.State.variables.`+_wear+` = 'towel';SugarCube.State.display(SugarCube.State.variables.passage)`">수건</a></div>
+		<div class="wardrobeItem wardrobe-action no-numberify"><<wearlink_norefresh "수건" 'towel'>></div>
 	<</if>>
 
 	<<for _i to 0; _i lt $wardrobe[_wardrobe_list].length; _i++>>
@@ -610,8 +649,8 @@ __옷__
 				<<continue>>
 			<</if>>
 		<</if>>
-		<div class="wardrobeItem">
-		<<clothingicon _item>><a @onclick="`SugarCube.State.variables.`+_wear+` = `+ _i +`;SugarCube.State.display(SugarCube.State.variables.passage)`"><<trClothes _wardrobe_list _item.name>>_trResult</a>
+		<div class="wardrobeItem wardrobe-action no-numberify">
+		<<clothingicon _item>><<trClothes _wardrobe_list _item.name>><<wearlink_norefresh _trResult _i>>
 		<<if _item.gender is "m">>
 			| <span class="blue">♂</span> |
 		<<elseif _item.gender is "f">>
@@ -651,6 +690,39 @@ __옷__
 <</if>>
 
 <<temperature>>
+<</widget>>
+
+<<widget "wearlink_norefresh">>
+	<<capture $args[1]>>
+		<<link $args[0]>>
+			<<set State.variables[_wear] = $args[1]>>
+			<<updatewardrobe>>
+		<</link>>
+	<</capture>>
+<</widget>>
+
+<<widget "updatewardrobe">>
+	<<if window.scrollY > 130>>
+		<<run $('#action-popup, #wardrobewear').html(new Wikifier(null, "<<wardrobewear>>").output)>>
+		<<run $('#action-popup').css('transform', 'translateY(0)'); setTimeout(() => { $('#action-popup').css('transform', 'translateY(-100%)') }, 3200);>>
+	<<else>>
+		<<run $('#wardrobewear').html(new Wikifier(null, "<<wardrobewear>>").output)>>
+	<</if>>
+	<<run $('#wardrobewear').addClass('notransition flash'); setTimeout(() => { $('#wardrobewear').removeClass('notransition flash') }, 100);>>
+	<<updatesidebarimg>>
+	<<updatesidebardescription>>
+	<<updateallure>>
+	<<updatewarmthscale>>
+	<<updatewarmthdescription>>
+	<<if $args[0] == "outfits">>
+		<<replace "#listoutfits">><<listoutfits>><</replace>>
+	<</if>>
+	<<replace '#clotheson'>><<clotheson>><</replace>>
+	<<if $('#wardrobeList')[0]>><<replace '#wardrobeList'>><<wardrobeContents>><</replace>><</if>>
+	<<exposure>>
+	<<run $('#wardrobeExits').html(new Wikifier(null, "<<wardrobeExits>>").output)>>
+	<<numberify ".passage">>
+	<<run updateMoment()>>
 <</widget>>
 
 <<widget "oldWardrobeListDisplay">>
@@ -1022,13 +1094,169 @@ $warmth 따뜻함 | $chill 추움
 온열 범위: <<print ($chill + 1)>> - <<print Math.trunc(($chill * 1.3) + 69)>>
 <</widget>>
 
+<<widget "wardrobeExits">>
+	<<switch $passage>>
+		<<case "Wardrobe">>
+			<<link [[옷장을 닫는다|Bedroom]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+		<<case "Changing Room">>
+			<<if $exposed lte 1>>
+				<<link [[나간다|Beach]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				이 꼴로는 나갈 수 없다!
+				<br><br>
+			<</if>>
+		<<case "Eden Wardrobe">>
+			<<if $exhibitionism gte 75>>
+				<<link [[마친다|Eden Cabin]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+			<<elseif $exhibitionism gte 55>>
+				<<if $exposed lte 1>>
+				<<link [[마친다|Eden Cabin]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+				<<else>>
+				지금처럼 아무 것도 안 입고 있을 순 없다!
+				<br><br>
+				<</if>>
+			<<else>>
+				<<if $exposed lte 0>>
+				<<link [[마친다|Eden Cabin]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+				<<else>>
+				지금처럼 아무 것도 안 입고 있을 순 없다!
+				<br><br>
+				<</if>>
+			<</if>>
+		<<case "Asylum Wardrobe">>
+			<<if $exhibitionism lte 54>>
+				<<if $exposed lte 0>>
+					<<link [[마친다|Asylum Cell]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<<elseif $exhibitionism gte 75>>
+				<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				<<if $exposed lte 1>>
+					<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<</if>>
+		<<case "Farm Wardrobe">>
+			<<if $exhibitionism lte 54>>
+				<<if $exposed lte 0>>
+					<<link [[Done|Farm Bedroom]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<<elseif $exhibitionism gte 75>>
+				<<link [[Done|Farm Bedroom]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				<<if $exposed lte 1>>
+					<<link [[Done|Farm Bedroom]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<</if>>
+		<<case "Strip Club Dressing Room">>
+			<<if $exhibitionism lte 14>>
+				<<if $exposed lte 0>>
+					<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					이 꼴로 나갈 순 없다!
+					<br><br>
+				<</if>>
+			<<elseif $exhibitionism gte 55>>
+				<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				<<if $exposed lte 1>>
+					<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					이 꼴로 나갈 순 없다!
+					<br><br>
+				<</if>>
+			<</if>>
+		<<case "Brothel Dressing Room">>
+			<<if $exhibitionism lte 14>>
+				<<if $exposed lte 0>>
+					<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					이 꼴로 나갈 순 없다!
+					<br><br>
+				<</if>>
+			<<elseif $exhibitionism gte 55>>
+				<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				<<if $exposed lte 1>>
+					<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					이 꼴로 나갈 순 없다!
+					<br><br>
+				<</if>>
+			<</if>>
+		<<case "School Boy Wardrobe">>
+			<<if $exposed gte 2 and $exhibitionism lt 75>>
+				You can't go out like this!
+				<br><br>
+			<<else>>
+				<<link [[나간다|School Boy Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<</if>>
+		<<case "School Girl Wardrobe">>
+			<<if $exposed gte 2 and $exhibitionism lt 75>>
+				You can't go out like this!
+				<br><br>
+			<<else>>
+				<<link [[나간다|School Girl Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<</if>>
+		<<case "Farm Assault Wardrobe">>
+			<<if $exhibitionism lte 54>>
+				<<if $exposed lte 0>>
+					<<link [[나간다|Farm Assault Intro]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<<elseif $exhibitionism gte 75>>
+				<<link [[나간다|Farm Assault Intro]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+				<br><br>
+			<<else>>
+				<<if $exposed lte 1>>
+					<<link [[나간다|Farm Assault Intro]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+					<br><br>
+				<<else>>
+					지금처럼 아무 것도 안 입고 있을 순 없다!
+					<br><br>
+				<</if>>
+			<</if>>
+	<</switch>>
+<</widget>>
+
 :: Wardrobe
 <<effects>>
 <<set $wardrobe_location to "wardrobe">>
 당신은 옷장을 들여다본다.
 <br><br>
-<<wardrobewear>>
-<<link [[옷장을 닫는다|Bedroom]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
 <br><br>
 <<wardrobe>>
 
@@ -1037,14 +1265,8 @@ $warmth 따뜻함 | $chill 추움
 <<set $wardrobe_location to "wardrobe">>
 당신은 작은 나무 탈의실에 있다.
 <br><br>
-<<wardrobewear>>
-<<if $exposed lte 1>>
-<<link [[나간다|Beach]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-<br><br>
-<<else>>
-이 꼴로는 나갈 수 없다!
-<br><br>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
 :: Eden Wardrobe
@@ -1052,26 +1274,8 @@ $warmth 따뜻함 | $chill 추움
 당신은 입던 옷이 들어있는 찬장을 들여다본다. 사생활을 위한 낡은 탈의용 가림막이 있다.
 <br><br>
 <<set $wardrobe_location to "wardrobe">>
-<<wardrobewear>>
-<<if $exhibitionism gte 75>>
-	<<link [[마친다|Eden Cabin]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-<<elseif $exhibitionism gte 55>>
-	<<if $exposed lte 1>>
-	<<link [[마친다|Eden Cabin]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
-	<br><br>
-	<</if>>
-<<else>>
-	<<if $exposed lte 0>>
-	<<link [[마친다|Eden Cabin]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
-	<br><br>
-	<</if>>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
 :: Asylum Wardrobe
@@ -1080,28 +1284,21 @@ $warmth 따뜻함 | $chill 추움
 당신은 입던 옷이 들어있는 찬장을 들여다본다.
 <br><br>
 <<set $wardrobe_location to "wardrobe">>
-<<wardrobewear>>
-<<if $exhibitionism lte 54>>
-	<<if $exposed lte 0>>
-	<<link [[마친다|Asylum Cell]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
-		<br><br>
-	<</if>>
-<<elseif $exhibitionism gte 75>>
-<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-<br><br>
-<<else>>
-	<<if $exposed lte 1>>
-	<<link [[마친다|Asylum Cell]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-	<<else>>
-	지금처럼 아무 것도 안 입고 있을 순 없다!
-		<br><br>
-	<</if>>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
+
+:: Farm Wardrobe
+<<effects>>
+당신은 소박한 옷장을 들여다본다.
+<br><br>
+<<set $wardrobe_location to "wardrobe">>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
+<<wardrobe>>
+
 
 :: Strip Club Dressing Room
 
@@ -1109,27 +1306,9 @@ $warmth 따뜻함 | $chill 추움
 <<set $wardrobe_location to "wardrobe">>
 당신은 스트립 클럽의 탈의실에 있다. <<if $daystate isnot "day" and $daystate isnot "dawn">>몇 개 없는 거울은 전부 저마다의 머리 상태와 화장을 점검하는 직원들이 쓰고 있다.<</if>>
 <br><br>
-<<wardrobewear>>
-<<if $exhibitionism lte 14>>
-	<<if $exposed lte 0>>
-		<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-		<br><br>
-	<<else>>
-		이 꼴로 나갈 순 없다!
-		<br><br>
-	<</if>>
-<<elseif $exhibitionism gte 55>>
-	<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-<<else>>
-	<<if $exposed lte 1>>
-		<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-		<br><br>
-	<<else>>
-		이 꼴로 나갈 순 없다!
-		<br><br>
-	<</if>>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
 
 :: Brothel Dressing Room
@@ -1138,27 +1317,9 @@ $warmth 따뜻함 | $chill 추움
 <<set $wardrobe_location to "wardrobe">>
 당신은 창관 탈의실에 있다. 몇 개 없는 거울은 전부 저마다의 머리 상태와 화장을 점검하는 직원들이 쓰고 있다.
 <br><br>
-<<wardrobewear>>
-<<if $exhibitionism lte 14>>
-	<<if $exposed lte 0>>
-		<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-		<br><br>
-	<<else>>
-		이 꼴로 나갈 순 없다!
-		<br><br>
-	<</if>>
-<<elseif $exhibitionism gte 55>>
-	<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-<<else>>
-	<<if $exposed lte 1>>
-		<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-		<br><br>
-	<<else>>
-		이 꼴로 나갈 순 없다!
-		<br><br>
-	<</if>>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
 
 :: School Boy Wardrobe
@@ -1167,14 +1328,9 @@ $warmth 따뜻함 | $chill 추움
 <<set $wardrobe_location to "wardrobe">>
 당신은 자신의 열려있는 락커 앞에 서있다.
 <br><br>
-<<wardrobewear>>
-<<if $exposed gte 2 and $exhibitionism lt 75>>
-이 꼴로 나갈 순 없다!
-<br><br>
-<<else>>
-<<link [[나간다|School Boy Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
 
 :: School Girl Wardrobe
@@ -1183,14 +1339,9 @@ $warmth 따뜻함 | $chill 추움
 <<set $wardrobe_location to "wardrobe">>
 당신은 자신의 열려있는 락커 앞에 서있다.
 <br><br>
-<<wardrobewear>>
-<<if $exposed gte 2 and $exhibitionism lt 75>>
-이 꼴로 나갈 순 없다!
-<br><br>
-<<else>>
-<<link [[나간다|School Girl Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
-	<br><br>
-<</if>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
 
 :: Wardrobe Sale Crate
@@ -1218,7 +1369,7 @@ $warmth 따뜻함 | $chill 추움
 		<<set _value += Math.floor(getClothingCost(_items[_i]) * (_items[_i].integrity / _items[_i].integrity_max) / 3)>>
 	<</for>>
 <</for>>
-전부 팔면 £<<print ((_value + 5000) / 100).toFixed(2)>> 를 받을 수 있다.
+전부 팔면 <<printmoney `_value + 5000`>>를 받을 수 있다.
 <br><br>
 <<link [[네|Wardrobe Sale Crate Result]]>><</link>>
 <br>
@@ -1254,7 +1405,7 @@ $warmth 따뜻함 | $chill 추움
 		<</if>>
 	<</for>>
 <</for>>
-운전기사가 £<<print ((_value + 5000) / 100).toFixed(2)>>를 두고 상자를 가져간다.
+운전기사가 <<printmoney `_value + 5000`>>를 두고 상자를 가져간다.
 <<set $money += Math.floor(_value + 5000)>>
 <br><br>
 <<link [[계속|$wardrobeReturnLink]]>>
@@ -1286,7 +1437,7 @@ $warmth 따뜻함 | $chill 추움
 <</for>>
 전부 수리하려면 
 <<if _value gt 5000>>
-	£<<print ((_value - 5000) / 100).toFixed(2)>>가 필요하다.
+	<<printmoney `_value - 5000`>>가 필요하다.
 <<else>>
 	돈은 필요없다.
 <</if>>
@@ -1341,7 +1492,7 @@ $warmth 따뜻함 | $chill 추움
 <</for>>
 <<if _value gt 5000>>
 	<<set $money -= _value - 5000>>
-	운전기사가 상자와 £<<print ((_value - 5000) / 100).toFixed(2)>>를 들고간다.
+	운전기사가 상자와 <<printmoney `_value - 5000`>>를 들고간다.
 <<else>>
 	운전기사가 상자를 들고간다.
 <</if>>

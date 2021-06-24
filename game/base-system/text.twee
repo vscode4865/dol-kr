@@ -68,29 +68,11 @@
 <<if $args[0]>>
 	<<set _colour to $args[0]>>
 <</if>>
-
-<<switch _colour>>
-	<<case "platinumblond">>백금색
-	<<case "ashyblond">>에쉬 블론드
-	<<case "lightbrown">>연한 갈색
-	<<case "strawberryblond">>스트로베리 블론드
-	<<case "hotpink">>핫핑크
-	<<case "softpink">>소프트 핑크
-	<<case "snowwhite">>순백색
-	<<case "deepblue">>딥블루
-	<<case "neonblue">>네온 블루
-	<<case "toxicgreen">>톡식 그린
-	<<case "brightpurple">>밝은 보라색
-	<<case "bloodorange">>블러드 오렌지색
-	<<case "burntorange">>번트 오렌지색
-	<<case "jetblack">>흑옥색
-	<<case "softblond">>소프트 블론드
-	<<case "softbrown">>소프트 브라운
-	<<case "darklime">>다크 라임
-	<<case "brightpink">>밝은 분홍색
-	<<case "mediumpurple">>미디엄 퍼플
-	<<default>><<trColour _colour>>_trResult
-<</switch>>
+<<if _colour in setup.colours.hair_map>>
+	<<trColour setup.colours.hair_map[_colour].name>><<print _trResult>>
+<<else>>
+	<<trColour _colour>>_trResult
+<</if>>
 
 <</widget>>
 
@@ -124,7 +106,7 @@
 <<widget "word">><<silently>>
 	<<set _text_output to "">>
 	<<if $args[0] and $worn[$args[0]].word isnot "n">>
-		/*<<set _text_output to $worn.upper.word>>한글에 관사는 없음*/<<set _text_output to "">>
+		/*<<set _text_output to $worn[$args[0]].word>>한글에 관사는 없음*/<<set _text_output to "">>
 	<</if>>
 <</silently>>_text_output <</widget>>
 
@@ -781,6 +763,22 @@
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
+<<widget "breastsensitivity">><<silently>>
+<<if $breastsensitivity > 5>>
+	<<set _text_output2 to "예민한 ">>
+<<elseif $breastsensitivity >= 3>>
+	<<set _text_output2 to "민감한 ">>
+<<elseif $breastsensitivity >= 1.5>>
+	<<set _text_output2 to "섬세한 ">>
+<<else>>
+	<<set _text_output2 to "">>
+<</if>>
+<</silently>><<print _text_output2>><</widget>>
+
+<<widget "nipple">><<breastsensitivity>><<print "nipple">><</widget>>
+
+<<widget "nipples">><<nipple>>s<</widget>>
+
 <<widget "breasts">><<silently>>
 <<switch $breastsize>>
 <<case 0>>
@@ -820,7 +818,7 @@
 <<default>>
 <<set _text_output to "breasts">>
 <</switch>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<breastsensitivity>><<print _text_output>><</widget>>
 
 <<widget "undertop">>
 <<silently>>
@@ -883,7 +881,6 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "pussy">><<silently>>
-
 <<if $devstate gte 1>>
 	<<if $orgasmcount gte 23>>
 		<<if $orgasmdown gte 1>>
@@ -901,13 +898,13 @@
 		<<if $orgasmdown gte 1>>
 		<<set _text_output to "twitching pussy">>
 		<<else>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<set _text_output to "tingling pussy">>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 			<<set _text_output to "pussy">>
-			<<elseif $arousal gte 4000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 2>>
 			<<set _text_output to "pussy">>
-			<<elseif $arousal gte 2000>>
+			<<elseif $arousal gte $arousalmax / 5>>
 			<<set _text_output to "quim">>
 			<<else>>
 			<<set _text_output to "pussy">>
@@ -931,13 +928,13 @@
 		<<if $orgasmdown gte 1>>
 		<<set _text_output to "twitching pussy">>
 		<<else>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<set _text_output to "tingling pussy">>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 			<<set _text_output to "pussy">>
-			<<elseif $arousal gte 4000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 2>>
 			<<set _text_output to "pussy">>
-			<<elseif $arousal gte 2000>>
+			<<elseif $arousal gte $arousalmax / 5>>
 			<<set _text_output to "quim">>
 			<<else>>
 			<<set _text_output to "pussy">>
@@ -945,9 +942,9 @@
 		<</if>>
 	<</if>>
 <</if>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
-<!-- Too small and too big outputs are intended as error messages 
+<!-- Too small and too big outputs are intended as error messages
 	so that it's more obvious what's wrong when people report bugs -->
 <<widget "penissize">><<silently>>
 <<if $penissize lt -2>>
@@ -977,7 +974,7 @@
 <<else>>
 	<<set _text_output to "clit">>
 <</if>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
 <<widget "penis">><<silently>>
 <<penissize>>
@@ -1002,13 +999,13 @@
 	<<if $orgasmdown gte 1>>
 	<<set _text_output to _penissize_text + "twitching penis">>
 	<<else>>
-		<<if $arousal gte 8000>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 		<<set _text_output to _penissize_text + "tingling penis">>
-		<<elseif $arousal gte 6000>>
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
 		<<set _text_output to _penissize_text + "penis">>
-		<<elseif $arousal gte 4000>>
+		<<elseif $arousal gte ($arousalmax / 5) * 2>>
 		<<set _text_output to _penissize_text + "penis">>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 		<<set _text_output to _penissize_text + "penis">>
 		<<else>>
 		<<set _text_output to _penissize_text + "penis">>
@@ -1016,7 +1013,7 @@
 	<</if>>
 <</if>>
 
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
 <<widget "reveal">>
 <<if $args[0]>>
@@ -1330,11 +1327,28 @@
 <<print _text_output>>
 <</widget>>
 
+<<widget "genitalsensitivity">><<silently>>
+<<if $genitalsensitivity > 5>>
+	<<set _text_output2 to "예민한 ">>
+<<elseif $genitalsensitivity >= 3>>
+	<<set _text_output2 to "민감한 ">>
+<<elseif $genitalsensitivity >= 1.5>>
+	<<set _text_output2 to "섬세한 ">>
+<</if>>
+<</silently>><<print _text_output2>><</widget>>
+
 <<widget "genitals">><<silently>>
 <<if $worn.genitals.type.includes("chastity") and $args[0] is undefined and _chastityBreak isnot 1>>
 	<<set _text_output to $worn.genitals.name>>
 <<else>>
 	<<set _text_output to "">>
+	<<if $genitalsensitivity > 5>>
+		<<set _text_output += "예민한 ">>
+	<<elseif $genitalsensitivity >= 3>>
+		<<set _text_output += "민감한 ">>
+	<<elseif $genitalsensitivity >= 1.5>>
+		<<set _text_output += "섬세한 ">>
+	<</if>>
 	<<if $penisexist is 1>>
 		<<if $player.virginity.penile is true and $args[0] isnot 2>>
 			<<set _text_output += "virgin ">>
@@ -1876,8 +1890,24 @@
 <span class="green">+ 신뢰</span>
 <</widget>>
 
+<<widget "ggtrust">> |
+<span class="green">+ + 신뢰</span>
+<</widget>>
+
+<<widget "gggtrust">> |
+<span class="green">+ + + 신뢰</span>
+<</widget>>
+
 <<widget "ltrust">> |
 <span class="red">- 신뢰</span>
+<</widget>>
+
+<<widget "lltrust">> |
+<span class="red">- - 신뢰</span>
+<</widget>>
+
+<<widget "llltrust">> |
+<span class="red">- - - 신뢰</span>
 <</widget>>
 
 <<widget "glove">> |
@@ -2312,6 +2342,10 @@
 <span class="red">- - - 농장 생산량</span>
 <</widget>>
 
+<<widget "gnet">> |
+<span class="green">+ 채집망 숙련도</span>
+<</widget>>
+
 <<widget "gsecurity">> |
 <span class="red">+ 보안</span>
 <</widget>>
@@ -2337,27 +2371,27 @@
 <</widget>>
 
 <<widget "gdaring">> |
-<span class="green">+ Daring</span>
+<span class="green">+ 대담성</span>
 <</widget>>
 
 <<widget "ggdaring">> |
-<span class="green">+ + Daring</span>
+<span class="green">+ + 대담성</span>
 <</widget>>
 
 <<widget "gggdaring">> |
-<span class="green">+ + + Daring</span>
+<span class="green">+ + + 대담성</span>
 <</widget>>
 
 <<widget "ldaring">> |
-<span class="red">- Daring</span>
+<span class="red">- 대담성</span>
 <</widget>>
 
 <<widget "lldaring">> |
-<span class="red">- - Daring</span>
+<span class="red">- - 대담성</span>
 <</widget>>
 
 <<widget "llldaring">> |
-<span class="red">- - - Daring</span>
+<span class="red">- - - 대담성</span>
 <</widget>>
 
 <<widget "gknowledge">> |
@@ -2620,6 +2654,18 @@
 
 <<widget "gggwillpower">> |
 <span class="green">+ + + 의지력</span>
+<</widget>>
+
+<<widget "gphysique">>|
+<span class="green">+ 체격</span>
+<</widget>>
+
+<<widget "ggphysique">> |
+<span class="green">+ + 체격</span>
+<</widget>>
+
+<<widget "gggphysique">> |
+<span class="green">+ + + 체격</span>
 <</widget>>
 
 <<widget "exhibitionist1">> |
@@ -3070,7 +3116,7 @@
 <span class="lewd">Your clothing snags on a $stripobject, tearing it from your body and leaving you totally bare!</span>
 
 <<elseif !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0 and !$worn.lower.type.includes("naked") and $worn.lower.integrity lte 0>>
-<span class="lewd">Your <<outfit>> <<if $stripset is 1>>snags on a $stripobject, and is torn clean off your body.<<else>>snag on a $stripobject, and are torn from you body.<</if>></span>
+<span class="lewd">Your <<outfit>> <<if $stripset is 1>>snags on a $stripobject, and is torn clean off your body.<<else>>snag on a $stripobject, and are torn from your body.<</if>></span>
 
 <<elseif !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0 and !$worn.under_lower.type.includes("naked") and $worn.under_lower.integrity lte 0>>
 <span class="lewd">Your $worn.upper.name and $worn.under_lower.name snag on a $stripobject and are torn from your body.</span>
@@ -4120,8 +4166,8 @@ You can't help but be conscious of your <<nudity>>.
 <<if $trauma gte $traumamax>>
 	눈이 게슴츠레하고 공허해진 채로,
 <<elseif $trauma gte ($traumamax / 5) * 4>>
-	<<if $stress gte 8000>>
-		<<if $arousal gte 8000>>
+	<<if $stress gte ($stressmax / 5) * 4>>
+		<<if $arousal gte ($arousalmax /5) * 4>>
 			<<if $pain gte 100>>
 				어둠의 덩굴손이 피부를 후려치고 비틀며,
 			<<elseif $pain gte 40>>
@@ -4129,7 +4175,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				기이한 안개가 주변을 뒤덮고 가장 민감한 부위에 파고들며,
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				어두운 덩어리가 당신을 따라다니며, 엉덩이를 쿡쿡 찌르고 때린다.
 			<<elseif $pain gte 40>>
@@ -4146,8 +4192,8 @@ You can't help but be conscious of your <<nudity>>.
 				어둠 속에서 지켜보고 있는 눈을 보았다 생각하며
 			<</if>>
 		<</if>>
-	<<elseif $stress gte 2000>>
-		<<if $arousal gte 8000>>
+	<<elseif $stress gte $stressmax / 5>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				고문당한 몸과 정신이 더 많은 처벌을 갈구하는 와중에
 			<<elseif $pain gte 40>>
@@ -4155,7 +4201,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				고문당한 정신이 더 많은 처벌을 갈구하는 와중에
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				자신을 해치려 드는 것이 없다는 것에 놀라며,
 			<<elseif $pain gte 40>>
@@ -4173,7 +4219,7 @@ You can't help but be conscious of your <<nudity>>.
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $arousal gte 8000>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				성적으로 고문당하는 것에 대한 생각이 머릿속을 비집고 들어오는 와중에
 			<<elseif $pain gte 40>>
@@ -4181,7 +4227,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				성노예가 되는 것에 대한 생각이 머릿속을 비집고 들어오는 와중에
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				난폭하게 강간당하는 것에 대한 생각이 머릿속을 비집고 들어오는 와중에
 			<<elseif $pain gte 40>>
@@ -4200,8 +4246,8 @@ You can't help but be conscious of your <<nudity>>.
 		<</if>>
 	<</if>>
 <<elseif $trauma gte ($traumamax / 5) * 2>>
-	<<if $stress gte 8000>>
-		<<if $arousal gte 8000>>
+	<<if $stress gte ($stressmax / 5) * 4>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				부분적으로는 지금 느끼고 있는 고통을 만끽하며
 			<<elseif $pain gte 40>>
@@ -4209,7 +4255,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				정신이 이상해져가는 것은 아닌가 걱정하며,
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				무언가 공격해오지는 않을까 두려워하며,
 			<<elseif $pain gte 40>>
@@ -4226,8 +4272,8 @@ You can't help but be conscious of your <<nudity>>.
 				뭔가 움직이기라도 하면 움찔거리며
 			<</if>>
 		<</if>>
-	<<elseif $stress gte 2000>>
-		<<if $arousal gte 8000>>
+	<<elseif $stress gte $stressmax / 5>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				다치고 수치심을 느끼며,
 			<<elseif $pain gte 40>>
@@ -4235,7 +4281,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				수치스러운 생각들이 머릿속을 비집고 들어오며
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				공격해오는 이가 없길 바라며
 			<<elseif $pain gte 40>>
@@ -4253,7 +4299,7 @@ You can't help but be conscious of your <<nudity>>.
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $arousal gte 8000>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				수치스러움과 고통을 느끼며,
 			<<elseif $pain gte 40>>
@@ -4261,7 +4307,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				수치심이 몸을 타고 오르는 것을 느끼며,
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				몸이 아프지만 수치스러운 시큰거림도 함께 느끼며
 			<<elseif $pain gte 40>>
@@ -4280,8 +4326,8 @@ You can't help but be conscious of your <<nudity>>.
 		<</if>>
 	<</if>>
 <<else>>
-	<<if $stress gte 8000>>
-		<<if $arousal gte 8000>>
+	<<if $stress gte ($stressmax / 5) * 4>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				정신적으로 피폐해진 상태로
 			<<elseif $pain gte 40>>
@@ -4289,7 +4335,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				몸이 따라주지 않을 것을 두려워하며,
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				다치고 두려움을 느끼며,
 			<<elseif $pain gte 40>>
@@ -4306,8 +4352,8 @@ You can't help but be conscious of your <<nudity>>.
 				어쩔 줄을 모르며,
 			<</if>>
 		<</if>>
-	<<elseif $stress gte 2000>>
-		<<if $arousal gte 8000>>
+	<<elseif $stress gte $stressmax / 5>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				고통 아래에서 원초적인 갈망을 느끼며
 			<<elseif $pain gte 40>>
@@ -4315,7 +4361,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				몸이 흥분했다는 신호를 보내오는 것에 당황스러워하며,
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				다치고 몸이 덜덜 떨리며,
 			<<elseif $pain gte 40>>
@@ -4333,7 +4379,7 @@ You can't help but be conscious of your <<nudity>>.
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $arousal gte 8000>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<if $pain gte 100>>
 				고문당한 몸이 흥분에 떨리며
 			<<elseif $pain gte 40>>
@@ -4341,7 +4387,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<else>>
 				몸이 흥분에 떨리며
 			<</if>>
-		<<elseif $arousal gte 2000>>
+		<<elseif $arousal gte $arousalmax / 5>>
 			<<if $pain gte 100>>
 				몸이 다치고 따끔따끔거리며
 			<<elseif $pain gte 40>>
@@ -5122,7 +5168,7 @@ You can't help but be conscious of your <<nudity>>.
 		<</if>>
 	<<case "moan">>
 		<<if $rng lte 25>>
-			<<if $arousal lte 6000>>
+			<<if $arousal lte ($arousalmax / 5) * 3>>
 				<<set _text_output to "신음한다">>
 			<<else>>
 				<<set _text_output to "헐떡이며 신음한다">>
@@ -5130,7 +5176,7 @@ You can't help but be conscious of your <<nudity>>.
 		<<elseif $rng lte 50>>
 			<<set _text_output to "웅얼거린다">>
 		<<elseif $rng lte 75>>
-			<<if $arousal lte 6000>>
+			<<if $arousal lte ($arousalmax / 5) * 3>>
 				<<set _text_output to "키득거린다">>
 			<<else>>
 				<<set _text_output to "헐떡이며 키득거린다">>
@@ -5147,7 +5193,7 @@ You can't help but be conscious of your <<nudity>>.
 			<<set _text_output to "신음한다">>
 		<</if>>
 	<<case "demand">>
-		<<if $arousal lte 6000>>
+		<<if $arousal lte ($arousalmax / 5) * 3>>
 			<<if $rng lte 33>>
 				<<set _text_output to "말한다">>
 			<<elseif $rng lte 66>>
@@ -5753,3 +5799,38 @@ and
 <<print _text_output>>
 <</widget>>
 
+<<widget "gbeauty">> |
+<span class="green">+ 용모</span>
+<</widget>>
+
+<<widget "ggbeauty">> |
+<span class="green">+ + 용모</span>
+<</widget>>
+
+<<widget "gggbeauty">> |
+<span class="green">+ + + 용모</span>
+<</widget>>
+
+<<widget "gseduction">> |
+<span class="green">+ 유혹</span>
+<</widget>>
+
+<<widget "ggseduction">> |
+<span class="green">+ + 유혹</span>
+<</widget>>
+
+<<widget "gggseduction">> |
+<span class="green">+ + + 유혹</span>
+<</widget>>
+
+<<widget "gskulduggery">> |
+<span class="green">+ 속임수</span>
+<</widget>>
+
+<<widget "ggskulduggery">> |
+<span class="green">+ + 속임수</span>
+<</widget>>
+
+<<widget "gggskulduggery">> |
+<span class="green">+ + + 속임수</span>
+<</widget>>

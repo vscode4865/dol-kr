@@ -91,6 +91,7 @@
 			skulduggery:0,
 			dancing:0,
 			swimming:0,
+			tending:0,
 			seduction:0,
 			purity:0,
 			impurity:0,
@@ -107,6 +108,7 @@
 			skulduggery:{cost:5, limit: 20, minCount: 1, count:_keys.count("Thief"), exclusive:""},
 			dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
 			swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
+			tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
 			seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
 			purity:{cost:20, limit: 100, minCount: 2, count:_purityFeats, exclusive:"impurity"},
 			impurity:{cost:20, limit: 100, minCount: 1, count:_keys.count("Demon"), exclusive:"purity"},
@@ -123,6 +125,7 @@
 			skulduggery:"'도둑' 달성 못함",
 			dancing:"'한 곡 추시겠어요?' 달성 못함",
 			swimming:"'잠수부' 달성 못함",
+			tending:"'초록 손가락' 달성 못함",
 			seduction:"'요부' 달성 못함",
 			purity:"'천사처럼 걷기'나 '추락하고, 추락하고, 추락하고...' 달성 못함",
 			impurity:"'악마같은 모습' 달성 못함",
@@ -139,6 +142,7 @@
 			skulduggery:"Skulduggery grade",
 			dancing:"Dancing grade",
 			swimming:"Swimming grade",
+			tending:"Tending grade",
 			seduction:"Seduction grade",
 			purity:"Daily purity",
 			impurity:"Daily impurity",
@@ -174,8 +178,7 @@
 	<<set $'+ $args[0] + ' to 200>>
 <<else>>
 	<<set $'+ $args[0] + ' to 100>>
-<</if>>
-'>>
+<</' + 'if>>'>>
 <</widget>>
 
 <<widget "applyFeatsBoost">>
@@ -203,6 +206,9 @@
 <</if>>
 <<if _upgrades.dancing gt 0>>
 	<<set $danceskill to _upgrades.dancing / _details.dancing.cost * 100>>
+<</if>>
+<<if _upgrades.tending gt 0>>
+	<<set $tending += _upgrades.tending / _details.tending.cost * 100>>
 <</if>>
 <<if _upgrades.swimming gt 0>>
 	<<set $swimmingskill to _upgrades.swimming / _details.swimming.cost * 100>>
@@ -396,7 +402,7 @@
 <</widget>>
 
 <<widget "earnAllFeats">>
-<<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
+<<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
 	<<featsData>>
 	<<if $args[0] is true>>
 		/*Rarely occuring feats*/
@@ -521,6 +527,15 @@
 			<<if $farm.beasts.horses gte 20 and $farm.beasts.cattle gte 20 and $farm.beasts.dogs gte 20 and $farm.beasts.pigs gte 20>>
 				<<earnFeat "Animal Tender">>
 			<</if>>
+		<</if>>
+		<<if $masochism_level gte 4 and $sadism_level gte 4>>
+			<<earnFeat "Sadomasochist">>
+		<</if>>
+		<<if $masochism_level gte 4>>
+			<<earnFeat "Twisted Desire">>
+		<</if>>
+		<<if $sadism_level gte 4>>
+			<<earnFeat "Served Hot">>
 		<</if>>
 		<<specialClothesUpdate>>
 	<</if>>
@@ -696,6 +711,34 @@
 			series: "alex",
 			filter: ["All", "General"],
 		},
+		"Cultivator":{
+			title: "경작자",
+			desc: "알렉스의 농장에서 모든 경작지를 경작한다.",
+			difficulty: 3,
+			series: "alex",
+			filter: ["All", "General"],
+		},
+		"The Rival Farm":{
+			title: "라이벌 농장",
+			desc: "농장을 확장한다.",
+			difficulty: 2,
+			series: "farm",
+			filter: ["All", "General"],
+		},
+		"The Rival Estate":{
+			title: "라이벌 대농장",
+			desc: "농장을 완전히 확장한다.",
+			difficulty: 3,
+			series: "farm",
+			filter: ["All", "General"],
+		},
+		"Heroic Victory":{
+			title: "영웅적인 승리",
+			desc: "레미에게서 아홉 경작지를 지키고, 하나도 잃지 않는다.",
+			difficulty: 3,
+			series: "",
+			filter: ["All", "General"],
+		},
 		"Five in a Row":{
 			title: "5연승",
 			desc: "블랙잭을 5번 연속으로 이긴다.",
@@ -858,6 +901,27 @@
 			desc: "시장을 지배하라.",
 			difficulty: 2,
 			series: "market",
+			filter: ["All", "Stats"],
+		},
+		"Twisted Desire":{
+			title: "뒤틀린 욕구",
+			desc: "고통은 선택이다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Stats"],
+		},
+		"Served Hot":{
+			title: "뜨겁게 제공합니다",
+			desc: "그들을 아프게 할 것이다. 그리고 당신은 그것을 좋아한다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Stats"],
+		},
+		"Sadomasochist":{
+			title: "새도마조히스트",
+			desc: "당신은 고통을 원한다. 주는 것도, 받는 것도.",
+			difficulty: 3,
+			series: "",
 			filter: ["All", "Stats"],
 		},
 		"Social Butterfly":{
@@ -1517,30 +1581,66 @@
 			softLockable: true,
 		},
 		"Trading Dignity":{
-			title: "Trading Dignity",
-			desc: "Orally satisfied a pack of Remy's goons.",
+			title: "존엄성 거래",
+			desc: "레미의 하수인들을 입으로 만족시켰다.",
 			difficulty: 1,
 			series: "",
 			filter: ["All", "Discoveries"],
-			hint: "Hint: Make a one-sided trade.",
+			hint: "Hint: 일방적인 거래를 한다.",
 			softLockable: true,
 		},
 		"Playing with Fire":{
-			title: "Playing with Fire",
-			desc: "Made Wren cum before you.",
+			title: "불장난",
+			desc: "렌을 당신 앞에서 절정시켰다.",
 			difficulty: 2,
 			series: "",
 			filter: ["All", "Discoveries"],
-			hint: "Hint: Endure a gambler's demands.",
+			hint: "Hint: 도박사의 요구를 견딘다.",
 			softLockable: true,
 		},
 		"Firestarter":{
-			title: "Firestarter",
-			desc: "Convinced Wren to start a fire.",
+			title: "방화범",
+			desc: "렌이 불을 붙이도록 설득하였다.",
 			difficulty: 1,
 			series: "",
 			filter: ["All", "Discoveries"],
-			hint: "Hint: Win a destructive prize.",
+			hint: "Hint: 파괴적인 경품을 딴다.",
+			softLockable: true,
+		},
+		"Dealing":{
+			title: "거래",
+			desc: "부도덕한 회사에 농작물을 팔았다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 알렉스의 이상한 농작물을 판다.",
+			softLockable: true,
+		},
+		"To Watch the Fields":{
+			title: "농작지 감시하기",
+			desc: "농장에 경비원을 고용하였다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 도울 사람을 고용한다.",
+			softLockable: true,
+		},
+		"Reliable Employer":{
+			title: "믿을만한 고용주",
+			desc: "S-랭크 경비원을 고용한다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 경비원 한 사람의 잠재력을 끌어내도록 돕는다.",
+			softLockable: true,
+		},
+		"Into the Sunset":{
+			title: "노을 속으로",
+			desc: "말 탄 레미의 하수인들에게서 도망쳤다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 말 탄 추적자들에게서 도망친다.",
 			softLockable: true,
 		},
 		"Max Those Shots":{

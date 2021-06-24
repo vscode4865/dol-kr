@@ -537,6 +537,8 @@ window.settingsObjects = function (type) {
 				voredisable: { boolLetter: true, bool: true },
 				tentacledisable: { boolLetter: true, bool: true },
 				analdisable: { boolLetter: true, bool: true },
+				analingusdisablegiving: { boolLetter: true, bool: true },
+				analingusdisablereceiving: { boolLetter: true, bool: true },
 				transformdisable: { boolLetter: true, bool: true },
 				hirsutedisable: { boolLetter: true, bool: true },
 				breastfeedingdisable: { boolLetter: true, bool: true },
@@ -547,6 +549,9 @@ window.settingsObjects = function (type) {
 				parasitedisable: { boolLetter: true, bool: true},
 				slugdisable: { boolLetter: true, bool: true},
 				waspdisable: {boolLetter: true, bool: true},
+				beedisable: { boolLetter: true, bool: true},
+				lurkerdisable: {boolLetter: true, bool: true},
+				horsedisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 3, decimals: 0 },
 				breastsizemax: { min: 0, max: 13, decimals: 0 },
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
@@ -625,23 +630,27 @@ window.settingsConvert = function(exportType, type, settings){
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
 				var keyArray = Object.keys(listObject[keys[i]][itemKey[j]]);
 				if(exportType){
-					if (result[keys[i]][itemKey[j]] === "t") {
-						result[keys[i]][itemKey[j]] = true;
-					}else if(result[keys[i]][itemKey[j]] === "f"){
-						result[keys[i]][itemKey[j]] = false;
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === "t") {
+							result[keys[i]][itemKey[j]] = true;
+						}else if(result[keys[i]][itemKey[j]] === "f"){
+							result[keys[i]][itemKey[j]] = false;
+						}
 					}
 				}else{
-					if (result[keys[i]][itemKey[j]] === true) {
-						result[keys[i]][itemKey[j]] = "t";
-					}else if(result[keys[i]][itemKey[j]] === false){
-						result[keys[i]][itemKey[j]] = "f";
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === true) {
+							result[keys[i]][itemKey[j]] = "t";
+						}else if(result[keys[i]][itemKey[j]] === false){
+							result[keys[i]][itemKey[j]] = "f";
+						}
 					}
 				}
 			}
 		}else{
 			var keyArray = Object.keys(listObject[keys[i]]);
 			if(exportType){
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === "t") {
 						result[keys[i]] = true;
 					}else if(result[keys[i]] === "f"){
@@ -649,7 +658,7 @@ window.settingsConvert = function(exportType, type, settings){
 					}
 				}
 			}else{
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === true) {
 						result[keys[i]] = "t";
 					}else if(result[keys[i]] === false){
@@ -692,7 +701,7 @@ window.updateMoment = function () {
 	// it appears that this line is not necessary for it to work
 	//SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
 
-	// VoilĂ ! F5 will reload the current state now without going to another passage!
+	// Voilà! F5 will reload the current state now without going to another passage!
 }
 
 window.isJsonString = function(s) {

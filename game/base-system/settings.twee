@@ -30,6 +30,9 @@
 <<set $spiderdisable to "f">>
 <<set $slugdisable to "f">>
 <<set $waspdisable to "f">>
+<<set $beedisable to "f">>
+<<set $lurkerdisable to "f">>
+<<set $horsedisable to "f">>
 <<set $bodywritingdisable to "f">>
 <<set $parasitedisable to "f">>
 <<set $bestialitydisable to "f">>
@@ -37,6 +40,8 @@
 <<set $voredisable to "f">>
 <<set $tentacledisable to "f">>
 <<set $analdisable to "f">>
+<<set $analingusdisablegiving to "f">>
+<<set $analingusdisablereceiving to "f">>
 <<set $transformdisable to "f">>
 /*<<set $hirsutedisable to "t">>*/
 <<set $breastfeedingdisable to "f">>
@@ -74,6 +79,8 @@
 <<set $clothesPriceSchool to 1>>
 <<set $clothesPriceLewd to 1>>
 <<set $rentmod to 1>>
+
+<<set $notifyUpdate = true>>
 
 <<startingPlayerImageReset>>
 <<init_customSetting>><</widget>>
@@ -726,7 +733,16 @@
 			<<print '<<checkbox "$slugdisable" "t" "f" ' + ($slugdisable is "f" ? "checked" : "") + '>>'>> 민달팽이 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$waspdisable" "t" "f" ' + ($waspdisable is "f" ? "checked" : "") + '>>'>> 벌 활성화
+			<<print '<<checkbox "$waspdisable" "t" "f" ' + ($waspdisable is "f" ? "checked" : "") + '>>'>> 말벌 활성화
+			</div></label>
+			<label><div class="settingsToggle">
+			<<print '<<checkbox "$beedisable" "t" "f" ' + ($beedisable is "f" ? "checked" : "") + '>>'>> 벌 활성화
+			</div></label>
+			<label><div class="settingsToggle">
+			<<print '<<checkbox "$lurkerdisable" "t" "f" ' + ($lurkerdisable is "f" ? "checked" : "") + '>>'>> 럴커 활성화
+			</div></label>
+			<label><div class="settingsToggle">
+			<<print '<<checkbox "$horsedisable" "t" "f" ' + ($horsedisable is "f" ? "checked" : "") + '>>'>> 말과 켄타우르스 활성화
 			</div></label>
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
@@ -800,6 +816,15 @@
 	<label><div class="settingsToggle">
 	<<print '<<checkbox "$analdisable" "t" "f" ' + ($analdisable is "f" ? "checked" : "") + '>>'>> 애널 활성화
 	</div></label>
+	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
+	<span id="settingsAnalingusHead">항문 핥기:</span>
+	<label>
+		<<print '<<checkbox "$analingusdisablegiving" "t" "f" ' + ($analingusdisablegiving is "f" ? "checked" : "") + '>>'>> 해 주는 것
+	</label>
+	<label>
+		<<print '<<checkbox "$analingusdisablereceiving" "t" "f" ' + ($analingusdisablereceiving is "f" ? "checked" : "") + '>>'>> 당하는 것
+	</label>
+	</div>
 	<label><div class="settingsToggle">
 	<<print '<<checkbox "$pbdisable" "t" "f" ' + ($pbdisable is "f" ? "checked" : "") + '>>'>> 음모 성장 활성화
 	</div></label>
@@ -863,7 +888,6 @@
 
 <<widget "generalSettings">>
 	<span class="gold">이미지</span>
-	<br>
 	<<if StartConfig.enableImages is true>>
 		<label><div class="settingsToggleBig">
 		<<print '<<checkbox "$images" 0 1 ' + ($images is 1 ? "checked" : "") + '>>'>> 이미지 활성화
@@ -954,19 +978,18 @@
 			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>><!--</script>-->
 			</div></label>
 		<</if>>
-		<br>
 	<<else>>
+		<br>
 		설정 불가능
 	<</if>>
-	<div id="spacer" class="">&nbsp;</div>
 	<span class="gold">숫자 링크 탐색</span>
-	<br>
 	<<if StartConfig.enableLinkNumberify is true>>
 		<label><div class="settingsToggleBig">
 		<<print '<<checkbox "$numberify_enabled" 0 1 ' + ($numberify_enabled is 1 ? "checked" : "") + '>>'>> 숫지 링크 탐색 활성화
 		<div class="description">키보드로 탐색할 수 있습니다.</div>
 		</div></label>
 	<<else>>
+		<br>
 		설정 불가능
 	<</if>>
 	<br><br>
@@ -985,7 +1008,6 @@
 	<br><br>
 
 	<span class="gold">인게임 힌트와 팁</span>
-	<br>
 	<label><div class="settingsToggleBig">
 	<<print '<<checkbox "$tipdisable" "t" "f" ' + ($tipdisable is "f" ? "checked" : "") + '>>'>> 힌트와 팁 활성화
 	<div class="description">사이드바에 보여줍니다.</div>
@@ -1006,7 +1028,7 @@
 	<<textbox "$saveName" $saveName>>
 	<div class="description">세이브 메뉴에서 세이브 id 자리에 표시됩니다.</div>
 	<div class="description"><span class="red">현재 세이브 메뉴 상에서는 최대 10글자까지만 표시가 되고, 세이브 ID를 표시하려면 공란으로 남겨두세요</span></div>
-	<br><br>
+	<br>
 	<span class="gold">게임 줌</span> - 게임 요소와 텍스트를 조정할 수 있게 됩니다. 기본값은 100입니다.
 	50으로 설정하면 기존의 절반 크기가 되고, 200으로 설정하면 두 배로 커지게 됩니다.
 	테스트 버튼을 눌러도 현재 세이브에 줌 설정치가 저장되진 않습니다.
@@ -1023,18 +1045,37 @@
 	<input type="button" value="줌 설정" onclick="zoom(undefined, true)"/>
 	<br><br>
 	<span class="gold">치트 메뉴</span>
-	<br>
 	<label><div class="settingsToggleBig">
 	<<print '<<checkbox "$cheatdisable" "t" "f" ' + ($cheatdisable is "f" ? "checked" : "") + '>>'>> 치트 활성화
 	<div class="description">버튼은 사이드바에 표시됩니다. <span class="red">설정에서 치트를 활성화하는 경우 세이브에서 도전과제를 달성할 수 없게 됩니다.</span></div>
 	</div></label>
 	<br><br>
+	<span class="gold">갤러리</span> - 세이브 파일에는 어떤 식으로도 영향을 주지 않습니다.
+	<br>
 	<<if version.major gt 2 or version.minor gt 29>>
 		<<link [["캐릭터 뷰어"|Clothes Testing]]>>
 			<<set $lastPassage to $passage>>
 			<<set $gameTanImgSetting to clone($skinColor.tanImgEnabled)>>
+			<<if $cheatdisable is "f" and $feats.locked is false>>
+				<<set $cheatdisable to "t">>
+			<</if>>
 		<</link>>
-		- 캐릭터 스프라이트를 갖고 놀 수 있으며, 세이브 파일에는 어떤 식으로도 영향을 주지 않습니다.
+		- 캐릭터 스프라이트를 갖고 놀 수 있습니다.
+		<br>
+	<</if>>
+	<<if $passage isnot "Start" and $passage isnot "certification_event_start">>
+		<<link [["씬 뷰어"|Scene Viewer]]>>
+			<<set $lastPassage to $passage>>
+			<<seenPassageChecks>>
+			<<if $cheatdisable is "f" and $feats.locked is false>>
+				<<set $cheatdisable to "t">>
+			<</if>>
+		<</link>>
+		- 해제한 씬을 다시 볼 수 있습니다.
+		<br>
+	<<else>>
+		씬 뷰어는 시작 페이지에서는 사용할 수 없습니다.
+		<br>
 	<</if>>
 
 <</widget>>

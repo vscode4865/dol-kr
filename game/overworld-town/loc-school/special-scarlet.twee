@@ -78,7 +78,7 @@ Feb 2019
 <br><br>
 막이 넘어갈 때마다, 내용은 점차 어두워지고 무서워진다. 읽을 때마다 하얀 드레스를 입은 순진하고 순수한 소녀의 시선과 욕정으로 가득찬 남자의 시선이 번갈아가며 나온다. 당신은 질투심, 성욕과 분노가 뒤섞인 감정을 느낀다. 꽤 좋은 느낌이다.
 <br><br>
-<<if $english gte 600 and $arousal gte 4000>>
+<<if $english gte 600 and $arousal gte ($arousalmax / 5) * 2>>
 	이젠 단순히 책을 읽고만 있는 것이 아니다. 각 장면과 감정들이 너무 완벽하게 묘사되어 있어, 마치 그곳에 있는 것 같은 느낌이 든다. 마치, 당신이 등장인물 중 한 명이 된 것처럼 말이다.
 	<br><br>
 <<else>>
@@ -105,7 +105,7 @@ Feb 2019
 	<<link [[자위한다|Library Masturbation]]>><<set $masturbationstart to 1>><</link>><<exhibitionist2>>
 	<br>
 <</if>>
-<<if $english gte 600 and $arousal gte 4000>>
+<<if $english gte 600 and $arousal gte ($arousalmax / 5) * 2>>
 	<<link [[재닛이 되는 상상을 한다|ScarletBook5]]>><<pass 30>><<arousal 600>><</link>><<garousal>>
 	<br>
 <</if>>
@@ -509,6 +509,7 @@ Feb 2019
 :: Scarlet Widgets [widget]
 <<widget "calljanet">>
 /*store players stats*/
+<<set $statFreeze to true>>
 <<set $real_playersex to $player.sex>>
 <<set $real_playergender to $player.gender>>
 <<set $real_penisexist to $penisexist>>
@@ -548,9 +549,14 @@ Feb 2019
 <<set $real_skulduggery to $skulduggery>>
 <<set $real_purity to $purity>>
 <<set $real_spray to $spray>>
+<<set $real_skin to clone($skin)>>
 /*store player clothing*/
 
 <<undress "janet">>
+<<if $worn.genitals.name isnot "naked">>
+	<<set $real_wornGenitals to clone($worn.genitals)>>
+	<<set $worn.genitals to clone(setup.clothes.genitals[0])>>
+<</if>>
 /*store time*/
 <<set $real_time to $time>>
 /*morph player into Janet*/
@@ -564,6 +570,7 @@ Feb 2019
 <<set $haircolour to "platinumblond">>
 <<set $hairlength to 400>>
 <<set $breastsize to 5>>
+<<bodywriting_init>>
 
 <<set $pain to 0>>
 <<set $arousal to 0>>
@@ -590,10 +597,11 @@ Feb 2019
 <<legswear 5>>
 <<upperwear 7>>
 <<underlowerwear 3>>
-
+<<freezePlayerStats>>
 <</widget>>
 
 <<widget "sleepjanet">>
+<<unfreezePlayerStats>>
 /*restore clothes integrity and undress*/
 <<set _rebuy to $clothingrebuy>>
 <<set $clothingrebuy to 0>>
@@ -603,18 +611,20 @@ Feb 2019
 
 /*restore real clothes*/
 <<storeon "janet">>
+<<if $real_wornGenitals isnot undefined>>
+	<<set $worn.genitals to clone($real_wornGenitals)>>
+	<<unset $real_wornGenitals>>
+<</if>>
 /*restore players stats*/
 <<set $player.sex to $real_playersex>>
 <<set $player.gender to $real_playergender>>
 <<set $penisexist to $real_penisexist>>
 <<set $vaginaexist to $real_vaginaexist>>
 <<if $vaginaexist is 0>>
-	<<set $vaginalejacstat to 0>>
-	<<set $vaginalentranceejacstat to 0>>
 	<<set $vaginaoutsidesemen to 0>>
 	<<set $vaginaoutsidegoo to 0>>
-	<<set $vaginalstat to 0>>
 <</if>>
+<<unset $statFreeze>>
 <<set $eyecolour to $real_eyecolour>>
 <<set $haircolour to $real_haircolour>>
 <<set $hairlength to $real_hairlength>>
@@ -650,6 +660,7 @@ Feb 2019
 <<set $skulduggery to $real_skulduggery>>
 <<set $purity to $real_purity>>
 <<set $spray to $real_spray>>
+<<set $skin to clone($real_skin)>>
 /*restore location and time*/
 <<set $location to "school">>
 <<set $time to $real_time>>
