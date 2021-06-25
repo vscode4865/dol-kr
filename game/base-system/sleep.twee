@@ -1,10 +1,10 @@
 :: Widgets Sleep [widget]
 
-<<widget "sleep">><<nobr>>
+<<widget "sleep">>
 	<<sleephour>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "sleephour">><<nobr>>
+<<widget "sleephour">>
 	<<set $sleepHoursTotal to 0>>
 	<<for $sleephour gte 1>><<set $sleephour -= 1>><<set $sleepStat++>>
 		<<effectstime>>
@@ -30,6 +30,12 @@
 		<<elseif $location is "asylum" and $suspicion gte 80 and random(1, 10) gte 10>>
 			<<set $schoolwake to 1>>
 			<<set $rapewake to 1>>
+		<<elseif $location is "alex_farm" and ($hour gte 21 or $hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
+			<<set $alexwake to 1>>
+			<<set $schoolwake to 1>>
+		<<elseif $location is "alex_farm" and $farm_attack_timer is 0 and $hour gte 21>>
+			<<set $remywake to 1>>
+			<<set $schoolwake to 1>>
 		<<elseif $schoolday is 1 and $hour is 7 and $location is "home">>
 			<<set $schoolwake to 1>>
 		<<elseif $hour lte 6 and $location is "cabin" and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
@@ -45,7 +51,6 @@
 		<<elseif $location is "home" and $corruption_slime gte ($willpower / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0>>
 			<<set $slimeWake to 1>>
 			<<break>>
-		<<else>>
 		<</if>>
 		<<if $schoolwake isnot 1>>
 			<<set $sleepHoursTotal += 1>>
@@ -62,10 +67,12 @@
 			<<if $nightmares gte 1 and $controlled is 0>>
 				<<stress 6>>
 			<</if>>
+		<<else>>
+			<<break>>
 		<</if>>
 	<</for>>
-<</nobr>><</widget>>
-<<widget "sleepeffects">><<nobr>>
+<</widget>>
+<<widget "sleepeffects">>
 	<<if $sleeptransform is 1>>
 		<<if $wolfgirl is 0 and $wolfbuild gte 5>>
 			<<set $wolfgirl to 1>>
@@ -118,7 +125,7 @@
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $stress gte 10000>>
+	<<if $stress gte $stressmax>>
 		<<set $stress -= 2000>>
 		<<trauma 10>>
 		<span class="red">스트레스가 자는 동안 최고점을 찍었다가 가라앉았지만, 그 대신 정신 건강이 많이 상했다.</span>
@@ -130,9 +137,9 @@
 		일어나자마자 야한 생각이 떠오른다. <span class="gold">과학 프로젝트 주제로 "지역 남근"을 선택할 수 있다.</span> 세부 사항은 관계 페이지의 일기 항목을 확인하라.
 		<br><br>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "bedclotheson">><<nobr>>
+<<widget "bedclotheson">>
 	<<set $wardrobe_location to "wardrobe">>
 	<<if $wear_outfit is "clotheson">>
 		<<undress "wardrobe">>
@@ -143,9 +150,9 @@
 		<<wearoutfit>>
 	<</if>>
 	<<set $wear_outfit to "none">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeNoSleep">><<nobr>>
+<<widget "slimeNoSleep">>
 	<<if $corruption_slime gte 80>>
 		<<set _eventsList to ["have sex with someone or something", "only sleep naked from now on"]>>
 
@@ -171,9 +178,9 @@
 	<br>
 	<<link [[반항한다|SleepSlimeEventDefy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<set $submissive -= 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeEventResult">><<nobr>>
+<<widget "slimeEventResult">>
 	<<if $slimeEvent is "go running or swimming naked for an hour" or "go running or swimming for an hour">>
 		<<set $slimeEventLength to 2>>
 	<</if>>
@@ -189,9 +196,9 @@
 		<br><br>
 		<<link [[다음|Bedroom]]>><</link>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeEventEnd">><<nobr>>
+<<widget "slimeEventEnd">>
 <<switch $slimeEvent>>
 	<<case "go running or swimming naked for an hour">>
 		<<if $slimeEventLength is 1 and $exposed is 2>>
@@ -210,7 +217,7 @@
 	<<default>>
 		<<unset $slimeEvent>>
 <</switch>>
-<</nobr>><</widget>>
+<</widget>>
 
 :: SleepSlimeEventObey
 	당신은 슬라임의 요구를 따른다.

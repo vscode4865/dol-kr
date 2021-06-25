@@ -23,14 +23,16 @@
         <<elseif $pronoun is "i">>
             <<set _trResult to "녀석">>
         <<elseif $pronoun is "n">>
-            <<set _trResult to "one">>
+            <<set _trResult to "그자">>
         <<elseif $pronoun is "t">>
             <<set _trResult to "그들">>
         <</if>>
 
         <<if $args[1] isnot undefined>>
-            <<if $pronoun is "i" or $pronoun is "n" or $pronoun is "t">>
+            <<if $pronoun is "i">>
                 <<trPost 0 $args[1] $args[2]>>
+            <<elseif $pronoun is "t">>
+                <<trPost 2 $args[1] $args[2]>>
             <<else>>
                 <<trPost 1 $args[1] $args[2]>>
             <</if>>
@@ -60,13 +62,15 @@
         <<elseif $pronoun is "i">>
             <<set _trResult to "녀석">>
         <<elseif $pronoun is "n">>
-            <<set _trResult to "One">>
+            <<set _trResult to "그자">>
         <<elseif $pronoun is "t">>
             <<set _trResult to "그들">>
         <</if>>
         <<if $args[0] isnot undefined>>
-            <<if $pronoun is "i" or $pronoun is "n" or $pronoun is "t">>
+            <<if $pronoun is "i">>
                 <<trPost 0 $args[0] $args[1]>>
+            <<elseif $pronoun is "t">>
+                <<trPost 2 $args[0] $args[1]>>
             <<else>>
                 <<trPost 1 $args[0] $args[1]>>
             <</if>>
@@ -82,15 +86,17 @@
 	<<elseif $pronoun is "f">>
 		<<set _trResult to "그녀">>
 	<<elseif $pronoun is "i">>
-		<<set _trResult to "그것">>
+		<<set _trResult to "녀석">>
 	<<elseif $pronoun is "n">>
-		<<set _trResult to "one">>
+		<<set _trResult to "그자">>
 	<<elseif $pronoun is "t">>
 		<<set _trResult to "그들">>
 	<</if>>
 	<<if $args[0] isnot undefined>>
-		<<if $pronoun is "i" or $pronoun is "n" or $pronoun is "t">>
+		<<if $pronoun is "i">>
 			<<trPost 0 $args[0] $args[1]>>
+		<<elseif $pronoun is "t">>
+			<<trPost 2 $args[0] $args[1]>>
 		<<else>>
 			<<trPost 1 $args[0] $args[1]>>
 		<</if>>
@@ -191,21 +197,27 @@
 
 <<widget "hisselectPost">><<nobr>>
 <!-- Note calls range from 0-5 corresponding to NPCs 1-6. This was done to simplify FOR loops -->
-<<set _n to $args[0]>>
+<<set _args to []>>
+<<if isNaN($args[0]) and $args[2] is undefined>>
+	<<set _args[0] to 0>><<set _args[1] to $args[0]>><<set _args[2] to $args[1]>>
+<<else>>
+	<<set _args[0] to $args[0]>><<set _args[1] to $args[1]>><<set _args[2] to $args[2]>>
+<</if>>
+<<set _n to _args[0]>>
     <<if $enemytype is "man" and $enemyno gte 2>>
         <<personselect _n>>
         <<if $npc_named isnot 0>>
-        <<trNamedNPC $npc $args[0] $args[1]>>
+        <<trNamedNPC $npc _args[1] _args[2]>>
         <<elseif $NPCList[_n].intro is 1>>
             <<set $NPCList[_n].intro to 0>>
-            <<personsPost $args[0] $args[1]>>
+            <<personsPost _args[1] _args[2]>>
         <<else>>
-            <<hisPost $args[0] $args[1]>>
+            <<hisPost _args[1] _args[2]>>
         <</if>>
     <<elseif $enemytype is "beast">>
-        <<bhisPost $args[0] $args[1]>>
+        <<bhisPost _args[1] _args[2]>>
     <<else>>
-        <<hisPost $args[0] $args[1]>>
+        <<hisPost _args[1] _args[2]>>
     <</if>>
 <</nobr>><</widget>>
 

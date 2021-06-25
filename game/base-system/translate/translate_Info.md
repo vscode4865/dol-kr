@@ -81,6 +81,28 @@
         <<trClothesType "upper">>               //  "상의"
     ```
 
+* trClothingTrait
+    ```
+    <<trClothingTrait>>
+        <<trClothingTrait *clothingTrait>>
+
+        옷의 특성을 번역합니다.
+
+        필수사항
+        - *clothingTrait: 옷의 특성
+
+        e.g.
+        <<trClothingTrait "holy">>               //  "신성함"
+    ```
+
+* trIntegrityKeyword
+    ```
+        옷의 해어진 상태를 번역합니다.
+		 
+		 이것은 window.integrityKeyword (base.js) 의 한글 대용 버전이며
+		 function integrityWord() (base.js) 에서 integrityKeyword 대신 사용됩니다.
+
+    ```
 
 
 -----------------
@@ -135,6 +157,16 @@
 
         e.g.
         <<breastsPost "을">>                //<<breasts>>을
+    ```
+
+    ```
+    <<nipplePost>>
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<nipplesPost>>
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
@@ -602,7 +634,7 @@
 	<<handtoolPost>>
 		<<handtoolPost *target *post 'sep'>>
 
-		손에 있는 도구 이름을 번역한다.
+		손에 있는 도구 이름을 번역한다. + 메이크업 이름도 번역한다.
 		+ trinit.twee의 _handtoolList에 미리 정의되어 있어야 함.
 
 		필수사항
@@ -613,7 +645,7 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<handtoolPost "marker" "을">>              // "마커펜을"
+		<<handtoolPost "marker" "을">>_trResult              // "마커펜을"
     ```
 
 	<<lefttoolPost>>
@@ -629,7 +661,7 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<lefttoolPost 0 "을">>              // $NPCList[0].lefttool을
+		<<lefttoolPost 0 "을">>_trResult              // $NPCList[0].lefttool을
     ```
 
     ```
@@ -976,8 +1008,8 @@
         조사를 번역하여 _trResult의 뒤에 붙인다.
 
         필수사항
-        - *postNum: 1이면 입력받은 조사의 형태를 변경한다.
-        - *post: 조사
+        - *postNum: 종성이 있을 경우 (단, ㄹ 제외) 0, 종성이 없을 경우 1, 종성이 ㄹ일 경우 2.
+        - *post: 종성이 있을 경우의 일반 조사 (예: "은", "을", "으로" 등)
 
         선택사항
         - sep: 조사를 _trPost에 따로 저장한다.
@@ -989,6 +1021,28 @@
         <<trPost 1 '을'>>                   //  'abc를'
         /* _trResult = "123" */
         <<trPost 1 '이' 'sep'>>             //  _trReulst:'123', _trPost: "가"
+    ```
+
+    ```
+    <<getPostNum>>
+        <<getPostNum *txt>>
+        
+        문자열에서 조사 번호를 찾아 _postNum에 넣는다
+
+        필수사항
+        - *txt: 문자열
+
+        주의점
+        - 현재 한글과 숫자만 가능
+
+        e.g.
+
+        <<getPostNum '가'>>                   //  _postNum = 1
+		<<getPostNum '가능'>>                   //  _postNum = 0
+		<<getPostNum '팔'>>                   //  _postNum = 2
+		<<getPostNum '11'>>                   //  _postNum = 2 (십일)
+		<<getPostNum 'ABC'>>                   //  _postNum = undefined
+		<<getPostNum>>                   //  _postNum = undefined
     ```
 
 * trVirginity
@@ -1053,7 +1107,7 @@
 		이랑/랑 - _irang/_rang
 		아/야 - _a/_ya
 		이여/여 - _iyo/_yo
-		이야/야 - _iya/_ya
+		이야/야 - _iya (_ya 는 아/야 에서 이미 사용하고 있어서 _iya로 통일시킴)
 		으로/로 - _uro/_ro
 		으로서/로서 - _uroseo/_roseo
 		으로써/로써 - _urosseo/_rosseo
@@ -1089,13 +1143,13 @@
 	- beasttypePost 계열
 		<<beasttype_(조사)>>, <<beastsplural_(조사)>>
 	- bodyPost 계열
-		<<breasts_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>
+		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>
 	- clothesPost 계열
 		<<undertop_(조사)>>, <<groin_(조사)>>, <<crotch_(조사)>>, <<undies_(조사)>>, <<bottoms_(조사)>>, <<underbottoms_(조사)>>, <<top_(조사)>>, 
 		<<topaside_(조사)>>, <<breastsaside_(조사)>>, <<outfit_(조사)>>, <<underoutfit_(조사)>>, <<lewdness_(조사)>>, <<nudity_(조사)>>
 	- HePost 계열
 		<<He_(조사)>>, <<he_(조사)>>, <<She_(조사)>>, <<she_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Her_(조사)>>, <<her_(조사)>>, <<Himself_(조사)>>, 
-		<<himself_(조사)>>, <<Herself_(조사)>>, <<herself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>, <<ohe_(조사)>>, 
+		<<himself_(조사)>>, <<Herself_(조사)>>, <<herself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<pShe_(조사)>>, <<phim_(조사)>>, <<pshe_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>
 		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<pher_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
@@ -1116,5 +1170,5 @@
 		<<tentacle_(조사)>>
 	- 기타
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>, <<namedNPC_name_(조사)>>, 
-		<<namedNPC_title_(조사)>>, <<NPCDesc_(조사)>>, <<parasite_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
+		<<namedNPC_title_(조사)>>, <<NPCDesc_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
 		<<vore_(조사)>>, <<weather_(조사)>>

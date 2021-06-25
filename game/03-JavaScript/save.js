@@ -32,7 +32,7 @@ window.prepareSaveDetails = function (forceRun){
 				saveDetails.slots[i] = null;
 			}
 		}
-	
+
 		localStorage.setItem("dolSaveDetails" ,JSON.stringify(saveDetails));
 	}
 	return;
@@ -309,7 +309,7 @@ var importSettingsData = function (data) {
 		if (S.general != undefined) {
 			var listObject = settingsObjects("general");
 			var listKey = Object.keys(listObject);
-			var namedObjects = ["map", "skinColor"];
+			var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 			for (var i = 0; i < listKey.length; i++) {
 				if (namedObjects.contains(listKey[i]) && S.general[listKey[i]] != undefined) {
@@ -392,6 +392,7 @@ window.exportSettings = function (data, type) {
 		general: {
 			map: {},
 			skinColor: {},
+			shopDefaults: {},
 		},
 		npc: {}
 	};
@@ -426,7 +427,7 @@ window.exportSettings = function (data, type) {
 
 	var listObject = settingsObjects("general");
 	var listKey = Object.keys(listObject);
-	var namedObjects = ["map", "skinColor"];
+	var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 	for (var i = 0; i < listKey.length; i++) {
 		if (namedObjects.contains(listKey[i]) && V[listKey[i]] != undefined) {
@@ -525,6 +526,7 @@ window.settingsObjects = function (type) {
 				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1 },
 				clothesPriceSchool: { min: 1, max: 2, decimals: 1 },
 				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1 },
+				rentmod: { min: 0.1, max: 3, decimals: 1 },
 				beastmalechance: { min: 0, max: 100, decimals: 0 },
 				monsterchance: { min: 0, max: 100, decimals: 0 },
 				monsterhallucinations: { boolLetter: true, bool: true },
@@ -535,6 +537,8 @@ window.settingsObjects = function (type) {
 				voredisable: { boolLetter: true, bool: true },
 				tentacledisable: { boolLetter: true, bool: true },
 				analdisable: { boolLetter: true, bool: true },
+				analingusdisablegiving: { boolLetter: true, bool: true },
+				analingusdisablereceiving: { boolLetter: true, bool: true },
 				transformdisable: { boolLetter: true, bool: true },
 				hirsutedisable: { boolLetter: true, bool: true },
 				breastfeedingdisable: { boolLetter: true, bool: true },
@@ -545,6 +549,9 @@ window.settingsObjects = function (type) {
 				parasitedisable: { boolLetter: true, bool: true},
 				slugdisable: { boolLetter: true, bool: true},
 				waspdisable: {boolLetter: true, bool: true},
+				beedisable: { boolLetter: true, bool: true},
+				lurkerdisable: {boolLetter: true, bool: true},
+				horsedisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 3, decimals: 0 },
 				breastsizemax: { min: 0, max: 13, decimals: 0 },
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
@@ -582,7 +589,20 @@ window.settingsObjects = function (type) {
 				skinColor: {
 					tanImgEnabled: { boolLetter: true, bool: true },
 					tanningEnabled: { bool: true },
-				}
+				},
+				shopDefaults: {
+					alwaysBackToShopButton: { bool: true },
+					color: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+					colourItems: { strings: ["disable","random","default"] },
+					compactMode: { bool: true },
+					disableReturn: { bool: true },
+					highContrast: { bool: true },
+					mannequinGender: { strings: ["same","opposite","male","female"] },
+					mannequinGenderFromClothes:  { bool: true },
+					noHelp: { bool: true },
+					noTraits: { bool: true },
+					secColor: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+				},
 			};
 			break;
 		case "npc":
@@ -604,29 +624,33 @@ window.settingsConvert = function(exportType, type, settings){
 	var keys = Object.keys(listObject);
 	for (var i = 0; i < keys.length; i++){
 		if (result[keys[i]] === undefined) continue;
-		if(["map", "skinColor", "player"].includes(keys[i])){
+		if(["map", "skinColor", "player", "shopDefaults"].includes(keys[i])){
 			var itemKey = Object.keys(listObject[keys[i]]);
 			for (var j = 0; j < itemKey.length; j++) {
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
 				var keyArray = Object.keys(listObject[keys[i]][itemKey[j]]);
 				if(exportType){
-					if (result[keys[i]][itemKey[j]] === "t") {
-						result[keys[i]][itemKey[j]] = true;
-					}else if(result[keys[i]][itemKey[j]] === "f"){
-						result[keys[i]][itemKey[j]] = false;
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === "t") {
+							result[keys[i]][itemKey[j]] = true;
+						}else if(result[keys[i]][itemKey[j]] === "f"){
+							result[keys[i]][itemKey[j]] = false;
+						}
 					}
 				}else{
-					if (result[keys[i]][itemKey[j]] === true) {
-						result[keys[i]][itemKey[j]] = "t";
-					}else if(result[keys[i]][itemKey[j]] === false){
-						result[keys[i]][itemKey[j]] = "f";
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === true) {
+							result[keys[i]][itemKey[j]] = "t";
+						}else if(result[keys[i]][itemKey[j]] === false){
+							result[keys[i]][itemKey[j]] = "f";
+						}
 					}
-				}	
+				}
 			}
 		}else{
 			var keyArray = Object.keys(listObject[keys[i]]);
 			if(exportType){
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === "t") {
 						result[keys[i]] = true;
 					}else if(result[keys[i]] === "f"){
@@ -634,7 +658,7 @@ window.settingsConvert = function(exportType, type, settings){
 					}
 				}
 			}else{
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === true) {
 						result[keys[i]] = "t";
 					}else if(result[keys[i]] === false){
@@ -667,7 +691,7 @@ window.updateMoment = function () {
 	// prepare the moment object with modified history
 	let moment = SugarCube.State.marshalForSave();
 	// replace moment.history with moment.delta, because that's what SugarCube expects to find
-	// this is a bad thing to do probably btw, because while history and delta appear to look very similar, 
+	// this is a bad thing to do probably btw, because while history and delta appear to look very similar,
 	// they're not always the same thing, SugarCube actually decodes delta into history (see: https://github.com/tmedwards/sugarcube-2/blob/36a8e1600160817c44866205bc4d2b7730b2e70c/src/state.js#L527)
 	// but for my purpose it works (i think?)
 	delete Object.assign(moment, {delta: moment.history}).history;
@@ -678,4 +702,13 @@ window.updateMoment = function () {
 	//SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
 
 	// Voilà! F5 will reload the current state now without going to another passage!
+}
+
+window.isJsonString = function(s) {
+    try {
+        JSON.parse(s);
+    } catch (e) {
+        return false;
+    }
+	return true;
 }

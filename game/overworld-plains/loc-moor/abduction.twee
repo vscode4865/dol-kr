@@ -1,20 +1,127 @@
-:: Moor Abduction [nobr]
+:: Farm Abduction wake
+<<set $location to "farm">><<set $outside to 1>><<effects>>
+<<npc Alex>><<person1>><<generate2>><<generate3>>
+You wake up to two arms holding you tightly. You find yourself being dragged across a field towards a parked van.
+<br><br>
+"Shit, <<pshe>>'s waking up," the <<person2>><<person>> says.
+<br><br>
+"What're you waiting for? Put <<phim>> out again before someone notices!" the <<person3>><<person>> mutters under their breath.
+<br><br>
+You don't have a lot of time to shout before it's too late.
+<br><br>
+<<link [[Scream|Farm Abduction wake 2]]>><<set $phase to 1>><</link>>
+<br>
+<<link [[Give in|Farm Abduction wake 2]]>><<set $phase to 2>><</link>>
+
+:: Farm Abduction wake 2
+<<set $location to "farm">><<set $outside to 1>><<effects>>
+<<if $phase is 1>>
+	With all you've got, you scream at the top of your lungs. The <<person2>><<person>> produces a rag and bottle. You struggle, but it's no use. The rag covers your face, and the sweet smells makes you feel faint. Dizziness overwhelms you as you slip into their arms.
+	<br><br>
+	<<if $NPCName[$NPCNameList.indexOf("Alex")].love gte 40>>
+		<<person1>>
+		"Hey!" A voice belonging to Alex calls out. "Drop <<phim>>, now!" <<His>> voice startles the goons.
+		<br><br>
+		"Fuck, this was supposed to be easy!" the <<person2>><<person>> angrily states.
+		<br><br>
+		Both assailants drop you, leaving you in the dirt. They run into the van and speed off.
+		<br><br>
+		Footsteps approach, and soon you're facing Alex. <<person1>><<He>> inspects your clouded eyes with a worried expression.
+		<br><br>
+		"What's wrong? Hey!" Alex frantically says, tapping your cheek. You barely give a response. "What happened?"
+		<br><br>
+		<<His>> voice trails off as your consciousness begins to fade. Alex quickly picks you up and carries you away before everything goes dark.
+		<br><br>
+		<<link [[Give in|Farm Abduction wake 3]]>><<pass 4 hours>><<set $stress -= 5000>><</link>><<lstress>>
+	<<else>>
+		The <<person2>><<person>> looks around for a moment then at you. <<He>> smirks. "What did you expect that to do, princess? Waiting for a prince to rescue you?"
+		<br><br>
+		The two assailants continue to drag you towards the van. Dizziness overwhelms you. As you near the vehicle, you feel your consciousness fading.
+		<br><br>
+		<<link [[Next|Moor Abduction Wake]]>><<pass 60>><<set $stress -= 2000>><<set $moor to 50>><<endevent>><</link>>
+	<</if>>
+<<elseif $phase is 2>>
+	You watch as one of the goons produces a rag and bottle. You struggle, but it's no use. The rag covers your face, and the sweet smells makes you feel faint.
+	<br><br>
+	The two assailants continue to drag you towards the van. Dizziness overwhelms you. As you near the vehicle, you feel your consciousness fading.
+	<br><br>
+	<<link [[Next|Moor Abduction Wake]]>><<pass 60>><<set $stress -= 2000>><<set $moor to 50>><<endevent>><</link>>
+<</if>>
+
+:: Farm Abduction wake 3
+<<set $location to "farm">><<set $outside to 0>><<effects>>
+<<if $trauma lt ($traumamax / 10) * 6>>
+	You awake inside a farmhouse. You're lying on a couch with a blanket over you. A small table holding a cup of tea sits nearby.
+	<br><br>
+	Alex is walking up and down the room, phone in hand. "I know how long it's going to take. I need an ambulance now!" <<His>> gaze turns to you. "Shit, are you alright?"
+	<br><br>
+	You nod.
+	<br><br>
+	"Cancel that." Alex sighs, rubbing <<his>> face. <<He>> approaches you. "Some thugs were carting you off. They drugged you. Don't worry," Alex strokes your hair. "I'm not letting them take what's mine."
+	<br><br>
+	Getting up, <<he>> begins to <<if $daystate isnot "night">>walk outside<<else>>walk upstairs<</if>>. "Rest up as long as you need."
+	<br><br>
+	Not wasting too much time, you sit up and drink the tea left for you. It's refreshing.
+	<br><br>
+<<else>>
+	You awaken in a wooden interior. You are lying on a sofa. You realise a figure is looming over you, and you panic. You shout and flail your arms, trying to push them away from you. A small wooden table falls over, spilling a cup onto the floor.
+	<br><br>
+	The figure backs away at your onslaught, but then approaches again. They grasp your wrists and straddle your belly, pinning you in place.
+	<br><br>
+	"It's me!" says Alex. "What's gotten into you?"
+	<br><br>
+	Your mind clears, and you stop struggling. Alex looks down at your tear-strewn face. <<He>> sighs in relief and releases you.
+	<br><br>
+	"Sorry, but you were about ready to hurt yourself," <<he>> says. "You went full mental jacket there. Though given what just happened, I don't blame you." <<He>> rubs the back of <<his>> neck. "I'm not about ready for someone to take what's mine, don't worry. Rest as long as you need."
+	<br><br>
+	Alex crouches to clean the mess, then steps away. You stare at your shaking hands before getting up.
+	<br><br>
+<</if>>
+<<if $daystate is "night">>
+	<<link [[Rest till morning|Farm Abduction wake 4]]>><<set $saveDetails.auto.count++>><<endevent>><</link>>
+	<br>
+<</if>>
+<!--Might be best to change this later-->
+<<link [[Leave|Farm Work]]>><<endevent>><</link>>
+
+:: Farm Abduction wake 4
+<<set $location to "farm">><<set $outside to 0>><<effects>>
+<<run Save.autosave.save(null, {"saveId":$saveId, "saveName":$saveName})>>
+<<if _preventUpdate is undefined>>
+	<<run setSaveDetail("autosave",{"saveId":$saveId,"saveName":$saveName})>>
+<</if>>
+<<set _hour to clone($hour)>>
+<<for _i to 0; _i lt 12; _i++>>
+	<<set _hour++>>
+	<<if _hour % 24 gte 6 and _hour % 24 lte 9>>
+		<<set _multi to _hour - $hour>>
+		<<pass `1 * _multi` hour>><<tiredness `-12 * _multi`>><<effects>>
+		<<break>>
+	<</if>>
+<</for>>
+<<sleepeffects>>
+You decide to lie back down on the couch till morning. You get up just as the sun is starting to shine.
+<br><br>
+<!--Might be best to change this later-->
+<<link [[Next|Farm Work]]>><</link>>
+
+:: Moor Abduction
 <<effects>>
 <<bind>>
 <<moor_captive_init>>
 <<if $daystate is "night">>
 	You see lights up ahead, illuminating a few tents. Figures cast shadows against them. Someone shoves you forward. "Keep moving."<<gpain>><<pain 4>>
 	<br><br>
-	
+
 	You arrive at the camp. Heads turn and leer at you. <<covered>> Some carry metal poles, tipped with prongs. They don't get to gawk long. You're shoved into one of the tents.
 	<br><br>
-	
+
 	The interior is dominated by a large tarpaulin. Something hisses from beneath. A <<generate1>><<person1>><<person>> follows you in, and wrestles you to the ground. <<He>> ties the ropes binding your arms to a chain buried in the earth.
 	<br><br>
-	
+
 	"Sleep tight," <<he>> says. "Don't want you looking haggard when we arrive." <<He>> laughs as <<he>> exits.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Tent]]>><<endevent>><</link>>
 	<br>
 <<else>>
@@ -24,33 +131,33 @@
 	<br><br>
 	<<His>> eyes flick over your body. <<covered>> "Remy will like this one." <<He>> turns. "We're moving out." <<he>> shouts to the camp. "Stop lazing."
 	<br><br>
-	
-	
+
+
 	<<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 	<br>
 <</if>>
 
 
 
-:: Moor Abduction Wake [nobr]
+:: Moor Abduction Wake
 <<set $location to "moor">><<set $outside to 1>><<effects>>
 <<bind>>
 <<moor_captive_init>>
 <<generate1>><<generate2>>
 You awaken, your face cold and wet. A <<person1>><<person>> stands above you, an empty bucket in <<his>> hands. Others stand with <<him>>. Some hold metal poles, tipped with prongs. "<<pShes>> awake," <<he>> says. "Get <<phim>> up. Remy will like this one."
 <br><br>
-	
+
 <<if $daystate is "night">>
 	You try to stand, but your arms are bound behind your back. Rough hands haul you to your feet. <<covered>>
 	<br><br>
 	You can't see far in the dark, but you think you're on the moor. Lights illuminate a circle of tents. A <<person2>><<person>> shoves you into one.
 	<br><br>
-	
+
 	The interior is dominated by a large tarpaulin. Something hisses from beneath. The <<person>> follows you in, and wrestles you to the ground. <<He>> ties the ropes binding your arms to a chain buried in the ground.
 	<br><br>
 	"Sleep tight," <<he>> says. "Don't want you looking haggard when we arrive." <<He>> laughs as <<he>> exits.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Tent]]>><<endevent>><</link>>
 	<br>
 <<else>>
@@ -58,41 +165,41 @@ You awaken, your face cold and wet. A <<person1>><<person>> stands above you, an
 	<br><br>
 	You're on the moor. You see small cages stacked some distance away. Shapes move within, but they stick to the shadows.
 	<br><br>
-	
+
 	"We're moving out," barks a <<person2>><<person>>. "Stop lazing."
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 	<br>
 <</if>>
 
 
-:: Moor Abduction Tent [nobr]
+:: Moor Abduction Tent
 <<set $outside to 0>><<effects>>
 
 You are alone in a tent, tied to a chain buried in the earth. You hear snoring outside, and hissing from beneath a nearby tarpaulin.
 <br><br>
 <<moor_binding_text>>
 <br><br>
-	
-<<if $stress gte 10000>>
+
+<<if $stress gte $stressmax>>
 	It's too much for you. You pass out.
 	<br><br>
-		
+
 	<<passout>>
 	<<link [[Next|Moor Abduction Remy Wake]]>><<end_moor_captive>><<pass 60>><</link>>
 	<br>
 <<elseif $daystate isnot "night">>
 	You hear activity outside. A <<generate1>><<person1>><<person>> steps into the tent, and crouches behind your chain. <<He>> fiddles with your bindings while the others lift cages from beneath the tarpaulin.
 	<br><br>
-	
+
 	You're pushed outside once freed. They soon have the camp disassembled. They shove you into motion as they begin a march across the moor.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	
+
 	<<if $moor_binding gte 1>>
 		<<link [[Loosen your binds (1:00)|Moor Abduction Tent Loosen]]>><<pass 60>><</link>>
 		<br>
@@ -105,7 +212,7 @@ You are alone in a tent, tied to a chain buried in the earth. You hear snoring o
 <</if>>
 
 
-:: Moor Abduction Walk [nobr]
+:: Moor Abduction Walk
 <<set $outside to 1>><<effects>>
 
 You're marched across the moor, enduring the ogling stares of your captors.
@@ -126,10 +233,10 @@ You're marched across the moor, enduring the ogling stares of your captors.
 	<br><br>
 	You arrive in front of a gate. The sign beside it reads: <span class="red">"Remy estate"</span>
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Remy]]>><<end_moor_captive>><</link>>
 	<br>
-	
+
 <<elseif $moor is 20>>
 	The terrain becomes less rocky. Plains of heather stretch ahead of you.
 <<elseif $moor is 50>>
@@ -147,27 +254,27 @@ You're marched across the moor, enduring the ogling stares of your captors.
 <<if $moor gte 11>>
 	<<moor_binding_text>>
 	<br><br>
-	<<if $stress gte 10000>>
+	<<if $stress gte $stressmax>>
 		It's too much for you. Your vision fades.
 		<br><br>
-		
+
 		<<passout>>
 		<<link [[Next|Moor Abduction Remy Wake]]>><<end_moor_captive>><<pass 60>><</link>>
 		<br>
 	<<elseif $daystate is "night">>
 		"Set camp," the cry goes up. "We're not traveling in the dark."
 		<br><br>
-		
+
 		<<if $moor lte 20>>
 			You hear some grumbling about almost being back at the estate, but they get to work regardless.
 		<</if>>
 		They put up lights, and begin to raise tents. You're left unoccupied, for now.
 		<br><br>
-		
+
 		<<if $moor gte 51>>
 			You peer into the dark. You're surrounded by hidden pools and sinkholes. Escape would be difficult.
 			<br><br>
-			
+
 			<<if $moor_binding lte 0>>
 				<<link [[Break your bonds and run|Moor Abduction Mire Run]]>><<unbind>><</link>><<athleticsdifficulty 900 1900>>
 			<<else>>
@@ -177,7 +284,7 @@ You're marched across the moor, enduring the ogling stares of your captors.
 		<<elseif $moor gte 21>>
 			You peer into the dark. Running across such uneven ground in the dark could be dangerous.
 			<br><br>
-			
+
 			<<if $moor_binding lte 0>>
 				<<link [[Break your bonds and run|Moor Abduction Rock Run]]>><<unbind>><</link>><<athleticsdifficulty 800 1500>>
 			<<else>>
@@ -187,7 +294,7 @@ You're marched across the moor, enduring the ogling stares of your captors.
 		<<else>>
 			You peer into the dark. You could run, but they'll soon notice you're gone, and give chase.
 			<br><br>
-			
+
 			<<if $moor_binding lte 0>>
 				<<link [[Break your bonds and run|Moor Abduction Plain Run]]>><<unbind>><</link>><<athleticsdifficulty 500 1500>>
 			<<else>>
@@ -205,10 +312,10 @@ You're marched across the moor, enduring the ogling stares of your captors.
 	<<elseif $rng gte 81>>
 		"We'll search here," shouts an authoritative voice. The ground is flat, and metal chains have been buried in the earth. They've camped here before.
 		<br><br>
-		
+
 		The thugs form into groups that leave the camp in different directions, taking empty cages with them. Only two thugs remain to guard you.
 		<br><br>
-		
+
 		<<if $moor_binding gte 1>>
 			<<link [[Seduce and deceive|Moor Abduction Seduce]]>><</link>>
 			<br>
@@ -227,12 +334,12 @@ You're marched across the moor, enduring the ogling stares of your captors.
 			<span class="red">A terrible screech pierces the air.</span><<if $syndromebird isnot 1>><<ggstress>><<stress 12>><</if>>
 		<</if>>
 		<br><br>
-		
+
 		<<if $syndromebird is 1 and $harpy gte 6>>
 			The thugs crowd closer, clutching their weapons, eyes darting up at the sky.
 			<br><br>
-			
-			<<link [[Screech (0:20)|Moor Abduction Bird Screech]]>><<pass 20>><</link>> | <span class="gold">Bird</span>
+
+			<<link [[Screech (0:20)|Moor Abduction Bird Screech]]>><<pass 20>><</link>><<harpy>>
 			<br>
 			<<link [[Wait|Moor Abduction Bird Wait]]>><</link>>
 			<br>
@@ -241,54 +348,54 @@ You're marched across the moor, enduring the ogling stares of your captors.
 			<br><br>
 			<<generate1>><<person1>>"Stop standing around," shouts a <<person>>, almost mastering the fear in <<his>> voice. "We've got work to do." Your entourage moves once more.
 			<br><br>
-			
+
 			<<endevent>>
 			<<moor_captive_actions>>
 		<</if>>
-		
+
 	<<elseif $rng gte 41>>
 		You feel a hand grope your <<bottom>>. A <<generate1>><<person1>><<person>> is the culprit. <<He>> walks awfully close.<<gstress>><<garousal>><<stress 6>><<arousal 600>>
 		<br><br>
-		
+
 		No one seems to notice, or care.
 		<br><br>
-		
+
 		<<link [[Get angry|Moor Abduction Angry]]>><<def 1>><<trauma -6>><</link>><<ltrauma>>
 		<br>
 		<<link [[Endure|Moor Abduction Endure]]>><<sub 1>><<trauma 6>><</link>><<gtrauma>>
 	<<elseif $rng gte 21>>
 		<<if $moor gte 51>>
-			
+
 			You hear a scream from up ahead, and then from behind. Strange, slimy creatures lunge from black pools. You're shunted to the middle of the group, but glimpse sparks as the thugs defend themselves with their long weapons.
 			<br><br>
-			
+
 			Most of the creatures flee, but some remain, shocked and immobile. Your captors load them into cages before moving once again.
 			<<if $awarelevel gte 2>>
 				The group feels smaller than before.
 			<</if>>
 			<br><br>
-			
+
 		<<elseif $moor gte 21>>
 			You hear a scream from up ahead, and then from behind. Strange, slimy creatures lunge from atop the strange rock formations. You're shunted to the middle of the group, but glimpse sparks as the thugs defend themselves with their long weapons.
 			<br><br>
-			
+
 			Most of the creatures flee, but some remain, shocked and immobile. Your captors load them into cages before moving once again.
 			<br><br>
 		<<else>>
 			You hear a scream from up ahead, and then from behind. Strange, slimy creatures lunge from the heather. You're shunted to the middle of the group, but glimpse sparks as the thugs defend themselves with their long weapons.
 			<br><br>
-			
+
 			Most of the creatures flee, but some remain, shocked and immobile. Your captors load them into cages before moving once again.
 			<br><br>
 		<</if>>
-		
+
 		<<endevent>>
 		<<moor_captive_actions>>
 	<<else>>
 		<<generate1>><<person1>>
 		A <<person>> approaches you, holding out a canteen. "Here <<girl>>," <<he>> says. "Keep you on your feet."
 		<br><br>
-		
+
 		<<link [[Drink|Moor Abduction Drink]]>><</link>>
 		<br>
 		<<if $skulduggery gte 100>>
@@ -301,7 +408,7 @@ You're marched across the moor, enduring the ogling stares of your captors.
 <</if>>
 
 
-:: Moor Abduction Remy [nobr]
+:: Moor Abduction Remy
 <<effects>>
 
 <<generate1>><<generate2>><<generate3>>
@@ -324,7 +431,7 @@ You're dragged away from the entrance by a <<person1>><<person>>, and into a sma
 <<link [[Submit|Street Van Submit]]>><<sub 1>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
 <br>
 
-:: Moor Abduction Remy Wake [nobr]
+:: Moor Abduction Remy Wake
 <<effects>>
 
 <<generate2>><<generate3>>
@@ -340,7 +447,7 @@ You awaken on a wooden floor, a cold heavy weight around your neck. Three figure
 <<link [[Next|Livestock Intro]]>><<endevent>><</link>>
 <br>
 
-:: Moor Abduction Plain Run [nobr]
+:: Moor Abduction Plain Run
 <<effects>>
 
 You run into the heather, and hear a cry from behind a few moments later. You spare a glance over your shoulder. Three thugs sprint after you.
@@ -356,16 +463,16 @@ You run into the heather, and hear a cry from behind a few moments later. You sp
 <<else>>
 	A <<generate1>><<person1>><<person>> proves faster than the others, <span class="red">catching up with you,</span> and tackling you to the ground. You struggle, but the others soon arrive, panting, and help restrain you.
 	<br><br>
-	
+
 	You're dragged back to the entourage.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Punish]]>><</link>>
 	<br>
 <</if>>
 
 
-:: Moor Abduction Rock Run [nobr]
+:: Moor Abduction Rock Run
 <<effects>>
 
 You break into a run, and hear a cry from behind a few moments later. You spare a glance over your shoulder. Three thugs sprint after you.
@@ -380,19 +487,19 @@ You break into a run, and hear a cry from behind a few moments later. You spare 
 <<else>>
 	They soon slow, and keep glancing at the stones litering the uneven ground. Your foot catches in a small hole,<span class="red"> and you trip</span>.<<gpain>><<pain 4>>
 	<br><br>
-	
+
 	A <<generate1>><<person1>><<person>> is the first to catch up with you, and restrains you before you can recover. You struggle, but the others arrive to help restrain you.
 	<br><br>
-	
+
 	You're dragged back to the entourage.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Punish]]>><</link>>
 	<br>
 <</if>>
 
 
-:: Moor Abduction Mire Run [nobr]
+:: Moor Abduction Mire Run
 <<effects>>
 
 You break into a run, and hear a cry from behind a few moments later. You spare a glance over your shoulder. Three thugs sprint after you.
@@ -408,19 +515,19 @@ You break into a run, and hear a cry from behind a few moments later. You spare 
 <<else>>
 	You gain ground at first, <span class="red">until you tumble into cold water,</span> invisible in the dark. You struggle to the surface, just in time for a pair of hands to grasp your shoulders and haul you onto shore.
 	<br><br>
-	
+
 	<<generate1>><<person1>>A <<person>> pulls you to your feet. You struggle, but the others arrive to help restrain you.
 	<br><br>
-	
+
 	You're dragged back to the entourage.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Punish]]>><</link>>
 	<br>
 <</if>>
 
 
-:: Moor Abduction Punish [nobr]
+:: Moor Abduction Punish
 <<effects>>
 
 <<generate2>><<generate3>><<generate4>><<generate5>><<generate6>>
@@ -460,7 +567,7 @@ Laughter erupts from <<his>> colleagues. They no longer seem interested in punis
 <</if>>
 
 
-:: Moor Abduction Punish Tent [nobr]
+:: Moor Abduction Punish Tent
 <<effects>>
 
 A <<generate1>><<person1>><<person>> grasps your bindings, and forces you into a tent. <<He>> wrestles you to the ground beside a large tarpaulin, and ties you to a chain buried in the earth. You hear a hiss beneath the sheet.
@@ -473,7 +580,7 @@ A <<generate1>><<person1>><<person>> grasps your bindings, and forces you into a
 <br>
 
 
-:: Moor Abduction Camp Bide [nobr]
+:: Moor Abduction Camp Bide
 <<effects>>
 
 They finish setting up the tents, and load the cages into the smallest. A <<generate1>><<person1>><<person>> grasps your bindings, and forces you into the same tent. <<He>> wrestles you to the ground, and ties you to a chain buried in the earth.
@@ -486,7 +593,7 @@ They finish setting up the tents, and load the cages into the smallest. A <<gene
 <br>
 
 
-:: Moor Abduction Seduce [nobr]
+:: Moor Abduction Seduce
 <<effects>>
 
 
@@ -510,7 +617,7 @@ You lock eyes with a <<person1>><<person>>. "I'm bored," you say. "If only there
 	The <<person1>><<person>> shoves in front, <span class="green">and fumbles with your bindings.</span>
 	<br><br>
 	<<unbind>>
-	
+
 	<<link [[Next|Moor Abduction Seduce Rape]]>><<set $molestationstart to 1>><</link>>
 	<br>
 
@@ -522,13 +629,13 @@ You lock eyes with a <<person1>><<person>>. "I'm bored," you say. "If only there
 	<br><br>
 	<span class="red">The <<person2>><<person>> laughs.</span> "I prefer you like this," <<he>> says. The pair close in.
 	<br><br>
-	
+
 	<<link [[Next|Moor Abduction Seduce Rape]]>><<set $molestationstart to 1>><</link>>
 	<br>
 
 <</if>>
 
-:: Moor Abduction Seduce Rape [nobr]
+:: Moor Abduction Seduce Rape
 <<if $molestationstart is 1>>
 	<<set $molestationstart to 0>>
 	<<controlloss>>
@@ -555,7 +662,7 @@ You lock eyes with a <<person1>><<person>>. "I'm bored," you say. "If only there
 	<span id="next"><<link [[Next|Moor Abduction Seduce Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Moor Abduction Seduce Rape Finish [nobr]
+:: Moor Abduction Seduce Rape Finish
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
@@ -595,11 +702,11 @@ You lock eyes with a <<person1>><<person>>. "I'm bored," you say. "If only there
 <</if>>
 
 
-:: Moor Abduction Loosen [nobr]
+:: Moor Abduction Loosen
 <<effects>>
 
 <<set $moor_binding -= 1>>
-You work against your bindings. 
+You work against your bindings.
 <<if $moor_binding lte 0>>
 	<span class="green">You feel them come loose.</span> You should be able to break free, but you need to choose the right moment.
 	<br><br>
@@ -624,7 +731,7 @@ The thugs return to camp, group by group. Some look roughed up, and some of the 
 <<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 <br>
 
-:: Moor Abduction Bide [nobr]
+:: Moor Abduction Bide
 <<effects>>
 
 
@@ -645,7 +752,7 @@ The thugs return to camp, group by group. Some look roughed up, and some of the 
 <br>
 
 
-:: Moor Abduction Attack [nobr]
+:: Moor Abduction Attack
 <<effects>>
 <<unbind>>
 You catch one of the guards, a <<generate1>><<person1>><<person>>, unprepared. You charge <<him>>, colliding with <<his>> back and sending <<him>> stumbling into the nest of cages.
@@ -659,7 +766,7 @@ The <<generate1>><<person1>><<person>> recovers from surprise, and rolls up <<hi
 <br>
 
 
-:: Moor Abduction Fight [nobr]
+:: Moor Abduction Fight
 <<if $fightstart is 1>>
 	<<set $fightstart to 0>>
 
@@ -689,7 +796,7 @@ The <<generate1>><<person1>><<person>> recovers from surprise, and rolls up <<hi
 	<span id="next"><<link [[Next|Moor Abduction Fight]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Moor Abduction Fight Finish [nobr]
+:: Moor Abduction Fight Finish
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
@@ -721,14 +828,14 @@ The <<generate1>><<person1>><<person>> recovers from surprise, and rolls up <<hi
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
-	
+
 	<<link [[Next|Moor Abduction Walk]]>><<pass 60>><</link>>
 	<br>
 
 <</if>>
 
 
-:: Moor Abduction Angry [nobr]
+:: Moor Abduction Angry
 <<effects>>
 
 <<if $submissive gte 1150>>
@@ -747,7 +854,7 @@ The other thugs chuckle.
 <<else>>
 	"Don't worry," the <<person>> says. "I'll leave you alone. Right after I finish your health check." <<He>> reaches around your chest, bringing your to a halt, and pinches your <<breasts>>.<<ggstress>><<stress 6>>
 	<br><br>
-	
+
 	"Stop messing around," shouts a voice from up ahead. The <<person>> releases you. "Remy will like you," <<he>> says.
 	<br><br>
 <</if>>
@@ -755,7 +862,7 @@ The other thugs chuckle.
 <<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 <br>
 
-:: Moor Abduction Endure [nobr]
+:: Moor Abduction Endure
 <<effects>>
 
 The <<person>> continues to grope as you walk. You do your best to ignore it.
@@ -765,7 +872,7 @@ The <<person>> continues to grope as you walk. You do your best to ignore it.
 <br>
 
 
-:: Moor Abduction Drink [nobr]
+:: Moor Abduction Drink
 <<effects>>
 
 You let the <<person>> pour the canteen into your mouth.
@@ -791,7 +898,7 @@ You let the <<person>> pour the canteen into your mouth.
 
 
 
-:: Moor Abduction Sniff [nobr]
+:: Moor Abduction Sniff
 <<effects>>
 
 You sniff the proffered canteen.
@@ -817,7 +924,7 @@ It doesn't smell of anything. It could just be water.
 <<link [[Refuse|Moor Abduction Refuse]]>><</link>>
 <br>
 
-:: Moor Abduction Drink 2 [nobr]
+:: Moor Abduction Drink 2
 <<effects>>
 
 
@@ -844,7 +951,7 @@ You let the <<person>> pour the canteen into your mouth.
 
 
 
-:: Moor Abduction Refuse [nobr]
+:: Moor Abduction Refuse
 <<effects>>
 
 You shake your head. The <<person1>><<person>> shrugs. "Suit yourself."
@@ -854,7 +961,7 @@ You shake your head. The <<person1>><<person>> shrugs. "Suit yourself."
 <br>
 
 
-:: Moor Abduction Sleep [nobr]
+:: Moor Abduction Sleep
 <<effects>>
 
 
@@ -886,30 +993,30 @@ You lie on the ground, and close your eyes.
 <<if $nightmares gte 1 and $controlled is 0>>
 	Your dreams are plagued by nightmarish creatures, hissing and hunting you through the dark. You're soon awoken by noisy activity outside.
 	<br><br>
-<<else>>	
+<<else>>
 	You struggle to sleep with the incessant hissing so close, but you must have dosed off. You're soon awoken by noisy activity outside.
 	<br><br>
 <</if>>
 
 A <<generate1>><<person1>><<person>> steps into the tent, and crouches behind your chain. <<He>> fiddles with your bindings while the others lift cages from beneath the tarpaulin.
 <br><br>
-	
+
 You're pushed outside once freed. They soon have the camp disassembled. They shove you into motion as they begin a march across the moor.
 <br><br>
-	
+
 <<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 <br>
 
 
-:: Moor Abduction Tent Loosen [nobr]
+:: Moor Abduction Tent Loosen
 <<effects>>
 
 <<set $moor_binding -= 1>>
-You work against your bindings. 
+You work against your bindings.
 <<if $moor_binding lte 0>>
 	<span class="green">You feel them come loose.</span> You should be able to break free.
 	<br><br>
-	
+
 	<<link [[Escape|Moor Abduction Escape]]>><</link>>
 	<br>
 	<<link [[Bide your time|Moor Abduction Tent]]>><</link>>
@@ -922,7 +1029,7 @@ You work against your bindings.
 <</if>>
 
 
-:: Moor Abduction Escape [nobr]
+:: Moor Abduction Escape
 <<effects>><<set $lock to 700>>
 
 You tear free of the rope, and rise to your feet. Most of the thugs must be asleep. You peek through the tent entrance, and see a guard sitting to one side, half-awake and surrounded by empty bottles of beer.
@@ -944,7 +1051,7 @@ You turn back to the tarpaulin, and peek beneath. Stacks of cages, most shut and
 <<link [[Sneak past the guard|Moor Abduction Sneak]]>><</link>><<skulduggerydifficulty>>
 
 
-:: Moor Abduction Lock [nobr]
+:: Moor Abduction Lock
 <<effects>>
 
 Careful not to make too much noise, you break into the cages, one by one. The creatures inside don't move to leave, instead shrinking away from the little light piercing the front of the tent.
@@ -957,7 +1064,7 @@ Once finished, you take a deep breath, grasp a couple of cages, and pull them to
 <br>
 
 
-:: Moor Abduction Lock 2 [nobr]
+:: Moor Abduction Lock 2
 <<effects>>
 
 The crash spurs the creatures. A flurry of slimy hides and tendrils emerge. They leap around the tent, searching for a way out, or just tearing holes in the fabric.
@@ -978,7 +1085,7 @@ You're already running. You hear the guard scream behind you, followed by shouts
 <<earnFeat "Slippery">>
 <<link [[Next|Moor]]>><<end_moor_captive>><</link>>
 <br>
-:: Moor Abduction Sneak [nobr]
+:: Moor Abduction Sneak
 <<effects>>
 
 <<generate1>><<person1>>
@@ -1025,7 +1132,7 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 <</if>>
 
 
-:: Moor Abduction Rape [nobr]
+:: Moor Abduction Rape
 <<effects>>
 
 
@@ -1059,7 +1166,7 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	<span id="next"><<link [[Next|Moor Abduction Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Moor Abduction Rape Finish [nobr]
+:: Moor Abduction Rape Finish
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
@@ -1068,7 +1175,7 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	<<He>> downs the rest of <<his>> bottle as <<he>> leaves the tent.
 	<<clotheson>>
 	<<endcombat>>
-	
+
 	<<bind>>
 	<<set $moor_binding to 6>>
 	<<link [[Next|Moor Abduction Tent]]>><</link>>
@@ -1088,7 +1195,7 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	<<link [[Next|Moor]]>><<end_moor_captive>><<set $eventskip to 1>><</link>>
 
 <<else>>
-	
+
 	The <<person1>><<persons>> colleagues emerge from their tents, drawn by your cry. They look tired, and upset by the disturbance.
 	<br><br>
 	<<generate2>><<person2>>
@@ -1102,14 +1209,14 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	You back against the tent as the thugs close in.
 	<br><br>
 	<<endcombat>>
-	
+
 	<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<person1>>
-	
+
 	<<link [[Next|Moor Abduction Gang Rape]]>><<set $molestationstart to 1>><</link>>
 
 <</if>>
 
-:: Moor Abduction Gang Rape [nobr]
+:: Moor Abduction Gang Rape
 <<effects>>
 
 <<if $molestationstart is 1>>
@@ -1139,7 +1246,7 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	<span id="next"><<link [[Next|Moor Abduction Gang Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Moor Abduction Gang Rape Finish [nobr]
+:: Moor Abduction Gang Rape Finish
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
@@ -1174,14 +1281,14 @@ You wait until the guard, a <<person>>, takes a long swig from a bottle, then sl
 	<</if>>
 	The camp is too busy to notice your flight.
 	<br><br>
-	
+
 	<<link [[Next|Moor]]>><<endevent>><<end_moor_captive>><<set $eventskip to 1>><</link>>
 	<br>
 
 <</if>>
 
 
-:: Moor Abduction Walk Loosen [nobr]
+:: Moor Abduction Walk Loosen
 <<effects>>
 
 
@@ -1233,10 +1340,10 @@ You work against your bindings, hoping nobody notices.
 <<link [[Next|Moor Abduction Walk]]>><<endevent>><</link>>
 <br>
 
-:: Moor Abduction Fantasise [nobr]
+:: Moor Abduction Fantasise
 <<effects>>
 
-You imagine all the terrible things you'll do to your captors when you break free. 
+You imagine all the terrible things you'll do to your captors when you break free.
 
 <<if $rng gte 81>>
 	<<generate1>><<person1>>
@@ -1250,7 +1357,7 @@ You imagine all the terrible things you'll do to your captors when you break fre
 <br>
 
 
-:: Moor Abduction Bird Screech [nobr]
+:: Moor Abduction Bird Screech
 <<effects>>
 
 You screech and flap your wings. The thugs spin to face you, surprise and horror on their faces.
@@ -1259,7 +1366,7 @@ You screech and flap your wings. The thugs spin to face you, surprise and horror
 <span class="green">You hear another screech.</span> This one is closer. Right above. The thugs' attention snaps away from you again.
 <br><br>
 <<npc "Great Hawk">>
-The <<beasttype>> swoops closer. 
+The <<beasttype>> swoops closer.
 <<endevent>>
 <<generate1>>
 A <<person1>><<person>> drops <<his>> weapon and runs. <<Hes>> targeted first.
@@ -1289,13 +1396,13 @@ The thugs leave you unguarded as they tighten their circle. The remaining weapon
 <<link [[Next|Moor Abduction Bird]]>><</link>>
 <br>
 
-:: Moor Abduction Bird [nobr]
+:: Moor Abduction Bird
 <<effects>>
 
 The <<beasttype>> lands in front of you, and casts a dismissive eye at the thugs.
 
 <<if $monster is 1>>
-	"Not worth trouble," <<he>> says. "Come <<if $player.gender_appearance is "m">>husband<<else>>wife<</if>>." You take <<bhis>> hand, and together take to the sky. <<takeHandholdingVirginity "Great Hawk" "romantic">>
+	"Not worth trouble," <<he>> says. "Come, <<wife>>." You take <<bhis>> hand, and together take to the sky. <<takeHandholdingVirginity "Great Hawk" "romantic">>
 	<br><br>
 <<else>>
 	You climb atop <<bhis>> back, and take to the sky.
@@ -1307,7 +1414,7 @@ The <<beasttype>> lands in front of you, and casts a dismissive eye at the thugs
 
 
 
-:: Moor Abduction Bird 2 [nobr]
+:: Moor Abduction Bird 2
 <<effects>>
 
 <<endevent>>
@@ -1315,7 +1422,7 @@ The <<beasttype>> lands in front of you, and casts a dismissive eye at the thugs
 <<if $monster is 1>>
 	You soar over the moor. Your wings tire quickly. The <<beasttype>> notices, and shifts behind you, wrapping <<bhis>> arms around your chest and carrying you the rest of the way.
 	<br><br>
-	
+
 	<<bHe>> pants by the time you arrive at the tower. "Be careful when alone," <<bhe>> says. "They'll take you to landbound home. No place for us."
 	<br><br>
 <<else>>
@@ -1330,7 +1437,7 @@ The <<beasttype>> lands in front of you, and casts a dismissive eye at the thugs
 <br>
 
 
-:: Moor Abduction Bird Wait [nobr]
+:: Moor Abduction Bird Wait
 <<effects>>
 
 Another screech chills you, but this one is further away. The thugs relax.
@@ -1340,4 +1447,3 @@ Another screech chills you, but this one is further away. The thugs relax.
 
 <<endevent>>
 <<moor_captive_actions>>
-			

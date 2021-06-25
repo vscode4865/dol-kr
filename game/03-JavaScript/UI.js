@@ -166,7 +166,8 @@ $(document).on('keyup', function (ev) {
 	if (!State.variables.numberify_enabled || !StartConfig.enableLinkNumberify || State.variables.tempDisable)
 		return;
 
-	if (document.activeElement.tagName === "INPUT" && document.activeElement.type === "number")
+	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio"
+		&& document.activeElement.type !== "checkbox")
 		return;
 
 	if ((ev.keyCode >= 48 && ev.keyCode <= 57) || (ev.keyCode >= 96 && ev.keyCode <= 105)) {
@@ -295,19 +296,22 @@ window.isImageOk = function (id) {
 }
 
 window.beastTogglesCheck = function () {
-	let vars = SugarCube.State.variables; 
+	let vars = SugarCube.State.variables;
 	let temp = SugarCube.State.temporary;
-	temp.beastVars = [ 
-		"bestialitydisable", 
-		"swarmdisable", 
-		"parasitedisable", 
-		"analpregdisable", 
-		"tentacledisable", 
-		"slimedisable", 
-		"voredisable", 
-		"spiderdisable", 
-		"slugdisable", 
-		"waspdisable"
+	temp.beastVars = [
+		"bestialitydisable",
+		"swarmdisable",
+		"parasitedisable",
+		"analpregdisable",
+		"tentacledisable",
+		"slimedisable",
+		"voredisable",
+		"spiderdisable",
+		"slugdisable",
+		"waspdisable",
+		"beedisable",
+		"lurkerdisable",
+		"horsedisable"
 	];
 	temp.anyBeastOn = temp.beastVars.some(x => vars[x] == 'f');
 }
@@ -318,7 +322,7 @@ window.settingsAsphyxiation = function () {
 		let text = null;
 		switch (val) {
 			case 0:
-				text = "내 목 건들지 마!"; break;
+				text = "내 목 절대 건들지 마!"; break;
 			case 1:
 				text = "NPC들이 당신의 목을 <span class='blue' style='margin-left: unset; min-width: unset;'>잡을</span> 지도 모릅니다. 숨 쉬는 데 영향을 주진 않아요."; break;
 			case 2:
@@ -343,14 +347,14 @@ window.settingsAsphyxiation = function () {
 	});
 }
 
-window.settingsNamedNpcBreastSize = function () {	
+window.settingsNamedNpcBreastSize = function () {
 	const breastSizes = ["유두","약간 솟아오른","조그마한","작은","앙증맞은","평범한","봉긋한","큰","풍만한","커다란","매우 큰","엄청난","거대한"];
-	
+
 	let updateText = () => {
 		const npcId = SugarCube.State.temporary.npcId;
 		const npc = SugarCube.State.variables.NPCName[npcId];
 		const val = npc.breastsize;
-		
+
 		const text = breastSizes[val];
 
 		if (val > 0) {

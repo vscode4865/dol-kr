@@ -6,7 +6,7 @@ Second argument - bought or stolen
 Third argument - worn or send
 Forth argument - item index*/
 
-<<widget "shopbuy">><<nobr>>
+<<widget "shopbuy">>
 <<set _shop_temp to $args[3]>>
 <<set $clothes_choice_previous to $clothes_choice>>
 
@@ -54,9 +54,9 @@ Forth argument - item index*/
 	<</for>>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "clothingShopColorSet">><<nobr>>
+<<widget "clothingShopColorSet">>
 <<if $colouraction is "random">>
 	<<set _colouractionChoices to clone(setup.clothes[$args[0]][_shop_temp].colour_options)>>
 	<<run _colouractionChoices.delete("custom")>>
@@ -71,9 +71,9 @@ Forth argument - item index*/
 <<else>>
 	<<set $accessorycolouraction2 to clone($accessorycolouraction)>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "clothingShop">><<nobr>>
+<<widget "clothingShop">>
 <<if $args[0]>>
 	<<set $clothingShopSlot to $args[0]>>
 <</if>>
@@ -98,7 +98,7 @@ Forth argument - item index*/
 	<br><br>
 <</if>>
 <<if $clothes_choice and setup.clothes[$clothingShopSlot][$clothes_choice] is undefined>>
-    <<unset $clothes_choice>>
+	<<unset $clothes_choice>>
 <<elseif $clothes_choice>>
 	<<set _temp_choice to clone(setup.clothes[$clothingShopSlot][$clothes_choice])>>
 	<<if _temp_choice.plural is 1>>
@@ -112,7 +112,7 @@ Forth argument - item index*/
 	<<elseif _temp_choice.gender is "f">>
 		<span class="pink">여성용.</span>
 	<</if>>
-	<<print '<<trSearchClothes _temp_choice.name "desc">>_trResult'>> 가격 <span class="gold">£<<print _temp_choice.cost / 100>>.</span>
+	<<print '<<trSearchClothes _temp_choice.name "desc">>_trResult'>> 가격 <<printmoney `getClothingCost(_temp_choice)`>>.
 	<br>
 	<<warmth _temp_choice.warmth>>
 	<br><br>
@@ -168,7 +168,7 @@ Forth argument - item index*/
 			<div id="shopFullImage" @class="($shopDefaults.invertImagesHidden is true? '' : ' hidden')"><<shopFullImage $clothingShopSlot $clothes_choice>></div>
 			<br>
 		<</if>>
-		<<set _cost to clone(_temp_choice.cost)>>
+		<<set _cost to clone(getClothingCost(_temp_choice))>>
 		<<unset _cursedPrevent>>
 		<<set _outfitPrimaryShop to _temp_choice.outfitPrimary>>
 		<<set _preventSlots to []>>
@@ -273,7 +273,7 @@ Forth argument - item index*/
 			<<link [[입어본다|$passage]]>><<shopbuy $clothingShopSlot "try" null $clothes_choice>><<set $randomLock to true>><</link>>
 			<br>
 			<<if $tryOn.tryingOn[[$clothingShopSlot]] isnot null>>
-			<<link [[돌아간다|$passage]]>><<shopbuy $clothingShopSlot "return" null $clothes_choice>><<unset $randomLock>><</link>>
+			<<link [[돌려준다|$passage]]>><<shopbuy $clothingShopSlot "return" null $clothes_choice>><<unset $randomLock>><</link>>
 			<br>
 			<</if>>
 		<</if>>
@@ -362,7 +362,7 @@ Forth argument - item index*/
 				<</link>>
 			<</capture>>
 		<</if>>
-		| <span class="teal">£<<print _item.cost / 100>></span> |
+		| <span class="teal"><<printmoney `getClothingCost(_item)` true>></span> |
 		<<if _item.gender is "m">>
 			<span class="blue">♂</span>
 		<<elseif _item.gender is "f">>
@@ -397,7 +397,7 @@ Forth argument - item index*/
 		of
 		<<print Math.floor(_trueListCount / $shopListMax) + 1>> |
 		<<if _listCount is $shopListMax + $shopListStartCount>>
-			
+
 			<<link [["Next Page"|$passage]]>>
 				<<run $shopListStartCount += $shopListMax>>
 			<</link>>
@@ -410,194 +410,85 @@ Forth argument - item index*/
 		<br>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopTraitDescription">><<nobr>>
+<<widget "shopTraitDescription">>
 
-<<if $args[0] is "normal">>
-	일반 - 일상생활에 적합하다.
-<</if>>
-<<if $args[0] is "formal">>
-	격식 - 중요한 일, 특정 회사 간의 격식을 갖추는 대에 적합하다.
-<</if>>
-<<if $args[0] is "school">>
-    학교 - 교내에서 허가된 교복.
-<</if>>
-<<if $args[0] is "glasses">>
-    안경 - 집중을 도와, 성적향상의 비율을 높힌다.
-<</if>>
-<<if $args[0] is "cool">>
-    유행 - 학교에서의 지위가 향상되지만, 일부 교사가 싫어할 수 있다.
-<</if>>
-<<if $args[0] is "swim">>
-    수영복 - 물속에서 잘 움직일 수 있다.
-<</if>>
-<<if $args[0] is "diving">>
-    다이빙 - 차가운 물속에서도 몸을 따뜻하게 유지해준다.
-<</if>>
-<<if $args[0] is "dance">>
-    춤 - 댄스플로어의 혹독함을 견딜 수 있을 정도로 유연하다.
-<</if>>
-<<if $args[0] is "costume">>
-    코스튬 - 주변 상황과 다른 때에 입으면, 사람들은 이상한 눈으로 볼지도 모른다.
-<</if>>
-<<if $args[0] is "serving">>
-    서빙 - 바텐더나 웨이터리스트로 일할 때, 팁을 부추길수도 있다.
-<</if>>
-<<if $args[0] is "fetish">>
-    페티쉬 - 본질적으로 음탕하다.
-<</if>>
-<<if $args[0] is "sleep">>
-    수면 - 부드럽고 아늑하다.
-<</if>>
-<<if $args[0] is "mask">>
-    마스크 - 당신의 정체성을 숨기고, 명성이 오르는걸 막는다. 경찰이나 당신을 아는 사람을 속이진 않을 것이다.
-<</if>>
-<<if $args[0] is "holy">>
-    신성함 - 지역 신앙에 신성시된다. 순결도의 손익량 증가.
-<</if>>
-<<if $args[0] is "dark">>
-    불경 - 지역 신앙에 의해서 외설적인 것으로 여겨진다. 성지식의 손익량 증가.
-<</if>>
-<<if $args[0] is "binding">>
-    구속 - 당신의 팔을 단단하게 구속하고, 무기력하게 만든다.
-<</if>>
-<<if $args[0] is "stealthy">>
-    은밀함 - 당신의 범죄를 추적하기 어렵게 만든다.
-<</if>>
-<<if $args[0] is "sticky_fingers">>
-	Sticky fingers - More likely to get your way, and keep that which isn't yours
-<</if>>
-<<if $args[0] is "rainproof">>
-    방수 - 당신을 비로부터 지킨다.
-<</if>>
-<<if $args[0] is "tanLines">>
-    선탠라인 - 선탠라인이 생기는걸 막는다.
-<</if>>
-<<if $args[0] is "bimbo">>
-    스페셜 - 이 옷 세트는 뭔가 특별한 것 같다.
-<</if>>
-<<if $args[0] is "heels">>
-    높은 굽 - 발 스킬이 부족하면 피로해지고, 발이 걸려 넘어질 가능성이 있다. 발차기 능력이 향상된다.
-<</if>>
-<<if $args[0] is "rugged">>
-	Rugged - Helps you keep your footing in tough environments.
-<</if>>
-<<if $args[0] is "chest_bind">>
-    가슴 감음 - 가슴을 꽉 조여서, 당신의 가슴을 숨긴다.
-<</if>>
-<<if $args[0] is "eerie">>
-    으스스한 - <<if $transformdisable is "f">>특정 변환을 막는다.<<else>>이 물건엔 무언가 이상한 점이 있다.<</if>>
-<</if>>
-<</nobr>><</widget>>
+<<unset $noTraitDescription>>
+<<switch $args[0]>>
+	<<case "normal">>
+		일반 - 일상생활에 적합하다.
+	<<case "formal">>
+		격식 - 중요한 일, 특정 회사 간의 격식을 갖추는 대에 적합하다.
+	<<case "school">>
+		    학교 - 교내에서 허가된 교복.
+	<<case "glasses">>
+		    안경 - 집중을 도와, 성적향상의 비율을 높힌다.
+	<<case "cool">>
+		유행 - 학교 친구들의 평가가 향상되지만, 일부 교사가 싫어할 수 있다.
+	<<case "swim">>
+		수영복 - 물속에서 잘 움직일 수 있다.
+	<<case "diving">>
+		    다이빙 - 차가운 물속에서도 몸을 따뜻하게 유지해준다.
+	<<case "dance">>
+		춤 - 댄스플로어의 혹독함을 견딜 수 있을 정도로 유연하다.
+	<<case "costume">>
+		    코스튬 - 주변 상황과 다른 때에 입으면, 사람들은 이상한 눈으로 볼지도 모른다.
+	<<case "serving">>
+		    서빙 - 바텐더나 웨이터리스트로 일할 때, 팁을 부추길수도 있다.
+	<<case "fetish">>
+		    페티쉬 - 본질적으로 음탕하다.
+	<<case "sleep">>
+		    수면 - 부드럽고 아늑하다.
+	<<case "mask">>
+		    마스크 - 당신의 정체성을 숨기고, 명성이 오르는걸 막는다. 경찰이나 당신을 아는 사람을 속이진 않을 것이다.
+	<<case "holy">>
+		    신성함 - 지역 신앙에 신성시된다. 순결도의 손익량 증가.
+	<<case "dark">>
+		    불경 - 지역 신앙에 의해서 외설적인 것으로 여겨진다. 성지식의 손익량 증가.
+	<<case "binding">>
+		    구속 - 당신의 팔을 단단하게 구속하고, 무기력하게 만든다.
+	<<case "stealthy">>
+		    은밀함 - 당신의 범죄를 추적하기 어렵게 만든다.
+	<<case "sticky_fingers">>
+		끈적한 손가락 - 당신의 것이 아닌 것을 더 쉽게 얻을 수 있다.
+	<<case "rainproof">>
+		    방수 - 당신을 비로부터 지킨다.
+	<<case "tanLines">>
+		    선탠라인 - 선탠라인이 생기는걸 막는다.
+	<<case "bimbo">>
+		    스페셜 - 이 옷 세트는 뭔가 특별한 것 같다.
+	<<case "heels">>
+		높은 굽 - 발 스킬이 부족하면 피로해지고, 발이 걸려 넘어질 가능성이 있다. 발차기 능력이 향상된다.
+	<<case "rugged">>
+		튼튼함 - 거친 환경에서 발을 보호해 준다.
+	<<case "chest_bind">>
+		    가슴 감음 - 가슴을 꽉 조여서, 당신의 가슴을 숨긴다.
+	<<case "eerie">>
+		으스스함 - <<if $transformdisable is "f">>특정 변신을 막는다. 변신 진행도는 자정에 진행되거나 쇠퇴한다. <<else>>이 물건엔 무언가 이상한 점이 있다.<</if>>
+	<<default>>
+		<<set $noTraitDescription = 1>>
+<</switch>>
+<</widget>>
 
-<<widget "shoptraits">><<nobr>>
+<<widget "shoptraits">>
 특성:
 <br>
-<<if _temp_choice.type.includes("normal")>>
-<<shopTraitDescription "normal">>
+<<for _trait range $clothingTraits>>
+	<<if _temp_choice.type.includes(_trait)>>
+		<div class="trait-description">
+			<<shopTraitDescription _trait>>
+			<<if $noTraitDescription isnot 1>>
+				<<clothingtrait _trait 1>>
+				<br>
+			<</if>>
+		</div>
+	<</if>>
+<</for>>
 <br>
-<</if>>
-<<if _temp_choice.type.includes("formal")>>
-<<shopTraitDescription "formal">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("school")>>
-<<shopTraitDescription "school">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("glasses")>>
-<<shopTraitDescription "glasses">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("cool")>>
-<<shopTraitDescription "cool">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("swim")>>
-<<shopTraitDescription "swim">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("diving")>>
-<<shopTraitDescription "diving">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("dance")>>
-<<shopTraitDescription "dance">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("costume")>>
-<<shopTraitDescription "costume">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("serving")>>
-<<shopTraitDescription "serving">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("fetish")>>
-<<shopTraitDescription "fetish">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("sleep")>>
-<<shopTraitDescription "sleep">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("mask")>>
-<<shopTraitDescription "mask">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("holy")>>
-<<shopTraitDescription "holy">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("dark")>>
-<<shopTraitDescription "dark">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("binding")>>
-<<shopTraitDescription "binding">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("stealthy")>>
-<<shopTraitDescription "stealthy">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("sticky_fingers")>>
-<<shopTraitDescription "sticky_fingers">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("rainproof")>>
-<<shopTraitDescription "rainproof">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("tanLines")>>
-<<shopTraitDescription "tanLines">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("bimbo")>>
-<<shopTraitDescription "bimbo">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("heels")>>
-<<shopTraitDescription "heels">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("rugged")>>
-<<shopTraitDescription "rugged">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("chest_bind")>>
-<<shopTraitDescription "chest_bind">>
-<br>
-<</if>>
-<<if _temp_choice.type.includes("eerie")>>
-<<shopTraitDescription "eerie">>
-<br>
-<</if>>
-<br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopDefaultOptions">><<nobr>>
+<<widget "shopDefaultOptions">>
 
 <br>
 <<set _colorOptions to ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"]>>
@@ -614,7 +505,7 @@ Forth argument - item index*/
 두번째 색:
 <br>
 <<for _i to 0; _i lt _secondaryColorOptions.length; _i++>>
-	<label><<trColour _secondaryColorOptions[_i]>><<print '<span class="'+ _colorOptions[_i] +'">' + _trResult + '</span>'>>
+	<label><<trColour _secondaryColorOptions[_i]>><<print '<span class="'+ _secondaryColorOptions[_i] +'">' + _trResult + '</span>'>>
 	<<print '<<radiobutton "$shopDefaults.secColor" "'+ _secondaryColorOptions[_i] +'" ' + ($shopDefaults.secColor is _secondaryColorOptions[_i] ? "checked" : "") + '>>'>></label>
 	|
 <</for>>
@@ -632,7 +523,7 @@ Forth argument - item index*/
 	<<if $shopListMax is undefined>>
 		<<set $shopListMax to 15>>
 	<</if>>
-	한번에 물건을 표시하는 개수: 
+	한번에 물건을 표시하는 개수:
 	<<listbox "$shopListMax" autoselect>>
 		<<option 10>>
 		<<option 15>>
@@ -640,19 +531,19 @@ Forth argument - item index*/
 		<<option 25>>
 	<</listbox>>
 </label>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopDefaultOptionsToggle">><<nobr>>
+<<widget "shopDefaultOptionsToggle">>
 <<toggleclass #shopDefault "hidden">>
 <<addclass #shopClothingFilter "hidden">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopClothingFilterToggle">><<nobr>>
+<<widget "shopClothingFilterToggle">>
 <<toggleclass #shopClothingFilter "hidden">>
 <<addclass #shopDefault "hidden">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopClothingFilterSettings">><<nobr>>
+<<widget "shopClothingFilterSettings">>
 <<if $shopClothingFilter is undefined>>
 	<<set $shopClothingFilter to {
 		gender: "none",
@@ -724,25 +615,20 @@ Forth argument - item index*/
 <br>
 [[확인|$passage]]
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopClothingFilterReset">><<nobr>>
-<<if $shopClothingFilter>>
-	<<set $shopClothingFilter.gender to "none">>
-	<<set $shopClothingFilter.traits to []>>
-	<<set $shopClothingFilter.reveal to {
-		lewd: true,
-		risqué: true,
-		seductive: true,
-		comfy: true,
-		tasteful: true,
-		smart: true,
-		unassuming: true
-	}>>
+<<widget "shopClothingFilterReset">>
+<<if $shopClothingFilter is undefined>>
+	<<set $shopClothingFilter = {}>>
 <</if>>
-<</nobr>><</widget>>
+<<set $shopClothingFilter.gender = { female: true, neutral: true, male: true }>>
+<<set $shopClothingFilter.reveal = { from: 0, to: 9999 }>>
+<<set $shopClothingFilter.warmth = { from: 0, to: 200 }>>
+<<set $shopClothingFilter.traits = []>>
+<<set $shopClothingFilter.active = false>>
+<</widget>>
 
-<<widget "shopClothingFilterLoadTraits">><<nobr>>
+<<widget "shopClothingFilterLoadTraits">>
 <<set _clothingTraitTypes to [
   "cool",
   "costume",
@@ -768,28 +654,28 @@ Forth argument - item index*/
 ]>>
 
 <<set _clothingTraitTypes to _clothingTraitTypes.sort(shopClothingFilterSortOnDescription)>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsToggle">><<nobr>>
+<<widget "shopCustomColorsToggle">>
 <<toggleclass #shopCustomColorsDisplay "hidden">>
 <<toggleclass #customColorBars "hidden">>
 <<toggleclass #ColorsPresets "hidden">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColors">><<nobr>>
+<<widget "shopCustomColors">>
 <br>
 <div id="shopCustomColorsDisplay" @class="'shopCustomColors' + ($shopDefaults.invertCustomColorsHidden is true? '' : ' hidden')"><<shopCustomColorsDisplay>></div>
 <div id="customColorBars" @class="'shopCustomColors' + ($shopDefaults.invertCustomColorsHidden is true? '' : ' hidden')"><<shopCustomColorsBars>></div>
 <div style="clear:both;"></div>
 <div id="ColorsPresets" @class="($shopDefaults.invertCustomColorsHidden is true? '' : 'hidden')"><<shopCustomColorsPresets>></div>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsDisplay">><<nobr>>
+<<widget "shopCustomColorsDisplay">>
 __커스텀 색상__
 <div id="customColor">
-	<div @style="customColor($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)"></div>
+	<div @style="customColour($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)"></div>
 	기본 - 색: $customColors.color.primary | 채도: $customColors.saturation.primary | 명도: $customColors.brightness.primary | 대비: $customColors.contrast.primary | 세피아(흑갈색): $customColors.sepia.primary
-	<div @style="customColor($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)"></div>
+	<div @style="customColour($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)"></div>
 	두번째 - 색: $customColors.color.secondary | 채도: $customColors.saturation.secondary | 명도: $customColors.brightness.secondary | 대비: $customColors.contrast.secondary | 세피아(흑갈색): $customColors.sepia.secondary
 </div>
 <br>
@@ -808,9 +694,9 @@ __커스텀 색상__
 	<<replace #customColorBars>><<shopCustomColorsBars>><</replace>>
 	<<replace #shopCustomColorsDisplay>><<shopCustomColorsDisplay>><</replace>>
 <</link>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsBars">><<nobr>>
+<<widget "shopCustomColorsBars">>
 
 색:
 <div id="numberslider-body-customColor" class="macro-numberslider">
@@ -834,9 +720,9 @@ __커스텀 색상__
 <div id="numberslider-body-customColor" class="macro-numberslider">
 	<input type="range" min="0" max="1" step="0.05" @value="$customColors.sepia[$customColors.currentType]" oninput="wikifier('shopCustomColorsSet','sepia', this.value)">
 </div>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsSet">><<nobr>>
+<<widget "shopCustomColorsSet">>
 <<if $args[0] and $args[1]>>
 	<<switch $args[0]>>
 		<<case "color">><<set $customColors.color[$customColors.currentType] to $args[1]>>
@@ -847,9 +733,9 @@ __커스텀 색상__
 	<</switch>>
 	<<replace #shopCustomColorsDisplay>><<shopCustomColorsDisplay>><</replace>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsPresets">><<nobr>>
+<<widget "shopCustomColorsPresets">>
 <br>
 <label><<print '<<radiobutton "$customColors.action" "set" ' + ($customColors.action is "set" ? "checked" : "") + '>>'>> 설정</label> |
 <label><<print '<<radiobutton "$customColors.action" "delete" ' + ($customColors.action is "delete" ? "checked" : "") + '>>'>> 삭제</label>
@@ -875,9 +761,9 @@ __커스텀 색상__
 	<<unset $tempDisable>>
 <</link>>
 <br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopCustomColorsPresetsLoad">><<nobr>>
+<<widget "shopCustomColorsPresetsLoad">>
 <<set _presets to Object.keys($customColors.presets)>>
 <<set _preset to _presets[$args[0]]>>
 <<if $customColors.action is "set">>
@@ -907,10 +793,10 @@ __커스텀 색상__
 	<<set $customColors.presets to clone(_newPresets)>>
 	<<replace #ColorsPresets>><<shopCustomColorsPresets>><</replace>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
 /*Args: slots used in an array*/
-<<widget "shopBuyItemStatus">><<nobr>>
+<<widget "shopBuyItemStatus">>
 <<if $args[0]>>
 	<<set _undamagedCount to 0>>
 	<<set _damagedCount to 0>>
@@ -950,25 +836,25 @@ __커스텀 색상__
 		<br>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
 /*Args: slot, itemName, outfit*/
-<<widget "shopFullImage">><<nobr>>
+<<widget "shopFullImage">>
 <<if $args[0] and $args[1] isnot undefined>>
 	<<set _shopFullImageVar to [$args[0], $args[1]]>>
 	<a value="Refresh" onclick="Wikifier.wikifyEval('<<replace #shopFullImage>><<shopFullImage $clothingShopSlot $clothes_choice>><</replace>>');">Refresh</a>
 	<br>
 	<div class="hideImageOverflow">
 		<div class="shopImg">
-			<<set _customPrimary to customColor($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)>>
-			<<set _customSecondary to customColor($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)>>
+			<<set _customPrimary to customColour($customColors.color.primary, $customColors.saturation.primary, $customColors.brightness.primary, $customColors.contrast.primary, $customColors.sepia.primary)>>
+			<<set _customSecondary to customColour($customColors.color.secondary, $customColors.saturation.secondary, $customColors.brightness.secondary, $customColors.contrast.secondary, $customColors.sepia.secondary)>>
 			<<shopFullImageSlot $args[0] $args[1]>>
 		</div>
 	</div>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopFullImageSlot">><<nobr>>
+<<widget "shopFullImageSlot">>
 <<if $args[0] and $args[1]>>
 	<<set $_slot to $args[0]>>
 	<<set $_item to $args[1]>>
@@ -976,7 +862,7 @@ __커스텀 색상__
 		<<shopFullImagePart $_slot $_item "full" $colouraction _customPrimary>>
 	<</if>>
 	<<if setup.clothes[$_slot][$_item].breast_img is 1>>
-		<<switch $breastsize>>
+		<<switch $player.perceived_breastsize>>
 			<<case 12>>
 				<<set _breastSize to 6>>
 			<<case 8 9 10 11>>
@@ -1017,18 +903,18 @@ __커스텀 색상__
 		<</for>>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
 /*$args[0] - slot, $args[1] - itemNo, $args[2] - file, $args[3] - colour, $args[4] - custom colour*/
-<<widget "shopFullImagePart">><<nobr>>
+<<widget "shopFullImagePart">>
 <img @class="'clothes-'+ (typeof($args[3]) == 'string' ? $args[3].replace(/ /g, '-') : '') + ' layer-' + $args[0]" @src="'img/clothes/' + $args[0] + '/' + setup.clothes[$args[0]][$args[1]].variable + '/' + $args[2] + '.png'" @style="($args[3] is 'custom'? $args[4]:'')">
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "shopFullImageToggle">><<nobr>>
+<<widget "shopFullImageToggle">>
 <<toggleclass #shopFullImage "hidden">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "specialClothesSetup">><<nobr>>
+<<widget "specialClothesSetup">>
 <<if $specialClothes is undefined>>
 	<<set $specialClothes to {
 		"witchdress":"locked",
@@ -1052,7 +938,9 @@ __커스텀 색상__
 		"witchshoes":"locked",
 		"mummyfacewrap":"locked",
 		"mummytop":"locked",
-		"mummyskirt":"locked"
+		"mummyskirt":"locked",
+		"catsuit":"locked",
+		"holystole":"locked"
 	}>>
 <</if>>
 <<if $specialClothes.cowbell is undefined>>
@@ -1061,9 +949,15 @@ __커스텀 색상__
 <<if $specialClothes.featheredhairclip is undefined>>
 	<<set $specialClothes.featheredhairclip to "locked">>
 <</if>>
-<</nobr>><</widget>>
+<<if $specialClothes.catsuit is undefined>>
+	<<set $specialClothes.catsuit to "locked">>
+<</if>>
+<<if $specialClothes.holystole is undefined>>
+	<<set $specialClothes.holystole to "locked">>
+<</if>>
+<</widget>>
 
-<<widget "specialClothesUpdate">><<nobr>>
+<<widget "specialClothesUpdate">>
 <<if $headdrive is 1>>
 	<<set $specialClothes["serafuku"] to "unlocked">>
 <</if>>
@@ -1114,6 +1008,12 @@ __커스텀 색상__
 <<if $syndromebird is 1>>
 	<<set $specialClothes["featheredhairclip"] to "unlocked">>
 <</if>>
+<<if $catsuit_found is true>>
+	<<set $specialClothes["catsuit"] to "unlocked">>
+<</if>>
+<<if $grace gte 100>>
+	<<set $specialClothes["holystole"] to "unlocked">>
+<</if>>
 <<set _count to 0>>
 <<for $_label, $_value range $specialClothes>>
 	<<if $_value is "unlocked">>
@@ -1151,9 +1051,9 @@ __커스텀 색상__
 	<<set $specialClothes["cowbell"] to "unlocked">>
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "specialClothesHint">><<nobr>>
+<<widget "specialClothesHint">>
 <<if _specialClothesHint is undefined>>
 	<<set _specialClothesHint to {
 		"witchdress":"In stock from the 21st of October.",
@@ -1165,7 +1065,7 @@ __커스텀 색상__
 		"bellydancer'stop":"Be offered the star role in a show at the brothel.",
 		"christmastrousers":"In stock from the 15th of December.",
 		"bellydancer'sbottoms":"Be offered the star role in a show at the brothel.",
-		"loincloth":"Befriend a lonely hunter. Or join a pack of wolves.",
+		"loincloth":"Befriend a lonely hunter, or join a pack of wolves.",
 		"witchhat":"In stock from the 21st of October.",
 		"christmashat":"In stock from the 15th of December.",
 		"chefhat":"Become famous for your cream buns.",
@@ -1179,7 +1079,19 @@ __커스텀 색상__
 		"mummyfacewrap":"In stock from the 21st of October.",
 		"mummytop":"In stock from the 21st of October.",
 		"mummyskirt":"In stock from the 21st of October.",
-		"featheredhairclip":"Romance an avian."
+		"featheredhairclip":"Romance an avian.",
+		"catsuit":"Pillage a shipment.",
+		"holystole":"Requires sufficient devotion."
 	}>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
+
+<<widget "updatesidebarimg">>
+	<<if $images is 1>>
+		<<if $passage is "Start">>
+			<<startingPlayerImageUpdate>>
+		<<else>>
+			<<replace "#sidebar-img-container">><<img>><</replace>>
+		<</if>>
+	<</if>>
+<</widget>>

@@ -1,24 +1,24 @@
-:: StoryCaption [nobr]
+:: StoryCaption
 <div id="storyCaptionDiv" @class="($extendedStats ? 'storyCaptionDivExtended' : '')">
 <<if $intro is 0>>
 	<<effectstime>>
 	<<weatherdisplay>>
-	<<exposure>>
 	<<if $gamemode is "soft">>
 		<<set $pain to 0>>
 	<</if>>
 	<<if $images is 1>>
 		<<addclass body has-images>>
 		<<removeclass body no-images>>
-		<<img>>
+		<div id="sidebar-img-container">
+			<<img>>
+		</div>
 	<<else>>
 		<<removeclass body has-images>>
 		<<addclass body no-images>>
 	<</if>>
 	<<combateffects>>
 	
-	
-	
+
 	<<if $endeventerror isnot undefined>>
 		<<if $debugdisable is "f">>
 			<<if $images is 1>><img class="layer-sexmouth" src="img/ui/sym_awareness.png"><</if>><span class="red"><<print StartConfig.version>> Error: An NPC generated on the "$endeventerror" passage broke free. Please inform Vrelnir. <<if $cheatdisable is "f">>Disregard this if you've just used a cheat.<</if>></span>
@@ -57,14 +57,9 @@
 			<<statsCaption>>
 		</div>
 	<<else>>
-		<<if $dev is 1>>
-			<<set $money = Math.trunc($money)>>
-			£<<print ($money / 100)>>를 갖고 있다
-			<br>
-		<<else>>
-			£<<print Math.trunc($money / 100)>>.<<if $money % 100 lte 9>>0<</if>><<print $money % 100>>를 갖고 있다
-			<br>
-		<</if>>
+		<div id="money-noimg">
+			<<statsMoneyNoImg>>
+		</div>
 		<br>
 
 		<<if $timestyle is "ampm">>
@@ -84,142 +79,14 @@
 	<</if>>
 	<<schoolday>>
 	<br>
-	<!--old version
-	<<clothingcaption>>
-	<br>
-	<<stripcaption>>
-
-	<<if ($player.gender is "m" or $player.gender is "h") and $player.gender_appearance is "f">>
-		<<if $breastindicator is 1>>
-			<span class="pink">노출된 가슴 때문에 사람들은 당신이 여자라고 생각할 것이다!</span>
-			<br>
-		<<elseif $exposed gte 2>>
-			<span class="pink">겉모습만 보면 사람들은 당신이 여자라고 생각할 것이다!</span>
-			<br>
-		<<else>>
-			<span class="pink">옷차림 때문에 사람들은 당신이 여자라고 생각할 것이다!</span>
-			<br>
-		<</if>>
-	<<elseif ($player.gender is "f" or $player.gender is "h") and $player.gender_appearance is "m">>
-		<<if $breastindicator is 0 and $worn.upper.exposed is 2 and $worn.under_upper.exposed gte 1>>
-			<span class="pink">노출된 평평한 가슴 때문에 사람들은 당신이 남자라고 생각할 것이다!</span>
-			<br>
-		<<elseif $exposed gte 2>>
-			<span class="pink">겉모습만 보면 사람들은 당신이 남자라고 생각할 것이다!</span>
-		<<else>>
-			<span class="pink">옷차림 때문에 사람들은 당신이 남자라고 생각할 것이다!</span>
-			<br>
-		<</if>>
-	<</if>>-->
-	<<clothingCpationText>>
-	
-	<<switch $body_temperature>>
-	<<case "hot">>
-		<span class="red">당신은 더위로 푹푹 찌고 있다.</span>
-	<<case "warm">>
-		<span class="purple">당신은 따뜻하고, 땀을 흘린다.</span>
-	<<case "chilly">>
-		<<if _water_warmth>>
-			<span class="purple">당신은 찬 물에 몸이 식는다.</span>
-		<<else>>
-			<span class="purple">당신은 몸이 쌀쌀하다.</span>
-		<</if>>
-	<<case "cold">>
-		<<if _water_warmth>>
-			<span class="red">당신은 얼어붙은 물에서 몸을 떨고 있다.</span>
-		<<else>>
-			<span class="red">당신은 떨고있다.</span>
-		<</if>>
-	<<default>>
-		<<if _water_warmth>>
-			<span class="green">물이 따뜻하다.</span>
-		<<else>>
-			<span class="green">몸이 아늑하다.</span>
-		<</if>>
-	<</switch>>
+	<div id="sidebar-look-description">
+		<<sidebarlookdescription>>
+	</div>
 	<br>
 
 	<<clamp>>
 
-	<<if $daystate is "night">>
-		<<set $nightmod to 1.5>>
-	<<else>>
-		<<set $nightmod to 1>>
-	<</if>>
-
-	<<if $exposed gte 2>>
-		<<set $exposedmod to 1.4>>
-	<<elseif $exposed gte 1>>
-		<<set $exposedmod to 1.2>>
-	<<else>>
-		<<set $exposedmod to 1>>
-	<</if>>
-
-	<<set $allure to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
-	<<if $worn.upper.type.includes("naked")>><<set $allure += $worn.under_upper.reveal>><</if>>
-	<<if $worn.lower.type.includes("naked")>><<set $allure += $worn.under_lower.reveal>><</if>>
-	<<set $allure *= $nightmod>>
-	<<set $allure *= $exposedmod>>
-	<<set $allure += $worn.head.reveal>>
-	<<set $allure += $worn.face.reveal>>
-	<<set $allure += $worn.neck.reveal>>
-	<<set $allure += $worn.legs.reveal>>
-	<<set $allure += $worn.feet.reveal>>
-	<<if $wolfgirl gte 6>><<set $allure += 500>><</if>>
-	<<if $demon gte 6>><<set $allure += 500>><</if>>
-	<<if $angel gte 6>><<set $allure += 500>><</if>>
-	<<if $fallenangel gte 2>><<set $allure += 500>><</if>>
-	<<if $cat gte 6>><<set $allure += 500>><</if>>
-	<<if $cow gte 6>><<set $allure += 500>><</if>>
-	<<if $harpy gte 6>><<set $allure += 500>><</if>>
-	<<goocount>><<set $allure += ($goocount * 50) + ($semencount * 50)>>
-
-	<<if $makeup.lipstick != 0>><<set $allure += 100>><</if>>
-	<<if $makeup.eyeshadow != 0>><<set $allure += 100>><</if>>
-	<<if $makeup.mascara != 0>><<set $allure += 100>><</if>>
-
-	<<set $allure += ($famesex / 10)>>
-	<<set $allure += ($famerape / 10)>>
-	<<set $allure += ($famebestiality / 10)>>
-	<<set $allure += ($fameexhibitionism / 10)>>
-
-	<<set $allure -= ($famescrap / 2)>>
-	<<set $allure -= ($famegood / 2)>>
-	<<set $allure -= ($famebusiness / 2)>>
-	<<set $allure -= ($famesocial / 2)>>
-	<<if $dev is 1>>
-		<<set $allure -= ($famepimp / 2)>>
-	<</if>>
-	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
-		<<set $allure += 2000>>
-	<</if>>
-	<<set $allure *= $alluremod>>
-	<<if $allure gte 8000 * $alluremod>><<set $allure to 8000 * $alluremod>><</if>>
-	<<if $moorLuck gt 0>>
-		<<set $allure to Math.floor($allure * (1 - ($moorLuck / 100)))>>
-	<</if>>
-	<<if $allure lt 0>>
-		<<set $allure to 0>>
-	<</if>>
-
-	<<set $attractiveness to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
-	<<if $worn.upper.type.includes("naked")>><<set $attractiveness += $worn.under_upper.reveal>><</if>>
-	<<if $worn.lower.type.includes("naked")>><<set $attractiveness += $worn.under_lower.reveal>><</if>>
-	<<set $attractiveness += $worn.head.reveal>>
-	<<set $attractiveness += $worn.face.reveal>>
-	<<set $attractiveness += $worn.neck.reveal>>
-	<<set $attractiveness += $worn.legs.reveal>>
-	<<set $attractiveness += $worn.feet.reveal>>
-	<<if $wolfgirl gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $demon gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $angel gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $fallenangel gte 2>><<set $attractiveness += 500>><</if>>
-	<<if $cat gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $cow gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $harpy gte 6>><<set $attractiveness += 500>><</if>>
-	<<if $makeup.lipstick != 0>><<set $attractiveness += 100>><</if>>
-	<<if $makeup.eyeshadow != 0>><<set $attractiveness += 100>><</if>>
-	<<if $makeup.mascara != 0>><<set $attractiveness += 100>><</if>>
+	<<calculateallure>>
 	<<set $rng to random(1, 100)>>
 
 	<<if $worn.neck.collared gte 1>>
@@ -341,27 +208,39 @@
 	<<button 정보>>
 		<<overlayReplace "characteristics">>
 	<</button>>
-
-	<<button 특성>>
-		<<overlayReplace "traits">>
-	<</button>>
-
 	<<button 관계>>
 		<<overlayReplace "social">>
 	<</button>>
-
-	<<button 통계/도전과제>>
-		<<overlayReplace "statistics">>
-	<</button>>
-	<br><br>
-	<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
-		<<button 치트>>
-			<<overlayReplace "cheats">>
+	<div class="sidebarButtonSplit">
+		<<button 특성>>
+			<<overlayReplace "traits">>
 		<</button>>
-	<</if>>
+		<<button 일지>>
+			<<overlayReplace "journal">>
+		<</button>>
+	</div>
+	<div class="sidebarButtonSplit">
+		<<button 통계>>
+			<<overlayReplace "statistics">>
+		<</button>>
+		<<button 도전과제>>
+			<<overlayReplace "gameFeats">>
+		<</button>>
+	</div>
+	<br>
+	<div class="sidebarButtonSplit">
+		<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
+			<<button 치트>>
+				<<overlayReplace "cheats">>
+			<</button>>
+		<</if>>
+		<<if $debug is 1>>
+			<<debug>>
+		<</if>>
+	</div>
 
-	<<if $debug is 1>>
-		<<debug>>
+	<<if $showDebugRenderer>>
+		<<button "DEBUG RENDERER">><<overlayReplace "canvasModel">><</button>>
 	<</if>>
 
 <<else>>
@@ -374,29 +253,170 @@
 		<<overlayReplace "startFeats">>
 	<</button>>
 <</if>>
-
-<<if passage() is "certification_start">><<certification_optionsButton>><<else>><<button 저장/옵션>>
-	<<overlayReplace "options">>
-<</button>><</if>>
-<br><br>
+<div class="sidebarButtonSplit">
+	<<button 옵션>>
+		<<overlayReplace "options">>
+	<</button>>
+	<<button 세이브>>
+		<<overlayReplace "saves">>
+	<</button>>
+</div>
+<br>
 
 <<set $currentOverlay to null>>
 <div id="customOverlay" class="customOverlay hidden">
 	<div id="customOverlayTitle" class="fixedClose"></div>
-	<div id="customOverlaySaveContent"></div>
 	<div id="customOverlayContent"></div>
 </div>
 </div>
 
 :: Widgets Clothing Caption [widget]
-<<widget "clothingcaption">><<nobr>>
+<<widget "sidebarlookdescription">>
+	<!--old version
+	<<clothingcaption>>
+	<br>
+	<<stripcaption>>
+
+	<<if ($player.gender is "m" or $player.gender is "h") and $player.gender_appearance is "f">>
+		<<if $breastindicator is 1>>
+			<span class="pink">노출된 가슴 때문에 사람들은 당신이 여자라고 생각할 것이다!</span>
+			<br>
+		<<elseif $exposed gte 2>>
+			<span class="pink">겉모습만 보면 사람들은 당신이 여자라고 생각할 것이다!</span>
+			<br>
+		<<else>>
+			<span class="pink">옷차림 때문에 사람들은 당신이 여자라고 생각할 것이다!</span>
+			<br>
+		<</if>>
+	<<elseif ($player.gender is "f" or $player.gender is "h") and $player.gender_appearance is "m">>
+		<<if $breastindicator is 0 and $worn.upper.exposed is 2 and $worn.under_upper.exposed gte 1>>
+			<span class="pink">노출된 평평한 가슴 때문에 사람들은 당신이 남자라고 생각할 것이다!</span>
+			<br>
+		<<elseif $exposed gte 2>>
+			<span class="pink">겉모습만 보면 사람들은 당신이 남자라고 생각할 것이다!</span>
+		<<else>>
+			<span class="pink">옷차림 때문에 사람들은 당신이 남자라고 생각할 것이다!</span>
+			<br>
+		<</if>>
+	<</if>>-->
+	<<clothingCpationText>>
+
+	<<switch $body_temperature>>
+	<<case "hot">>
+		<span class="red">당신은 무더위에 시달리고 있다.</span>
+	<<case "warm">>
+		<span class="purple">당신은 따뜻하고, 땀을 흘린다.</span>
+	<<case "chilly">>
+		<<if _water_warmth>>
+			<span class="purple">당신은 찬 물 때문에 추위를 느낀다.</span>
+		<<else>>
+			<span class="purple">당신은 쌀쌀함을 느낀다.</span>
+		<</if>>
+	<<case "cold">>
+		<<if _water_warmth>>
+			<span class="red">당신은 얼어붙을 듯한 물 속에서 떨고 있다.</span>
+		<<else>>
+			<span class="red">당신은 떨고 있다.</span>
+		<</if>>
+	<<default>>
+		<<if _water_warmth>>
+			<span class="green">물이 따뜻하다.</span>
+		<<else>>
+			<span class="green">몸이 아늑하다.</span>
+		<</if>>
+	<</switch>>
+<</widget>>
+
+<<widget "calculateallure">>
+	<<if $daystate is "night">>
+		<<set $nightmod to 1.5>>
+	<<else>>
+		<<set $nightmod to 1>>
+	<</if>>
+
+	<<if $exposed gte 2>>
+		<<set $exposedmod to 1.4>>
+	<<elseif $exposed gte 1>>
+		<<set $exposedmod to 1.2>>
+	<<else>>
+		<<set $exposedmod to 1>>
+	<</if>>
+
+	<<set $allure to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
+	<<if $worn.upper.type.includes("naked")>><<set $allure += $worn.under_upper.reveal>><</if>>
+	<<if $worn.lower.type.includes("naked")>><<set $allure += $worn.under_lower.reveal>><</if>>
+	<<set $allure *= $nightmod>>
+	<<set $allure *= $exposedmod>>
+	<<set $allure += $worn.head.reveal>>
+	<<set $allure += $worn.face.reveal>>
+	<<set $allure += $worn.neck.reveal>>
+	<<set $allure += $worn.legs.reveal>>
+	<<set $allure += $worn.feet.reveal>>
+	<<if $wolfgirl gte 6>><<set $allure += 500>><</if>>
+	<<if $demon gte 6>><<set $allure += 500>><</if>>
+	<<if $angel gte 6>><<set $allure += 500>><</if>>
+	<<if $fallenangel gte 2>><<set $allure += 500>><</if>>
+	<<if $cat gte 6>><<set $allure += 500>><</if>>
+	<<if $cow gte 6>><<set $allure += 500>><</if>>
+	<<if $harpy gte 6>><<set $allure += 500>><</if>>
+	<<goocount>><<set $allure += ($goocount * 50) + ($semencount * 50)>>
+
+	<<if $makeup.lipstick != 0>><<set $allure += 100>><</if>>
+	<<if $makeup.eyeshadow != 0>><<set $allure += 100>><</if>>
+	<<if $makeup.mascara != 0>><<set $allure += 100>><</if>>
+
+	<<set $allure += ($famesex / 10)>>
+	<<set $allure += ($famerape / 10)>>
+	<<set $allure += ($famebestiality / 10)>>
+	<<set $allure += ($fameexhibitionism / 10)>>
+
+	<<set $allure -= ($famescrap / 2)>>
+	<<set $allure -= ($famegood / 2)>>
+	<<set $allure -= ($famebusiness / 2)>>
+	<<set $allure -= ($famesocial / 2)>>
+	<<if $dev is 1>>
+		<<set $allure -= ($famepimp / 2)>>
+	<</if>>
+	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
+		<<set $allure += 2000>>
+	<</if>>
+	<<set $allure *= $alluremod>>
+	<<if $allure gte 8000 * $alluremod>><<set $allure to 8000 * $alluremod>><</if>>
+	<<if $moorLuck gt 0>>
+		<<set $allure to Math.floor($allure * (1 - ($moorLuck / 100)))>>
+	<</if>>
+	<<if $allure lt 0>>
+		<<set $allure to 0>>
+	<</if>>
+
+	<<set $attractiveness to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
+	<<if $worn.upper.type.includes("naked")>><<set $attractiveness += $worn.under_upper.reveal>><</if>>
+	<<if $worn.lower.type.includes("naked")>><<set $attractiveness += $worn.under_lower.reveal>><</if>>
+	<<set $attractiveness += $worn.head.reveal>>
+	<<set $attractiveness += $worn.face.reveal>>
+	<<set $attractiveness += $worn.neck.reveal>>
+	<<set $attractiveness += $worn.legs.reveal>>
+	<<set $attractiveness += $worn.feet.reveal>>
+	<<if $wolfgirl gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $demon gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $angel gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $fallenangel gte 2>><<set $attractiveness += 500>><</if>>
+	<<if $cat gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $cow gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $harpy gte 6>><<set $attractiveness += 500>><</if>>
+	<<if $makeup.lipstick != 0>><<set $attractiveness += 100>><</if>>
+	<<if $makeup.eyeshadow != 0>><<set $attractiveness += 100>><</if>>
+	<<if $makeup.mascara != 0>><<set $attractiveness += 100>><</if>>
+<</widget>>
+
+<<widget "clothingcaption">>
 <<if $worn.upper.name is "naked">>
 	<<if $worn.lower.name is "naked">>
 		<<if $worn.under_lower.name is "naked" and $worn.genitals.name is "naked">>
 			<<if $worn.under_upper.name is "naked">>
 			<span class="red">당신은 완전히 알몸이다!</span>
 			<<else>>
-			<span class="red">당신의 하반신이 완전히 노출되어 있다!</span> <span class="pink">그나마 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "이">>_trResult 조금이나마 위안이 되어준다.</span>
+			<span class="red">당신의 하반신이 완전히 노출되어 있다!</span> <span class="pink">그나마 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "이">>_trResult 조금이나마 위안이 되어준다.</span>
 			<</if>>
 		<<elseif $worn.under_lower.name is "naked" and $worn.genitals.name isnot "naked">>
 			<<if $worn.under_upper.name is "naked">>
@@ -407,12 +427,12 @@
 		<</if>>
 		<<if $worn.under_lower.name isnot "naked">>
 			<<if $worn.under_upper.name is "naked">>
-			<span class="pink">당신은 <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 빼곤 아무 것도 입고 있지 않다.</span>
+			<span class="pink">당신은 <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 빼곤 아무 것도 입고 있지 않다.</span>
 			<<else>>
 				<<if $worn.under_lower.set is $worn.under_upper.set>>
-				<span class="pink">당신은 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만 입고 있다.</span>
+				<span class="pink">당신은 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만 입고 있다.</span>
 				<<else>>
-				<span class="pink">당신은 <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "과">>_trResult <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.</span>
+				<span class="pink">당신은 <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "과">>_trResult <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.</span>
 				<</if>>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
@@ -423,9 +443,9 @@
 	<<if $worn.lower.name isnot "naked">>
 		<<if $worn.under_lower.name is "naked">>
 			<<if $worn.under_upper.name is "naked">>
-			<span class="pink">당신의 상반신은 알몸에 속옷도 입고 있지 않지만</span>, 하반신은 <<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 가리고 있다.
+			<span class="pink">당신의 상반신은 알몸에 속옷도 입고 있지 않지만</span>, 하반신은 <<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 가리고 있다.
 			<<else>>
-			<span class="pink">당신은 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "와" "sep">>_trResult</span>_trPost <<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 입고 있고, <span class="purple">그 아래에는 아무 것도 입고 있지 않다.</span>
+			<span class="pink">당신은 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "와" "sep">>_trResult</span>_trPost <<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 입고 있고, <span class="purple">그 아래에는 아무 것도 입고 있지 않다.</span>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
 				당신은 <<genitalsintegrity>> <<trClothes "genitals" $worn.genitals.name>>_trResult<<if $worn.genitals.anal_shield is 1>>와 애널 보호대<</if>>를 착용하고 있다.
@@ -433,9 +453,9 @@
 		<</if>>
 		<<if $worn.under_lower.name isnot "naked">>
 			<<if $worn.under_upper.name is "naked">>
-			<span class="pink">당신의 상반신은 알몸이고</span> <<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있다.
+			<span class="pink">당신의 상반신은 알몸이고</span> <<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있다.
 			<<else>>
-			당신의 하반신은 <<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 가리고 있지만, <span class="pink"><<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만이 당신의 가슴을 보호하고 있다.</span>
+			당신의 하반신은 <<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 가리고 있지만, <span class="pink"><<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만이 당신의 가슴을 보호하고 있다.</span>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
 				당신은 <<genitalsintegrity>> <<trClothes "genitals" $worn.genitals.name>>_trResult<<if $worn.genitals.anal_shield is 1>>와 애널 보호대<</if>>를 착용하고 있다.
@@ -447,15 +467,15 @@
 		<<if $worn.under_lower.name is "naked">>
 			<<if $worn.upper.one_piece is "broken" and $worn.lower.set isnot $worn.upper.set>>
 				<<if $worn.under_upper.name is "naked">>
-				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="red"> 하반신이 완전히 노출되어 있다!</span>
+				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="red"> 하반신이 완전히 노출되어 있다!</span>
 				<<else>>
-				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있어서 <span class="red">하반신이 완전히 노출되어 있다!</span>
+				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있어서 <span class="red">하반신이 완전히 노출되어 있다!</span>
 				<</if>>
 			<<else>>
 				<<if $worn.under_upper.name is "naked">>
-				<span class="red">당신의 하반신은 완전히 노출되어 있다!</span> 상반신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "이">>_trResult 가리고 있으나, <span class="purple">그 밑엔 아무 것도 입지 않았다.</span>
+				<span class="red">당신의 하반신은 완전히 노출되어 있다!</span> 상반신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "이">>_trResult 가리고 있으나, <span class="purple">그 밑엔 아무 것도 입지 않았다.</span>
 				<<else>>
-				<span class="red">당신의 하반신은 완전히 노출되어 있다!</span> 상반신에는 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있고, 그 밑에 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
+				<span class="red">당신의 하반신은 완전히 노출되어 있다!</span> 상반신에는 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있고, 그 밑에 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
 				<</if>>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
@@ -465,18 +485,18 @@
 		<<if $worn.under_lower.name isnot "naked">>
 			<<if $worn.upper.one_piece is "broken" and $worn.lower.set isnot $worn.upper.set>>
 				<<if $worn.under_upper.name is "naked">>
-				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="purple"> <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
+				당신은 허리 아래가 뜯겨나간 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="purple"> <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
 				<<else>>
-				당신은 <<underupperintegrity>> <<underupperclothescolour>> $worn.under_upper.name 위에 허리 아래가 뜯겨나간 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="purple"><<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
+				당신은 <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name 위에 허리 아래가 뜯겨나간 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있어서 <span class="purple"><<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
 				<</if>>
 			<<else>>
 				<<if $worn.under_upper.name is "naked">>
-				당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있고 <span class="purple"><<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
+				당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 입고 있고 <span class="purple"><<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
 				<<else>>
 					<<if $worn.under_upper.one_piece is 1>>
-					당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다. <span class="purple">허리 밑으로 <<trClothes "under_upper" $worn.under_upper.name "name" "이">>_trResult 보인다.</span>
+					당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다. <span class="purple">허리 밑으로 <<trClothes "under_upper" $worn.under_upper.name "name" "이">>_trResult 보인다.</span>
 					<<else>>
-					당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있고 <span class="purple"><<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
+					당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name>>_trResult 밑에 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있고 <span class="purple"><<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 노출되어 있다.</span>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -488,20 +508,20 @@
 	<<if $worn.lower.name isnot "naked">>
 		<<if $worn.under_lower.name is "naked">>
 			<<if $worn.under_upper.name is "naked">>
-			당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult
+			당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult
 				<<if $worn.lower.one_piece isnot 1>>
-				<<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult 함께
+				<<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult 함께
 				<</if>>
 			입고 <<if $worn.lower.type.includes("swim")>>있고<<else>>있으나<</if>> <span class="purple">속옷을 입고 있지 않다.</span>
 			<<else>>
-				당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult
+				당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult
 				<<if $worn.lower.one_piece isnot 1>>
-				<<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult 함께
+				<<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name "name" "과">>_trResult 함께
 				<</if>>
 				입고 <<if $worn.under_upper.one_piece is "broken">>
-				<span class="purple">그 밑에는 허리 아래가 뜯겨나간 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있다.</span>
+				<span class="purple">그 밑에는 허리 아래가 뜯겨나간 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있다.</span>
 				<<else>>
-				<span class="purple">그 밑에는 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있다.</span>
+				<span class="purple">그 밑에는 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name>>_trResult만을 입고 있다.</span>
 				<</if>>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
@@ -510,24 +530,24 @@
 		<</if>>
 		<<if $worn.under_lower.name isnot "naked">>
 			<<if $worn.under_upper.name is "naked">>
-			당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "과" "sep">>_trResult<<if $worn.lower.one_piece isnot 1>>_trPost<<else>>에다가<</if>>
+			당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "과" "sep">>_trResult<<if $worn.lower.one_piece isnot 1>>_trPost<<else>>에다가<</if>>
 				<<if $worn.lower.one_piece isnot 1>>
-				<<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name>>_trResult에다가
+				<<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name>>_trResult에다가
 				<</if>>
 				<<if $breastsize lt 3>>
-					그 밑에 <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있다.
+					그 밑에 <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있다.
 				<<else>>
-					<span class="purple">그 밑에 <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name>>_trResult만 입고 있다.</span>
+					<span class="purple">그 밑에 <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name>>_trResult만 입고 있다.</span>
 				<</if>>
 			<<else>>
-			당신은 <<upperintegrity>> <<upperclothescolour>> <<trClothes "upper" $worn.upper.name "name" "과" "sep">>_trResult<<if $worn.lower.one_piece isnot 1>>_trPost<<else>>에다가<</if>>
+			당신은 <<upperintegrity>> <<clothescolour 'upper'>> <<trClothes "upper" $worn.upper.name "name" "과" "sep">>_trResult<<if $worn.lower.one_piece isnot 1>>_trPost<<else>>에다가<</if>>
 				<<if $worn.lower.one_piece isnot 1>>
-				<<lowerintegrity>> <<lowerclothescolour>> <<trClothes "lower" $worn.lower.name>>_trResult에다가
+				<<lowerintegrity>> <<clothescolour 'lower'>> <<trClothes "lower" $worn.lower.name>>_trResult에다가
 				<</if>>
 				<<if $worn.under_lower.one_piece is 1>>
-				그 밑에 <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
+				그 밑에 <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
 				<<else>>
-				그 밑에 <<underlowerintegrity>> <<underlowerclothescolour>> <<trClothes "under_lower" $worn.under_lower.name "name" "과">>_trResult <<underupperintegrity>> <<underupperclothescolour>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
+				그 밑에 <<underlowerintegrity>> <<clothescolour 'under_lower'>> <<trClothes "under_lower" $worn.under_lower.name "name" "과">>_trResult <<underupperintegrity>> <<clothescolour 'under_upper'>> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 입고 있다.
 				<</if>>
 			<</if>>
 			<<if $worn.genitals.name isnot "naked">>
@@ -542,9 +562,9 @@
 당신의 신원은 <<trClothes "face" $worn.face.name>>_trResult로 인해 감춰져 있다.
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stripcaption">><<nobr>>
+<<widget "stripcaption">>
 
 <<if !$worn.upper.type.includes("naked") and $upperwetstage gte 3 and !$worn.lower.type.includes("naked") and $lowerwetstage gte 3 and !$worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("chastity") and $underlowerwetstage gte 3 and !$worn.under_upper.type.includes("naked") and $underupperwetstage gte 3>>
 	<<if $worn.under_upper.set is $worn.under_lower.set>>
@@ -719,17 +739,17 @@
 
 <</if>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "statsCaption">><<nobr>>
+<<widget "statsCaption">>
 	<<if $dev is 1>>
 		<<set $money = Math.trunc($money)>>
 		£<<print ($money / 100)>>.
 	<<else>>
-		£<<print Math.trunc($money / 100)>>.<<if $money % 100 lte 9>>0<</if>><<print $money % 100>>
+		<<printmoney $money true>>
 	<</if>>
 	&nbsp;
-	
+
 	<img class="icon_ui" src="img/ui/icon_time.png">
 	<<if $timestyle is "ampm">>
 		<<if $hour gte 13>>
@@ -749,12 +769,22 @@
 	<<case 1>>日<<case 2>>月<<case 3>>火<<case 4>>水<<case 5>>木<<case 6>>金<<case 7>>土
 	<</switch>>
 	<<if $extendedStats>>
-		$monthday<<monthday>> <<month true>>
+		<<month true>> $monthday<<monthday>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
+<<widget "statsMoneyNoImg">>
+	<<if $dev is 1>>
+		<<set $money = Math.trunc($money)>>
+		£<<print ($money / 100)>>를 갖고 있다
+		<br>
+	<<else>>
+		<<printmoney $money true>>를 갖고 있다
+		<br>
+	<</if>>
+<</widget>>
 
-<<widget "startingPlayerImage">><<nobr>>
+<<widget "startingPlayerImage">>
 <<set $naturalhaircolour to $hairselect>>
 <<set _filters to {
 	"body": skinColor("t", $skinColor.range, setup.skinColor[$skinColor.natural]),
@@ -782,11 +812,11 @@
 	<<set _showClothes to true>>
 <</if>>
 
-<<if ($player.gender is "f" and $background isnot "crossdresser") or 
-	($player.gender is "m" and $background is "crossdresser") or 
-	($player.gender is "h" and 
+<<if ($player.gender is "f" and $background isnot "crossdresser") or
+	($player.gender is "m" and $background is "crossdresser") or
+	($player.gender is "h" and
 		(
-			(($player.gender_body is "m" or ($player.gender_body is "a" and $breastsize lte 3)) and $background is "crossdresser") or 
+			(($player.gender_body is "m" or ($player.gender_body is "a" and $player.perceived_breastsize lte 3)) and $background is "crossdresser") or
 			(($player.gender_body is "f" or ($player.gender_body is "a" and $breastsize gt 3)) and $background isnot "crossdresser")
 		)
 	)>>
@@ -821,14 +851,84 @@
 			<<set _penisSize to 3>>
 		<<case 1>>
 			<<set _penisSize to 2>>
-		<<case 0 -1>>
+		<<case 0>>
 			<<set _penisSize to 1>>
+		<<case -1>>
+			<<set _penisSize to 0>>
+		<<case -2>>
+			<<set _penisSize to -1>>
 		<</switch>>
 	<<else>>
 		<<unset _penisSize>>
 	<</if>>
 	<<set _disabled to ["disabled","hidden"]>>
 
+	<<if $sidebarRenderer is undefined>>
+		<<set $sidebarRenderer to 'canvas'>>
+	<</if>>
+	<<if $sidebarRenderer isnot 'img'>>
+		<<selectmodel "main" "sidebar">> <!-- reuse sidebar cache slot -->
+		<<twinescript>>
+			_modeloptions.breast_size = _breastSize;
+			_modeloptions.breasts = (!_showUnderwear && !_showClothes) ? "default" : "cleavage";
+			if (_penisSize isnot undefined) {
+				_modeloptions.penis = $player.virginity.penile is true ? "virgin" : "default";
+				_modeloptions.penis_size = _penisSize;
+				_modeloptions.balls = $player.ballsExist;
+			}
+
+			_modeloptions.skin_type = $skinColor.natural;
+			_modeloptions.skin_tone = $skinColor.range/100;
+
+			_modeloptions.hair_colour = $hairselect;
+			_modeloptions.hair_sides_position = $hairposition;
+			_modeloptions.hair_sides_length = _hairlengthstage;
+			_modeloptions.hair_fringe_length = _hairlengthstage;
+
+			_modeloptions.eyes_colour = $eyeselect;
+			_modeloptions.mouth = "neutral";
+			_modeloptions.freckles = $player.freckles is true;
+
+			_modeloptions.demon_wings_type = $transformationParts.demon.wings;
+			_modeloptions.angel_wings_type = $transformationParts.angel.wings;
+			_modeloptions.fallen_wings_type = $transformationParts.fallenAngel.wings;
+
+			if (_clothesType is "male") {
+				if (_showClothes) {
+					_modeloptions.worn_upper = 4; /* t-shirt */
+					_modeloptions.worn_upper_colour = "tangerine";
+					_modeloptions.worn_lower = 5; /* shorts */
+					_modeloptions.worn_lower_colour = "blue";
+					_modeloptions.worn_legs = 2; /* boysgymsocks */
+					_modeloptions.worn_feet = 1; /* schoolshoes */
+				}
+				if (_showUnderwear) {
+					_modeloptions.worn_under_lower = 4; /* briefs */
+					_modeloptions.worn_under_lower_colour = "black";
+				}
+			} else if (_clothesType is "female") {
+				if (_showClothes) {
+					_modeloptions.worn_upper = 1; /* sundress */
+					_modeloptions.worn_upper_colour = "white";
+					_modeloptions.worn_lower = 1; /* sundress */
+					_modeloptions.worn_lower_colour = "white";
+					_modeloptions.worn_legs = 3; /* girlsgymsocks */
+					_modeloptions.worn_feet = 1; /* schoolshoes */
+				}
+				if (_showUnderwear) {
+					if ($breastsize > 3) {
+						_modeloptions.worn_under_upper = 12; /* plainbra */
+						_modeloptions.worn_under_upper_colour = "pale white";
+					}
+					_modeloptions.worn_under_lower = 1; /* plainpanties */
+					_modeloptions.worn_under_lower_colour = "pale white";
+				}
+			}
+			_modeloptions.crotch_visible = !_showClothes && !_showUnderwear;
+		<</twinescript>>
+		<<rendermodel `($sidebarRenderer is 'both' ? 'canvasimg-both' : '')`>>
+	<</if>>
+	<<if $sidebarRenderer isnot 'canvas'>>
 	<img class="layer-base" @src="_img.basenoarms" @style="'filter: '+_filters.body">
 	<img class="layer-basehead" @src="_img.basehead" @style="'filter: '+_filters.body">
 
@@ -838,7 +938,7 @@
 	<</if>>
 
 	<img class="layer-base" @src="_img.leftarmidle" @style="'filter: '+_filters.body">
-			
+
 	<<if !_disabled.includes($transformationParts.demon.wings)>>
 		<<if $exposed gte 2 and $dontHide is false and $uncomfortable.flaunting is false>>
 			<img class="layer-tailPenisCover" @src="'img/transformations/demon/flauntwings/'+$transformationParts.demon.wings+'.png'">
@@ -941,18 +1041,19 @@
 			</div>
 		<</if>>
 	<</if>>
+	<</if>> <!-- renderer switch -->
 </div>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "startingPlayerImageUpdate">><<nobr>>
+<<widget "startingPlayerImageUpdate">>
 <<if $passage is "Start">>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<replace #startingPlayerImage>>
 		<<startingPlayerImage>>
 	<</replace>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-:: StoryRightSidebar [nobr]
+:: StoryRightSidebar
 
 Testing

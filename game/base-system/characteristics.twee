@@ -1,6 +1,6 @@
 :: Characteristics [widget]
 
-<<widget "characteristics">><<nobr>>
+<<widget "characteristics">>
 
 오늘은 $year년 <<month>> $monthday<<monthday>>이다.
 
@@ -62,12 +62,17 @@
 <br><br>
 
 <<switch $devlevel>>
-	<<case 6>>You are tiny compared to others.
-	<<case 10>>You are small compared to others.
-	<<case 12>>You are of average height.
-	<<case 16>>You are large compared to others.
+	<<case 6>>당신은 또래보다 몸집이 왜소하다.
+	<<case 10>>당신은 또래보다 몸집이 작다.
+	<<case 12>>당신은 또래와 몸집이 비슷하다.
+	<<case 16>>당신은 또래보다 몸집이 크다.
 <</switch>>
-당신의 눈은 <<trColour $eyecolour>>_trResult이다. 피부는 <<skincolourtext>> <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 엉덩이는 <<bottomPost "이다">>. <<if $penisexist is 1>>당신은 <<penisPost "을">> 갖고 있다.<</if>>
+<<if $makeup.eyelenses>>
+	당신의 눈은 <<trColour $eyecolour>>_trResult이며 <<trColour $makeup.eyelenses>>_trResult 렌즈를 끼고 있다.
+<<else>>
+	당신의 눈은 <<trColour $eyecolour>>_trResult이다.
+<</if>>
+피부는 <<skincolourtext>>, <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 엉덩이는 <<bottomPost "이다">>. <<if $penisexist is 1>>당신에게는 <<penisPost "이">> 있다.<</if>>
 
 <!--Hair Details-->
 <<set _hairTextConfig = { currentValue : $hairlength, states : [
@@ -113,15 +118,15 @@
 	<<if $semen_volume gt 0>>
 		<<characteristic-text _semenVolumeTextConfig>>
 		<<if $semen_amount gte $semen_volume>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 				이미 가득 쌓인 상태에서, <span class="pink">흥분으로 용량이 증가한다.</span>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 				이미 가득 쌓인 상태에서, <span class="purple">흥분으로 용량이 증가한다.</span>
 			<</if>>
 		<<else>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 				<span class="pink">흥분한 것이 회복하는 데에 도움을 준다.</span>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 				<span class="purple">흥분한 것이 회복하는 데에 도움을 준다.</span>
 			<</if>>
 		<</if>>
@@ -377,7 +382,7 @@
 			<<set _swimmingConfig = 	{ name : "수영", 	displayType : "grade",	currentValue : $swimmingskill, 	states : _detailedSkillGrades}>>
 			<<set _athleticsConfig = 	{ name : "운동", 	displayType : "grade",	currentValue : $athletics, 		states : _detailedSkillGrades}>>
 			<<set _tendingConfig = 		{ name : "관리", 	displayType : "grade",	currentValue : $tending, 		states : _detailedSkillGrades}>>
-						
+
 			<<if $moorLuck gt 0>>
 				<<set _skulduggeryConfig.modifier to Math.floor(_skulduggeryConfig.modifier * (1 + ($moorLuck / 100)))>>
 				<<set _dancingConfig.modifier to Math.floor(_dancingConfig.modifier * (1 + ($moorLuck / 100)))>>
@@ -441,6 +446,14 @@
 			<</if>>
 		<</for>>
 		<<if _plant_temp is 1>>코누다투스 가에 가판대를 빌려서 새벽에 팔 수 있다.<</if>>
+		<<if $phials_held gte 2>>
+			당신은 $phials_held 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다.
+		<<elseif $phials_held gte 1>>
+			당신은 한 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다.
+		<</if>>
+		<<if $lurkers_held gte 1>>
+			당신은 럴커를 가지고 있다.
+		<</if>>
 	</div>
 
 	<h4>성기술</h4>
@@ -596,6 +609,21 @@
 			당신은 £<<print $antiquemoney>> 어치의 골동품을 갖고 있다.
 		<</if>>
 	</div>
+	
+<h4>무기 스킬</h4>
+	<div id="prof" class="characteristic-box-list">
+		<<silently>>
+			<<set _sprayConfig = 		{ name : "스프레이", 		displayType : "grade",	currentValue : $prof.spray, 		modifier: 100,		states : _basicSkillGrades}>>
+			<<set _netConfig = 		{ name : "채집망", 		displayType : "grade",	currentValue : $prof.net, 		modifier: 100,		states : _basicSkillGrades}>>
+			<<set _hiddenConfig = 		{ name : "????", 		displayType : "grade",	currentValue : 0, 		modifier: 100,		states : _basicSkillGrades}>>
+		<</silently>>
+		<<characteristic-box _sprayConfig>>
+		<<if $prof.net isnot undefined>>
+			<<characteristic-box _netConfig>>
+		<<else>>
+			<<characteristic-box _hiddenConfig>>
+		<</if>>
+	</div>
 </div>
 <br><br>
 
@@ -720,4 +748,5 @@ __불안감__ - <i>불안감이 증가할수록 세밀한 조사가 어려워지
 <</if>>
 
 <br>
-<</nobr>><</widget>>
+
+<</widget>>

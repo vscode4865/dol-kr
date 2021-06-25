@@ -1,4 +1,4 @@
-:: Moor [nobr]
+:: Moor
 <<set $location to "moor">><<set $outside to 1>><<effects>>
 <<if $moor_hunt gte 1>>
 	<span class="red">You are being hunted.</span>
@@ -12,6 +12,7 @@
 <<case "normal">>
 	You move through the moor, avoiding the more conspicuous areas.
 <<case "fly">>
+	<<flight_effects>>
 	You catch the wind with a running jump, and fly low across the moor. Your wings tire quickly, but you cover a lot of ground before needing to land.
 <<case "careful_search">>
 	You keep low, searching the nooks and crannies of the moor.
@@ -20,7 +21,10 @@
 <<case "normal_search">>
 	You search the moor for anything of value.
 <<case "fly_search">>
+	<<flight_effects>>
 	You soar high above the moor, your keen eyes scanning the ground below. Your wings tire quickly, and you land upon a hillock to catch your breath.
+<<case "hobble">>
+	You hobble across the uneven moor, careful not to trip.
 <<default>>
 	You are on the moor.
 <</switch>>
@@ -59,7 +63,7 @@
 	<br><br>
 <</if>>
 
-<<if $stress gte 10000>>
+<<if $stress gte $stressmax>>
 	You've pushed yourself too much.
 	<br><br>
 	<<passout_moor>>
@@ -80,7 +84,7 @@
 	<</if>>
 	<<if $moor gte 51>>
 		<<if $pubtask is "moor" and $pubtask2 isnot 1>>
-			<<if $pubtasksetting is "lurkers" and $bestialitydisable is "f">>
+			<<if $pubtasksetting is "lurkers" and $bestialitydisable is "f" and $lurkerdisable is "f">>
 				<<link [[Search for Landry's black box|Moor Box Lurkers]]>><</link>>
 				<br><br>
 			<<elseif $pubtasksetting is "person">>
@@ -95,27 +99,39 @@
 			<</if>>
 		<</if>>
 	<</if>>
+	<<if $moor is 10>>
+		<<link [[Approach the estate|Estate Approach]]>><</link>>
+		<br><br>
+	<</if>>
 	<<if $moor is undefined>>
 		<<set $moor to 0>>
+	<</if>>
+	<<if $harpy gte 6 and $birdFly gte 1>>
+		<<flight_time_check 4>>
+		<br>
 	<</if>>
 	<<if $moor lt 100>>
 		Go deeper into the moor
 		<br>
 		<<if $harpy gte 6 and $birdFly gte 1>>
-			<<link [[Fly (0:02)|Moor]]>><<bird_pass 2>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "fly">><<tiredness 1>><</link>><<flight_text>><<gtiredness>>
+			<<print '<<link [[Fly ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
 			<br>
 		<</if>>
-		<<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor += 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
-		<br>
-		<<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
-		<br>
-		<<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor += 5>><<set $moormove to "careful">><<set $forestmod to 0.5>><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<<if $worn.feet.type.includes("heels")>>
+			<<link [[Hobble in heels (0:30)|Moor]]>><<bird_pass 30>><<set $moor += 5>><<set $forestmod to 3>><<set $moormove to "hobble">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<gharass>>
+		<<else>>
+			<<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor += 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
+			<br>
+			<<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
+			<br>
+			<<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor += 5>><<set $moormove to "careful">><<set $forestmod to 0.5>><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<</if>>
 		<br><br>
 	<</if>>
 		Search nearby <<gtreasure>>
 		<br>
 		<<if $harpy gte 6 and $birdFly gte 1>>
-			<<link [[Fly (0:05)|Moor]]>><<bird_pass 5>><<set $forestmod to 0.5>><<set $moormove to "fly_search">><<tiredness 1>><</link>><<flight_text>><<gtiredness>><<lharass>>
+			<<print '<<link [[Fly ('+_hoursPassedSearch+':'+ (_minutesPassedSearch lt 10 ? "0" : "") + _minutesPassedSearch + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTimeSearch>><<bird_pass _flightTimeSearch>><<set $forestmod to 0.5>><<set $moormove to "fly_search">><</link>>'>><<flight_text>><<gtiredness>><<lharass>>
 			<br>
 		<</if>>
 		<<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $forestmod to 3>><<set $moormove to "quick_search">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
@@ -128,14 +144,18 @@
 		Go towards the coast
 		<br>
 		<<if $harpy gte 6 and $birdFly gte 1>>
-			<<link [[Fly (0:02)|Moor]]>><<bird_pass 2>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "fly">><<tiredness 1>><</link>><<flight_text>><<gtiredness>>
+			<<print '<<link [[Fly ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
 			<br>
 		<</if>>
-		<<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor -= 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
-		<br>
-		<<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
-		<br>
-		<<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor -= 5>><<set $forestmod to 0.5>><<set $moormove to "careful">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<<if $worn.feet.type.includes("heels")>>
+			<<link [[Hobble in heels (0:30)|Moor]]>><<bird_pass 30>><<set $moor -= 5>><<set $forestmod to 3>><<set $moormove to "hobble">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<gharass>>
+		<<else>>
+			<<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor -= 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
+			<br>
+			<<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
+			<br>
+			<<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor -= 5>><<set $forestmod to 0.5>><<set $moormove to "careful">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<</if>>
 		<br><br>
 	<<else>>
 		<<link [[Enter the farmlands (0:05)|Farmland]]>><<bird_pass 5>><<set $moor to 0>><<unset $moor_hunt>><<set $forestmod to 1>><</link>>
@@ -146,7 +166,7 @@
 <<set $eventskip to 0>>
 <<unset $moormove>>
 
-:: Castle [nobr]
+:: Castle
 <<set $location to "moor">><<effects>>
 
 You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ruin towers all around you.
@@ -173,7 +193,7 @@ You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ru
 <<link [[Leave|Moor]]>><<set $moor to 100>><</link>>
 <br>
 
-:: Castle Fly [nobr]
+:: Castle Fly
 <<effects>>
 
 <<npc "Great Hawk">>
@@ -194,7 +214,7 @@ You fly to the top of the tower, and land beside the nest.
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
-:: Castle Call [nobr]
+:: Castle Call
 <<effects>>
 
 <<npc "Great Hawk">>
@@ -203,7 +223,7 @@ You call up to the tower.
 <<if $bird.state isnot "home" and $bird.timer gte 0>>
 	There's no response. <<bHe>> must be out.
 	<br><br>
-	
+
 	<<link [[Wait|Castle Call Wait]]>><<bird_pass $bird.timer>><</link>>
 	<br>
 	<<link [[Stop|Castle]]>><<endevent>><</link>>
@@ -229,7 +249,7 @@ You call up to the tower.
 	<br>
 <</if>>
 
-:: Castle Call Wait [nobr]
+:: Castle Call Wait
 <<effects>>
 
 You wait, watching the skies, until you see the <<beasttype>> soaring over the moor. You call out as <<bhe>> passes overhead. <<bHe>> swoops towards you, grasps your shoulders, and carries you home.
@@ -252,7 +272,7 @@ You wait, watching the skies, until you see the <<beasttype>> soaring over the m
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
 
-:: Castle Treasure [nobr]
+:: Castle Treasure
 <<effects>>
 
 You get to work digging through the peat. The middle seems as good a place to start as any.
@@ -263,7 +283,7 @@ You soon find yourself wishing the map had been more specific. There's no guaran
 <<link [[Next|Castle Treasure 2]]>><</link>>
 <br>
 
-:: Castle Treasure 2 [nobr]
+:: Castle Treasure 2
 <<effects>>
 
 You leave a trail of holes behind you, but barely a fifth of the courtyard has been searched.
@@ -274,7 +294,7 @@ You're considering giving up when your fingers brush against something hard. You
 <<link [[Next|Castle Treasure 3]]>><</link>>
 <br>
 
-:: Castle Treasure 3 [nobr]
+:: Castle Treasure 3
 <<effects>>
 
 There's something beneath. You chuck the log aside, and reach back into the hole. You lift a wooden chest from the soil. It's not locked.
@@ -293,7 +313,7 @@ You find yourself wanting to leave it buried, but it could be worth a lot to a c
 <br>
 
 
-:: Moor Box Lurkers [nobr]
+:: Moor Box Lurkers
 <<effects>>
 
 <<if $pubtasksetting is "lurkers">>
@@ -313,7 +333,7 @@ You find yourself wanting to leave it buried, but it could be worth a lot to a c
 <br>
 
 
-:: Moor Box Lurkers 2 [nobr]
+:: Moor Box Lurkers 2
 <<water waist>><<effects>>
 
 You drop into the water, and wade through. The creatures dart towards you as your ripples touch them.
@@ -322,7 +342,7 @@ You drop into the water, and wade through. The creatures dart towards you as you
 <<link [[Next|Moor Box Struggle]]>><<set $struggle_start to 1>><</link>>
 <br>
 
-:: Moor Box Struggle [nobr]
+:: Moor Box Struggle
 <<water waist>><<effects>>
 
 
@@ -334,7 +354,7 @@ You drop into the water, and wade through. The creatures dart towards you as you
 	<<controlloss>>
 	<<violence 1>>
 	<<molested>>
-	
+
 	<<unset $struggle_start>>
 	<<set $timer to 3>>
 <</if>>
@@ -362,7 +382,7 @@ You drop into the water, and wade through. The creatures dart towards you as you
 <</if>>
 
 
-:: Moor Box Struggle End [nobr]
+:: Moor Box Struggle End
 <<water waist>><<effects>>
 
 The creatures disppear beneath the surface.
@@ -382,26 +402,26 @@ The journey back to shore proves safer.
 <br>
 
 
-:: Moor Box [nobr]
+:: Moor Box
 <<effects>>
 
 <<if $pubtasksetting is "person">>
 	<<loadNPC 0 moor>><<person1>>
 	You climb the hillock, and find the <<person>> sitting atop the rocks. <<covered>> <<Hes>> holding the black box. "Changed your mind?" <<he>> asks.
 	<br><br>
-	
+
 	<<link [[Next|Moor Box 2]]>><</link>>
 	<br>
 <<else>>
 	<<set $pubtasksetting to "person">>
 	You climb atop a hillock, one crowned by a pile of rocks, and peer at the surrounding terrain, searching for Landry's black box.
 	<br><br>
-	
+
 	<<generate1>><<person1>>
 	<<saveNPC 0 moor>>
 	"What brings a cute <<girl>> all the way out here?" says a voice from behind. Startled, you almost trip in your haste to turn. A <<person>> sits atop the rocks, watching you. <<covered>>
 	<br>
-	
+
 	<<if $submissive gte 1150>>
 		"I-I'm looking for something," you say. "A black box."
 	<<elseif $submissive lte 850>>
@@ -412,20 +432,20 @@ The journey back to shore proves safer.
 	<br>
 	"Really?" the <<person>> replies. <<He>> bends over. "Would this be it?" <<He>> pulls a black box out from behind a rock.
 	<br><br>
-	
+
 	You nod. The <<person>> smiles.
 	<br><br>
-	
+
 	<<link [[Next|Moor Box 2]]>><</link>>
 	<br>
 <</if>>
 
-:: Moor Box 2 [nobr]
+:: Moor Box 2
 <<effects>>
 
 <<if $exposed gte 2>>
 	"I'm happy to part with it," the <<person>> says. "But I'd like something in return.
-	
+
 	<<if $leftarm is "bound" and $rightarm is "bound">>
 		Spied you running over the moor. Face me properly. I want to see your <<if $player.gender_appearance is "m">>cock<<else>>pussy<</if>>."
 		<br><br>
@@ -433,7 +453,7 @@ The journey back to shore proves safer.
 		Move your arms. I want to see your <<if $player.gender_appearance is "m">>cock<<else>>pussy<</if>>."
 		<br><br>
 	<</if>>
-	
+
 	<<if $exhibitionism gte 55>>
 		<<link [[Comply|Moor Box Naked]]>><</link>><<exhibitionist4>>
 		<br>
@@ -443,11 +463,11 @@ The journey back to shore proves safer.
 	<</if>>
 	<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<br>
-	
+
 <<else>>
 	"I'm happy to part with it," the <<person>> says. "But I'd like something in return. Your underwear."
 	<br>
-	
+
 	<<if $submissive gte 1150>>
 		"M-my underwear?" you ask.
 		<br>
@@ -464,7 +484,7 @@ The journey back to shore proves safer.
 		The <<person>> nods. "You heard me."
 		<br><br>
 	<</if>>
-	
+
 	<<if $worn.under_lower.name is "naked">>
 		<<link [[Say you aren't wearing any|Moor Box No Undies]]>><</link>>
 		<br>
@@ -489,10 +509,10 @@ The journey back to shore proves safer.
 	<</if>>
 	<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<br>
-	
+
 <</if>>
 
-:: Moor Box Naked [nobr]
+:: Moor Box Naked
 <<effects>>
 
 <<if $leftarm is "bound" and $rightarm is "bound">>
@@ -511,7 +531,7 @@ The journey back to shore proves safer.
 		<<elseif $penissize lte 1>>
 			"Though I can barely see it from here."
 		<<else>>
-			
+
 		<</if>>
 	<<else>>
 		"Nice cock," <<he>> says.
@@ -520,7 +540,7 @@ The journey back to shore proves safer.
 		<<elseif $penissize lte 1>>
 			"Though I can barely make it out from here." <<He>> laughs.
 		<<else>>
-			
+
 		<</if>>
 	<</if>>
 <<else>>
@@ -553,7 +573,7 @@ The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You cr
 <br>
 
 
-:: Moor Box No Undies [nobr]
+:: Moor Box No Undies
 <<effects>>
 
 <<if $submissive gte 1150>>
@@ -580,7 +600,7 @@ The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You cr
 <br>
 
 
-:: Moor Box Show [nobr]
+:: Moor Box Show
 <<effects>>
 
 <<if $worn.lower.skirt is 1>>
@@ -603,7 +623,7 @@ The <<person>> ogles your <<genitals>>.
 		<<elseif $penissize lte 1>>
 			"Though I can barely see it from here."
 		<<else>>
-			
+
 		<</if>>
 	<<else>>
 		"Nice cock," <<he>> says.
@@ -612,7 +632,7 @@ The <<person>> ogles your <<genitals>>.
 		<<elseif $penissize lte 1>>
 			"Though I can barely make it out from here." <<He>> laughs.
 		<<else>>
-			
+
 		<</if>>
 	<</if>>
 <<else>>
@@ -645,7 +665,7 @@ The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You cr
 <<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
 <br>
 
-:: Moor Box Undies [nobr]
+:: Moor Box Undies
 <<effects>>
 
 <<if $worn.lower.type.includes("naked")>>
@@ -688,7 +708,7 @@ The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You cr
 		<<else>>
 			You tug your $worn.under_upper.name down your chest, until it bunches at your waist. You hitch up your skirt, and begin pulling it the rest of the way, down your thighs, over your knees, and then your ankles. You step out of the fabric before holding it towards the <<person>>
 			<<exhibitionism1>>
-			
+
 			Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 			<br><br>
 			<<underupperruined>><<underlowerruined>>
@@ -696,53 +716,53 @@ The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You cr
 	<<else>>
 		You hitch up the sides of your skirt, and pull your $worn.under_lower.name down your thighs, over your knees, and down to your ankles. The <<person>> watches intently.
 		<<exhibitionism1>>
-		
+
 		You step out of them, lift them from the ground, and hold them towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 		<br><br>
-		<<underlowerruined>>		
+		<<underlowerruined>>
 	<</if>>
 <<else>>
 	<<if $worn.under_upper.set is $worn.under_lower.set>>
 		<<if $worn.upper.set is $worn.lower.set>>
 			You'll need to remove your $worn.upper.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
 			<br><br>
-			
+
 			You shuffle out of your top and bottoms, then tug your $worn.under_upper.name down your chest, until it bunches at your waist. You continue pulling it down your thighs, over your knees, and then your ankles. You step out of the fabric, and put your $worn.upper.name back on.
 			<<exhibitionism1>>
-			
+
 			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 			<br><br>
 			<<underupperruined>><<underlowerruined>>
 		<<else>>
 			You'll need to remove your $worn.lower.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
 			<br><br>
-			
+
 			You pull down your bottoms, then tug your $worn.under_upper.name down your chest, until it bunches at your waist. You continue pulling it down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.lower.name back on.
 			<<exhibitionism1>>
-			
+
 			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 			<br><br>
 			<<underupperruined>><<underlowerruined>>
-			
+
 		<</if>>
 	<<else>>
 		<<if $worn.upper.set is $worn.lower.set>>
 			You'll need to remove your $worn.upper.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
 			<br><br>
-			
+
 			You shuffle out of your top and bottoms, then tug your $worn.under_lower.name down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.upper.name back on.
 			<<exhibitionism1>>
-			
+
 			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 			<br><br>
 			<<underlowerruined>>
 		<<else>>
 			You'll need to remove your $worn.lower.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
 			<br><br>
-			
+
 			You shuffle out of your bottoms, then tug your $worn.under_lower.name down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.lower.name back on.
 			<<exhibitionism1>>
-			
+
 			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
 			<br><br>
 			<<underlowerruined>>

@@ -1,23 +1,47 @@
 :: Widgets Journal [widget]
-<<widget "journal">><<nobr>>
+<<widget "journal">>
 
-<h4>일기</h4>
+<h4>일지</h4>
+
+
+<<if $season is "winter">>
+	<img id="world_map" src="img/misc/world_map_winter.png">
+<<else>>
+	<img id="world_map" src="img/misc/world_map.png">
+<</if>>
+<br>
+
+
 <<if $rentday isnot undefined>>
 	<<if $renttime lte 0>>
-		베일리가 당신을 찾고 있으며, <span class="gold">£<<print $rentmoney / 100>></span>를 원한다.
+		베일리가 당신을 찾고 있으며, <<printmoney $rentmoney>>를 원한다.
 		<br>
 	<<else>>
-		베일리는 <<rentday>>까지 <span class="gold">£<<print $rentmoney / 100>></span>를 원한다.
+		베일리는 <<rentday>>까지 <<printmoney $rentmoney>>를 원한다.
 		<br>
 	<</if>>
-<<else>>
-	베일리는 <span class="gold">£<<print $rentmoney / 100>></span>를 원한다.
+<<elseif $rentmoney isnot undefined>>
+	베일리는 <<printmoney $rentmoney>>를 원한다.
 	<br>
 <</if>>
 
 <<if $psych is 1>>
 	금요일에 하퍼 박사와 약속이 있다.
 	<br>
+<</if>>
+
+<<if $eden_asylum_window is 1 and $location is "asylum">>
+	<<if $hour lt 22>>
+		에덴은 오늘밤 <<if $timestyle is "military">>20:00<<else>>오후 10:00<</if>>에 정신병원을 관찰할 것이다.
+	<<else>>
+		에덴은 정신병원을 관찰하며, 당신이 당신의 방을 표시해 주기를 기다리고 있다.
+	<</if>>
+<</if>>
+
+<<if $edendistract gte 1 and $location is "asylum">>
+	<<if $hour lt 21>>
+		에덴은 오늘밤 <<if $timestyle is "military">>21:00<<else>>오후 9:00<</if>>에 소동을 일으킬 것이다.
+	<</if>>
 <</if>>
 
 <<if $brothelshow isnot "none" and $brothelshowintro is 1>>
@@ -50,6 +74,7 @@
 
 <<if $police_hack is 1>>
 	잠긴 경찰서 컴퓨터에 대해서는 랜드리가 도와줄 수 있을지도 모른다.
+	<br>
 <<elseif $pub_hack_job is 1>>
 	랜드리는 도무스 가 고아원에 사는 어린 해커를 찾아오길 원한다.
 	<br>
@@ -81,16 +106,29 @@
 	<br>
 <</if>>
 
+<<if $valentines is 1>>
+	2월 14일은 발렌타인 데이다.
+	<<if $valentines_eden is 1 and !$valentines_eden_bought>>
+		당신은 에덴과 발렌타인 데이를 기념하기 위헤 무언가를 살 수 있다.
+	<<elseif $valentines_eden_bought is 1>>
+		당신은 발렌타인 데이 <<if $timestyle is "military">>17:00<<else>>오후 5:00<</if>>에 에덴과 목욕을 준비할 수 있다.
+	<</if>>
+	<br>
+<</if>>
+
 <<if $halloween is 1>>
 	10월 31일은 할로윈이다.
 	<<if $halloween_whitney is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
 		휘트니는<<if $timestyle is "military">>19시<<else>>오후 7시<</if>>부터 도무스 가에서 트릭-오어-트릿을 할 것이다.
 	<</if>>
-	<<if $halloween_robin is 1>>
+	<<if $halloween_robin is 1 and $robinmissing isnot 1>>
 		로빈은 <<if $timestyle is "military">>16시와 19시<<else>>오후 4시와 오후 7시<</if>> 사이에 트릭-오어-트릿을 하러 가고 싶어한다.
 	<</if>>
 	<<if $halloween_kylar is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
 		카일라가 <<if $timestyle is "military">>21시<<else>>오후 9시<</if>> 이후에 공원에서 만나자고 했다.
+	<</if>>
+	<<if $halloween_eden is 1>>
+		당신은 에덴과 할로윈을 기념하기 위해 사탕을 살 수 있다.
 	<</if>>
 	<br>
 <</if>>
@@ -121,6 +159,25 @@
 	<</if>>
 	<<if !$christmas_wrap>>
 		쇼핑센터에서 포장지를 팔고 있다.
+		<br>
+	<</if>>
+	<<if $syndromeeden gte 1>>
+		<<if $monthday is 25>>
+			<<if $hour lte 20>>
+				당신은 오늘 에덴과 크리스마스를 기념할 수 있다.
+				<br>
+			<</if>>
+		<<else>>
+			크리스마스가 오고 있다. 당신은 에덴과 크리스마스를 기념할 수 있다.
+			<br>
+		<</if>>
+	<</if>>
+	<<if $christmas_gift_eden is undefined and $syndromeeden gte 1>>
+		당신은 쇼핑센터에서 에덴을 위해 선물을 살 수 있다.
+		<br>
+	<</if>>
+	<<if $edenmeal is 1>>
+		에덴은 당신에게 <<if $timestyle is "military">>18:00<<else>>오후 6:00<</if>>에 크리스마스 저녁식사를 같이 하자고 초대하였다.
 		<br>
 	<</if>>
 <</if>>
@@ -207,6 +264,40 @@
 	<br>
 <</if>>
 
+<<if $farm_state gte 5 and $estate_fence is undefined>>
+	레미는 황무지의 사유지에서 알렉스의 농장을 침해하고 있다.
+	<br>
+<<elseif $estate_fence is "quest" and $skulduggery lt 800>>
+	당신이 레미의 사유지에 숨어들어가도록 도와줄 누군가를 찾자. 암흑가와 연결고리가 있는 누군가, 혹은 황무지에 대해 아는 누군가를.
+	<br>
+<<elseif $estate_fence is "bird">>
+	거대 매가 만들어 놓은 통로를 사용해 레미의 사유지 울타리를 수색하자.
+	<br>
+<<elseif $estate_fence is "landry">>
+	랜드리가 만들어 놓은 통로를 사용해 레미의 사유지 울타리를 수색하자.
+	<br>
+<</if>>
+
+<<if $farm>>
+	<<if $farm.tower gte 1 and !$farm.tower_guard>>
+		농장의 감시탑은 비어 있다. 당신은 하베스트 가의 주점에서 필요한 경비원 후보를 찾을 수 있다.
+		<br>
+	<</if>>
+<</if>>
+
+<<if $farm_stage gte 7>>
+	레미는 농장을 
+	<<if $farm_attack_timer is 0>>
+		오늘 공격할 것이다.
+	<<elseif $farm_attack_timer is 1>>
+		내일 공격할 것이다.
+	<<else>>
+		$farm_attack_timer일 안에 공격할 것이다.
+	<</if>>
+	그들은 <<if $timestyle is "ampm">>오후 9:00<<else>>21:00<</if>> 부터 자정 사이에 올 것이다.
+	<br>
+<</if>>
+
 <br>
 <<if $scienceproject is "ongoing">>
 	<hr>
@@ -279,7 +370,7 @@
 	<<if $scienceshroomknown is 1>>
 		-<span class="green">지역 버섯</span>
 		<br>
-		-- $scienceshroomheart/5개의 심장버섯을 
+		-- $scienceshroomheart/5개의 심장버섯을 찾았다.
 		<br>
 		-- $scienceshroomheartready/5개의 심장버섯을 프로젝트에 추가했다.
 		<<if $scienceshroomheart gte $scienceshroomheartready>>
@@ -364,4 +455,18 @@
 	<hr>
 <</if>>
 
-<</nobr>><</widget>>
+
+<h4>씨앗</h4>
+<<set _plant_keys to Object.keys(setup.plants)>>
+<<for _i to 0; _i lt _plant_keys.length; _i++>>
+	<<if setup.plants[_plant_keys[_i]].type is "flower" or setup.plants[_plant_keys[_i]].type is "vegetable">>
+		<<if $plants_known.includes( setup.plants[_plant_keys[_i]].name)>>
+			<span class="green"><<print setup.plants[_plant_keys[_i]].plural[0].toUpperCase() + setup.plants[_plant_keys[_i]].plural.substring(1)>></span> |
+		<<else>>
+			??? |
+		<</if>>
+	<</if>>
+<</for>>
+
+
+<</widget>>

@@ -1,5 +1,5 @@
 :: FeatsUI [widget]
-<<widget "feats">><<nobr>>
+<<widget "feats">>
 <<updateFeats>>
 <h3>도전과제</h3>
 
@@ -11,12 +11,16 @@
 잠긴 도전과제는 붉은색으로 표시됩니다.
 <<if $feats.locked is false>>
 	<<if $gamemode is "soft" or $alluremod lt 1>>
+		<br>
 		<span class="red">현재 소프트 모드로 플레이하고 있거나 색기 조정치를 1 미만으로 설정해놨습니다.</span>
+		<br>
 		<<if $feats.soft is true>>
-			현재 몇 가지 도전과제가 잠겨있습니다.
+			<span class="red">현재 게임에서는 몇 가지 도전과제가 잠겨있습니다.</span>
 		<</if>>
 	<<elseif $debug is 1>>
 		<span class="red">디버그 모드로 인해 비활성화 되었습니다.</span>
+	<<elseif $replayScene isnot undefined>>
+		<span class="red">리플레이 모드로 인해 비활성화 되었습니다.</span>
 	<<else>>
 		<span class="green">도전과제를 달성할 수 있습니다.</span>
 	<</if>>
@@ -42,9 +46,9 @@
 	<<featsList>>
 </div>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "featsList">><<nobr>>
+<<widget "featsList">>
 <<featsData>>
 <<set _skip to []>>
 <<set _filter to "All">>
@@ -100,10 +104,10 @@
 	</div>
 <</for>>
 <div style="clear:both;"></div>
-<</nobr>><</widget>>
+<</widget>>
 
 /*Feat Popup*/
-<<widget "displayFeat">><<nobr>>
+<<widget "displayFeat">>
 <<silently>>
 	<<featsData>>
 	<<if _featsCount is undefined>>
@@ -128,10 +132,10 @@
 	</div>
 	<div @id="'closeFeat-' + _featsCount" class="closeFeat" @onclick="'closeFeats('+ _featsCount +')'"></div>
 </div>
-<</nobr>><</widget>>
+<</widget>>
 
 /*Feat Points Menu*/
-<<widget "featsPointsMenu">><<nobr>>
+<<widget "featsPointsMenu">>
 
 <div id="featsStats">
 	당신은 <span class="green"><<print $feats.allSaves.points - $featsBoosts.pointsUsed>>개의 VrelCoin</span>이 남아있다.
@@ -188,9 +192,9 @@
 		<</for>>
 	</ul>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "featsMenu">><<nobr>>
+<<widget "featsMenu">>
 <<set _name to $args[0]>>
 <<capture _name>>
 	<<set _details to $featsBoosts.upgradeDetails[_name]>>
@@ -214,7 +218,7 @@
 			<<case "defaultMoves">>
 				<span class="gold">추가 기본 행동:</span> +<<print $featsBoosts.upgrades.defaultMoves / _details.cost>>
 			<<case "specialClothing">>
-				<span class="gold">Unlock previously unlocked special clothes:</span> <<print ($featsBoosts.upgrades.specialClothing is 0?"False":"True")>>
+				<span class="gold">이전에 해금한 특수 복장 해금:</span> <<print ($featsBoosts.upgrades.specialClothing is 0?"False":"True")>>
 			<<default>>
 				<span class="gold">초기 _name 성적:</span> +<<print $featsBoosts.upgrades[_name] / _details.cost>>
 		<</switch>>
@@ -248,27 +252,27 @@
 
 			<<if _totalTattoos gt 0>>
 				<br>
-				<span class="gold">Tattoo Number:</span>
+				<span class="gold">문신 번호:</span>
 				<<print _tattooNumber>>
 				<br>
 				<<if _tattooNumber gt 1>>
-					<<link "Previous Tattoo">>
+					<<link "이전 문신">>
 						<<set _tattooNumber -= 1>>
 						<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
 					<</link>> |
 				<<else>>
-					Previous Tattoo |
+					이전 문신 |
 				<</if>>
 				<<if _tattooNumber lt _totalTattoos>>
-					<<link "Next Tattoo">>
+					<<link "다음 문신">>
 						<<set _tattooNumber += 1>>
 						<<replace #featsPointsMenu>><<featsPointsMenu>><</replace>>
 					<</link>> |
 				<<else>>
-					Next Tattoo |
+					다음 문신 |
 				<</if>>
 				<br>
-				<span class="gold">Where the tattoo is:</span>
+				<span class="gold">어디에 문신을 할 것인가:</span>
 				<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek","Left shoulder","Right shoulder","Back","Breasts","Left bottom","Right bottom","Left thigh","Right thigh","Pubic"]>>
 				<<for _l to 1; _l lte _totalTattoos; _l++>>
 					<<if _tattooNumber is _l>>
@@ -282,7 +286,7 @@
 				<</listbox>>
 				<br>
 				<span class="listMargin">
-					<span class="gold">What the tattoo is:</span>
+					<span class="gold">어떤 문신을 할 것인가:</span>
 					<<featsTattooOptions>>
 					<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].tattoo"` autoselect>>
 						<<option "Random">>
@@ -291,7 +295,7 @@
 				</span>
 				<br>
 				<span class="listMargin">
-					<span class="gold">Tattoo Type:</span>
+					<span class="gold">문신 종류:</span>
 					<<set _penOptions to ["Tattoo","Brand"]>>
 					<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].pen"` autoselect>>
 						<<optionsfrom _penOptions>>
@@ -304,9 +308,9 @@
 		<span class="red"><<print $featsBoosts.missing[_name]>></span>
 	<</if>>
 <</capture>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "featsPointsMenuButtons">><<nobr>>
+<<widget "featsPointsMenuButtons">>
 <<set _type to $args[0]>>
 <<set _multi to $args[1]>>
 <<set _max to $args[2]>>
@@ -340,9 +344,9 @@
 		5 증가
 	<</if>>
 <</capture>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "updateFeatsPointsMenu">><<nobr>>
+<<widget "updateFeatsPointsMenu">>
 <<if $feats.allSaves.points - $featsBoosts.pointsUsed gte $args[1] or $args[1] lt 0>>
 	<<set $featsBoosts.upgrades[$args[0]] += $args[1]>>
 	<<set $featsBoosts.pointsUsed += $args[1]>>
@@ -350,9 +354,9 @@
 <<replace #featsPointsMenu>>
 	<<featsPointsMenu>>
 <</replace>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "featsTattooOptions">><<nobr>>
+<<widget "featsTattooOptions">>
 <<if _featsTattooOptions is undefined>>
 	<<set _featsTattooOptions to []>>
 	<<for _value range setup.bodywriting>>
@@ -362,4 +366,4 @@
 		<<run _featsTattooOptions.push(_value.writing)>>
 	<</for>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
