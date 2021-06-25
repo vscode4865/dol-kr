@@ -95,6 +95,15 @@
         <<trClothingTrait "holy">>               //  "신성함"
     ```
 
+* trIntegrityKeyword
+    ```
+        옷의 해어진 상태를 번역합니다.
+		 
+		 이것은 window.integrityKeyword (base.js) 의 한글 대용 버전이며
+		 function integrityWord() (base.js) 에서 integrityKeyword 대신 사용됩니다.
+
+    ```
+
 
 -----------------
 # Post

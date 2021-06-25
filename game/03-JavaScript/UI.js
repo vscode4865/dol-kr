@@ -322,7 +322,7 @@ window.settingsAsphyxiation = function () {
 		let text = null;
 		switch (val) {
 			case 0:
-				text = "내 목 건들지 마!"; break;
+				text = "내 목 절대 건들지 마!"; break;
 			case 1:
 				text = "NPC들이 당신의 목을 <span class='blue' style='margin-left: unset; min-width: unset;'>잡을</span> 지도 모릅니다. 숨 쉬는 데 영향을 주진 않아요."; break;
 			case 2:

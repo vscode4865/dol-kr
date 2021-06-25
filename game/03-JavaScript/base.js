@@ -235,11 +235,11 @@ function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext)
 window.integrityKeyword = function(worn) {
 	const i = worn.integrity/worn.integrity_max;
 	if (i <= 0.2) {
-		return "너덜너덜한"
+		return "tattered"
 	} else if (i <= 0.5) {
-		return "찢긴"
+		return "torn"
 	} else if (i <= 0.9) {
-		return "해어진"
+		return "frayed"
 	} else {
 		return "full"
 	}
@@ -250,7 +250,7 @@ window.integrityKeyword = function(worn) {
  * @return {string} printable integrity prefix
  */
 function integrityWord(worn) {
-	const kw = integrityKeyword(worn);
+	const kw = trIntegrityKeyword(worn);
 	switch (kw) {
 		case "너덜너덜한":
 		case "찢긴":
