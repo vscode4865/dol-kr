@@ -352,7 +352,7 @@
     <<pShePost>>
         <<pShePost post "sep">>
         
-        <<pHe>>의 대체 위젯. 조사를 붙일 수 있다.
+        <<pShe>>의 대체 위젯. 조사를 붙일 수 있다.
         + <<pshePost>> , <<pHimPost>>, <<pherPost>>등도 사용할 수 있음.
 
         선택사항
@@ -360,7 +360,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<pShePost "을">>               // <<pHe>>을 | <<pHe>>를
+        <<pShePost "을">>               // <<pShe>>을 | <<pShe>>를
     ```
 
     ```
