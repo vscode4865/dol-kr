@@ -33,8 +33,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trClothes *upper "sundress">>                                 //  "여름용 원피스"
-        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "여름용 원피스", _trPost: "를"
+        <<trClothes *upper "sundress">>                                 //  "선 드레스"
+        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "선 드레스", _trPost: "를"
         <<trClothes "upper" "sundress" "desc">>                         //  "뛰어 놀기에 좋다."
     ```
 
@@ -58,8 +58,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trSearchClothes "sundress">>                                  //  "여름용 원피스"
-        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "여름용 원피스", _trPost: "를"
+        <<trSearchClothes "sundress">>                                  //  "선 드레스"
+        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "선 드레스", _trPost: "를"
         <<trSearchClothes "sundress" "desc">>                           //  "뛰어 놀기에 좋다."
     ```
 
@@ -970,7 +970,7 @@
         - *PillType: 약의 타입
 
         e.g.
-        <<trPill "Growth">>     // 성장
+        <<trPill "Growth">>     // 성장약
     ```
 
 
