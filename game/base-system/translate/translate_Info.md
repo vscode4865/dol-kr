@@ -817,6 +817,19 @@
         e.g.
         <<trBodyWriting "heart">>               //  "하트"
     ```
+* trBodyWritingCategory
+    ```
+    <<trBodyWritingCategory>>
+        <<trBodyWritingCategory *category>>
+
+        문신 종류를 번역한다.
+
+        필수사항
+        - *catgory 종류명
+
+        e.g.
+        <<trBodyWritingCategory "Masochism">>_trResult               //  "마조히즘"
+    ```
 
 * trBreastsdesc
     ```
@@ -1061,13 +1074,16 @@
 * trVore
     ```
     <<trVore>>
-        <<trVore *voretype post>>
+        <<trVore *voretype post "sep">>
 
         보어 타입을 번역한다.
 
         필수사항
         - voretype: 보어 타입
 
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
         e.g.
         <<trVore "whale" "의">>             // "고래의"
     ```
