@@ -925,6 +925,28 @@
         <<trNPCdesc "Robin" "을">>                      //  "로빈을"
     ```
 
+* trNPCname
+    ```
+    <<trNPCname>>
+        <<trNPCname [NPCname | NPCnum]>>
+        <<trNPCname [NPCname | NPCnum] post "sep">>
+
+        NPC의 이름을 번역한다.
+
+        필수사항
+        - NPCname: NPC의 이름
+        - NPCnum: NPC의 번호 (1-6)
+        - 주어지지 않은 경우 1번 NPC 이름으로 가정함
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trNPCname "Olivia">>                         //  "올리비아"
+        <<trNPCname "Robin" "을">>                      //  "로빈을"
+    ```
+
 * trParasite
     ```
     <<trParasite>>
@@ -1186,5 +1208,5 @@
 		<<tentacle_(조사)>>
 	- 기타
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>, <<namedNPC_name_(조사)>>, 
-		<<namedNPC_title_(조사)>>, <<NPCDesc_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
+		<<namedNPC_title_(조사)>>, <<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
 		<<vore_(조사)>>, <<weather_(조사)>>
