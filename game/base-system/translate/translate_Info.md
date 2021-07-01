@@ -707,9 +707,18 @@
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 
+        주의점
+		- tentacledesc 에 ~ tentacle 이 들어있으면 "촉수" 가 붙음
+		- tentacledesc 에 ~ tentacle 이 없으면 "촉수" 가 붙지 않음
+		- 단, ~ tentacle 이 없더라도 조사가 붙으면 "촉수" 가 붙음
+
         e.g.
-        $tentacles[_i].fullDesc = "narrow tantacle"
+        $tentacles[_i].fullDesc = "narrow tentacle"
+		$tentacles[_i].desc = "narrow"
+		<<trTentacle $tentacles[_i].fullDesc>>              //"가느다란 촉수"
         <<trTentacle $tentacles[_i].fullDesc "을">>              //"가느다란 촉수를"
+		<<trTentacle $tentacles[_i].desc>>              //"가느다란"
+        <<trTentacle $tentacles[_i].desc "을">>              //"가느다란 촉수를"
     ```
 
 
