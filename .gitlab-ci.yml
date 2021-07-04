@@ -2,11 +2,18 @@ stages:
   - build
 
 default:
+  image: alpine:latest
   before_script:
+    # Install requirements
+    - | 
+      apk update
+      apk add git bash
+
     # Get devTools/tweego from original repository
     - |
       git clone -c core.symlinks=false --depth=1 https://gitgud.io/Vrelnir/degrees-of-lewdity.git _originalRepository
       cp -rf ./_originalRepository/devTools/tweego ./devTools/tweego
+
     # Fix Permission on compile script.
     - chmod +x ./compile.sh 
 
@@ -22,6 +29,9 @@ build:html:
   #     - Degrees of Lewdity kr-*.html
 
 build:debug_apk:
+  image: docker:latest
+  services:
+    - docker:dind
   stage: build
   script:
     # Apply patch for APK build
@@ -41,6 +51,6 @@ build:debug_apk:
     - docker run -v $CI_PROJECT_DIR:/src -t cordova-android npm run build-debug
 
   # artifacts:
-  #   name: dol-kr-debug-apk
+  #   name: dol-kr-debug_apk
   #   paths:
   #     - dist/*-debug.apk
