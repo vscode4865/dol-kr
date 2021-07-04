@@ -9,33 +9,59 @@
 # $KEYSTORE_KEY_PASS    : Key Password
 
 # Proceed only keystore file environment is defined.
-if [ -z ${KEYSTORE_FILE_B64+true} ]; then
-    echo "No keystore file provided. Skipping..."
-else
-    BASE=`pwd`
-    APP_BASE=$BASE/devTools/androidsdk/image/cordova
-    PROP_BASE=$APP_BASE/platforms/android
-    KEYSTORE_FILE_PATH=$APP_BASE/keystore.jks
+BASE=.
+APP_BASE=$BASE/devTools/androidsdk/image/cordova
+PROP_BASE=$APP_BASE/platforms/android
+KEYSTORE_FILE_NAME=keystore.jks
+KEYSTORE_FILE_PATH=$APP_BASE/$KEYSTORE_FILE_NAME
+KEYSTORE_DOCKER_PATH=/cordovasrc/$KEYSTORE_FILE_NAME
 
-    # Save key to keystore.
-    echo "$KEYSTORE_FILE_B64" | base64 -d > $KEYSTORE_FILE_PATH
-
-    PROP_
-
-    # Debug sigining key property
-   cat << EOF > $PROP_BASE/debug-signing.properties
-key.store=/cordovasrc/keystore.jks
-key.store.password=${KEYSTORE_STORE_PASS}
-key.alias=${KEYSTORE_ALIAS}
-key.alias.password=${KEYSTORE_KEY_PASS}
-EOF
-
-    # Release sigining key property
-    cat << EOF > $PROP_BASE/release-signing.properties
-key.store=/cordovasrc/keystore.jks
-key.store.password=${KEYSTORE_STORE_PASS}
-key.alias=${KEYSTORE_ALIAS}
-key.alias.password=${KEYSTORE_KEY_PASS}
-EOF
-
+if [ -z ${KEYSTORE_ALIAS} ]; then
+    echo "No keystore configuration found. exiting..."
+	exit 0;
 fi
+
+# Save key to keystore.
+echo -n $KEYSTORE_FILE_B64 | base64 -d > $KEYSTORE_FILE_PATH
+
+# Debug sigining key property
+cat << EOF > $PROP_BASE/debug-signing.properties
+storeFile=${KEYSTORE_DOCKER_PATH}
+storeType=jks
+keyAlias=${KEYSTORE_ALIAS}
+keyPassword=${KEYSTORE_KEY_PASS}
+storePassword=${KEYSTORE_STORE_PASS}
+EOF
+
+# Release sigining key property
+cat << EOF > $PROP_BASE/release-signing.properties
+storeFile=${KEYSTORE_DOCKER_PATH}
+storeType=jks
+keyAlias=${KEYSTORE_ALIAS}
+keyPassword=${KEYSTORE_KEY_PASS}
+storePassword=${KEYSTORE_STORE_PASS}
+EOF
+
+# build.json signing key
+cat << EOF > $APP_BASE/build.json
+{
+    "android": {
+        "debug": {
+            "keystore": "${KEYSTORE_DOCKER_PATH}",
+            "storePassword": "${KEYSTORE_STORE_PASS}",
+            "alias": "${KEYSTORE_ALIAS}",
+            "password" : "${KEYSTORE_KEY_PASS}",
+            "keystoreType": "jks",
+            "packageType": "apk"
+        },
+        "release": {
+            "keystore": "${KEYSTORE_DOCKER_PATH}",
+            "storePassword": "${KEYSTORE_STORE_PASS}",
+            "alias": "${KEYSTORE_ALIAS}",
+            "password" : "${KEYSTORE_KEY_PASS}",
+            "keystoreType": "jks",
+            "packageType": "apk"
+        }
+    }
+}
+EOF
