@@ -33,8 +33,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trClothes *upper "sundress">>                                 //  "여름용 원피스"
-        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "여름용 원피스", _trPost: "를"
+        <<trClothes *upper "sundress">>                                 //  "선 드레스"
+        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "선 드레스", _trPost: "를"
         <<trClothes "upper" "sundress" "desc">>                         //  "뛰어 놀기에 좋다."
     ```
 
@@ -58,8 +58,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trSearchClothes "sundress">>                                  //  "여름용 원피스"
-        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "여름용 원피스", _trPost: "를"
+        <<trSearchClothes "sundress">>                                  //  "선 드레스"
+        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "선 드레스", _trPost: "를"
         <<trSearchClothes "sundress" "desc">>                           //  "뛰어 놀기에 좋다."
     ```
 
@@ -352,7 +352,7 @@
     <<pShePost>>
         <<pShePost post "sep">>
         
-        <<pHe>>의 대체 위젯. 조사를 붙일 수 있다.
+        <<pShe>>의 대체 위젯. 조사를 붙일 수 있다.
         + <<pshePost>> , <<pHimPost>>, <<pherPost>>등도 사용할 수 있음.
 
         선택사항
@@ -360,7 +360,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<pShePost "을">>               // <<pHe>>을 | <<pHe>>를
+        <<pShePost "을">>               // <<pShe>>을 | <<pShe>>를
     ```
 
     ```
@@ -707,9 +707,18 @@
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 
+        주의점
+		- tentacledesc 에 ~ tentacle 이 들어있으면 "촉수" 가 붙음
+		- tentacledesc 에 ~ tentacle 이 없으면 "촉수" 가 붙지 않음
+		- 단, ~ tentacle 이 없더라도 조사가 붙으면 "촉수" 가 붙음
+
         e.g.
-        $tentacles[_i].fullDesc = "narrow tantacle"
+        $tentacles[_i].fullDesc = "narrow tentacle"
+		$tentacles[_i].desc = "narrow"
+		<<trTentacle $tentacles[_i].fullDesc>>              //"가느다란 촉수"
         <<trTentacle $tentacles[_i].fullDesc "을">>              //"가느다란 촉수를"
+		<<trTentacle $tentacles[_i].desc>>              //"가느다란"
+        <<trTentacle $tentacles[_i].desc "을">>              //"가느다란 촉수를"
     ```
 
 
@@ -817,6 +826,19 @@
         e.g.
         <<trBodyWriting "heart">>               //  "하트"
     ```
+* trBodyWritingCategory
+    ```
+    <<trBodyWritingCategory>>
+        <<trBodyWritingCategory *category>>
+
+        문신 종류를 번역한다.
+
+        필수사항
+        - *catgory 종류명
+
+        e.g.
+        <<trBodyWritingCategory "Masochism">>_trResult               //  "마조히즘"
+    ```
 
 * trBreastsdesc
     ```
@@ -912,6 +934,28 @@
         <<trNPCdesc "Robin" "을">>                      //  "로빈을"
     ```
 
+* trNPCname
+    ```
+    <<trNPCname>>
+        <<trNPCname [NPCname | NPCnum]>>
+        <<trNPCname [NPCname | NPCnum] post "sep">>
+
+        NPC의 이름을 번역한다.
+
+        필수사항
+        - NPCname: NPC의 이름
+        - NPCnum: NPC의 번호 (1-6)
+        - 주어지지 않은 경우 1번 NPC 이름으로 가정함
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trNPCname "Olivia">>                         //  "올리비아"
+        <<trNPCname "Robin" "을">>                      //  "로빈을"
+    ```
+
 * trParasite
     ```
     <<trParasite>>
@@ -970,7 +1014,7 @@
         - *PillType: 약의 타입
 
         e.g.
-        <<trPill "Growth">>     // 성장
+        <<trPill "Growth">>     // 성장약
     ```
 
 
@@ -1061,13 +1105,16 @@
 * trVore
     ```
     <<trVore>>
-        <<trVore *voretype post>>
+        <<trVore *voretype post "sep">>
 
         보어 타입을 번역한다.
 
         필수사항
         - voretype: 보어 타입
 
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
         e.g.
         <<trVore "whale" "의">>             // "고래의"
     ```
@@ -1170,5 +1217,5 @@
 		<<tentacle_(조사)>>
 	- 기타
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>, <<namedNPC_name_(조사)>>, 
-		<<namedNPC_title_(조사)>>, <<NPCDesc_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
+		<<namedNPC_title_(조사)>>, <<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
 		<<vore_(조사)>>, <<weather_(조사)>>

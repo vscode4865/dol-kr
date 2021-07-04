@@ -112,3 +112,35 @@
         <</if>>
     <</if>>
 <</widget>>
+
+<<widget "trNPCname">>
+	<<if $args[0] is undefined>>
+		<<set $_name to $NPCList[0].name>>
+	<<elseif isNaN($args[0])>>
+		<<set $_name to $args[0]>>
+	<<else>>
+		<<set $_name to $NPCList[Number($args[0]) - 1].name>>
+	<</if>>
+	
+	<<trinit_NPCname>>
+	<<set $_found to _NPCnameList[$_name]>>
+	<<if $_found is undefined>>
+		<<trinit_namedNPC>>
+		<<set $_found to _namedNPCList.find(function(select){
+			if(select.name == $args[0]){
+				return true;
+			}
+		})>>
+	<</if>>
+	<<if $_found is undefined>>
+		<<set $_found to {}>>
+		<<set $_found.koname to $_name>>
+		<<getPostNum $_name>>
+		<<set $_found.post to _postNum>>
+	<</if>>
+	
+	<<set _trResult to $_found.koname>>
+	<<if $args[1] isnot undefined>>
+		<<trPost $_found.post $args[1] $args[2]>>
+	<</if>>
+<</widget>>
