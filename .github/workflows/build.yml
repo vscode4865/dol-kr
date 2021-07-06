@@ -2,8 +2,6 @@ name: Build
 
 on:
   push:
-    branches:
-    - main
 
 jobs:
   html:
@@ -64,12 +62,7 @@ jobs:
         docker build -t cordova-android:latest .
 
     - name: Build debug apk
-      run: docker run -v "$GITHUB_WORKSPACE":"/src" -e KEYSTORE_ALIAS -e KEYSTORE_STORE_PASS -e KEYSTORE_KEY_PASS -t cordova-android npm run sign-build-debug
-      env:
-        KEYSTORE_FILE_B64: ${{ secrets.KEYSTORE_FILE_B64 }}
-        KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
-        KEYSTORE_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASS }}
-        KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
+      run: docker run -v "$GITHUB_WORKSPACE":"/src" -t cordova-android npm run sign-build-debug
 
     # - name: Upload Artifact
     #   uses: actions/upload-artifact@v2
@@ -112,15 +105,12 @@ jobs:
         docker build -t cordova-android:latest .
 
     - name: Build release apk
-      run: docker run -v "$GITHUB_WORKSPACE":"/src" -e KEYSTORE_ALIAS -e KEYSTORE_STORE_PASS -e KEYSTORE_KEY_PASS -t cordova-android npm run sign-build-release
-      env:
-        KEYSTORE_FILE_B64: ${{ secrets.KEYSTORE_FILE_B64 }}
-        KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
-        KEYSTORE_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASS }}
-        KEYSTORE_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASS }}
+      run: docker run -v "$GITHUB_WORKSPACE":"/src" -t cordova-android npm run sign-build-release
 
     # - name: Upload Artifact
     #   uses: actions/upload-artifact@v2
     #   with:
     #     name: dol-kr-release-apk
-    #     path: dist/*.apk
+    #     path: |
+    #       dist/*.apk
+    #       !dist/*-debug.apk
