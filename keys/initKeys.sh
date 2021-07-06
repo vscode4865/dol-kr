@@ -18,7 +18,10 @@ KEYSTORE_DOCKER_PATH=/cordovasrc/$KEYSTORE_FILE_NAME
 
 if [ -z ${KEYSTORE_ALIAS} ]; then
     echo "No keystore configuration found. exiting..."
-	exit 0;
+
+    # Fix issue with build config
+    echo "{}" > $APP_BASE/build.json
+    exit 0;
 fi
 
 # Save key to keystore.
