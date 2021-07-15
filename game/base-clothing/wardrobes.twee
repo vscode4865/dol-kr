@@ -23,6 +23,7 @@
 <<set _slimePrevent to ["upper", "lower", "under_upper", "under_lower"]>>
 <<set _towelCheck to ["upper", "lower"]>>
 <<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
+<<unset _outfitPieceIds>>
 <<for _ie to 0; _ie lt _equip.length;_ie++>>
 	<<if _equipSkip[_equip[_ie]] is true>>
 		<<continue>>
@@ -64,7 +65,7 @@
 	<</if>>
 	<<if $wardrobeOption is "wear" or _wearId is "strip" or _wearId is "towel" or _wearId is "large_towel">>
 		/*Checks for cursed equip*/
-		<<unset _cursedPrevent>><<unset _outfitPieceIds>>
+		<<unset _cursedPrevent>>
 		<<set _wornOutfitPrimary to $worn[_equip[_ie]].outfitPrimary>>
 		<<if $worn[_equip[_ie]].cursed is 1>>
 			<<trClothes _equip[_ie] $worn[_equip[_ie]].name "name" "을">>_trResult 벗으려 하나, 실패한다. <<print "<<cursedtext "+$worn[_equip[_ie]].name+">>">>
@@ -426,7 +427,7 @@ __옷__
 <br>
 새 세트 추가:
 <br>
-이름: <input id="outfitName" type="text" value="커스텀" maxlength="30" onfocus="SugarCube.State.variables.tempDisable = true;">
+이름: <input id="outfitName" type="text" value="커스텀" maxlength="30" onfocus="V.tempDisable = true;">
 <br>
 종류: <label>일상 <<radiobutton "$outfit_type" 0 checked>></label> | <label>잠옷<<radiobutton "$outfit_type" "sleep">></label> | <label>수영복<<radiobutton "$outfit_type" "swim">></label>
 <br>
@@ -438,8 +439,8 @@ __옷__
 <div class="wardrobe-action">
 	<<link "새로운 세트에 현재 입은 옷 추가">>
 		<<script>>
-			SugarCube.State.variables.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
-		<</script>><!--</script>-->
+			V.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
+		<</script>>
 		<<set $outfit.push(
 			{index: $outfit.length,
 			name: $outfit_name,
@@ -527,21 +528,21 @@ __옷__
 	정렬:
 	/*Undefined error for unknown reason*/
 	/*<a @onclick="`wikifier('wardrobeListReorder', '`+ $lastWardrobeSlot + `', 'name');`">이름</a> |*/
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name');">이름</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color');">색상</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd');">음란도</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity');">내구도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'name');">이름</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'color');">색상</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'lewd');">음란도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'integrity');">내구도</a></div> |
 	<<if _outfitTypes.includes(_wardrobe_list)>>
-		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit');">옷 상태</a></div> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'outfit');">옷 상태</a></div> |
 	<</if>>
 	<br>
 	역순 정렬:
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'name', true);">이름</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'color', true);">색상</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'lewd', true);">음란도</a></div> |
-	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'integrity', true);">내구도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'name', true);">이름</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'color', true);">색상</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'lewd', true);">음란도</a></div> |
+	<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'integrity', true);">내구도</a></div> |
 	<<if _outfitTypes.includes(_wardrobe_list)>>
-		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', SugarCube.State.variables.lastWardrobeSlot, 'outfit', true);">옷 상태</a></div> |
+		<div class="wardrobe-action"><a onclick="wikifier('wardrobeListReorder', V.lastWardrobeSlot, 'outfit', true);">옷 상태</a></div> |
 	<</if>>
 	<br><br>
 	현재 입은 옷:
@@ -672,7 +673,7 @@ __옷__
 			<<if _broken is 0>>
 				<span class="gold">(한벌옷)</span>
 			<<elseif _broken lt _keys.length>>
-				<span class="red">(부분 파손)</span>
+				<span class="red">(일부 파손)</span>
 			<<else>>
 				<span class="red">(망가짐)</span>
 			<</if>>
@@ -695,7 +696,7 @@ __옷__
 <<widget "wearlink_norefresh">>
 	<<capture $args[1]>>
 		<<link $args[0]>>
-			<<set State.variables[_wear] = $args[1]>>
+			<<set V[_wear] = $args[1]>>
 			<<updatewardrobe>>
 		<</link>>
 	<</capture>>
@@ -796,13 +797,13 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 <div>
 <ul>
 <<if $worn[_wardrobe_list].name isnot "naked">>
-	<li><a @onclick="`SugarCube.State.variables.`+_wear+` = 'strip';SugarCube.State.display(SugarCube.State.variables.passage)`">벗기</a></li>
+	<li><a @onclick="`V.`+_wear+` = 'strip';SugarCube.State.display(V.passage)`">벗기</a></li>
 <</if>>
 <<if _wardrobe_list is "upper">>
-	<li><a onclick="SugarCube.State.variables.wear_upper='large_towel';SugarCube.State.display(SugarCube.State.variables.passage)">큰 수건</a></li>
+	<li><a onclick="V.wear_upper='large_towel';SugarCube.State.display(V.passage)">큰 수건</a></li>
 <</if>>
 <<if _wardrobe_list is "upper" or _wardrobe_list is "lower" >>
-	<li><a @onclick="`SugarCube.State.variables.`+_wear+` = 'towel';SugarCube.State.display(SugarCube.State.variables.passage)`">수건</a></li>
+	<li><a @onclick="`V.`+_wear+` = 'towel';SugarCube.State.display(V.passage)`">수건</a></li>
 <</if>>
 <<for _i to 0; _i lt $wardrobe[_wardrobe_list].length; _i++>>
 	<<set _item to $wardrobe[_wardrobe_list][_i]>>
@@ -814,9 +815,9 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 	<<if (_item.outfitPrimary isnot undefined and _showType is "non-outfits") or (_item.outfitPrimary is undefined and _showType is "outfits")>>
 		<<continue>>
 	<</if>>
-	<li>/*<<clothingicon _item>>*/<a @onclick="`SugarCube.State.variables.`+_wear+` = `+ _i +`;SugarCube.State.display(SugarCube.State.variables.passage)`">_item.name_cap</a>
+	<li>/*<<clothingicon _item>>*/<a @onclick="`V.`+_wear+` = `+ _i +`;SugarCube.State.display(V.passage)`">_item.name_cap</a>
 	<<if $wardrobe[_wardrobe_list][_i].colour isnot 0>>
-		<span @class="$wardrobe[_wardrobe_list][_i].colour">(_item.colour)</span>
+		<span @class="$wardrobe[_wardrobe_list][_i].colour"><<trColour _item.colour>>(_trResult)</span>
 	<</if>>
 	<<wardrobeintegrity _wardrobe_list>>
 	</li>
@@ -940,7 +941,7 @@ __<<print _wardrobe_list[0].toUpperCase() + _wardrobe_list.substring(1) + (_show
 /*Fixes invisible outfit bottoms caused by bugs in previous versions*/
 <<set $lastWardrobeSanityCheck to $saveVersions.last()>>
 /*Update _equip as required*/
-<<set _equip to ["lower", "under_lower"]>>
+<<set _equip to ["lower", "under_lower", "head"]>>
 <<for _slot range _equip>>
 	<<set $_itemIndex to {}>>
 	<<for $_i to 0; $_i lt $wardrobe[_slot].length; $_i++>>
@@ -1107,7 +1108,7 @@ $warmth 따뜻함 | $chill 추움
 				<br><br>
 			<</if>>
 		<<case "Eden Wardrobe">>
-			<<if $exhibitionism gte 75>>
+			<<if $exhibitionism gte 75 or $loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden">>
 				<<link [[마친다|Eden Cabin]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 			<<elseif $exhibitionism gte 55>>
 				<<if $exposed lte 1>>
@@ -1174,7 +1175,7 @@ $warmth 따뜻함 | $chill 추움
 					<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 					<br><br>
 				<<else>>
-					이 꼴로 나갈 순 없다!
+					이 꼴로는 나갈 수 없다!
 					<br><br>
 				<</if>>
 			<<elseif $exhibitionism gte 55>>
@@ -1185,7 +1186,7 @@ $warmth 따뜻함 | $chill 추움
 					<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 					<br><br>
 				<<else>>
-					이 꼴로 나갈 순 없다!
+					이 꼴로는 나갈 수 없다!
 					<br><br>
 				<</if>>
 			<</if>>
@@ -1195,7 +1196,7 @@ $warmth 따뜻함 | $chill 추움
 					<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 					<br><br>
 				<<else>>
-					이 꼴로 나갈 순 없다!
+					이 꼴로는 나갈 수 없다!
 					<br><br>
 				<</if>>
 			<<elseif $exhibitionism gte 55>>
@@ -1206,13 +1207,13 @@ $warmth 따뜻함 | $chill 추움
 					<<link [[창관으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
 					<br><br>
 				<<else>>
-					이 꼴로 나갈 순 없다!
+					이 꼴로는 나갈 수 없다!
 					<br><br>
 				<</if>>
 			<</if>>
 		<<case "School Boy Wardrobe">>
 			<<if $exposed gte 2 and $exhibitionism lt 75>>
-				You can't go out like this!
+				이 꼴로는 나갈 수 없다!
 				<br><br>
 			<<else>>
 				<<link [[나간다|School Boy Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>
@@ -1220,7 +1221,7 @@ $warmth 따뜻함 | $chill 추움
 			<</if>>
 		<<case "School Girl Wardrobe">>
 			<<if $exposed gte 2 and $exhibitionism lt 75>>
-				You can't go out like this!
+				이 꼴로는 나갈 수 없다!
 				<br><br>
 			<<else>>
 				<<link [[나간다|School Girl Changing Room]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><</link>>

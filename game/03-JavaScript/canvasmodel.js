@@ -41,7 +41,8 @@
  * @property {number} [brightness] Adjust brightness, from -1 to +1 (before recoloring), default 0
  * @property {number} [contrast] Adjust contrast (before recoloring), default 1
  * @property {string} [blendMode] Recoloring mode (see docs for globalCompositeOperation; "hard-light", "multiply" and "screen" ), default none
- * @property {string} [blend] Color for recoloring, CSS color string
+ * @property {string|object} [blend] Color for recoloring, CSS color string or gradient spec (see model.d.ts)
+ * @property {string} [masksrc] Mask image path. If present, only parts where mask is opaque will be displayed
  * @property {string} [animation] Name of animation to apply, default none
  * @property {number} [frames] Frame numbers used to display static images, array of subsprite indices. For example, if model frame count is 6 but layer has only 3 subsprites, default frames would be [0, 0, 1, 1, 2, 2].
  * @property {string[]} [filters] Names of filters that should be applied to the layer; filters themselves are taken from model options
@@ -50,23 +51,24 @@
  * @property {number} [width] Layer subsprite width, default = model width
  * @property {number} [height] Layer subsprite width, default = model height
  *
- * The following functions can be used instead of constant properties. Theit arguments are (options,V,T) where V=State.variables, T=State.temporary, options are model options provided in render call (from _modeloptions variable for <<rendermodel>>/<<animatemodel>> widget)
- * @property {function} [showfn] (options,V,T)=>boolean Function generating `show` property. Should return boolean, do not use undefined/null/0/"" to hide layer, use of !! (double not) operator recommended.
- * @property {function} [srcfn] (options,V,T)=>string
- * @property {function} [zfn] (options,V,T)=>number
- * @property {function} [alphafn] (options,V,T)=>number
- * @property {function} [desaturatefn] (options,V,T)=>boolean
- * @property {function} [brightnessfn] (options,V,T)=>number
- * @property {function} [contrastftn] (options,V,T)=>number
- * @property {function} [blendModefn] (options,V,T)=>string
- * @property {function} [blendfn] (options,V,T)=>string
- * @property {function} [animationfn] (options,V,T)=>string
- * @property {function} [framesfn] (options,V,T)=>number[]
- * @property {function} [filtersfn] (options,V,T)=>string[]
- * @property {function} [dxfn] (options,V,T)=>number
- * @property {function} [dyfn] (options,V,T)=>number
- * @property {function} [widthfn] (options,V,T)=>number
- * @property {function} [heightfn] (options,V,T)=>number
+ * The following functions can be used instead of constant properties. Their arguments are (options) where options are model options provided in render call (from _modeloptions variable for <<rendermodel>>/<<animatemodel>> widget)
+ * @property {function} [showfn] (options)=>boolean Function generating `show` property. Should return boolean, do not use undefined/null/0/"" to hide layer, use of !! (double not) operator recommended.
+ * @property {function} [srcfn] (options)=>string
+ * @property {function} [zfn] (options)=>number
+ * @property {function} [alphafn] (options)=>number
+ * @property {function} [desaturatefn] (options)=>boolean
+ * @property {function} [brightnessfn] (options)=>number
+ * @property {function} [contrastftn] (options)=>number
+ * @property {function} [blendModefn] (options)=>(string|object)
+ * @property {function} [blendfn] (options)=>string
+ * @property {function} [masksrcfn] (options)=>string
+ * @property {function} [animationfn] (options)=>string
+ * @property {function} [framesfn] (options)=>number[]
+ * @property {function} [filtersfn] (options)=>string[]
+ * @property {function} [dxfn] (options)=>number
+ * @property {function} [dyfn] (options)=>number
+ * @property {function} [widthfn] (options)=>number
+ * @property {function} [heightfn] (options)=>number
  */
 
 /**
@@ -211,7 +213,6 @@ window.CanvasModel = class CanvasModel {
 		if (this.animated) {
 			return Renderer.animateLayers(this.canvas,
 				this.compile(this.options),
-				Renderer.Animations,
 				this.listener,
 				true);
 		} else {
@@ -226,10 +227,8 @@ window.CanvasModel = class CanvasModel {
 	 * Pre-process options. Typically you calculate some expression here and store them as generated options
 	 * Override in subclass.
 	 * @param options Model options
-	 * @param V State.variables
-	 * @param T State.temporary
 	 */
-	preprocess(options, V, T) {
+	preprocess(options) {
 	}
 
 	/**
@@ -238,12 +237,11 @@ window.CanvasModel = class CanvasModel {
 	 * @return {CompositeLayerSpec[]} layers
 	 */
 	compile(options) {
-		const V = State.variables, T = State.temporary;
 		const debug = V.debug;
 		if (!options) options = {filters: {}};
 		if (!('filters' in options)) options.filters = {};
 		try {
-			this.preprocess(options, V, T);
+			this.preprocess(options);
 		} catch (e) {
 			console.error(e);
 			throw "Error in model preprocessing: "+e.stack
@@ -272,7 +270,7 @@ window.CanvasModel = class CanvasModel {
 			let fnkey = propname + "fn";
 			if (fnkey in layer) {
 				try {
-					layer[propname] = layer[fnkey](options, V, T);
+					layer[propname] = layer[fnkey](options);
 				} catch (e) {
 					if (layer.show) {
 						console.error("Error evaluating layer " + layer.name + " property " + propname,)
@@ -296,6 +294,7 @@ window.CanvasModel = class CanvasModel {
 			propeval(layer, "desaturate");
 			propeval(layer, "brightness");
 			propeval(layer, "contrast");
+			propeval(layer, "masksrc");
 			propeval(layer, "animation");
 			propeval(layer, "filters");
 			propeval(layer, "dx");
@@ -353,118 +352,3 @@ Renderer.locateModel = function(modelName, slot) {
 	}
 }
 
-/**
- * (Low-level API)
- * Prepare a layer to be rendered.
- *
- * See {@link CompositeLayerSpec} definition for details on options.
- *
- * Arguments are processed depending on their type:
- * * String argument is `src` option (image source)
- * * Number argument is `z` option (z-index)
- * * Object argument is full or partial  CompositeLayerSpec object
- * Leftmost arguments have most priority.
- * @example
- * <<run canvaslayer(10, 'img.png', {blendMode:'hard-light', blend:'#00ff00'});>>
- * <<run canvaslayer({z:10, src:'img.png'}, {blendMode:'hard-light', blend:'#00ff00'});>>
- */
-function canvaslayer() {
-    var layers = State.temporary.CanvasLayers;
-    if (!layers) throw "'canvaslayer()' without 'canvasstart'"
-
-    var theOptions = {};
-    for (var i = arguments.length-1; i>=0; i--) {
-        var arg = arguments[i];
-        switch (typeof arg) {
-            case 'object':
-                theOptions = Object.assign(theOptions, arg);
-                break;
-            case 'string':
-                theOptions.src = arg;
-                break;
-            case 'number':
-                theOptions.z = arg;
-                break;
-            default:
-                throw "Invalid canvaslayer() argument "+i+": "+(typeof arg);
-        }
-    }
-
-    if (typeof theOptions.src !== 'string') {
-        console.error(arguments);
-        throw "canvaslayer() options missing 'src'"
-    }
-    layers.push(theOptions);
-}
-window.canvaslayer = canvaslayer;
-
-Renderer.Stats = {
-    trace: false,
-    traceAnim: false,
-    lastLoadTime: 0,
-    lastRenderTime: 0,
-
-    logmsgLoad: new ObservableValue(""),
-    logmsgRender: new ObservableValue(""),
-    logmsgAnimate: new ObservableValue(""),
-
-    nlayers: 0,
-    ncached: 0
-};
-Renderer.defaultListener = {
-    composeLayers: function(layers) {
-    	Renderer.Stats.loadErrors = 0;
-        if (Renderer.Stats.trace) {
-            console.log(DOL.Perflog.millitime().toFixed(3), "Composing "+layers.length+" layers...");
-        }
-    },
-	loadError: function(layer, src) {
-    	// logged to console by Renderer itself
-		Renderer.Stats.loadErrors++;
-		Errors.report("Failed to load image "+src+" for layer "+layer);
-	},
-    loadingDone: function(time, layersLoaded) {
-        Renderer.Stats.lastLoadTime = time;
-        let msg = "Loaded "+layersLoaded+" images in " + time.toFixed(3) + ' ms';
-        if (Renderer.Stats.loadErrors > 0) msg += ' ('+Renderer.Stats.loadErrors+' failed)';
-        Renderer.Stats.logmsgLoad.value = msg;
-        if (Renderer.Stats.trace) {
-            console.log(DOL.Perflog.millitime().toFixed(3), msg);
-        }
-    },
-    beforeRender: function(layers) {
-        Renderer.Stats.nlayers = layers.length;
-        Renderer.Stats.ncached = 0;
-    },
-    layerCacheHit: function(layer) {
-        Renderer.Stats.ncached++;
-    },
-    renderingDone: function(time) {
-        Renderer.Stats.lastRenderTime = time;
-        let msg = "Rendered "+Renderer.Stats.nlayers+" layers"+
-            " ("+Renderer.Stats.ncached+" cached)"+
-            " in "+time.toFixed(3)+' ms'
-        if (Renderer.Stats.trace) {
-            console.log(DOL.Perflog.millitime().toFixed(3),msg);
-        }
-        Renderer.Stats.logmsgRender.value = msg;
-    },
-    keyframe: function(animation, keyframeIndex, keyframe) {
-        if (Renderer.Stats.traceAnim) {
-            console.log(DOL.Perflog.millitime().toFixed(3), "animation",animation,"keyframe",keyframeIndex,"frame",keyframe.frame,"duration",keyframe.duration);
-        }
-    },
-    keyframeRender: function(spec, cacheHit, cacheRenderTime) {
-        if (Renderer.Stats.traceAnim) {
-            console.log(DOL.Perflog.millitime().toFixed(3), "KeyframeRender",spec,cacheHit?"cache hit, render time "+cacheRenderTime.toFixed(3)+" ms":"cache miss");
-        }
-        if (cacheHit && Renderer.Stats.logmsgAnimate) {
-            Renderer.Stats.logmsgAnimate.value = "Cached keyframe rendered in "+cacheRenderTime.toFixed(3)+" ms"
-        }
-    },
-	animationStop: function () {
-		if (Renderer.Stats.traceAnim) {
-			console.log(DOL.Perflog.millitime().toFixed(3), "Animation stopped");
-		}
-	}
-}

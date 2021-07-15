@@ -321,9 +321,21 @@
 <<set _plotKeys to Object.keys($plots)>>
 <<for _s to 0; _s lt _plotKeys.length; _s++>>
 	<<set _plot to _plotKeys[_s]>>
+	<<switch _plot>>
+		<<case "farm">>
+			<<if $farm.irrigation>>
+				<<set _irrigation to $farm.irrigation>>
+			<<else>>
+				<<set _irrigation to 0>>
+			<</if>>
+		<<default>>
+			<<set _irrigation to 0>>
+	<</switch>>
 	<<for _t to 0; _t lt $plots[_plot].length; _t++>>
 		<<capture _t>>
-		<<set $plots[_plot][_t].days += 1>>
+		<<if $plots[_plot][_t].stage gte 1 and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
+			<<set $plots[_plot][_t].days += 1>>
+		<</if>>
 		<<switch $plots[_plot][_t].stage>>
 		<<case 4>>
 			<<if $plots[_plot][_t].days gte setup.plants[$plots[_plot][_t].name].days and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
@@ -344,6 +356,9 @@
 		<</switch>>
 		<<if $weather is "rain">>
 			<<set $plots[_plot][_t].water to 1>>
+		<<elseif _irrigation gt 0>>
+			<<set $plots[_plot][_t].water to 1>>
+			<<set _irrigation-->>
 		<<else>>
 			<<set $plots[_plot][_t].water to 0>>
 		<</if>>

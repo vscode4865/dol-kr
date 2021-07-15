@@ -125,6 +125,7 @@
 <</widget>>
 
 <<widget "settings">>
+<<updatehistorycontrols>><!-- hides controls on going back in history after enabling that option -->
 <<if $passage is "Start" or $passage is "certification_event_start">>
 <div id="settingsExit">
 	<<settingsExit>>
@@ -178,7 +179,7 @@
 	<<script>>
 		document.body.scrollTop = 0;
 		document.documentElement.scrollTop = 0;
-	<</script>><!--</script>-->
+	<</script>>
 <</link>>
 <<if $passage isnot "Start" and $passage isnot "certification_event_start">>
 <br><br>
@@ -240,6 +241,7 @@
 	<<if $gamemode is "soft" or $alluremod lt 1>>
 		<<set $feats.soft to true>>
 	<</if>>
+	<<updatehistorycontrols>>
 	<<initnpcgender>>
 	<<hirsuteHideCheck>>
 	<<tanned 0 "ignoreCoverage">>
@@ -335,7 +337,7 @@
 <<widget "characterSettings">>
 
 	<<if StartConfig.enableImages is true>>
-		<span class="gold">사이드 바에서 미리보기.</span> <label>겉옷 보기 <<print '<<checkbox "_showClothes" false true '+(_showClothes isnot false ? "checked" : "")+'>>'>></label> <label>속옷 보기 <<print '<<checkbox "_showUnderwear" false true '+(_showUnderwear isnot false ? "checked" : "")+'>>'>></label>
+		<span class="gold">사이드 바에서 캐릭터를 미리보기 한다.</span> <label>겉옷 보기 <<checkbox "_showClothes" false true autocheck>></label> <label>속옷 보기 <<checkbox "_showUnderwear" false true autocheck>></label>
 		<br>
 		<span class="red">'플레이어 캐릭터의 피부색 시각적으로 표현' 기능은 일반 탭에서 활성화해야 정상적으로 게임 플레이 중에 피부색을 볼 수 있습니다.</span>
 		<br>
@@ -352,136 +354,136 @@
 	<<else>>
 		<span class="gold">신체 크기</span> - 몸이 작을 수록 인카운터 중에 가할 수 있는 피해량이 적어져, 저항이 힘들어집니다.
 		<br>
-		<label>조그마함 <<print '<<radiobutton "$bodysize" 0 ' + ($bodysize is 0 ? "checked" : "") + '>>'>></label> |
-		<label>작음 <<print '<<radiobutton "$bodysize" 1 ' + ($bodysize is 1 ? "checked" : "") + '>>'>></label> |
-		<label>평범함 <<print '<<radiobutton "$bodysize" 2 ' + ($bodysize is 2 ? "checked" : "") + '>>'>></label> |
-		<label>큼 <<print '<<radiobutton "$bodysize" 3 ' + ($bodysize is 3 ? "checked" : "") + '>>'>></label>
+		<label>조그마함 <<radiobutton "$bodysize" 0 autocheck>></label> |
+		<label>작음 <<radiobutton "$bodysize" 1 autocheck>></label> |
+		<label>평범함 <<radiobutton "$bodysize" 2 autocheck>></label> |
+		<label>Large <<radiobutton "$bodysize" 3 autocheck>></label>
 		<br><br>
 	<</if>>
 
 	<span class="gold">성별</span>
 	<br>
-	<label>남성 <<print '<<radiobutton "$player.gender" "m" ' + ($player.gender is "m" ? "checked" : "") + '>>'>></label> |
-	<label>여성 <<print '<<radiobutton "$player.gender" "f" ' + ($player.gender is "f" ? "checked" : "") + '>>'>></label> |
-	<label>후타나리 <<print '<<radiobutton "$player.gender" "h" ' + ($player.gender is "h" ? "checked" : "") + '>>'>></label>
+	<label>남성 <<radiobutton "$player.gender" "m" autocheck>></label> |
+	<label>여성 <<radiobutton "$player.gender" "f" autocheck>></label> |
+	<label>후타나리 <<radiobutton "$player.gender" "h" autocheck>></label>
 	<br><br>
 
 	<span class="gold">체형</span>
 	<br>
-	<label>남성적 <<print '<<radiobutton "$player.gender_body" "m" ' + ($player.gender_body is "m" ? "checked" : "") + '>>'>></label> |
-	<label>여성적 <<print '<<radiobutton "$player.gender_body" "f" ' + ($player.gender_body is "f" ? "checked" : "") + '>>'>></label> |
-	<label>중성적 <<print '<<radiobutton "$player.gender_body" "a" ' + ($player.gender_body is "a" ? "checked" : "") + '>>'>></label> |
+	<label>남성적 <<radiobutton "$player.gender_body" "m" autocheck>></label> |
+	<label>여성적 <<radiobutton "$player.gender_body" "f" autocheck>></label> |
+	<label>중성적 <<radiobutton "$player.gender_body" "a" autocheck>></label> |
 	<br><br>
 
 	<<if $dev is 1>>
 		<span class="gold">성기</span>
 		<br>
-		<label>자지 <<print '<<radiobutton "$player.sex" "m" ' + ($player.sex is "m" ? "checked" : "") + '>>'>></label> |
-		<label>보지 <<print '<<radiobutton "$player.sex" "f" ' + ($player.sex is "f" ? "checked" : "") + '>>'>></label>
+		<label>자지 <<radiobutton "$player.sex" "m" autocheck>></label> |
+		<label>보지 <<radiobutton "$player.sex" "f" autocheck>></label>
 		<br><br>
 	<</if>>
 
 	<span class="gold">자지 크기</span> - 적용 가능할 경우
 	<br>
-	<label>조그마함 <<print '<<radiobutton "$penissize" 0 ' + ($penissize is 0 ? "checked" : "") + '>>'>></label> |
-	<label>작음 <<print '<<radiobutton "$penissize" 1 ' + ($penissize is 1 ? "checked" : "") + '>>'>></label> |
-	<label>평범함 <<print '<<radiobutton "$penissize" 2 ' + ($penissize is 2 ? "checked" : "") + '>>'>></label>
+	<label>조그마함 <<radiobutton "$penissize" 0 autocheck>></label> |
+	<label>작음 <<radiobutton "$penissize" 1 autocheck>></label> |
+	<label>평범함 <<radiobutton "$penissize" 2 autocheck>></label>
 	<br><br>
 
 	<span class="gold">가슴 크기</span>
 	<br>
-	<label>평평함 <<print '<<radiobutton "$breastsize" 0 ' + ($breastsize is 0 ? "checked" : "") + '>>'>></label> |
-	<label>약간 솟아오름 <<print '<<radiobutton "$breastsize" 1 ' + ($breastsize is 1 ? "checked" : "") + '>>'>></label> |
-	<label>조그마함 <<print '<<radiobutton "$breastsize" 2 ' + ($breastsize is 2 ? "checked" : "") + '>>'>></label> |
-	<label>작음 <<print '<<radiobutton "$breastsize" 3 ' + ($breastsize is 3 ? "checked" : "") + '>>'>></label> |
-	<label>앙증맞음 <<print '<<radiobutton "$breastsize" 4 ' + ($breastsize is 4 ? "checked" : "") + '>>'>></label>
+	<label>평평함 <<radiobutton "$breastsize" 0 autocheck>></label> |
+	<label>약간 솟아오름 <<radiobutton "$breastsize" 1 autocheck>></label> |
+	<label>조그마함 <<radiobutton "$breastsize" 2 autocheck>></label> |
+	<label>작음 <<radiobutton "$breastsize" 3 autocheck>></label> |
+	<label>앙증맞음 <<radiobutton "$breastsize" 4 autocheck>></label>
 	<br><br>
 
 	<span class="gold">엉덩이 크기</span>
 	<br>
-	<label>호리호리함 <<print '<<radiobutton "$bottomsize" 0 ' + ($bottomsize is 0 ? "checked" : "") + '>>'>></label> |
-	<label>날씬함 <<print '<<radiobutton "$bottomsize" 1 ' + ($bottomsize is 1 ? "checked" : "") + '>>'>></label> |
-	<label>평범함 <<print '<<radiobutton "$bottomsize" 2 ' + ($bottomsize is 2 ? "checked" : "") + '>>'>></label> |
-	<label>푹신함 <<print '<<radiobutton "$bottomsize" 3 ' + ($bottomsize is 3 ? "checked" : "") + '>>'>></label>
+	<label>호리호리함 <<radiobutton "$bottomsize" 0 autocheck>></label> |
+	<label>날씬함 <<radiobutton "$bottomsize" 1 autocheck>></label> |
+	<label>평범함 <<radiobutton "$bottomsize" 2 autocheck>></label> |
+	<label>푹신함 <<radiobutton "$bottomsize" 3 autocheck>></label>
 	<br><br>
 
 	<span class="gold">고환</span> - 후타나리인 경우에만 적용
 	<br>
-	<label>있음 <<print '<<radiobutton "$player.ballsExist" true ' + ($player.ballsExist is true ? "checked" : "") + '>>'>></label> |
-	<label>없음 <<print '<<radiobutton "$player.ballsExist" false ' + ($player.ballsExist is false ? "checked" : "") + '>>'>></label> |
+	<label>있음 <<radiobutton "$player.ballsExist" true autocheck>></label> |
+	<label>없음 <<radiobutton "$player.ballsExist" false autocheck>></label> |
 	<br><br>
 
 	<span class="gold">가슴 감도</span>
 	<br>
-	<label>평범함 <<print '<<radiobutton "$breastsensitivity" 1 ' + ($breastsensitivity is 1 ? "checked" : "") + '>>'>></label> |
-	<label><span class="pink">민감함</span> <<print '<<radiobutton "$breastsensitivity" 3 ' + ($breastsensitivity is 3 ? "checked" : "") + '>>'>></label> |
-	<label><span class="red">아주 민감함</span> <<print '<<radiobutton "$breastsensitivity" 5 ' + ($breastsensitivity is 5 ? "checked" : "") + '>>'>></label>
+	<label>평범함 <<radiobutton "$breastsensitivity" 1 autocheck>></label> |
+	<label><span class="pink">민감함</span> <<radiobutton "$breastsensitivity" 3 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$breastsensitivity" 5 autocheck>></label>
 	<br><br>
 
 	<span class="gold">성기 감도</span>
 	<br>
-	<label>평범함 <<print '<<radiobutton "$genitalsensitivity" 1 ' + ($genitalsensitivity is 1 ? "checked" : "") + '>>'>></label> |
-	<label><span class="pink">민감함</span> <<print '<<radiobutton "$genitalsensitivity" 3 ' + ($genitalsensitivity is 3 ? "checked" : "") + '>>'>></label> |
-	<label><span class="red">아주 민감함</span> <<print '<<radiobutton "$genitalsensitivity" 5 ' + ($genitalsensitivity is 5 ? "checked" : "") + '>>'>></label>
+	<label>평범함 <<radiobutton "$genitalsensitivity" 1 autocheck>></label> |
+	<label><span class="pink">민감함</span> <<radiobutton "$genitalsensitivity" 3 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$genitalsensitivity" 5 autocheck>></label>
 	<br><br>
 
 	<span class="gold">눈 색</span>
 	<br>
-	<label><span class="purple">보라</span> <<print '<<radiobutton "$eyeselect" "purple" ' + ($eyeselect is "purple" ? "checked" : "") + '>>'>></label> |
-	<label><span class="blue">짙은 파랑</span> <<print '<<radiobutton "$eyeselect" "dark blue" ' + ($eyeselect is "dark blue" ? "checked" : "") + '>>'>></label> |
-	<label><span class="lblue">밝은 파랑</span> <<print '<<radiobutton "$eyeselect" "light blue" ' + ($eyeselect is "light blue" ? "checked" : "") + '>>'>></label> |
-	<label><span class="tangerine">호박색</span> <<print '<<radiobutton "$eyeselect" "amber" ' + ($eyeselect is "amber" ? "checked" : "") + '>>'>></label> |
-	<label><span class="brown">적갈색</span> <<print '<<radiobutton "$eyeselect" "hazel" ' + ($eyeselect is "hazel" ? "checked" : "") + '>>'>></label> |
-	<label><span class="green">초록</span> <<print '<<radiobutton "$eyeselect" "green" ' + ($eyeselect is "green" ? "checked" : "") + '>>'>></label> |
-	<label><span class="red">빨강</span> <<print '<<radiobutton "$eyeselect" "red" ' + ($eyeselect is "red" ? "checked" : "") + '>>'>></label> |
-	<label><span class="pink">분홍</span> <<print '<<radiobutton "$eyeselect" "pink" ' + ($eyeselect is "pink" ? "checked" : "") + '>>'>></label> |
-	<label><span class="grey">회색</span> <<print '<<radiobutton "$eyeselect" "grey" ' + ($eyeselect is "grey" ? "checked" : "") + '>>'>></label>
+	<label><span class="purple">보라</span> <<radiobutton "$eyeselect" "purple" autocheck>></label> |
+	<label><span class="blue">짙은 파랑</span> <<radiobutton "$eyeselect" "dark blue" autocheck>></label> |
+	<label><span class="lblue">밝은 파랑</span> <<radiobutton "$eyeselect" "light blue" autocheck>></label> |
+	<label><span class="tangerine">호박색</span> <<radiobutton "$eyeselect" "amber" autocheck>></label> |
+	<label><span class="brown">적갈색</span> <<radiobutton "$eyeselect" "hazel" autocheck>></label> |
+	<label><span class="green">초록</span> <<radiobutton "$eyeselect" "green" autocheck>></label> |
+	<label><span class="red">빨강</span> <<radiobutton "$eyeselect" "red" autocheck>></label> |
+	<label><span class="pink">분홍</span> <<radiobutton "$eyeselect" "pink" autocheck>></label> |
+	<label><span class="grey">회색</span> <<radiobutton "$eyeselect" "grey" autocheck>></label>
 	<br><br>
 
 	<span class="gold">머리카락 색</span>
 	<br>
-	<label><span class="red">빨강</span> <<print '<<radiobutton "$hairselect" "red" ' + ($hairselect is "red" ? "checked" : "") + '>>'>></label> |
-	<label><span class="black">흑옥색</span> <<print '<<radiobutton "$hairselect" "jetblack" ' + ($hairselect is "jetblack" ? "checked" : "") + '>>'>></label> |
-	<label><span class="black">검정</span> <<print '<<radiobutton "$hairselect" "black" ' + ($hairselect is "black" ? "checked" : "") + '>>'>></label> |
-	<label><span class="brown">갈색</span> <<print '<<radiobutton "$hairselect" "brown" ' + ($hairselect is "brown" ? "checked" : "") + '>>'>></label> |
-	<label><span class="softbrown">연한 갈색</span> <<print '<<radiobutton "$hairselect" "softbrown" ' + ($hairselect is "softbrown" ? "checked" : "") + '>>'>></label> |
-	<label><span class="lightbrown">밝은 갈색</span> <<print '<<radiobutton "$hairselect" "lightbrown" ' + ($hairselect is "lightbrown" ? "checked" : "") + '>>'>></label> |
-	<label><span class="burntorange">번트 오렌지</span> <<print '<<radiobutton "$hairselect" "burntorange" ' + ($hairselect is "burntorange" ? "checked" : "") + '>>'>></label> |
-	<label><span class="gold">금발</span> <<print '<<radiobutton "$hairselect" "blond" ' + ($hairselect is "blond" ? "checked" : "") + '>>'>></label> |
-	<label><span class="softblond">연한 금색</span> <<print '<<radiobutton "$hairselect" "softblond" ' + ($hairselect is "softblond" ? "checked" : "") + '>>'>></label> |
-	<label><span class="platinum">백금색</span> <<print '<<radiobutton "$hairselect" "platinumblond" ' + ($hairselect is "platinumblond" ? "checked" : "") + '>>'>></label> |
-	<label><span class="ashy">에쉬 블론드</span> <<print '<<radiobutton "$hairselect" "ashyblond" ' + ($hairselect is "ashyblond" ? "checked" : "") + '>>'>></label> |
-	<label><span class="strawberry">스트로베리 블론드</span> <<print '<<radiobutton "$hairselect" "strawberryblond" ' + ($hairselect is "strawberryblond" ? "checked" : "") + '>>'>></label> |
-	<label><span class="tangerine">진저</span> <<print '<<radiobutton "$hairselect" "ginger" ' + ($hairselect is "ginger" ? "checked" : "") + '>>'>></label>
+	<label><span class="red">빨강</span> <<radiobutton "$hairselect" "red" autocheck>></label> |
+	<label><span class="black">흑옥색</span> <<radiobutton "$hairselect" "jetblack" autocheck>></label> |
+	<label><span class="black">검정</span> <<radiobutton "$hairselect" "black" autocheck>></label> |
+	<label><span class="brown">갈색</span> <<radiobutton "$hairselect" "brown" autocheck>></label> |
+	<label><span class="softbrown">연한 갈색</span> <<radiobutton "$hairselect" "softbrown" autocheck>></label> |
+	<label><span class="lightbrown">밝은 갈색</span> <<radiobutton "$hairselect" "lightbrown" autocheck>></label> |
+	<label><span class="burntorange">번트 오렌지</span> <<radiobutton "$hairselect" "burntorange" autocheck>></label> |
+	<label><span class="gold">금발</span> <<radiobutton "$hairselect" "blond" autocheck>></label> |
+	<label><span class="softblond">연한 금색</span> <<radiobutton "$hairselect" "softblond" autocheck>></label> |
+	<label><span class="platinum">백금색</span> <<radiobutton "$hairselect" "platinumblond" autocheck>></label> |
+	<label><span class="ashy">애쉬 블론드</span> <<radiobutton "$hairselect" "ashyblond" autocheck>></label> |
+	<label><span class="strawberry">스트로베리 블론드</span> <<radiobutton "$hairselect" "strawberryblond" autocheck>></label> |
+	<label><span class="tangerine">진저</span> <<radiobutton "$hairselect" "ginger" autocheck>></label>
 	<br><br>
 
 	<span class="gold">머리카락 길이</span>
 	<br>
-	<label>귀까지 <<print '<<radiobutton "$hairlength" 0 ' + ($hairlength is 0 ? "checked" : "") + '>>'>></label> |
-	<label>목까지 <<print '<<radiobutton "$hairlength" 200 ' + ($hairlength is 200 ? "checked" : "") + '>>'>></label> |
-	<label>가슴까지 <<print '<<radiobutton "$hairlength" 400 ' + ($hairlength is 400 ? "checked" : "") + '>>'>></label>
+	<label>귀까지 <<radiobutton "$hairlength" 0 autocheck>></label> |
+	<label>목까지 <<radiobutton "$hairlength" 200 autocheck>></label> |
+	<label>가슴까지 <<radiobutton "$hairlength" 400 autocheck>></label>
 	<br><br>
 
 	<span class="gold">주근깨</span>
 	<br>
-	<label>네 <<print '<<radiobutton "$player.freckles" true ' + ($player.freckles is true ? "checked" : "") + '>>'>></label> |
-	<label>아니오 <<print '<<radiobutton "$player.freckles" false ' + ($player.freckles is false ? "checked" : "") + '>>'>></label> |
-	<label>랜덤 <<print '<<radiobutton "$player.freckles" "random" ' + ($player.freckles is "random" ? "checked" : "") + '>>'>></label> |
+	<label>있음 <<radiobutton "$player.freckles" true autocheck>></label> |
+	<label>없음 <<radiobutton "$player.freckles" false autocheck>></label> |
+	<label>랜덤 <<radiobutton "$player.freckles" "random" autocheck>></label> |
 	<br><br>
 
 	<span class="gold">피부색</span>
 	<br>
 	붉게:
-	<label>연하게 <<print '<<radiobutton "$skinColor.natural" "light" ' + ($skinColor.natural is "light" ? "checked" : "") + '>>'>></label> |
-	<label>중간 <<print '<<radiobutton "$skinColor.natural" "medium" ' + ($skinColor.natural is "medium" ? "checked" : "") + '>>'>></label> |
-	<label>짙게 <<print '<<radiobutton "$skinColor.natural" "dark" ' + ($skinColor.natural is "dark" ? "checked" : "") + '>>'>></label> |
-	<label>갸루 <<print '<<radiobutton "$skinColor.natural" "gyaru" ' + ($skinColor.natural is "gyaru" ? "checked" : "") + '>>'>> (선탠 없이는 옅은 색, 완전히 태우면 아주 짙은 색)</label>
+	<label>연하게 <<radiobutton "$skinColor.natural" "light" autocheck>></label> |
+	<label>중간 <<radiobutton "$skinColor.natural" "medium" autocheck>></label> |
+	<label>짙게 <<radiobutton "$skinColor.natural" "dark" autocheck>></label> |
+	<label>갸루 <<radiobutton "$skinColor.natural" "gyaru" autocheck>> (Pale with no tan, very dark with full tan)</label>
 	<br>
 	노랗게:
-	<label>연하게 <<print '<<radiobutton "$skinColor.natural" "ylight" ' + ($skinColor.natural is "ylight" ? "checked" : "") + '>>'>></label> |
-	<label>중간 <<print '<<radiobutton "$skinColor.natural" "ymedium" ' + ($skinColor.natural is "ymedium" ? "checked" : "") + '>>'>></label> |
-	<label>짙게 <<print '<<radiobutton "$skinColor.natural" "ydark" ' + ($skinColor.natural is "ydark" ? "checked" : "") + '>>'>></label> |
-	<label>갸루 <<print '<<radiobutton "$skinColor.natural" "ygyaru" ' + ($skinColor.natural is "ygyaru" ? "checked" : "") + '>>'>></label>
+	<label>연하게 <<radiobutton "$skinColor.natural" "ylight" autocheck>></label> |
+	<label>중간 <<radiobutton "$skinColor.natural" "ymedium" autocheck>></label> |
+	<label>짙게 <<radiobutton "$skinColor.natural" "ydark" autocheck>></label> |
+	<label>갸루 <<radiobutton "$skinColor.natural" "ygyaru" autocheck>></label>
 	<br><br>
 
 	<label>초기 선탠 수치: <<numberslider "$skinColor.range" $skinColor.range 0 100 1>></label>
@@ -506,33 +508,33 @@
 
 	<span class="gold">성지식</span> - 경험은 없지만 섹스에 대해 조금 알고는 있는지를 결정해주세요.
 	<br>
-	<label>순수함 <<print '<<radiobutton "$awareselect" "innocent" ' + ($awareselect is "innocent" ? "checked" : "") + '>>'>></label> |
-	<label>지식 있음 <<print '<<radiobutton "$awareselect" "knowledgeable" ' + ($awareselect is "knowledgeable" ? "checked" : "") + '>>'>></label>
+	<label>순수함 <<radiobutton "$awareselect" "innocent" autocheck>></label> |
+	<label>지식 있음 <<radiobutton "$awareselect" "knowledgeable" autocheck>></label>
 	<br><br>
 
 	<span class="gold">배경</span>
 	<br>
-	<label>고아 <<print '<<radiobutton "$background" "waif" ' + ($background is "waif" ? "checked" : "") + '>>'>> - 특별한 장점이나 단점 없음. <i>초심자에게 권장합니다.</i></label>
+	<label>고아 <<radiobutton "$background" "waif" autocheck>> - 특별한 장점이나 단점 없음. <i>초심자에게 권장합니다.</i></label>
 	<br>
-	<label>공부벌레 <<print '<<radiobutton "$background" "nerd" ' + ($background is "nerd" ? "checked" : "") + '>>'>> - 성적 좋음. 잘 괴롭혀짐. <span class="red">(이 경우 비사회적 나방 도전과제를 달성할 수 없게 됩니다)</span></label>
+	<label>공부벌레 <<radiobutton "$background" "nerd" autocheck>> - 성적 좋음. 잘 괴롭혀짐. <span class="red">(이 경우 비사회적 나방 도전과제를 달성할 수 없게 됩니다)</span></label>
 	<br>
-	<label>운동선수 <<print '<<radiobutton "$background" "athlete" ' + ($background is "athlete" ? "checked" : "") + '>>'>> - 신체 능력 좋음. 성적은 고통받음.</label>
+	<label>운동선수 <<radiobutton "$background" "athlete" autocheck>> - 신체 능력 좋음. 성적은 고통받음.</label>
 	<br>
-	<label>불량아 <<print '<<radiobutton "$background" "delinquent" ' + ($background is "delinquent" ? "checked" : "") + '>>'>> - 당신의 비행으로 다른 학생들 사이에서 인기가 있습니다. 선생님들에게는 반대지만요.</label>
+	<label>불량아 <<radiobutton "$background" "delinquent" autocheck>> - 당신의 비행으로 다른 학생들 사이에서 인기가 있습니다. 선생님들에게는 반대지만요.</label>
 	<br>
-	<label>음란함 <<print '<<radiobutton "$background" "promiscuous" ' + ($background is "promiscuous" ? "checked" : "") + '>>'>> - 성적인 실험을 받았습니다.</label>
+	<label>음란함 <<radiobutton "$background" "promiscuous" autocheck>> - 성적인 실험을 받았습니다.</label>
 	<br>
-	<label>노출 중독자 <<print '<<radiobutton "$background" "exhibitionist" ' + ($background is "exhibitionist" ? "checked" : "") + '>>'>> - 당신은 공공장소에서 신체 부위를 드러내길 즐깁니다.</label>
+	<label>노출 중독자 <<radiobutton "$background" "exhibitionist" autocheck>> - 당신은 공공장소에서 신체 부위를 드러내길 즐깁니다.</label>
 	<br>
-	<label>이상성욕자 <<print '<<radiobutton "$background" "deviant" ' + ($background is "deviant" ? "checked" : "") + '>>'>> - 당신은 동물들을 <i>정말</i> 좋아합니다.</label>
+	<label>이상성욕자 <<radiobutton "$background" "deviant" autocheck>> - 당신은 동물들을 <i>정말</i> 좋아합니다.</label>
 	<br>
-	<label>미인 <<print '<<radiobutton "$background" "beautiful" ' + ($background is "beautiful" ? "checked" : "") + '>>'>> - 당신은 시선을 끕니다. <i>초심자에게 권장하지 않습니다.</i></label>
+	<label>미인 <<radiobutton "$background" "beautiful" autocheck>> - 당신은 시선을 끕니다. <i>초심자에게 권장하지 않습니다.</i></label>
 	<br>
-	<label>크로스드레서 <<print '<<radiobutton "$background" "crossdresser" ' + ($background is "crossdresser" ? "checked" : "") + '>>'>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리에겐 아무 효과도 없습니다.</label>
+	<label>크로스드레서 <<radiobutton "$background" "crossdresser" autocheck>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리에겐 아무 효과도 없습니다.</label>
 	<br>
-	<label>성욕 많음 <<print '<<radiobutton "$background" "lustful" ' + ($background is "lustful" ? "checked" : "") + '>>'>> - 흥분도가 시간에 따라 증가하고, 어떻게든 처리해줘야 합니다.</label>
+	<label>성욕 많음 <<radiobutton "$background" "lustful" autocheck>> - 흥분도가 시간에 따라 증가하고, 어떻게든 처리해줘야 합니다.</label>
 	<br>
-	<label>그린썸 <<print '<<radiobutton "$background" "greenthumb" ' + ($background is "greenthumb" ? "checked" : "") + '>>'>> - 비료를 사용할떄 수확량이 많아지며 부패하지 않습니다.</label>
+	<label>원예가 <<radiobutton "$background" "greenthumb" autocheck>> - 초기 관리 기술을 가지고 있고, 비료를 사용할 때 수확량이 많아지며 부패하지 않습니다.</label>
 
 <</widget>>
 
@@ -579,15 +581,15 @@
 <<widget "gameSettings">>
 	<span class="gold">게임 모드</span>
 	<br>
-	<label><span class = "green">노말 모드</span> <<print '<<radiobutton "$gamemode" "normal" ' + ($gamemode is "normal" ? "checked" : "") + '>>'>> - 이 위험한 세상에서 살아남으세요.</label>
+	<label><span class = "green">일반 모드</span> <<radiobutton "$gamemode" "normal" autocheck>> - 이 위험한 세상에서 살아남으세요.</label>
 	<br>
 	<label><span class = "blue">소프트 모드</span>
-	<<print '<<radiobutton "$gamemode" "soft" ' + ($gamemode is "soft" ? "checked" : "") + '>>'>>
+	<<radiobutton "$gamemode" "soft" autocheck>>
 	- 가벼운 마음으로 야한 모험을 즐기고자 하는 이들을 위한 모드. 그래도 어두운 면이 없지는 않습니다. <span class="red">실험적인 기능으로, 게임 진행이 불가능할 정도의 버그가 존재할 수 있습니다. 미래에 수정되거나 빠질 예정입니다. 소프트 모드로 설정한다면 노말 모드로 설정하기 전까지는 도전과제를 달성할 수 없습니다. 그렇다면 영구적으로 일부 도전과제는 달성할 수 없게 됩니다</span></label>
 	<br>
 	<<if $intro is 1 or $gamemode is "hard">>
 		<label><span class = "purple">하드 모드</span>
-		<<print '<<radiobutton "$gamemode" "hard" ' + ($gamemode is "hard" ? "checked" : "") + '>>'>>
+		<<radiobutton "$gamemode" "hard" autocheck>>
 		- 야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕) 트라우마와 통제력 관리가 매우 어려워집니다. 게임 시작에만 선택 가능하고, 수용소에 감금된다면 노말 모드로 바뀝니다. <span class="red">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</span></label>
 		<br>
 	<</if>>
@@ -687,8 +689,8 @@
 
 			<span class="gold">짐승을 몬스터 소년과 소녀로 대체</span>
 			<br>
-			<label>환각을 볼 때만 <<print '<<radiobutton "$monsterhallucinations" "t" ' + ($monsterhallucinations is "t" ? "checked" : "") + '>>'>></label> |
-			<label>항상 <<print '<<radiobutton "$monsterhallucinations" "f" ' + ($monsterhallucinations is "f" ? "checked" : "") + '>>'>></label>
+			<label>환각을 볼 때만 <<radiobutton "$monsterhallucinations" "t" autocheck>></label> |
+			<label>항상 <<radiobutton "$monsterhallucinations" "f" autocheck>></label>
 			<br><br>
 
 			<span class="red">수간을 해제하면, 위의 설정과 관계 없이 모든 짐승이 몬스터 소녀,소년으로 대체됩니다.</span>
@@ -699,50 +701,50 @@
 			<<run beastTogglesCheck()>>
 			<<button `" 모든 토글을 " + (_anyBeastOn ? "끈다" : "켠다")`>>
 				<<script>>
-					let val = SugarCube.State.temporary.anyBeastOn ? 't' : 'f';
-					SugarCube.State.temporary.beastVars.forEach(x => SugarCube.State.variables[x] = val);
-				<</script>><!--</script>-->
+					let val = T.anyBeastOn ? 't' : 'f';
+					T.beastVars.forEach(x => V[x] = val);
+				<</script>>
 				<<displaySubsection "beastSettings">>
 			<</button>>
 			</span><br>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$bestialitydisable" "t" "f" ' + ($bestialitydisable is "f" ? "checked" : "") + '>>'>> 수간 활성화
+			<<checkbox "$bestialitydisable" "t" "f" autocheck>> 수간 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$swarmdisable" "t" "f" ' + ($swarmdisable is "f" ? "checked" : "") + '>>'>> 떼 활성화 (장어 등등)
+			<<checkbox "$swarmdisable" "t" "f" autocheck>> 떼 활성화 (장어 등등)
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$parasitedisable" "t" "f" ' + ($parasitedisable is "f" ? "checked" : "") + '>>'>> 기생충 활성화
+			<<checkbox "$parasitedisable" "t" "f" autocheck>> 기생충 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$analpregdisable" "t" "f" ' + ($analpregdisable is "f" ? "checked" : "") + '>>'>> 항문 기생 임신 활성화
+			<<checkbox "$analpregdisable" "t" "f" autocheck>> 항문 기생 임신 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$tentacledisable" "t" "f" ' + ($tentacledisable is "f" ? "checked" : "") + '>>'>> 촉수 활성화
+			<<checkbox "$tentacledisable" "t" "f" autocheck>> 촉수 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$slimedisable" "t" "f" ' + ($slimedisable is "f" ? "checked" : "") + '>>'>> 슬라임 활성화
+			<<checkbox "$slimedisable" "t" "f" autocheck>> 슬라임 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$voredisable" "t" "f" ' + ($voredisable is "f" ? "checked" : "") + '>>'>> 소프트한 몬스터 보어 활성화
+			<<checkbox "$voredisable" "t" "f" autocheck>> 소프트한 몬스터 보어 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$spiderdisable" "t" "f" ' + ($spiderdisable is "f" ? "checked" : "") + '>>'>> 거미 활성화
+			<<checkbox "$spiderdisable" "t" "f" autocheck>> 거미 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$slugdisable" "t" "f" ' + ($slugdisable is "f" ? "checked" : "") + '>>'>> 민달팽이 활성화
+			<<checkbox "$slugdisable" "t" "f" autocheck>> 민달팽이 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$waspdisable" "t" "f" ' + ($waspdisable is "f" ? "checked" : "") + '>>'>> 말벌 활성화
+			<<checkbox "$waspdisable" "t" "f" autocheck>> 말벌 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$beedisable" "t" "f" ' + ($beedisable is "f" ? "checked" : "") + '>>'>> 벌 활성화
+			<<checkbox "$beedisable" "t" "f" autocheck>> 벌 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$lurkerdisable" "t" "f" ' + ($lurkerdisable is "f" ? "checked" : "") + '>>'>> 럴커 활성화
+			<<checkbox "$lurkerdisable" "t" "f" autocheck>> 럴커 활성화
 			</div></label>
 			<label><div class="settingsToggle">
-			<<print '<<checkbox "$horsedisable" "t" "f" ' + ($horsedisable is "f" ? "checked" : "") + '>>'>> 말과 켄타우르스 활성화
+			<<checkbox "$horsedisable" "t" "f" autocheck>> 말과 켄타우르스 활성화
 			</div></label>
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
@@ -797,14 +799,14 @@
 			<!-- Set the initial minimum -->
 			<<run $(() => {
 				let newmin = parseFloat((Math.ceil(10 / $('#numberslider-input-clothesprice').val()) * 0.1).toFixed(1));
-				let oldval = State.variables.clothesPriceLewd;
+				let oldval = V.clothesPriceLewd;
 				$('#numberslider-input-clothespricelewd').attr('min', newmin).val(oldval).trigger('change');
 			})>>
 			<!-- Limit lewd slider so that all coef * lewd coef >= 100% -->
 			<<run $(() => {
 				$('#numberslider-input-clothesprice').on('input change', e => {
 					let newmin = parseFloat((Math.ceil(10 / $(e.currentTarget).val()) * 0.1).toFixed(1));
-					let oldval = State.variables.clothesPriceLewd;
+					let oldval = V.clothesPriceLewd;
 					$('#numberslider-input-clothespricelewd').attr('min', newmin).val(oldval).trigger('change');
 				})
 			})>>
@@ -814,34 +816,34 @@
 	<span class="gold">기능 토글</span>
 	<br>
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$analdisable" "t" "f" ' + ($analdisable is "f" ? "checked" : "") + '>>'>> 애널 활성화
+	<<checkbox "$analdisable" "t" "f" autocheck>> 애널 활성화
 	</div></label>
 	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
 	<span id="settingsAnalingusHead">항문 핥기:</span>
 	<label>
-		<<print '<<checkbox "$analingusdisablegiving" "t" "f" ' + ($analingusdisablegiving is "f" ? "checked" : "") + '>>'>> 해 주는 것
+		<<checkbox "$analingusdisablegiving" "t" "f" autocheck>> 해 주는 것
 	</label>
 	<label>
-		<<print '<<checkbox "$analingusdisablereceiving" "t" "f" ' + ($analingusdisablereceiving is "f" ? "checked" : "") + '>>'>> 당하는 것
+		<<checkbox "$analingusdisablereceiving" "t" "f" autocheck>> 당하는 것
 	</label>
 	</div>
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$pbdisable" "t" "f" ' + ($pbdisable is "f" ? "checked" : "") + '>>'>> 음모 성장 활성화
+	<<checkbox "$pbdisable" "t" "f" autocheck>> 음모 성장 활성화
 	</div></label>
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$transformdisable" "t" "f" ' + ($transformdisable is "f" ? "checked" : "") + '>>'>> 변신 활성화
+	<<checkbox "$transformdisable" "t" "f" autocheck>> 변신 활성화
 	</div></label>
 	/*<label><div class="settingsToggle">
-	<<print '<<checkbox "$hirsutedisable" "t" "f" ' + ($hirsutedisable is "f" ? "checked" : "") + '>>'>> 추가 음모/털복숭이 늑대로 변신
+	<<checkbox "$hirsutedisable" "t" "f" autocheck>> 추가 음모/털복숭이 늑대로 변신
 	</div></label>*/
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$breastfeedingdisable" "t" "f" ' + ($breastfeedingdisable is "f" ? "checked" : "") + '>>'>> 젖 분비 활성화
+	<<checkbox "$breastfeedingdisable" "t" "f" autocheck>> 젖 분비 활성화
 	</div></label>
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$watersportsdisable" "t" "f" ' + ($watersportsdisable is "f" ? "checked" : "") + '>>'>> 방뇨 활성화
+	<<checkbox "$watersportsdisable" "t" "f" autocheck>> 방뇨 활성화
 	</div></label>
 	<label><div class="settingsToggle">
-	<<print '<<checkbox "$bodywritingdisable" "t" "f" ' + ($bodywritingdisable is "f" ? "checked" : "") + '>>'>> 신체 낙서 및 강제 문신 활성화
+	<<checkbox "$bodywritingdisable" "t" "f" autocheck>> 신체 낙서 및 강제 문신 활성화
 	</div></label>
 	<div class="settingsToggle" style="display: inline-flex;">
 	<span style="white-space:nowrap;">질식 강도 설정</span>
@@ -856,6 +858,7 @@
 	<br>
 	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
+		<!-- this hack is still required for arrays -->
 		<label><<print _name[_i]>> <<print '<<radiobutton "$breastsizemax" _i ' + ($breastsizemax is _i ? "checked" : "") + '>>'>></label> |
 	<</for>>
 	<br><br>
@@ -890,24 +893,24 @@
 	<span class="gold">이미지</span>
 	<<if StartConfig.enableImages is true>>
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$images" 0 1 ' + ($images is 1 ? "checked" : "") + '>>'>> 이미지 활성화
+		<<checkbox "$images" 0 1 autocheck>> 이미지 활성화
 		<div class="description">옛 버전의 안드로이드에서는 이미지가 제대로 표시되지 않을 수도 있습니다.</div>
 		</div></label>
 
 		<label><div class="settingsToggleBig">
 		CSS 애니메이션
-		<div><label><<print '<<checkbox "$sidebarAnimations" false true ' + ($sidebarAnimations is true ? "checked" : "") + '>>'>> 사이드바 애니메이션</label></div>
-		<div><label><<print '<<checkbox "$combatAnimations" false true ' + ($combatAnimations is true ? "checked" : "") + '>>'>> 전투 애니메이션</label></div>
+		<div><label><<checkbox "$sidebarAnimations" false true autocheck>> 사이드바 애니메이션</label></div>
+		<div><label><<checkbox "$combatAnimations" false true autocheck>> 전투 애니메이션</label></div>
 		<div class="description">비활성화하면 성능이 향상될 수도 있고 어쩌면 이미지가 잘못 로드되는 것을 방지할지도 모릅니다. 먼저 사이드바의 이미지의 비활성화를 합니다.</div>
 		</div></label>
 
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$bodywritingImages" false true ' + ($bodywritingImages is true ? "checked" : "") + '>>'>> 바디라이팅 이미지 활성화
-		<div class="description">비활성화하면 성능이 향상될 수도 있고 이미지가 잘못 로드되는 것을 방지할방지할지도 모릅니다.</div>
+		<<checkbox "$bodywritingImages" false true autocheck>> 낙서 이미지 활성화
+		<div class="description">비활성화하면 성능이 향상될 수도 있고 이미지가 잘못 로드되는 것을 방지할지도 모릅니다.</div>
 		</div></label>
 
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$silhouettedisable" "t" "f" ' + ($silhouettedisable is "f" ? "checked" : "") + '>>'>> NPC 실루엣 활성화
+		<<checkbox "$silhouettedisable" "t" "f" autocheck>> NPC 실루엣 활성화
 		</div></label>
 
 		<<if $skinColor.init is false and $passage isnot "Start" and $passage isnot "certification_event_start">>
@@ -917,19 +920,19 @@
 
 			피부색:<br>
 			붉게:
-			<label>연하게 <<print '<<radiobutton "$naturalSkinColor" "light" ' + ($naturalSkinColor is "light" ? "checked" : "") + '>>'>></label> |
-			<label>중간 <<print '<<radiobutton "$naturalSkinColor" "medium" ' + ($naturalSkinColor is "medium" ? "checked" : "") + '>>'>></label> |
-			<label>짙게 <<print '<<radiobutton "$naturalSkinColor" "dark" ' + ($naturalSkinColor is "dark" ? "checked" : "") + '>>'>></label> |
-			<label>갸루 <<print '<<radiobutton "$naturalSkinColor" "gyaru" ' + ($naturalSkinColor is "gyaru" ? "checked" : "") + '>>'>> (태닝이 없다면 창백해지고, 완전히 태닝이 되었다면 아주 어두운 색이 됨)</label>
+			<label>연하게 <<radiobutton "$naturalSkinColor" "light" autocheck>></label> |
+			<label>중간 <<radiobutton "$naturalSkinColor" "medium" autocheck>></label> |
+			<label>짙게 <radiobutton "$naturalSkinColor" "dark" autocheck>></label> |
+			<label>갸루 <<radiobutton "$naturalSkinColor" "gyaru" autocheck>> (Pale with no tan, very dark with full tan)</label>
 			<br>
 			노랗게:
-			<label>연하게 <<print '<<radiobutton "$naturalSkinColor" "ylight" ' + ($naturalSkinColor is "ylight" ? "checked" : "") + '>>'>></label> |
-			<label>중간 <<print '<<radiobutton "$naturalSkinColor" "ymedium" ' + ($naturalSkinColor is "ymedium" ? "checked" : "") + '>>'>></label> |
-			<label>짙게 <<print '<<radiobutton "$naturalSkinColor" "ydark" ' + ($naturalSkinColor is "ydark" ? "checked" : "") + '>>'>></label>
-			<label>갸루 <<print '<<radiobutton "$naturalSkinColor" "ygyaru" ' + ($naturalSkinColor is "ygyaru" ? "checked" : "") + '>>'>></label>
+			<label>연하게 <<radiobutton "$naturalSkinColor" "ylight" autocheck>></label> |
+			<label>중간 <<radiobutton "$naturalSkinColor" "ymedium" autocheck>></label> |
+			<label>짙게 <radiobutton "$naturalSkinColor" "ydark" autocheck>></label>
+			<label>갸루 <<radiobutton "$naturalSkinColor" "ygyaru" autocheck>></label>
 			<br><br>
 
-			<label>초기 선탠: <<print '<<numberslider "$range" '+($range isnot undefined? $range:0)+' 0 100 1>>'>></label>
+			<label>초기 선탠: <<numberslider "$range" ($range isnot undefined? $range:0) 0 100 1>>'>></label>
 			<br>
 			<<link 테스트>>
 				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
@@ -951,22 +954,22 @@
 			<</link>> - <span class="red">확인을 누른 뒤에는 설정을 바꿀 수 없습니다.</span>
 		<<else>>
 			<label><div class="settingsToggleBig">
-			<<print '<<checkbox "$skinColor.tanImgEnabled" "f" "t" ' + ($skinColor.tanImgEnabled is "t" ? "checked" : "") + '>>'>> 플레이어 캐릭터의 피부색 시각적으로 표현
+			<<checkbox "$skinColor.tanImgEnabled" "f" "t" autocheck>> 플레이어 캐릭터의 피부색 시각적으로 표현
 			<div class="description"><span class="pink">일부 장치에서는 퍼포먼스가 저하될 수 있습니다</span></div>
 			</div></label>
 			<label><div class="settingsToggleBig">
-			<<print '<<checkbox "$skinColor.tanningEnabled" false true ' + ($skinColor.tanningEnabled is true ? "checked" : "") + '>>'>> 선탠량 변화
+			<<checkbox "$skinColor.tanningEnabled" false true autocheck>> 태양에 노출되는 정도에 따라 선탠량 변화
 			<div class="description"><span class="red">비활성화 옵션은 추후 제거될 수도 있습니다</span></div>
 			</div></label>
 		<</if>>
 
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$blinkingdisable" "t" "f" ' + ($blinkingdisable is "t" ? "" : "checked") + '>>'>> 눈 깜박임 애니메이션
+		<<checkbox "$blinkingdisable" "t" "f" autocheck>> 눈 깜박임 애니메이션
 		<div class="description">CSS 애니메이션이 활성화 되어야 작동합니다.</div>
 		</div></label>
 		<<if $eyelidTEST is true>>
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$halfcloseddisable" "t" "f" ' + ($halfcloseddisable is "t" ? "" : "checked") + '>>'>> 반쯤 감긴 눈 그래픽 사용
+		<<checkbox "$halfcloseddisable" "t" "f" autocheck>> 반쯤 감긴 눈 그래픽 사용
 		<div class="description">높은 흥분 상태에서 사이드바의 눈꺼풀이 반쯤 감긴 이미지를 사용합니다.</div>
 		</div></label>
 		<</if>>
@@ -975,7 +978,7 @@
 			Face style
 			<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
 			<div class="description">This setting works only if you have installed face styles other than default.</div>
-			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>><!--</script>-->
+			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
 			</div></label>
 		<</if>>
 	<<else>>
@@ -985,7 +988,7 @@
 	<span class="gold">숫자 링크 탐색</span>
 	<<if StartConfig.enableLinkNumberify is true>>
 		<label><div class="settingsToggleBig">
-		<<print '<<checkbox "$numberify_enabled" 0 1 ' + ($numberify_enabled is 1 ? "checked" : "") + '>>'>> 숫지 링크 탐색 활성화
+		<<checkbox "$numberify_enabled" 0 1 autocheck>> 숫자 링크 탐색 활성화
 		<div class="description">키보드로 탐색할 수 있습니다.</div>
 		</div></label>
 	<<else>>
@@ -996,20 +999,23 @@
 
 	<span class="gold">시간 형식</span>
 	<br>
-	<label>24시간 <<print '<<radiobutton "$timestyle" "military" ' + ($timestyle is "military" ? "checked" : "") + '>>'>></label> |
-	<label>12시간 <<print '<<radiobutton "$timestyle" "ampm" ' + ($timestyle is "ampm" ? "checked" : "") + '>>'>></label>
+	<label>24시간 <<radiobutton "$timestyle" "military" autocheck>></label> |
+	<label>12시간 <<radiobutton "$timestyle" "ampm" autocheck>></label>
+	<br>
+	<<checkbox "$oldclock" false true autocheck>> 사이드바에 구형 시계로 표시
+
 	<br><br>
 
 	<span class="gold">스킬 체크 표시</span>
 	<br>
-	<label>정확한 확률 표시 <<print '<<radiobutton "$checkstyle" "percentage" ' + ($checkstyle is "percentage" ? "checked" : "") + '>>'>></label> |
-	<label>일반적인 표현으로만 제시 <<print '<<radiobutton "$checkstyle" "words" ' + ($checkstyle is "words" ? "checked" : "") + '>>'>></label>
-	<label>스킬 이름만 표시 <<print '<<radiobutton "$checkstyle" "skillname" ' + ($checkstyle is "skillname" ? "checked" : "") + '>>'>></label> |
+	<label>정확한 확률 표시 <<radiobutton "$checkstyle" "percentage" autocheck>></label> |
+	<label>일반적인 표현으로만 표시 <<radiobutton "$checkstyle" "words" autocheck>></label> |
+	<label>스킬 이름만 표시 <<radiobutton "$checkstyle" "skillname" autocheck>></label> |
 	<br><br>
 
 	<span class="gold">인게임 힌트와 팁</span>
 	<label><div class="settingsToggleBig">
-	<<print '<<checkbox "$tipdisable" "t" "f" ' + ($tipdisable is "f" ? "checked" : "") + '>>'>> 힌트와 팁 활성화
+	<<checkbox "$tipdisable" "t" "f" autocheck>> 힌트와 팁 활성화
 	<div class="description">사이드바에 보여줍니다.</div>
 	<div><<link [["모든 팁 보기"|Tips]]>><<set $lastPassage to $passage>><</link>></div>
 	</div></label>
@@ -1018,7 +1024,7 @@
 	<span class="gold">추가 에러 정보</span> - 사이드바에 표시됨
 	<br>
 	<label><div class="settingsToggleBig">
-	<<print '<<checkbox "$debugdisable" "t" "f" ' + ($debugdisable is "f" ? "checked" : "") + '>>'>> 추가 메세지 활성화
+	<<checkbox "$debugdisable" "t" "f" autocheck>> 추가 메세지 활성화
 	<div class="description">사이드바에 보여줍니다.</div>
 	</div></label>
 	<br><br>
@@ -1044,9 +1050,18 @@
 	<input type="button" value="줌 리셋" onclick="zoom(100, true)"/>
 	<input type="button" value="줌 설정" onclick="zoom(undefined, true)"/>
 	<br><br>
+
+	<span class="gold">이력 깊이</span><br>
+	<div class="description">이력에서 N-1 단계(passage)까지 뒤로 갈 수 있습니다. 변경은 설정창을 나간 후 적용됩니다.<br>
+	<span class="red"><b>주의:</b> 속도저하를 일으킬 수 있습니다. 그리고, 5 이상의 숫자는 당신의 로컬 스토리지 용량을 넘어 <br>
+	<b>세이브 문제를 일으킬 수 있습니다</b>. 사용시 일어날 수 있는 불상사는 자신의 책임입니다.</span>
+	</div>
+	<<numberslider "$maxStates" $maxStates 1 20 1>>
+	<br><br>
+
 	<span class="gold">치트 메뉴</span>
 	<label><div class="settingsToggleBig">
-	<<print '<<checkbox "$cheatdisable" "t" "f" ' + ($cheatdisable is "f" ? "checked" : "") + '>>'>> 치트 활성화
+	<<checkbox "$cheatdisable" "t" "f" autocheck>> 치트 활성화
 	<div class="description">버튼은 사이드바에 표시됩니다. <span class="red">설정에서 치트를 활성화하는 경우 세이브에서 도전과제를 달성할 수 없게 됩니다.</span></div>
 	</div></label>
 	<br><br>
@@ -1077,6 +1092,11 @@
 		씬 뷰어는 시작 페이지에서는 사용할 수 없습니다.
 		<br>
 	<</if>>
+	<<link [["렌더러 테스트"|Renderer Test Page]]>>
+		<<set $lastPassage to $passage>>
+	<</link>>
+	- 여기에서 당신의 브라우저가 새 렌더러를 지원하는 지 확인할 수 있습니다.
+	<br>
 
 <</widget>>
 
@@ -1167,7 +1187,7 @@
 <br>
 "텍스트 영역 복사"를 클릭하여 나온 내용물을 복사하세요. 장치나 브라우저가 지원하지 않는다면 버튼의 이름이 "복사 에러"로 변할 겁니다.
 <br><br>
-<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(SugarCube.State.variables.disableAutoSelect == false)this.select();" onfocus="SugarCube.State.variables.tempDisable = true;" onblur="SugarCube.State.variables.tempDisable = false;"></textarea>
+<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();" onfocus="V.tempDisable = true;" onblur="V.tempDisable = false;"></textarea>
 <br>
 <input type="button" value="텍스트 상자 비우기" onclick="clearTextBox('settingsDataInput')"/>
 <input type="button" value="텍스트 상자 최상단" onclick="topTextArea('settingsDataInput')"/>
@@ -1209,11 +1229,11 @@
 <br><br>
 <span class="gold"><<trNamedNPC $NPCName[_npcId].title>>_trResult <<trNamedNPC $NPCName[_npcId].nam>>_trResult</span>
 <br>
-<label><<print '<<radiobutton "$NPCName['+_npcId+'].pronoun" "f" ' + ($NPCName[_npcId].pronoun is "f" ? "checked" : "") + '>>'>> 여자</label> |
-<label><<print '<<radiobutton "$NPCName['+_npcId+'].pronoun" "m" ' + ($NPCName[_npcId].pronoun is "m" ? "checked" : "") + '>>'>> 남자</label>
+<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> 여자</label> |
+<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
 <br>
-<label><<print '<<radiobutton "$NPCName['+_npcId+'].gender" "f" ' + ($NPCName[_npcId].gender is "f" ? "checked" : "") + '>>'>> 보지</label> |
-<label><<print '<<radiobutton "$NPCName['+_npcId+'].gender" "m" ' + ($NPCName[_npcId].gender is "m" ? "checked" : "") + '>>'>> 자지</label>
+<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
+<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
 <br><br>
 자지 크기 - 가능할 경우:
 <br>
@@ -1235,16 +1255,16 @@
 <<if $NPCName[_npcId].nam is "Black Wolf">>
 	짐승 종류:
 	<br>
-	<label><<print '<<radiobutton "$blackwolfmonster" 0 ' + ($blackwolfmonster is 0 ? "checked" : "") + '>>'>> 항상 짐승</label> |
-	<label><<print '<<radiobutton "$blackwolfmonster" 1 ' + ($blackwolfmonster is 1 ? "checked" : "") + '>>'>> 조건이 맞는다면 몬스터 소녀나 소년</label>
-	<label><<print '<<radiobutton "$blackwolfmonster" 2 ' + ($blackwolfmonster is 2 ? "checked" : "") + '>>'>> 항상 몬스터 소녀나 소년</label>
+	<label><<radiobutton "$blackwolfmonster" 0 autocheck>> 항상 짐승</label> |
+	<label><<radiobutton "$blackwolfmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
+	<label><<radiobutton "$blackwolfmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
 	<br><br>
 <<elseif $NPCName[_npcId].nam is "Great Hawk">>
 	짐승 종류:
 	<br>
-	<label><<print '<<radiobutton "$greathawkmonster" 0 ' + ($greathawkmonster is 0 ? "checked" : "") + '>>'>> 항상 짐승</label> |
-	<label><<print '<<radiobutton "$greathawkmonster" 1 ' + ($greathawkmonster is 1 ? "checked" : "") + '>>'>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
-	<label><<print '<<radiobutton "$greathawkmonster" 2 ' + ($greathawkmonster is 2 ? "checked" : "") + '>>'>> 항상 몬스터 소녀나 소년</label>
+	<label><<radiobutton "$greathawkmonster" 0 autocheck>> 항상 짐승</label> |
+	<label><<radiobutton "$greathawkmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
+	<label><<radiobutton "$greathawkmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
 	<br><br>
 <</if>>
 <<if $debug is 1>>

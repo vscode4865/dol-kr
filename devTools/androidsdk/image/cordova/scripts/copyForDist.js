@@ -10,14 +10,7 @@ if (fs.existsSync(path.resolve(ROOT, 'LICENSE'))) {
 function copyFilesToRoot() {
     const OUTPUT_ROOT = path.resolve("platforms/android/app/build/outputs/apk/");
     const DIST_ROOT = path.resolve(ROOT, 'dist')
-    let version = fs.readFileSync(path.resolve(ROOT, 'version'));
-    try {
-        let version_ko = fs.readFileSync(path.resolve(ROOT, 'version.ko'));
-        version = version + "-" + version_ko;   // OriginalVersion-KoVersion
-    } catch(err) {
-        ;   // original version only
-    }
-
+    const version = fs.readFileSync(path.resolve(ROOT, 'version'));
     const paths = {
         android: {
             src: {

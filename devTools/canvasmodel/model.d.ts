@@ -4,6 +4,27 @@ declare interface AnyDict {
 declare interface Dict<T> {
 	[index: string]: T;
 }
+declare interface BlendGradientSpec {
+	gradient: 'linear'|'radial';
+	/**
+	 * * For linear gradient: [x0, y0, x1, y1].
+	 * * For radial gradient: [x0, y0, r0, x1, y1, r1].
+	 */
+	values: number[];
+	/**
+	 * Color stops.
+	 * Pairs of `[offset, color]` or `[color]`.
+	 * Default offsets are for evenly spaced gradient
+	 */
+	colors: ([number,string]|string)[];
+}
+declare interface BlendPatternSpec {
+	/**
+	 * Pattern identifier or a specification, sent to pattern provider to get an actual image
+	 */
+	pattern: string|object;
+}
+declare type BlendSpec = string|BlendGradientSpec|BlendPatternSpec;
 
 declare interface CompositeLayerParams {
 	/**
@@ -15,9 +36,9 @@ declare interface CompositeLayerParams {
 	 */
 	z?: number;
 	/**
-	 * Blend color, CSS color string
+	 * Blend color/gradient/pattern. For color, CSS color string.
 	 */
-	blend?: string;
+	blend?: BlendSpec;
 	/**
 	 * Blend mode.
 	 */
@@ -34,6 +55,10 @@ declare interface CompositeLayerParams {
 	 * Adjust contrast before processing. >=0, 1 is don't change
 	 */
 	contrast?: number;
+	/**
+	 * Mask, a stencil image to cut out and display only select parts of this layer.
+	 */
+	masksrc?: string;
 	/**
 	 * Alpha, 0-1. Default 1
 	 */
@@ -82,20 +107,32 @@ declare interface KeyframeSpec {
 	 * Duration of this keyframe, milliseconds (= delay before next keyframe)
 	 */
 	duration: number;
+
+	// Animating layer properties
+	blend?: BlendSpec;
+	show?: boolean;
+	brightness?: number;
+	contrast?: number;
+	alpha?: number;
+	dx?: number;
+	dy?: number;
 }
 
-declare type AnimationSpec = KeyframeAnimationSpec | IsochronousAnimationSpec;
+declare type AnimationSpec = KeyframeAnimationSpec | SimpleAnimationSpec;
 declare interface KeyframeAnimationSpec {
 	keyframes: KeyframeSpec[];
 }
-declare interface IsochronousAnimationSpec {
+declare interface SimpleAnimationSpec {
 	frames: number;
+	/**
+	 * Duration of *every* keyframe
+	 */
 	duration: number;
 }
 
 declare interface CompositeLayer extends CompositeLayerSpec {
 	/**
-	 * Cached image src
+	 * `src` of cached `image` (if `src` changes, `image` will be reloaded)
 	 */
 	imageSrc?: string;
 	/**
@@ -103,11 +140,19 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	 */
 	image?: CanvasImageSource;
 	/**
+	 * Loaded/cached mask image
+	 */
+	mask?: CanvasImageSource;
+	/**
+	 * Value of `masksrc` corresponding to current `mask` (if masksrc changes mask will be reloaded)
+	 */
+	cachedMaskSrc?: string;
+	/**
 	 * Encoded processing options used to display cachedImage
 	 */
 	cachedProcessing?: string;
 	/**
-	 * Last displayed image
+	 * Last displayed composed image
 	 */
 	cachedImage?: CanvasImageSource;
 }

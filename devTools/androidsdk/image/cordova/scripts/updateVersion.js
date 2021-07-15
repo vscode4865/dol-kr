@@ -12,12 +12,6 @@ if (!version) {
         process.exit(1)
     }
     version = fs.readFileSync(versionFile).toString();
-    try {
-        let version_ko = fs.readFileSync(path.resolve(SRC, 'version.ko'));
-        version = version + "-" + version_ko;   // OriginalVersion-KoVersion
-    } catch(err) {
-        ;   // original version only
-    }
 } else {
     console.log(`Updating to version number "${version}"`)
 }
