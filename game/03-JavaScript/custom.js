@@ -1,6 +1,6 @@
 /*window*/
 window.Customconfig = {
-    "version" : "0.1.1.0716"
+    "version" : "0.1.1.0716.2"
 }
 
 window.sleep = function (ms) {
