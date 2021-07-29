@@ -3,6 +3,8 @@ window.Customconfig = {
     "version" : "0.1.1.0724"
 }
 
+l10nStrings.errorTitle = StartConfig.version + "-" + Customconfig.version + " Error";
+
 window.sleep = function (ms) {
     sleep(ms);
 }
