@@ -220,6 +220,22 @@
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+	<<handPost>>
+        <<handPost ["left"|"right"] post "sep">>
+
+        왼손/오른손 표시를 쉽게 하기 위해 추가. 조사를 붙일 수 있다.
+
+        선택사항
+        - ["left"|"right"]: 왼손/오른손, 없으면 그냥 손.
+        - post: 조사
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<handPost "left" "이">>                 // 왼손이
+        <<handPost "을">>                 // 손을
+    ```
+	
 
 * clothesPost
     ```
