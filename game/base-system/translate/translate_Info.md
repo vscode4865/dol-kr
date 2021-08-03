@@ -666,7 +666,7 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<handtoolPost "marker" "을">>_trResult              // "마커펜을"
+		<<handtoolPost "marker" "을">>              // "마커펜을"
     ```
 
 	<<lefttoolPost>>
@@ -682,12 +682,29 @@
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<lefttoolPost 0 "을">>_trResult              // $NPCList[0].lefttool을
+		<<lefttoolPost 0 "을">>             // $NPCList[0].lefttool을
     ```
 
     ```
 	<<righttoolPost>>
         + <<lefttoolPost>>와 용도 및 방식 같음. 생략
+    ```
+
+	<<struggle_appendagePost>>
+		<<struggle_appendagePost *part *post 'sep'>>
+
+		base-combat/struggle.twee 의 struggle_appendage 대체 매크로.
+		해당 부분의 크리쳐의 부속 기관 이름을 번역한다.
+
+		필수사항
+		- part: 몸의 부분
+		
+		선택사항
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<struggle_appendagePost "mouth" "을">>              // "독침을"
     ```
 
 
@@ -973,8 +990,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trNPCname "Olivia">>                         //  "올리비아"
-        <<trNPCname "Robin" "을">>                      //  "로빈을"
+        <<trNPCname "Olivia">>_trResult                         //  "올리비아"
+        <<trNPCname "Robin" "을">>_trResult                     //  "로빈을"
     ```
 
 * trParasite
@@ -982,17 +999,22 @@
     <<trParasite>>
         <<trParasite *parasite post "sep">>
 
-        기생충을 번역한다.
+        기생충/크리쳐를 번역한다.
 
         필수사항
-        - *parasite: 기생충 이름
+        - *parasite: 기생충/크리쳐 이름
 
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trParasite tantacle '을'>>               // '촉수를'
+        <<trParasite tantacle '을'>>_trResult               // '촉수를'
+    ```
+
+* trCreature
+    ```
+    + <<trParasite>> 와 동일. 버전이 올라가면서 기생충 외에 크리쳐도 번역해야 해서 헷갈리지 않게 추가. 생략
     ```
 
 * trPenisdesc
@@ -1228,7 +1250,7 @@
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
-		<<lefttool_(조사)>>, <<righttool_(조사)>>
+		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 	- personPost 계열
 		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>
@@ -1239,5 +1261,5 @@
 		<<tentacle_(조사)>>
 	- 기타
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>, <<namedNPC_name_(조사)>>, 
-		<<namedNPC_title_(조사)>>, <<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
+		<<namedNPC_title_(조사)>>, <<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<creature_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
 		<<vore_(조사)>>, <<weather_(조사)>>
