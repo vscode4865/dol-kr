@@ -321,16 +321,33 @@
         당신은 당신의 <<nudityPost "을">> 의식한다.<<nudityPostend>>
     ```
 
+    ```
     <<allTopsPost>>
         + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+
     ```
     <<allBottomsPost>>
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
+
+    ```
     <<allTopsUnderwearPost>>
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
+
+    ```
     <<allBottomsUnderwearPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<exposedupperPost>>
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<exposedlowerPost>>
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
