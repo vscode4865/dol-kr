@@ -1003,7 +1003,7 @@
         <<trHairtype "braid left">>             // "왼쪽으로 땋은 머리"
     ```
 
-* ListboxItems
+* trListboxItems
 	```
 	<<trListboxItemsFromArray>>
 		<<trListboxItemsFromArray *arrayname>>
@@ -1013,22 +1013,50 @@
 		필수사항
 		- arrayname 원본 배열 이름 (따옴표를 붙여줄것)
 		- 해당 arrayname 에 대한 번역표가 trListboxItems.twee 의 <<trListboxItemsInit>> 매크로 안에 존재할것
+		- 혹은 기존 매크로로 번역할 수 있는 것이면 매크로를 <<trListboxItemsInit>>에 지정하면 해당 매크로를 사용하여 번역함.
 		
-		e.g.
+		e.g. 1 (번역표)
 		/* 원본 */
-		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		<<set _options to ["Everyone","Strangers","Animals",...]>>
 		
-		<<listbox "_defaultActions" autoselect>>
+		<<listbox ...>>
 			<<optionsfrom _options>>	
 		<</listbox>>
 		
-		/* 번역 */
-		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		/* 번역표 */
+		"_options" :
+		{
+			"Everyone":"모두",
+			"Strangers":"낯선 사람",
+			"Animals":"동물",
+			...
+		},
 		
-		<<trListboxItemsFromArray "_options">><<listbox "_defaultActions" autoselect>>	/* listbox 앞에 배열이름을 따옴표로 붙여서 매크로 부름 */
+		/* 번역 */
+		<<set _options to ["Everyone","Strangers","Animals",...]>>
+		
+		<<trListboxItemsFromArray "_options">><<listbox ...>>	/* listbox 앞에 배열이름을 따옴표로 붙여서 매크로 부름 */
 			<<optionsfrom _trListboxItems>>	/* 원래 배열 대신 _trListboxItems 를 사용 */
 		<</listbox>>
+		
+		e.g. 2 (번역 매크로)
+		/* 원본 */
+		<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek",...]>>
 
+		<<listbox ...>>
+			<<optionsfrom _bodyPartOptions>>
+		<</listbox>>
+		
+		/* 번역표 */
+		"_bodyPartOptions" : "trBodypart",	/* 번역 매크로 이름 */
+		
+		/* 번역 */
+		<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek",...]>>
+
+		<<trListboxItemsFromArray "_bodyPartOptions">><<listbox ...>>
+			<<optionsfrom _trListboxItems>>
+		<</listbox>>
+		
 		note
 		- listbox 에 들어가는 옵션이 배열 ([] 안에 정의되는 것) 이 아니라 오브젝트 모음 ({} 안에 "이름":"값" 형식으로 정의되는 것) 인 경우 그냥 
 			앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.

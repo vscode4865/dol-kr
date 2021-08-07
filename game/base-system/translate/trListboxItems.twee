@@ -2,6 +2,7 @@
 <<widget "trListboxItemsInit">>
 	<<if _trListboxItemsCollection is undefined>>
 		<<set _trListboxItemsCollection to {
+			/* 번역표 */
 			"_options" :
 			{
 				"Everyone":"모두",
@@ -33,6 +34,15 @@
 				"Great Hawk":"거대 매",
 				"Alex":"알렉스",
 			},
+			
+			"_penOptions" :
+			{
+				"Tattoo":"문신",
+				"Brand":"낙인",
+			},
+			
+			/* 번역 매크로 */
+			"_bodyPartOptions" : "trBodypart",
 		}>>
 	<</if>>
 <</widget>>
@@ -44,6 +54,17 @@
 		<<set _listboxitems to _trListboxItemsCollection[$args[0]]>>
 		<<if _listboxitems is undefined>>
 			<<set _trListboxItems to _listboxarray>>
+		<<elseif typeof _listboxitems is "string">>
+			<<set _trListboxItems to {}>>
+				<<for _item range _listboxarray>>
+					<<print "<<" + _listboxitems + " \"" + _item + "\">>">>	/* e.g. <<trBodypart "Forehead">> */
+					<<set _tritem to _trResult>>
+					<<if _tritem isnot undefined>>
+						<<set _trListboxItems[_tritem] to _item>>
+					<<else>>
+						<<set _trListboxItems[_item] to _item>>
+					<</if>>
+				<</for>>
 		<<else>>
 				<<set _trListboxItems to {}>>
 				<<for _item range _listboxarray>>
