@@ -173,6 +173,19 @@
 		+ <<trParasite>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+    <<trSwarmAction>>
+        <<trSwarmAction *action>>
+
+        swarm (떼. 장어, 물고기 등) 및 주인공의 움직임을 번역한다.
+		
+		필수사항
+		- *action: swarm 혹은 주인공의 움직임
+
+        e.g.
+        <<trSwarmAction "moving towards you">>_trResult               // '당신에게로 다가온다"
+    ```
+
 * trVore
     ```
     <<trVore>>
