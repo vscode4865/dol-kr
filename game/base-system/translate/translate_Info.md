@@ -821,6 +821,25 @@
 		<<struggle_appendagePost "mouth" "을">>              // "독침을"
     ```
 
+    ```
+    <<underworld_nicknamePost>>
+        <<underworld_nicknamePost post "sep">>
+
+        <<underworld_nickname>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+        
+        e.g.
+        <<underworld_nicknamePost "을">>               // "고깃구멍을"
+    ```
+
+    ```
+    <<overworld_nicknamePost>>
+        + <<underworld_nicknamePost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * putpost
     ```
