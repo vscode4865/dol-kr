@@ -197,7 +197,7 @@ Forth argument - item index*/
 				<<if $worn[$clothingShopSlot].cursed is 1>>
 					<span class="blue">먼저 당신의
 					<<for _i to 0; _i lt _preventSlots.length; _i++>>
-						<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "와">>_trResult
+						<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "과">>_trResult
 						<<elseif _preventSlots.length gte 2 and _i is _preventSlots.length - 1>>
 							<<trSearchClothes $worn[_preventSlots[_i]].name "name" "을">>_trResult
 						<</if>>
@@ -229,7 +229,7 @@ Forth argument - item index*/
 			<<if _cursedPrevent is true>>
 				<span class="blue">먼저 당신의
 				<<for _i to 0; _i lt _preventSlots.length; _i++>>
-					<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "와">>_trResult
+					<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "과">>_trResult
 					<<elseif _preventSlots.length gte 2 and _i is _preventSlots.length - 1>>
 						<<trSearchClothes $worn[_preventSlots[_i]].name "name" "을">>_trResult
 					<</if>>
@@ -385,25 +385,25 @@ Forth argument - item index*/
 		<br>
 	<<elseif $shopListStartCount gte $shopListMax or _listCount is $shopListMax + $shopListStartCount>>
 		<<if $shopListStartCount gte $shopListMax>>
-			<<link [["Previous Page"|$passage]]>>
+			<<link [["이전 페이지"|$passage]]>>
 				<<run $shopListStartCount -= $shopListMax>>
 			<</link>>
 			<<set _extrabr to true>>
 		<<else>>
-			Previous Page
+			이전 페이지
 		<</if>>
-		| Page
+		| 페이지
 		<<print ($shopListStartCount / $shopListMax) + 1>>
-		of
+		/
 		<<print Math.floor(_trueListCount / $shopListMax) + 1>> |
 		<<if _listCount is $shopListMax + $shopListStartCount>>
 
-			<<link [["Next Page"|$passage]]>>
+			<<link [["다음 페이지"|$passage]]>>
 				<<run $shopListStartCount += $shopListMax>>
 			<</link>>
 			<<set _extrabr to true>>
 		<<else>>
-			Next Page
+			다음 페이지
 		<</if>>
 	<</if>>
 	<<if _extrabr>>
@@ -439,7 +439,7 @@ Forth argument - item index*/
 	<<case "fetish">>
 		    페티쉬 - 본질적으로 음탕하다.
 	<<case "sleep">>
-		    수면 - 부드럽고 아늑하다.
+		수면 - 부드럽고 아늑하다. 수면의 질을 높인다.
 	<<case "mask">>
 		    마스크 - 당신의 정체성을 숨기고, 명성이 오르는걸 막는다. 경찰이나 당신을 아는 사람을 속이진 않을 것이다.
 	<<case "holy">>
@@ -745,12 +745,12 @@ __커스텀 색상__
 	<a @onclick="`wikifier('shopCustomColorsPresetsLoad',`+_i+`)`">_keys[_i]</a> |
 <</for>>
 <br>
-이름: <input id="colorName" type="text" value="Custom" maxlength="30" onfocus="SugarCube.State.variables.tempDisable = true;">
+이름: <input id="colorName" type="text" value="커스텀" maxlength="30" onfocus="V.tempDisable = true;">
 <br>
 <<link [["설정 저장"|$passage]]>>
 	<<script>>
-		SugarCube.State.temporary.colorName = document.getElementById("colorName").value;
-	<</script>><!--</script>-->
+		T.colorName = document.getElementById("colorName").value.replace(/[^a-zA-Z가-힝 0-9]+/g,"");
+	<</script>>
 	<<set $customColors.presets[_colorName] to {
 		color: $customColors.color,
 		saturation: $customColors.saturation,
@@ -1049,6 +1049,9 @@ __커스텀 색상__
 	<<set $specialClothes["darkpendant"] to "unlocked">>
 	<<set $specialClothes["stonependant"] to "unlocked">>
 	<<set $specialClothes["cowbell"] to "unlocked">>
+	<<set $specialClothes["featheredhairclip"] to "unlocked">>
+	<<set $specialClothes["catsuit"] to "unlocked">>
+	<<set $specialClothes["holystole"] to "unlocked">>
 <</if>>
 
 <</widget>>
@@ -1056,32 +1059,32 @@ __커스텀 색상__
 <<widget "specialClothesHint">>
 <<if _specialClothesHint is undefined>>
 	<<set _specialClothesHint to {
-		"witchdress":"In stock from the 21st of October.",
-		"christmasdress":"In stock from the 15th of December.",
-		"serafuku":"Discover the headteacher's secret.",
-		"vampirejacket":"In stock from the 21st of October.",
-		"slutshirt":"Survive slavery in an underground brothel.",
-		"christmasshirt":"In stock from the 15th of December.",
-		"bellydancer'stop":"Be offered the star role in a show at the brothel.",
-		"christmastrousers":"In stock from the 15th of December.",
-		"bellydancer'sbottoms":"Be offered the star role in a show at the brothel.",
-		"loincloth":"Befriend a lonely hunter, or join a pack of wolves.",
-		"witchhat":"In stock from the 21st of October.",
-		"christmashat":"In stock from the 15th of December.",
-		"chefhat":"Become famous for your cream buns.",
-		"fedora":"Eavesdrop as a bartender and learn about a criminal undertaking.",
-		"holypendant":"Discover the soup kitchen.",
-		"darkpendant":"Discover Bailey's fear.",
-		"stonependant":"Find beneath a loose stone at the temple.",
-		"cowbell":"Become livestock.",
-		"christmaslegwarmers":"In stock from the 15th of December.",
-		"witchshoes":"In stock from the 21st of October.",
-		"mummyfacewrap":"In stock from the 21st of October.",
-		"mummytop":"In stock from the 21st of October.",
-		"mummyskirt":"In stock from the 21st of October.",
-		"featheredhairclip":"Romance an avian.",
-		"catsuit":"Pillage a shipment.",
-		"holystole":"Requires sufficient devotion."
+		"witchdress":"10월 21일부터 판매한다.",
+		"christmasdress":"12월 15일부터 판매한다.",
+		"serafuku":"교장 선생님의 비밀을 밝힌다.",
+		"vampirejacket":"10월 21일부터 판매한다.",
+		"slutshirt":"지하 창관의 노예생활에서 살아남는다.",
+		"christmasshirt":"12월 15일부터 판매한다.",
+		"bellydancer'stop":"창관의 쇼에서 주역을 제안받는다.",
+		"christmastrousers":"12월 15일부터 판매한다.",
+		"bellydancer'sbottoms":"창관의 쇼에서 주역을 제안받는다.",
+		"loincloth":"외로운 사냥꾼과 친구가 되거나, 늑대 무리의 일원이 된다.",
+		"witchhat":"10월 21일부터 판매한다.",
+		"christmashat":"12월 15일부터 판매한다.",
+		"chefhat":"당신의 크림빵으로 유명해진다.",
+		"fedora":"바텐더 일을 하며 엿듣고 진행중인 범죄에 대해 알아낸다.",
+		"holypendant":"무료 급식소를 발견한다.",
+		"darkpendant":"베일리가 무서워하는 곳을 발견한다.",
+		"stonependant":"사원의 헐거운 돌멩이 아래를 찾아본다.",
+		"cowbell":"가축이 된다.",
+		"christmaslegwarmers":"12월 15일부터 판매한다.",
+		"witchshoes":"10월 21일부터 판매한다.",
+		"mummyfacewrap":"10월 21일부터 판매한다.",
+		"mummytop":"10월 21일부터 판매한다.",
+		"mummyskirt":"10월 21일부터 판매한다.",
+		"featheredhairclip":"새와 사랑에 빠진다.",
+		"catsuit":"수송품을 약탈한다.",
+		"holystole":"사원에 충분한 헌신을 한다."
 	}>>
 <</if>>
 <</widget>>

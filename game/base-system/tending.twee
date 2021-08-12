@@ -46,18 +46,18 @@
 <<widget "display_quality">>
 <<silently>>
 <<switch $plots[$args[0]][$args[1]].bed>>
-	<<case "water">><<set _bedType to "water">>
-	<<case "earth">><<set _bedType to "soil">>
+	<<case "water">><<set _bedType to "수질">>
+	<<case "earth">><<set _bedType to "토양">>
 	<<default>><<set _bedType to clone($plots[$args[0]][$args[1]].bed)>>
 <</switch>>
 <<if $plots[$args[0]][$args[1]].quality is 1>>
-	<<set $_result to `<span class="blue">poor `+_bedType+`</span>`>>
+	<<set $_result to `<span class="blue">척박한 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality is 2>>
-	<<set $_result to `<span class="lblue">decent `+_bedType+`</span>`>>
+	<<set $_result to `<span class="lblue">적당한 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality is 3>>
-	<<set $_result to `<span class="teal">good `+_bedType+`</span>`>>
+	<<set $_result to `<span class="teal">괜찮은 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality gt 3>>
-	<<set $_result to `<span class="green">excellent `+_bedType+`</span>`>>
+	<<set $_result to `<span class="green">최상의 `+_bedType+`</span>`>>
 <</if>>
 <</silently>><<print $_result>>
 <</widget>>
@@ -77,7 +77,7 @@
 <<for _i to 0; _i lt $plots[$args[0]].length; _i++>>
 <<set _tending_temp to _i>>
 <<capture _tending_temp>>
-<span class="gold"><<wordify_i _i cap>> 터 <<if $plots[$args[0]][_i].bed isnot "earth">>(<<print $plots[$args[0]][_i].bed>>)<</if>>:</span>
+<span class="gold"><<wordify_i _i cap>> 터 (<<display_quality $args[0] _tending_temp>>):</span>
 	<<if $plots[$args[0]][_i].stage gte 5>>
 		<<trPlants setup.plants[$plots[$args[0]][_i].name].plural>><span class="green">_trResult에 꽃이 펴, 이제 딸 수 있을 것 같다.</span>
 		<br>
@@ -321,9 +321,21 @@
 <<set _plotKeys to Object.keys($plots)>>
 <<for _s to 0; _s lt _plotKeys.length; _s++>>
 	<<set _plot to _plotKeys[_s]>>
+	<<switch _plot>>
+		<<case "farm">>
+			<<if $farm.irrigation>>
+				<<set _irrigation to $farm.irrigation>>
+			<<else>>
+				<<set _irrigation to 0>>
+			<</if>>
+		<<default>>
+			<<set _irrigation to 0>>
+	<</switch>>
 	<<for _t to 0; _t lt $plots[_plot].length; _t++>>
 		<<capture _t>>
-		<<set $plots[_plot][_t].days += 1>>
+		<<if $plots[_plot][_t].stage gte 1 and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
+			<<set $plots[_plot][_t].days += 1>>
+		<</if>>
 		<<switch $plots[_plot][_t].stage>>
 		<<case 4>>
 			<<if $plots[_plot][_t].days gte setup.plants[$plots[_plot][_t].name].days and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
@@ -344,6 +356,9 @@
 		<</switch>>
 		<<if $weather is "rain">>
 			<<set $plots[_plot][_t].water to 1>>
+		<<elseif _irrigation gt 0>>
+			<<set $plots[_plot][_t].water to 1>>
+			<<set _irrigation-->>
 		<<else>>
 			<<set $plots[_plot][_t].water to 0>>
 		<</if>>

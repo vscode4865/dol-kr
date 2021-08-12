@@ -1,9 +1,11 @@
 :: School Pool
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
 
-<<if $schoolstate is "fifth" and $time lte ($hour * 60 + 51)>>
-
-	<<if $exposed gte 2 and $swimall is 1>>
+<<if $poolroomstate is "own">>
+	<<if $time gte ($hour * 60 + 50) and $swimmingattended isnot 1>>
+		<<include "School Swimming Late">>
+		<<set $swimmingattended to 2>><!-- still a missed lesson -->
+	<<elseif $exposed gte 2 and $swimall is 1>>
 		<<npc Mason>><<person1>>
 		<<if $swimmingattended is 1>>
 			당신은 수영 수업에 다시 들어온다.
@@ -48,12 +50,6 @@
 		<<schoolpoolexposed>>
 		<<if $exhibitionism gte 75 and $swimall isnot 1>>
 			<<link [[알몸으로 수영해도 되냐고 물어본다|School Pool Ask Naked]]>><<fameexhibitionism 15>><<endevent>><<set $swimnudecounter += 1>><</link>><<exhibitionist5>>
-			<br>
-		<</if>>
-		<<if $schoolstate is "fifth" and $swimnudecounter gte 1>>
-			<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><<endevent>><</link>>
-			<br>
-			<<femaleicon>><<link [[여학생 탈의실|School Girl Changing Room]]>><<endevent>><</link>>
 			<br>
 		<</if>>
 	<<elseif $swimall is 1>>
@@ -159,7 +155,7 @@
 		<br><br>
 	<</if>>
 
-<<elseif $schoollesson is 1>>
+<<elseif $poolroomstate is "other">>
 	<<if $exposed gte 1>>
 		<<schoolpoolexposed>>
 	<<else>>
@@ -190,7 +186,7 @@
 			<</if>>
 		<</if>>
 	<</if>>
-<<else>>
+<<else>><!-- $poolroomstate is "empty" -->
 	당신은 수영장에 있다. 안에는 염소 냄새가 가득하다.
 	<br><br>
 
@@ -450,27 +446,26 @@
 	<br>
 	<<link [[거부한다 (0:05)|School Pool Refuse]]>><<pass 5>><<detention 6>><<endevent>><</link>><<gdelinquency>>
 <<elseif $rng gte 41>>
-	<<if $player.gender is "f" or ($player.gender is "h" and $breastsize gt 3)>>
+	<<if $player.gender_appearance is "f">>
 		<<HePost "은">> 옷 뭉치를 꺼내들어 당신에게 건네준다. "얼른 갈아입으렴!" <<HePost "은">> 만족스레 말하고는 당신을 방에 홀로 두고 나간다.
 		<br><br>
 
-		옷 뭉치를 펼쳐보자 상당히 낡은 수영복이다. 당신은 수영복으로 갈아입고 원래 입은 옷은 선반에 올려둔 뒤, 수업을 들으러 나간다.
+		옷 뭉치를 펼쳐보자 상당히 낡은 수영복이다.
 		<br><br>
 
-		<<link [[갈아입는다|Swimming Lesson]]>><<endevent>><</link>>
-		<<undress "school pool">><<spareschoolswimsuit>><<exposure>>
+		<<link [[갈아입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimsuit>><<endevent>><<exposure>><<set $phase to 1>><</link>>
 	<<else>>
 		<<HePost "은">> 옷 뭉치를 꺼내들어 당신에게 건네준다. "얼른 갈아입으렴!" <<HePost "은">> 만족스레 말하고는 당신을 방에 홀로 두고 나간다.
 		<br><br>
 
-		옷 뭉치를 펼쳐보자 상당히 낡은 반바지 수영복이다. 당신은 수영복으로 갈아입고 원래 입은 옷은 선반에 올려둔 뒤, 수업을 들으러 나간다.
+		옷 뭉치를 펼쳐보자 상당히 낡은 반바지 수영복이다.
 		<br><br>
 
-		<<link [[갈아입는다|Swimming Lesson]]>><<endevent>><</link>>
-		<<undress "school pool">><<spareschoolswimshorts>><<exposure>>
+		<<link [[갈아입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimshorts>><<endevent>><<exposure>><<set $phase to 0>><</link>>
+		<!-- A crossdressing girl may now have her assets on display, "School Pool Crossdress" will handle that -->
 	<</if>>
 <<elseif $rng gte 1>>
-	<<if $player.gender is "f" or ($player.gender is "h" and $breastsize gt 3)>>
+	<<if $player.gender_appearance is "f">>
 		<<HePost "은">> 옷 뭉치를 꺼내들어 당신에게 건네준다. "얼른 갈아입으렴!" <<HePost "은">> 만족스레 말하고는 당신을 방에 홀로 두고 나간다.
 		<br><br>
 
@@ -478,11 +473,10 @@
 		반바지 수영복이 아니면 입을 것이 없다.
 		<br><br>
 
-		<<link [[반바지 수영복을 입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimshorts>><<endevent>><<exposure>><</link>>
+		<<link [[반바지 수영복을 입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimshorts>><<endevent>><<exposure>><<set $phase to 0>><</link>>
 		<br>
 		<<link [[수업을 빼먹는다 (0:05)|School Pool Refuse]]>><<pass 5>><<detention 6>><<endevent>><</link>><<gdelinquency>>
 	<<else>>
-
 		<<HePost "은">> 옷 뭉치를 꺼내들어 당신에게 건네준다. "얼른 갈아입으렴!" <<HePost "은">> 만족스레 말하고는 당신을 방에 홀로 두고 나간다.
 		<br><br>
 
@@ -490,7 +484,7 @@
 		이 수영복이 아니면 입을 것이 없다.
 		<br><br>
 
-		<<link [[수영복을 입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimsuit>><<endevent>><<exposure>><</link>>
+		<<link [[수영복을 입는다|School Pool Crossdress]]>><<undress "school pool">><<spareschoolswimsuit>><<endevent>><<exposure>><<set $phase to 1>><</link>>
 		<br>
 		<<link [[수업을 빼먹는다 (0:05)|School Pool Refuse]]>><<pass 5>><<detention 6>><<endevent>><</link>><<gdelinquency>>
 	<</if>>
@@ -544,35 +538,45 @@
 
 :: School Pool Crossdress
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
+<!-- phase 0 is shorts, 1 is a swimsuit, 2 is internal looping -->
 
-<<if $phase is 1>>
-	<<set $phase to 0>>
-	당신은 마음을 단단히 먹고, <<lewdnessPost "을">> 내보인 상태로 문을 열고 나간다. 어떻게든 물 속에 몸을 숨기는데에 성공하나,
-	얼마 있지 않아 다른 학생들 모두가 당신의 상태를 눈치챈다.
-	<<garousal>><<arousal 600>>
+<!-- Note that the gender_appearance may have changed with the ersatz swimwear and the player may have crossdressed before and isn't anymore -->
+<<if $player.gender_appearance isnot $player.gender>>
+	<<if $phase is 2>>
+		<<set $phase to 0>>
+		당신은 마음을 단단히 먹고, <<lewdnessPost "을">> 내보인 상태로 문을 열고 나간다. 어떻게든 물 속에 몸을 숨기는데에 성공하나,
+		얼마 있지 않아 다른 학생들 모두가 당신의 상태를 눈치챈다.
+		<<garousal>><<arousal 600>>
+		<br><br>
+
+		<<link [[다음|Swimming Lesson]]>><</link>>
+		<br>
+	<<elseif $exposed gte 1>>
+		당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, 낡은 <<if $phase is 9>>여학생용 수영복<<else>>반바지 수영복<</if>>을 입는다.
+		당신은 당신의 <<breasts_rul>> 내려다본다; 당신이 남학생으로서 들어갈 확률은 없다. 당신은 문을 살짝 열고 그 틈으로 살짝 내다본다.
+		밖에는 30명 정도 되는 학생에 선생님까지 계시다. 합류하지 않으면 곤란한 일에 휘말리게 될 것이지만, 이렇게 많은 사람들 앞에서 알몸을 드러내도 괜찮을까?
+		<br><br>
+
+		<<link [[이건 실수였어!|School Pool Refuse]]>><</link>>
+		<br>
+		<<link [[별 다른 선택지가 없어|School Pool Crossdress]]>><<set $phase to 2>><</link>>
+	<<elseif $exposed lte 0>>
+		당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, 낡은 <<if $phase is 9>>여학생용 수영복<<else>>반바지 수영복<</if>>을 입는다.
+		<br><br>
+
+		당신은 당당히 수영장에 들어선다. 몇몇이 고개를 돌려 당신을 쳐다보나, 일단 물 속에 들어가니 관심을 끊는다.
+		<br><br>
+
+		<<link [[다음|Swimming Lesson]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	당신은 수업에 들어가기 전에, 낡은 <<if $phase is 9>>여학생용 수영복<<else>>반바지 수영복<</if>>을 입고 당신의 옷은 찬장에 올려놓는다.
 	<br><br>
 
 	<<link [[다음|Swimming Lesson]]>><</link>>
-	<br>
-<<elseif $exposed gte 1>>
-	당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, <<if $player.gender is "f" or ($player.gender is "h" and $breastsize gte 3)>>반바지 수영복<<else>>여학생용 수영복<</if>>을 입는다.
-	You look down at your <<breasts>>; there's no way you'll pass as a boy. You open the door slightly and peek through the gap.
-	밖에는 30명 정도 되는 학생에 선생님까지 계시다. 합류하지 않으면 곤란한 일에 휘말리게 될 것이지만, 이렇게 많은 사람들 앞에서 알몸을 드러내도 괜찮을까?
-	<br><br>
-
-	<<link [[이건 실수였어!|School Pool Refuse]]>><</link>>
-	<br>
-	<<link [[별 다른 선택지가 없어|School Pool Crossdress]]>><<set $phase to 1>><</link>>
-<<elseif $exposed lte 0>>
-	당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, <<if $player.gender is "f" or ($player.gender is "h" and $breastsize gte 3)>>반바지 수영복<<else>>여학생용 수영복<</if>>을 입는다.
-	<br><br>
-
-	당신은 당당히 수영장에 들어선다. 몇몇이 고개를 돌려 당신을 쳐다보나, 일단 물 속에 들어가니 관심을 끊는다.
-	<br><br>
-
-	<<link [[다음|Swimming Lesson]]>><</link>>
-	<br>
 <</if>>
+
 
 :: School Pool Nude Entry
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
@@ -596,30 +600,9 @@
 	<<physique 3>><<swimmingskilluse>>
 <</if>>
 
-<<pass 5>><<stress 1>><<tiredness 1>>
-<<schooleffects>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress 1>><<tiredness 1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress 1>><<tiredness 1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress 1>><<tiredness 1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
+<<advancelesson>>
+<<stress _lesson_progress>>
+<<tiredness _lesson_progress>>
 
 <<if $phase is 1>>
 	<<set $phase to 0>>
@@ -633,13 +616,6 @@
 	<<elseif $exposed lte 0>>
 		종이 울리며 수업의 끝을 알린다. 당신은 수영장에서 나온다.
 		<br><br>
-	<</if>>
-	<<if $time is ($hour * 60 + 57)>>
-		<<pass 3>>
-	<<elseif $time is ($hour * 60 + 58)>>
-		<<pass 2>>
-	<<elseif $time is ($hour * 60 + 59)>>
-		<<pass 1>>
 	<</if>>
 	<<if $exposed lte 0>>
 		<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><</link>>
@@ -669,6 +645,18 @@
 		<</if>>
 	<</if>>
 <</if>>
+	<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
+	<<else>>
+		<<if $player.gender_appearance is "m">>
+			<<link [[Wait for the girls to leave (0:05)|School Pool]]>><<pass 5>><</link>>
+		<br><br>
+		<</if>>
+		<<if $player.gender_appearance is "f">>
+			<<link [[Wait for the boys to leave (0:05)|School Pool]]>><<pass 5>><</link>>
+		<br><br>
+		<</if>>
+	<</if>>
+
 
 :: Swimming Lesson Naked Backstroke
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<water>><<effects>>
@@ -699,30 +687,13 @@
 <</if>>
 <br><br>
 
-<<pass 5>><<status 1>><<trauma -1>><<stress -1>>
-<<schooleffects>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<trauma -1>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
+<<status 1>>
+
+<<advancelesson>>
+<<set _stress to _lesson_progress * -1>>
+<<stress _stress>>
+<<set _trauma to _lesson_progress * -0.5>>
+<<trauma _trauma>>
 
 <<if $phase is 1>>
 	<<set $phase to 0>>
@@ -736,13 +707,6 @@
 	<<elseif $exposed lte 0>>
 		종이 울리며 수업의 끝을 알린다. 당신은 수영장에서 나온다.
 		<br><br>
-	<</if>>
-	<<if $time is ($hour * 60 + 57)>>
-		<<pass 3>>
-	<<elseif $time is ($hour * 60 + 58)>>
-		<<pass 2>>
-	<<elseif $time is ($hour * 60 + 59)>>
-		<<pass 1>>
 	<</if>>
 	<<if $exposed lte 0>>
 		<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><</link>>
@@ -759,16 +723,16 @@
 	<<if $exposed gte 1>>
 		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 		<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsswimming>>
+			<<eventsswimming>>
 		<<else>>
-		<<eventsswimmingsafe>>
+			<<eventsswimmingsafe>>
 		<</if>>
 	<<elseif $exposed lte 0>>
 		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 		<<if $danger gte (8900 - ($allure / 10))>>
-		<<eventsswimming>>
+			<<eventsswimming>>
 		<<else>>
-		<<eventsswimmingsafe>>
+			<<eventsswimmingsafe>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -785,30 +749,13 @@
 	<br><br>
 <</if>>
 
-<<pass 5>><<status 1>><<trauma -1>><<stress -1>>
-<<schooleffects>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<trauma -1>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
+<<status 1>>
+
+<<advancelesson>>
+<<set _stress to _lesson_progress * -1>>
+<<stress _stress>>
+<<set _trauma to _lesson_progress * -0.5>>
+<<trauma _trauma>>
 
 <<if $phase is 1>>
 	<<set $phase to 0>>
@@ -822,13 +769,6 @@
 	<<elseif $exposed lte 0>>
 		종이 울리며 수업의 끝을 알린다. 당신은 수영장에서 나온다.
 		<br><br>
-	<</if>>
-	<<if $time is ($hour * 60 + 57)>>
-		<<pass 3>>
-	<<elseif $time is ($hour * 60 + 58)>>
-		<<pass 2>>
-	<<elseif $time is ($hour * 60 + 59)>>
-		<<pass 1>>
 	<</if>>
 	<<if $exposed lte 0>>
 		<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><</link>>
@@ -878,30 +818,13 @@
 <</if>>
 <br><br>
 
-<<pass 5>><<status 1>><<trauma -1>><<stress -1>>
-<<schooleffects>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<trauma -1>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-	<<pass 5>><<stress -1>>
-	<<schooleffects>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
-<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
-<<else>>
-	<<set $phase to 1>>
-<</if>>
+<<status 1>>
+
+<<advancelesson>>
+<<set _stress to _lesson_progress * -1>>
+<<stress _stress>>
+<<set _trauma to _lesson_progress * -0.5>>
+<<trauma _trauma>>
 
 <<if $phase is 1>>
 	<<set $phase to 0>>
@@ -915,13 +838,6 @@
 	<<elseif $exposed lte 0>>
 		종이 울리며 수업의 끝을 알린다. 당신은 수영장에서 나온다.
 		<br><br>
-	<</if>>
-	<<if $time is ($hour * 60 + 57)>>
-		<<pass 3>>
-	<<elseif $time is ($hour * 60 + 58)>>
-		<<pass 2>>
-	<<elseif $time is ($hour * 60 + 59)>>
-		<<pass 1>>
 	<</if>>
 	<<if $exposed lte 0>>
 		<<maleicon>><<link [[남학생 탈의실|School Boy Changing Room]]>><</link>>

@@ -36,7 +36,7 @@ namespace Renderer {
 	export let ImageLoader: LayerImageLoader = DefaultImageLoader;
 
 	export interface RendererListener {
-		error?: (layer: string, prop: string, error: Error) => any;
+		error?: (error: Error, context:any) => any;
 
 		composeLayers?: (layers: CompositeLayer[]) => any;
 		loaded?: (layer: string, src: string) => any;
@@ -54,6 +54,13 @@ namespace Renderer {
 		keyframeRender?: (spec: string, cacheHit: boolean, cacheRenderTime: number) => any;
 		animationStop?: () => any;
 	}
+	function rendererError(listener:RendererListener, error:Error, context?:any) {
+		if (listener && listener.error) {
+			listener.error(error, context);
+		} else {
+			console.error(error);
+		}
+	}
 
 	/**
 	 * Last arguments to composeLayers
@@ -67,6 +74,11 @@ namespace Renderer {
 	 * Last result of animateLayers
 	 */
 	export let lastAnimation: AnimatingCanvas | undefined = undefined;
+
+	/**
+	 * Use "pixels" of this size when generating images.
+	 */
+	export let pixelSize: number = 1;
 
 	export function emptyLayerFilter():CompositeLayerParams {
 		return {
@@ -102,6 +114,11 @@ namespace Renderer {
 	}
 
 	/**
+	 * Free to use CanvasRenderingContext2D (to create image data, gradients, patterns)
+	 */
+	export const globalC2D = createCanvas(1,1);
+
+	/**
 	 * Creates a cutout of color in shape of sourceImage
 	 */
 	export function cutout(sourceImage: CanvasImageSource,
@@ -124,7 +141,7 @@ namespace Renderer {
 	 */
 	export function cutoutFrom(base: CanvasRenderingContext2D,
 	                           stencil: CanvasImageSource): CanvasRenderingContext2D {
-		base.globalCompositeOperation = 'destination-atop';
+		base.globalCompositeOperation = 'destination-in';
 		base.drawImage(stencil, 0, 0);
 		return base;
 	}
@@ -143,6 +160,111 @@ namespace Renderer {
 		canvas.drawImage(sourceImage, 0, 0);
 
 		return canvas;
+	}
+
+	/**
+	 * Repeatedly fill all sub-frames of canvas with same style.
+	 * (Makes sense with gradient and pattern fills, to keep consistents across all sub-frames)
+	 */
+	export function fillFrames(
+		fillStyle: string|CanvasGradient|CanvasPattern,
+		canvas: CanvasRenderingContext2D,
+		frameCount: number,
+		frameWidth: number
+	) {
+		const frameHeight = canvas.canvas.height;
+		canvas.globalCompositeOperation = 'source-over';
+		canvas.fillStyle = fillStyle;
+		canvas.fillRect(0, 0, frameWidth, frameHeight);
+		if (pixelSize > 1) {
+			// downscale, redraw on temp canvas, then draw again
+			const tw = Math.floor(frameWidth/pixelSize),
+				th = Math.floor(frameHeight/pixelSize);
+			const tmpcanvas = createCanvas(tw, th);
+			tmpcanvas.imageSmoothingEnabled = false
+			canvas.imageSmoothingEnabled = false
+			tmpcanvas.drawImage(
+				canvas.canvas,
+				0, 0, frameWidth, frameHeight,
+				0, 0, tw, th
+			);
+			canvas.drawImage(
+				tmpcanvas.canvas,
+				0, 0, tw, th,
+				0, 0, frameWidth, frameHeight
+			);
+		}
+		for (let i = 1; i<frameCount; i++) {
+			canvas.drawImage(canvas.canvas,
+				0, 0, frameWidth, frameHeight,
+				i*frameWidth, 0, frameWidth, frameHeight);
+		}
+	}
+
+	export let Patterns:Dict<CanvasPattern> = {};
+	/**
+	 * CanvasPattern generator/provider.
+	 * Default implementation looks up in the Renderer.Patterns object, can be replaced to accept complex object
+	 * and generate custom pattern.
+	 */
+	export let PatternProvider: (spec: string|object)=>(CanvasPattern|null) = (spec)=>{
+		if (typeof spec === 'string' && spec in Patterns) return Patterns[spec];
+		return null;
+	};
+
+	export function createGradient(spec: BlendGradientSpec): CanvasGradient {
+		let gradient: CanvasGradient;
+		switch (spec.gradient) {
+			case "linear":
+				gradient = globalC2D.createLinearGradient(
+					spec.values[0], spec.values[1],
+					spec.values[2], spec.values[3]
+				);
+				break;
+			case "radial":
+				gradient = globalC2D.createRadialGradient(
+					spec.values[1], spec.values[2], spec.values[3],
+					spec.values[4], spec.values[5], spec.values[6]
+				);
+				break;
+			default:
+				throw new Error("Invalid gradient type: "+spec.gradient);
+		}
+		if (spec.colors.length < 2) throw new Error("Invalid gradient stops: "+JSON.stringify(spec.colors));
+		for (let i = 0; i < spec.colors.length; i++) {
+			let stop = spec.colors[i];
+			let offset:number, color:string;
+			if (typeof stop === 'string') {
+				color = stop;
+				offset =  i/(spec.colors.length-1);
+			} else {
+				offset = stop[0];
+				color = stop[1];
+			}
+			gradient.addColorStop(offset, color);
+		}
+		return gradient
+	}
+
+	/**
+	 * Paints sourceImage over same-sized canvas filled with pattern or gradient
+	 */
+	export function composeOverSpecialRect(
+		sourceImage: CanvasImageSource,
+		fillStyle: CanvasGradient|CanvasPattern,
+		blendMode: string,
+		frameCount: number,
+		targetCanvas: CanvasRenderingContext2D = createCanvas(
+			sourceImage.width as number,
+			sourceImage.height as number
+		)
+	): CanvasRenderingContext2D {
+		let fw = (sourceImage.width as number)/frameCount;
+		fillFrames(fillStyle, targetCanvas, frameCount, fw);
+
+		targetCanvas.globalCompositeOperation = blendMode;
+		targetCanvas.drawImage(sourceImage, 0, 0);
+		return targetCanvas
 	}
 
 	/**
@@ -262,7 +384,8 @@ namespace Renderer {
 			desaturate: spec.desaturate,
 			brightness: spec.brightness,
 			contrast: spec.contrast,
-			prefilter: spec.prefilter
+			prefilter: spec.prefilter,
+			masksrc: spec.masksrc
 		});
 
 	}
@@ -378,6 +501,7 @@ namespace Renderer {
 
 	export function processLayer(
 		layer: CompositeLayer,
+		rects: LayerRects,
 		listener: RendererListener
 	) {
 		let name = layer.name || layer.src;
@@ -386,7 +510,7 @@ namespace Renderer {
 		if (layer.desaturate) {
 			image = desaturateImage(image, undefined, false);
 			needsCutout = true;
-			if (listener && listener.composition) {
+			if (listener && listener.processingStep) {
 				listener.processingStep(name, "desaturate", image);
 			}
 		}
@@ -399,33 +523,97 @@ namespace Renderer {
 		if (typeof layer.brightness === 'number' && layer.brightness !== 0) {
 			image = adjustBrightness(image, layer.brightness, undefined, false);
 			needsCutout = true;
-			if (listener && listener.composition) {
+			if (listener && listener.processingStep) {
 				listener.processingStep(name, "brightness", image);
 			}
 		}
 		if (typeof layer.contrast === 'number' && layer.contrast !== 1) {
 			image = adjustContrast(image, layer.contrast, undefined);
 			needsCutout = true;
-			if (listener && listener.composition) {
+			if (listener && listener.processingStep) {
 				listener.processingStep(name, "contrast", image);
 			}
 		}
-		if (layer.blend && layer.blendMode) {
+		const blend = layer.blend;
+		if (blend && layer.blendMode) {
 			needsCutout = true;
-			image = composeOverRect(image, layer.blend, layer.blendMode).canvas;
+			let noop = false;
+			if (typeof blend === 'string') {
+				image = composeOverRect(image, blend, layer.blendMode).canvas;
+			} else if ('gradient' in blend) {
+				let gradient = createGradient(blend);
+				image = composeOverSpecialRect(image, gradient, layer.blendMode, rects.subspriteFrameCount).canvas;
+			} else if ('pattern' in blend) {
+				let pattern = PatternProvider(blend.pattern);
+				if (pattern) {
+					image = composeOverSpecialRect(image, pattern, layer.blendMode, rects.subspriteFrameCount).canvas;
+				} else {
+					noop = true;
+				}
+			} else {
+				throw new Error("Invalid blend spec for layer "+layer.name+": "+JSON.stringify(blend));
+			}
+			if (listener && listener.processingStep && !noop) {
+				listener.processingStep(name, "blend", image as HTMLCanvasElement);
+			}
+		}
+		if (layer.mask) {
+			image = cutoutFrom((image as HTMLCanvasElement).getContext('2d'), layer.mask).canvas;
 			if (listener && listener.processingStep) {
-				listener.processingStep(name, "blend", image);
+				listener.processingStep(name, "mask", image);
 			}
 		}
 		if (needsCutout) {
-			image = cutoutFrom((image as HTMLCanvasElement).getContext('2d'), layer.image!!).canvas;
+			if (!(image instanceof HTMLCanvasElement)) {
+				let i2 = createCanvas(image.width as number, image.height as number);
+				i2.drawImage(image, 0, 0);
+				image = i2.canvas;
+			}
+			image = cutoutFrom(image.getContext('2d'), layer.image!!).canvas;
+			if (listener && listener.processingStep) {
+				listener.processingStep(name, "cutout", image);
+			}
 		}
 		return image;
 	}
 
+	interface LayerRects {
+		width: number;
+		height: number;
+		frameWidth: number;
+		frameCount: number;
+		subspriteWidth: number;
+		subspriteHeight: number;
+		subspriteFrameCount: number;
+		dx: number;
+		dy: number;
+	}
+	function calcLayerRects(layer: CompositeLayer,
+	                        layerImageWidth: number,
+	                        targetWidth: number,
+	                        targetHeight: number,
+	                        frameCount: number): LayerRects {
+		const frameWidth = targetWidth / frameCount;
+		const subspriteWidth = layer.width || frameWidth;
+		const subspriteHeight = layer.height || targetHeight;
+		const dx = layer.dx || 0;
+		const dy = layer.dy || 0;
+		const subspriteFrameCount = layerImageWidth / subspriteWidth;
+		return {
+			width: targetWidth,
+			height: targetHeight,
+			frameWidth,
+			frameCount,
+			subspriteWidth,
+			subspriteHeight,
+			subspriteFrameCount,
+			dx,
+			dy
+		}
+	}
 	export function composeProcessedLayer(layer: CompositeLayer,
 	                                      targetCanvas: CanvasRenderingContext2D,
-	                                      frameCount: number = 1) {
+	                                      rects: LayerRects) {
 		const image = layer.cachedImage;
 		targetCanvas.filter = 'none';
 		if (typeof layer.alpha === 'number') {
@@ -434,18 +622,13 @@ namespace Renderer {
 			targetCanvas.globalAlpha = 1.0;
 		}
 
-		const frameWidth = targetCanvas.canvas.width / frameCount;
-		const subspriteWidth = layer.width || frameWidth;
-		const subspriteHeight = layer.height || targetCanvas.canvas.height;
-		const dx = layer.dx || 0;
-		const dy = layer.dy || 0;
-		const imageFrameCount = (image.width as number) / subspriteWidth;
-		if (imageFrameCount === frameCount && !layer.frames) {
+		const {frameWidth, frameCount, subspriteWidth, subspriteHeight, subspriteFrameCount, dx, dy} = rects;
+		if (rects.subspriteFrameCount === frameCount && !layer.frames) {
 			targetCanvas.drawImage(image, dx, dy);
 		} else {
 			for (let i = 0; i < frameCount; i++) {
-				const imageFrameIndex = Math.min(imageFrameCount - 1,
-					layer.frames ? layer.frames[i] : Math.floor(i * imageFrameCount / frameCount));
+				const imageFrameIndex = Math.min(subspriteFrameCount - 1,
+					layer.frames ? layer.frames[i] : Math.floor(i * subspriteFrameCount / frameCount));
 				targetCanvas.drawImage(image,
 					imageFrameIndex * subspriteWidth, 0, subspriteWidth, subspriteHeight,
 					dx + i * frameWidth, dy, subspriteWidth, subspriteHeight);
@@ -493,11 +676,14 @@ namespace Renderer {
 			if (listener && listener.beforeRender) {
 				listener.beforeRender(layers);
 			}
+			const targetWidth = targetCanvas.canvas.width;
+			const targetHeight = targetCanvas.canvas.height;
 			const t1 = millitime();
 			for (const layer of layers) {
 				if (layer.show === false) continue; // Could be disabled due to load error
 				let name = layer.name || layer.src;
 				let image = layer.image!!;
+				let layerRects = calcLayerRects(layer, image.width as number, targetWidth, targetHeight, frameCount);
 				let currentProcessing = encodeProcessing(layer);
 				if (layer.cachedProcessing && layer.cachedImage && currentProcessing === layer.cachedProcessing) {
 					if (listener && listener.layerCacheHit) {
@@ -508,11 +694,11 @@ namespace Renderer {
 					if (listener && listener.layerCacheMiss) {
 						listener.layerCacheMiss(layer);
 					}
-					image = processLayer(layer, listener);
+					image = processLayer(layer, layerRects, listener);
 					layer.cachedProcessing = currentProcessing;
 					layer.cachedImage = image;
 				}
-				composeProcessedLayer(layer, targetCanvas, frameCount);
+				composeProcessedLayer(layer, targetCanvas, layerRects);
 				if (listener && listener.composition) {
 					listener.composition(name, targetCanvas.canvas);
 				}
@@ -524,12 +710,17 @@ namespace Renderer {
 			if (rendered) return;
 			for (const layer of layers) {
 				if (layer.show !== false && !layer.image) return;
+				if (layer.masksrc && !layer.mask) return;
 			}
 			if (listener && listener.loadingDone) listener.loadingDone(millitime() - t0, layersLoaded);
-			renderResult();
+			try {
+				renderResult();
+			} catch (e) {
+				rendererError(listener, e);
+			}
 		}
 
-		function enqueueLayer(layer: CompositeLayer) {
+		function loadLayerImage(layer: CompositeLayer) {
 			ImageLoader.loadImage(
 				layer.src,
 				layer,
@@ -556,24 +747,75 @@ namespace Renderer {
 				}
 			)
 		}
+		function loadLayerMask(layer: CompositeLayer) {
+			ImageLoader.loadImage(
+				layer.masksrc,
+				layer,
+				(src,layer,image)=>{
+					layersLoaded++;
+					if (listener && listener.loaded) {
+						listener.loaded(layer.name || 'unnamed', src);
+					}
+					layer.mask = image;
+					layer.cachedMaskSrc = src;
+					ImageCaches[src] = image;
+					maybeRenderResult();
+				},
+				(src,layer,error)=>{
+					// Mark this src as erroneous to avoid blinking due to reload attempts
+					ImageErrors[src] = true;
+					if (listener && listener.loadError) {
+						listener.loadError(layer.name || 'unnamed', src);
+					} else {
+						console.error('Failed to load mask ' + src + (layer.name ? ' for layer ' + layer.name : ''));
+					}
+					delete layer.masksrc;
+					maybeRenderResult();
+				}
+			)
+		}
 
 		for (const layer of layers) {
+			let needImage = true;
 			if (layer.image) {
 				if (layer.imageSrc === layer.src) {
-					continue;
+					needImage = false;
 				} else {
 					// Layer was loaded in previous render, but then its src was changed - purge cache
 					delete layer.image;
 					delete layer.imageSrc;
 				}
 			}
-			if (ImageErrors[layer.src]) {
-				layer.show = false;
-			} else if (layer.src in ImageCaches) {
-				layer.image = ImageCaches[layer.src];
-				layer.imageSrc = layer.src;
-			} else {
-				enqueueLayer(layer);
+			if (needImage) {
+				if (ImageErrors[layer.src]) {
+					layer.show = false;
+					continue;
+				} else if (layer.src in ImageCaches) {
+					layer.image = ImageCaches[layer.src];
+					layer.imageSrc = layer.src;
+				} else {
+					loadLayerImage(layer);
+				}
+			}
+			let needMask = !!layer.masksrc;
+			if (layer.mask) {
+				if (layer.cachedMaskSrc === layer.masksrc) {
+					needMask = false;
+				} else {
+					// Layer mask was loaded in previous render, but then its masksrc was changed - purge cache
+					delete layer.mask;
+					delete layer.cachedMaskSrc;
+				}
+			}
+			if (needMask) {
+				if (ImageErrors[layer.masksrc]) {
+					delete layer.masksrc;
+				} else if (layer.masksrc in ImageCaches) {
+					layer.mask = ImageCaches[layer.masksrc];
+					layer.cachedMaskSrc = layer.masksrc;
+				} else {
+					loadLayerMask(layer);
+				}
 			}
 		}
 
@@ -582,6 +824,10 @@ namespace Renderer {
 
 	export interface AnimationInfo {
 		spec: KeyframeAnimationSpec;
+		/**
+		 * True if any layer properties other than `frame`, are animated
+		 */
+		complex: boolean;
 		/**
 		 * Affected layers
 		 */
@@ -611,6 +857,10 @@ namespace Renderer {
 		target: CanvasRenderingContext2D;
 		keyframeCaches: Dict<CanvasRenderingContext2D>;
 		animations: AnimationInfo[];
+		/**
+		 * True during rendering a frame
+		 */
+		busy: boolean;
 
 		redraw(): void;
 
@@ -623,6 +873,10 @@ namespace Renderer {
 
 	export function invalidateLayerCaches(layers: CompositeLayer[]) {
 		for (let layer of layers) {
+			delete layer.image;
+			delete layer.imageSrc;
+			delete layer.mask;
+			delete layer.cachedMaskSrc;
 			delete layer.cachedImage;
 			delete layer.cachedProcessing;
 		}
@@ -634,12 +888,24 @@ namespace Renderer {
 
 	const animatingCanvases = new WeakMap<CanvasRenderingContext2D, AnimatingCanvas>();
 
+	export let Animations: Dict<AnimationSpec> = {};
+	/**
+	 * Animation spec provider; default implementation is look up in Renderer.Animations by layer's `animation` property.
+	 *
+	 * Can be overridden to auto-generate animations, for example.
+	 */
+	export let AnimationProvider: (layer:CompositeLayerSpec)=>(AnimationSpec|undefined) =
+			layer=>Animations[layer.animation];
+
+	/**
+	 * Animatable properties of KeyframeSpec and CompositeLayer
+	 */
+	export const AnimatableProps = ["alpha","show","blend","brightness","contrast","dx","dy"];
 	export function animateLayers(targetCanvas: CanvasRenderingContext2D,
 	                              layerSpecs: CompositeLayerSpec[],
-	                              animations: Dict<AnimationSpec>,
 	                              listener: RendererListener,
 	                              autoStop: boolean = true): AnimatingCanvas {
-		lastAnimateCall = [targetCanvas, layerSpecs, animations, listener, autoStop];
+		lastAnimateCall = [targetCanvas, layerSpecs, listener, autoStop];
 		const keyframeCaches: Dict<CanvasRenderingContext2D> = {};
 
 		function invalidateCaches() {
@@ -655,6 +921,7 @@ namespace Renderer {
 			keyframeCaches: keyframeCaches,
 			animations: [],
 			playing: false,
+			busy: false,
 			start() {
 				if (this.playing) this.stop();
 				this.playing = true;
@@ -668,11 +935,12 @@ namespace Renderer {
 				for (let layer of layerSpecs) {
 					if (!layer.src || layer.show === false) continue;
 					if (layer.animation) {
-						let spec = animations[layer.animation];
+						let spec = AnimationProvider(layer);
 						if (!spec) {
 							console.error("Layer '" + (layer.name || layer.src) + "' animation '" + layer.animation + "' not found");
 							continue;
 						}
+						let complex = false;
 						if ('frames' in spec) {
 							let frames = spec.frames, duration = spec.duration;
 							spec = {
@@ -681,11 +949,22 @@ namespace Renderer {
 							for (let i = 0; i < frames; i++) {
 								spec.keyframes.push({frame: i, duration: duration});
 							}
+						} else {
+							for (let kf of spec.keyframes) {
+								for (let ap of AnimatableProps) {
+									if (ap in kf) {
+										complex = true;
+										break;
+									}
+								}
+								if (complex) break;
+							}
 						}
 						let animation = usedAnimations[layer.animation];
 						if (!animation) {
 							animation = usedAnimations[layer.animation] = {
 								name: layer.animation,
+								complex: complex,
 								spec: spec,
 								timeoutId: 0,
 								keyframeIndex: 0,
@@ -695,7 +974,7 @@ namespace Renderer {
 							};
 						}
 						animation.layers.push(layer);
-						layer.frames = [animation.keyframe.frame];
+						applyKeyframe(animation.keyframe, layer);
 					} else {
 						layer.frames = [0];
 					}
@@ -705,7 +984,7 @@ namespace Renderer {
 					scheduleNextKeyframe(animation);
 					if (listener && listener.keyframe) listener.keyframe(animation.name, animation.keyframeIndex, animation.keyframe);
 				}
-				compose();
+				compose().catch((e)=>{if (e) console.error(e)});
 			},
 			stop() {
 				if (!this.playing) return;
@@ -722,14 +1001,18 @@ namespace Renderer {
 			invalidateCaches,
 			time: 0,
 			redraw() {
-				compose();
+				compose().catch((e)=>{if (e) console.error(e)});
 			}
 		}
 
 		function genAnimationSpec(): string {
 			let j = {};
 			for (let animation of animatingCanvas.animations) {
-				j[animation.name] = animation.keyframe.frame;
+				if (animation.complex) {
+					j[animation.name] = animation.keyframeIndex;
+				} else {
+					j[animation.name] = animation.keyframe.frame;
+				}
 			}
 			return JSON.stringify(j);
 		}
@@ -741,10 +1024,14 @@ namespace Renderer {
 			if (!tasks) {
 				schedule[t1] = tasks = [];
 				animation.timeoutId = window.setTimeout(() => {
-					delete schedule[t1];
-					animatingCanvas.time = Math.max(t1, animatingCanvas.time);
-					for (let task of tasks) task();
-					compose();
+					try {
+						delete schedule[t1];
+						animatingCanvas.time = Math.max(t1, animatingCanvas.time);
+						for (let task of tasks) task();
+						compose().catch((e)=>{if (e) console.error(e)});
+					} catch (e) {
+						rendererError(listener, e);
+					}
 				}, animation.keyframe.duration);
 			} else {
 				animation.timeoutId = 0;
@@ -755,24 +1042,50 @@ namespace Renderer {
 			});
 		}
 
+		function applyKeyframe(keyframe: KeyframeSpec, layer: CompositeLayer) {
+			layer.frames = [keyframe.frame];
+			for (let ap of AnimatableProps) {
+				if (ap in keyframe) layer[ap] = keyframe[ap];
+			}
+		}
+
 		function nextKeyframe(animation: AnimationInfo) {
 			let keyframes = animation.spec.keyframes;
 			animation.keyframeIndex = (animation.keyframeIndex + 1) % keyframes.length;
 			animation.keyframe = keyframes[animation.keyframeIndex];
 			for (let layer of animation.layers) {
-				layer.frames = [animation.keyframe.frame];
+				applyKeyframe(animation.keyframe, layer);
 			}
 			scheduleNextKeyframe(animation);
 			if (listener && listener.keyframe) listener.keyframe(animation.name, animation.keyframeIndex, animation.keyframe);
 		}
 
-		function compose() {
+		function stopCheck():boolean {
 			if (autoStop && animatingCanvas.time > 0 && !(document.body.contains(targetCanvas.canvas))) {
 				/* the canvas was removed from DOM. we exclude frame 0 because it might not yet be added */
 				animatingCanvas.stop();
-				return;
+				return true;
 			}
-			requestAnimationFrame(() => {
+			return false;
+		}
+		function compose(): Promise<void> {
+			if (stopCheck() || animatingCanvas.busy) {
+				return Promise.reject();
+			}
+			animatingCanvas.busy = true;
+			return new Promise((resolve,reject)=>{
+				requestAnimationFrame(()=>{
+					animatingCanvas.busy = false;
+					try {
+						doCompose0();
+						resolve();
+					} catch (e) {
+						rendererError(listener, e);
+						reject(e)
+					}
+				})
+			})
+			function doCompose0() {
 				let spec = genAnimationSpec();
 				let cachedCanvas = keyframeCaches[spec];
 				if (cachedCanvas) {
@@ -798,11 +1111,11 @@ namespace Renderer {
 					try {
 						composeLayers(targetCanvas, layerSpecs, 1, myListener);
 					} catch (e) {
-						console.error(e);
 						animatingCanvas.stop();
+						throw e;
 					}
 				}
-			});
+			}
 		}
 
 		animatingCanvas.start();

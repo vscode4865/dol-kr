@@ -45,6 +45,10 @@ Most "cream" produced: $creamstat
 <br>
 판매한 농산물: $produce_sold개
 <br>
+<<if $farmersProduce>>
+	벌크로 판매한 농산물: $farmersProduce.totalSold
+	<br>
+<</if>>
 비료 사용: $fertiliser.used개
 <br>
 농장에서 일한 시간: <<print Math.trunc($farm_shift / 60)>>시간
@@ -91,9 +95,9 @@ __섹스__
 <br>
 발로 사정시킨 횟수: $feetejacstat번
 <br>
-허벅지로 해준 횟수: $thighstat번
+넓적다리로 해준 횟수: $thighstat번
 <br>
-허벅지로 사정시킨 횟수: $thighejacstat번
+넓적다리로 사정시킨 횟수: $thighejacstat번
 <br>
 가슴으로 해준 횟수: $cheststat번
 <br>
@@ -238,6 +242,13 @@ Games of blackjack played: $blackjack_played
 Games of blackjack won: $blackjack_won
 <br>
 Highest blackjack streak: $blackjack_streak_high
+<br>
+Underwear stolen: $stat_panties_stolen
+<br>
+Sentenced with community service: $stat_police.community
+<br>
+Sentenced with the pillory:	$stat_police.pillory
+<br>
 
 <br><br>
 __게임 세이브 상세__
@@ -255,7 +266,7 @@ __게임 세이브 상세__
 	<br>
 	<<for _i to 0; _i lt $saveVersions.length; _i++>>
 		<<if _i gt 0>>
-			<<if SugarCube.State.variables.saveVersions[_i].split(".")[2] is SugarCube.State.variables.saveVersions[_i - 1].split(".")[2]>>
+			<<if V.saveVersions[_i].split(".")[2] is V.saveVersions[_i - 1].split(".")[2]>>
 				--
 			<<else>>
 				<br>
@@ -267,17 +278,27 @@ __게임 세이브 상세__
 <</if>>
 <</widget>>
 
-<<widget "extraStatistics">>
+<<widget "extraStatisticsWarning">>
+
+<<if $skipStatisticsConfirmation is undefined>><<set $skipStatisticsConfirmation to false>><</if>>
+
 <h3>추가 통계</h3>
+
 <div id="spoilerWarning">
 	정말로 확인하시겠습니까? 스포일러가 포함되어 있을 수도 있어요!
 	<br>
 	<<link 네>>
-		<<addclass #spoilerWarning "hidden">>
-		<<removeclass #spoilerWarningConfirmed "hidden">>
+		<<overlayReplace "extraStatistics">>
 	<</link>>
+	&nbsp;&nbsp;&nbsp;<<checkbox "$skipStatisticsConfirmation" false true autocheck>> Don't Show Again
+	<!-- ignore the nbsp's, they're just for formatting -->
 </div>
-<div id="spoilerWarningConfirmed" class="hidden">
+<</widget>>
+
+<<widget "extraStatistics">>
+
+<h3>추가 통계</h3>
+<div id="spoilerWarningConfirmed">
 	__상태__
 	<br>
 	고통: <<print Math.trunc($pain)>>
@@ -452,6 +473,5 @@ __게임 세이브 상세__
 		<<print Math.trunc($fallenangel)>>
 	<</if>>
 	<br>
-
 </div>
 <</widget>>

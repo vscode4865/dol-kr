@@ -24,6 +24,9 @@
 			<<case "extraStatistics">>
 				<<replace #customOverlayTitle>><<OverlayTitle "extraStatistics">><</replace>>
 				<<replace #customOverlayContent>><<extraStatistics>><</replace>>
+			<<case "extraStatisticsWarning">>
+				<<replace #customOverlayTitle>><<OverlayTitle "extraStatisticsWarning">><</replace>>
+				<<replace #customOverlayContent>><<extraStatisticsWarning>><</replace>>
 			<<case "gameFeats">>
 				<<replace #customOverlayTitle>><<OverlayTitle "feats">><</replace>>
 				<<replace #customOverlayContent>><<feats>><</replace>>
@@ -88,7 +91,11 @@
 <</if>>
 <<if $args[0] is "statistics">>
 	<<button "추가 통계 (스포일러)">>
-		<<overlayReplace "extraStatistics">>
+		<<if $skipStatisticsConfirmation>>
+			<<overlayReplace "extraStatistics">>
+		<<else>>
+			<<overlayReplace "extraStatisticsWarning">>
+		<</if>>
 		<<set $currentOverlay to null>>
 	<</button>>
 <</if>>
@@ -141,6 +148,7 @@
 	<<else>>
 		<div class="buttonlike -noborder">Model</div>
 	<</if>>
+	<br>
 	<<if Renderer.lastAnimation>>
 		<<button "애니메이션 시작/정지">>
 			<<script>>
@@ -149,11 +157,23 @@
 			<</script>>
 		<</button>>
 	<</if>>
+	<<button "Refresh caches">>
+		<<script>>
+			Renderer.Stats.logmsgLoad.value = "";
+			Renderer.Stats.logmsgRender.value = "";
+			Renderer.Stats.logmsgAnimate.value = "";
+			Renderer.ImageCaches = {};
+			Renderer.ImageErrors = {};
+			Renderer.lastAnimation.invalidateCaches();
+			Renderer.invalidateLayerCaches(Renderer.lastModel.layerList);
+			Renderer.lastModel.redraw();
+		<</script>>
+	<</button>>
 	<br>
 	<<script>>
-	output.append(Renderer.Stats.logmsgLoad.bindText(document.createElement("div")));
-	output.append(Renderer.Stats.logmsgRender.bindText(document.createElement("div")));
-	output.append(Renderer.Stats.logmsgAnimate.bindText(document.createElement("div")));
+	output.append(Renderer.Stats.logmsgLoad.bindText($("<div>")[0]));
+	output.append(Renderer.Stats.logmsgRender.bindText($("<div>")[0]));
+	output.append(Renderer.Stats.logmsgAnimate.bindText($("<div>")[0]));
 	<</script>>
 <</if>>
 <br><br>
