@@ -840,6 +840,24 @@
         + <<underworld_nicknamePost>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+    <<tattooPost>>
+        <<tattooPost *bodypart post "sep">>
+
+        <<tattoo>>의 대체 위젯. 조사를 붙일 수 있다.
+
+		필수사항
+             - bodypart: 신체 부위
+
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<tattooPost "back" "을">>               // (등에 "Cute girl" 글씨가 있을 경우) "귀여운 소녀"글씨를
+    ```
+
 
 * putpost
     ```
