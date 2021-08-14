@@ -156,7 +156,7 @@
 * trStruggle
     ```
     <<trStruggle>>
-        <<trStruggle *parasite post "sep">>
+        <<trStruggle *creature post "sep">>
 
         struggle creature (럴커, 벌레 등)을 번역한다. <<trCreature "struggle">> 와 동일.
 		
@@ -166,7 +166,7 @@
 * trSwarm
     ```
     <<trSwarm>>
-        <<trSwarm *parasite post "sep">>
+        <<trSwarm *swarm post "sep">>
 
         swarm (떼. 장어, 물고기 등)을 번역한다. <<trCreature "swarm">> 와 동일.
 		
@@ -314,12 +314,12 @@
 
     ```
 	<<handPost>>
-        <<handPost ["left"|"right"] post "sep">>
+        <<handPost ["left"|"right"|"both"] post "sep">>
 
         왼손/오른손 표시를 쉽게 하기 위해 추가. 조사를 붙일 수 있다.
 
         선택사항
-        - ["left"|"right"]: 왼손/오른손, 없으면 그냥 손.
+        - ["left"|"right"|"both"]: 왼손/오른손/양손, 없으면 그냥 손.
         - post: 조사
         - sep: 조사를 분리하여 저장한다.
 
@@ -783,6 +783,7 @@
 		<<handtoolPost "marker" "을">>              // "마커펜을"
     ```
 
+    ```
 	<<lefttoolPost>>
 		<<lefttoolPost [num] *post 'sep'>>
 
@@ -804,6 +805,7 @@
         + <<lefttoolPost>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
 	<<struggle_appendagePost>>
 		<<struggle_appendagePost *part *post 'sep'>>
 
@@ -1095,8 +1097,8 @@
 		<</listbox>>
 		
 		note
-		- listbox 에 들어가는 옵션이 배열 ([] 안에 정의되는 것) 이 아니라 오브젝트 모음 ({} 안에 "이름":"값" 형식으로 정의되는 것) 인 경우 그냥 
-			앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.
+		- listbox 에 들어가는 옵션이 배열 ([] 안에 정의되는 것) 이 아니라 오브젝트 모음 ({} 안에 "이름":"값" 형식으로 정의되는 것)
+			인 경우 그냥 앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.
 		
 	```
 
@@ -1361,12 +1363,13 @@
         + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
-===============================================
+-----------------
 # EasyPost
 
 위의 매크로들을 좀 더 직관적으로 쉽게 사용하기 위해 추가한 매크로입니다.
 
 * 규칙
+    ```
 	- <<(명사 | 대명사)_(조사 | 어미) [옵션]>>
 		예: <<He_nun>> - 그는, <<weather_ga "rain">> - 비가
 	- 조사/어미 종류는 trinit_post 에 정의된 것에 준해 만들었음
@@ -1399,32 +1402,46 @@
 		예: He_nun - 히_는, bottom_un - 바텀_은
 	- 옷의 경우 $worn.(위치).name 식의 사용이 대부분으로 보여 이를 대체하는 매크로만 만들었음
 		예: $worn.under_lower.name은 - <<worn_under_lower_name_un>>
+    ```
 
 * 예시
+    ```
 	원본: <<He>> ripped your $worn.under_lower.name and shove <<his>> <<penis>> into your <<pussy>>.
 	기존번역: <<HePost "은">> 당신의 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 찢고 <<hisPost "의">> <<penisPost "을">> 당신의 <<pussyPost "으로">> 집어넣는다.
 	EasyPost: <<He_nun>> 당신의 <<worn_under_lower_name_ul>> 찢고 <<his_yi>> <<penis_rul>> 당신의 <<pussy_ro>> 집어넣는다.
 	출력: 그는 당신의 평범한 팬티를 찢고 그의 조그마한 자지를 당신의 보지로 집어넣는다.
+    ```
 
 * 현재 등록된 매크로
 	- trClothes 계열
+		```
 		<<worn_(착용부위)_name_(조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
 		<<worn_(착용부위)_name>> 시리즈. 조사 없이 이름만 가져오게 함
+		```
 	- beasttypePost 계열
+		```
 		<<beasttype_(조사)>>, <<beastsplural_(조사)>>
+		```
 	- bodyPost 계열
+		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
 		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>,
+		```
 	- clothesPost 계열
+		```
 		<<undertop_(조사)>>, <<groin_(조사)>>, <<crotch_(조사)>>, <<undies_(조사)>>, <<bottoms_(조사)>>, <<underbottoms_(조사)>>, <<top_(조사)>>, 
 		<<topaside_(조사)>>, <<breastsaside_(조사)>>, <<outfit_(조사)>>, <<underoutfit_(조사)>>, <<lewdness_(조사)>>, <<nudity_(조사)>>
+		```
 	- HePost 계열
+		```
 		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, 
 		<<bHim_(조사)>>, <<bhim_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>,<<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>
 		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<pher_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
+		```
 	- otherPost 계열
+		```
 		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
@@ -1432,18 +1449,29 @@
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
 		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
+		```
 	- personPost 계열
+		```
 		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>
 		<<persons_yi>> 는 소유격이라 _yi 조사만 지원함
+		```
 	- putpost 계열
+		```
 		<<putpost_(조사)>>
+		```
 	- tentacle 계열
+		```
 		<<tentacle_(조사)>>
+		```
 	- creature 계열
+		```
 		<<creature_(조사)>>,  <<vorecreature_(조사)>>, <<struggle_creature_(조사)>>, <<swarm_(조사>>, <<swarmtype_(조사)>>, <<swarmname_(조사)>>,
 		<<struggle_mouth_creature_(조사)>>, <<struggle_vagina_creature_(조사)>>, <<struggle_penis_creature_(조사)>>, <<struggle_anus_creature_(조사)>>, <<struggle_chest_creature_(조사)>>,
 		<<swarmmove>>, <<swarmspill>>, <<swarmsteady>> 는 서술어 번역이라 조사가 필요없음
+		```
 	- 기타
+		```
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>, <<namedNPC_name_(조사)>>, 
 		<<namedNPC_title_(조사)>>, <<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
 		<<weather_(조사)>>
+		```
