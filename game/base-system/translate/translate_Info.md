@@ -1318,6 +1318,49 @@
         <<trWeather "rain">>                //  "비"
     ```
 
+-----------------
+# 기타
+   - 사용 횟수가 너무 적어 새로 만들지 않고 기존 매크로를 변경시켜 사용하는 매크로들. 조사를 받는 것만 기재한다.
+
+* base-combat/audience.twee
+    ```
+    <<ahe>>
+        + 구경꾼. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+* base-combat/audienceswarm.twee
+    ```
+    <<aHe>>
+        + 구경꾼. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+* base-combat/struggle.twee
+    ```
+    <<struggle_bodypart>>
+        + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
+    ```
+
+* base-system/widget.twee
+    ```
+    <<A_pillory_person>>
+        + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<a_pillory_person>>
+        + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<The_pillory_person>>
+        + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<the_pillory_person>>
+        + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 ===============================================
 # EasyPost
 
