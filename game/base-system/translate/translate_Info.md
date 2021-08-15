@@ -173,6 +173,19 @@
 		+ <<trParasite>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+    <<trSwarmAction>>
+        <<trSwarmAction *action>>
+
+        swarm (떼. 장어, 물고기 등) 및 주인공의 움직임을 번역한다.
+		
+		필수사항
+		- *action: swarm 혹은 주인공의 움직임
+
+        e.g.
+        <<trSwarmAction "moving towards you">>_trResult               // '당신에게로 다가온다"
+    ```
+
 * trVore
     ```
     <<trVore>>
@@ -808,6 +821,43 @@
 		<<struggle_appendagePost "mouth" "을">>              // "독침을"
     ```
 
+    ```
+    <<underworld_nicknamePost>>
+        <<underworld_nicknamePost post "sep">>
+
+        <<underworld_nickname>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+        
+        e.g.
+        <<underworld_nicknamePost "을">>               // "고깃구멍을"
+    ```
+
+    ```
+    <<overworld_nicknamePost>>
+        + <<underworld_nicknamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<tattooPost>>
+        <<tattooPost *bodypart post "sep">>
+
+        <<tattoo>>의 대체 위젯. 조사를 붙일 수 있다.
+
+		필수사항
+             - bodypart: 신체 부위
+
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<tattooPost "back" "을">>               // (등에 "Cute girl" 글씨가 있을 경우) "귀여운 소녀"글씨를
+    ```
+
 
 * putpost
     ```
@@ -990,7 +1040,7 @@
         <<trHairtype "braid left">>             // "왼쪽으로 땋은 머리"
     ```
 
-* ListboxItems
+* trListboxItems
 	```
 	<<trListboxItemsFromArray>>
 		<<trListboxItemsFromArray *arrayname>>
@@ -1000,22 +1050,50 @@
 		필수사항
 		- arrayname 원본 배열 이름 (따옴표를 붙여줄것)
 		- 해당 arrayname 에 대한 번역표가 trListboxItems.twee 의 <<trListboxItemsInit>> 매크로 안에 존재할것
+		- 혹은 기존 매크로로 번역할 수 있는 것이면 매크로를 <<trListboxItemsInit>>에 지정하면 해당 매크로를 사용하여 번역함.
 		
-		e.g.
+		e.g. 1 (번역표)
 		/* 원본 */
-		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		<<set _options to ["Everyone","Strangers","Animals",...]>>
 		
-		<<listbox "_defaultActions" autoselect>>
+		<<listbox ...>>
 			<<optionsfrom _options>>	
 		<</listbox>>
 		
-		/* 번역 */
-		<<set _options to ["Everyone","Strangers","Animals","Acquaintances","Robin","Bailey"]>>
+		/* 번역표 */
+		"_options" :
+		{
+			"Everyone":"모두",
+			"Strangers":"낯선 사람",
+			"Animals":"동물",
+			...
+		},
 		
-		<<trListboxItemsFromArray "_options">><<listbox "_defaultActions" autoselect>>	/* listbox 앞에 배열이름을 따옴표로 붙여서 매크로 부름 */
+		/* 번역 */
+		<<set _options to ["Everyone","Strangers","Animals",...]>>
+		
+		<<trListboxItemsFromArray "_options">><<listbox ...>>	/* listbox 앞에 배열이름을 따옴표로 붙여서 매크로 부름 */
 			<<optionsfrom _trListboxItems>>	/* 원래 배열 대신 _trListboxItems 를 사용 */
 		<</listbox>>
+		
+		e.g. 2 (번역 매크로)
+		/* 원본 */
+		<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek",...]>>
 
+		<<listbox ...>>
+			<<optionsfrom _bodyPartOptions>>
+		<</listbox>>
+		
+		/* 번역표 */
+		"_bodyPartOptions" : "trBodypart",	/* 번역 매크로 이름 */
+		
+		/* 번역 */
+		<<set _bodyPartOptions to ["Forehead","Left cheek","Right cheek",...]>>
+
+		<<trListboxItemsFromArray "_bodyPartOptions">><<listbox ...>>
+			<<optionsfrom _trListboxItems>>
+		<</listbox>>
+		
 		note
 		- listbox 에 들어가는 옵션이 배열 ([] 안에 정의되는 것) 이 아니라 오브젝트 모음 ({} 안에 "이름":"값" 형식으로 정의되는 것) 인 경우 그냥 
 			앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.
