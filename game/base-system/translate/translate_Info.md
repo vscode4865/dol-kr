@@ -1435,7 +1435,7 @@
 	- HePost 계열
 		```
 		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, 
-		<<bHim_(조사)>>, <<bhim_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>,<<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
+		<<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>,<<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>
 		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<pher_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
