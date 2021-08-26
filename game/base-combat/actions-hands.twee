@@ -5,8 +5,14 @@
 <<if $consensual isnot 1>>
 	<<set _leftaction["때린다"] to "lefthit">>
 <</if>>
-<<set _leftaction["얼굴을 가린다"] to "leftcoverface">>
+<<set _leftaction["등 뒤로 둔다"] to "behind">>
 
+<<leftcoverface>>
+
+<</widget>>
+
+<<widget "leftcoverface">>
+	<<set _leftaction["얼굴을 가린다"] to "leftcoverface">>
 <</widget>>
 
 <<widget "leftgrab">>
@@ -202,7 +208,7 @@
 <</widget>>
 
 <<widget "leftsteal">>
-<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
 <<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
 	<<if $leftactiondefault is "steal">>
 	| <label><span class="brat">훔치기</span> <<radiobutton "$leftaction" "steal" checked>> <<skulduggerydifficulty>><<combatcrime>></label>
@@ -213,7 +219,7 @@
 <</widget>>
 
 <<widget "leftstealnew">>
-<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
 <<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
 	/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
 	<<set _leftaction["훔치기"] to "steal">>
@@ -246,18 +252,69 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</if>>
 <</widget>>
 
+<<widget "leftshacklewhack">>
+<<for _lsw to 0; _lsw lt $NPCList.length; _lsw++>>
+	<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent" or $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+		<<set _leftaction["족쇄를 친다"] to "shacklewhack">>
+	<</if>>
+<</for>>
+<</widget>>
+
+<<widget "rightshacklewhack">>
+<<for _lsw to 0; _lsw lt $NPCList.length; _lsw++>>
+	<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent" or $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+		<<set _rightaction["족쇄를 친다"] to "shacklewhack">>
+	<</if>>
+<</for>>
+<</widget>>
+
 <<widget "leftFixAndCoverActions">>
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1 and $vaginause is 0>>
-	<<set _leftaction["보지를 가린다"] to "leftcovervagina">>
+<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $vaginause is "cover">>
+			<<set _leftaction["계속 보지를 가린다"] to "leftcovervaginameek">>
+		<<elseif $vaginause is 0>>
+			<<set _leftaction["보지를 가린다"] to "leftcovervaginameek">>
+		<</if>>
+	<<else>>
+		<<if $vaginause is "cover">>
+			<<set _leftaction["계속 보지를 가린다"] to "leftcovervagina">>
+		<<elseif $vaginause is 0>>
+			<<set _leftaction["보지를 가린다"] to "leftcovervagina">>
+		<</if>>
+	<</if>>
 <</if>>
 
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1 and $penisuse is 0>>
-	<<set _leftaction["자지를 가린다"] to "leftcoverpenis">>
+<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $penisuse is "cover">>
+			<<set _leftaction["계속 자지를 가린다"] to "leftcoverpenismeek">>
+		<<elseif $penisuse is 0>>
+			<<set _leftaction["자지를 가린다"] to "leftcoverpenismeek">>
+		<</if>>
+	<<else>>
+		<<if $penisuse is "cover">>
+			<<set _leftaction["계속 자지를 가린다"] to "leftcoverpenis">>
+		<<elseif $penisuse is 0>>
+			<<set _leftaction["자지를 가린다"] to "leftcoverpenis">>
+		<</if>>
+	<</if>>
 <</if>>
 
-<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1 and $anususe is 0>>
-
-	<<set _leftaction["엉덩이를 가린다"] to "leftcoveranus">>
+<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $anususe is "cover">>
+			<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranusmeek">>
+		<<else>>
+			<<set _leftaction["엉덩이를 가린다"] to "leftcoveranusmeek">>
+		<</if>>
+	<<else>>
+		<<if $anususe is "cover">>
+			<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranus">>
+		<<else>>
+			<<set _leftaction["엉덩이를 가린다"] to "leftcoveranus">>
+		<</if>>
+	<</if>>
 <</if>>
 
 <<if $worn.under_lower.name isnot "naked">>
@@ -332,8 +389,14 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $consensual isnot 1>>
 	<<set _rightaction["때린다"] to "righthit">>
 <</if>>
-<<set _rightaction["얼굴을 가린다"] to "rightcoverface">>
+<<set _rightaction["등 뒤로 둔다"] to "behind">>
 
+<<rightcoverface>>
+
+<</widget>>
+
+<<widget "rightcoverface">>
+	<<set _rightaction["얼굴을 가린다"] to "rightcoverface">>
 <</widget>>
 
 <<widget "rightgrab">>
@@ -534,7 +597,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</widget>>
 
 <<widget "rightsteal">>
-<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
 <<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
 	<<if $rightactiondefault is "steal">>
 	| <label><span class="brat">훔치기</span> <<radiobutton "$rightaction" "steal" checked>> <<skulduggerydifficulty>><<combatcrime>></label>
@@ -545,7 +608,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</widget>>
 
 <<widget "rightstealnew">>
-<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+<<if $skulduggery gte 200 and $stealstate isnot 3 and $enemytype is "man" and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
 <<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
 	/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
 	<<set _rightaction["훔치기"] to "steal">>
@@ -580,16 +643,52 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</widget>>
 
 <<widget "rightFixAndCoverActions">>
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1 and $vaginause is 0>>
-	<<set _rightaction["보지를 가린다"] to "rightcovervagina">>
+<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $vaginause is "cover">>
+			<<set _rightaction["계속 보지를 가린다"] to "rightcovervaginameek">>
+		<<elseif $vaginause is 0>>
+			<<set _rightaction["보지를 가린다"] to "rightcovervaginameek">>
+		<</if>>
+	<<else>>
+		<<if $vaginause is "cover">>
+			<<set _rightaction["계속 보지를 가린다"] to "rightcovervagina">>
+		<<elseif $vaginause is 0>>
+			<<set _rightaction["보지를 가린다"] to "rightcovervagina">>
+		<</if>>
+	<</if>>
 <</if>>
 
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1 and $penisuse is 0>>
-	<<set _rightaction["자지를 가린다"] to "rightcoverpenis">>
+<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $penisuse is "cover">>
+			<<set _rightaction["계속 자지를 가린다"] to "rightcoverpenismeek">>
+		<<elseif $penisuse is 0>>
+			<<set _rightaction["자지를 가린다"] to "rightcoverpenismeek">>
+		<</if>>
+	<<else>>
+		<<if $penisuse is "cover">>
+			<<set _rightaction["계속 자지를 가린다"] to "rightcoverpenis">>
+		<<elseif $penisuse is 0>>
+			<<set _rightaction["자지를 가린다"] to "rightcoverpenis">>
+		<</if>>
+	<</if>>
 <</if>>
 
-<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1 and $anususe is 0>>
-	<<set _rightaction["엉덩이를 가린다"] to "rightcoveranus">>
+<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
+	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+		<<if $anususe is "cover">>
+			<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranusmeek">>
+		<<else>>
+			<<set _rightaction["엉덩이를 가린다"] to "rightcoveranusmeek">>
+		<</if>>
+	<<else>>
+		<<if $anususe is "cover">>
+			<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranus">>
+		<<else>>
+			<<set _rightaction["엉덩이를 가린다"] to "rightcoveranus">>
+		<</if>>
+	<</if>>
 <</if>>
 
 <<if $worn.under_lower.name isnot "naked">>
@@ -929,71 +1028,87 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $leftaction is "spray" and $rightaction is "spray">><<set $leftactiondefault to "lefthit">><<set $rightactiondefault to "righthit">><<set $leftaction to 0>><<set $rightaction to 0>>
 	<<if $spray gte 2>><<set $enemyhealth -= 400>><<set $spraystat += 2>><<spray -2>><<set $speechspray to 1>>
 		<<if $enemytype is "beast">>
-		당신은 양손에 스프레이를 들고는 <<beasttypePost "의">> 얼굴에 전부 뿌려버린다. 녀석은 낑낑거린다.
+			당신은 양손에 스프레이를 들고는 <<beasttypePost "의">> 얼굴에 전부 뿌려버린다. 녀석은 낑낑거린다.
 		<<elseif $enemyno gte 2>>
-		당신은 양손에 스프레이를 들고는 공격자들에게 전부 뿌려버린다. 그들은 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 양손에 스프레이를 들고는, <<groupPost>>에게 전부 뿌려버린다. 그들은 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<<else>>
-		당신은 양손에 스프레이를 들고는 공격자에게 전부 뿌려버린다. <<HePost "은">> 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 양손에 스프레이를 들고는 공격자에게 전부 뿌려버린다. <<HePost "은">> 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<</if>>
 	<<elseif $spray gte 1>><<set $enemyhealth -= 200>><<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
 		<<if $enemytype is "beast">>
-		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
+			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<if $enemytype is "beast">>
-		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<</if>>
 	<</if>>
 <<elseif $leftaction is "spray">><<set $leftactiondefault to "lefthit">><<set $leftaction to 0>>
 	<<if $spray gte 1>><<set $enemyhealth -= 200>><<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
 		<<if $enemytype is "beast">>
-		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
+			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<if $enemytype is "beast">>
-		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<</if>>
 	<</if>>
 <<elseif $rightaction is "spray">><<set $rightactiondefault to "righthit">><<set $rightaction to 0>>
 	<<if $spray gte 1>><<set $enemyhealth -= 200>><<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
-		<<if $enemytype is "beast">>
+			<<if $enemytype is "beast">>
 		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-		<<ggcrime>><<crimeup 500>>
+			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar")>>
+				<<ggcrime>><<crimeup 500>>
+			<</if>>
 		<</if>>
 	<<else>>
 		<<if $enemytype is "beast">>
-		당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<elseif $enemyno gte 2>>
-		당신은 공격자들에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<<else>>
-		당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 		<</if>>
 	<</if>>
 <</if>>
@@ -1005,7 +1120,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<if $leftaction is "steal" and $rightaction is "steal">><<set $rightaction to 0>><<set $leftactiondefault to "steal">><<set $rightactiondefault to "steal">><<set $skulduggerydifficulty += 400>><<skulduggerycheck>><<person1>>
 	<<if $skulduggerysuccess is 1>><<set $stealstate to 3>>
 	당신은 <<personPost "의">> <<wallet_ul>> 샅샅이 뒤진다.  <<encountersteal>><<set $leftactiondefault to "rest">><<set $rightactiondefault to "rest">>
-	<<else>><<brat 15>><<set $speechsteal to 1>>
+	<<else>><<brat 30>><<set $speechsteal to 1>>
 	당신은 <<personPost "의">> <<wallet_ul>> 샅샅이 뒤진다. <<HePost 1 "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 당신의 손에서 떼어낸다.
 	<</if>>
 <<elseif $leftaction is "steal">><<set $leftactiondefault to "steal">><<set $leftaction to 0>><<skulduggerycheck>><<person1>>
@@ -1019,7 +1134,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<else>><<set $stealstate to 3>>
 		당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $leftactiondefault to "rest">>
 		<</if>>
-	<<else>><<brat 15>><<set $speechsteal to 1>>
+	<<else>><<brat 30>><<set $speechsteal to 1>>
 		<<if $stealstate is undefined>>
 		당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ul>> 만진다. <<HePost 1 "은">> 속지 않는다. <<HePost 1 "은">> <<hisPost "의">> 귀중품들을 당신의 손에서 떼어낸다.
 		<<elseif $stealstate is 0>>
@@ -1041,7 +1156,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<else>><<set $stealstate to 3>>
 		당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $rightactiondefault to "rest">>
 		<</if>>
-	<<else>><<brat 15>><<set $speechsteal to 1>>
+	<<else>><<brat 30>><<set $speechsteal to 1>>
 		<<if $stealstate is undefined>>
 		당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ul>> 만진다. <<HePost 1 "은">> 속지 않는다. <<HePost 1 "은">> <<hisPost "의">> 귀중품들을 당신의 손에서 떼어낸다.
 		<<elseif $stealstate is 0>>
@@ -1137,6 +1252,66 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<</if>>
 <</if>>
 
+<</widget>>
+
+<<widget "effectsshacklewhack">>
+<<if $leftaction is "shacklewhack">>
+	<<set $leftaction to 0>>
+	<<for _lsw to 0; _lsw lt $NPCList.length; _lsw++>>
+		<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent" or $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+			<<switch _lsw>>
+				<<case 0>>
+					<<person1>>
+				<<case 1>>
+					<<person2>>
+				<<case 2>>
+					<<person3>>
+				<<case 3>>
+					<<person4>>
+				<<case 4>>
+					<<person5>>
+				<<case 5>>
+					<<person6>>
+			<</switch>>
+			<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent">>
+				<<combat-reset-hand "left">>
+			<<elseif $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+				<<combat-reset-hand "right">>
+			<</if>>
+			당신은 그 <<persons_yi>> 손에서 족쇄를 쳐낸다. <<He_nun>> <<his_yi>> 주먹을 꽉 쥔다.
+			<<brat 10>>
+		<</if>>
+	<</for>>
+<</if>>
+
+<<if $rightaction is "shacklewhack">>
+	<<set $rightaction to 0>>
+	<<for _lsw to 0; _lsw lt $NPCList.length; _lsw++>>
+		<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent" or $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+			<<switch _lsw>>
+				<<case 0>>
+					<<person1>>
+				<<case 1>>
+					<<person2>>
+				<<case 2>>
+					<<person3>>
+				<<case 3>>
+					<<person4>>
+				<<case 4>>
+					<<person5>>
+				<<case 5>>
+					<<person6>>
+			<</switch>>
+			<<if $NPCList[_lsw].lefthand is "shackle_entrance" or $NPCList[_lsw].lefthand is "shackle_imminent">>
+				<<combat-reset-hand "left">>
+			<<elseif $NPCList[_lsw].righthand is "shackle_entrance" or $NPCList[_lsw].righthand is "shackle_imminent">>
+				<<combat-reset-hand "right">>
+			<</if>>
+			당신은 그 <<persons_yi>> 손에서 족쇄를 쳐낸다. <<He_nun>> <<his_yi>> 주먹을 꽉 쥔다.
+			<<brat 10>>
+		<</if>>
+	<</for>>
+<</if>>
 <</widget>>
 
 <<widget "effectshandsfreeface">>
@@ -1317,5 +1492,238 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			</span>
 			<<brat 2>>
 		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "hand_section">>
+<<if $NPCList[_n].lefthand is "spank">>
+		<<combat-spank "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "spank">>
+		<<combat-spank "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "arms">>
+		<<combat-hand-on-arms "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "arms">>
+		<<combat-hand-on-arms "right">>
+	<</if>>
+
+
+	<<if $NPCList[_n].lefthand is "leftarm">>
+		<<combat-hand-on-one-arm "left" "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "leftarm">>
+		<<combat-hand-on-one-arm "right" "left">>
+	<</if>>
+	<<if $NPCList[_n].lefthand is "rightarm">>
+		<<combat-hand-on-one-arm "left" "right">>
+	<</if>>
+
+	<<if $NPCList[_n].righthand is "rightarm">>
+		<<combat-hand-on-one-arm "right" "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "vaginaentrance">>
+		<<combat-hand-on-vaginaentrance "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "vaginaentrance">>
+		<<combat-hand-on-vaginaentrance "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "penisentrance">>
+		<<combat-hand-on-penisentrance "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "penisentrance">>
+		<<combat-hand-on-penisentrance "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "vagina">>
+		<<combat-hand-on-vagina "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "vagina">>
+		<<combat-hand-on-vagina "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "penis">>
+		<<combat-hand-on-penis "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "penis">>
+		<<combat-hand-on-penis "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "anusentrance">>
+		<<combat-hand-on-anusentrance "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "anusentrance">>
+		<<combat-hand-on-anusentrance "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "anus">>
+		<<combat-hand-on-anus "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "anus">>
+		<<combat-hand-on-anus "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "mouth">>
+		<<combat-hand-on-mouth "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "mouth">>
+		<<combat-hand-on-mouth "right">>
+	<</if>>
+
+	<<if $asphyxiaLvl gte 1 and ($NPCList[_n].lefthand is "throat" or $NPCList[_n].righthand is "throat")>>
+		<<set $rng to random(1, 100)>>
+		<<if $consensual is 1>>
+			<<mancombat_choke>>
+		<<else>>
+			<<mancombat_strangle>>
+		<</if>>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "genitals">>
+		<<combat-hand-on-chastity "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "genitals">>
+		<<combat-hand-on-chastity "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "underclothes">>
+		<<combat-hand-on-underclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "underclothes">>
+		<<combat-hand-on-underclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "hair">>
+		<<combat-hand-on-hair "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "hair">>
+		<<combat-hand-on-hair "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "lowerclothes">>
+		<<combat-hand-on-lowerclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "lowerclothes">>
+		<<combat-hand-on-lowerclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "overlowerclothes">>
+		<<combat-hand-on-overlowerclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "overlowerclothes">>
+		<<combat-hand-on-overlowerclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "overupperclothes">>
+		<<combat-hand-on-overupperclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "overupperclothes">>
+		<<combat-hand-on-overupperclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "upperclothes">>
+		<<combat-hand-on-upperclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "upperclothes">>
+		<<combat-hand-on-upperclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "underupperclothes">>
+		<<combat-hand-on-underupperclothes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "underupperclothes">>
+		<<combat-hand-on-underupperclothes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "head_nipples" or $NPCList[_n].righthand is "head_nipples">>
+		<<sex 3>>
+		<<He_nun>> 계속 당신의 입을 <<hisselect_yi _n>> <<trBreastsdesc $NPCList[_n].breastdesc>>_trResult에 눌러댄다.
+		<<if $NPCList[_n].lactation is 1 and $breastfeedingdisable is "f">>
+			<span class="pink">모유가 <<hisselect_yi _n>> 젖꼭지에서 흘러내린다.</span>
+		<</if>>
+		<<bodypart_admire_chance forehead>>
+	<</if>>
+	<<if $NPCList[_n].lefthand is "head_breasts">>
+		<<combat-hand-on-head_breasts "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "head_breasts">>
+		<<combat-hand-on-head_breasts "right">>
+	<</if>>
+
+	<<set $rng to random(1, 100)>>
+	<<if $NPCList[_n].lefthand is "mask" and $NPCList[_n].righthand is "mask">>
+		<<combat-hand-on-mask "both" "both hands">>
+	<<elseif $NPCList[_n].lefthand is "mask">>
+		<<combat-hand-on-mask "left" "<<his_yi>> left hand">>
+	<<elseif $NPCList[_n].righthand is "mask">>
+		<<combat-hand-on-mask "right" "<<his_yi>> right hand">>
+	<</if>>
+
+	<<for _e to 0; _e lt $bodypart_number; _e++>>/*NPC draws on PC*/
+		<<activebodypart>>
+		<<if $NPCList[_n].lefthand is "pen" + "_" + _active_bodypart>>
+			<<He>> scrawls on your <<bodypart _active_bodypart>>:
+			<<bodywriting_npc _active_bodypart $NPCList[_n].lefttool>>
+			<<set $NPCList[_n].lefthand to 0>><<set $NPCList[_n].lefttool to 0>>
+		<</if>>
+		<<if $NPCList[_n].righthand is "pen" + "_" + _active_bodypart>>
+			<<He>> scrawls on your <<bodypart _active_bodypart>>:
+			<<bodywriting_npc _active_bodypart $NPCList[_n].righttool>>
+			<<set $NPCList[_n].righthand to 0>><<set $NPCList[_n].righttool to 0>>
+		<</if>>
+	<</for>>
+	<<if $NPCList[_n].lefthand is "pen">>/*NPC chooses which bodypart to draw on*/
+		<<bodywriting_npc_bodypart left $NPCList[_n].lefttool>>
+	<</if>>
+	<<if $NPCList[_n].righthand is "pen">>
+		<<bodywriting_npc_bodypart right $NPCList[_n].righttool>>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "lube">>
+		<<combat-hand-on-lube "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "lube">>
+		<<combat-hand-on-lube "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "shoes">>
+		<<combat-hand-on-shoes "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "shoes">>
+		<<combat-hand-on-shoes "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "socks">>
+		<<combat-hand-on-socks "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "socks">>
+		<<combat-hand-on-socks "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "shackle_imminent">>
+		<<combat-hand-on-shackle "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "shackle_imminent">>
+		<<combat-hand-on-shackle "right">>
+	<</if>>
+
+	<<if $NPCList[_n].lefthand is "shackle_entrance">>
+		<<combat-hand-on-shackle-imminent "left">>
+	<</if>>
+	<<if $NPCList[_n].righthand is "shackle_entrance">>
+		<<combat-hand-on-shackle-imminent "right">>
+	<</if>>
+	
+	<<set $rng to random(1, 100)>>
+	<<if $NPCList[_n].lefthand is 0>>
+		<<combat-set-hand-start "left">>
+	<</if>>
+	<<set $rng to random(1, 100)>>
+	<<if $NPCList[_n].righthand is 0>>
+		<<combat-set-hand-start "right">>
 	<</if>>
 <</widget>>

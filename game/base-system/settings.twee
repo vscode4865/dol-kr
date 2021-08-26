@@ -43,10 +43,12 @@
 <<set $analingusdisablegiving to "f">>
 <<set $analingusdisablereceiving to "f">>
 <<set $transformdisable to "f">>
+<<set $transformdisabledivine to "f">>
 /*<<set $hirsutedisable to "t">>*/
 <<set $breastfeedingdisable to "f">>
 <<set $analpregdisable to "f">>
 <<set $asphyxiaLvl to 3>>
+<<set $footdisable to "f">>
 <<set $tipdisable to "f">>
 <<set $bodywritingImages to true>>
 <<if $debug is 1>>
@@ -89,7 +91,7 @@
 <<if $args[0]>>
 	<<set $currentSettings to $args[0]>>
 <</if>>
-<<if $passage isnot "Start" and ["quickStart", "presetConfirm", "characterSettings", "featSettings"].includes($currentSettings)>>
+<<if $passage isnot "Start" and ["characterSettings", "featSettings"].includes($currentSettings)>>
 	<<set $currentSettings to "gameSettings">>
 <</if>>
 <<switch $currentSettings>>
@@ -127,16 +129,17 @@
 <<widget "settings">>
 <<updatehistorycontrols>><!-- hides controls on going back in history after enabling that option -->
 <<if $passage is "Start">>
-<div id="settingsExit">
-	<<settingsExit>>
-</div>
-<br>
+	<div id="settingsExit">
+		<<settingsExit>>
+	</div>
+	<br>
 <</if>>
+<<set $cheatdisabletoggle to $cheatdisable>>
 <div class="gold">
+	<<button `$passage is "Start" ? "빠른 시작" : "빠른 수정"`>>
+		<<displaySettings "quickStart">>
+	<</button>>
 	<<if $passage is "Start">>
-		<<button "빠른 시작<span class='red'>*</span>">>
-			<<displaySettings "quickStart">>
-		<</button>>
 		<<button "캐릭터 생성<span class='red'>*</span>">>
 			<<displaySettings "characterSettings">>
 		<</button>>
@@ -171,7 +174,7 @@
 	<<if $passage is "Start">>
 		<<quickStart>><<set $currentSettings to "quickStart">>
 	<<else>>
-	<<gameSettings>><<set $currentSettings to "gameSettings">>
+		<<quickStart>><<set $currentSettings to "quickStart">>
 	<</if>>
 </div>
 <br>
@@ -197,7 +200,7 @@
 	<<set _buttonName to "확인">>
 <</if>>
 <<link _buttonName>>
-	<<if ($feats.locked is true or $cheatdisable is "t") and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1) and $rentmod gte 1)>>
+	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1))>>
 		<<settingsExitFunction>>
 	<<else>>
 		<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
@@ -209,7 +212,7 @@
 <span class="red">일부 설정은 특정 도전과제를 비활성화시킬 수 있습니다. 괜찮습니까?</span>
 <br>
 <<link "아뇨, 해당 설정들을 원래대로 되돌려주세요">>
-	<<set $cheatdisable to "t">>
+	<<set $cheatdisabletoggle to "t">>
 	<<if $gamemode is "soft">>
 		<<set $gamemode to "normal">>
 	<</if>>
@@ -224,9 +227,6 @@
 <</link>>
 <br><br><br>
 <<link "네">>
-	<<if $rentmod lt 1>>
-		<<set $cheatdisable to "f">>
-	<</if>>
 	<<settingsExitFunction>>
 <</link>>
 <</widget>>
@@ -235,9 +235,11 @@
 	<<if $settingsExitPassage is "Start2">>
 		<<setSkinColorBase>>
 	<</if>>
-	<<if $cheatdisable is "f" and !$debug>>
+	<<set $cheatdisable to $cheatdisabletoggle>>
+	<<if $cheatdisable is "f" or $rentmod lt 1>>
 		<<set $feats.locked to true>>
 	<</if>>
+	<<unset $cheatdisabletoggle>>
 	<<if $gamemode is "soft" or $alluremod lt 1>>
 		<<set $feats.soft to true>>
 	<</if>>
@@ -320,10 +322,11 @@
 <span class="gold">변태 프리셋:</span> <<listbox "_kinkPreset" autoselect>><<optionsfrom _quickStartOptions.kink>><</listbox>> |
 <<link 사용>><<presets _kinkPreset>><</link>>
 <br><br>
-
-<span class="gold">난이도 프리셋:</span> <<listbox "_gamePreset" autoselect>><<optionsfrom _quickStartOptions.game>><</listbox>> |
-<<link 사용>><<presets _gamePreset>><</link>>
-<br><br>
+<<if $passage is "Start">>
+	<span class="gold">난이도 프리셋:</span> <<listbox "_gamePreset" autoselect>><<optionsfrom _quickStartOptions.game>><</listbox>> |
+	<<link 사용>><<presets _gamePreset>><</link>>
+	<br><br>
+<</if>>
 <<if StartConfig.enableImages is true>>
 	<span class="gold">이미지 프리셋:</span> <<listbox "_imagesPreset" autoselect>><<optionsfrom _quickStartOptions.images>><</listbox>> |
 	<<link 사용>><<presets _imagesPreset>><</link>>
@@ -337,7 +340,7 @@
 <<widget "characterSettings">>
 
 	<<if StartConfig.enableImages is true>>
-		<span class="gold">사이드 바에서 캐릭터를 미리보기 한다.</span> <label>겉옷 보기 <<checkbox "_showClothes" false true autocheck>></label> <label>속옷 보기 <<checkbox "_showUnderwear" false true autocheck>></label>
+		<span class="gold">사이드 바에서 캐릭터 미리보기</span> <label>겉옷 숨기기 <<checkbox "_showClothes" true false autocheck>></label> <label>속옷 숨기기 <<checkbox "_showUnderwear" true false autocheck>></label>
 		<br>
 		<span class="red">'플레이어 캐릭터의 피부색 시각적으로 표현' 기능은 일반 탭에서 활성화해야 정상적으로 게임 플레이 중에 피부색을 볼 수 있습니다.</span>
 		<br>
@@ -830,9 +833,11 @@
 	<label><div class="settingsToggle">
 	<<checkbox "$pbdisable" "t" "f" autocheck>> 음모 성장 활성화
 	</div></label>
-	<label><div class="settingsToggle">
-	<<checkbox "$transformdisable" "t" "f" autocheck>> 변신 활성화
-	</div></label>
+	<div class="settingsToggle" role="group">
+	변신:
+	<label><<checkbox "$transformdisable" "t" "f" autocheck>> 짐승</label>
+	<label><<checkbox "$transformdisabledivine" "t" "f" autocheck>> 영적 존재</label>
+	</div>
 	/*<label><div class="settingsToggle">
 	<<checkbox "$hirsutedisable" "t" "f" autocheck>> 추가 음모/털복숭이 늑대로 변신
 	</div></label>*/
@@ -847,9 +852,12 @@
 	</div></label>
 	<div class="settingsToggle" style="display: inline-flex;">
 	<span style="white-space:nowrap;">질식 강도 설정</span>
-	<<numberslider "$asphyxiaLvl" $asphyxiaLvl 0 3 1>>
+	<<numberslider "$asphyxiaLvl" $asphyxiaLvl 0 4 1>>
 	<<run settingsAsphyxiation()>>
 	</div>
+	<label><div class="settingsToggle">
+	<<checkbox "$footdisable" "t" "f" autocheck>> 발 활성화
+	</div></label>
 	<div style="clear:both;">/*Keep at end of toggles*/</div><<customSettingToggle>>
 <</widget>>
 
@@ -931,8 +939,10 @@
 			<label>짙게 <radiobutton "$naturalSkinColor" "ydark" autocheck>></label>
 			<label>갸루 <<radiobutton "$naturalSkinColor" "ygyaru" autocheck>></label>
 			<br><br>
-
-			<label>초기 선탠: <<numberslider "$range" ($range isnot undefined? $range:0) 0 100 1>>'>></label>
+			<<if $range is undefined>>
+				<<set $range to 0>>
+			<</if>>
+			<label>초기 선탠: <<numberslider "$range" 0 0 100 1>></label>
 			<br>
 			<<link 테스트>>
 				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
@@ -1061,7 +1071,7 @@
 
 	<span class="gold">치트 메뉴</span>
 	<label><div class="settingsToggleBig">
-	<<checkbox "$cheatdisable" "t" "f" autocheck>> 치트 활성화
+	<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> 치트 활성화
 	<div class="description">버튼은 사이드바에 표시됩니다. <span class="red">설정에서 치트를 활성화하는 경우 세이브에서 도전과제를 달성할 수 없게 됩니다.</span></div>
 	</div></label>
 	<br><br>
@@ -1071,9 +1081,6 @@
 		<<link [["캐릭터 뷰어"|Clothes Testing]]>>
 			<<set $lastPassage to $passage>>
 			<<set $gameTanImgSetting to clone($skinColor.tanImgEnabled)>>
-			<<if $cheatdisable is "f" and $feats.locked is false>>
-				<<set $cheatdisable to "t">>
-			<</if>>
 		<</link>>
 		- 캐릭터 스프라이트를 갖고 놀 수 있습니다.
 		<br>
@@ -1082,9 +1089,6 @@
 		<<link [["씬 뷰어"|Scene Viewer]]>>
 			<<set $lastPassage to $passage>>
 			<<seenPassageChecks>>
-			<<if $cheatdisable is "f" and $feats.locked is false>>
-				<<set $cheatdisable to "t">>
-			<</if>>
 		<</link>>
 		- 해제한 씬을 다시 볼 수 있습니다.
 		<br>

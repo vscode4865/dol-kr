@@ -49,55 +49,58 @@
 <<if $defaultsType is undefined>>
 	<<getCombatDefaultsType>>
 <</if>>
-<div id="replaceAction">
-	<<replaceActionLink>>
-</div>
-
-<div id="listContainer">
-	<div id="leftaction" @class="$combatControls + 'Control'">
-		<<leftActionInit>>
+<<if $position isnot "stalk">>
+	<div id="replaceAction">
+		<<replaceActionLink>>
 	</div>
-
-	<div id="rightaction" @class="$combatControls + 'Control'">
-		<<rightActionInit>>
-	</div>
-
-	<div id="feetaction" @class="$combatControls + 'Control'">
-		<<feetactionInit>>
-	</div>
-
-	<div id="mouthaction" @class="$combatControls + 'Control'">
-		<<mouthactionInit>>
-	</div>
-
-	<<if $penisexist is 1>>
-		<div id="penisaction" @class="$combatControls + 'Control'">
-			<<penisactionInit>>
+<</if>>
+<<if !$stalk_end>>
+	<div id="listContainer">
+		<div id="leftaction" @class="$combatControls + 'Control'">
+			<<leftActionInit>>
 		</div>
-	<</if>>
 
-	<<if $vaginaexist is 1>>
-		<div id="vaginaaction" @class="$combatControls + 'Control'">
-			<<vaginaactionInit>>
+		<div id="rightaction" @class="$combatControls + 'Control'">
+			<<rightActionInit>>
 		</div>
-	<</if>>
 
-	<div id="anusaction" @class="$combatControls + 'Control'">
-		<<anusactionInit>>
+		<div id="feetaction" @class="$combatControls + 'Control'">
+			<<feetactionInit>>
+		</div>
+
+		<div id="mouthaction" @class="$combatControls + 'Control'">
+			<<mouthactionInit>>
+		</div>
+
+		<<if $penisexist is 1>>
+			<div id="penisaction" @class="$combatControls + 'Control'">
+				<<penisactionInit>>
+			</div>
+		<</if>>
+
+		<<if $vaginaexist is 1>>
+			<div id="vaginaaction" @class="$combatControls + 'Control'">
+				<<vaginaactionInit>>
+			</div>
+		<</if>>
+
+		<div id="anusaction" @class="$combatControls + 'Control'">
+			<<anusactionInit>>
+		</div>
+
+		<<if $chestuse isnot 0>>
+			<div id="chestaction" @class="$combatControls + 'Control'">
+				<<chestactionInit>>
+			</div>
+		<</if>>
+
+		<<if $thighuse isnot 0>>
+			<div id="thighaction" @class="$combatControls + 'Control'">
+				<<thighactionInit>>
+			</div>
+		<</if>>
 	</div>
-
-	<<if $chestuse isnot 0>>
-		<div id="chestaction" @class="$combatControls + 'Control'">
-			<<chestactionInit>>
-		</div>
-	<</if>>
-
-	<<if $thighuse isnot 0>>
-		<div id="thighaction" @class="$combatControls + 'Control'">
-			<<thighactionInit>>
-		</div>
-	<</if>>
-</div>
+<</if>>
 <</widget>>
 
 /*Generates the required values for defaults to be setup based on the situation*/
@@ -242,6 +245,9 @@
 		<<case "anus">>
 			<<set _leftOptions to "coverAss">>
 			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼손은 <<bottomPost "을">> 보호하고 있다.</span>
+		<<case "behind">>
+			<<set _leftOptions to "behind">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼손은 당신의 등 뒤에 있다.</span>
 	<</switch>>
 	<<if $lastOptions.left isnot _leftOptions>>
 		<<set _leftGold to true>>
@@ -296,39 +302,51 @@
 <<widget "leftActions">>
 /*Generate Actions*/
 <<set _leftaction to {}>>
-<<switch _leftOptions>>
-	<<case "free">>
-		<<set _leftaction["쉰다"] to "rest">>
-		<<leftdefault>>
-		<<leftgrabnew>>
-		<<leftplaynew>>
-		<<leftclothesnew>>
-		<<leftspraynew>>
-		<<leftstealnew>>
-		<<leftpenwhacknew>>
-		<<leftFixAndCoverActions>>
-		<<leftchoke>>
-		<<handsstrugglefreebodypart "left">>
-	<<case "penis">>
-		<<set _leftaction["자지를 애무한다"] to "leftwork">>
-		<<set _leftaction["멈춘다"] to "leftstoppenis">>
-	<<case "grappled">>
-		<<set _leftaction["쉰다"] to "rest">>
-		<<set _leftaction["몸부림친다"] to "leftstruggle">>
-	<<case "bothBound">>
-	<<case "pussy">>
-		<<set _leftaction["클리토리스를 문지른다"] to "leftclit">>
-		<<set _leftaction["멈춘다"] to "leftothervaginastop">>
-	<<case "coverVagina">>
-		<<set _leftaction["계속 가린다"] to "leftcovervagina">>
-		<<set _leftaction["멈춘다"] to "leftstopvagina">>
-	<<case "coverPenis">>
-		<<set _leftaction["계속 가린다"] to "leftcoverpenis">>
-		<<set _leftaction["멈춘다"] to "leftstopcoverpenis">>
-	<<case "coverAss">>
-		<<set _leftaction["계속 가린다"] to "leftcoveranus">>
-		<<set _leftaction["멈춘다"] to "leftstopanus">>
-<</switch>>
+<<if $position is "stalk">>
+	<<set _leftaction["주먹을 쥔다"] to "clench">>
+	<<set _leftaction["몸을 끌어안는다"] to "fold">>
+	<<leftFixAndCoverActions>>
+	<<leftcoverface>>
+	<<left_pursuit_grab>>
+<<else>>
+	<<switch _leftOptions>>
+		<<case "free">>
+			<<set _leftaction["쉰다"] to "rest">>
+			<<leftdefault>>
+			<<leftgrabnew>>
+			<<leftplaynew>>
+			<<leftclothesnew>>
+			<<leftspraynew>>
+			<<leftstealnew>>
+			<<leftpenwhacknew>>
+			<<leftFixAndCoverActions>>
+			<<leftchoke>>
+			<<leftshacklewhack>>
+			<<handsstrugglefreebodypart "left">>
+		<<case "penis">>
+			<<set _leftaction["자지를 애무한다"] to "leftwork">>
+			<<set _leftaction["멈춘다"] to "leftstoppenis">>
+		<<case "grappled">>
+			<<set _leftaction["쉰다"] to "rest">>
+			<<set _leftaction["몸부림친다"] to "leftstruggle">>
+		<<case "bothBound">>
+		<<case "pussy">>
+			<<set _leftaction["클리토리스를 문지른다"] to "leftclit">>
+			<<set _leftaction["멈춘다"] to "leftothervaginastop">>
+		<<case "coverVagina">>
+			<<set _leftaction["계속 가린다"] to "leftcovervagina">>
+			<<set _leftaction["멈춘다"] to "leftstopvagina">>
+		<<case "coverPenis">>
+			<<set _leftaction["계속 가린다"] to "leftcoverpenis">>
+			<<set _leftaction["멈춘다"] to "leftstopcoverpenis">>
+		<<case "coverAss">>
+			<<set _leftaction["계속 가린다"] to "leftcoveranus">>
+			<<set _leftaction["멈춘다"] to "leftstopanus">>
+		<<case "behind">>
+			<<set _leftaction["계속 뒤에 둔다"] to "behind">>
+			<<set _leftaction["멈춘다"] to "stopbehind">>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "rightActionInit">>
@@ -357,6 +375,9 @@
 		<<case "anus">>
 			<<set _rightOptions to "coverAss">>
 			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른손은 <<bottomPost "을">> 보호하고 있다.</span>
+		<<case "behind">>
+			<<set _rightOptions to "behind">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른손은 당신의 등 뒤에 있다.</span>
 	<</switch>>
 	<<if $lastOptions.right isnot _rightOptions>>
 		<<set _rightGold to true>>
@@ -411,39 +432,51 @@
 <<widget "rightActions">>
 /*Generate Actions*/
 <<set _rightaction to {}>>
-<<switch _rightOptions>>
-	<<case "free">>
-		<<set _rightaction["쉰다"] to "rest">>
-		<<rightdefault>>
-		<<rightgrabnew>>
-		<<rightplaynew>>
-		<<rightclothesnew>>
-		<<rightspraynew>>
-		<<rightstealnew>>
-		<<rightpenwhacknew>>
-		<<rightFixAndCoverActions>>
-		<<rightchoke>>
-		<<handsstrugglefreebodypart "right">>
-	<<case "penis">>
-		<<set _rightaction["자지를 애무한다"] to "rightwork">>
-		<<set _rightaction["멈춘다"] to "rightstoppenis">>
-	<<case "grappled">>
-		<<set _rightaction["쉰다"] to "rest">>
-		<<set _rightaction["몸부림친다"] to "rightstruggle">>
-	<<case "bothBound">>
-	<<case "pussy">>
-		<<set _rightaction["클리토리스를 문지른다"] to "rightclit">>
-		<<set _rightaction["멈춘다"] to "rightothervaginastop">>
-	<<case "coverVagina">>
-		<<set _rightaction["계속 가린다"] to "rightcovervagina">>
-		<<set _rightaction["멈춘다"] to "rightstopvagina">>
-	<<case "coverPenis">>
-		<<set _rightaction["계속 가린다"] to "rightcoverpenis">>
-		<<set _rightaction["멈춘다"] to "rightstopcoverpenis">>
-	<<case "coverAss">>
-		<<set _rightaction["계속 가린다"] to "rightcoveranus">>
-		<<set _rightaction["멈춘다"] to "rightstopanus">>
-<</switch>>
+<<if $position is "stalk">>
+	<<set _rightaction["주먹을 쥔다"] to "clench">>
+	<<set _rightaction["몸을 끌어안는다"] to "fold">>
+	<<rightFixAndCoverActions>>
+	<<rightcoverface>>
+	<<right_pursuit_grab>>
+<<else>>
+	<<switch _rightOptions>>
+		<<case "free">>
+			<<set _rightaction["쉰다"] to "rest">>
+			<<rightdefault>>
+			<<rightgrabnew>>
+			<<rightplaynew>>
+			<<rightclothesnew>>
+			<<rightspraynew>>
+			<<rightstealnew>>
+			<<rightpenwhacknew>>
+			<<rightFixAndCoverActions>>
+			<<rightchoke>>
+			<<rightshacklewhack>>
+			<<handsstrugglefreebodypart "right">>
+		<<case "penis">>
+			<<set _rightaction["자지를 애무한다"] to "rightwork">>
+			<<set _rightaction["멈춘다"] to "rightstoppenis">>
+		<<case "grappled">>
+			<<set _rightaction["쉰다"] to "rest">>
+			<<set _rightaction["몸부림친다"] to "rightstruggle">>
+		<<case "bothBound">>
+		<<case "pussy">>
+			<<set _rightaction["클리토리스를 문지른다"] to "rightclit">>
+			<<set _rightaction["멈춘다"] to "rightothervaginastop">>
+		<<case "coverVagina">>
+			<<set _rightaction["계속 가린다"] to "rightcovervagina">>
+			<<set _rightaction["멈춘다"] to "rightstopvagina">>
+		<<case "coverPenis">>
+			<<set _rightaction["계속 가린다"] to "rightcoverpenis">>
+			<<set _rightaction["멈춘다"] to "rightstopcoverpenis">>
+		<<case "coverAss">>
+			<<set _rightaction["계속 가린다"] to "rightcoveranus">>
+			<<set _rightaction["멈춘다"] to "rightstopanus">>
+		<<case "behind">>
+			<<set _rightaction["계속 뒤에 둔다"] to "behind">>
+			<<set _rightaction["멈춘다"] to "stopbehind">>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "feetactionInit">>
@@ -460,6 +493,12 @@
 		<<case "bound">>
 			<<set _feetOptions to "bound">>
 			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 다리는 묶여있다.</span>
+		<<case "walk">>
+			<<set _feetOptions to "walk">>
+			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 걷고 있다.</span>
+		<<case "run">>
+			<<set _feetOptions to "run">>
+			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 달리고 있다.</span>
 		<<default>>
 			<<set _feetOptions to "unusable">>
 			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭지만 이 자세에서는 움직일 수 없다.</span>
@@ -508,22 +547,34 @@
 <</if>>
 <<switch _diffAction>>
 	<<case "grab" "vaginagrab">><<feetdifficulty>><<combatpromiscuous3>>
+	<<case "run">><<if $NPCList[0].legs is "run">><<stalk_athletics_difficulty>><</if>>
+	<<case "hide">><<if $NPCList[0].state is "stalk">><<stalk_skulduggery_difficulty>><</if>>
 <</switch>>
 <</widget>>
 
 <<widget "feetActions">>
 /*Generate Actions*/
 <<set _feetaction to {}>>
-<<set _feetaction["쉰다"] to "rest">>
-<<switch _feetOptions>>
-	<<case "free">>
-		<<feetgrabnew>>
-		<<feetKick>>
-	<<case "penis">>
-		<<feetGrabRub>>
-	<<case "othervagina">>
-		<<feetOthervagina>>
-<</switch>>
+<<if $position is "stalk">>
+	<<feet_walk>>
+	<<feet_run>>
+	<<feet_hobble>>
+	<<feet_stand>>
+	<<feet_hide>>
+<<else>>
+	<<set _feetaction["쉰다"] to "rest">>
+	<<switch _feetOptions>>
+		<<case "free">>
+			<<feetgrabnew>>
+			<<feetKick>>
+			<<feetshoes>>
+			<<feetsocks>>
+		<<case "penis">>
+			<<feetGrabRub>>
+		<<case "othervagina">>
+			<<feetOthervagina>>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "mouthactionInit">>
@@ -673,47 +724,53 @@
 /*Generate Actions*/
 <<set _mouthaction to {}>>
 <<set _mouthaction["쉰다"] to "rest">>
-<<switch _mouthOptions>>
-	<<case "free">>
-		<<if $head isnot "grappled" and $head isnot "bound">>
-			<<if $chestuse is "penis">>
-				<<set _mouthaction["키스한다"] to "peniskiss">>
-			<<else>>
-				<<set _mouthaction["키스한다"] to "kiss">>
+<<if $position is "stalk">>
+	<<head_turn>>
+	<<head_down>>
+	<<head_up>>
+<<else>>
+	<<switch _mouthOptions>>
+		<<case "free">>
+			<<if $head isnot "grappled" and $head isnot "bound">>
+				<<if $chestuse is "penis">>
+					<<set _mouthaction["키스한다"] to "peniskiss">>
+				<<else>>
+					<<set _mouthaction["키스한다"] to "kiss">>
+				<</if>>
 			<</if>>
-		<</if>>
-		<<oralnew>>
-		<<speak>>
-		<<combatApologise>>
-	<<case "othervagina" "facesit">>
-		<<combatOthervagina>>
-	<<case "otheranus">>
-		<<combatMouthOtherAnus>>
-	<<case "kiss">>
-		<<set _mouthaction["키스한다"] to "kissback">>
-		<<set _mouthaction["밀어낸다"] to "pullawaykiss">>
-		<<if $consensual isnot 1>>
-			<<set _mouthaction["박치기"] to "headbutt">>
-		<</if>>
-		<<if $mouthstate isnot "kiss" and $mouthstate isnot "kissimminent">>
+			<<oralnew>>
 			<<speak>>
-		<</if>>
-	<<case "gagged">>
-	<<case "penisEntrance">>
-		<<combatPenisEntrance>>
-	<<case "penisImminent">>
-		<<combatPenisImminent>>
-	<<case "penisPenetrated">>
-		<<combatPenisPenetrated>>
-	<<case "breasts">>
-		<<combatBreast>>
-	<<case "nipple">>
-		<<combatNipple>>
-	<<case "lefthand">>
-		<<set _mouthaction["문다"] to "handbite">>
-	<<case "righthand">>
-		<<set _mouthaction["문다"] to "handbite">>
-<</switch>>
+			<<combatApologise>>
+		<<case "othervagina" "facesit">>
+			<<combatOthervagina>>
+		<<case "otheranus">>
+			<<combatMouthOtherAnus>>
+		<<case "kiss">>
+			<<set _mouthaction["키스한다"] to "kissback">>
+			<<set _mouthaction["밀어낸다"] to "pullawaykiss">>
+			<<if $consensual isnot 1>>
+				<<set _mouthaction["박치기"] to "headbutt">>
+			<</if>>
+			<<if $mouthstate isnot "kiss" and $mouthstate isnot "kissimminent">>
+				<<speak>>
+			<</if>>
+		<<case "gagged">>
+		<<case "penisEntrance">>
+			<<combatPenisEntrance>>
+		<<case "penisImminent">>
+			<<combatPenisImminent>>
+		<<case "penisPenetrated">>
+			<<combatPenisPenetrated>>
+		<<case "breasts">>
+			<<combatBreast>>
+		<<case "nipple">>
+			<<combatNipple>>
+		<<case "lefthand">>
+			<<set _mouthaction["문다"] to "handbite">>
+		<<case "righthand">>
+			<<set _mouthaction["문다"] to "handbite">>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "penisactionInit">>
@@ -814,40 +871,44 @@
 <<widget "penisActions">>
 /*Generate Actions*/
 <<set _penisaction to {}>>
-<<switch _penisOptions>>
-	<<case "free">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenistovaginanew>>
-		<<actionspenistoanusnew>>
-	<<case "mouthEntrance">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisMouthEntrance>>
-	<<case "mouthImminent">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisMouthImminent>>
-	<<case "mouthPenetration">>
-		<<actionspenisMouthPenetration>>
-	<<case "pussyEntrance">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisPussyEntrance>>
-	<<case "pussyImminent">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisPussyImminent>>
-	<<case "pussyPenetration">>
-		<<actionspenisPussyPenetration>>
-	<<case "anusEntrance">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisAnusEntrance>>
-	<<case "anusImminent">>
-		<<set _penisaction["쉰다"] to "rest">>
-		<<actionspenisAnusImminent>>
-	<<case "anusPenetration">>
-		<<actionspenisAnusPenetration>>
-	<<case "penisAgainstClit">>
-		<<actionspenisAgainstClit>>
-	<<case "penisAgainstAss">>
-		<<actionspenisAgainstAss>>
-<</switch>>
+<<if $position is "stalk">>
+	
+<<else>>
+	<<switch _penisOptions>>
+		<<case "free">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenistovaginanew>>
+			<<actionspenistoanusnew>>
+		<<case "mouthEntrance">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisMouthEntrance>>
+		<<case "mouthImminent">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisMouthImminent>>
+		<<case "mouthPenetration">>
+			<<actionspenisMouthPenetration>>
+		<<case "pussyEntrance">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisPussyEntrance>>
+		<<case "pussyImminent">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisPussyImminent>>
+		<<case "pussyPenetration">>
+			<<actionspenisPussyPenetration>>
+		<<case "anusEntrance">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisAnusEntrance>>
+		<<case "anusImminent">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenisAnusImminent>>
+		<<case "anusPenetration">>
+			<<actionspenisAnusPenetration>>
+		<<case "penisAgainstClit">>
+			<<actionspenisAgainstClit>>
+		<<case "penisAgainstAss">>
+			<<actionspenisAgainstAss>>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "vaginaactionInit">>
@@ -940,38 +1001,42 @@
 <<widget "vaginaActions">>
 /*Generate Actions*/
 <<set _vaginaaction to {}>>
-<<switch _vaginaOptions>>
-	<<case "free">>
-		<<set _vaginaaction["쉰다"] to "rest">>
-		<<actionsvaginatopenisnew>>
-		<<actionsvaginatovaginanew>>
-	<<case "mouthEntranch">>
-		<<set _vaginaaction["쉰다"] to "rest">>
-		<<actionsvaginaMouthEntrance>>
-	<<case "mouthImminent">>
-		<<set _vaginaaction["쉰다"] to "rest">>
-		<<actionsvaginaMouthImminent>>
-	<<case "mouthPenetrated">>
-		<<actionsvaginaMouthPenetrated>>
-	<<case "penisEntrance">>
-		<<set _vaginaaction["쉰다"] to "rest">>
-		<<actionsvaginaPenisEntrance>>
-	<<case "penisImminent">>
-		<<set _vaginaaction["쉰다"] to "rest">>
-		<<actionsvaginaPenisImminent>>
-	<<case "penisPenetrated">>
-		<<actionsvaginaPenisPenetrated>>
+<<if $position is "stalk">>
+	
+<<else>>
+	<<switch _vaginaOptions>>
+		<<case "free">>
+			<<set _vaginaaction["쉰다"] to "rest">>
+			<<actionsvaginatopenisnew>>
+			<<actionsvaginatovaginanew>>
+		<<case "mouthEntranch">>
+			<<set _vaginaaction["쉰다"] to "rest">>
+			<<actionsvaginaMouthEntrance>>
+		<<case "mouthImminent">>
+			<<set _vaginaaction["쉰다"] to "rest">>
+			<<actionsvaginaMouthImminent>>
+		<<case "mouthPenetrated">>
+			<<actionsvaginaMouthPenetrated>>
+		<<case "penisEntrance">>
+			<<set _vaginaaction["쉰다"] to "rest">>
+			<<actionsvaginaPenisEntrance>>
+		<<case "penisImminent">>
+			<<set _vaginaaction["쉰다"] to "rest">>
+			<<actionsvaginaPenisImminent>>
+		<<case "penisPenetrated">>
+			<<actionsvaginaPenisPenetrated>>
 		<<case "vaginaEntrance">>
-		<<actionsTribRest>>
-		<<actionsvaginatovaginafucknew>>
-		<<actionsvaginaVaginaEntrance>>
-	<<case "vaginaImminent">>
-		<<actionsTribRest>>
-		<<actionsvaginatovaginafucknew>>
-		<<actionsvaginaVaginaImminent>>
-	<<case "vaginaPenetrated">>
-		<<actionsvaginaVagina>>
-<</switch>>
+			<<actionsTribRest>>
+			<<actionsvaginatovaginafucknew>>
+			<<actionsvaginaVaginaEntrance>>
+		<<case "vaginaImminent">>
+			<<actionsTribRest>>
+			<<actionsvaginatovaginafucknew>>
+			<<actionsvaginaVaginaImminent>>
+		<<case "vaginaPenetrated">>
+			<<actionsvaginaVagina>>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "anusactionInit">>
@@ -1061,33 +1126,37 @@
 <<widget "anusActions">>
 /*Generate Actions*/
 <<set _anusaction to {}>>
-<<switch _anusOptions>>
-	<<case "free">>
-		<<set _anusaction["쉰다"] to "rest">>
-		<<actionsanustopenisnew>>
-	<<case "mouthEntrance">>
-		<<set _anusaction["쉰다"] to "rest">>
-		<<actionsanusMouthEntrance>>
-	<<case "mouthImminent">>
-		<<set _anusaction["쉰다"] to "rest">>
-		<<actionsanusMouthImminent>>
-	<<case "mouthPenetration">>
-		<<actionsanusMouthPenetration>>
-	<<case "penisEntrance">>
-		<<set _anusaction["쉰다"] to "rest">>
-		<<actionsanuspenisfucknew>>
-		<<actionsanusPenisEntrance>>
-	<<case "penisImminent">>
-		<<set _anusaction["쉰다"] to "rest">>
-		<<actionsanuspenisfucknew>>
-		<<actionsanusPenisImminent>>
-	<<case "penisPenetration">>
-		<<actionsanusPenisPenetration>>
-	<<case "faceAgainstAnus">>
-		<<actionsanusFaceAgainstAnus>>
-	<<case "penisAgainstAnus">>
-		<<actionsanusPenisAgainstAnus>>
-<</switch>>
+<<if $position is "stalk">>
+	
+<<else>>
+	<<switch _anusOptions>>
+		<<case "free">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanustopenisnew>>
+		<<case "mouthEntrance">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanusMouthEntrance>>
+		<<case "mouthImminent">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanusMouthImminent>>
+		<<case "mouthPenetration">>
+			<<actionsanusMouthPenetration>>
+		<<case "penisEntrance">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanuspenisfucknew>>
+			<<actionsanusPenisEntrance>>
+		<<case "penisImminent">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanuspenisfucknew>>
+			<<actionsanusPenisImminent>>
+		<<case "penisPenetration">>
+			<<actionsanusPenisPenetration>>
+		<<case "faceAgainstAnus">>
+			<<actionsanusFaceAgainstAnus>>
+		<<case "penisAgainstAnus">>
+			<<actionsanusPenisAgainstAnus>>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "chestactionInit">>
@@ -1132,11 +1201,15 @@
 /*Generate Actions*/
 <<set _chestaction to {}>>
 /*<<set _chestaction["쉰다"] to "rest">>*/
-<<switch _chestOptions>>
-	<<case "penis">>
-		<<set _chestaction["문지른다"] to "rub">>
-		<<set _chestaction["멈춘다"] to "stop">>
-<</switch>>
+<<if $position is "stalk">>
+	
+<<else>>
+	<<switch _chestOptions>>
+		<<case "penis">>
+			<<set _chestaction["문지른다"] to "rub">>
+			<<set _chestaction["멈춘다"] to "stop">>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "thighactionInit">>
@@ -1183,14 +1256,18 @@
 /*Generate Actions*/
 <<set _thighaction to {}>>
 /*<<set _thighaction["쉰다"] to "rest">>*/
-<<switch _thighOptions>>
-	<<case "mouth">>
-		<<set _thighaction["문지른다"] to "othermouthrub">>
-		<<set _thighaction["멈춘다"] to "othermouthstop">>
-	<<case "penis">>
-		<<set _thighaction["문지른다"] to "rub">>
-		<<set _thighaction["멈춘다"] to "stop">>
-<</switch>>
+<<if $position is "stalk">>
+	
+<<else>>
+	<<switch _thighOptions>>
+		<<case "mouth">>
+			<<set _thighaction["문지른다"] to "othermouthrub">>
+			<<set _thighaction["멈춘다"] to "othermouthstop">>
+		<<case "penis">>
+			<<set _thighaction["문지른다"] to "rub">>
+			<<set _thighaction["멈춘다"] to "stop">>
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "resetLastOptions">>

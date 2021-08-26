@@ -327,6 +327,9 @@ window.settingsAsphyxiation = function () {
 				text = "합의된 교제 중에, NPC들이 당신의 <span class='purple' style='margin-left: unset; min-width: unset;'>숨을 막히게</span> 할지도 모릅니다."; break;
 			case 3:
 				text = "합의되지 않은 교제 중에, NPC들이 당신의 <span class='red' style='margin-left: unset; min-width: unset;'>목을 졸라 질식시킬지도</span> 모릅니다."; break;
+			case 4:
+				text = "합의되지 않은 교제 중에, NPC들이 <span class='red' style='margin-left: unset; min-width: unset;'>자주</span> 당신의 <span class='red' style='margin-left: unset; min-width: unset;'>목을 졸라 질식시키려</span> 시도합니다."; break;
+
 			default:
 				text = "Error: bad value: " + val;
 				val = 0;

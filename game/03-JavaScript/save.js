@@ -286,7 +286,7 @@ var importSettingsData = function (data) {
 			var namedObjects = ["player", "skinColor"];
 
 			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.contains(listKey[i]) && S.starting[listKey[i]] != undefined) {
+				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != undefined) {
 					var itemKey = Object.keys(listObject[listKey[i]]);
 					for (var j = 0; j < itemKey.length; j++) {
 						if (V[listKey[i]][itemKey[j]] != undefined && S.starting[listKey[i]][itemKey[j]] != undefined) {
@@ -295,7 +295,7 @@ var importSettingsData = function (data) {
 							}
 						}
 					}
-				} else if (!namedObjects.contains(listKey[i])) {
+				} else if (!namedObjects.includes(listKey[i])) {
 					if (V[listKey[i]] != undefined && S.starting[listKey[i]] != undefined) {
 						if (validateValue(listObject[listKey[i]], S.starting[listKey[i]])) {
 							V[listKey[i]] = S.starting[listKey[i]];
@@ -311,7 +311,7 @@ var importSettingsData = function (data) {
 			var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.contains(listKey[i]) && S.general[listKey[i]] != undefined) {
+				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != undefined) {
 					var itemKey = Object.keys(listObject[listKey[i]]);
 					for (var j = 0; j < itemKey.length; j++) {
 						if (V[listKey[i]][itemKey[j]] != undefined && S.general[listKey[i]][itemKey[j]] != undefined) {
@@ -320,7 +320,7 @@ var importSettingsData = function (data) {
 							}
 						}
 					}
-				} else if (!namedObjects.contains(listKey[i])) {
+				} else if (!namedObjects.includes(listKey[i])) {
 					if (V[listKey[i]] != undefined && S.general[listKey[i]] != undefined) {
 						if (validateValue(listObject[listKey[i]], S.general[listKey[i]])) {
 							V[listKey[i]] = S.general[listKey[i]];
@@ -404,7 +404,7 @@ window.exportSettings = function (data, type) {
 		var namedObjects = ["player", "skinColor"];
 
 		for (var i = 0; i < listKey.length; i++) {
-			if (namedObjects.contains(listKey[i]) && V[listKey[i]] != undefined) {
+			if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
 				var itemKey = Object.keys(listObject[listKey[i]]);
 				for (var j = 0; j < itemKey.length; j++) {
 					if (V[listKey[i]][itemKey[j]] != undefined) {
@@ -413,7 +413,7 @@ window.exportSettings = function (data, type) {
 						}
 					}
 				}
-			} else if (!namedObjects.contains(listKey[i])) {
+			} else if (!namedObjects.includes(listKey[i])) {
 				if (V[listKey[i]] != undefined) {
 					if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 						S.starting[listKey[i]] = V[listKey[i]];
@@ -428,7 +428,7 @@ window.exportSettings = function (data, type) {
 	var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 	for (var i = 0; i < listKey.length; i++) {
-		if (namedObjects.contains(listKey[i]) && V[listKey[i]] != undefined) {
+		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
 			var itemKey = Object.keys(listObject[listKey[i]]);
 			for (var j = 0; j < itemKey.length; j++) {
 				if (V[listKey[i]][itemKey[j]] != undefined) {
@@ -437,7 +437,7 @@ window.exportSettings = function (data, type) {
 					}
 				}
 			}
-		} else if (!namedObjects.contains(listKey[i])) {
+		} else if (!namedObjects.includes(listKey[i])) {
 			if (V[listKey[i]] != undefined) {
 				if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 					S.general[listKey[i]] = V[listKey[i]];
@@ -538,6 +538,7 @@ window.settingsObjects = function (type) {
 				analingusdisablegiving: { boolLetter: true, bool: true },
 				analingusdisablereceiving: { boolLetter: true, bool: true },
 				transformdisable: { boolLetter: true, bool: true },
+				transformdisabledivine: { boolLetter: true, bool: true },
 				hirsutedisable: { boolLetter: true, bool: true },
 				breastfeedingdisable: { boolLetter: true, bool: true },
 				analpregdisable: { boolLetter: true, bool: true },
@@ -550,6 +551,7 @@ window.settingsObjects = function (type) {
 				beedisable: { boolLetter: true, bool: true},
 				lurkerdisable: {boolLetter: true, bool: true},
 				horsedisable: {boolLetter: true, bool: true},
+				footdisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 3, decimals: 0 },
 				breastsizemax: { min: 0, max: 13, decimals: 0 },
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
@@ -567,7 +569,7 @@ window.settingsObjects = function (type) {
 				checkstyle: { strings: ["percentage", "words", "skillname"] },
 				tipdisable: { boolLetter: true, bool: true },
 				debugdisable: { boolLetter: true, bool: true },
-				cheatdisable: { boolLetter: true, bool: true },
+				cheatdisabletoggle: { boolLetter: true, bool: true },
 				showCaptionText: { bool: true },
 				confirmSave: { bool: true },
 				confirmLoad: { bool: true },
@@ -704,10 +706,10 @@ window.updateMoment = function () {
 }
 
 window.isJsonString = function(s) {
-    try {
-        JSON.parse(s);
-    } catch (e) {
-        return false;
-    }
+	try {
+		JSON.parse(s);
+	} catch (e) {
+		return false;
+	}
 	return true;
 }

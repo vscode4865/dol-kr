@@ -5,6 +5,7 @@
 <!-- In case of train combat, count stops after 1, e.g. 5 to 5. -->
 <!-- Lots of further opportunity to reduce code using <<for>><</for>> loops with NPC objects NG 2.8-->
 
+
 <<if $combattype is "train">>
 	<<set _end to $enemyno-1>>
 <<else>>
@@ -34,10 +35,12 @@
 	<<set $NPCList[_i].intro to 1>>
 <</for>>
 
-<<if $trance gte 1>>
-	당신은 멍하니 앞만 바라보고 있고, 당신의 몸은 저항 없이 시키는 대로 움직인다.
-<<elseif $dissociation gte 2>>
-	당신은 멍하니 앞만 바라보고 있고, 당신의 몸은 저항 없이 시키는 대로 움직인다.
+<<if $trance gte 1 or $dissociation gte 2>>
+	<<if $position is "stalk">>
+		당신은 멍하니, 주변을 인식하지 못하고 떠돌아다닌다.
+	<<else>>
+		당신은 멍하니 앞만 바라보고 있고, 당신의 몸은 저항 없이 시키는 대로 움직인다.
+	<</if>>
 <</if>>
 
 <<if $underwater is 1>>
@@ -82,6 +85,7 @@
 	<<effectssteal>>
 <</if>>
 <<effectspenwhack>>
+<<effectsshacklewhack>>
 <<effectshandsfreeface>>
 
 <<if $bodyaction is "doggy">>
@@ -273,6 +277,42 @@
 	당신은 오른팔을 가만히 둔다.
 <</if>>
 
+<<if $leftaction is "behind" and $rightaction is "behind">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "behind">><<set $rightactiondefault to "behind">>
+	당신은 당신의 양팔을 등 뒤로 돌려 순종적인 자세를 취한다.
+	<<meek 2>><<set $leftarm to "behind">><<set $rightarm to "behind">>
+<</if>>
+
+<<if $leftaction is "behind">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "behind">>
+	당신은 당신의 왼팔을 등 뒤로 돌려 순종적인 자세를 취한다.
+	<<meek 1>><<set $leftarm to "behind">>
+<</if>>
+
+<<if $rightaction is "behind">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "behind">>
+	당신은 당신의 오른팔을 등 뒤로 돌려 순종적인 자세를 취한다.
+	<<meek 1>><<set $rightarm to "behind">>
+<</if>>
+
+<<if $leftaction is "stopbehind" and $rightaction is "stopbehind">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "rest">><<set $rightactiondefault to "rest">>
+	당신은 당신의 양팔을 당신 앞으로 움직인다.
+	<<set $leftarm to 0>><<set $rightarm to 0>>
+<</if>>
+
+<<if $leftaction is "stopbehind">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	당신은 당신의 왼팔을 당신 앞으로 움직인다.
+	<<set $leftarm to 0>>
+<</if>>
+
+<<if $rightaction is "stopbehind">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	당신은 당신의 오른팔을 당신 앞으로 움직인다.
+	<<set $rightarm to 0>>
+<</if>>
+
 <<if $leftaction is "leftchest" and $rightaction is "rightchest">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftchest">>
 	<<set $rightactiondefault to "rightchest">><<actionsstroke>><<submission 2>>
@@ -323,9 +363,11 @@
 	<</if>>
 <</if>>
 
+<<cover_end>>/*Resets $face and other variables that are covered */
+
 <<if $leftaction is "leftcoverface" and $rightaction is "rightcoverface">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcoverface">><<set $rightactiondefault to "rightcoverface">>
-	당신은 양 손으로 얼굴을 가린다.
+	당신은 양손으로 얼굴을 가린다.
 	<<set $speechcoverface to 1>><<set $face to "covered">><<neutral 2>>
 <<elseif $leftaction is "leftcoverface">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftcoverface">>
@@ -337,75 +379,202 @@
 	<<set $speechcoverface to 1>><<set $face to "covered">><<neutral 1>>
 <</if>>
 
+<<if $leftaction is "leftcovervaginameek" and $rightaction is "rightcovervaginameek">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcovervaginameek">><<set $rightactiondefault to "rightcovervaginameek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 보지를 가린다.
+	<<else>>
+		당신은 양손으로 보지를 가린다.
+	<</if>>
+	<<meek 2>><<set $leftarm to "vagina">><<set $rightarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
+<</if>>
+
+<<if $leftaction is "leftcovervaginameek">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftcovervaginameek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 보지를 가린다.
+	<<else>>
+		당신은 왼손으로 보지를 가린다.
+	<</if>>
+	<<meek 1>><<set $leftarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
+<</if>>
+
+<<if $rightaction is "rightcovervaginameek">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightcovervaginameek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 보지를 가린다.
+	<<else>>
+		당신은 오른손으로 보지를 가린다.
+	<</if>>
+	<<meek 1>><<set $rightarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
+<</if>>
+
 <<if $leftaction is "leftcovervagina" and $rightaction is "rightcovervagina">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcovervagina">><<set $rightactiondefault to "rightcovervagina">>
-	당신은 양 손으로 보지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 보지를 가린다.
+	<<else>>
+		당신은 양손으로 보지를 가린다.
+	<</if>>
 	<<brat 2>><<set $leftarm to "vagina">><<set $rightarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
 <</if>>
 
 <<if $leftaction is "leftcovervagina">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftcovervagina">>
-	당신은 한 손으로 보지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 보지를 가린다.
+	<<else>>
+		당신은 왼손으로 보지를 가린다.
+	<</if>>
 	<<brat 1>><<set $leftarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
 <</if>>
 
 <<if $rightaction is "rightcovervagina">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightcovervagina">>
-	당신은 한 손으로 보지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 보지를 가린다.
+	<<else>>
+		당신은 오른손으로 보지를 가린다.
+	<</if>>
 	<<brat 1>><<set $rightarm to "vagina">><<set $vaginause to "cover">><<set $speechcovervagina to 1>>
 <</if>>
 
+<<if $leftaction is "leftcoverpenismeek" and $rightaction is "rightcoverpenismeek">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcoverpenismeek">><<set $rightactiondefault to "rightcoverpenismeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 자지를 가린다.
+	<<else>>
+		당신은 양손으로 자지를 가린다.
+	<</if>>
+	<<meek 2>><<set $leftarm to "coverpenis">><<set $rightarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
+<</if>>
+
+<<if $leftaction is "leftcoverpenismeek">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftcoverpenismeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 자지를 가린다.
+	<<else>>
+		당신은 왼손으로 자지를 가린다.
+	<</if>>
+	<<meek 1>><<set $leftarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
+<</if>>
+
+<<if $rightaction is "rightcoverpenismeek">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightcoverpenismeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 자지를 가린다.
+	<<else>>
+		당신은 오른손으로 자지를 가린다.
+	<</if>>
+	<<meek 1>><<set $rightarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
+<</if>>
+
+
 <<if $leftaction is "leftcoverpenis" and $rightaction is "rightcoverpenis">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcoverpenis">><<set $rightactiondefault to "rightcoverpenis">>
-	당신은 양 손으로 자지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 자지를 가린다.
+	<<else>>
+		당신은 양손으로 자지를 가린다.
+	<</if>>
 	<<brat 2>><<set $leftarm to "coverpenis">><<set $rightarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
 <</if>>
 
 <<if $leftaction is "leftcoverpenis">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftcoverpenis">>
-	당신은 한 손으로 자지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 자지를 가린다.
+	<<else>>
+		당신은 왼손으로 자지를 가린다.
+	<</if>>
 	<<brat 1>><<set $leftarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
 <</if>>
 
 <<if $rightaction is "rightcoverpenis">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightcoverpenis">>
-	당신은 한 손으로 자지를 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 자지를 가린다.
+	<<else>>
+		당신은 오른손으로 자지를 가린다.
+	<</if>>
 	<<brat 1>><<set $rightarm to "coverpenis">><<set $penisuse to "cover">><<set $speechcoverpenis to 1>>
+<</if>>
+
+<<if $leftaction is "leftcoveranusmeek" and $rightaction is "rightcoveranusmeek">>
+	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcoveranusmeek">><<set $rightactiondefault to "rightcoveranusmeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 양손으로 엉덩이를 가린다.
+	<</if>>
+	<<meek 2>><<set $leftarm to "anus">><<set $rightarm to "anus">><<set $anususe to "cover">>
+<</if>>
+
+<<if $leftaction is "leftcoveranusmeek">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftcoveranusmeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 왼손으로 엉덩이를 가린다.
+	<</if>>
+	<<meek 1>><<set $leftarm to "anus">><<set $anususe to "cover">>
+<</if>>
+
+<<if $rightaction is "rightcoveranusmeek">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightcoveranusmeek">>
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 오른손으로 엉덩이를 가린다.
+	<</if>>
+	<<meek 1>><<set $rightarm to "anus">><<set $anususe to "cover">>
 <</if>>
 
 <<if $leftaction is "leftcoveranus" and $rightaction is "rightcoveranus">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftcoveranus">><<set $rightactiondefault to "rightcoveranus">>
-	당신은 양 손으로 항문을 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 양손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 양손으로 엉덩이를 가린다.
+	<</if>>
 	<<brat 2>><<set $leftarm to "anus">><<set $rightarm to "anus">><<set $anususe to "cover">>
 <</if>>
 
 <<if $leftaction is "leftcoveranus">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftcoveranus">>
-	당신은 한 손으로 항문을 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 왼손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 왼손으로 엉덩이를 가린다.
+	<</if>>
 	<<brat 1>><<set $leftarm to "anus">><<set $anususe to "cover">>
 <</if>>
 
 <<if $rightaction is "rightcoveranus">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightcoveranus">>
-	당신은 한 손으로 항문을 가린다.
+	<<if ($worn.lower.name is "towel skirt" or $worn.lower.name is "large towel bottom") and $worn.lower.state is "waist">>
+		수건을 그 위로 잡아당겨, 당신은 오른손으로 엉덩이를 가린다.
+	<<else>>
+		당신은 오른손으로 엉덩이를 가린다.
+	<</if>>
 	<<brat 1>><<set $rightarm to "anus">><<set $anususe to "cover">>
 <</if>>
 
 <<if $leftaction is "leftstopvagina" and $rightaction is "rightstopvagina">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftstopvagina">><<set $rightactiondefault to "rightstopvagina">>
-	당신은 양 손으로 보지를 가리는 것을 그만둔다.
+	당신은 양손으로 보지를 가리는 것을 그만둔다.
 	<<set $leftarm to 0>><<set $rightarm to 0>><<set $vaginause to 0>><<meek 2>>
 <</if>>
 
 <<if $leftaction is "leftstopcoverpenis" and $rightaction is "rightstopcoverpenis">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftstopcoverpenis">><<set $rightactiondefault to "rightstopcoverpenis">>
-	당신은 양 손으로 자지를 가리는 것을 그만둔다.
+	당신은 양손으로 자지를 가리는 것을 그만둔다.
 	<<set $leftarm to 0>><<set $rightarm to 0>><<set $penisuse to 0>><<meek 2>>
 <</if>>
 
 <<if $leftaction is "leftstopanus" and $rightaction is "rightstopanus">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftstopanus">><<set $rightactiondefault to "rightstopanus">>
-	당신은 양 손으로 <<bottom_ul>> 가리는 것을 그만둔다.
+	당신은 양손으로 <<bottom_ul>> 가리는 것을 그만둔다.
 	<<set $leftarm to 0>><<set $rightarm to 0>><<set $anususe to 0>><<meek 2>>
 <</if>>
 
@@ -505,22 +674,22 @@
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftothervaginastop">><<set $rightactiondefault to "rightothervaginastop">>
 	<<if $NPCList[0].vagina is "leftarm">>
 		<<set $NPCList[0].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 1>> 보지에서 양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 1>> 보지에서 양손을 치운다.</span>
 	<<elseif $NPCList[1].vagina is "leftarm">>
 		<<set $NPCList[1].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 2>> 보지에서 양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 2>> 보지에서 양손을 치운다.</span>
 	<<elseif $NPCList[2].vagina is "leftarm">>
 		<<set $NPCList[2].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 3>> 보지에서 양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 3>> 보지에서 양손을 치운다.</span>
 	<<elseif $NPCList[3].vagina is "leftarm">>
 		<<set $NPCList[3].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 4>> 보지에서양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 4>> 보지에서양손을 치운다.</span>
 	<<elseif $NPCList[4].vagina is "leftarm">>
 		<<set $NPCList[4].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 5>> 보지에서 양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 5>> 보지에서 양손을 치운다.</span>
 	<<elseif $NPCList[5].vagina is "leftarm">>
 		<<set $NPCList[5].vagina to 0>><<set $leftarm to 0>>
-		<span class="blue">당신은 <<his_yi 6>> 보지에서 양 손을 치운다.</span>
+		<span class="blue">당신은 <<his_yi 6>> 보지에서 양손을 치운다.</span>
 	<</if>>
 	<<if $NPCList[0].vagina is "rightarm">>
 		<<set $NPCList[0].vagina to 0>><<set $rightarm to 0>>
@@ -1066,6 +1235,80 @@
 	<</if>>
 <</if>>
 
+/*Stalked actions */
+<<if !$stalk_end>>
+	<<if $leftaction is "clench" and $rightaction is "clench">>
+		<<set $leftactiondefault to "clench">><<set $leftaction to 0>><<set $rightactiondefault to "clench">><<set $rightaction to 0>><<brat 6>>
+		당신은 양주먹을 꽉 쥔다.
+	<</if>>
+
+	<<if $leftaction is "clench">>
+		<<set $leftactiondefault to "clench">><<set $leftaction to 0>><<brat 3>>
+		당신은 왼주먹을 꽉 쥔다.
+	<</if>>
+
+	<<if $rightaction is "clench">>
+		<<set $rightactiondefault to "clench">><<set $rightaction to 0>><<brat 3>>
+		당신은 오른주먹을 꽉 쥔다.
+	<</if>>
+
+	<<if $leftaction is "fold" and $rightaction is "fold">>
+		<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "fold">><<set $rightactiondefault to "fold">>
+		<<if $breastsize gte 3>>
+			당신은 당신의 <<breastsPost>> 아래에서 양팔로 몸을 끌어안는다.
+		<<else>>
+			당신은 당신의 앞에서 양팔로 몸을 끌어안는다.
+		<</if>>
+		<<meek 6>>
+	<</if>>
+
+	<<if $leftaction is "fold">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "fold">>
+		<<if $breastsize gte 3>>
+			당신은 당신의 <<breastsPost>> 아래에서 왼팔로 몸을 끌어안는다.
+		<<else>>
+			당신은 당신의 앞에서 왼팔로 몸을 끌어안는다.
+		<</if>>
+		<<meek 3>>
+	<</if>>
+
+	<<if $rightaction is "fold">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "fold">>
+		<<if $breastsize gte 3>>
+			당신은 당신의 <<breastsPost>> 아래에서 오른팔로 몸을 끌어안는다.
+		<<else>>
+			당신은 당신의 앞에서 오른팔로 몸을 끌어안는다.
+		<</if>>
+		<<meek 3>>
+	<</if>>
+
+	<<if $leftaction is "pursuit_grab" and $rightaction is "pursuit_grab">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "pursuit_grab">><<set $rightaction to 0>><<set $rightactiondefault to "pursuit_grab">>
+		<<set $feetaction to "rest">>
+		<<set $feetuse to 0>>
+		당신은 그 <<persons_yi>> 셔츠 뒤를 양손으로 잡고, <span class="green"><<him_ul>> 강제로 멈춘다.</span> <<He_nun>> 뒤로 돌아 당신을 쳐다본다.
+		<<stalk_catch>>
+	<</if>>
+
+	<<if $leftaction is "pursuit_grab">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "pursuit_grab">>
+		<<set $feetaction to "rest">>
+		<<set $feetuse to 0>>
+		당신은 그 <<persons_yi>> 셔츠 뒤를 왼손으로 잡고, <span class="green"><<him_ul>> 강제로 멈춘다.</span> <<He_nun>> 뒤로 돌아 당신을 쳐다본다.
+		<<stalk_catch>>
+	<</if>>
+
+	<<if $rightaction is "pursuit_grab">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "pursuit_grab">>
+		<<set $feetaction to "rest">>
+		<<set $feetuse to 0>>
+		당신은 그 <<persons_yi>> 셔츠 뒤를 오른손으로 잡고, <span class="green"><<him_ul>> 강제로 멈춘다.</span> <<He_nun>> 뒤로 돌아 당신을 쳐다본다.
+		<<stalk_catch>>
+	<</if>>
+<</if>>
+
+/*End of stalked actions */
+
 <<if $feetaction is "grab">>
 	<<set $feetaction to 0>><<set $feetactiondefault to "grab">><<combatpromiscuity3>>
 	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $feetskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
@@ -1186,6 +1429,218 @@
 		<</if>>
 	<</for>>
 <</if>>
+
+<<if $feetaction is "feetshoes">>
+	<<set $feetaction to 0>>
+	당신은 당신의 <<worn_feet_name_ul>> 차듯이 벗는다.
+	<<feetstrip>>
+<</if>>
+
+<<if $feetaction is "feetsocks">>
+	<<set $feetaction to 0>>
+	<<if $worn.legs.state is "thighs">>
+		당신은 당신의 <<worn_legs_name_ul>> 넓적다리에서 발가락으로 밀어내린다.
+		<<set $worn.legs.state to "ankles">>
+	<<elseif $worn.legs.state is "ankles">>
+		당신은 당신의 <<worn_legs_name_ul>> 차듯이 벗는다.
+		<<legsstrip>>
+	<</if>>
+<</if>>
+
+/*Stalked actions */
+<<if !$stalk_end>>
+	<<if $feetaction is "walk">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "walk">>
+		당신은
+		<<if $control gte ($controlmax * 0.8)>>
+			당신의 발을 확실하고 안정적으로 내딛으며 계속 걷는다.
+		<<elseif $control gte ($controlmax * 0.6)>>
+			한 발을 다른 발 앞에 놓으며 계속 걷는다.
+		<<elseif $control gte ($controlmax * 0.4)>>
+			당신의 발걸음에 대해 걱정하고 있지만 계속 걷는다.
+		<<elseif $control gte ($controlmax * 0.2)>>
+			침착함을 유지하려고 온 힘을 다하며 계속 걷는다.
+		<<else>>
+			뛰려 하는 충동을 억제하며 계속 걷는다.
+		<</if>>
+		<<stalk_walk_events>>
+	<</if>>
+
+	<<if $feetaction is "run">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "run">>
+		<<if $NPCList[0].state is "pursuit">>
+			<<if $feetuse isnot "run">>
+				당신은 뛰기 시작하며, 도둑을 쫓아간다.
+				<<stalk_run>>
+			<<else>>
+				당신은 도둑을 쫓아간다.
+			<</if>>
+			<<run_text>>
+			<<if $worn.feet.type.includes("heels")>>
+				<<if $feetskill gte random(1, 1000)>>
+					<<set _stalk_feet to true>>
+				<<else>>
+					<<set _stalk_feet to false>>
+				<</if>>
+			<<else>>
+				<<set _stalk_feet to true>>
+			<</if>>
+			<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+				<<set _stalk_athletics to true>>
+			<<else>>
+				<<set _stalk_athletics to false>>
+			<</if>>
+			<<if _stalk_athletics and _stalk_feet>>
+				<span class="teal">당신은 따라잡는다.</span>
+				<<set $NPCList[0].distance -= 2>>
+			<<else>>
+				<span class="red"><<He_nun>> 당신보다 빠르다.</span>
+				<br>
+			<</if>>
+			<<stalk_run_events>>
+		<<else>>
+			<<if $feetuse isnot "run">>
+				당신은 뛰기 사작한다.
+				<<if $NPCList[0].bold * 2 gte random(1, 1000)>>
+					당신 뒤의 발소리가 속도를 높인다. <span class="red">당신은 쫓기고 있다.</span>
+					<<stalk_run>>
+					<<if $worn.feet.type.includes("heels")>>
+						<<if $feetskill gte random(1, 1000)>>
+							<<set _stalk_feet to true>>
+						<</if>>
+					<<else>>
+						<<set _stalk_feet to true>>
+					<</if>>
+					<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+						<<set _stalk_athletics to true>>
+					<<else>>
+						<<set _stalk_athletics to false>>
+					<</if>>
+					<<if _stalk_athletics and _stalk_feet>>
+						<span class="teal">그 발소리는 점점 멀어진다.</span>
+						<<set $NPCList[0].distance += 2>>
+					<<else>>
+						<span class="red">그 발소리는 점점 가까워진다.</span>
+					<</if>>
+				<<else>>
+					<span class="teal">아무도 뒤쫓지 않는다.</span>
+					<<set $stalk_end to "escaped">>
+				<</if>>
+			<<else>>
+				당신은 계속 뛴다.
+				<<run_text>>
+				<<if $worn.feet.type.includes("heels")>>
+					<<if $feetskill gte random(1, 1000)>>
+						<<set _stalk_feet to true>>
+					<</if>>
+				<<else>>
+					<<set _stalk_feet to true>>
+				<</if>>
+				<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+					<<set _stalk_athletics to true>>
+				<<else>>
+					<<set _stalk_athletics to false>>
+				<</if>>
+				<<if _stalk_athletics and _stalk_feet>>
+					<span class="teal">그 발소리는 점점 멀어진다.</span>
+					<<set $NPCList[0].distance += 2>>
+				<<else>>
+					<span class="red">그 발소리는 점점 가까워진다.</span>
+				<</if>>
+				<br>
+			<</if>>
+			<<if $NPCList[0].distance gte 5>>
+				<span class="green">당신은 그들을 멀리 따돌렸고,</span> 안전하게 도망친다.
+				<<set $stalk_end to "escaped">>
+			<<else>>
+				<<stalk_run_events>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $feetaction is "stand">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "stand">>
+		<<if $control gte ($controlmax * 0.8)>>
+			당신은 가만히 서서, 발을 굳건히 한다.
+		<<elseif $control gte ($controlmax * 0.6)>>
+			당신은 가만히 서서, 깊은 숨을 들이마신다.
+		<<elseif $control gte ($controlmax * 0.4)>>
+			당신의 불안감에도 불구하고, 당신은 가만히 선다.
+		<<elseif $control gte ($controlmax * 0.2)>>
+			당신의 공포에도 불구하고, 당신은 가만히 선다.
+		<<else>>
+			공포로 덜덜 떨며, 당신은 가만히 선다.
+		<</if>>
+		<<set $NPCList[0].distance to 0>>
+	<</if>>
+
+	<<if $feetaction is "hobble">>
+		<<set $feetaction to 0>><<set $feetactiondefaul to "hobble">>
+		<<if $leftleg is "bound" or $rightleg is "bound">>
+			당신은 당신의 묶인 다리가 허락하는 한 가장 빠르게,
+		<<else>>
+			당신은 당신의 미숙한 하이힐 발놀림이 허락하는 한 가장 빠르게,
+		<</if>>
+		<<if $control gte ($controlmax * 0.8)>>
+			당신의 처지에도 불구하고 발을 안정적으로 내딛으며 절뚝거리며 걷는다.
+		<<elseif $control gte ($controlmax * 0.6)>>
+			발을 헛디디지 않게 조심하며 절뚝거리며 걷는다.
+		<<elseif $control gte ($controlmax * 0.4)>>
+			당신 뒤의 발소리에 대한 커져가는 공포를 억제하며 절뚝거리며 걷는다.
+		<<elseif $control gte ($controlmax * 0.2)>>
+			침착함을 유지하려고 몸부림치며 절뚝거리며 걷는다.
+		<<else>>
+			두려움으로 몸을 숙이려는 충동을 억제하며 절뚝거리며 걷는다.
+		<</if>>
+	<</if>>
+
+	<<if $feetaction is "hide">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "hide">>
+		<<set _difficulty to $NPCList[0].skills.security>>
+		<<set _difficulty += ($semencount + $goocount) * 20>>
+		<<if $skulduggery gte random(1, _difficulty)>>
+			<<set _hide_success to true>>
+		<</if>>
+		<<if _hide_success and $NPCList[0].state is "pursuit">>
+			<<switch $location>>
+			<<case forest lake>>
+				당신은 나무 뒤에 숨어, 아무도 보지 못했기를 바란다.
+			<<case moor>>
+				당신은 작은 언덕 뒤에 웅크리고, 아무도 보지 못했기를 바란다.
+			<<default>>
+				당신은 작은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다.
+			<</switch>>
+			<<set $stalk_end to "hide">>
+		<<elseif !_hide_success and ($NPCList[0].legs is "run" or $NPCList[0].bold gte random(1, 1000))>>
+			<<switch $location>>
+			<<case alley>>
+				당신은 좁은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다. 당신은 모퉁이를 훔쳐본다. 당신은 아무도 보지 못한다.
+			<<case forest lake>>
+				당신은 빽빽한 잡목림 안으로 뛰어들어가, 두꺼운 나무둥치 뒤에 몸을 숨긴다. 당신은 나무둥치 옆을 훔쳐본다. 당신은 아무도 보지 못한다.
+			<<case moor>>
+				당신은 작은 언덕 위로 올라가, 도랑 안으로 뛰어든다. 당신은 위를 쳐다보지만, 아무도 보지 못한다.
+			<<default>>
+				당신은 좁은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다. 당신은 모퉁이를 훔쳐본다. 당신은 아무도 보지 못한다.
+			<</switch>>
+			<span class="red">그리고 당신은 누군가의 기척을 느낀다.</span>
+			<<events_stalk>>
+		<<else>>
+			<<switch $location>>
+			<<case alley>>
+				당신은 좁은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다. <span class="green">그 <<person_un>> 당신 쪽을 보지 못하고 지나간다.</span>
+			<<case forest lake>>
+				당신은 빽빽한 잡목림 안으로 뛰어들어가, 두꺼운 나무둥치 뒤에 몸을 숨긴다. 당신은 나무둥치 옆을 훔쳐본다. <span class="green">그 <<person_un>> 당신 쪽을 보지 못하고 지나간다.</span>
+			<<case moor>>
+				당신은 작은 언덕 위로 올라가, 도랑 안으로 뛰어든다. 그 <<person_un>> 꼭대기에서 멈칫하더니, <span class="green">당신 쪽을 보지 못하고 지나간다.</span>
+			<<default>>
+				당신은 좁은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다. 당신은 모퉁이를 훔쳐본다. <span class="green">그 <<person_un>> 당신 쪽을 보지 못하고 지나간다.</span>
+			<</switch>>
+			<<set $stalk_end to "hide">>
+		<</if>>
+	<</if>>
+<</if>>
+
+/*End of stalked actions */
 
 <<if $mouthaction is "rest">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
@@ -1473,7 +1928,7 @@
 	<<else>>
 		당신은 도와달라고 비명을 지른다.
 		<<if $loveInterest>>
-			<<if ($loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden") and $location is "forest" and $npc isnot "Eden">>
+			<<if ($loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden") and $location is "forest" and !($npc.includes("Eden"))>>
 				<<if $rng lte 50>>
 					"에덴! 저들을 쫓아내줘!"
 				<<else>>
@@ -1632,7 +2087,7 @@
 <<if $mouthaction is "bite">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "bite">>
 	당신은 자지를 깨물었고, <<theowner_nun>> <<if $enemytype is "man">>으악하고 비명을 지르며<<elseif $enemytype is "beast">>으르렁대며<<else>>소리지르며<</if>> 고통에 차서 몸을 웅크린다.
-	<<defiance 20>><<attackstat>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
+	<<defiance 20>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
 	<<if $wolfgirl gte 2 or $cat gte 2>>
 		<<defiance 20>><<defiance 20>>
 		당신은 송곳니를 혀로 핥아 깨끗이 한다.
@@ -1716,15 +2171,18 @@
 		<<for _j = 0; _j lt $enemyno; _j++>>
 			<<if $NPCList[_j].lefthand is "mouth">>
 				<<set $NPCList[_j].lefthand to 0>>
+				<<control 15>>
 				<span class="teal"><<He_nun `_j + 1`>> 고통에 움찔하며 손을 빼어, 당신의 입을 놓아준다.</span>
 			<</if>>
 			<<if $NPCList[_j].righthand is "mouth">>
 				<<set $NPCList[_j].righthand to 0>>
+				<<control 15>>
 				<span class="teal"><<He_nun `_j + 1`>> 고통에 움찔하며 손을 빼어, 당신의 입을 놓아준다.</span>
 			<</if>>
 		<</for>>
 	<<else>>
-		<span class="purple">손은 아직 입을 막고 있다.</span>
+		<<control -5>>
+		<span class="purple">손은 아직 입을 막고 있다.</span> 
 	<</if>>
 <</if>>
 
@@ -1780,6 +2238,78 @@
 		<</if>>
 	<</for>>
 <</if>>
+
+/*Stalked actions */
+<<if !$stalk_end>>
+	<<if $mouthaction is "up">>
+		<<set $mouthaction to 0>><<set $mouthactiondefault to "up">>
+		<<if $control gte 100>>
+			당신은 당신의 턱과, 머리를 오만하게 올린 채로 둔다.
+		<<elseif $control gte 80>>
+			당신은 당신의 머리를 올리고 눈은 전방의 길에 초점을 맞춘다.
+		<<elseif $control gte 60>>
+			당신은 당신의 눈을 전방의 길에 고정시킨 채로 둔다.
+		<<elseif $control gte 40>>
+			당신은 위협에 대비해 주위를 둘러보려는 충동에 저항하며, 당신의 눈을 전방에 둔다.
+		<<elseif $control gte 20>>
+			당신은 당신의 머리를 올리고, 당신의 눈은 위험에 대비해 전방의 길을 탐색한다.
+		<<else>>
+			당신은 당신의 머리를 올리고 있지만, 공포심에 눈을 감고 있다.
+		<</if>>
+		<<brat 3>>
+	<</if>>
+
+	<<if $mouthaction is "down">>
+		<<set $mouthaction to 0>><<set $mouthactiondefault to "down">>
+		<<if $control gte 100>>
+			당신은 당신 앞의 바닥을 본다.
+		<<elseif $control gte 80>>
+			당신은 당신 앞의 바닥을 쳐다본다.
+		<<elseif $control gte 60>>
+			당신은 머리를 아래로 내리고, 주목을 끌지 않기를 바란다.
+		<<elseif $control gte 40>>
+			당신은 머리를 아래로 내리고, 누구도 보고 있지 않기를 바란다.
+		<<elseif $control gte 20>>
+			당신은 머리를 아래로 내리고, 당신 자신에게 길이 안전하다고 되뇐다.
+		<<else>>
+			당신은 공포심에 머리를 숙인다.
+		<</if>>
+		<<meek 3>>
+	<</if>>
+
+	<<if $mouthaction is "turn">>
+		<<set $mouthaction to 0>><<set $mouthactiondefault to "turn">>
+		당신은 당신의 어깨 너머로 흘낏 뒤를 본다.
+		당신은 한 <<person1>><<person_i>> 당신을 따라오고 있는 것을 본다.
+		<<He_nun>> 
+		<<if $NPCList[0].skills.athletics gte 800>>
+			<span class="pink">활기찬 발걸음으로</span>
+		<<elseif $NPCList[0].skills.athletics gte 600>>
+			<span class="purple">의욕적인 걸음걸이로</span>
+		<<elseif $NPCList[0].skills.athletics gte 400>>
+			<span class="blue">조용한 걸음걸이로</span>
+		<<elseif $NPCList[0].skills.athletics gte 200>>
+			<span class="lblue">느긋한 걸음걸이로</span>
+		<<else>>
+			<span class="teal">나태하게 발을 끌며</span>
+		<</if>>
+		걸어오고 있으며
+		<<if $NPCList[0].skills.security gte 800>>
+			<span class="pink"><<his_yi>> 눈에 교활한 번득임을 보이고 있다.</span>
+		<<elseif $NPCList[0].skills.security gte 600>>
+			<span class="purple">무언가에 집중한 것 처럼 보인다.</span>
+		<<elseif $NPCList[0].skills.security gte 400>>
+			<span class="blue">여유가 있어 보인다.</span>
+		<<elseif $NPCList[0].skills.security gte 200>>
+			<span class="lblue">주의가 산만해 보인다.</span>
+		<<else>>
+			<span class="teal">백일몽에 빠져 있는 것 처럼 보인다.</span>
+		<</if>>
+		<<set $stalk_assess to true>>
+	<</if>>
+<</if>>
+
+/*End of stalked actions */
 
 <<set $rng to random(1, 100)>>
 

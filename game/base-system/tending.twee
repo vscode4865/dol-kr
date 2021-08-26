@@ -64,7 +64,7 @@
 
 <<widget "display_plot">>/*Argument is the plot location you want to display.*/
 <<set _water_needed to 0>>
-경작할 수 있는
+경작할 수 있는 <<trNumber $plots[$args[0]].length>> 개의
 <<if $plots[$args[0]][0].size is "small">>
 	<span class="lblue">모판</span>이
 <<elseif $plots[$args[0]][0].size is "medium">>
@@ -72,7 +72,7 @@
 <<else>>
 	<span class="green">밭</span>이
 <</if>>
-있다. <<if $fertiliser.current gt 0 or $fertiliser.used gt 0>>당신은 비료를 $fertiliser.current개 가지고 있다.<</if>> 경작하는 시간은 관리 스킬에 따라 줄어든다.
+있다. <<if $fertiliser.current gt 0 or $fertiliser.used gt 0>>당신은 비료를 <<trNumber $fertiliser.current>> 개 가지고 있다.<</if>> 경작하는 시간은 관리 스킬에 따라 줄어든다.
 <br><br>
 <<for _i to 0; _i lt $plots[$args[0]].length; _i++>>
 <<set _tending_temp to _i>>
@@ -108,14 +108,24 @@
 			<<for _e to 0; _e lt $plants_known.length; _e++>>
 			<<capture _e>>
 			<br>
+			<<switch $args[0]>>
+				<<case "farm">>
+					<<if $farm.irrigation>>
+						<<set _irrigation to $farm.irrigation>>
+					<<else>>
+						<<set _irrigation to 0>>
+					<</if>>
+				<<default>>
+					<<set _irrigation to 0>>
+			<</switch>>
 			<<if setup.plants[$plants_known[_e]].season.includes($season) or ($args[0] is "garden" and $alex_greenhouse gte 3)>>
 				<<if setup.plants[$plants_known[_e]].bed is $plots[$args[0]][_i].bed>>
 					<<if $plots[$args[0]][_i].size is "small">>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (0:30)"` $passage>><<pass 30>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (0:30)"` $passage>><<pass 30>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<<elseif $plots[$args[0]][_i].size is "medium">>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (1:30)"` $passage>><<pass 90>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (1:30)"` $passage>><<pass 90>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<<else>>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (3:00)"` $passage>><<pass 3 hours>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (3:00)"` $passage>><<pass 3 hours>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<</if>>
 				<<else>>
 					<<trPlants setup.plants[$plants_known[_e]].plural "은">><span class="blue"><<print _trResult>> <<putpost setup.plants[$plants_known[_e]].bed>>에서만 자란다.</span>
@@ -387,7 +397,7 @@
 <<elseif $args[1] is 2>>
 	<<set _tending_amount *= 1.2>>
 <</if>>
-<<if !$backgroundTraits.includes("greenthumb") and $tending is 1000 and ($fertiliser.used gte 40 or ($fertiliser.used gte 25 and $farm_stage gte 6)) and $plants_known.length gte 11>>
+<<if !$backgroundTraits.includes("greenthumb") and $tending is 1000 and ($fertiliser.used gte 40 or ($fertiliser.used gte 25 and $farm_stage gte 6)) and $plants_known.length gte 16>>
 	<<run $backgroundTraits.pushUnique("greenthumb")>>
 	<span class="gold">흙에서 오랜 시간을 보낸 결과 당신은 원예가의 재능을 얻게 되었다.</span>
 	<br>
@@ -399,7 +409,7 @@
 <<set $plants[$args[0]].amount += _tending_amount>>
 <<set $plants[$args[0]].plural to clone(setup.plants[$args[0]].plural)>>
 <<set $plants[$args[0]].name to clone(setup.plants[$args[0]].name)>>
-당신은 <<trPlants setup.plants[$args[0]].plural "을">>_trResult <<print _tending_amount>>개 수확한다.
+당신은 <<trPlants setup.plants[$args[0]].plural "을">>_trResult <<trNumber _tending_amount>> 개 수확한다.
 <<if $plotDecay>>
 	비료의 효과가<<if $plotDecay is 2>> 완전히<</if>> 줄어들었다.
 	<<unset $plotDecay>>
@@ -431,9 +441,9 @@
 <<set $wild_plant_stat += _tending_amount>>
 당신은
 <<if _tending_amount is 1>>
-	<<trPlants setup.plants[$args[0]].name "을">> <<print _trResult>> 하나 수확한다.
+	<<trPlants setup.plants[$args[0]].name "을">><<print _trResult>> 한 송이 수확한다.
 <<else>>
-	<<print _tending_amount>> <<trPlants setup.plants[$args[0]].plural "을">> <<print _trResult>> 수확한다.
+	<<trPlants setup.plants[$args[0]].plural "을">><<print _trResult>> <<trNumber _tending_amount>> 송이 수확한다.
 <</if>>
 <</widget>>
 

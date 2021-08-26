@@ -2,8 +2,8 @@
 
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 <<npc Briar>><<person1>>
-<<if $brothelshow is "flirt">>
-	<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+<<if $brothelshowdata.type is "flirt">>
+	<<startbrothelshow "flirt">>
 	Briar turns to you. "We're all set and ready. Just waiting for the star. Look out for the blue cap." You walk onto the stage. A single white light turns on above you, and the din of the dark room falls quiet. You can't see beyond the edge of the stage, but you can feel the eyes on you.
 	<br><br>
 	<<endevent>><<generate1>><<person1>>
@@ -16,9 +16,9 @@
 	<br>
 	<<link [[Point at a customer|Brothel Show Flirt]]>><<set $phase to 1>><</link>>
 	<br>
-<<elseif $brothelshow is "gangbang">>
+<<elseif $brothelshowdata.type is "gangbang">>
 	<<if $worn.upper.type.includes("school") and $worn.lower.type.includes("school")>>
-		<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+		<<startbrothelshow "gangbang">>
 		Briar turns and beholds you. "Cute. We're all set and ready. There's no script. Try to antagonise the audience a bit." You walk onto the stage. A single white light turns on above you, and the din of the dark room falls quiet. You can't see beyond the edge of the stage, but you can feel the eyes on you.
 		<br><br>
 		"Ladies and gentlemen!" Briar's voice rings throughout the room. "Today we'll witness the tale of the school <<girl>> who wandered into the wrong part of town." Cheers and whistles erupt from the audience. "<<pShes>> at the top of <<pher>> class, but has no experience outside <<pher>> little bubble. What will become of <<phim>>, I wonder?"
@@ -33,8 +33,8 @@
 		<br><br>
 		<<link [[Next|Brothel]]>><<endevent>><</link>>
 	<</if>>
-<<elseif $brothelshow is "pig">>
-	<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+<<elseif $brothelshowdata.type is "pig">>
+	<<startbrothelshow "pig">>
 	Briar turns to you. "We're all set and ready. Just waiting for the star." The cage beside <<him>> shakes. "The beast is a bit worked up, but I'm sure you can handle it." You walk onto the stage. A single white light turns on above you, and the din of the dark room falls quiet. You can't see beyond the edge of the stage, but you can feel the eyes on you.
 	<br><br>
 	<<endevent>>
@@ -45,8 +45,8 @@
 
 	<<link [[Next|Brothel Show Pig]]>><<set $sexstart to 1>><</link>>
 	<br>
-<<elseif $brothelshow is "swarm">>
-	<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+<<elseif $brothelshowdata.type is "swarm">>
+	<<startbrothelshow "swarm">>
 	Briar turns to you. "We're all set and ready. Just waiting for the star."
 	<br><br>
 	<<generate2>><<generate3>>
@@ -73,8 +73,8 @@
 	<br><br>
 	<<endevent>>
 	<<link [[Next|Brothel Show Swarm]]>><<set $sexstart to 1>><<set $rng to random(1,100)>><</link>>
-<<elseif $brothelshow is "machine">>
-	<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+<<elseif $brothelshowdata.type is "machine">>
+	<<startbrothelshow "machine">>
 	<<endevent>><<generate1>><<generate2>><<person1>>
 	Briar turns to you. "We're all set and ready. Just waiting for the star. Remember, the audience want to see penetration." You walk onto the stage, and stand beside the waiting table. There are fewer in the audience than usual. Briar mentioned this being a private show. A single white light turns on above you, plunging the audience into darkness.
 	<br><br>
@@ -83,8 +83,8 @@
 
 	<<link [[Next|Brothel Show Machine Intro]]>><</link>>
 	<br>
-<<elseif $brothelshow is "horse">>
-	<<set $brothelshow to "none">><<set $brothelshowdone to 1>>
+<<elseif $brothelshowdata.type is "horse">>
+	<<startbrothelshow "horse">>
 	<<endevent>><<loadNPC 0 "saddled_steed">><<person1>>
 	Briar turns to you. "We're all set and ready, including your friend here."
 	<br><br>
@@ -375,7 +375,7 @@ The <<beasttype>> trots behind the stage as Briar storms onto it.<<endevent>><<n
 <br><br>
 
 <<elseif $enemyarousal gte $enemyarousalmax>>
-<<famebestiality 20>>
+<<famebestiality 20 vid>>
 <<beastejaculation>>
 
 Someone behind the stage tugs on the leash and the <<beasttype>> walks off. <<tearful>> you climb to your feet, bow, and follow.
@@ -605,7 +605,7 @@ A red light glows from the front as it scans you. It moves its phallus in front 
 	<<machine_end>>
 
 	<<npc Briar>><<person1>>
-	Briar climbs off the stage. "disappointing," <<he>> says. "The damage isn't severe, but that isn't what our audience paid for. Try to give a proper show next time."
+	Briar climbs off the stage. "Disappointing," <<he>> says. "The damage isn't severe, but that isn't what our audience paid for. Try to give a proper show next time."
 	<br><br>
 <</if>>
 
@@ -684,6 +684,8 @@ The $farm.steed steed mounts you, and the audiences' excitement reaches a fevere
 	<<consensual>>
 	<<set $consensual to 1>>
 	<<neutral 1>>
+	<<beastCombatInit>>
+	<<farm_trust horses>>
 
 	<<set $NPCList[0].stance to "top">>
 	<<if $NPCList[0].penis isnot "none">>
@@ -691,14 +693,15 @@ The $farm.steed steed mounts you, and the audiences' excitement reaches a fevere
 	<<else>>
 		<<set $position to "missionary">>
 	<</if>>
-	<<farm_trust horses>>
-	<<beastCombatInit>>
+	<<set $position_lock to 1>>
 <</if>>
 
 <<effects>>
 <<effectsman>>
-<<audience>>
+<br>
 <<beast $enemyno>>
+<br><br>
+<<audience>>
 <br><br>
 
 <<stateman>>
@@ -719,7 +722,7 @@ The $farm.steed steed mounts you, and the audiences' excitement reaches a fevere
 <<effects>>
 
 <<if $enemyarousal gte $enemyarousalmax>>
-	<<famebestiality 30>>
+	<<famebestiality 30 pic>>
 	<<beastejaculation>>
 
 	The crowd erupts once again. The <<beasttype>> steps away from you, satisfied but agitated by the sudden noise. You hold <<bhis>> reins as you turn to face the crowd, still wet with lewd fluids, and bow.
@@ -731,7 +734,7 @@ The $farm.steed steed mounts you, and the audiences' excitement reaches a fevere
 	<<npc Briar>><<generate2>><<person1>>Briar waits for you behind the stage. "Nice work," <<he>> says as a <<person2>><<person>> takes the reins from your hand. Briar hands you <<moneyGain 2000>>.<<glove>>
 	<<npcincr Briar love 1>>
 	<br><br>
-	
+
 
 <<elseif $enemyhealth lte 0>>
 
@@ -739,7 +742,7 @@ The $farm.steed steed mounts you, and the audiences' excitement reaches a fevere
 	The <<beasttype>> runs away from you in fright. The audience cheers and you follow <<bhim>> off the stage.
 	<br><br>
 
-	The steed stands in the corner, cowed but restless, as one of Briar's goons tries to calm <<bhim>>. 
+	The steed stands in the corner, cowed but restless, as one of Briar's goons tries to calm <<bhim>>.
 	<br><br>
 
 

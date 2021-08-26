@@ -167,18 +167,20 @@
 <</if>>
 <</widget>>
 
-<<widget "update_school_skill">>
-<<print '<<if $' + $args[0] + 'trait gte 4>>
-	<<set $'+ $args[0] + ' to 1000>>
-<<elseif $' + $args[0] + 'trait gte 3>>
-	<<set $'+ $args[0] + ' to 700>>
-<<elseif $' + $args[0] + 'trait gte 2>>
-	<<set $'+ $args[0] + ' to 400>>
-<<elseif $' + $args[0] + 'trait gte 1>>
-	<<set $'+ $args[0] + ' to 200>>
-<<else>>
-	<<set $'+ $args[0] + ' to 100>>
-<</' + 'if>>'>>
+<<widget "update_school_skills">>
+<<for _subject range ["science", "english", "maths", "history"]>>
+	<<if V[_subject + 'trait'] gte 4>>
+		<<set V[_subject] to 1000>>
+	<<elseif V[_subject + 'trait'] gte 3>>
+		<<set V[_subject] to 700>>
+	<<elseif V[_subject + 'trait'] gte 2>>
+		<<set V[_subject] to 400>>
+	<<elseif V[_subject + 'trait'] gte 1>>
+		<<set V[_subject] to 200>>
+	<<else>>
+		<<set V[_subject] to 100>>
+	<</if>>
+<</for>>
 <</widget>>
 
 <<widget "applyFeatsBoost">>
@@ -195,10 +197,7 @@
 	<<set $englishtrait += _upgrades.grades / _details.grades.cost * 1>>
 	<<set $mathstrait += _upgrades.grades / _details.grades.cost * 1>>
 	<<set $historytrait += _upgrades.grades / _details.grades.cost * 1>>
-	<<update_school_skill science>>
-	<<update_school_skill maths>>
-	<<update_school_skill english>>
-	<<update_school_skill history>>
+	<<update_school_skills>>
 <</if>>
 <<if _upgrades.skulduggery gt 0>>
 	<<set $skulduggery to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
@@ -514,7 +513,7 @@
 		<<if $produce_sold gte 5000>>
 			<<earnFeat "Merchant">>
 		<</if>>
-		<<if $plants_known.length gte 11>>
+		<<if $plants_known.length gte 16>>
 			<<earnFeat "Seedy">>
 		<</if>>
 		<<if $ex_road is 1 and $ex_cream is 1 and $ex_flyover is 1>>
@@ -552,9 +551,9 @@
 		<<earnFeat "Millionaire">>
 	<</if>>
 	<<if $goooutsidecount + $semenoutsidecount gte 100
-	and ($anusgoo + $anussemen gte 5 or $analdisable is "t")
-	and ($vaginagoo + $vaginasemen gte 5 or $vaginaexist is 0)
-	and $mouthgoo + $mouthsemen gte 5>>
+	and (setup.bodyliquid.combined("anus") gte 5 or $analdisable is "t")
+	and (setup.bodyliquid.combined("vagina") gte 5 or $vaginaexist is 0)
+	and setup.bodyliquid.combined("mouth") gte 5>>
 		<<earnFeat "Fully Covered">>
 	<</if>>
 	<<if $skulduggery gte 1000>>
@@ -1398,11 +1397,11 @@
 		},
 		"Cornered Rogue":{
 			title: "진퇴양난의 도둑",
-			desc: "짖궂은 여우로부터 옷을 되찾았다.",
+			desc: "짓궂은 여우로부터 옷을 되찾았다.",
 			difficulty: 1,
 			series: "",
 			filter: ["All", "Discoveries"],
-			hint: "Hint: 짖궂은 도둑을 한 수 앞지른다."
+			hint: "Hint: 짓궂은 도둑을 한 수 앞지른다."
 		},
 		"Pain Rider":{
 			title: "탑승자의 고통",

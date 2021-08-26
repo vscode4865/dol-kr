@@ -4,6 +4,10 @@
 	<<run App.Utils.setLocalPronouns($args[0], $args[1])>>
 <</widget>>
 
+<<widget "capitalise">><<silently>>
+	<<set _text_output to _text_output.toLocaleUpperFirst()>>
+<</silently>>_text_output<</widget>>
+
 <<widget "catcall">>
 
 "<<print either("안녕 이쁜이.",
@@ -276,7 +280,15 @@
 <</if>>
 <</silently>>_text_output<</widget>>
 
+
 <<widget "someones">><<silently>>
+/* Take target into consideration. Pre-set _target and use it instead.
+	<<if _target isnot undefined>>
+		<<hisselect _target>>
+	<<else>>
+		<<his>>
+	<</if>>
+ */
 <<if $enemyno gte 2 and $enemytype is "man">>
 	<<set $rng to random(1, $enemyno)>>
 	<<if $rng is 1>>
@@ -298,6 +310,13 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "someone">><<silently>>
+/* Same as above
+	<<if _target isnot undefined>>
+		<<personselect _target>>
+	<<else>>
+		<<himPost>><<set _text_output to _trResult>>
+	<</if>>
+ */
 <<if $enemyno gte 2 and $enemytype is "man">>
 	<<set _text_output to "누군가">>
 <<else>>
@@ -322,6 +341,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "he">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그">>
 <<elseif $pronoun is "f">>
@@ -478,6 +503,12 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "hes">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "he's">>
 <<elseif $pronoun is "f">>
@@ -492,6 +523,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "his">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그의">>
 <<elseif $pronoun is "f">>
@@ -506,6 +543,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "hers">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그의 것">>
 <<elseif $pronoun is "f">>
@@ -521,19 +564,26 @@
 
 <<widget "He">><<silently>>
 <<if $args[0]>>
-	<<if $enemytype is "man">>
-		<<if $args[0] is 1>>
-			<<person1>>
-		<<elseif $args[0] is 2>>
-			<<person2>>
-		<<elseif $args[0] is 3>>
-			<<person3>>
-		<<elseif $args[0] is 4>>
-			<<person4>>
-		<<elseif $args[0] is 5>>
-			<<person5>>
-		<<elseif $args[0] is 6>>
-			<<person6>>
+	<!-- Add the option to call for a named NPC's name -->
+	<<if $NPCNameList.includes($args[0])>>
+		<<set _args to $args[0]>>
+		<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+		<<unset _args>>
+	<<else>>
+		<<if $enemytype is "man">>
+			<<if $args[0] is 1>>
+				<<person1>>
+			<<elseif $args[0] is 2>>
+				<<person2>>
+			<<elseif $args[0] is 3>>
+				<<person3>>
+			<<elseif $args[0] is 4>>
+				<<person4>>
+			<<elseif $args[0] is 5>>
+				<<person5>>
+			<<elseif $args[0] is 6>>
+				<<person6>>
+			<</if>>
 		<</if>>
 	<</if>>
 	<<if $pronoun is "m">>
@@ -547,23 +597,48 @@
 	<<elseif $pronoun is "t">>
 		<<set _text_output to "그들">>
 	<</if>>
-<<elseif $NPCList[0].intro is 1 and $ejaculating isnot 1>>
+<<elseif $NPCList[0].intro is 1>>
 	<<set $NPCList[0].intro to 0>>
-	<<if $npc is 0>>
-		<<person1>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<if $npcrow.includes(0)>>
+		<<set _text_output to $npc[$npcrow.indexOf(0)]>>
 	<<else>>
-		<<set _text_output to $npc>>
+		<<person1>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
 	<</if>>
 <<elseif $NPCList[1].intro is 1>>
-	<<set $NPCList[1].intro to 0>><<person2>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<set $NPCList[1].intro to 0>>
+	<<if $npcrow.includes(1)>>
+		<<set _text_output to $npc[$npcrow.indexOf(1)]>>
+	<<else>>
+		<<person2>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+	<</if>>
 <<elseif $NPCList[2].intro is 1>>
-	<<set $NPCList[2].intro to 0>><<person3>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<set $NPCList[2].intro to 0>>
+	<<if $npcrow.includes(2)>>
+		<<set _text_output to $npc[$npcrow.indexOf(2)]>>
+	<<else>>
+		<<person3>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+	<</if>>
 <<elseif $NPCList[3].intro is 1>>
-	<<set $NPCList[3].intro to 0>><<person4>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<set $NPCList[3].intro to 0>>
+	<<if $npcrow.includes(3)>>
+		<<set _text_output to $npc[$npcrow.indexOf(3)]>>
+	<<else>>
+		<<person4>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+	<</if>>
 <<elseif $NPCList[4].intro is 1>>
-	<<set $NPCList[4].intro to 0>><<person5>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<set $NPCList[4].intro to 0>>
+	<<if $npcrow.includes(4)>>
+		<<set _text_output to $npc[$npcrow.indexOf(4)]>>
+	<<else>>
+		<<person5>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+	<</if>>
 <<elseif $NPCList[5].intro is 1>>
-	<<set $NPCList[5].intro to 0>><<person6>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+	<<set $NPCList[5].intro to 0>>
+	<<if $npcrow.includes(5)>>
+		<<set _text_output to $npc[$npcrow.indexOf(5)]>>
+	<<else>>
+		<<person6>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+	<</if>>
 <<else>>
 	<<if $pronoun is "m">>
 		<<set _text_output to "그">>
@@ -580,6 +655,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "His">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그의">>
 <<elseif $pronoun is "f">>
@@ -594,6 +675,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "Hers">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그의 것">>
 <<elseif $pronoun is "f">>
@@ -607,6 +694,12 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "Hes">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "He's">>
 <<elseif $pronoun is "f">>
@@ -621,6 +714,12 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "him">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
 	<<set _text_output to "그를">>
 <<elseif $pronoun is "f">>
@@ -643,8 +742,9 @@
 <<set _n to $args[0]>>
 <<if $enemytype is "man" and $enemyno gte 2>>
 	<<personselect _n>>
-	<<if $npc_named isnot 0>>
-		<<NPCname_yi $npc>>
+	<!-- NPC's name will only appear if they are selected -->
+	<<if $npcrow.includes(_n)>>
+		<<NPCname_yi $npc[$npcrow.indexOf(_n)]>>'s
 	<<elseif $NPCList[_n].intro is 1>>
 		<<set $NPCList[_n].intro to 0>>
 		그 <<persons>>
@@ -684,67 +784,118 @@
 <</widget>>
 
 <<widget "himself">><<silently>>
+<!-- Add the option to call for named NPCs individually -->
+<<if $args[0]>>
+	<<set _args to $args[0]>>
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
+	<<unset _args>>
+<</if>>
 <<if $pronoun is "m">>
-	<<set _text_output to "그 스스로">>
+	<<set _text_output to "그 자신">>
 <<elseif $pronoun is "i">>
-	<<set _text_output to "녀석 스스로">>
+	<<set _text_output to "녀석 자신">>
 <<else>>
-	<<set _text_output to "그녀 스스로">>
+	<<set _text_output to "그녀 자신">>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "people">><<silently>>
-<<if $malechance is 100>>
-	<<set _text_output to "남자들">>
-<<elseif $malechance is 0>>
-	<<set _text_output to "여자들">>
-<<else>>
-	<<set _text_output to "남자들과 여자들">>
-<</if>>
+	<<if $malechance is 100>>
+		<<set _text_output to "남자들">>
+	<<elseif $malechance is 0>>
+		<<set _text_output to "여자들">>
+	<<else>>
+		<<set _text_output to "남자들과 여자들">>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "peopley">><<silently>>
-<<if $malechance is 100>>
-	<<set _text_output to "소년들">>
-<<elseif $malechance is 0>>
-	<<set _text_output to "소녀들">>
-<<else>>
-	<<set _text_output to "소년들과 소녀들">>
-<</if>>
+	<<if $malechance is 100>>
+		<<set _text_output to "소년들">>
+	<<elseif $malechance is 0>>
+		<<set _text_output to "소녀들">>
+	<<else>>
+		<<set _text_output to "소년들과 소녀들">>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "persony">><<silently>>
-<<set $rng to random(1, 100)>>
-<<if $malechance is 100>>
-	<<set _text_output to "소년">>
-<<elseif $malechance is 0>>
-	<<set _text_output to "소녀">>
-<<elseif $rng gte 51>>
-	<<set _text_output to "소년">>
+	<<set $rng to random(1, 100)>>
+	<<set _text_output to ($rng lte $malechance? "소년" : "소녀")>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "group">><<silently>>
+<<if $enemyno gte 3>>
+	<<for _g to 0; _g lt $NPCList.length; _g++>>
+		<<if $NPCList[_g].pronoun is "m">>
+			<<set $_group_man to true>>
+		<<elseif $NPCList[_g].pronoun is "f">>
+			<<set $_group_woman to true>>
+		<</if>>
+	<</for>>
+	<<if $_group_man and $_group_woman>>
+		<<set _text_output to ($NPCList[0].teen is 1? "소년들과 소녀들" : "남자들과 여자들")>>
+	<<elseif $_group_man and !$_group_woman>>
+		<<set _text_output to ($NPCList[0].teen is 1? "소년들" : "남자들")>>
+	<<elseif !$_group_man and $_group_woman>>
+		<<set _text_output to ($NPCList[0].teen is 1? "소녀들" : "여자들")>>
+	<</if>>
+<<elseif $enemyno is 2>>
+	<<if $NPCList[0].pronoun isnot $NPCList[1].pronoun>>
+		<<set _text_output to ($NPCList[0].teen is 1? "소년과 소녀" : "남자와 여자")>>
+	<<elseif $NPCList[0].pronoun is "m">>
+		<<set _text_output to ($NPCList[0].teen is 1? "소년들" : "남자들")>>
+	<<elseif $NPCList[0].pronoun is "f">>
+		<<set _text_output to ($NPCList[0].teen is 1? "소녀들" : "여자들")>>
+	<</if>>
 <<else>>
-	<<set _text_output to "소녀">>
+	<<person>>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
-<<widget "pshe">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "he">><<elseif $player.gender_appearance is "f">><<set _text_output to "she">><</if>><</silently>>_text_output<</widget>>
+<<widget "gendercheck">>
+	<<if !["m", "f"].contains($player.gender_appearance)>><<set _text_output to "<span class=\"red\">ERROR: Unexpected $$player.gender_appearance: [$player.gender_appearance]</span>">><</if>>
+<</widget>>
 
-<<widget "pShe">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "He">><<elseif $player.gender_appearance is "f">><<set _text_output to "She">><</if>><</silently>>_text_output<</widget>>
+<<widget "pshe">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "he" : "she")>><<gendercheck>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pshes">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "he's">><<elseif $player.gender_appearance is "f">><<set _text_output to "she's">><</if>><</silently>>_text_output<</widget>>
+<<widget "pShe">><<silently>>
+	<<pshe>><<capitalise>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pShes">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "He's">><<elseif $player.gender_appearance is "f">><<set _text_output to "She's">><</if>><</silently>>_text_output<</widget>>
+<<widget "pshes">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "he's" : "she's")>><<gendercheck>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pher">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "his">><<elseif $player.gender_appearance is "f">><<set _text_output to "her">><</if>><</silently>>_text_output<</widget>>
+<<widget "pShes">><<silently>>
+	<<pshes>><<capitalise>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pHer">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "His">><<elseif $player.gender_appearance is "f">><<set _text_output to "Her">><</if>><</silently>>_text_output<</widget>>
+<<widget "pher">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "his" : "her")>><<gendercheck>>
+<</silently>>_text_output<</widget>>
 
-<<widget "phim">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "him">><<elseif $player.gender_appearance is "f">><<set _text_output to "her">><</if>><</silently>>_text_output<</widget>>
+<<widget "pHer">><<silently>>
+	<<pher>><<capitalise>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pHim">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "Him">><<elseif $player.gender_appearance is "f">><<set _text_output to "Her">><</if>><</silently>>_text_output<</widget>>
+<<widget "phim">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "him" : "her")>><<gendercheck>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pherself">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "himself">><<elseif $player.gender_appearance is "f">><<set _text_output to "herself">><</if>><</silently>>_text_output<</widget>>
+<<widget "pHim">><<silently>>
+	<<phim>><<capitalise>>
+<</silently>>_text_output<</widget>>
 
-<<widget "pHerself">><<silently>><<if $player.gender_appearance is "m">><<set _text_output to "Himself">><<elseif $player.gender_appearance is "f">><<set _text_output to "Herself">><</if>><</silently>>_text_output<</widget>>
+<<widget "pherself">><<silently>>
+	<<set _text_output to ($player.gender_appearance is "m"? "himself" : "herself")>><<gendercheck>>
+<</silently>>_text_output<</widget>>
+
+<<widget "pHerself">><<silently>>
+	<<pherself>><<capitalise>>
+<</silently>>_text_output<</widget>>
 
 <<widget "animals">>
 <<print either("bees", "elephants", "bunnies", "octopi", "chimps", "squid", "molluscs", "monkeys", "wasps", "baboons", "wolves", "bears", "elk", "seals", "dolphins", "whales", "jellyfish", "cats", "lions", "tigers", "cheetahs", "wild dogs", "panthers", "moles", "badgers", "honey badgers", "ducks", "geese", "sparrows", "robins", "perch", "pike", "salmon", "sturgeon", "frogs", "newts", "crocodiles", "toads", "hawks", "eagles", "cuttlefish", "pythons", "anacondas", "adders", "cobras", "sturgeon", "trout", "salmon", "tuna", "deer", "robins")>>
@@ -756,7 +907,7 @@
 
 <<widget "semen">>
 <<silently>>
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<set _text_output to "semen">>
 <<else>>
 	<<set _text_output to "lewd fluid">>
@@ -779,45 +930,52 @@
 
 <<widget "nipples">><<nipple>>s<</widget>>
 
+/* 
 <<widget "breasts">><<silently>>
-<<switch $breastsize>>
-<<case 0>>
-	<<if $dev is 1>>
-	<<set _text_output to "nipples">>
+	<<if Number.isInteger($breastsize)>>
+		<<if $breastsize lte 0>>
+			<<set _text_output to "nipples">>
+		<<else>>
+			<<set _text_output to ["", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"][$breastsize] + " breasts">>
+		<</if>>
 	<<else>>
-	<<set _text_output to "nipples">>
+		<<set _text_output to "ERROR - $$breastsize is not a number: $breastsize">>
 	<</if>>
-<<case 1>>
-	<<if $dev is 1>>
-	<<set _text_output to "budding breasts">>
-	<<else>>
-	<<set _text_output to "budding breasts">>
-	<</if>>
-<<case 2>>
-<<set _text_output to "tiny breasts">>
-<<case 3>>
-<<set _text_output to "small breasts">>
-<<case 4>>
-<<set _text_output to "pert breasts">>
-<<case 5>>
-<<set _text_output to "modest breasts">>
-<<case 6>>
-<<set _text_output to "full breasts">>
-<<case 7>>
-<<set _text_output to "large breasts">>
-<<case 8>>
-<<set _text_output to "ample breasts">>
-<<case 9>>
-<<set _text_output to "massive breasts">>
-<<case 10>>
-<<set _text_output to "huge breasts">>
-<<case 11>>
-<<set _text_output to "gigantic breasts">>
-<<case 12>>
-<<set _text_output to "enormous breasts">>
-<<default>>
-<<set _text_output to "breasts">>
-<</switch>>
+	<</silently>><<breastsensitivity>><<print _text_output>>
+<</widget>> 
+*/
+
+<<widget "breasts">><<silently>>
+	<<switch $breastsize>>
+	<<case 0>>
+		<<set _text_output to "nipples">>
+	<<case 1>>
+		<<set _text_output to "budding breasts">>
+	<<case 2>>
+		<<set _text_output to "tiny breasts">>
+	<<case 3>>
+		<<set _text_output to "small breasts">>
+	<<case 4>>
+		<<set _text_output to "pert breasts">>
+	<<case 5>>
+		<<set _text_output to "modest breasts">>
+	<<case 6>>
+		<<set _text_output to "full breasts">>
+	<<case 7>>
+		<<set _text_output to "large breasts">>
+	<<case 8>>
+		<<set _text_output to "ample breasts">>
+	<<case 9>>
+		<<set _text_output to "massive breasts">>
+	<<case 10>>
+		<<set _text_output to "huge breasts">>
+	<<case 11>>
+		<<set _text_output to "gigantic breasts">>
+	<<case 12>>
+		<<set _text_output to "enormous breasts">>
+	<<default>>
+		<<set _text_output to "breasts">>
+	<</switch>>
 <</silently>><<breastsensitivity>><<print _text_output>><</widget>>
 
 <<widget "undertop">>
@@ -858,25 +1016,7 @@
 <</widget>>
 
 <<widget "bottom">><<silently>>
-<<if $bottomsize gte 8>>
-	<<set _text_output to "huge">>
-<<elseif $bottomsize is 7>>
-	<<set _text_output to "large">>
-<<elseif $bottomsize is 6>>
-	<<set _text_output to "plump">>
-<<elseif $bottomsize is 5>>
-	<<set _text_output to "round">>
-<<elseif $bottomsize is 4>>
-	<<set _text_output to "soft">>
-<<elseif $bottomsize is 3>>
-	<<set _text_output to "cushioned">>
-<<elseif $bottomsize is 2>>
-	<<set _text_output to "modest">>
-<<elseif $bottomsize is 1>>
-	<<set _text_output to "slim">>
-<<else>>
-	<<set _text_output to "slender">>
-<</if>>
+	<<set _text_output to ["slender", "slim", "modest", "cushioned", "soft", "round", "plump", "large", "huge"][Math.clamp(0, 8, $bottomsize)]>>
 	<<set _text_output to _text_output += [" ass", " bum", " butt"].pluck()>>
 <</silently>><<print _text_output>><</widget>>
 
@@ -969,7 +1109,7 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "clit">><<silently>>
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<penis>>
 <<else>>
 	<<set _text_output to "clit">>
@@ -1123,8 +1263,8 @@
 <</if>><</silently>><<print _text_output>><</widget>>
 
 <<widget "person">><<silently>>
-<<if $npc_named is 1 and $npcdescription>>
-	<<set _text_output to $npcdescription>>
+<<if $npc_named is 1>>
+	<<set _text_output to $description>>
 <<elseif $npcadult is 1>>
 	<<if $pronoun is "m">>
 		<<set _text_output to $description+" man">>
@@ -1147,8 +1287,8 @@
 <<widget "combatperson">><<silently>>
 <<if $enemytype is "beast">>
 	<<beasttype>>
-<<elseif $npc_named is 1 and $npcdescription>>
-	<<set _text_output to $npcdescription>>
+<<elseif $npc_named is 1>>
+	<<set _text_output to $description>>
 <<elseif $npcadult is 1>>
 	<<if $pronoun is "m">>
 		<<set _text_output to $description+" man">>
@@ -1172,15 +1312,16 @@
 <!-- This replaces calls person1 person2 etc. Used for NPC object calls -->
 <!-- Note calls are 0-5 corresponding to NPCs 1-6 -->
 <<set _n to $args[0]>>
-<<if $args[0] is 0 and $npc>>
-	<<set $npc_named to 1>>
-<<else>>
-	<<set $npc_named to 0>>
-<</if>>
 
 <<set $npcadult to $NPCList[_n].adult>>
 <<set $pronoun to $NPCList[_n].pronoun>>
-<<set $description to $NPCList[_n].description>>
+<<if $npcrow.includes(_n)>>
+	<<set $description to $NPCName[$npcnum[$npcrow.indexOf(_n)]].title>>
+	<<set $npc_named to 1>>
+<<else>>
+	<<set $description to $NPCList[_n].description>>
+	<<set $npc_named to 0>>
+<</if>>
 <</widget>>
 
 <!-- Leaving person1-6 in place for legacy support as of v2.3-->
@@ -1229,40 +1370,20 @@
 <</widget>>
 
 <<widget "girl">><<silently>>
-<<if $player.gender_appearance is "f">>
-	<<set _text_output to "girl">>
-<<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "boy">>
-<<else>>
-	<<set _text_output to "girl">>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<set _text_output to ($player.gender_appearance is "m"? "boy" : "girl")>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "girlfriend">><<silently>>
-<<if $player.gender_appearance is "f">>
-	<<set _text_output to "girlfriend">>
-<<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "boyfriend">>
-<<else>>
-	<<set _text_output to "girlfriend">>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<girl>><<set _text_output to _text_output + "friend">>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "girls">><<silently>>
-<<if $player.gender_appearance is "f">>
-	<<set _text_output to "girls">>
-<<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "boys">>
-<<else>>
-	<<set _text_output to "girls">>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<girl>><<set _text_output to _text_output + "s">>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "wife">><<silently>>
-<<if $player.gender_appearance is "f">>
-	<<set _text_output to "wife">>
-<<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "husband">>
-<<else>>
-	<<set _text_output to "wife">>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<set _text_output to ($player.gender_appearance is "m"? "husband" : "wife")>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "Wife">><<silently>>
 <<wife>><<set _text_output to _text_output.toLocaleUpperFirst()>>
@@ -1283,25 +1404,20 @@
 
 <<widget "victimgirls">>
 <<if $malevictimchance is 0>>
-	<<set _text_output to "girls">>
+	<<set _text_output to "소녀들">>
 <<elseif $malevictimchance is 100>>
-	<<set _text_output to "boys">>
+	<<set _text_output to "소년들">>
 <<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "boys">>
+	<<set _text_output to "소년들">>
 <<else>>
-	<<set _text_output to "girls">>
+	<<set _text_output to "소녀들">>
 <</if>>
 <<print _text_output>>
 <</widget>>
 
 <<widget "lass">><<silently>>
-<<if $player.gender_appearance is "f">>
-	<<set _text_output to "lass">>
-<<elseif $player.gender_appearance is "m">>
-	<<set _text_output to "lad">>
-<<else>>
-	<<set _text_output to "lass">>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<set _text_output to ($player.gender_appearance is "m"? "lad" : "lass")>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "gender">><<silently>>
 	<<switch $player.gender>>
@@ -1311,21 +1427,18 @@
 	<</switch>>
 <</silently>><<print _text_output>><</widget>>
 
-<<widget "genitals_are">>
-<<silently>>
+<<widget "genitals_are">><<silently>>
 	<<if $args[0] is undefined>>
 		<<genitals>>
 	<<else>>
 		<<genitals 1>>
 	<</if>>
-<</silently>>
-<<if $penisexist is 1 and $vaginaexist is 1 and (!$worn.genitals.type.includes("chastity") or $args[0] isnot undefined)>>
-	<<set _text_output += " are">>
-<<else>>
-	<<set _text_output += " is">>
-<</if>>
-<<print _text_output>>
-<</widget>>
+	<<if $player.penisExist and $player.vaginaExist and (!$worn.genitals.type.includes("chastity") or $args[0] isnot undefined)>>
+		<<set _text_output += " are">>
+	<<else>>
+		<<set _text_output += " is">>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "genitalsensitivity">><<silently>>
 <<if $genitalsensitivity > 5>>
@@ -1349,16 +1462,16 @@
 	<<elseif $genitalsensitivity >= 1.5>>
 		<<set _text_output += "섬세한 ">>
 	<</if>>
-	<<if $penisexist is 1>>
+	<<if $player.penisExist>>
 		<<if $player.virginity.penile is true and $args[0] isnot 2>>
 			<<set _text_output += "virgin ">>
 		<</if>>
 		<<set _text_output += "penis">>
 	<</if>>
-	<<if $penisexist is 1 and $vaginaexist is 1>>
+	<<if $player.penisExist and $player.vaginaExist>>
 		<<set _text_output += " and ">>
 	<</if>>
-	<<if $vaginaexist is 1>>
+	<<if $player.vaginaExist>>
 		<<if $player.virginity.vaginal is true and $args[0] isnot 2>>
 			<<set _text_output += "virgin ">>
 		<</if>>
@@ -1378,7 +1491,7 @@
 <<widget "genitalsandbreasts">>
 	<<genitals>> <<if $breastsize gte 1>>and <<breasts>><</if>>
 	<<if $args[0] isnot undefined and $args[1] isnot undefined>>
-		<<if ($penisexist is 1 and $vaginaexist is 1) or $breastsize gte 1>>
+		<<if ($player.penisExist and $player.vaginaExist) or $breastsize gte 1>>
 			$args[1]
 		<<else>>
 			$args[0]
@@ -1971,72 +2084,72 @@
 <</widget>>
 
 <<widget "gdom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="purple">+ 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">+ <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="purple">+ <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="purple">+ <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="purple">+ NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "ggdom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="purple">+ + 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">+ + <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="purple">+ + <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="purple">+ + <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="purple">+ + NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "gggdom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="purple">+ + + 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">+ + + <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="purple">+ + + <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="purple">+ + + <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="purple">+ + + NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "ldom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="lblue">- 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">- <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="lblue">- <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="lblue">- NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "lldom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="lblue">- - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">- - <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="lblue">- - <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="lblue">- - NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "llldom">> |
-<<if $npc is "Robin" or $args[0] is "Robin">>
+<<if $npc.includes("Robin") or $args[0] is "Robin">>
 <span class="lblue">- - - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
 <span class="purple">- - - <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc isnot 0>>
-<span class="lblue">- - - <<NPCname_yi $npc>> 지배도</span>
+<<elseif $npc.length isnot 0>>
+<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
 <span class="lblue">- - - NPC 지배도</span>
 <</if>>
@@ -3479,7 +3592,7 @@
 			<</if>>
 		<<elseif $stress gte (($stressmax / 5) * 1)>>
 			<<if $arousal gte (($arousalmax / 5) * 4)>>
-			짖궂은 기분이 들며,
+			짓궂은 기분이 들며,
 			<<elseif $arousal gte (($arousalmax / 5) * 1)>>
 			자신에게 고정된 시선을 즐기며
 			<<else>>
@@ -3559,7 +3672,7 @@
 			<</if>>
 		<<elseif $stress gte (($stressmax / 5) * 1)>>
 			<<if $arousal gte (($arousalmax / 5) * 4)>>
-			짖궂은 기분이 들며,
+			짓궂은 기분이 들며,
 			<<elseif $arousal gte (($arousalmax / 5) * 1)>>
 			자신에게 고정된 시선을 즐기며
 			<<else>>
@@ -4171,7 +4284,7 @@
 <</widget>>
 
 <<widget "prostate">><<silently>>
-<<if $vaginaexist is 1>>
+<<if $player.vaginaExist>>
 <<set _text_output to "자궁">>
 <<else>>
 <<set _text_output to "전립선">>
@@ -5296,7 +5409,7 @@
 <</widget>>
 
 <<widget "vagina_lube_text">>
-<<set _vagina_lube_amount to $vaginaoutsidesemen + $vaginasemen + $vaginagoo + $vaginaoutsidegoo>>
+<<set _vagina_lube_amount to setup.bodyliquid.combined("vagina") + setup.bodyliquid.combined("vaginaoutside")>>
 <<if _vagina_lube_amount lte 0>>
 	상당히 말라있음에도 불구하고,
 <<else>>
@@ -5305,7 +5418,7 @@
 <</widget>>
 
 <<widget "anus_lube_text">>
-<<set _anus_lube_amount to $anussemen + $anusgoo + $bottomsemen + $bottomgoo>>
+<<set _anus_lube_amount to setup.bodyliquid.combined("anus") + setup.bodyliquid.combined("bottom")>>
 <<if _anus_lube_amount lte 0>>
 	윤활제 역할을 할 만한 것이 없음에도 불구하고,
 <<else>>
@@ -5314,7 +5427,7 @@
 <</widget>>
 
 <<widget "penis_lube_text">>
-<<set _penis_lube_amount to $penissemen + $penisgoo>>
+<<set _penis_lube_amount to setup.bodyliquid.combined("penis")>>
 <<if _penis_lube_amount lte 0>>
 	윤활제 역할을 할 만한 것이 없음에도 불구하고,
 <<else>>
@@ -5859,17 +5972,28 @@ to
 <span class="green">+ + + 속임수</span>
 <</widget>>
 
-<<widget "ampm">>
-	<<if $args[0] isnot undefined>>
-		<<set _hour to $args[0]>>
-	<<else>>
+<<widget "ampm">><!-- [hour] [minute] -->
+/* displays time in accordance with player-set time format */
+	<<if ndef $args[0]>>
+	/* when called without arguments, display current time */
 		<<set _hour to $hour>>
-	<</if>>
-	<<if $args[1] isnot undefined>>
-		<<set _minute to $args[1]>>
+		<<set _minute to $minute>>
+	<<elseif typeof($args[0]) is "string">>
+	/* if string, assume format H:mm or hh:mm */
+		<<set _numberstring to $args[0].replace(":", ".")>>
+		<<set _hour to Math.trunc(_numberstring)>>
+		<<set _minute to _numberstring * 100 % 100>>
 	<<else>>
-		<<set _minute to ($time - $hour * 60)>>
+	/* assume first numeric argument is hour */
+		<<set _hour to $args[0]>>
+		<<if ndef $args[1]>>
+		/* without a second argument, assume 00 */
+			<<set _minute to 0>>
+		<<else>>
+			<<set _minute to $args[1]>>
+		<</if>>
 	<</if>>
+
 	<<if $timestyle is "ampm">>
 		<<if _hour gte 13>>
 			<<set _text_output to "오후 " + (_hour - 12) +":"+ _minute.toString().padStart(2, "0")>>
@@ -5880,4 +6004,78 @@ to
 		<<set _text_output to _hour.toString().padStart(2,"0") +":"+ _minute.toString().padStart(2, "0")>>
 	<</if>>
 	<<print _text_output>>
+<</widget>>
+
+<!-- usage
+  <<number -69>> -> "negative sixty-nine"
+  <<number 69 silent>> -> _text_output = "sixty-nine"
+-->
+<<widget "number">><<silently>>
+	<<set $_x to $args[0]>>
+	<<if $_x lte -100 or $_x gte 100 or Math.floor($_x) isnot $_x>>
+		<<set _text_output to ""+$_x>>
+	<<else>>
+		<<if $_x lt 0>>
+			<<set _text_output to "negative ">>
+			<<set $_x to -$_x>>
+		<<else>>
+			<<set _text_output to "">>
+		<</if>>
+		<<if $_x is 0>>
+			<<set _text_output to "zero">>
+		<<elseif $_x gte 10 and $_x lte 20>>
+			<<set _text_output to  ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"][$_x-10]>>
+		<<else>>
+			<<set $_ones to ($_x % 10)>>
+			<<set $_tens to ($_x - $_ones)/10>>
+			<<set $_tenword to ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"][$_tens]>>
+			<<set $_oneword to ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][$_ones]>>
+			<<if $_tenword and $_oneword>>
+				<<set _text_output to  $_tenword + "-" + $_oneword>>
+			<<else>>
+				<<set _text_output to  $_tenword + "" + $_oneword>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</silently>><<if $args[1] isnot "silent">><<print _text_output>><</if>><</widget>>
+
+<<widget "Number">><<number $args[0] silent>><<print _text_output.toLocaleUpperFirst()>><</widget>>
+
+<<widget "location_text">>
+<<switch $location>>
+	<<case alley>>
+		<<set _text_output to "골목길">>
+	<<case forest lake>>
+		<<set _text_output to "숲">>
+	<<case moor>>
+		<<set _text_output to "황무지">>
+	<<default>>
+		<<set _text_output to "거리">>
+<</switch>>
+<<print _text_output>>
+<</widget>>
+
+<<widget "nude_text">>
+<<if $worn.under_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.over_upper.exposed gte 2>>
+	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 2>>
+		<<set _text_output to "벌거벗은">>
+	<<else>>
+		<<set _text_output to "상반신을 드러낸">>
+	<</if>>
+<<else>>
+	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 2>>
+		<<set _text_output to "하반신을 드러낸">>
+	<<else>>
+		<<set _text_output to "속옷 차림의">>
+	<</if>>
+<</if>>
+<<print _text_output>>
+<</widget>>
+
+<<widget "cast_aside_clothes">>
+<<if $combatgoal is "strip">>
+	<span class="purple"><<He_nun>> <<his_yi>> 팔 아래에 그 천조각을 대충 밀어넣는다.</span>
+<<else>>
+	<span class="purple"><<He_nun>> 그 천조각을 옆에 벗겨놓는다.</span>
+<</if>>
 <</widget>>

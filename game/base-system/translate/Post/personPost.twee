@@ -1,8 +1,8 @@
 :: Widgets personPost [widget nobr]
 <<widget "personPost">><<silently>>
 <<if $combat is 0>>
-    <<if $npc_named is 1 and $npcdescription>>
-        <<trNPCdesc $npcdescription $args[0] $args[1]>>
+    <<if $npc_named is 1>>
+        <<trNPCdesc $description $args[0] $args[1]>>
     <<elseif $npcadult is 1>>
         <<trNPCdesc $description>>
         <<if $pronoun is "m">><<set _trResult to _trResult+" 남자">>
@@ -59,8 +59,8 @@
 <<widget "combatpersonPost">><<silently>>
     <<if $enemytype is "beast">>
         <<beasttypePost $args[0] $args[1]>>
-    <<elseif $npc_named is 1 and $npcdescription>>
-        <<trNPCdesc $npcdescription $args[0] $args[1]>>
+    <<elseif $npc_named is 1>>
+        <<trNPCdesc $description $args[0] $args[1]>>
     <<elseif $npcadult is 1>>
         <<trNPCdesc $description>>
         <<if $pronoun is "m">>
@@ -114,4 +114,65 @@
 <<else>>
 	<<set _trResult to "소녀">><<if $args[0] isnot undefined>><<trPost 1 $args[0] $args[1]>><</if>>
 <</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "groupPost">><<silently>>
+	<<if $enemyno gte 3>>
+		<<for _g to 0; _g lt $NPCList.length; _g++>>
+			<<if $NPCList[_g].pronoun is "m">>
+				<<set $_group_man to true>>
+			<<elseif $NPCList[_g].pronoun is "f">>
+				<<set $_group_woman to true>>
+			<</if>>
+		<</for>>
+		<<if $_group_man and !$_group_woman>>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소년들">>
+			<<else>>
+				<<set _trResult to "남자들">>
+			<</if>>
+		<<elseif $_group_woman and !$_group_man>>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소녀들">>
+			<<else>>
+				<<set _trResult to "여자들">>
+			<</if>>
+		<<else>>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소년들과 소녀들">>
+			<<else>>
+				<<set _trResult to "남자들과 여자들">>
+			<</if>>
+		<</if>>
+		<<if $args[0] isnot undefined>>
+			<<trPost 2 $args[0] $args[1]>>
+		<</if>>
+	<<elseif $enemyno is 2>>
+	<<set $_postNum to 2>>
+		<<if $NPCList[0].pronoun is "m" and $NPCList[1].pronoun is "m">>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소년들">>
+			<<else>>
+				<<set _trResult to "남자들">>
+			<</if>>
+		<<elseif $NPCList[0].pronoun is "f" and $NPCList[1].pronoun is "f">>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소녀들">>
+			<<else>>
+				<<set _trResult to "여자들">>
+			<</if>>
+		<<else>>
+			<<if $NPCList[0].teen is 1>>
+				<<set _trResult to "소년과 소녀">>
+			<<else>>
+				<<set _trResult to "남자와 여자">>
+			<</if>>
+			<<set $_postNum to 1>>
+		<</if>>
+		<<if $args[0] isnot undefined>>
+			<<trPost $_postNum $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<personPost $args[0] $args[1]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>

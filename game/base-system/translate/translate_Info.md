@@ -766,6 +766,11 @@
     ```
 
     ```
+    <<groupPost>>
+        + <<personPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
 	<<handtoolPost>>
 		<<handtoolPost *target *post 'sep'>>
 
@@ -1151,7 +1156,6 @@
         <<trNPCdesc "Robin" "을">>                      //  "로빈을"
     ```
 
-* trNPCname
     ```
     <<trNPCname>>
         <<trNPCname [NPCname | NPCnum]>>
@@ -1171,6 +1175,38 @@
         e.g.
         <<trNPCname "Olivia">>_trResult                         //  "올리비아"
         <<trNPCname "Robin" "을">>_trResult                     //  "로빈을"
+    ```
+
+* trNumber
+    ```
+    <<trNumber>>
+        <<trNumber *number "silent">>
+
+        <<number>> 위젯의 대체 버전. 숫자를 문자로 바꿔준다.
+
+        필수사항
+        - number: 숫자
+
+        선택사항
+        - silent: 지정되면 _trResult 에만 저장되며 표시하지 않는다.
+
+        note.
+		- 이 번역 매크로는 뒤에 단위가 붙는 것을 전제로 만들어졌으므로 단위가 없이 사용할 경우 (열셋) 조심할 것. e.g. <<trNumber 13>> 명 // 열세 명
+		- 원본 버전이 silent 옵션을 사용하므로 이 매크로 역시 tr~ 매크로지만 ~Post 매크로처럼 _trResult 없이도 표시함.
+		
+        e.g.
+        <<trNumber 3>> 사람                         //  "세 사람" 
+        <<trNumber -69>>                     //  "마이너스 예순 아홉"
+    ```
+
+   ```
+    <<trNumberHanja>>
+        <<trNumberHanja *number "silent">>
+
+        <<trNumber>> 와 같지만 한자식 읽기 버전. 생략.
+
+        e.g.
+        <<trNumberHanja 30>> 분                         //  "삼십 분" 
     ```
 
 * trPenisdesc
@@ -1363,6 +1399,12 @@
         + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
+* overworld-forest/loc-forest/widget.twee
+    ```
+    <<gwilanItem>>
+        + 그윌란이 들고 다니는 물건. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 -----------------
 # EasyPost
 
@@ -1452,7 +1494,7 @@
 		```
 	- personPost 계열
 		```
-		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>
+		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
 		<<persons_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- putpost 계열
