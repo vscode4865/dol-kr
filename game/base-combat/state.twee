@@ -8,7 +8,7 @@
 
 			<<if ["m", "f", "i", "n", "t"].includes($NPCList[0].pronoun)>>
 				<<set $pronoun to $NPCList[0].pronoun>>
-			<<else>>
+			<<elseif $debugdisable is "f">>
 				<span class="red">ERROR: Unexpected $$NPCList[0].pronoun: [$NPCList[0].pronoun]</span>
 			<</if>>
 			<<if $enemytype is "beast">>
@@ -18,7 +18,9 @@
 				<<set $pronoun to "t">>
 			<</if>>
 
-			<<if $enemyhealth gte $enemyhealthmax>>
+			<<if $loveDrunk>>
+				<span class="lustful"><<He_nun>> <<print either("사랑에 취해", "죄가 많아", "발광한 듯", "욕정으로 흥분한 듯", "열광적으로")>> 보인다.</span>
+			<<elseif $enemyhealth gte $enemyhealthmax>>
 				<span class="red"><<HePost "은">> 열성적으로 보인다.</span>
 			<<elseif $enemyhealth gte ($enemyhealthmax / 5) * 4>>
 				<span class="pink"><<HePost "은">> 불편해 보인다.</span>
@@ -52,7 +54,15 @@
 			<<elseif $enemyarousal gt 0>>
 				<span class="teal"><<HePost "은">> 자극 받은 것 같다.</span>
 			<<elseif $enemyarousal lte 0>>
-				<span class="green"><<HePost "은">> 확실히 이완돼 있다.</span>
+				<<if $enemyno gt 1>>
+					<span class="green"><<HePost "은">> 자극받지 않은 것 같다.</span>
+				<<else>>
+					<<if $npcSub>>
+						<span class="green"><<He_nun>> 가만히 누워, 당신을 기다리고 있다.</span>
+					<<else>>
+						<span class="green"><<He_nun>> 확실히 <<if $NPCList[0].penis isnot "none">>축 늘어져<<else>>말라<</if>> 있다.</span>
+					<</if>>
+				<</if>>
 			<</if>>
 
 			<<if $enemyanger gte $enemyangermax>>
@@ -104,7 +114,9 @@
 		<<if $arousal gte $arousalmax>>
 			<<orgasm>>
 		<</if>>
-		<<pass10sec>>
+		<<if !$prayerRoom>>
+			<<pass10sec>>
+		<</if>>
 		<<sexcheck>>
 	</div>
 <</widget>>

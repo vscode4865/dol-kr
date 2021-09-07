@@ -1,10 +1,12 @@
 :: Widgets Wolf Cave [widget]
 
 <<widget "wolfcaveevent">>
-<<beastNEWinit 1 wolf>>
+	<<beastNEWinit 1 wolf>>
 	<<set $rng to random(1, 100)>>
+	<<cleareventpool>>
 	<<if $wolfstate isnot "cave">>
-		<<if $rng gte 81>>
+		<<childrenEvents "wolf_cave" $passage>>
+		<<addinlineevent "wolf cave play fight">>
 			어린 <<beastspluralPost>>중 하나가 당신에게 다가온다. 그것은 싸움을 하고 싶어하는 것 같다.
 			<br><br>
 			<<link [[논다 (0:20)|Wolf Cave Play Fight]]>><<pass 20>><<stress -4>><</link>><<lstress>>
@@ -20,28 +22,32 @@
 				<<link [[무시한다|Wolf Cave Clearing]]>><<endevent>><</link>>
 				<br>
 			<</if>>
-		<<elseif $rng gte 41>>
+		<</addinlineevent>>
+		<<addinlineevent "anxious younger wolves" 2>>
 			어린 <<wolf_cave_plural_un>> 무리가 무사히 돌아올까 걱정하며 나무를 바라본다
 			<br><br>
 			<<endevent>>
 			<<destinationwolfcave>>
-		<<else>>
+		<</addinlineevent>>
+		<<addinlineevent "younger wolf rub" 2>>
 			어린 <<beastspluralPost>>중 한마리가 지나갈 때 다리에 머리를 문지른다.
 			<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
 			<<endevent>>
 			<br><br>
 			<<destinationwolfcave>>
-		<</if>>
+		<</addinlineevent>>
 	<<else>>
+		<<childrenEvents "wolf_cave" $passage>>
 		<<if $wolfpackferocity + random(1, 20) gte $wolfpackharmony + random(1, 20)>>
-			<<if $rng gte 81>>
+			<<addinlineevent "wolf cave fight">>
 				<<beastspluralPost>>중 한마리가 당신에게 으르렁거리며 걸어온다
 				<br><br>
 				<<link [[싸운다|Wolf Cave Fight]]>><<set $molestationstart to 1>><</link>>
 				<br>
 				<<link [[도움을 요청한다|Wolf Cave Help]]>><</link>>
 				<br>
-			<<elseif $rng gte 41>>
+			<</addinlineevent>>
+			<<addinlineevent "wolf cave play fight" 2>>
 				피가 흐를 때까지 싸움이 점차 커져간다.
 				<br><br>
 				<<link [[개입한다|Wolf Cave Intervene]]>><<set $phase to 0>><</link>>
@@ -50,7 +56,8 @@
 				<br>
 				<<link [[무시한다|Wolf Cave Intervene]]>><<set $phase to 2>><</link>>
 				<br>
-			<<else>>
+			<</addinlineevent>>
+			<<addinlineevent "wolf cave blackwolf agitated" 2>>
 				<<endevent>><<npc "Black Wolf">>/*<<beastNNPCinit>>*/
 				<<if $wolfpackleader is 1>>
 					검은 늑대가 동요한다. <<bHePost "은">> 다른 녀석들을 물고 으르렁거리며 차례로 그들을 자극한다.
@@ -73,16 +80,16 @@
 					<<link [[도전한다|Wolf Cave Calm]]>><<set $phase to 2>><</link>>
 					<br>
 				<</if>>
-			<</if>>
+			<</addinlineevent>>
 		<<else>>
-			<<if $rng gte 61>>
+			<<addinlineevent "wolf face lick" 2>>
 				<<beasttypePost "이">> 당신에게 달려온다. <<bHePost "이">> 몸을 일으켜 기댄 채로 당신을 거의 넘어뜨린다. <<bHePost "이">> 당신의 얼굴을 핥는다..
 				<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
 				<br><br>
 
 				<<destinationwolfcave>>
-
-			<<elseif $rng gte 41>>
+			<</addinlineevent>>
+			<<addinlineevent "wolve mating rank">>
 				<<beastNEWinit 2 wolf>>
 				낮은 서열의 <<print $combatTrain.beastTypes[0]>> 가 짝짓기를 원하듯 접근한다. 더 높은 서열의 <<print $combatTrain.beastTypes[1]>> 은 당신을 빼앗으려고 한다.
 				<br><br>
@@ -98,16 +105,18 @@
 				<</if>>
 				<<link [[둘 다 무시한다|Wolf Cave Rank]]>><<set $phase to 3>><</link>>
 				<br>
-			<<else>>
+			<</addinlineevent>>
+			<<addinlineevent "young wolf rock climb" 2>>
 				어린 <<beasttypePost "이">> 바위를 오르려고 한다. <<bHisPost "의">> 발이 미끄러져 <<bhePost "은">> 땅을 뒹군다. <<bHePost "은">> 일어서지만, 낑깅거린다.
 				<br><br>
 				<<link [[괜찮은지 확인한다 (0:05)|Wolf Cave Young]]>><<set $phase to 0>><<pass 5>><</link>>
 				<br>
 				<<link [[무시한다|Wolf Cave Young]]>><<set $phase to 1>><</link>>
 				<br>
-			<</if>>
+			<</addinlineevent>>
 		<</if>>
 	<</if>>
+	<<runeventpool>>
 <</widget>>
 <<widget "wolfcavestate">>
 <<if $wolfpackferocity gte 20 and $wolfpackharmony gte 20>>

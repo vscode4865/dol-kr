@@ -80,7 +80,16 @@
 <<set $clothesPriceUnderwear to 1>>
 <<set $clothesPriceSchool to 1>>
 <<set $clothesPriceLewd to 1>>
+<<set $baseVaginalPregnancyChance to 80>>
+<<set $baseNpcPregnancyChance to 8>>
+<<set $humanPregnancyMonths to 3>>
+<<set $wolfPregnancyWeeks to 4>>
+<<set $playerPregnancyHumanDisable to "f">>
+<<set $playerPregnancyBeastDisable to "f">>
+<<set $npcPregnancyDisable to "f">>
 <<set $rentmod to 1>>
+<<set $condomchance to 50>>
+<<set $condomautochance to 50>>
 
 <<set $notifyUpdate = true>>
 
@@ -122,6 +131,7 @@
 	<<case "humanSettings">><<replace #subsectionDiv>><<humanSettings>><</replace>>
 	<<case "beastSettings">><<replace #subsectionDiv>><<beastSettings>><</replace>>
 	<<case "priceSettings">><<replace #subsectionDiv>><<priceSettings>><</replace>>
+	<<case "pregnancySettings">><<replace #subsectionDiv>><<pregnancySettings>><</replace>>
 	<<default>><<replace #subsectionDiv>><<humanSettings>><</replace>>
 <</switch>>
 <</widget>>
@@ -245,6 +255,7 @@
 	<</if>>
 	<<updatehistorycontrols>>
 	<<initnpcgender>>
+	<<updatePronouns>>
 	<<hirsuteHideCheck>>
 	<<tanned 0 "ignoreCoverage">>
 	<<if $player.freckles is "random">>
@@ -440,7 +451,8 @@
 	<label><span class="green">초록</span> <<radiobutton "$eyeselect" "green" autocheck>></label> |
 	<label><span class="red">빨강</span> <<radiobutton "$eyeselect" "red" autocheck>></label> |
 	<label><span class="pink">분홍</span> <<radiobutton "$eyeselect" "pink" autocheck>></label> |
-	<label><span class="grey">회색</span> <<radiobutton "$eyeselect" "grey" autocheck>></label>
+	<label><span class="grey">회색</span> <<radiobutton "$eyeselect" "grey" autocheck>></label> |
+	<label><span>무작위</span> <<radiobutton "$eyeselect" "random" autocheck>></label>
 	<br><br>
 
 	<span class="gold">머리카락 색</span>
@@ -457,7 +469,8 @@
 	<label><span class="platinum">백금색</span> <<radiobutton "$hairselect" "platinumblond" autocheck>></label> |
 	<label><span class="ashy">애쉬 블론드</span> <<radiobutton "$hairselect" "ashyblond" autocheck>></label> |
 	<label><span class="strawberry">스트로베리 블론드</span> <<radiobutton "$hairselect" "strawberryblond" autocheck>></label> |
-	<label><span class="tangerine">진저</span> <<radiobutton "$hairselect" "ginger" autocheck>></label>
+	<label><span class="tangerine">진저</span> <<radiobutton "$hairselect" "ginger" autocheck>></label> |
+	<label><span>무작위</span> <<radiobutton "$hairselect" "random" autocheck>></label>
 	<br><br>
 
 	<span class="gold">머리카락 길이</span>
@@ -606,15 +619,21 @@
 	<br><br>
 
 	<div class="gold widerButton">
-	<<button "사람형 NPC 세팅">>
+	<<button "사람형 NPC 설정">>
 		<<displaySubsection "humanSettings">>
 	<</button>>
-	<<button "짐승형 NPC 세팅 및 토글">>
+	<<button "짐승형 NPC 설정 및 토글">>
 		<<displaySubsection "beastSettings">>
 	<</button>>
-	<<button "가격 세팅">>
+	<<button "가격 설정">>
 		<<displaySubsection "priceSettings">>
 	<</button>>
+	/*ToDo: Pregnancy, remove check to properly enable*/
+	<<if $pregnancyTesting>>
+		<<button "임신 설정">>
+			<<displaySubsection "pregnancySettings">>
+		<</button>>
+	<</if>>
 	</div>
 
 	<div id="subsectionDiv">
@@ -674,6 +693,19 @@
 			<br>
 			<<numberslider "$blackchance" $blackchance 0 100 1>>
 			<br><br>
+			
+			<<if $pregnancyTesting>>
+				/*ToDo: Pregnancy, remove check to properly enable*/
+				<span class="gold">NPC들이 콘돔을 가지고 있을 가능성</span>
+				<br>
+				<<numberslider "$condomchance" $condomchance 0 100 1>>
+				<br><br>
+
+				<span class="gold">NPC들이 물어보지 않고 콘돔을 사용할 가능성</span>
+				<br>
+				<<numberslider "$condomautochance" $condomautochance 0 100 1>>
+				<br><br>
+			<</if>>
 		</div>
 	<</widget>>
 
@@ -719,6 +751,7 @@
 			<label><div class="settingsToggle">
 			<<checkbox "$parasitedisable" "t" "f" autocheck>> 기생충 활성화
 			</div></label>
+			/*ToDo: Pregnancy, remove duplicate option once enabled*/
 			<label><div class="settingsToggle">
 			<<checkbox "$analpregdisable" "t" "f" autocheck>> 항문 기생 임신 활성화
 			</div></label>
@@ -816,6 +849,59 @@
 		</div>
 	<</widget>>
 
+	<<widget "pregnancySettings">><<nobr>>
+		<div class="solidBorderContainer"><div class="numberslider-inline">
+			<div class="numberslider-inline basevaginalpregnancychance-container">
+				<span class="gold">Base Vaginal Pregnancy Chance</span>
+				<div class="small-description">Chance of conceiving when only being inseminated once at the right time, <span id="maxRequired"><<print 100 - $baseVaginalPregnancyChance>></span> times to guarantee. Some events may leave you with more than one helping of cum.</div>
+				<<numberslider "$baseVaginalPregnancyChance" $baseVaginalPregnancyChance 0 96 4>>
+			</div>
+			<<run $(() => { $('.basevaginalpregnancychance-container input').on('input change', e => { 
+				let valSpan = $(e.currentTarget).siblings().first();
+				let value = valSpan.text();
+				
+				valSpan.text((i, value) => "1 in " + (100 - value));
+				$('#maxRequired').text(100 - $baseVaginalPregnancyChance);
+			}).trigger('change') })>>
+			<div class="numberslider-inline basenpcpregnancychance-container">
+				<span class="gold">Base NPC Pregnancy Chance</span>
+				<div class="small-description">Chance of an npc conceiving when only being inseminated once at the right time, <span id="npcMaxRequired"><<print 20 - $baseNpcPregnancyChance>></span> times to guarantee.</div>
+				<<numberslider "$baseNpcPregnancyChance" $baseNpcPregnancyChance 0 16 4>>
+			</div>
+			<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => { 
+				let valSpan = $(e.currentTarget).siblings().first();
+				let value = valSpan.text();
+				
+				valSpan.text((i, value) => "1 in " + (20 - value));
+				$('#npcMaxRequired').text(20 - $baseNpcPregnancyChance);
+			}).trigger('change') })>>
+			<div class="numberslider-inline">
+				<span class="gold">Human Pregnancy Length in Months</span>
+				<<numberslider "$humanPregnancyMonths" $humanPregnancyMonths 1 9 1>>
+			</div>
+			<div class="numberslider-inline">
+				<span class="gold">Wolf Pregnancy Length in Weeks</span>
+				<<numberslider "$wolfPregnancyWeeks" $wolfPregnancyWeeks 2 12 1>>
+			</div>
+			<br>
+			<div class="small-description"><span class="red">Will not stop existing pregnancy.</span></div>
+			<label><div class="settingsToggle">
+				<<checkbox "$playerPregnancyHumanDisable" "t" "f" autocheck>>
+				Enable Player Human Pregnancy
+			</div></label>
+			<label><div class="settingsToggle">
+				<<checkbox "$playerPregnancyBeastDisable" "t" "f" autocheck>> Enable Player Beast Pregnancy
+			</div></label>
+			<label><div class="settingsToggle">
+				<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> Enable NPC Pregnancy
+			</div></label>
+			<label><div class="settingsToggle">
+			<<checkbox "$analpregdisable" "t" "f" autocheck>> 항문 기생 임신 활성화
+			</div></label>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+	<</nobr>><</widget>>
+
 	<span class="gold">기능 토글</span>
 	<br>
 	<label><div class="settingsToggle">
@@ -866,8 +952,14 @@
 	<br>
 	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<!-- this hack is still required for arrays -->
-		<label><<print _name[_i]>> <<print '<<radiobutton "$breastsizemax" _i ' + ($breastsizemax is _i ? "checked" : "") + '>>'>></label> |
+		<label><<print _name[_i]>> <<radiobutton "$breastsizemax" `_i` autocheck>></label> |
+	<</for>>
+	<br><br>
+
+	<span class="gold">플레이어 캐릭터 최소 가슴 크기</span> - 이미 이 이하로 설정된 가슴은 자동으로 커지거나 하지 않습니다.
+	<br>
+	<<for _i to 0; _i lt 5; _i++>>
+		<label><<print _name[_i]>> <<radiobutton "$breastsizemin" `_i` autocheck>></label> |
 	<</for>>
 	<br><br>
 
@@ -879,19 +971,19 @@
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최대 자지 크기</span> - 이미 이 이상으로 설정된 음경은 자동으로 작아지거나 하지 않습니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다.
+	<span class="gold">플레이어 캐릭터 최대 자지 크기</span> - 이미 이 이상으로 설정된 자지는 자동으로 작아지거나 하지 않습니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다.
 	<br>
-	<<set _name to ["아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
+	<<set _name to ["진짜 작음", "아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<print '<<radiobutton "$penissizemax" ' + (_i - 1) + ' ' + ($penissizemax is (_i - 1) ? "checked" : "") + '>>'>></label> |
+		<label><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label> |
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최소 자지 크기</span> - 이미 이 이하로 설정된 음경은 자동으로 커지거나 하지 않습니다.
+	<span class="gold">플레이어 캐릭터 최소 자지 크기</span> - 이미 이 이하로 설정된 자지는 자동으로 커지거나 하지 않습니다. 더 작은 크기는 줄어들거나/커지려면 추가 요건이 필요합니다.
 	<br>
-	<<set _name to ["아주 작음", "조그마함"]>>
+	<<set _name to ["진짜 작음", "아주 작음", "조그마함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<print '<<radiobutton "$penissizemin" ' + (_i - 1) + ' ' + ($penissizemin is (_i - 1) ? "checked" : "") + '>>'>></label> |
+		<label><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label> |
 	<</for>>
 	<br><br>
 
@@ -1214,30 +1306,30 @@
 <<listbox "_npcId" autoselect>>
 	<<optionsfrom _npcList>>
 <</listbox>>
-<<if _npcId gt 0>>
-	| <<link 이전>>
+| <<link 이전>>
+	<<if _npcId is 0>>
+		<<set _npcId to $NPCNameList.length - 1>>
+	<<else>>
 		<<set _npcId-->>
-		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-	<</link>> |
-<<else>>
-	| 이전 |
-<</if>>
-<<if _npcId lt $NPCName.length>>
-	<<link 다음>>
-		<<set _npcId++>>
-		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-	<</link>>
-<<else>>
-	다음
-<</if>>
+	<</if>>
+	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+<</link>> |
+<<link 다음>>
+	<<set _npcId++>>
+	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+<</link>>
 <br><br>
 <span class="gold"><<trNamedNPC $NPCName[_npcId].title>>_trResult <<trNamedNPC $NPCName[_npcId].nam>>_trResult</span>
 <br>
 <label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> 여자</label> |
 <label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
 <br>
+<<if $NPCName[_npcId].pregnancy[0] is null>>
 <label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
 <label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
+<<else>>
+	임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
+<</if>>
 <br><br>
 자지 크기 - 가능할 경우:
 <br>

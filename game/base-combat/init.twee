@@ -43,6 +43,16 @@
 <<else>>
 	<<set $monster to 0>>
 <</if>>
+<<if random(0,99) lt $condomchance>>
+	<<set $npcCondoms to "normal">>
+<<else>>
+	/*<<set $npcCondoms to "damaged">>*/
+<</if>>
+
+/*ToDo: Pregnancy, remove to properly enable*/
+<<if $pregnancyTesting is undefined>>
+	<<set $condomUse to false>>
+<</if>>
 
 <<combatinit>>
 <</widget>>
@@ -127,6 +137,11 @@
 <</if>>
 
 <<set $enemytype to "beast">>
+<<if $NPCList[0].monster is "monster">>
+	<<set $monster to 1>>
+<<else>>
+	<<set $monster to 0>>
+<</if>>
 
 <!--Used to prevent certain variables being repeated during re-generation-->
 <<set $combatTrain.generateInit to 0>>
@@ -612,6 +627,9 @@
 <!-- 'dont' is just an invalid value so that the NPC won't know how to use its genitals,
 otherwise there's no easy way of stopping NPC from shoving their stuff in PC's face -->
 
+<!--Prevents the use of asking for condoms-->
+<<set $condomAsk to true>>
+
 <<combatinit>>
 <</widget>>
 
@@ -963,6 +981,28 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	<</if>>
 </div>
 <</if>>
+<<if $enemyarousal lt $enemyarousalmax>>
+	<<unset $condomVaginalImg>>
+	<<unset $condomAnalImg>>
+	<<unset $condomPlayerPenisImg>>
+<</if>>
+<<for $_j = $enemyno-1; $_j gte _end; $_j-->>
+	<<if ["vaginaentrance","vaginaimminent","vagina"].includes($NPCList[$_j].penis) and $NPCList[$_j].condom isnot false>>
+		<<if $NPCList[$_j].condom.damaged is false>>
+			<<set $condomVaginalImg to true>>
+		<</if>>
+	<</if>>
+	<<if ["anusentrance","anusimminent","anus"].includes($NPCList[$_j].penis) and $NPCList[$_j].condom isnot false>>
+		<<if $NPCList[$_j].condom.damaged is false>>
+			<<set $condomAnalImg to true>>
+		<</if>>
+	<</if>>
+<</for>>
+<<if $player.condom isnot false>>
+	<<if $player.condom.damaged is false>>
+		<<set $condomPlayerPenisImg to true>>
+	<</if>>
+<</if>>
 
 <<set $rng to random(1, 100)>>
 
@@ -978,7 +1018,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	/*Comment for seeing herm character genitals for the first time*/
 	<<set $crossdressing to 0>>
 	<<exposedcheck true>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and $npc[0] is "Kylar")>>
+	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and ($npc[0] is "Kylar" or $npc[0] is "Sydney"))>>
 		<<schoolrep herm 1>>
 	<</if>>
 	<<if $enemyno gte 2>>
@@ -999,7 +1039,15 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 		<br><br>
 	<<else>>
-		<<if $rng gte 96 and !$npc.includes("Kylar")>>
+		<<if $npc.includes("Sydney") and !$sydneySeen.includes("herm")>>
+			<<set $sydneySeen.pushUnique("herm")>>
+			<<sydneyStatusCheck>>
+			<<if _sydneyStatus.includes("corrupt")>>
+				<<He_nun>> 당신의 <<genitals_rul>> 경이에 차서 쳐다본다. "우와! <<sydneyMum>>는 그런게 가능하다고는 전혀 말해주지 않았어."
+			<<else>>
+				<<He_nun>> 당신의 <<genitals_rul>> 엄청난 호기심으로 바라본다. "두...둘 다? 그런게 가능하다는 것은 몰랐어!"
+			<</if>><<npcincr Sydney purity -2>><<lspurity>>
+		<<elseif $rng gte 96>>
 			<span class="red">저들은 당신의 <<genitalsPost "을">>보고 공포와 역겨움에 물러선다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
 		<<elseif $rng gte 85 or $npc.includes("Kylar")>>
@@ -1030,7 +1078,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 			<<set _newTrait to true>>
 		<</if>>
 	<</if>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and $npc[0] is "Kylar")>>
+	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and ($npc[0] is "Kylar" or $npc[0] is "Sydney"))>>
 		<<schoolrep crossdress 1>>
 	<</if>>
 	<<if $enemyno gte 2>>
@@ -1051,7 +1099,15 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 		<br><br>
 	<<else>>
-		<<if $rng gte 96 and !$npc.includes("Kylar")>>
+		<<if $npc.includes("Sydney") and !$sydneySeen.includes("crossdress")>>
+			<<set $sydneySeen.pushUnique("crossdress")>>
+			<<sydneyStatusCheck>>
+			<<if _sydneyStatus.includes("corrupt")>>
+				<<He_nun>> 어리둥절하게 당신의 <<genitals_rul>> 바라본다. "원래, 네가 <<gender_rago>>? 뭐, 그게 내가 너에 대해 느끼는 것을 바꾸지는 않겠지만."
+			<<else>>
+				<<He_nun>> 혼란스럽게 당신의 <<genitals_rul>> 쳐다본다. "네가... <<gender_rago>>? 그-그것도 괜찮아! 네가 전혀 달라지지 않았다고 생각해!"
+			<</if>><<npcincr Sydney purity -2>><<lspurity>>
+		<<elseif $rng gte 96>>
 			<span class="red"><<HePost "이">> 당신의 <<genitalsPost "을">> 보고 공포에 물러선다. 속았다 느낀 <<HePost "은">> 분노에 미쳐 버린 것 같다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechcrossdressangry to 2>>
 		<<elseif $rng gte 86 or ($npc.includes("Kylar") and $NPCList[0].gender isnot $player.gender)>>

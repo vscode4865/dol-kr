@@ -36,10 +36,14 @@
 	<</if>>
 	<<for _j = $enemyno-1; _j gte _end; _j-->>
 		<<if $NPCList[_j].penis is 0>>
-			<<if $consensual is 1 and ($promiscuity lte 74 and $enemytype is "man" or $deviancy lte 74 and $enemytype isnot "man")>>
+			<<if $consensual is 1 and ($promiscuity lte 74 and $enemytype is "man" or $deviancy lte 74 and $enemytype isnot "man") and !$promiscuityIgnore>>
 				<!-- Do Nothing -->
 			<<elseif $NPCList[_j].stance isnot "topface" and ($enemytype isnot "man" or ($NPCList[_j].location.genitals is 0 and $NPCList[_j].location.head isnot "genitals"))>>
-				<<set _anusaction["자지에 올라탄다"] to "anustopenis">>
+				<<if $NPCList[_j].chastity.penis.includes("chastity")>>
+					<<trClothes "genitals" $NPCList[_j].chastity.penis "name" "에">><<set _anusaction[$NPCList[_j].pronouns.his + " " + _trResult +" 올라탄다"] to "anustopenis">>
+				<<else>>
+					<<set _anusaction[$NPCList[_j].pronouns.his + " 자지에 올라탄다"] to "anustopenis">>
+				<</if>>
 				<<break>>
 			<</if>>
 		<</if>>
@@ -65,9 +69,9 @@
 				<!-- Do Nothing -->
 			<<else>>
 				<<if $anusactiondefault is "anuspenisfuck">>
-					| <label><span class="sub"><<hisPost "의">> 자지를 받아들인다</span> <<radiobutton "$anusaction" "anuspenisfuck" checked>> <<combatpromiscuous5>><<analvirginitywarning>></label>
+					| <label><span class="sub"><<hisPost "의">> 자지를 받아들인다</span> <<radiobutton "$anusaction" "anuspenisfuck" checked>> <<combatpromiscuous5>><<analvirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "penile">></label>
 				<<else>>
-					| <label><span class="sub"><<hisPost "의">> 자지를 받아들인다</span> <<radiobutton "$anusaction" "anuspenisfuck">> <<combatpromiscuous5>><<analvirginitywarning>></label>
+					| <label><span class="sub"><<hisPost "의">> 자지를 받아들인다</span> <<radiobutton "$anusaction" "anuspenisfuck">> <<combatpromiscuous5>><<analvirginitywarning>><<NPCvirginitywarning $NPCList[_j].fullDescription "penile">></label>
 				<</if>>
 				<<break>>
 			<</if>>
@@ -88,10 +92,10 @@
 	<</if>>
 	<<for _j = $enemyno-1; _j gte _end; _j-->>
 		<<if $NPCList[_j].penis is "anusentrance" or $NPCList[_j].penis is "anusimminent">>
-			<<if $consensual is 1 and ($promiscuity lte 74 and $enemytype is "man" or $deviancy lte 74 and $enemytype isnot "man")>>
+			<<if $consensual is 1 and (($promiscuity lte 74 and $enemytype is "man" or $deviancy lte 74 and $enemytype isnot "man") and !$promiscuityIgnore) or $NPCList[_j].chastity.penis.includes("chastity")>>
 				<!-- Do Nothing -->
 			<<else>>
-				<<set _anusaction["자지를 받아들인다"] to "anuspenisfuck">>
+				<<set _anusaction[$NPCList[_j].pronouns.his + " 자지를 받아들인다"] to "anuspenisfuck">>
 				<<break>>
 			<</if>>
 		<</if>>
@@ -101,20 +105,40 @@
 <</widget>>
 
 <<widget "actionsanusMouthEntrance">>
-<<if $consensual is 1 and $promiscuity lt 0>>
+<<if $combattype is "train">>
+	<<set _end to $enemyno-1>>
 <<else>>
-	<<set _anusaction["입을 엉덩이로 누른다"] to "bottombay">>
+	<<set _end to 0>>
 <</if>>
-<<set _anusaction["얼굴에 문지른다"] to "othermouthtease">>
+<<for _j = $enemyno-1; _j gte _end; _j-->>
+	<<if $NPCList[_j].mouth is "anusentrance">>
+		<<if $consensual is 1 and $promiscuity lt 0 and !$promiscuityIgnore>>
+		<<else>>
+			<<set _anusaction[$NPCList[_j].pronouns.his + " 입을 엉덩이로 누른다"] to "bottombay">>
+		<</if>>
+		<<set _anusaction[$NPCList[_j].pronouns.his + " 얼굴에 문지른다"] to "othermouthtease">>
+		<<break>>
+	<</if>>
+<</for>>
 <</widget>>
 
 <<widget "actionsanusMouthImminent">>
-<<set _anusaction["입술에 비빈다"] to "othermouthrub">>
-<<set _anusaction["밀어낸다"] to "othermouthescape">>
+<<if $combattype is "train">>
+	<<set _end to $enemyno-1>>
+<<else>>
+	<<set _end to 0>>
+<</if>>
+<<for _j = $enemyno-1; _j gte _end; _j-->>
+	<<if $NPCList[_j].mouth is "anusimminent">>
+		<<set _anusaction[$NPCList[_j].pronouns.his + " 입술에 비빈다"] to "othermouthrub">>
+		<<set _anusaction["밀어낸다"] to "othermouthescape">>
+		<<break>>
+	<</if>>
+<</for>>
 <</widget>>
 
 <<widget "actionsanusMouthPenetration">>
-<<if $consensual is 0 or ($promiscuity lte 54 and $enemytype is "man") or ($deviancy lte 54 and $enemytype isnot "man")>>
+<<if $consensual is 0 or ($promiscuity lte 54 and $enemytype is "man" and !$promiscuityIgnore) or ($deviancy lte 54 and $enemytype isnot "man" and !$promiscuityIgnore)>>
 	<<set _anusaction["협조한다"] to "othermouthcooperate">>
 <<else>>
 	<<set _anusaction["허리를 흔든다"] to "othermouthcooperate">>
@@ -122,7 +146,7 @@
 <</widget>>
 
 <<widget "actionsanusPenisEntrance">>
-<<if $consensual is 1 and ($promiscuity lte 54 and $enemytype is "man" or $deviancy lte 54 and $enemytype isnot "man")>>
+<<if $consensual is 1 and ($promiscuity lte 54 and $enemytype is "man" or $deviancy lte 54 and $enemytype isnot "man") and !$promiscuityIgnore>>
 <<else>>
 	<<set _anusaction["엉덩이로 자지를 떼어 놓는다"] to "penischeeks">>
 <</if>>
@@ -142,7 +166,7 @@
 
 <<widget "actionsanusPenisPenetration">>
 <<set _anusaction["하는대로 둔다"] to "take">>
-<<if $consensual is 0 or ($promiscuity lte 54 and $enemytype is "man") or ($deviancy lte 54 and $enemytype isnot "man")>>
+<<if $consensual is 0 or ($promiscuity lte 54 and $enemytype is "man" and !$promiscuityIgnore) or ($deviancy lte 54 and $enemytype isnot "man" and !$promiscuityIgnore)>>
 	<<set _anusaction["협조한다"] to "cooperate">>
 <<else>>
 	<<set _anusaction["같이 허리를 흔든다"] to "cooperate">>
@@ -182,7 +206,12 @@
 				<<if $rightarm is "anus">>
 					<<set $rightarm to 0>>
 				<</if>>
-				<span class="lblue">당신은 <<personselect _j>><<combatpersonPost "의">> 위에 올라타 <<his1Post "의">> <<trPenisdesc $NPCList[_j].penisdesc "을">>_trResult <<bottomPost "으로">> 누른다.</span>
+				<span class="lblue">당신은 <<personselect _j>><<combatpersonPost "의">> 위에 올라타 <<his1Post "의">> <<npcPenisPost _j "을">> <<bottomPost "으로">> 누른다.</span>
+				<<if $condomUse is false>>
+				<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_j].condom is false>>
+					<<equipCondom _j>>
+					<span class="green"><<He_nun>> <<his_yi>> 자지에 콘돔을 씌운다.</span>
+				<</if>>
 				<<if $enemytype is "beast">><<set $NPCList[_j].stance to "top">><</if>>
 				<<set $NPCList[_j].location.genitals to "genitals">>
 				<<break>>
@@ -191,7 +220,7 @@
 	<<else>>
 		<<for _j = $enemyno-1; _j gte _end; _j-->>
 			<<if $NPCList[_j].penis is 0>>
-				<span class="blue"><<personselect _j>><<combatpersonPost>> 위에 올라타려 했으나 <<ohePost "이">> 당신을 밀어낸다.</span>
+				<span class="blue">당신은 <<personselect _j>><<combatpersonPost>> 위에 올라타려 했으나 <<ohePost "이">> 당신을 밀어낸다.</span>
 				<<break>>
 			<</if>>
 		<</for>>
@@ -225,7 +254,7 @@
 					<<default>>
 						<span class="lewd">남근이 몸 안에 침범하자 당신은 몸을 떤다.</span>
 					<</switch>>
-					<<sex 30>><<analstat>><<raped>><<anusraped>><<set $anusstate to "penetrated">>
+					<<sex 30>><<takeNPCVirginity $NPCList[_j].fullDescription "penile">><<analstat>><<raped>><<anusraped>><<set $anusstate to "penetrated">>
 					<<break>>
 				<<elseif $player.virginity.anal is true>>
 					<<set $NPCList[_j].penis to "anus">>
@@ -236,7 +265,7 @@
 						<<case 1>><span class="red"><<bottomPost "이">> 이런 식으로 범해지는 건 이번이 처음이지만, <<hisPost "의">> 좆이 너무 작아 느낌조차 없다.</span>
 						<<default>><span class="red"><<bottomPost "이">> 처음으로 범해지는 동안 당신은 숨을 헐떡인다.</span>
 					<</switch>>
-					<<sex 100>><<takeVirginity $NPCList[_j].fullDescription "anal">><<bruise anus>><<analstat>><<violence 30>><<raped>><<anusraped>><<set $anusstate to "penetrated">><<set $speechanusvirgin to 1>>
+					<<sex 100>><<takeVirginity $NPCList[_j].fullDescription "anal">><<takeNPCVirginity $NPCList[_j].fullDescription "penile">><<bruise anus>><<analstat>><<violence 30>><<raped>><<anusraped>><<set $anusstate to "penetrated">><<set $speechanusvirgin to 1>>
 					<<break>>
 				<</if>>
 			<<else>>

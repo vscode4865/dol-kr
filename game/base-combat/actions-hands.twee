@@ -35,10 +35,10 @@
 			<</if>>
 		<</if>>
 		<<if $leftactiondefault is "leftstroke">>
-			| <label><span class="sub"><<hisPost "의">> 자지를 훑는다</span> <<radiobutton "$leftaction" "leftstroke" checked>></label>
+			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$leftaction" "leftstroke" checked>></label>
 			<<break>>
 		<<else>>
-			| <label><span class="sub"><<hisPost "의">> 자지를 훑는다</span> <<radiobutton "$leftaction" "leftstroke">></label>
+			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$leftaction" "leftstroke">></label>
 			<<break>>
 		<</if>>
 	<</if>>
@@ -56,12 +56,20 @@
 
 <<for _j = $enemyno-1; _j gte _end; _j-->>
 	<<if $NPCList[_j].penis is 0>>
-		<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man")>>
+		<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 		<!-- Do Nothing -->
 		<<else>>
-			<<set _leftaction["자지를 잡는다"] to "leftgrab">>
+			<<if $NPCList[_j].chastity.penis.includes("chastity")>>
+				<<trClothes "genitals" $NPCList[_j].chastity.penis "name" "을">><<set _leftaction[$NPCList[_j].pronouns.his + " 자지를 " + _trResult + " 통해서 희롱한다"] to "leftgrab">>
+			<<else>>
+				<<set _leftaction[$NPCList[_j].pronouns.his + " 자지를 잡는다"] to "leftgrab">>
+			<</if>>
 		<</if>>
-		<<set _leftaction["자지를 훑는다"] to "leftstroke">>
+		<<if $NPCList[_j].chastity.penis.includes("chastity")>>
+			<<trClothes "genitals" $NPCList[_j].chastity.penis "name" "을">><<set _leftaction[$NPCList[_j].pronouns.his + " 자지를 " + _trResult + " 통해서 쓰다듬는다"] to "leftstroke">>
+		<<else>>
+			<<set _leftaction[$NPCList[_j].pronouns.his + " 자지를 쓰다듬는다"] to "leftstroke">>
+		<</if>>
 		<<break>>
 	<</if>>
 <</for>>
@@ -101,12 +109,16 @@
 	<<set _end to 0>>
 <</if>>
 
-<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man")>>
+<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 	<!-- Do Nothing -->
 <<else>>
 	<<for _j = $enemyno-1; _j gte _end; _j-->>
 		<<if $NPCList[_j].vagina is 0>>
-			<<set _leftaction["보지를 만지작거린다"] to "leftplay">>
+			<<if $NPCList[_j].chastity.vagina.includes("chastity")>>
+				<<trClothes "genitals" $NPCList[_j].chastity.vagina "name" "을">><<set _leftaction[$NPCList[_j].pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "leftplay">>
+			<<else>>
+				<<set _leftaction[$NPCList[_j].pronouns.his + " 보지를 만지작거린다"] to "leftplay">>
+			<</if>>
 			<<break>>
 		<</if>>
 	<</for>>
@@ -381,6 +393,38 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<</if>>
 <</widget>>
 
+<<widget "leftComdom">>
+<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $penisexist>>
+	<<if $player.condom is false and $condoms gt 0 and $parasite.penis.name is undefined>>
+		<<set _leftaction["콘돔을 씌운다 (" + $condoms + ")"] to "peniscondom">>
+	<</if>>
+	<<if $player.condom isnot false>>
+		<<set _leftaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "leftUndressOther">>
+
+<<if $combattype is "train">>
+	<<set _end to $enemyno-1>>
+<<else>>
+	<<set _end to 0>>
+<</if>>
+
+<<for _j = $enemyno-1; _j gte _end; _j-->>
+	<<if $NPCList[_j].penis is "clothed" or $NPCList[_j].vagina is "clothed">>
+		<<if ($consensual is 1 and ($promiscuity lte 14 and $enemytype is "man" or $deviancy lte 14 and $enemytype isnot "man") and !$promiscuityIgnore) or $consensual isnot 1>>
+		<!-- Do Nothing -->
+		<<else>>
+			<<set _leftaction[$NPCList[_j].pronouns.him + ($consensual is 1 ? " 벗긴다" : " 벗기려 시도한다")] to "leftUndressOther">>
+		<</if>>
+		<<break>>
+	<</if>>
+<</for>>
+
+<</widget>>
+
 :: Widgets Actions Right Hand [widget]
 
 <<widget "rightdefault">>
@@ -419,10 +463,10 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			<</if>>
 		<</if>>
 		<<if $rightactiondefault is "rightstroke">>
-			| <label><span class="sub"><<hisPost "의">> 자지를 훑는다</span> <<radiobutton "$rightaction" "rightstroke" checked>></label>
+			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$rightaction" "rightstroke" checked>></label>
 			<<break>>
 		<<else>>
-			| <label><span class="sub"><<hisPost "의">> 자지를 훑는다</span> <<radiobutton "$rightaction" "rightstroke">></label>
+			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$rightaction" "rightstroke">></label>
 			<<break>>
 		<</if>>
 	<</if>>
@@ -440,13 +484,21 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 <<for _j = $enemyno-1; _j gte _end; _j-->>
 	<<if $NPCList[_j].penis is 0>>
-		<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man")>>
+		<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 		<!-- Do Nothing -->
 		<<else>>
 			/*Missing <<handdifficulty>> <<combatpromiscuous3>>*/
-			<<set _rightaction["자지를 잡는다"] to "rightgrab">>
+			<<if $NPCList[_j].chastity.penis.includes("chastity")>>
+				<<trClothes "genitals" $NPCList[_j].chastity.penis "name" "을">><<set _rightaction[$NPCList[_j].pronouns.his + " 자지를 " + _trResult + " 통해서 희롱한다"] to "rightgrab">>
+			<<else>>
+				<<set _rightaction[$NPCList[_j].pronouns.his + " 자지를 잡는다"] to "rightgrab">>
+			<</if>>
 		<</if>>
-		<<set _rightaction["자지를 훑는다"] to "rightstroke">>
+		<<if $NPCList[_j].chastity.penis.includes("chastity")>>
+			<<trClothes "genitals" $NPCList[_j].chastity.penis "name" "을">><<set _rightaction[$NPCList[_j].pronouns.his + " 자지를 " + _trResult + " 통해서 쓰다듬는다"] to "rightstroke">>
+		<<else>>
+			<<set _rightaction[$NPCList[_j].pronouns.his + " 자지를 쓰다듬는다"] to "rightstroke">>
+		<</if>>
 		<<break>>
 	<</if>>
 <</for>>
@@ -487,12 +539,16 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<set _end to 0>>
 <</if>>
 
-<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man")>>
+<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 	<!-- Do Nothing -->
 <<else>>
 	<<for _j = $enemyno-1; _j gte _end; _j-->>
 		<<if $NPCList[_j].vagina is 0>>
-			<<set _rightaction["보지를 만지작거린다"] to "rightplay">>
+			<<if $NPCList[_j].chastity.vagina.includes("chastity")>>
+				<<trClothes "genitals" $NPCList[_j].chastity.vagina "name" "을">><<set _rightaction[$NPCList[_j].pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "rightplay">>
+			<<else>>
+				<<set _rightaction[$NPCList[_j].pronouns.his + " 보지를 만지작거린다"] to "rightplay">>
+			<</if>>
 			<<break>>
 		<</if>>
 	<</for>>
@@ -752,6 +808,38 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			<</if>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "rightComdom">>
+<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $penisexist>>
+	<<if $player.condom is false and $condoms gt 0>>
+		<<set _rightaction["콘돔을 씌운다 (" + $condoms + ")"] to "peniscondom">>
+	<</if>>
+	<<if $player.condom isnot false>>
+		<<set _rightaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "rightUndressOther">>
+
+<<if $combattype is "train">>
+	<<set _end to $enemyno-1>>
+<<else>>
+	<<set _end to 0>>
+<</if>>
+
+<<for _j = $enemyno-1; _j gte _end; _j-->>
+	<<if $NPCList[_j].penis is "clothed" or $NPCList[_j].vagina is "clothed">>
+		<<if ($consensual is 1 and ($promiscuity lte 14 and $enemytype is "man" or $deviancy lte 14 and $enemytype isnot "man") and !$promiscuityIgnore) or $consensual isnot 1>>
+		<!-- Do Nothing -->
+		<<else>>
+			<<set _rightaction[$NPCList[_j].pronouns.him + ($consensual is 1 ? " 벗긴다" : " 벗기려 시도한다")] to "rightUndressOther">>
+		<</if>>
+		<<break>>
+	<</if>>
+<</for>>
+
 <</widget>>
 
 :: Widgets Actions Either Hand [widget]
@@ -1174,80 +1262,108 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 <<if $leftaction is "penwhack">><<set $leftaction to 0>>
 	<<if $NPCList[0].lefthand is "pen">>
-		당신은 <<person1>><<personPost "의">> 손에서  <<lefttool_ul 0>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person1>><<personPost "의">> 손에서 <<lefttool_ul 0>> 쳐낸다.
+		<<if $npc[0] is "Sydney" or ($npc[0] is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35)>>
+    		<<He_nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+            <<brat 2>>
+        <<else>>
+            <<HePost "의">> 얼굴에 분노가 번진다.
+            <<brat 5>>
+        <</if>>
 		<<brat 5>><<set $NPCList[0].lefthand to 0>><<set $NPCList[0].lefttool to 0>>
 	<<elseif $NPCList[0].righthand is "pen">>
-		당신은 <<person1>><<personPost "의">> 손에서 <<righttool_ul 0>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		You whack the <<print $NPCList[0].righttool>> from the <<person1>><<persons>> hand.
+		<<if $npc[0] is "Sydney" or ($npc[0] is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35)>>
+    		<<He_nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+            <<brat 2>>
+        <<else>>
+            <<HePost "의">> 얼굴에 분노가 번진다.
+            <<brat 5>>
+        <</if>>
 		<<brat 5>><<set $NPCList[0].righthand to 0>><<set $NPCList[0].righttool to 0>>
 	<<elseif $NPCList[1].lefthand is "pen">>
-		당신은 <<person2>><<personPost "의">> 손에서  <<lefttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person2>><<personPost "의">> 손에서 <<lefttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[1].lefthand to 0>><<set $NPCList[1].lefttool to 0>>
 	<<elseif $NPCList[1].righthand is "pen">>
-		당신은 <<person2>><<personPost "의">> 손에서  <<righttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person2>><<personPost "의">> 손에서 <<righttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[1].righthand to 0>><<set $NPCList[1].righttool to 0>>
 	<<elseif $NPCList[2].lefthand is "pen">>
-		당신은 <<person3>><<personPost "의">> 손에서  <<lefttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person3>><<personPost "의">> 손에서 <<lefttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[2].lefthand to 0>><<set $NPCList[2].lefttool to 0>>
 	<<elseif $NPCList[2].righthand is "pen">>
-		당신은 <<person3>><<personPost "의">> 손에서  <<righttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person3>><<personPost "의">> 손에서 <<righttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[2].righthand to 0>><<set $NPCList[2].righttool to 0>>
 	<<elseif $NPCList[3].lefthand is "pen">>
-		당신은 <<person4>><<personPost "의">> 손에서  <<lefttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person4>><<personPost "의">> 손에서 <<lefttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[3].lefthand to 0>><<set $NPCList[3].lefttool to 0>>
 	<<elseif $NPCList[3].righthand is "pen">>
-		당신은 <<person4>><<personPost "의">> 손에서  <<righttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person4>><<personPost "의">> 손에서 <<righttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[3].righthand to 0>><<set $NPCList[3].righttool to 0>>
 	<<elseif $NPCList[4].lefthand is "pen">>
-		당신은 <<person5>><<personPost "의">> 손에서  <<lefttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person5>><<personPost "의">> 손에서 <<lefttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[4].lefthand to 0>><<set $NPCList[4].lefttool to 0>>
 	<<elseif $NPCList[4].righthand is "pen">>
-		당신은 <<person5>><<personPost "의">> 손에서  <<righttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person5>><<personPost "의">> 손에서 <<righttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[4].righthand to 0>><<set $NPCList[4].righttool to 0>>
 	<<elseif $NPCList[5].lefthand is "pen">>
-		당신은 <<person6>><<personPost "의">> 손에서  <<lefttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person6>><<personPost "의">> 손에서 <<lefttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[5].lefthand to 0>><<set $NPCList[5].lefttool to 0>>
 	<<elseif $NPCList[5].righthand is "pen">>
-		당신은 <<person6>><<personPost "의">> 손에서  <<righttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person6>><<personPost "의">> 손에서 <<righttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[5].righthand to 0>><<set $NPCList[5].righttool to 0>>
 	<</if>>
 <</if>>
 
 <<if $rightaction is "penwhack">><<set $rightaction to 0>>
 	<<if $NPCList[0].lefthand is "pen">>
-		당신은 <<person1>><<personPost "의">> 손에서  <<lefttool_ul 0>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person1>><<personPost "의">> 손에서 <<lefttool_ul 0>> 쳐낸다.
+		<<if $npc.includes("Sydney") or ($npc.includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35)>>
+    		<<He_nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+            <<brat 2>>
+        <<else>>
+            <<HePost "의">> 얼굴에 분노가 번진다.
+            <<brat 5>>
+        <</if>>
 		<<brat 5>><<set $NPCList[0].lefthand to 0>><<set $NPCList[0].lefttool to 0>>
 	<<elseif $NPCList[0].righthand is "pen">>
-		당신은 <<person1>><<personPost "의">> 손에서 <<righttool_ul 0>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		You whack the <<print $NPCList[0].righttool>> from the <<person1>><<persons>> hand.
+		<<if $npc[0] is "Sydney" or ($npc[0] is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35)>>
+    		<<He_nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+            <<brat 2>>
+        <<else>>
+            <<HePost "의">> 얼굴에 분노가 번진다.
+            <<brat 5>>
+        <</if>>
 		<<brat 5>><<set $NPCList[0].righthand to 0>><<set $NPCList[0].righttool to 0>>
 	<<elseif $NPCList[1].lefthand is "pen">>
-		당신은 <<person2>><<personPost "의">> 손에서  <<lefttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person2>><<personPost "의">> 손에서 <<lefttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[1].lefthand to 0>><<set $NPCList[1].lefttool to 0>>
 	<<elseif $NPCList[1].righthand is "pen">>
-		당신은 <<person2>><<personPost "의">> 손에서  <<righttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person2>><<personPost "의">> 손에서 <<righttool_ul 1>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[1].righthand to 0>><<set $NPCList[1].righttool to 0>>
 	<<elseif $NPCList[2].lefthand is "pen">>
-		당신은 <<person3>><<personPost "의">> 손에서  <<lefttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person3>><<personPost "의">> 손에서 <<lefttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[2].lefthand to 0>><<set $NPCList[2].lefttool to 0>>
 	<<elseif $NPCList[2].righthand is "pen">>
-		당신은 <<person3>><<personPost "의">> 손에서  <<righttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person3>><<personPost "의">> 손에서 <<righttool_ul 2>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[2].righthand to 0>><<set $NPCList[2].righttool to 0>>
 	<<elseif $NPCList[3].lefthand is "pen">>
-		당신은 <<person4>><<personPost "의">> 손에서  <<lefttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person4>><<personPost "의">> 손에서 <<lefttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[3].lefthand to 0>><<set $NPCList[3].lefttool to 0>>
 	<<elseif $NPCList[3].righthand is "pen">>
-		당신은 <<person4>><<personPost "의">> 손에서  <<righttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person4>><<personPost "의">> 손에서 <<righttool_ul 3>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[3].righthand to 0>><<set $NPCList[3].righttool to 0>>
 	<<elseif $NPCList[4].lefthand is "pen">>
-		당신은 <<person5>><<personPost "의">> 손에서  <<lefttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person5>><<personPost "의">> 손에서 <<lefttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[4].lefthand to 0>><<set $NPCList[4].lefttool to 0>>
 	<<elseif $NPCList[4].righthand is "pen">>
-		당신은 <<person5>><<personPost "의">> 손에서  <<righttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person5>><<personPost "의">> 손에서 <<righttool_ul 4>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[4].righthand to 0>><<set $NPCList[4].righttool to 0>>
 	<<elseif $NPCList[5].lefthand is "pen">>
-		당신은 <<person6>><<personPost "의">> 손에서  <<lefttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person6>><<personPost "의">> 손에서 <<lefttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[5].lefthand to 0>><<set $NPCList[5].lefttool to 0>>
 	<<elseif $NPCList[5].righthand is "pen">>
-		당신은 <<person6>><<personPost "의">> 손에서  <<righttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
+		당신은 <<person6>><<personPost "의">> 손에서 <<righttool_ul 5>> 쳐낸다. <<HePost "의">> 얼굴에 분노가 번진다.
 		<<brat 5>><<set $NPCList[5].righthand to 0>><<set $NPCList[5].righttool to 0>>
 	<</if>>
 <</if>>

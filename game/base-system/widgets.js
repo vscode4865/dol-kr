@@ -166,6 +166,17 @@ function genderappearancecheck() {
 			(V.breastsize - 4) * 100, 0, Infinity
 		), "옷 너머로 가슴 크기 확인 가능");
 	}
+	/* Pregnant Belly */
+	if (V.sexStats === undefined) {
+	}else if (V.sexStats.vagina.pregnancy.bellySize >= 8) {
+		addfemininityfromfactor(Math.clamp(
+			100000, 0, Infinity
+		), "임신한 배");
+	}else if (V.sexStats.vagina.pregnancy.bellySize >= 5) {
+		addfemininityfromfactor(Math.clamp(
+			(V.sexStats.vagina.pregnancy.bellySize - 4) * 500, 0, Infinity
+		), "임신한 배");
+	}
 	/* Body writing */
 	Wikifier.wikifyEval("<<bodywriting_exposure_check>>"); // TODO convert to JS when possible
 	T.skinValue = 0;

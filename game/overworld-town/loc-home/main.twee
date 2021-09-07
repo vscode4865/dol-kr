@@ -14,6 +14,20 @@
 	당신은 구속구를 책상에다가 대고 문댄다. 노력이 좀 필요하긴 했으나, 결국에는 부서지며 팔이 자유로와졌다.
 	<br><br>
 <</if>>
+<<if $study is 1>>
+	<<unset $study>>
+	<<if $phase is 1>><<scienceskill>>
+		당신은 당신의 침대에 앉아 과학 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 2>><<mathsskill>>
+		당신은 당신의 침대에 앉아 수학 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 3>><<englishskill>>
+		당신은 당신의 침대에 앉아 영어 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 4>><<historyskill>>
+		당신은 당신의 침대에 앉아 역사 교과서를 펴고 한번 주욱 읽는다.
+	<</if>>
+	<<endevent>>
+	<br><br>
+<</if>>
 <<if $stress gte $stressmax>>
 	<<passouthome>>
 <<elseif $christmas is 1 and $monthday is 25 and $christmas_robin_visit is undefined and $christmas_robin_gift_received is undefined and $daystate isnot "night" and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
@@ -31,6 +45,8 @@
 		<br><br>
 	<</if>>
 	<<projectoptions>>
+	<<homeStudyOptions>>
+	<br>
 	<<christmas_options>>
 	<<if $debug is 1>>
 		/*indev radio testing*/
@@ -275,6 +291,7 @@
 		<<ind>><<link [[음모를 다듬는다->Shave]]>><</link>>
 		<br>
 	<</if>>
+	<<pregnancyTest "Bedroom">>
 	<br>
 
 	<<bedroomicon>><<link [[방 (0:01)->Bedroom]]>><<pass 1>><</link>>
@@ -417,12 +434,24 @@
 			<<if $motherwake is 1>>
 				당신은 다시 잠에 들려 하지만, 베일리가 노크를 하며 일어나라고 한다.
 			<<else>>
-				당신은 뭔가 어둡고 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다. 악몽은 문을 두들기는 소리에 끝난다. 베일리가 학교에 가라고 당신을 깨우고 있다.
+				<<wakingEffects $sleepHoursTotal>>
+				<<if _wakingEffect isnot undefined>>
+					당신은 조금 전에
+				<<else>>
+					당신은 당신이
+				<</if>>
+				뭔가 어둡고 끔찍한 것에 뒤를 쫓기는 꿈을 꾸었다. 악몽은 문을 두들기는 소리에 끝난다. 베일리가 학교에 가라고 당신을 깨우고 있다.
 			<</if>>
 			<br><br>
 			<<set $motherwake to 1>>
 		<<else>>
-			당신은 뭔가 어둡고 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다. 금방 자세한 내용은 까먹어 버렸지만, 흐릿한 공포가 남아있다.
+			<<wakingEffects $sleepHoursTotal>>
+			<<if _wakingEffect isnot undefined>>
+				당신은 조금 전에
+			<<else>>
+				당신은 당신이
+			<</if>>
+			뭔가 어둡고 끔찍한 것에 뒤를 쫓기는 꿈을 꾸었다. 금방 자세한 내용은 까먹어 버렸지만, 흐릿한 공포가 남아있다.
 			<br><br>
 		<</if>>
 	<<else>>
@@ -431,12 +460,22 @@
 			<<if $motherwake is 1>>
 				당신은 다시 잠에 들려 하지만, 베일리가 노크를 하며 일어나라고 한다.
 			<<else>>
-				당신은 편안하게 잠을 자다가, 문을 두들기는 소리에 일찍 잠에서 깬다. 베일리가 학교에 가라고 당신을 깨우고 있다.
+				<<wakingEffects $sleepHoursTotal>>
+				<<if _wakingEffect isnot undefined>>
+					편안하게 잠을 잤지만,
+				<<else>>
+					당신은 편안하게 잠을 자다가,
+				<</if>>
+				문을 두들기는 소리에 일찍 잠에서 깬다. 베일리가 학교에 가라고 당신을 깨우고 있다.
 			<</if>>
 			<br><br>
 			<<set $motherwake to 1>>
 		<<else>>
-			<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
+			<<wakingEffects $sleepHoursTotal>>
+			<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+				당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다. <<stress 5>><<gstress>>
+				<br><br>
+			<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
 				당신은 자는 동안 추잡한 꿈 때문에 괴로워한다.
 				<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
 				<<arousal `100 * $sleepHoursTotal`>>
@@ -446,6 +485,9 @@
 				<<else>>
 					<br><br>
 				<</if>>
+			<<elseif _mildNausea>>
+				You sleep soundly.
+				<br><br>
 			<<else>>
 				당신은 편안히 잠을 잤고, 상쾌한 기분으로 일어난다.
 				<br><br>
@@ -455,7 +497,10 @@
 	<<if $robinbed is 1>>
 		<<set $robinbed to 0>>
 		<<npc Robin>><<person1>>
-		<<if _orgasm is true>>
+		<<wakingEffects $sleepHoursTotal>>
+		<<if _wakingEffect is "dryheaving">>
+			"괜찮아? 내가 도와줄게," 로빈이 말하며, 당신의 등을 쓸어준다. <<He_nun>> 떠나기 전에 당신이 괜찮은지 본다. 
+		<<elseif _orgasm is true>>
 			<<if $exposed gte 2>>
 				로빈이 당신을 껴안는다. "나갈 테니까 옷-" <<hePost "은">> 자신과 당신의 몸이 축축한 걸 느끼고는 말을 멈춘다. <<HePost "은">> 얼굴을 붉히고는 티슈를 뽑아 당신과 나눠 가진다.
 				<<if $rng gte 71>>
@@ -1049,7 +1094,7 @@ Your skin is still damp.
 
 	<<link [[다음|Orphanage]]>><<endevent>><</link>>
 
-<<elseif $days gte 1 and $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and $hour gte 7 and $hour lte 20>>
+<<elseif $days gte 1 and $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and ($schoolday is 1 and ($hour is 7 or $hour gte 16 and $hour lte 20) or $schoolday isnot 1 and $hour gte 7 and $hour lte 20)>>
 	<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 	<<npc Robin>><<initnpc Robin>><<person1>>당신은 누군가 뒤에서 소리치는 걸 듣는다. "얘!" 로빈이다. <<HePost "은">> 고아원에 사는 다른 고아다. 로빈은 당신과 동갑이지만, 항상 당신을 우러러보고 있다. <<HePost "은">> 당신을 향해 뛰어오다가 제때 속도를 멈추지 못하고는, 당신과 충돌하여 거의 넘어질 뻔한다. 당신은 <<hisPost "의">> 팔을 잡아 균형을 유지한다. "고마워." 로빈이 말한다. 쑥스러운듯 하지만 여전히 미소를 짓고 있다.
 	<br><br>
@@ -1534,7 +1579,14 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <</if>>
 
 :: Widget Passout Home [widget]
-<<widget "passouthome">>[[모든 것이 암흑 속으로 사라져간다...->Passout home]]<</widget>>
+<<widget "passouthome">>
+/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
+<<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
+	<<pregnancyWatersBrokenPassout "home">>
+<<else>>
+	[[모든 것이 암흑 속으로 사라져간다...->Passout home]]
+<</if>>
+<</widget>>
 
 :: Bath Slime
 <<effects>>

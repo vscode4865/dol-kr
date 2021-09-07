@@ -33,6 +33,12 @@
 				"Great Hawk" : {
 					important : true,
 				},
+				"Sydney" : {
+					important : true,
+					love : { maxValue: 150 },			
+					purity : { requirements : State.variables.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
+					corruption : { requirements : State.variables.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
+				},
 				"Mason" : {
 					love : { maxValue : 50 }
 				},
@@ -54,7 +60,7 @@
 			};
 
 			/*This list is backwards due to the method used to sort via index, with unimportant NPCs being assigned -1*/
-			T.importantNpcOrder = [ "Alex", "Great Hawk", "Avery", "Kylar", "Eden", "Whitney", "Robin"];
+			T.importantNpcOrder = [ "Alex", "Great Hawk", "Avery", "Sydney", "Kylar", "Eden", "Whitney", "Robin"];
 
 			/*Clones the NPC list, and orderes it by important first, then by alphabetical order*/
 			T.orderedNPCs = V.NPCName.slice().sort(function(a, b) {
@@ -306,6 +312,14 @@
 				<<set _bestialityFameConfig =	{ currentValue: $famebestiality,	preText: '이종간:',		flavorText: '이상성욕자',		states: _fameStates }>>
 			<</if>>
 			<<set _exhibitionismFameConfig =	{ currentValue: $fameexhibitionism,	preText: '노출증:',		flavorText: '과시자',			states: _fameStates }>>
+			<<if $famepregnancy gte 600>>
+				<<set $_name to "번식 엄마">>
+			<<elseif $famepregnancy gte 200>>
+				<<set $_name to "번식자">>
+			<<else>>
+				<<set $_name to "엄마">>
+			<</if>>
+			<<set _pregnancyFameConfig = 		{ currentValue: $famepregnancy,		preText: '임신:',		flavorText: $_name,				states: _fameStates }>>
 			<<set _combatFameConfig =			{ currentValue: $famescrap,			preText: '전투:',		flavorText: '싸움꾼',			states: _inverseFameStates }>>
 			<<set _kindnessFameConfig =			{ currentValue: $famegood,			preText: '친절:',		flavorText: '박애주의자',		states: _inverseFameStates }>>
 			<<set _businessFameConfig =			{ currentValue: $famebusiness,		preText: '사업:',		flavorText: '사업가',			states: _inverseFameStates }>>
@@ -325,6 +339,7 @@
 			<<set _rapeFameBoxConfig =			{ description : '<<relation-text _rapeFameConfig>>' }>>
 			<<set _bestialityFameBoxConfig =	{ description : '<<relation-text _bestialityFameConfig>>' }>>
 			<<set _exhibitionismFameBoxConfig =	{ description : '<<relation-text _exhibitionismFameConfig>>' }>>
+			<<set _pregnancyFameBoxConfig = 	{ description : '<<relation-text _pregnancyFameConfig>>' }>>
 			<<set _combatFameBoxConfig =		{ description : '<<relation-text _combatFameConfig>>' }>>
 			<<set _kindnessFameBoxConfig =		{ description : '<<relation-text _kindnessFameConfig>>' }>>
 			<<set _businessFameBoxConfig =		{ description : '<<relation-text _businessFameConfig>>' }>>
@@ -337,6 +352,10 @@
 		<<relation-box-simple _rapeFameBoxConfig>>
 		<<relation-box-simple _bestialityFameBoxConfig>>
 		<<relation-box-simple _exhibitionismFameBoxConfig>>
+		/*ToDo: Pregnancy, remove check to properly enable*/
+		<<if $pregnancyTesting>>
+			<<relation-box-simple _pregnancyFameBoxConfig>>
+		<</if>>
 		<<relation-box-simple _combatFameBoxConfig>>
 		<<relation-box-simple _kindnessFameBoxConfig>>
 		<<relation-box-simple _businessFameBoxConfig>>
@@ -344,7 +363,7 @@
 		<<relation-box-simple _overallFameBoxConfig>>
 	</div>
 
-	도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost  부른다.
+	도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost 부른다.
 
 	<<if $syndromewolves is 1>>
 		<h4>기타</h4>

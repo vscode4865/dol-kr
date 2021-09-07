@@ -44,9 +44,17 @@
 	<<elseif $NPCList[0].intro is 1>>
 		<<set $NPCList[0].intro to 0>>
 		<<if $npcrow.includes(0)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(0)] $_post $_sep>>
+			<<if $npc.includes("Black Wolf") or $npc.includes("Great Hawk")>>
+				<<trNamedNPC $npc[$npcrow.indexOf(0)] $_post $_sep>><<set _trResult to "그 " + _trResult>>
+			<<else>>
+				<<trNamedNPC $npc[$npcrow.indexOf(0)] $_post $_sep>>
+			<</if>>
 		<<else>>
-			<<person1>><<personPost $_post $_sep>>
+			<<if $enemytype is "beast">>
+				<<beasttypePost $_post $_sep>>
+			<<else>>
+				<<person1>><<personPost $_post $_sep>>
+			<</if>>
 		<</if>>
 	<<elseif $NPCList[1].intro is 1>>
 		<<set $NPCList[1].intro to 0>>
@@ -192,26 +200,12 @@
     <</if>>
     <<if $NPCList[_na].monster is "monster">>
         <<if $NPCList[_na].pronoun is "m">>
-            <<set _trResult to "그">>
+            <<set _trResult to "그">><<trPost 1 $args[1] $args[2]>>
         <<else>>
-            <<set _trResult to "그녀">>
+            <<set _trResult to "그녀">><<trPost 1 $args[1] $args[2]>>
         <</if>>
     <<else>>
-        <<set _trResult to "녀석">>
-    <</if>>
-
-    <<if typeof $args[0] is "number">>
-        <<if $NPCList[_na].monster isnot "monster">>
-            <<trPost 0 $args[0] $args[1]>>
-        <<else>>
-            <<trPost 1 $args[1] $args[2]>>
-        <</if>>
-    <<else>>
-        <<if $NPCList[_na].monster isnot "monster">>
-            <<trPost 0 $args[0] $args[1]>>
-        <<else>>
-            <<trPost 1 $args[0] $args[1]>>
-        <</if>>
+        <<set _trResult to "녀석">><<trPost 0 $args[0] $args[1]>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
@@ -389,3 +383,17 @@
 <</if>>
 <<trPost 1 $args[1] $args[2]>>
 <</silently>><<print _trResult>><</widget>>
+
+<<widget "nnpc_brotherPost">><<silently>>
+<<set _npcPronoun to $NPCName[$NPCNameList.indexOf($args[0])].pronoun>>
+<<set _trResult to (_npcPronoun is "m" ? "형제" : "자매")>><<trPost 1 $args[1] $args[2]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "nnpc_BrotherPost">><<nnpc_brotherPost $args[0] $args[1] $args[2]>><</widget>>
+
+<<widget "nnpc_titlePost">><<silently>>
+<<trNamedNPC $NPCName[$NPCNameList.indexOf($args[0])].title "title" $args[1] $args[2]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "nnpc_TitlePost">><<nnpc_titlePost $args[0] $args[1] $args[2]>><</widget>>
+
