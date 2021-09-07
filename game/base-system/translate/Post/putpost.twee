@@ -1,20 +1,59 @@
 :: Widgets putpost [widget nobr]
-<<widget "putpostList">>
-    <<if _putpostList is undefined>>
+<<widget "trinit_putpostList">>
+    <<if _putpostList is undefined>>	/* TODO: 너무 커지면 전용 위젯을 만들 것을 고려할것 */
         <<set _putpostList to {
-            "boy":{koname : "소년", post : 0},
-            "girl":{koname : "소녀", post : 1},
-            "man":{koname : "남자", post : 1},
-            "woman":{koname : "여자", post : 1},
-        }>>
+			"boy":{koname : "소년", post : 0},
+			"girl":{koname : "소녀", post : 1},
+			"man":{koname : "남자", post : 1},
+			"woman":{koname : "여자", post : 1},
+
+			/* 구속대 */
+			"wall":{koname : "벽", post : 0},
+			"pillory":{koname : "구속대", post : 1},
+			"cleanpillory":{koname : "구속대", post : 1},
+			"horse_pillory":{koname : "말 구속대", post : 1},
+			
+			/* stripobject */
+			"jutting rock":{koname : "튀어나온 돌", post : 2},
+			"tree branch":{koname : "나뭇가지", post : 1},
+			"steel wire":{koname : "철사", post : 1},
+			"broken brick":{koname : "깨진 벽돌", post : 2},
+			
+			/* featsUI */
+			"skulduggery":{koname : "속임수", post : 1},
+			"dancing":{koname : "춤", post : 0},
+			"swimming":{koname : "수영", post : 0},
+			"tending":{koname : "관리", post : 1},
+			"seduction":{koname : "유혹", post : 0},
+			"purity":{koname : "순결도 상승", post : 0},
+			"impurity":{koname : "순결도 하락", post : 0},
+			
+			/* creature.stats.gender */
+			"Male":{koname : "남성", post : 0},
+			"Female":{koname : "여성", post : 0},
+			"Futa":{koname : "후타나리", post : 1},
+			
+			/* plots.location.bed */
+			"earth":{koname : "땅", post : 0},
+			"water":{koname : "물", post : 2},
+		}>>
     <</if>>
 <</widget>>
 
 
-<<widget "putpost">>
-    <<putpostList>>
-                    
-    <<set _trResult to _putpostList[$args[0]].koname>>
-    <<trPost _putpostList[$args[0]].post $args[1] $args[2]>>
-    <<print _trResult>>
-<</widget>>
+<<widget "putpost">><<silently>>
+    <<trinit_putpostList>>
+	
+	<<if _putpostList.hasOwnProperty($args[0])>>
+		<<set _trResult to _putpostList[$args[0]].koname>>
+		<<if $args[1] isnot undefined>>
+			<<trPost _putpostList[$args[0]].post $args[1] $args[2]>>
+		<</if>>
+	<<else>>
+		<<set _trResult to $args[0]>>
+		<<if $args[1] isnot undefined>>
+			<<getPostNum $args[0]>>
+			<<trPost _postNum $args[1] $args[2]>>
+		<</if>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>

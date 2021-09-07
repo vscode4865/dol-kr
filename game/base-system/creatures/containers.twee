@@ -1,28 +1,28 @@
 :: Widgets containers [widget]
-<<widget "creatureActivity">><<nobr>>
+<<widget "creatureActivity">>
 <<if $args[0]>>
 	<<if $args[0] lt 60>>
-		<span class="gold">Perfect activity</span>
+		<span class="gold">완벽한 움직임</span>
 		<<earnFeat "Top Broodmother Host">>
 	<<elseif $args[0] lte 70>>
-		<span class="green">Amazing activity</span>
+		<span class="green">놀라운 움직임</span>
 	<<elseif $args[0] lte 100>>
-		<span class="teal">Good activity</span>
+		<span class="teal">좋은 움직임</span>
 	<<elseif $args[0] lte 150>>
-		<span class="lblue">Decent activity</span>
+		<span class="lblue">적절한 움직임</span>
 	<<elseif $args[0] lte 200>>
-		<span class="blue">Okay activity</span>
+		<span class="blue">그냥저냥한 움직임</span>
 	<<elseif $args[0] lte 250>>
-		<span class="purple">Poor activity</span>
+		<span class="purple">약한 움직임</span>
 	<<elseif $args[0] lte 300>>
-		<span class="pink">Rare activity</span>
+		<span class="pink">어쩌다 움직임</span>
 	<<else>>
-		<span class="red">Very rare activity</span>
+		<span class="red">거의 움직이지 않음</span>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "creatureContainersProgressDay">><<nobr>>
+<<widget "creatureContainersProgressDay">>
 <<set _list to $container.list>>
 <<for _i to 0; _i lt _list.length; _i++>>
 	<<set _container to $container[_list[_i]]>>
@@ -53,9 +53,9 @@
 	<</if>>
 	<<set _container.visited to false>>
 <</for>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "creatureVisit">><<nobr>>
+<<widget "creatureVisit">>
 <<set _container to $container[$location]>>
 <<set _container.visited to true>>
 <<set _container.daysSinceFed to 0>>
@@ -71,7 +71,7 @@
 		<<set _tendingMulti to 1 + ($tending / 1000)>>
 		<<set _value = Math.floor(5000 / _container.creatures[_i].stats.speed)>>
 		<<if _container.upgrades.luxury gt 0>>
-			<<set _value *= Math.floor(1 + (0.25 * _container.upgrades.luxury))>>
+			<<set _value to Math.floor(_value * (1 + (0.25 * _container.upgrades.luxury)))>>
 		<</if>>
 		<<if _value gt 0>>
 			<<set $stress -= Math.floor(_value * _tendingMulti)>>
@@ -109,16 +109,16 @@
 	<<set _purityGain to Math.ceil(_purityGain)>>
 	<<set _boosts[4] to true>>
 <</if>>
-<<set $purity += _purityGain>>
+<<purity _purityGain>>
 
 <<if _boosts[0]>> <<lstress>><</if>>
 <<if _boosts[1]>> <<ltrauma>><</if>>
 <<if _boosts[2]>> <<ltiredness>><</if>>
 <<if _boosts[3]>> <<gpurity>><</if>>
 <<if _boosts[4]>> <<lpurity>><</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-:: Containers [nobr]
+:: Containers
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
 <<set _container to $container[$location]>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
@@ -126,30 +126,31 @@
 
 <<if _container.count is 0>>
 	<<if _container.deadCreatures is 0>>
-		You currently have no <<if _pregnancy.namesChildren is true>>children<<else>>parasites<</if>> inside the <<print _container.name>>.
+		당신의 <<print _container.name>> 안에 <<if _pregnancy.namesChildren is true>>아이가<<else>>기생충이<</if>> 하나도 없다.
 		<br>
 	<<else>>
-		After not checking and feeding <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, it looks like some have died. You take your time in burying them.
+		<<if _pregnancy.namesChildren is true>>당신의 아이들을<<else>>기생충들을<</if>> 돌보고 먹이지 않아서, 몇몇이 죽은 것 같다. 당신은 그들을 묻어주는 데 시간을 보낸다.
 		<<ggtrauma>>
+		<br><br>
 		<<if _pregnancy.namesChildren is true>>
 			<<set _traumaMulti to 2>>
 		<<else>>
 			<<set _traumaMulti to 1>>
 		<</if>>
-		<<set $trauma += 100 * _traumaMulti * _container.deadCreatures>>
+		<<trauma `30 * _traumaMulti * _container.deadCreatures`>>
 
-		<<link [[Next (1:00)|$passage]]>><<set _container.deadCreatures to 0>><<pass 60>><</link>>
+		<<link [[다음 (1:00)|$passage]]>><<set _container.deadCreatures to 0>><<pass 60>><</link>>
 	<</if>>
 <<else>>
 	<<if _container.visited is false>>
-		You check on <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>>, and make sure they have everything they need inside <<print _container.name>>.
+		당신은 <<if _pregnancy.namesChildren is true>>당신의 아이들을<<else>>기생충들을<</if>> 확인하고, <<print _container.name>> 안에서 그들이 필요한 모든 것이 있는지 돌본다.
 		<br>
 		<<creatureVisit>>
 	<<else>>
-	You watch your <<if _pregnancy.namesChildren is true>>children<<else>>parasites<</if>> inside <<print _container.name>>.
+	당신은 <<print _container.name>> 안에 있는 <<if _pregnancy.namesChildren is true>>당신의 아이들을<<else>>기생충들을<</if>> 쳐다본다.
 	<</if>>
 	<br><br>
-	It has a max capacity of <<print _container.maxCount>> and <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>> can survive <<print _container.maxDaysWithoutFood>> days without your attention<<if _container.feederName>>, thanks to your <<print _container.feederName>><</if>>. <<if _container.decorations>>You have <<print _container.decorations>> setup within the tank.<</if>>
+	거기에는 최대 <<trNumber _container.maxCount>> 마리를 둘 수 있고, <<print _container.feederName>> 덕분에 <<if _pregnancy.namesChildren is true>>당신의 아이들은<<else>>기생충들은<</if>> <<trNumberHanja _container.maxDaysWithoutFood>>일 동안 당신의 돌봄 없이 생존할 수 있다. <<if _container.decorations>>당신은 수조 안에 <<print _container.decorations>>을 해 두었다.<</if>>
 <</if>>
 
 <<if _container.count gt 0>>
@@ -159,7 +160,7 @@
 				<<continue>>
 			<</if>>
 			<<if _container.creatures[_i] isnot null>>
-				<li><label><<print '<<checkbox "$checkboxResult[' + clone(_i) + ']" false true>>'>> - <<print _container.creatures[_i].creature>> - <<print _container.creatures[_i].stats.gender>> - <<creatureActivity _container.creatures[_i].stats.speed>></label></li>
+				<li><label><<print '<<checkbox "$checkboxResult[' + clone(_i) + ']" false true>>'>> - <<trCreature "all" _container.creatures[_i].creature>><<print _trResult>> - <<putpost _container.creatures[_i].stats.gender>> - <<creatureActivity _container.creatures[_i].stats.speed>></label></li>
 			<</if>>
 		<</for>>
 	</ul>
@@ -168,20 +169,24 @@
 <<if _container.deadCreatures is 0>>
 	<<if _pregnancy.feltMovement is true>>
 		<<if $worn.genitals.anal_shield is 1>>
-			You're unable to deliver <<if _pregnancy.namesChildren is true>>your children<<else>>the parasites<</if>> while you have an anal shield.
+			당신은 애널 보호대를 하고 있는 동안에는 <<if _pregnancy.namesChildren is true>>당신의 아이들을<<else>>기생충들을<</if>> 낳을 수가 없다.
+			<br><br>
 		<<else>>
 			<<if _pregnancy.namesChildren is true>>
-				<<link [[Attempt to deliver your baby (1:00)|GiveBirth]]>><<pass 60>><</link>>
+				<<link [[아이를 낳으려 시도한다 (1:00)|GiveBirth]]>><<pass 60>><</link>>
+				<br>
 			<<else>>
-				<<link [[Attempt to deliver the parasite (1:00)|GiveBirth]]>><<pass 60>><</link>>
+				<<link [[기생충을 낳으려 시도한다 (1:00)|GiveBirth]]>><<pass 60>><</link>>
+				<br>
 			<</if>>
 		<</if>>
 	<<elseif _pregnancy.count - (_pregnancy.motherStatus is 2 ? 1 : 0) gt 0>>
-		You don't think <<print (_pregnancy.namesChildren is true ? "your children" : "the parasites")>> are ready for delivery.
+		당신은 아직 <<print (_pregnancy.namesChildren is true ? "당신의 아이들이" : "기생충들이")>> 나올 때가 되었다고 생각하지 않는다.
+		<br><br>
 	<</if>>
 	<br>
 	<<if _container.count gt 0>>
-		<<link [[Transfer for selling|$passage]]>>
+		<<link [[팔기 위해 옮긴다|$passage]]>>
 			<<for _i to 0; _i lt _container.maxCount;_i++>>
 				<<if _container.creatures[_i] is undefined>>
 					<<continue>>
@@ -194,7 +199,7 @@
 				<</if>>
 			<</for>>
 		<</link>>
-		<br><br>
+		<br>
 	<</if>>
-	<<link [[Leave|$container[$location].leaveLink]]>><</link>>
+	<<link [[돌아간다|$container[$location].leaveLink]]>><</link>>
 <</if>>

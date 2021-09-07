@@ -1,6 +1,162 @@
 :: Widgets Orgasm [widget]
 
-<<widget "orgasm">><<nobr>>
+<<widget "orgasm">>
+	<<if $femaleclimax isnot -1 and $orgasmdown lt 0>>
+		<<set $femaleclimax to -1>>
+	<</if>>
+	<<orgasmstat>><<set $orgasmcount += 1>><<set $orgasmdown to 3>>
+	<<if $combat is 1>>
+		<<set $speechcum += 1>><<set $speechorgasmcount += 1>>
+	<</if>>
+	<<if $penisexist is 1 and $femaleclimax is -1 and $penissize lt 0>>
+		<<set _calculation to 0>>
+		<<if $anusstate is "penetrated" or $anusstate is "tentacle" or $anusstate is "tentacledeep">>
+			<<set _calculation += 40>>
+		<</if>>
+		<<if $mouthstate is "penetrated" or $mouthstate is "tentacle" or $mouthstate is "tentacledeep">>
+			<<set _calculation += 20>>
+		<</if>>
+		<<if $penisstate is "penetrated" or $penisstate is "otheranus" or $penisstate is "tentacledeep" or $penisstate is "tentacle">>
+			<<set _calculation -= 40>>
+		<</if>>
+		<<if random(1, 100) lte (50 + _calculation)>>
+			<<set $femaleclimax to 1>>
+		<<else>>
+			<<set $femaleclimax to 0>>
+		<</if>>
+	<</if>>
+	<<if $penisexist is 1 and $devstate is 1 and $femaleclimax isnot 1>>
+		<<if $semen_volume is 0 or $semen_amount is 0>>
+			<span class="pink">당신은 몸의 감각과 절정에 계집애처럼 굴복한다.</span>
+			<<set $femaleclimax to 1>>
+			<<semenvolume -1>>
+		<<else>>
+			<<set $player.bodyliquid.penis.semen += 1>>
+			<<if $parasite.penis.name>>
+			당신은 몸의 감각에 굴복하여 자지에 달라붙은 기생충 안에 사정한다.
+			<<elseif $penisuse is "othervagina">>
+				<<if $penisstate is "penetrated">>
+					<<penileejacstat>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 자궁 깊숙히 사정한다.</span>
+					<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
+				<<else>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 보지 위에 사정한다.</span>
+				<</if>>
+			<<elseif $penisuse is "otheranus">>
+				<<if $penisstate is "otheranus">>
+					<<penileejacstat>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 장 속 깊숙한 곳에 사정한다.</span>
+					<<purity -1>><<internalejac>><<creampie "npc" "anus">>
+				<<else>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 엉덩이에 사정한다.</span>
+				<</if>>
+			<<elseif $penisuse is "othermouth">>
+				<<if $penisstate is "othermouth">>
+					<<penileejacstat>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 입 안에 사정한다.</span>
+					<<purity -1>><<internalejac>><<creampie "npc" "mouth">>
+				<<else>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 <<his_yi>> 얼굴에 사정한다.</span>
+				<</if>>
+			<<elseif $penisuse is "tentacle">>
+				<<if $penisstate isnot "tentacleentrance" and $penisstate isnot "tentacleimminent">>
+					<<penileejacstat>>
+					<span class="pink">당신은 몸의 감각에 굴복한다. 촉수가 당신의 정액을 짜낸다.</span>
+					<<purity -1>><<internalejac>><<creampie "npc" "tentacle">>
+				<<else>>
+					<span class="pink">당신은 몸의 감각에 굴복하여 촉수에 사정한다.</span>
+				<</if>>
+			<<elseif $mouth is "mpenisentrance">>
+				<span class="pink">
+					당신은 몸의 감각에 굴복한다. 자지에서 정액이 폭발하듯 터져나와 당신의
+					얼굴<<if $rng gte 10 and $semen_amount gt ($semen_volume / 24) * 18>>과 머리카락<<set $player.bodyliquid.hair.semen += 1>><</if>>을 뒤덮는다.
+				</span>
+				<<if $semen_amount gt ($semen_volume / 24) * 18>>
+					<<set $player.bodyliquid.face.semen += 1>>
+				<</if>>
+			<<elseif $mouth is "mpenis">>
+				<span class="pink">당신은 몸의 감각에 굴복하고, 자신의 입 안에 사정되어, 어쩔 수 없이 사정한 정액을 재빨리 전부 삼킨다.</span>
+				<<set $player.bodyliquid.mouth.semen += 1>>
+			<<else>>
+				<span class="pink">당신은 몸의 감각에 굴복한다. 자지에서 정액이 폭발하듯<<if $worn.genitals.type.includes("chastity")>> 터져나와 <<trClothes "genitals" $worn.genitals.name "name" "을">>_trResult 뒤덮는다<<else>> 터져나온다<</if>>.</span>
+			<</if>>
+			<<if $semen_amount lte (($semen_volume / 24) * 6)>>
+				<span class="pink">기진맥진한 탓에, 당신의 몸은 묽은 정액 몇 방울만을 내보내고 만다.</span>
+				<<semenvolume -2>>
+			<<elseif $semen_amount lte (($semen_volume / 24) * 12)>>
+				<span class="pink">몸을 혹사시켜 피곤한 탓에, 당신의 정액은 묽고 옅다.</span>
+				<<semenvolume -1>>
+			<<elseif $semen_amount lte (($semen_volume / 24) * 18)>>
+				<span class="pink">반복된 절정으로 인한 대가를 치루듯, 몸에서 만들어지는 정액량이 감소한다.</span>
+				<<semenvolume -1>>
+			<</if>>
+
+		<</if>>
+	<<elseif $penisexist is 1 and $penissize lt 0>>
+		<span class="pink">당신은 몸의 감각과 절정에 계집애처럼 굴복한다.</span>
+		<<semenvolume -1>>
+	<<else>>
+		<span class="pink">당신은 몸의 감각과 절정에 굴복한다.</span>
+	<</if>>
+
+	<<if $arousalmasochism/$arousal gte 0.70>>
+	<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
+		<span class="green"> 당신은 몸부림을 치며 더 큰 고통을 갈구한다.</span>
+		<<set $masochism += 5>>
+	<</if>>
+
+	<<orgasmsemen>>/*Makes changes to semen values*/
+	<<vaginaFluidOrgasm>>
+
+	<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<set $corruption_slime += 2>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime">>
+		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 왼쪽 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<set $corruption_slime += 1>>
+		<br>
+	<<elseif $parasite.right_ear.name is "slime">>
+		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 오른쪽 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<set $corruption_slime += 1>>
+		<br>
+	<</if>>
+
+	<<if $swarmchestgrab gte 1>>
+		<span class="pink">당신의 몸이 경련을 일으켜 <<trSwarm _swarmcreature "을">>_trResult 가슴팍에서 튕겨낸다.</span>
+		<<set $swarmchestgrab to 0>>
+	<</if>>
+	<<if $swarm1 is "chest">>
+		<<set $swarm1 to "active">>
+	<</if>>
+	<<if $swarm2 is "chest">>
+		<<set $swarm2 to "active">>
+	<</if>>
+	<<if $swarm3 is "chest">>
+		<<set $swarm3 to "active">>
+	<</if>>
+	<<if $swarm4 is "chest">>
+		<<set $swarm4 to "active">>
+	<</if>>
+	<<if $swarm5 is "chest">>
+		<<set $swarm5 to "active">>
+	<</if>>
+	<<if $swarm6 is "chest">>
+		<<set $swarm6 to "active">>
+	<</if>>
+	<<if $swarm7 is "chest">>
+		<<set $swarm7 to "active">>
+	<</if>>
+	<<if $swarm8 is "chest">>
+		<<set $swarm8 to "active">>
+	<</if>>
+	<<if $swarm9 is "chest">>
+		<<set $swarm9 to "active">>
+	<</if>>
+	<<if $swarm10 is "chest">>
+		<<set $swarm10 to "active">>
+	<</if>>
+
 	<<if $orgasmcount lte 1>>
 		<<set $stress -= 200>>
 		<<if $drugged gte 1>>
@@ -126,7 +282,7 @@
 	<!-- If came while being choked -->
 	<<if $neckuse is "hand" and $oxygen lt $oxygenmax>>
 		<<set $chokeorgasm += 1>>
-		<<if $chokeorgasm gte 5 and $choketrait isnot 1>>
+		<<if $chokeorgasm gte 35 and $choketrait isnot 1>>
 			<<set $choketrait = 1>>
 			<br><span class="green">당신은 당신이 호흡할 수 없을 때 당신의 오르가즘이 더 강렬하고 당신이 그것을 좋아한다고 느낀다.</span>
 		<</if>>
@@ -137,170 +293,11 @@
 	<</if>>
 
 	<<set $orgasmcurrent += 1>>
-<</nobr>><</widget>>
-
-<<widget "orgasmpassage">><<nobr>>
-	<<if $femaleclimax isnot -1 and $orgasmdown lt 0>>
-		<<set $femaleclimax to -1>>
-	<</if>>
-	<<orgasmstat>><<set $orgasmcount += 1>><<set $orgasmdown to 3>>
-	<<if $combat is 1>>
-		<<set $speechcum += 1>><<set $speechorgasmcount += 1>>
-	<</if>>
-	<<if $penisexist is 1 and $femaleclimax is -1 and $penissize lt 0>>
-		<<set _calculation to 0>>
-		<<if $anusstate is "penetrated" or $anusstate is "tentacle" or $anusstate is "tentacledeep">>
-			<<set _calculation += 40>>
-		<</if>>
-		<<if $mouthstate is "penetrated" or $mouthstate is "tentacle" or $mouthstate is "tentacledeep">>
-			<<set _calculation += 20>>
-		<</if>>
-		<<if $penisstate is "penetrated" or $penisstate is "otheranus" or $penisstate is "tentacledeep" or $penisstate is "tentacle">>
-			<<set _calculation -= 40>>
-		<</if>>
-		<<if random(1, 100) lte (50 + _calculation)>>
-			<<set $femaleclimax to 1>>
-		<<else>>
-			<<set $femaleclimax to 0>>
-		<</if>>
-	<</if>>
-	<<if $penisexist is 1 and $devstate is 1 and $femaleclimax isnot 1>>
-		<<if $semen_volume is 0 or $semen_amount is 0>>
-			<span class="pink">당신은 몸의 감각과 절정에 계집애처럼 굴복한다.</span>
-			<<set $femaleclimax to 1>>
-			<<semenvolume -1>>
-		<<else>>
-			<<set $penissemen += 1>>
-			<<if $parasite.penis.name>>
-			당신은 몸의 감각에 굴복하여 자지에 달라붙은 기생충 안에 사정한다.
-			<<elseif $penisuse is "othervagina">>
-				<<if $penisstate is "penetrated">>
-					<<penileejacstat>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 자궁 깊숙히 사정한다.</span>
-					<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
-				<<else>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 보지 위에 사정한다.</span>
-				<</if>>
-			<<elseif $penisuse is "otheranus">>
-				<<if $penisstate is "otheranus">>
-					<<penileejacstat>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 장 속 깊숙한 곳에 사정한다.</span>
-					<<purity -1>><<internalejac>><<creampie "npc" "anus">>
-				<<else>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 엉덩이에 사정한다.</span>
-				<</if>>
-			<<elseif $penisuse is "othermouth">>
-				<<if $penisstate is "othermouth">>
-					<<penileejacstat>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 입 안에 사정한다.</span>
-					<<purity -1>><<internalejac>><<creampie "npc" "mouth">>
-				<<else>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 <<his>>의 얼굴에 사정한다.</span>
-				<</if>>
-			<<elseif $penisuse is "tentacle">>
-				<<if $penisstate isnot "tentacleentrance" and $penisstate isnot "tentacleimminent">>
-					<<penileejacstat>>
-					<span class="pink">당신은 몸의 감각에 굴복한다. 촉수가 당신의 정액을 짜낸다.</span>
-					<<purity -1>><<internalejac>><<creampie "npc" "tentacle">>
-				<<else>>
-					<span class="pink">당신은 몸의 감각에 굴복하여 촉수에 사정한다.</span>
-				<</if>>
-			<<elseif $mouth is "mpenisentrance">>
-				<span class="pink">
-					당신은 몸의 감각에 굴복한다. 자지에서 정액이 폭발하듯 터져나와 당신의
-					얼굴<<if $rng gte 10 and $semen_amount gt ($semen_volume / 24) * 18>>과 머리카락<<set $hairsemen += 1>><</if>>을 뒤덮는다.
-				</span>
-				<<if $semen_amount gt ($semen_volume / 24) * 18>>
-					<<set $facesemen += 1>>
-				<</if>>
-			<<elseif $mouth is "mpenis">>
-				<span class="pink">당신은 몸의 감각에 굴복하고, 자신의 입 안에 사정되어, 어쩔 수 없이 사정한 정액을 재빨리 전부 삼킨다.</span>
-				<<set $mouthsemen += 1>>
-			<<else>>
-				<span class="pink">당신은 몸의 감각에 굴복한다. 자지에서 정액이 폭발하듯<<if $worn.genitals.type.includes("chastity")>> 터져나와 <<trClothes "genitals" $worn.genitals.name "name" "을">>_trResult 뒤덮는다<</if>> 터져나온다.</span>
-			<</if>>
-			<<if $semen_amount lte (($semen_volume / 24) * 6)>>
-				<span class="pink">기진맥진한 탓에, 당신의 몸은 묽은 정액 몇 방울만을 내보내고 만다.</span>
-				<<semenvolume -2>>
-			<<elseif $semen_amount lte (($semen_volume / 24) * 12)>>
-				<span class="pink">몸을 혹사시켜 피곤한 탓에, 당신의 정액은 묽고 옅다.</span>
-				<<semenvolume -1>>
-			<<elseif $semen_amount lte (($semen_volume / 24) * 18)>>
-				<span class="pink">반복된 절정으로 인한 대가를 치루듯, 몸에서 만들어지는 정액량이 감소한다.</span>
-				<<semenvolume -1>>
-			<</if>>
-
-		<</if>>
-	<<elseif $penisexist is 1 and $penissize lt 0>>
-		<span class="pink">당신은 몸의 감각과 절정에 계집애처럼 굴복한다.</span>
-		<<semenvolume -1>>
-	<<else>>
-		<span class="pink">당신은 몸의 감각과 절정에 굴복한다.</span>
-	<</if>>
-
-	<<if $arousalmasochism/$arousal gte 0.70>>
-	<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
-		<span class="green"> 당신은 몸부림을 치며 더 큰 고통을 갈구한다.</span>
-		<<set $masochism += 5>>
-	<</if>>
-
-	<<orgasmsemen>>/*Makes changes to semen values*/
-	<<vaginaFluidOrgasm>>
-
-	<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
-		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
-		<<gcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<set $corruption_slime += 2>>
-		<br>
-	<<elseif $parasite.left_ear.name is "slime">>
-		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 왼쪽 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
-		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<set $corruption_slime += 1>>
-		<br>
-	<<elseif $parasite.right_ear.name is "slime">>
-		<span class="blue">진정되는 온기가 몸을 가득 채운다.</span> 세상사 모든 근심을 다 잊을 수 있을 것만 같은 기분이다. 당신은 이것이 오른쪽 귀에 들어간 슬라임이 절정을 느낀 것에 대해 포상을 내린 것임을 알아차린다.
-		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<set $corruption_slime += 1>>
-		<br>
-	<</if>>
-
-	<<if $swarmchestgrab gte 1>>
-		<span class="pink">당신의 몸이 경련을 일으켜 <<trParasite _swarmcreature "을">>_trResult 가슴팍에서 튕겨낸다.</span>
-		<<set $swarmchestgrab to 0>>
-	<</if>>
-	<<if $swarm1 is "chest">>
-		<<set $swarm1 to "active">>
-	<</if>>
-	<<if $swarm2 is "chest">>
-		<<set $swarm2 to "active">>
-	<</if>>
-	<<if $swarm3 is "chest">>
-		<<set $swarm3 to "active">>
-	<</if>>
-	<<if $swarm4 is "chest">>
-		<<set $swarm4 to "active">>
-	<</if>>
-	<<if $swarm5 is "chest">>
-		<<set $swarm5 to "active">>
-	<</if>>
-	<<if $swarm6 is "chest">>
-		<<set $swarm6 to "active">>
-	<</if>>
-	<<if $swarm7 is "chest">>
-		<<set $swarm7 to "active">>
-	<</if>>
-	<<if $swarm8 is "chest">>
-		<<set $swarm8 to "active">>
-	<</if>>
-	<<if $swarm9 is "chest">>
-		<<set $swarm9 to "active">>
-	<</if>>
-	<<if $swarm10 is "chest">>
-		<<set $swarm10 to "active">>
-	<</if>>
-	<<orgasm>>
 	<<wetnessCalculate>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "orgasmstreet">><<nobr>>
-	<<orgasmpassage>>
+<<widget "orgasmstreet">>
+	<<orgasm>>
 	<<if $exposed gte 1>>
 		<<if $daystate isnot "night">>
 			당신은 경련이 잦아들자 몸을 추스리며, 발가벗은 상태에서 낸 소리로 인해 숨은 장소가 발각되지 않았기만을 바란다.
@@ -316,10 +313,10 @@
 		<</if>>
 	<</if>>
 	<br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "orgasmforest">><<nobr>>
-	<<orgasmpassage>>
+<<widget "orgasmforest">>
+	<<orgasm>>
 	<<if $exposed gte 1>>
 		<<if $daystate isnot "night">>
 			당신은 경련이 잦아들자 나무를 붙잡고 몸을 추스린다.
@@ -334,10 +331,10 @@
 		<</if>>
 	<</if>>
 	<br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "orgasmbeach">><<nobr>>
-	<<orgasmpassage>>
+<<widget "orgasmbeach">>
+	<<orgasm>>
 	<<if $exposed gte 1>>
 		<<if $daystate isnot "night">>
 			당신은 경련이 잦아들자 몸을 추스리며, 발가벗은 상태에서 낸 소리로 인해 숨은 장소가 발각되지 않았기만을 바란다.
@@ -353,9 +350,9 @@
 		<</if>>
 	<</if>>
 	<br><br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "breastfeed">><<nobr>>
+<<widget "breastfeed">>
 <<set _milk_temp to random(1, 5)>>
 <<if $cow gte 6>>
 	<<set _milk_temp *= 2>>
@@ -376,9 +373,9 @@
 
 <<set $milk_amount -= _milk_temp>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "orgasmhour">><<nobr>>
+<<widget "orgasmhour">>
 	<<if $purity gte 990>>
 		<<set $orgasmcount -= 1>>
 	<<elseif $purity gte 900>>
@@ -407,7 +404,7 @@
 		<<milkvolume 1>>
 	<</if>>
 	<<if $penisexist is 1>>
-		<<if $arousal gte 8000>>
+		<<if $arousal gte ($arousalmax / 5) * 4>>
 			<<set $semen_amount += Math.floor(($semen_volume / 24) * 3)>>
 			<<if $cow gte 6>>
 				<<set $semen_amount += Math.floor(($semen_volume / 24) * 3)>>
@@ -416,7 +413,7 @@
 				<<semenvolume 2>>
 				<<set $semen_amount to $semen_volume>>
 			<</if>>
-		<<elseif $arousal gte 6000>>
+		<<elseif $arousal gte ($arousalmax / 5) * 3>>
 			<<set $semen_amount += Math.floor(($semen_volume / 24) * 2)>>
 			<<if $cow gte 6>>
 				<<set $semen_amount += Math.floor(($semen_volume / 24) * 2)>>
@@ -440,9 +437,9 @@
 		<</if>>
 	<</if>>
 	<<set $milk_amount += Math.floor(($milk_volume / 24))>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "orgasmsemen">><<nobr>>
+<<widget "orgasmsemen">>
 	<<set _temp_semen to 30>>
 	<<set _temp_semen += parseFloat(($semen_volume / 30).toFixed(1))>>
 	<<if $femaleclimax is 1>>
@@ -472,9 +469,9 @@
 	<<if $femaleclimax isnot 1>>
 		<<semenvolume 1>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "wetnessCalculate">><<nobr>>
+<<widget "wetnessCalculate">>
 <<set _totalArousal = 0>>
 <<set _length to $trackedArousal.length>>
 <<for _ia to 0; _ia lt _length; _ia++>>
@@ -493,18 +490,18 @@
 
 <<set _exponential to Math.pow(0.99985,_totalArousal)>>
 <<if $vaginaexist is 1>>
-	<<set $vaginaWetness to Math.clamp((75 - Math.floor(_exponential * 75)) + ($vaginagoo * 6) + ($vaginasemen * 6) + ($vaginaoutsidegoo * 6) + ($vaginaoutsidesemen * 6) + $combatWetBoost, 0, 120)>>
+	<<set $vaginaWetness to Math.clamp((75 - Math.floor(_exponential * 75)) + ($player.bodyliquid.vagina.goo * 6) + ($player.bodyliquid.vagina.semen * 6) + ($player.bodyliquid.vaginaoutside.goo * 6) + ($player.bodyliquid.vaginaoutside.semen * 6) + $combatWetBoost, 0, 120)>>
 <</if>>
 <<if $penisexist is 1>>
-	<<set $penisWetness to Math.clamp(($penisgoo * 12) + ($penissemen * 12), 0, 120)>>
+	<<set $penisWetness to Math.clamp(($player.bodyliquid.penis.goo * 12) + ($player.bodyliquid.penis.semen * 12), 0, 120)>>
 <</if>>
-<<set $anusWetness to Math.clamp(($anusgoo * 6) + ($anussemen * 6) + ($bottomgoo * 6) + ($bottomsemen * 6), 0, 120)>>
+<<set $anusWetness to Math.clamp(($player.bodyliquid.anus.goo * 6) + ($player.bodyliquid.anus.semen * 6) + ($player.bodyliquid.bottom.goo * 6) + ($player.bodyliquid.bottom.semen * 6), 0, 120)>>
 <<if $combat is 1>>
 	<<combatWetnessCalculate>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "combatWetnessCalculate">><<nobr>>
+<<widget "combatWetnessCalculate">>
 <<set $vaginalPain to 0>>
 <<set $analPain to 0>>
 <<set $penisPain to 0>>
@@ -537,22 +534,28 @@
 	<</if>>
 	<<set $analPain to _base * _diff>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "vaginaFluidPassive">><<nobr>>
-	<<if $vaginaexist is 1 and $masturbation_bowl is 1>>
-		<<set $masturbation_vaginaFluid += Math.floor(Math.clamp($vaginaWetness - 60 - random(10,40), 0, 40)/4)>>
+<<widget "vaginaFluidPassive">>
+	<<set _temp_lube to Math.floor(Math.clamp($vaginaWetness - 60 - random(10,40), 0, 40)/4)>>
+	<<if $masturbation_bowl is 1>>
+		<<set $masturbation_vaginaFluid += _temp_lube>>
 	<</if>>
-<</nobr>><</widget>>
+	<<set $lube_produced_stat += _temp_lube>>
+<</widget>>
 
-<<widget "vaginaFluidActive">><<nobr>>
-	<<if $vaginaexist is 1 and $masturbation_bowl is 1>>
-		<<set $masturbation_vaginaFluid += Math.floor(Math.clamp($vaginaWetness - 60 - random(0,30), 0, 40)/4)>>
+<<widget "vaginaFluidActive">>
+	<<set _temp_lube to Math.floor(Math.clamp($vaginaWetness - 60 - random(0,30), 0, 40)/4)>>
+	<<if $masturbation_bowl is 1>>
+		<<set $masturbation_vaginaFluid += _temp_lube>>
 	<</if>>
-<</nobr>><</widget>>
+	<<set $lube_produced_stat += _temp_lube>>
+<</widget>>
 
-<<widget "vaginaFluidOrgasm">><<nobr>>
-<<if $vaginaexist is 1 and $masturbation_bowl is 1 and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
-	<<set $masturbation_vaginaFluid += Math.floor(Math.clamp($vaginaWetness, 0, 40)/2)>>
-<</if>>
-<</nobr>><</widget>>
+<<widget "vaginaFluidOrgasm">>
+	<<set _temp_lube to Math.floor(Math.clamp($vaginaWetness, 0, 40)/2)>>
+	<<if $masturbation_bowl is 1 and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+		<<set $masturbation_vaginaFluid += _temp_lube>>
+	<</if>>
+	<<set $lube_produced_stat += _temp_lube>>
+<</widget>>

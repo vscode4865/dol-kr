@@ -1,16 +1,16 @@
 window.mapMove = function (moveTo) {
-	var currentPassage = SugarCube.State.variables.passage;
+	var currentPassage = V.passage;
 	var destination_table = [];
-	for (var i = 1; i < SugarCube.State.variables.link_table.length; i++) {
-		var temp = SugarCube.State.variables.link_table[i].split("|")[1];
+	for (var i = 1; i < V.link_table.length; i++) {
+		var temp = V.link_table[i].split("|")[1];
 		if (temp) {
 			destination_table[destination_table.length] = temp.split("]]")[0];
 		}
 	}
-	var available = SugarCube.State.variables.map.available;
+	var available = V.map.available;
 
-	if (SugarCube.State.variables.debug == 1 || available[currentPassage].includes(moveTo) && destination_table.includes(moveTo))
-	//if(SugarCube.State.variables.debug == 1 || available[currentPassage].includes(moveTo))
+	if (V.debug == 1 || available[currentPassage].includes(moveTo) && destination_table.includes(moveTo))
+	//if(V.debug == 1 || available[currentPassage].includes(moveTo))
 	{
 		new Wikifier(null, '<<pass 5>>');
 		SugarCube.State.display(moveTo);
@@ -18,7 +18,7 @@ window.mapMove = function (moveTo) {
 }
 
 window.shopClothingFilterToggleTrait = function(trait) {
-	let traits = SugarCube.State.variables.shopClothingFilter.traits;
+	let traits = V.shopClothingFilter.traits;
 	if (traits) {
 		let index = traits.indexOf(trait)
 		if (index == -1) {
@@ -30,10 +30,10 @@ window.shopClothingFilterToggleTrait = function(trait) {
 }
 
 window.shopClothingFilterSortOnDescription = function(traitOne, traitTwo) {
-    let descriptionOne = Wikifier.wikifyEval(`<<shopTraitDescription ${traitOne}>>`).textContent.trim();
-    let descriptionTwo = Wikifier.wikifyEval(`<<shopTraitDescription ${traitTwo}>>`).textContent.trim();
+	let descriptionOne = Wikifier.wikifyEval(`<<shopTraitDescription ${traitOne}>>`).textContent.trim();
+	let descriptionTwo = Wikifier.wikifyEval(`<<shopTraitDescription ${traitTwo}>>`).textContent.trim();
 
-    return descriptionOne > descriptionTwo
+	return descriptionOne > descriptionTwo
 }
 
 window.wikifier = function (widget, arg1, arg2, arg3) {
@@ -61,7 +61,7 @@ window.combatListColor = function (name, value, type) {
 	if (value != undefined) {
 		check = value;
 	} else {
-		check = SugarCube.State.variables[name];
+		check = V[name];
 	}
 	if (type === "") {
 		switch (check) {
@@ -71,27 +71,37 @@ window.combatListColor = function (name, value, type) {
 			case "leftunderpull": case "leftskirtpull": case "leftlowerpull": case "leftupperpull":
 			case "rightunderpull": case "rightskirtpull": case "rightlowerpull": case "rightupperpull":
 			case "stopchoke":
+			case "clench":
+			case "shacklewhack":
+			/*feetaction*/
+			case "run": case "hide":
 			/*mouthaction*/
 			case "pullaway": case "pullawayvagina": case "finish": case "novaginal": case "nopenile": case "noanal": case "scream":
 			case "mock": case "breastclosed": case "breastpull": case "pullawaykiss": case "noupper":
+			case "up":
 			/*penisaction*/
 			case "othermouthescape": case "escape": case "otheranusescape":
 			/*vaginaaction*/
 			case "tribescape":
 				color = "brat";
 				break;
-	
+
 			/*leftaction or rightaction*/
-			case "spray": case "lefthit": case "righthit": case "leftstruggle": case "rightstruggle": case "stopchokenoncon":
+			case "spray": case "lefthit": case "righthit": case "leftstruggle": case "rightstruggle": case "stopchokenoncon": case "pursuit_grab":
 			/*feetaction*/
 			case "kick":
 			/*mouthaction*/
 			case "bite": case "demand": case "breastbite": case "handbite": case "headbutt":
 				color = "def";
 				break;
-
+			/*leftaction or rightaction*/
+			case "behind":
+			case "fold":
+			case "leftcovervaginameek": case "leftcoverpenismeek": case "leftcoveranusmeek":
+			case "rightcovervaginameek": case "rightcoverpenismeek": case "rightcoveranusmeek":
 			/*mouthaction*/
 			case "grasp": case "plead": case "forgive":
+			case "down":
 			/*penisaction*/
 			case "thighbay": case "bay": case "otheranusbay":
 			/*vaginaaction*/
@@ -109,7 +119,7 @@ window.combatListColor = function (name, value, type) {
 			case "grab": case "vaginagrab": case "grabrub": case "vaginagrabrub": case "rub":
 			/*mouthaction*/
 			case "peniskiss": case "kiss": case "suck": case "lick": case "moan": case "breastsuck": case "breastlick": case "swallow": case "movetochest":
-			case "othervagina": case "mouth": case "kissback": case "vaginalick": case "askchoke":
+			case "othervagina": case "mouth": case "kissback": case "vaginalick": case "askchoke": case "anallick": case "analkiss":
 			/*penisaction*/
 			case "penistovagina": case "penistoanus": case "penisvaginafuck": case "penisanusfuck": case "othermouthtease": case "othermouthrub":
 			case "othermouthcooperate": case "tease": case "cooperate": case "otheranustease": case "otheranusrub": case "otheranuscooperate": case "clitrub":
@@ -266,22 +276,22 @@ function startingPlayerImageReset() {
 DefineMacroS("startingPlayerImageReset", startingPlayerImageReset);
 
 window.deck = function(){
-    var names = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    var suits = ['Hearts','Diamonds','Spades','Clubs'];
-    var cards = [];
-    
-    for( var s = 0; s < suits.length; s++ ) {
-        for( var n = 0; n < names.length; n++ ) {
-            cards.push( {value:n+2, name:names[n], suits:suits[s]} );
-        }
-    }
+	var names = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+	var suits = ['Hearts','Diamonds','Spades','Clubs'];
+	var cards = [];
 
-    return cards;
+	for( var s = 0; s < suits.length; s++ ) {
+		for( var n = 0; n < names.length; n++ ) {
+			cards.push( {value:n+2, name:names[n], suits:suits[s]} );
+		}
+	}
+
+	return cards;
 }
 
 window.shuffle = function(o) {
-    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
 };
 
 function updateAskColour() {
@@ -292,3 +302,11 @@ function updateAskColour() {
 }
 
 DefineMacroS("updateAskColour", updateAskColour);
+
+window.bulkProduceValue = function(plant, quantity = 250) {
+	if(plant !== undefined){
+		let baseCost = plant.plant_cost * quantity / 2;
+		let seasonBoost = !plant.season.includes(V.season) ? 1.1 : 1;
+		return Math.floor(baseCost * seasonBoost);
+	}
+}

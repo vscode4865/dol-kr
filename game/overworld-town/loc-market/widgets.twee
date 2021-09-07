@@ -1,6 +1,6 @@
 :: Widgets Market [widget]
-<<widget "stall_actions">><<nobr>>
-<<if $stress gte 10000>>
+<<widget "stall_actions">>
+<<if $stress gte $stressmax>>
 	<<passoutstreet>>
 <<elseif $worn.upper.type.includes("naked") and $player.gender_appearance is "f">>
 	<<if $player.gender is "m">>
@@ -38,7 +38,7 @@
 	<<elseif $worn.under_lower.name isnot "naked">>
 		<<if $worn.under_lower.set isnot $worn.under_upper.set>>
 			<<if $exhibitionism gte 55>>
-				<<link [[Remove your Undies|Stall Undies Strip]]>><<endevent>><<endstall>><</link>><<if $ex_stall isnot 1>><<exhibitionist4>><</if>>
+				<<link [[Remove your undies|Stall Undies Strip]]>><<endevent>><<endstall>><</link>><<if $ex_stall isnot 1>><<exhibitionist4>><</if>>
 				<br>
 			<</if>>
 		<</if>>
@@ -50,45 +50,271 @@
 	<<link [[Leave|Connudatus Street]]>><<endevent>><<endstall>><<clotheson>><<set $eventskip to 1>><</link>>
 	<br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_inventory">><<nobr>>
-Inventory:
+<<widget "stall_inventory">>
+
+<<silently>>
 <<set $plant_inventory to []>>
 <<set _plant_keys to Object.keys($plants)>>
+<<set _total_worth to 0>>
+<<set _total_amount to 0>>
+<<set _total_sold_amount to 0>>
 <<for _t to 0; _t lt _plant_keys.length; _t++>>
+	<<if ndef $stall_stats[_plant_keys[_t]]>>
+		<<set $stall_stats[_plant_keys[_t]] to { inventory:{amount:0, price:0, total:0}, sold:{amount:0, total:0} }>>
+	<</if>>
 	<<if $plants[_plant_keys[_t]].amount gte 1>>
 		<<set _plant_value to Math.round(setup.plants[$plants[_plant_keys[_t]].name].plant_cost)>>
-		<span class="gold"><<print $plants[_plant_keys[_t]].amount>></span> <<print $plants[_plant_keys[_t]].plural>> (£<<print Math.trunc(_plant_value / 100)>>.<<if _plant_value % 100 lte 9>>0<</if>><<print _plant_value % 100>> each) |
+		<<set _total_worth += $plants[_plant_keys[_t]].amount * _plant_value>>
+		<<set _total_amount += $plants[_plant_keys[_t]].amount>>
 		<<set _inventory_found to 1>>
-		<<set $plant_inventory.push($plants[_plant_keys[_t]].name)>>
-		<<if $stall_expensive is undefined>>
+		<<run $plant_inventory.push($plants[_plant_keys[_t]].name)>>
+		<<if ($stall_expensive is undefined) or ($plants[$stall_expensive].amount lte 0) or (setup.plants[$plants[_plant_keys[_t]].name].plant_cost gte setup.plants[$stall_expensive].plant_cost)>>
 			<<set $stall_expensive to clone(setup.plants[$plants[_plant_keys[_t]].name].name)>>
 		<</if>>
-		<<if $plants[$stall_expensive].amount lte 0>>
-			<<set $stall_expensive to clone(setup.plants[$plants[_plant_keys[_t]].name].name)>>
-		<</if>>
-		<<if setup.plants[$plants[_plant_keys[_t]].name].plant_cost gte setup.plants[$stall_expensive].plant_cost>>
-			<<set $stall_expensive to clone(setup.plants[$plants[_plant_keys[_t]].name].name)>>
-		<</if>>
+		<<set $stall_stats[_plant_keys[_t]].inventory to {amount:$plants[_plant_keys[_t]].amount, price:_plant_value, total:($plants[_plant_keys[_t]].amount * _plant_value)}>>
+	<<else>>
+		<<set $stall_stats[_plant_keys[_t]].inventory to {amount:0, price:Math.round(setup.plants[$plants[_plant_keys[_t]].name].plant_cost), total:0}>>
 	<</if>>
+	<<set _total_sold_amount += $stall_stats[_plant_keys[_t]].sold.amount>>
 <</for>>
-<<if _inventory_found isnot 1>>
-	You're out of stock!
-<</if>>
-<</nobr>><</widget>>
+<</silently>>
 
-<<widget "endstall">><<nobr>>
+<<switch $mathstrait>>
+	<<case -1>><!-- F -->
+		<<set _canmath to ($maths_exam lt 50 ? 0 : 1)>>
+	<<case 0>><!-- D -->
+		<<set _canmath to ($maths_exam lt 50 ? 2 : 3)>>
+	<<case 1>><!-- C -->
+		<<set _canmath to 4>>
+	<<case 2>><!-- B -->
+		<<set _canmath to 5>>
+	<<case 3 4>><!-- A, A* -->
+		<<set _canmath to 6>>
+	<<default>>
+		<<set _canmath to 0>>
+<</switch>>
+
+<<set _mobile to ($useNarrowMarket and _canmath gt 4)>>
+
+<!-- <<for _mobile to 0; _mobile lt 2; _mobile++>><<for _canmath to 0; _canmath lt 7; _canmath++>><center>---mobile:_mobile math:_canmath---</center> -->
+
+<!--
+_canmath                :	0		1		2		3		4		5		6
+table                   :	-		-		-		x		x		x		x
+
+item inventory worth    :	-		-		-		-		x		x		x
+total inventory worth   :	-		-		txt		txt		x		x		x
+
+sold average            :	-		-		-		-		-		-		x
+per item sold           :	-		-		-		-		-		x		x
+total sold              :	-		txt		txt		txt		txt		x		x
+
+math skill min          :	F		F50		D		D50		C		B		A	A*
+colums                  :	-		-		-		2+0		3+0		3+2		3+3
+total colums            :	-		-		-		2		3		5		6
+-->
+
+<<if _canmath gte 3>>
+	<center style="max-height:50vh;overflow-y:auto">
+		<table border="1" style="background-color:#c0ffff08;font-size:95%"><!-- TODO: Put that CSS in some stylesheet -->
+			<<if _mobile and 0>>
+				<tr>
+					<<switch _canmath>>
+						<<case 3>>
+							<th colspan="2" align="left">Item</th>
+						<<case 4>>
+							<th colspan="3" align="left">Item</th>
+						<<case 5>>
+							<th colspan="4" align="left">Item</th>
+						<<case 6>>
+							<th colspan="6" align="left">Item</th>
+					<</switch>>
+				</tr>
+			<</if>>
+			<tr>
+				<<if not _mobile>>
+					<th rowspan="2" style="border-bottom-width:2px" valign="middle" width="40%" align="left">Item</th>
+				<</if>>
+				<<switch _canmath>>
+					<<case 3>>
+						<th colspan="2" align="center">Inventory</th>
+					<<case 4 5 6>>
+						<th colspan="3" align="center">Inventory</th>
+				<</switch>>
+				<<switch _canmath>>
+					<<case 5>>
+						<th colspan="2" align="center">Sold Today</th>
+					<<case 6>>
+						<th colspan="3" align="center">Sold Today</th>
+				<</switch>>
+			</tr>
+			<tr>
+				<th style="border-bottom-width:2px;min-width:7ch" align="center">Amount</th>
+				<th style="border-bottom-width:2px;min-width:7ch" align="center">Each</th>
+				<<if _canmath gte 4>>
+					<th style="border-bottom-width:2px;min-width:7ch" align="center">Total</th>
+				<</if>>
+				<<if _canmath gte 5>>
+					<th style="border-bottom-width:2px;min-width:7ch" align="center">Amount</th>
+					<<if _canmath gte 6>>
+						<th style="border-bottom-width:2px;min-width:7ch" align="center">Avg</th>
+					<</if>>
+					<th style="border-bottom-width:2px;min-width:7ch" align="center">Total</th>
+				<</if>>
+			</tr>
+
+			<<for _t to 0; _t lt _plant_keys.length; _t++>>
+				<<if $stall_stats[_plant_keys[_t]].inventory.amount gt 0 or (_canmath gte 5 and $stall_stats[_plant_keys[_t]].sold.amount gt 0)>>
+					<<if _mobile>>
+						<tr>
+							<td align="left" colspan="6" style="border-top-width:2px"><<=$plants[_plant_keys[_t]].plural.charAt(0).toUpperCase() + $plants[_plant_keys[_t]].plural.slice(1)>></td>
+						</tr>
+					<</if>>
+					<tr>
+						<<if not _mobile>>
+							<td align="left"><<=$plants[_plant_keys[_t]].plural.charAt(0).toUpperCase() + $plants[_plant_keys[_t]].plural.slice(1)>></td>
+						<</if>>
+						<<if $stall_stats[_plant_keys[_t]].inventory.amount gt 0>>
+							<td align="right"><<=$stall_stats[_plant_keys[_t]].inventory.amount>></td>
+							<td align="right"><<printmoney $stall_stats[_plant_keys[_t]].inventory.price>></td>
+							<<if _canmath gte 4>>
+								<td align="right"><<printmoney $stall_stats[_plant_keys[_t]].inventory.total>></td>
+							<</if>>
+						<<else>>
+							<td align="right">-&nbsp;</td>
+							<td align="right"><<printmoney $stall_stats[_plant_keys[_t]].inventory.price>></td>
+							<<if _canmath gte 4>>
+								<td align="right">-&nbsp;</td>
+							<</if>>
+						<</if>>
+						<<if _canmath gte 5>>
+							<<if $stall_stats[_plant_keys[_t]].sold.amount gt 0>>
+								<td align="right"><<=$stall_stats[_plant_keys[_t]].sold.amount>></td>
+								<<if _canmath gte 6>>
+									<td align="right"><<set _avg to Math.round($stall_stats[_plant_keys[_t]].sold.total / $stall_stats[_plant_keys[_t]].sold.amount)>><<printmoney _avg>></td>
+								<</if>>
+								<td align="right"><<printmoney $stall_stats[_plant_keys[_t]].sold.total>></td>
+							<<else>>
+								<td align="right">-&nbsp;</td>
+								<<if _canmath gte 6>>
+									<td align="right">-&nbsp;</td>
+								<</if>>
+								<td align="right">-&nbsp;</td>
+							<</if>>
+						<</if>>
+					</tr>
+				<</if>>
+			<</for>>
+
+			<<if _canmath gte 4>>
+				<tr>
+					<<if not _mobile>>
+						<th style="border-top-width:4px;border-top-style:double" align="left">Total</th>
+					<</if>>
+					<td style="border-top-width:4px;border-top-style:double" align="right">_total_amount</td>
+					<td style="border-top-width:4px;border-top-style:double"></td>
+					<td style="border-top-width:4px;border-top-style:double" align="right"><<printmoney _total_worth>></td>
+					<<if _canmath gte 5>>
+						<td style="border-top-width:4px;border-top-style:double" align="right">_total_sold_amount</td>
+						<<if _canmath gte 6>>
+							<td style="border-top-width:4px;border-top-style:double"></td>
+						<</if>>
+						<td style="border-top-width:4px;border-top-style:double" align="right"><<printmoney $stall_money>></td>
+					<</if>>
+				</tr>
+			<</if>>
+		</table>
+	</center>
+<<elseif _inventory_found is 1>>
+	Inventory:
+	<<set _first to 1>>
+	<<for _t to 0; _t lt _plant_keys.length; _t++>>
+		<<if $stall_stats[_plant_keys[_t]].inventory.amount gt 0>>
+			<<if _first>>
+				<span class="gold"><<=$stall_stats[_plant_keys[_t]].inventory.amount>></span>
+				<<=$plants[_plant_keys[_t]].plural.charAt(0).toUpperCase() + $plants[_plant_keys[_t]].plural.slice(1)>>
+				(<<printmoney _plant_value>> each)
+			<<else>>
+				|
+				<span class="gold"><<=$stall_stats[_plant_keys[_t]].inventory.amount>></span>
+				<<=$plants[_plant_keys[_t]].plural>>
+				(<<printmoney _plant_value>> each)
+			<</if>>
+			<<set _first to 0>>
+		<</if>>
+	<</for>>
+	<br>
+<<else>>
+	Inventory: You're out of stock!<br>
+<</if>>
+
+<<switch _canmath>>
+	<<case 1>>
+		<<if $stall_money is 0>>
+			You haven't sold anything yet.
+		<<else>>
+			You earned <<printmoney $stall_money>> from sales today.
+		<</if>>
+	<<case 2>>
+		<<if $stall_money is 0>>
+			<<if _inventory_found is 1>>
+				Your inventory is worth <<printmoney _total_worth>>.
+			<</if>>
+			You haven't sold anything yet.
+		<<else>>
+			<<if _inventory_found is 1>>
+				Your remaining inventory is worth <<printmoney _total_worth>>.
+			<</if>>
+			You earned <<printmoney $stall_money>> from sales today.
+		<</if>>
+	<<case 3>>
+		<center>
+			<<if $stall_money is 0>>
+				<<if _inventory_found is 1>>
+					Your inventory is worth <<printmoney _total_worth>>.
+				<</if>>
+				You haven't sold anything yet.
+			<<else>>
+				<<if _inventory_found is 1>>
+					Your remaining inventory is worth <<printmoney _total_worth>>.
+				<</if>>
+				You earned <<printmoney $stall_money>> from sales today.
+			<</if>>
+		</center>
+	<<case 4>>
+		<center>
+			<<if $stall_money is 0>>
+				You haven't sold anything yet.
+			<<else>>
+				You earned <<printmoney $stall_money>> from sales today.
+			<</if>>
+		</center>
+<</switch>>
+
+<!-- <</for>><</for>> -->
+
+<</widget>>
+
+<<widget "endstall">>
 <<unset $plant_inventory>>
 <<unset $stall_amount>>
 <<unset $stall_plant>>
 <<unset $stall_cost>>
 <<unset $stall_expensive>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_sell">><<nobr>>
+<<widget "stall_sell">>
+<<if ndef $stall_stats[$stall_plant]>>
+	<<set $stall_stats[$stall_plant] to { inventory:{amount:0, price:0, total:0}, sold:{amount:0, total:0} }>>
+<</if>>
+<<set $stall_stats[$stall_plant].sold.amount += $stall_amount>>
+<<set $stall_stats[$stall_plant].sold.total  += Math.round($stall_cost * $stall_amount)>>
+
 <<set $plants[$stall_plant].amount -= $stall_amount>>
 <<set $money += Math.round($stall_cost * $stall_amount)>>
+<<set $stall_money += Math.round($stall_cost * $stall_amount)>>
 <<set $produce_sold += $stall_amount>>
 You sell
 <<if $stall_amount gte 2>>
@@ -96,15 +322,15 @@ You sell
 <<else>>
 	one <<print setup.plants[$stall_plant].name.replace(/_/g," ")>>
 <</if>>
- for <span class="gold">£<<print Math.round($stall_cost * $stall_amount / 100)>></span>
+ for <<printmoney `$stall_cost * $stall_amount`>>
 <<if $stall_cost * $stall_amount / 100 gte 10000>>
 	It feels good to make so much money at once.
 	<<ltrauma>><<lstress>>
 <</if>>
 <<famebusiness 1>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "eventsstall">><<nobr>>
+<<widget "eventsstall">>
 <<set $rng to random(1, 10)>>
 <<if $stall_rejected gte random(1, 200)>>
 	<<if $rng is 1>>
@@ -116,7 +342,7 @@ You sell
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<br><br>
 
-				"I heard the owner of this stall was a slut," says a <<if $pronoun is "m">>man's<<else>>woman's<</if>> voice. "But I didn't expect <<phim>> to have nothing on down here." <<He>> continues to fondle you.
+				"I heard the owner of this stall was a slut," says a <<personsimple>>'s voice. "But I didn't expect <<phim>> to have nothing on down here." <<He>> continues to fondle you.
 				<br><br>
 
 			<<else>>
@@ -124,7 +350,7 @@ You sell
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<br><br>
 
-				"I heard the owner of this stall was a slut," says a <<if $pronoun is "m">>man's<<else>>woman's<</if>> voice. "But I didn't expect <<phim>> to be secretly wearing just underwear down here." <<He>> continues to fondle you.
+				"I heard the owner of this stall was a slut," says a <<personsimple>>'s voice. "But I didn't expect <<phim>> to be secretly wearing just underwear down here." <<He>> continues to fondle you.
 				<br><br>
 			<</if>>
 		<<else>>
@@ -133,14 +359,14 @@ You sell
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<br><br>
 
-				"Don't lie to me," says a <<if $pronoun is "m">>man's<<else>>woman's<</if>> voice. <<His>> hands wander down to your <<genitals>>. "You set this place up to draw attention to yourself. You want this." <<He>> continues to fondle you.
+				"Don't lie to me," says a <<personsimple>>'s voice. <<His>> hands wander down to your <<genitals>>. "You set this place up to draw attention to yourself. You want this." <<He>> continues to fondle you.
 				<br><br>
 			<<else>>
 				Before you can turn, a pair of hands appear beneath your shoulders and grasp your <<genitals>>.
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<br><br>
 
-				"Don't lie to me," says a <<if $pronoun is "m">>man's<<else>>woman's<</if>> voice. "You set this place up to draw attention to yourself. You want this." <<He>> continues to fondle you.
+				"Don't lie to me," says a <<personsimple>>'s voice. "You set this place up to draw attention to yourself. You want this." <<He>> continues to fondle you.
 				<br><br>
 			<</if>>
 		<</if>>
@@ -150,7 +376,7 @@ You sell
 		<br>
 	<<elseif $rng is 2>>
 		<<generate1>><<person1>>
-		You hear movement behind you. Before you can turn, a hand clasps around your mouth. "I've heard about you," the <<if $pronoun is "m">>man<<else>>woman<</if>> whispers. "Slut." <<He>> kicks your legs out from under you, forcing you to the ground.
+		You hear movement behind you. Before you can turn, a hand clasps around your mouth. "I've heard about you," the <<personsimple>> whispers. "Slut." <<He>> kicks your legs out from under you, forcing you to the ground.
 		<br><br>
 
 		<<link [[Next|Stall Rape]]>><<set $molestationstart to 1>><</link>>
@@ -226,7 +452,7 @@ You sell
 					<<He>> runs away, clutching the fabric in <<his>> hand. <<covered>>
 					<br><br>
 				<<else>>
-					<<He>> tugs it down, exposing your $worn.upper.name before you're able to break <<his>> grip. <<He>> turns and runs.
+					<<He>> tugs it down, exposing your $worn.under_upper.name before you're able to break <<his>> grip. <<He>> turns and runs.
 					<br><br>
 				<</if>>
 			<</if>>
@@ -242,7 +468,7 @@ You sell
 	<<elseif $rng is 5>>
 		<<generate1>><<person1>>
 		<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-		A <<person>> walks up to your display. <<He>> examines one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks. <<He>> leers at you openly.
+		A <<person>> walks up to your display. <<He>> examines one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. <<He>> leers at you openly.
 		<br><br>
 
 		<<stall_trust>>
@@ -252,7 +478,7 @@ You sell
 	<<elseif $rng is 6>>
 		<<generate1>><<person1>>
 		<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-		A <<person>> walks up to your display. <<He>> lifts one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks. "And don't try to sweet talk me. I've heard about you."
+		A <<person>> walks up to your display. <<He>> lifts one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks. "And don't try to sweet talk me. I've heard about you."
 		<br><br>
 
 		<<stall_trust>>
@@ -262,7 +488,7 @@ You sell
 	<<elseif $rng is 7>>
 		<<generate1>><<person1>>
 		<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-		You see a <<person>> watching you from afar. <<He>> walks over when your eyes meet. <<He>> stoops to examine one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks.
+		You see a <<person>> watching you from afar. <<He>> walks over when your eyes meet. <<He>> stoops to examine one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
 		<br><br>
 
 		<<stall_trust>>
@@ -272,7 +498,7 @@ You sell
 	<<elseif $rng is 8>>
 		<<generate1>><<person1>>
 		<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-		A <<person>> walks by, and stops in front of your stall. <<His>> eyes flicker over your face and chest as <<he>> picks up one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks.
+		A <<person>> walks by, and stops in front of your stall. <<His>> eyes flicker over your face and chest as <<he>> picks up one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks.
 		<br><br>
 
 		<<stall_trust>>
@@ -285,7 +511,7 @@ You sell
 		A <<person>> swaggers up to your display. Without warning, <<he>> reaches forward and grasps your arm. <<He>> tugs you forward, until you're leaning over the table, then <<he>> leans in and licks your cheek.
 		<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 		<br><br>
-		<<He>> releases you, then examines one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks, leaning against the table.
+		<<He>> releases you, then examines one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
 		<br><br>
 
 		<<stall_trust>>
@@ -295,7 +521,7 @@ You sell
 	<<else>>
 		<<generate1>><<person1>>
 		<<stall_init>><<set $enemyarousal += 20>><<set $enemytrust -= 20>>
-		A <<person>> walks up to your display. <<He>> sniffs one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?" <<he>> asks, leaning against the table.
+		A <<person>> walks up to your display. <<He>> sniffs one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?" <<he>> asks, leaning against the table.
 		<br><br>
 
 		<<stall_trust>>
@@ -311,7 +537,7 @@ You sell
 
 	<<link [[Talk|Stall Shuffle Talk]]>><</link>>
 	<br>
-	<<link [[Remain Silent|Stall Shuffle Silent]]>><</link>>
+	<<link [[Remain silent|Stall Shuffle Silent]]>><</link>>
 	<br>
 <<elseif $rng is 2>>
 	<<generate1>><<person1>>
@@ -321,16 +547,16 @@ You sell
 
 	<<link [[Talk|Stall Walk Talk]]>><</link>>
 	<br>
-	<<link [[Remain Silent|Stall Walk Silent]]>><</link>>
+	<<link [[Remain silent|Stall Walk Silent]]>><</link>>
 <<elseif $rng is 3>>
 	<<generate1>><<person1>>
 	<<stall_init>>
-	A <<person>> walks up to your stand. <<He>> lifts a <<print $stall_plant.replace(/_/g," ")>>, and sniffs it.
+	A <<person>> walks up to your stand. <<He>> lifts a <span class="green"><<print $stall_plant.replace(/_/g," ")>></span>, and sniffs it.
 	<br><br>
 	<<if $stall_amount gte 2>>
-		"How much?" <<he>> asks, picking up several more until <<he>> holds <<stall_amount>> in <<his>> hand.
+		"How much?" <<he>> asks, picking up several more until <<he>> carries <span class="green"><<stall_amount>></span> in <<his>> basket.
 	<<else>>
-		"How much for one?" <<he>> asks.
+		"How much for <span class="green">one</span>?" <<he>> asks.
 	<</if>>
 	<br><br>
 
@@ -341,7 +567,7 @@ You sell
 <<elseif $rng is 4>>
 	<<generate1>><<person1>>
 	<<stall_init>>
-	A <<person>> walks over, holding <<his>> hands behind <<his>> back. "Aha," <<he>> says, spying a <<print $stall_plant.replace(/_/g," ")>>. <<He>> leans closer, and starts talking about it. <<He>> seems to know a lot.
+	A <<person>> walks over, holding <<his>> hands behind <<his>> back. "Aha," <<he>> says, spying a <span class="green"><<print $stall_plant.replace(/_/g," ")>></span>. <<He>> leans closer, and starts talking about it. <<He>> seems to know a lot.
 	<br><br>
 
 	<<link [[Listen politely (0:10)|Stall Listen]]>><<set $enemytrust += 20>><</link>><<gtrust>>
@@ -355,7 +581,7 @@ You sell
 	<<stall_init>>
 	You see a <<person>> moving along the stalls. <<He>> stops at each one, no matter what they're selling, and chats with the owner. At last <<he>> arrives at yours.
 	<br><br>
-	"Oho," <<he>> says, lifting a <<print $stall_plant.replace(/_/g," ")>>. "These are lovely. Do you produce them yourself?"
+	"Oho," <<he>> says, lifting a <span class="green"><<print $stall_plant.replace(/_/g," ")>></span>. "These are lovely. Do you produce them yourself?"
 	<br><br>
 	<<link [[Answer honestly|Stall Honest]]>><<set $enemytrust += 20>><</link>><<gtrust>>
 	<br>
@@ -377,7 +603,7 @@ You sell
 <<elseif $rng is 7>>
 	<<generate1>><<person1>>
 	<<stall_init>>
-	A <<person>> stops in front of your stall. "Looking for something for the <<spouse>>," <<he>> says. <<He>> leans down and sniffs one of the <<print setup.plants[$stall_plant].plural>>. "How much for <<stall_amount>> of these?"
+	A <<person>> stops in front of your stall. "Looking for something for the <<spouse>>," <<he>> says. <<He>> leans down and sniffs one of the <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span> of these?"
 	<br><br>
 
 	<<stall_trust>>
@@ -387,7 +613,7 @@ You sell
 <<elseif $rng is 8>>
 	<<generate1>><<person1>>
 	<<stall_init>>
-	A <<person1>><<person>> snatches one of your <<print setup.plants[$stall_expensive].plural>> as <<he>> walks by, and breaks into a run.
+	A <<person1>><<person>> snatches one of your <span class="green"><<print setup.plants[$stall_expensive].plural>></span> as <<he>> walks by, and breaks into a run.
 	<br><br>
 
 	<<if $worn.lower.type.includes("naked")>>
@@ -426,7 +652,7 @@ You sell
 <<else>>
 	<<generate1>><<person1>>
 	<<stall_init>>
-	A <<person1>><<person>> is impressed by your <<print setup.plants[$stall_plant].plural>>. "How much for $stall_amount?" <<he>> asks.
+	A <<person1>><<person>> is impressed by your <span class="green"><<print setup.plants[$stall_plant].plural>></span>. "How much for <span class="green"><<stall_amount>></span>?" <<he>> asks.
 	<br><br>
 
 	<<stall_trust>>
@@ -434,9 +660,9 @@ You sell
 
 	<<stall_sell_actions>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_chance">><<nobr>>
+<<widget "stall_chance">>
 Your attractiveness is giving you
 <<if $attractiveness gte 5000>>
 	an <span class="green">excellent</span>
@@ -504,9 +730,9 @@ and your tending skill is contributing
 <<elseif $stall_rejected gte 10>>
 	A <span class="lewd">lewd</span> aura permeates the area.
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_trust">><<nobr>>
+<<widget "stall_trust">>
 <<He>> looks
 <<if $enemytrust gte 50>>
 	<span class="green">enraptured.</span>
@@ -528,35 +754,35 @@ and your tending skill is contributing
 	<<elseif $enemyarousal gte 80>>
 		<span class="pink">lustful.</span>
 	<<elseif $enemyarousal gte 60>>
-		<span class="purple">horny</span>
+		<span class="purple">horny.</span>
 	<<elseif $enemyarousal gte 40>>
 		<span class="blue">aroused.</span>
 	<<else>>
 		<span class="lblue">flirty.</span>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_sell_actions">><<nobr>>
-<<link [[Ask for normal price|Stall Sell]]>><</link>> <span class="gold">(£<<print ($stall_cost / 100 * $stall_amount).toFixed(2)>>)</span>
+<<widget "stall_sell_actions">>
+<<link [[Ask for normal price|Stall Sell]]>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount`>>)</span>
 <br>
-<<link [[Give a discount|Stall Sell]]>><<set $stall_cost *= 0.8>><<set $enemytrust += 20>><</link>> <span class="gold">(£<<print (($stall_cost / 100) * $stall_amount * 0.8).toFixed(2)>>)</span> <<gtrust>>
+<<link [[Give a discount|Stall Sell]]>><<set $stall_cost *= 0.8>><<set $enemytrust += 20>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount * 0.8`>>)</span> <<gtrust>>
 <br>
-<<link [[Ask for more than they're worth|Stall Sell]]>><<set $enemytrust -= 20>><<set $stall_cost *= 1.2>><</link>> <span class="gold">(£<<print ($stall_cost / 100 * $stall_amount * 1.2).toFixed(2)>>)</span> <<ltrust>>
+<<link [[Ask for more than they're worth|Stall Sell]]>><<set $enemytrust -= 20>><<set $stall_cost *= 1.2>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount * 1.2`>>)</span> <<ltrust>>
 <br>
 <<if $stall_plant isnot $stall_expensive and $stall_expensive isnot undefined>>
 	<<link [[Push your most expensive stock|Stall Sell Push]]>><<set $stall_plant to $stall_expensive>><<set $enemytrust -= 20>><</link>><<ltrust>>
 	<br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_sell_man">><<nobr>>
+<<widget "stall_sell_man">>
 <<if $enemyarousal gte random(50, 150)>>
 	The <<person1>><<person>> leans over the table and grasps your arm. "I've paid enough," <<he>> whispers. "Time for you to give up the actual goods."
 	<br><br>
 
 	<<if $promiscuity gte 55>>
-		<<link [[Offer Oral|Stall Oral]]>><</link>><<promiscuous4>>
+		<<link [[Offer oral|Stall Oral]]>><</link>><<promiscuous4>>
 		<br>
 	<<else>>
 		You aren't promiscuous enough to accept
@@ -619,11 +845,11 @@ and your tending skill is contributing
 	<<stall_trust>>
 	<br><br>
 
-	<<link [[Refuse to budge|Stall Sell]]>><</link>> <span class="gold">(£<<print ($stall_cost / 100 * $stall_amount).toFixed(2)>>)</span>
+	<<link [[Refuse to budge|Stall Sell]]>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount`>>)</span>
 	<br>
-	<<link [[Agree to lower price|Stall Sell]]>><<set $stall_cost *= 0.8>><<set $enemytrust += 20>><</link>> <span class="gold">(£<<print ($stall_cost / 100 * $stall_amount * 0.8).toFixed(2)>>)</span> <<gtrust>>
+	<<link [[Agree to lower price|Stall Sell]]>><<set $stall_cost *= 0.8>><<set $enemytrust += 20>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount * 0.8`>>)</span> <<gtrust>>
 	<br>
-	<<link [[Raise your price|Stall Sell]]>><<set $enemytrust -= 20>><<set $stall_cost *= 1.2>><</link>> <span class="gold">(£<<print ($stall_cost / 100 * $stall_amount * 1.2).toFixed(2)>>)</span> <<ltrust>>
+	<<link [[Raise your price|Stall Sell]]>><<set $enemytrust -= 20>><<set $stall_cost *= 1.2>><</link>> <span class="gold">(<<printmoney `$stall_cost * $stall_amount * 1.2`>>)</span> <<ltrust>>
 	<br>
 <<else>>
 	The <<person1>><<person>> scoffs and walks away.
@@ -632,9 +858,9 @@ and your tending skill is contributing
 	<<stall_actions>>
 
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_init">><<nobr>>
+<<widget "stall_init">>
 <<set $stall_plant to $plant_inventory.random()>>
 <<if setup.plants[$stall_plant].special.includes("large")>>
 	<<set $stall_amount to 1>>
@@ -648,13 +874,47 @@ and your tending skill is contributing
 <<set $enemyarousal to 0>>
 <<set $stall_seduced to 0>>
 <<set $stall_cost to Math.round(clone(setup.plants[$stall_plant].plant_cost))>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "stall_amount">><<nobr>>
+<<widget "stall_amount">>
 <<if $stall_amount is 1>>
 	<<set _text_output to "one">>
+<<elseif $stall_amount is 2 and random(1,5) is 1>>
+	<<set _text_output to "a pair">>
+<<elseif $stall_amount is 12 and random(1,5) is 1>>
+	<<set _text_output to "a dozen">>
+<<elseif $stall_amount is 13 and random(1,10) is 1>>
+	<<set _text_output to "a baker's dozen">>
+<<elseif $stall_amount is 20 and random(1,10) is 1>>
+	<<set _text_output to "a score">>
+<<elseif $stall_amount is 24 and random(1,10) is 1>>
+	<<set _text_output to "two dozen">>
+<<elseif $stall_amount is 36 and random(1,15) is 1>>
+	<<set _text_output to "three dozen">>
+<<elseif $stall_amount is 40 and random(1,20) is 1>>
+	<<set _text_output to "two score">>
+<<elseif $stall_amount is 48 and random(1,15) is 1>>
+	<<set _text_output to "four dozen">>
+<<elseif $stall_amount is 60 and random(1,20) is 1>>
+	<<set _text_output to "three score">>
+<<elseif $stall_amount is 60 and random(1,15) is 1>>
+	<<set _text_output to "five dozen">>
+<<elseif $stall_amount is 72 and random(1,10) is 1>>
+	<<set _text_output to "six dozen">>
+<<elseif $stall_amount is 80 and random(1,20) is 1>>
+	<<set _text_output to "four score">>
+<<elseif $stall_amount is 84 and random(1,20) is 1>>
+	<<set _text_output to "seven dozen">>
+<<elseif $stall_amount is 96 and random(1,20) is 1>>
+	<<set _text_output to "eight dozen">>
+<<elseif $stall_amount is 108 and random(1,20) is 1>>
+	<<set _text_output to "nine dozen">>
+<<elseif $stall_amount is 120 and random(1,20) is 1>>
+	<<set _text_output to "ten dozen">>
+<<elseif $stall_amount is 144 and random(1,5) is 1>>
+	<<set _text_output to "a gross">>
 <<else>>
-	<<set _text_output to $stall_amount>>
+	<<number $stall_amount silent>>
 <</if>>
 <<print _text_output>>
-<</nobr>><</widget>>
+<</widget>>

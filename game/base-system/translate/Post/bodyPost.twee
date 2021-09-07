@@ -1,5 +1,5 @@
 :: Widgets bodyPost [widget nobr]
-<<widget "breastsPost">>
+<<widget "breastsPost">><<silently>>
     <<switch $breastsize>>
         <<case 0>>
             <<set _trResult to "유두">>
@@ -37,12 +37,15 @@
             <<trPost 0 $args[0] $args[1]>>
         <</if>>
     <</if>>
+<</silently>><<breastsensitivity>><<print _trResult>><</widget>>
 
-    <<print _trResult>>
-<</widget>>
+<<widget "nipplePost">><<silently>>
+	<<set _trResult to "젖꼭지">><<if $args[0] isnot undefined>><<trPost 1 $args[0] $args[1]>><</if>>
+<</silently>><<breastsensitivity>><<print _trResult>><</widget>>
 
+<<widget "nipplesPost">><<nipplePost $args[0] $args[1]>><</widget>>
 
-<<widget "bottomPost">><<nobr>><<silently>>
+<<widget "bottomPost">><<silently>>
     <<if $bottomsize gte 8>>
         <<set _trResult to "거대한">>
     <<elseif $bottomsize is 7>>
@@ -66,10 +69,10 @@
     <<if $args[0] isnot undefined>>
         <<trPost 1 $args[0] $args[1]>>
     <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<print _trResult>><</widget>>
 
 
-<<widget "pussyPost">><<nobr>><<silently>>
+<<widget "pussyPost">><<silently>>
     <<if $devstate gte 1>>
         <<if $orgasmcount gte 23>>
             <<if $orgasmdown gte 1>>
@@ -87,13 +90,13 @@
             <<if $orgasmdown gte 1>>
             <<set _trResult to "움찔거리는 보지">>
             <<else>>
-                <<if $arousal gte 8000>>
-                <<set _trResult to "따끔거리는 보지">>
-                <<elseif $arousal gte 6000>>
+                <<if $arousal gte ($arousalmax / 5) * 4>>
+                <<set _trResult to "욱신거리는 보지">>
+                <<elseif $arousal gte ($arousalmax / 5) * 3>>
                 <<set _trResult to "보지">>
-                <<elseif $arousal gte 4000>>
+                <<elseif $arousal gte ($arousalmax / 5) * 2>>
                 <<set _trResult to "보지">>
-                <<elseif $arousal gte 2000>>
+                <<elseif $arousal gte $arousalmax / 5>>
                 <<set _trResult to "보지">>
                 <<else>>
                 <<set _trResult to "보지">>
@@ -103,30 +106,30 @@
     <<else>>
         <<if $orgasmcount gte 23>>
             <<if $orgasmdown gte 1>>
-            <<set _trResult to "고문당한 작은 보지">>
+            <<set _trResult to "고문당한 보지">>
             <<else>>
-            <<set _trResult to "기진맥진한 작은 보지">>
+            <<set _trResult to "기진맥진한 보지">>
             <</if>>
         <<elseif $orgasmcount gte 9>>
             <<if $orgasmdown gte 1>>
             <<set _trResult to "움찔거리는 보지">>
             <<else>>
-            <<set _trResult to "지친 작은 보지">>
+            <<set _trResult to "지친 보지">>
             <</if>>
         <<else>>
             <<if $orgasmdown gte 1>>
             <<set _trResult to "움찔거리는 보지">>
             <<else>>
-                <<if $arousal gte 8000>>
-                <<set _trResult to "따끔거리는 보지">>
-                <<elseif $arousal gte 6000>>
-                <<set _trResult to "조그마한 보지">>
-                <<elseif $arousal gte 4000>>
-                <<set _trResult to "조그마한 보지">>
-                <<elseif $arousal gte 2000>>
-                <<set _trResult to "조그마한 보지">>
+                <<if $arousal gte ($arousalmax / 5) * 4>>
+                <<set _trResult to "욱신거리는 보지">>
+                <<elseif $arousal gte ($arousalmax / 5) * 3>>
+                <<set _trResult to "보지">>
+                <<elseif $arousal gte ($arousalmax / 5) * 2>>
+                <<set _trResult to "보지">>
+                <<elseif $arousal gte $arousalmax / 5>>
+                <<set _trResult to "보지">>
                 <<else>>
-                <<set _trResult to "조그마한 보지">>
+                <<set _trResult to "보지">>
                 <</if>>
             <</if>>
         <</if>>
@@ -134,49 +137,61 @@
     <<if $args[0] isnot undefined>>
         <<trPost 1 $args[0] $args[1]>>
     <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<genitalsensitivity>><<print _trResult>><</widget>>
 
 
-<<widget "genitalsPost">><<nobr>><<silently>>
+<<widget "genitalsPost">><<silently>>
 <<if $worn.genitals.type.includes("chastity") and isNaN($args[0]) and _chastityBreak isnot 1>>
 	<<trClothes "genitals" $worn.genitals.name "name" $args[0] $args[1]>>
 <<else>>
-	<<set _args to []>>
+	<<set $_args to []>>
 	<<if isNaN($args[0]) and $args[2] is undefined>>
-		<<set _args[1] to $args[0]>><<set _args[2] to $args[1]>>
+		<<set $_args[1] to $args[0]>><<set $_args[2] to $args[1]>>
 	<<else>>
-		<<set _args[0] to $args[0]>><<set _args[1] to $args[1]>><<set _args[2] to $args[2]>>
+		<<set $_args[0] to $args[0]>><<set $_args[1] to $args[1]>><<set $_args[2] to $args[2]>>
 	<</if>>
 	<<set _trResult to "">>
+	<<if $genitalsensitivity > 5>>
+		<<set _trResult += "예민한 ">>
+	<<elseif $genitalsensitivity >= 3>>
+		<<set _trResult += "민감한 ">>
+	<<elseif $genitalsensitivity >= 1.5>>
+		<<set _trResult += "섬세한 ">>
+	<</if>>
 	<<if $penisexist is 1>>
-		<<if $player.virginity.penile is true and _args[0] isnot 2>>
+		<<if $player.virginity.penile is true and $_args[0] isnot 2>>
 			<<set _trResult += "동정 ">>
 		<</if>>
 		<<set _trResult += "자지">>
-		<<if $vaginaexist is 1>>
-			<<trPost 1 "과">><<set _trResult += " ">>
-		<</if>>
+	<</if>>
+	<<if $penisexist is 1 and $vaginaexist is 1>>
+		<<trPost 1 "과">><<set _trResult += " ">>
 	<</if>>
 	<<if $vaginaexist is 1>>
-		<<if $pblevel is 9 and $vaginaWetness gte 75 and $pbdisable is "f">>
+		<<if $pblevel gte 8 and $vaginaWetness gte 75 and $pbdisable is "f">>
 			<<set _trResult += "흥분한 것이 보이는, 털이 무성한 ">>
 		<<elseif $vaginaWetness gte 75>>
 			<<set _trResult += "흥분한 것이 눈에 보이는 ">>
-		<<elseif $pblevel is 9>>
-			<<set _trResult += "털이 무성한 " and $pbdisable is "f">>
+		<<elseif $pblevel gte 8 and $pbdisable is "f">>
+			<<set _trResult += "털이 무성한 ">>
 		<</if>>
-		<<if $player.virginity.vaginal is true and _args[0] isnot 2>>
+		<<if $player.virginity.vaginal is true and $_args[0] isnot 2>>
 			<<set _trResult += "처녀 ">>
 		<</if>>
 		<<set _trResult += "보지">>
-        <<trPost 1 _args[1] _args[2]>>
+	<</if>>
+	<<if $_args[1] isnot undefined>>
+		<<trPost 1 $_args[1] $_args[2]>>
 	<</if>>
 <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<print _trResult>><</widget>>
+
 <<widget "genitals_arePost">><<genitalsPost $args[0] $args[1] $args[2]>><</widget>>
 
+<<widget "genitalsandbreastsPost">><<if $breastsize gte 1>><<genitalsPost "과">> <<breastsPost $args[0] $args[1]>><<else>><<genitalsPost $args[0] $args[1]>><</if>><</widget>>
 
-<<widget "clitPost">><<nobr>><<silently>>
+
+<<widget "clitPost">><<silently>>
     <<if $penisexist is 1>>
         <<penisPost $args[0] $args[1]>>
     <<else>>
@@ -185,10 +200,10 @@
             <<trPost 1 $args[0] $args[1]>>
         <</if>>
     <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<genitalsensitivity>><<print _trResult>><</widget>>
 
 
-<<widget "penisPost">><<nobr>><<silently>>
+<<widget "penisPost">><<silently>>
     <<trPenissize>>
     <<set _penissize_text to _trResult>>
     <<if _penissize_text isnot "">>
@@ -211,13 +226,13 @@
         <<if $orgasmdown gte 1>>
         <<set _trResult to _penissize_text + "움찔거리는 자지">>
         <<else>>
-            <<if $arousal gte 8000>>
-            <<set _trResult to _penissize_text + "따끔거리는 자지">>
-            <<elseif $arousal gte 6000>>
+            <<if $arousal gte ($arousalmax / 5) * 4>>
+            <<set _trResult to _penissize_text + "욱신거리는 자지">>
+            <<elseif $arousal gte ($arousalmax / 5) * 3>>
             <<set _trResult to _penissize_text + "자지">>
-            <<elseif $arousal gte 4000>>
+            <<elseif $arousal gte ($arousalmax / 5) * 2>>
             <<set _trResult to _penissize_text + "자지">>
-            <<elseif $arousal gte 2000>>
+            <<elseif $arousal gte $arousalmax / 5>>
             <<set _trResult to _penissize_text + "자지">>
             <<else>>
             <<set _trResult to _penissize_text + "자지">>
@@ -227,10 +242,10 @@
     <<if $args[0] isnot undefined>>
         <<trPost 1 $args[0] $args[1]>>
     <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<genitalsensitivity>><<print _trResult>><</widget>>
 
 
-<<widget "glansPost">><<nobr>><<silently>>
+<<widget "glansPost">><<silently>>
 <<if $penisuse is 0>>
 	<<set _trResult to "귀두">>
     <<if $args[0] isnot undefined>>
@@ -242,12 +257,47 @@
         <<trPost 0 $args[0] $args[1]>>
     <</if>>
 <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<print _trResult>><</widget>>
 
 
-<<widget "testiclesPost">><<nobr>><<silently>>
+<<widget "testiclesPost">><<silently>>
 	<<set _trResult to "불알">>
     <<if $args[0] isnot undefined>>
         <<trPost 0 $args[0] $args[1]>>
     <</if>>
-<</silently>><<print _trResult>><</nobr>><</widget>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "handPost">><<silently>>
+	<<set $_preword to "">>
+	<<if $args[0] isnot undefined>>
+		<<set $_tempArray to $args[0].split(' ')>>
+		<<if $_tempArray.length gt 2>>
+			<<set $_preword to $_tempArray[0] + " ">>
+			<<set $_hand to $_tempArray[1]>>
+		<<else>>
+			<<set $_hand to $_tempArray[0]>>
+		<</if>>
+	<</if>>
+	<<if $_hand is "left">>
+		<<set _trResult to $_preword + "왼손">>
+		<<set $_postStr to $args[1]>>
+		<<set $_postOpt to $args[2]>>
+	<<elseif $_hand is "right">>
+		<<set _trResult to $_preword + "오른손">>
+		<<set $_postStr to $args[1]>>
+		<<set $_postOpt to $args[2]>>
+	<<elseif $_hand is "both">>
+		<<set _trResult to $_preword + "양손">>
+		<<set $_postStr to $args[1]>>
+		<<set $_postOpt to $args[2]>>
+	<<else>>
+		<<set _trResult to $_preword + "손">>
+		<<if $args[0] isnot undefined>>
+			<<set $_postStr to $args[0]>>
+			<<set $_postOpt to $args[1]>>
+		<</if>>
+	<</if>>
+    <<if $_postStr isnot undefined>>
+        <<trPost 0 $_postStr $_postOpt>>
+    <</if>>
+<</silently>><<print _trResult>><</widget>>

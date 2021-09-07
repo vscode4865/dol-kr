@@ -1,33 +1,85 @@
-:: Police Station [nobr]
+:: Police Station
 
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
 <<if $NPCList[0].pronoun is 0>>
 	<<generate1>>
 <</if>>
 You are stood in the police station lobby. A <<person1>><<person>> in an officer's uniform sits behind the front desk.
+<<if $crime gte 5000>>
+	There's a wanted poster behind <<him>>. <span class="red">It has a picture of your face.</span>
+<</if>>
 <br><br>
+<<if $community_service gte 1 and $community_service_done isnot 1 and $exposed lte 0 and $hour lt 21 and $hour gte 6>>
+	<<link [[Community Service (1:00)|Police Community]]>><</link>>
+	<br>
+<</if>>
+<<if $crime gte 1000>>
+	<<link [[Turn yourself in (1:00)|Police Turn]]>><<pass 6>><</link>> | <span class="green">You'll receive a more lenient sentence.</span>
+	<br>
+<</if>>
 <<if $worn.neck.collared is 1 or $worn.neck.name is "collar">>
 	<<link [[Ask for collar removal|Police Station Collar]]>><</link>>
+	<br>
+<</if>>
+<<if $worn.feet.type.includes("shackle")>>
+	<<link [[Ask for shackle removal|Police Station Shackle]]>><</link>>
 	<br>
 <</if>>
 <<if $headdrive is 1 and $headpolice isnot 1>>
 	<<link [[Give evidence against Leighton|Police Leighton]]>><</link>>
 	<br>
 <</if>>
+
 <br>
 <<link [[Leave|Barb Street]]>><<endevent>><</link>>
 <br>
 
-:: Police Station Collar [nobr]
+:: Police Turn
+<<effects>>
+
+<<generate2>><<generate3>>
+You approach the desk.
+<<if $submissive gte 1150>>
+	"I-I've been bad," you say. "I'm here to turn myself in."
+<<elseif $submissive lte 850>>
+	"It's your lucky day," you say. "I'm here to turn myself in."
+<<else>>
+	"I'm a wanted criminal," you say. "I'm here to turn myself in."
+<</if>>
+<br><br>
+<<if $crime gte 5000>>
+	The <<person>> frowns at you, then turns to the wanted poster behind <<him>>. <<He>> pulls it from the wall, and holds it over the desk. <<He>> compares you to the photo, as if suspecting a trick, then shrugs. <<He>> pushes a button below the desk, and two more officers enter.
+	<br><br>
+<<else>>
+	The <<person>> frowns at you, then pushes a button below the desk. Two more officers enter.
+	<br><br>
+<</if>>
+"Take <<phim>> to a cell," <<he>> says, still looking at you. "We'll soon decide what to do with you. Thank you for cooperating."
+<br><br>
+
+<<set $crime to Math.trunc($crime * 0.8)>>
+You are led down a flight of steps, and into a tiny cell. The door rattles shut behind you.
+<br><br>
+
+<<link [[Next|Police Cell]]>><<endevent>><<pass 60>><</link>>
+<br>
+
+:: Police Station Collar
 
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
 You ask the <<person>> if you can have your collar removed.
-<<if $worn.neck.collaredpolice is 1 and $communityservice is 1>>
+<<if $worn.neck.collaredpolice is 1 and $community_service gte 1>>
+	<span class="red">"No can do,"</span> <<he>> says. "That's part of your sentence. Finish your community service, then we'll remove it."
+	<br><br>
+	<<if $promiscuity gte 15 and $policecollarseduceattempt isnot 1>>
+		<<link [[Seduce|Police Station Seduce]]>><<set $policecollarseduceattempt to 1>><<set $phase to 1>><</link>><<promiscuous2>>
+		<br>
+	<</if>>
 <<else>>
 	"Sure," <<he>> says. "It'll cost £200. You really shouldn't go putting those things on for fun. They're government property for one thing, and a bitch to get off by design."
 	<br><br>
 	<<if $promiscuity gte 15 and $policecollarseduceattempt isnot 1>>
-		<<link [[Seduce|Police Station Seduce]]>><<set $policecollarseduceattempt to 1>><</link>><<promiscuous2>>
+		<<link [[Seduce|Police Station Seduce]]>><<set $policecollarseduceattempt to 1>><<set $phase to 0>><</link>><<promiscuous2>>
 		<br>
 	<</if>>
 	<<if $money gte 20000>>
@@ -38,26 +90,50 @@ You ask the <<person>> if you can have your collar removed.
 <<link [[Leave|Police Station]]>><</link>>
 <br>
 
-:: Police Station Seduce [nobr]
+:: Police Station Shackle
 
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
-<<set $seductiondifficulty to 4000>>
+You ask the <<person>> if you can have your shackles removed. "Dunno what you expect us to do," <<he>> laughs, looking at your ankles. "These aren't the middle ages." <<He>> laughs again. <span class="gold">"Try a museum."</span>
+<br><br>
+
+<<link [[Leave|Police Station]]>><</link>>
+<br>
+
+:: Police Station Seduce
+
+<<set $outside to 0>><<set $location to "police_station">><<effects>>
+<<if $phase is 1>>
+	<<set $seductiondifficulty to 10000>>
+<<else>>
+	<<set $seductiondifficulty to 4000>>
+<</if>>
 <<seductioncheck>>
 <br><br>
 <<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
 <br><br>
 <<if $seductionrating gte $seductionrequired>>
-	"I'll pretend I didn't hear that. If you can't pay up, I can't help you." As you turn to leave however, <<he>> whispers to you. "Meet me behind the station in five minutes, in that old ruin." <<promiscuity2>>
+	"I'll pretend I didn't hear that.
+	<<if $phase is 1>>
+		Just do your time."
+	<<else>>
+		If you can't pay up, I can't help you."
+	<</if>>
+	As you turn to leave however, <<he>> whispers to you. "Meet me behind the station in five minutes, in that old ruin." <<promiscuity2>>
 	<br><br>
 	<<pass 5>>
 	You go to the ruin the <<person>> mentioned, which looks like the remains of an ancient wall. You wait in the hollow interior. You don't have to wait long.
 	<br><br>
-	"I'll remove your collar once we're done," <<he>> says, stooping through the arched entrance. "I think It'll make it more fun."
+	"I'll remove your collar once we're done," <<he>> says, stooping through the arched entrance. "I think it'll make it more fun."
 	<br><br>
 	<<link [[Next|Police Station Sex]]>><<set $sexstart to 1>><</link>>
 	<br>
 <<else>>
-	"I'll pretend I didn't hear that. If you can't pay up, I can't help you."
+	"I'll pretend I didn't hear that.
+	<<if $phase is 1>>
+		Just do your time."
+	<<else>>
+		If you can't pay up, I can't help you."
+	<</if>>
 	<br><br>
 	<i>You can try again tomorrow.</i>
 	<br><br>
@@ -65,16 +141,19 @@ You ask the <<person>> if you can have your collar removed.
 	<br>
 <</if>>
 
-:: Police Station Collar Removal [nobr]
+:: Police Station Collar Removal
 
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
+<<if $syndromeeden is 1>>
+	<<set $edencollarremove to 1>>
+<</if>>
 "I'll be right round," The <<person>> says. <<He>> enters the lobby proper moments later, holding a strange-looking key. <<He>> holds it up to the collar, and the lock clicks open, releasing your neck. <<He>> takes the collar. "As I said, government property."
 <br><br>
 <<set $worn.neck.cursed to 0>><<neckruined>><<set $worn.neck.collaredpolice to 0>>
 <<link [[Next|Police Station]]>><</link>>
 <br>
 
-:: Police Station Sex [nobr]
+:: Police Station Sex
 
 <<if $sexstart is 1>>
 	<<set $sexstart to 0>>
@@ -99,7 +178,7 @@ You ask the <<person>> if you can have your collar removed.
 	<span id="next"><<link [[Next|Police Station Sex]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Police Station Sex Finish [nobr]
+:: Police Station Sex Finish
 
 <<set $outside to 0>><<set $location to "police_station">><<schooleffects>><<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
@@ -123,7 +202,7 @@ You ask the <<person>> if you can have your collar removed.
 <br><br>
 <<link [[Next|Residential alleyways]]>><</link>>
 
-:: Police Leighton [nobr]
+:: Police Leighton
 
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
 <<if $submissive gte 1150>>
@@ -143,7 +222,7 @@ You get the feeling the police aren't going to be helpful. At least you tried to
 <<link [[Next|Police Station]]>><</link>>
 <br>
 
-:: Police Back Office [nobr]
+:: Police Back Office
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
 <<if ndef $police_access_card>><<set $police_access_card to 0>><</if>>
 <<if ndef $police_hack>><<set $police_hack to 0>><</if>>
@@ -169,16 +248,17 @@ You get the feeling the police aren't going to be helpful. At least you tried to
 	<<if $police_access_card is 0 and ($rng % 3) is 0>>
 		<br><span class="gold">A police access card lies on the desk.</span> A note on it says "external access only."
 		<br><br>
-		<<link [[Steal Access card|Police Back Office]]>><<set $police_access_card to 1>><</link>>
+		<<link [[Steal access card|Police Back Office]]>><<set $police_access_card to 1>><</link>>
 		<br>
 	<<else>>
 	<br><br>
 	<</if>>
 	<<if $police_hack is 4>>
-		<<link [[Access Police Computer (0:10)|Police Computer]]>><<pass 1>><<set $phase to 0>><</link>>
+		<!-- SANITY: Intentional mismatch between stated time and actual time, to avoid letting the user know what it will fail -->
+		<<link [[Access police computer (0:10)|Police Computer]]>><<pass 1>><<set $phase to 0>><</link>>
 		<br>
 	<<elseif $police_hack is 5>>
-		<<link [[Access Police Computer (0:10)|Police Computer]]>><<pass 10>><<set $phase to 1>><</link>>
+		<<link [[Access police computer (0:10)|Police Computer]]>><<pass 10>><<set $phase to 1>><</link>>
 		<br>
 	<</if>>
 <<else>>
@@ -191,7 +271,7 @@ You get the feeling the police aren't going to be helpful. At least you tried to
 <<link [[Leave|Barb Street]]>><<set $police_intro to 0>><</link>>
 <br>
 
-:: Police Computer [nobr]
+:: Police Computer
 <<set $outside to 0>><<set $location to "police_station">><<effects>>
 <<if $phase is 0>>
 	The password you have no longer works. It must have been changed.
@@ -200,6 +280,9 @@ You get the feeling the police aren't going to be helpful. At least you tried to
 	You access the police computer.
 	<<police_computer_action>>
 <<elseif $phase is 10>>
+	<<if $crime lt 0>>
+		<<set $crime to 0>>
+	<</if>>
 	You delete a number of crimes from your record, and randomly change several evidence reference numbers.
 <<elseif $phase is 11>>
 	A messagebox tells you the software installed correctly. It should lock out everything within the next few hours.

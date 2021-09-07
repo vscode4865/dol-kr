@@ -2,6 +2,7 @@
 <<widget "variablesVersionUpdate">>
 /*Variable that you need to check on every new version, page load/refresh or save load*/
 
+<<updatehistorycontrols>>
 <<if $objectVersion is undefined>>
 	<<set $objectVersion to {}>>
 <</if>>
@@ -28,7 +29,7 @@
 
 <<if $player.appearance isnot undefined>>
 	<<set $player.gender_appearance to $player.appearance>>
-	<<run delete State.variables.player.appearance>>
+	<<run delete V.player.appearance>>
 <</if>>
 
 <<if $toplessgender isnot undefined>>
@@ -69,11 +70,7 @@
 <</if>>
 
 <<if $player.ballsExist is undefined>>
-	<<if $player.gender is "f">>
-		<<set $player.ballsExist to false>>
-	<<else>>
-		<<set $player.ballsExist to true>>
-	<</if>>
+	<<set $player.ballsExist to ($player.gender isnot "f")>>
 <</if>>
 
 <<if $clothing_update is undefined>><<set $clothing_update to 1>>
@@ -205,8 +202,8 @@
 	<<set $schooleventtimer to 5>>
 <</if>>
 
-<<if $stressmax is undefined>>
-	<<set $stressmax to 10010>>
+<<if $stressmax is undefined or $stressmax is 10010>>
+	<<set $stressmax to 10000>>
 <</if>>
 <<if $tirednessmax is undefined>>
 	<<set $tirednessmax to 2000>>
@@ -234,11 +231,12 @@
 <<if $transformdisable is undefined>>
 	<<set $transformdisable to "f">>
 <</if>>
+
 <<if $analpregdisable is undefined>>
 	<<set $analpregdisable to "f">>
 <</if>>
 
-<<if $robindebtlimit is undefined and $robinintro is 1>>
+<<if $robindebtlimit is undefined and $docksrobinintro is 1>>
 	<<set $robindebtlimit to 5>>
 	<<if $robindebt gte $robindebtlimit>>
 		<<set $robindebt to ($robindebtlimit - 1)>>
@@ -249,100 +247,11 @@
 	<<set $robindebtknown to 1>>
 <</if>>
 
-<<if $averygender is undefined>>
-	<<if $malechance lt random(1, 100)>>
-		<<set $averygender to "f">>
-	<<else>>
-		<<set $averygender to "m">>
-	<</if>>
-<</if>>
-<<if $averygenitals is undefined>>
-	<<if $averygender is "m">>
-		<<if random(0, 99) gte $cbchance>>
-			<<set $averygenitals to "penis">>
-		<<else>>
-			<<set $averygenitals to "vagina">>
-		<</if>>
-	<<elseif $averygender is "f">>
-		<<if random(0, 99) gte $dgchance>>
-			<<set $averygenitals to "vagina">>
-		<<else>>
-			<<set $averygenitals to "penis">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $morgangender is undefined>>
-	<<if $malechance lt random(1, 100)>>
-		<<set $morgangender to "f">>
-	<<else>>
-		<<set $morgangender to "m">>
-	<</if>>
-<</if>>
-
-<<if $morgangenitals is undefined>>
-	<<if $morgangender is "m">>
-		<<if random(0, 99) gte $cbchance>>
-			<<set $morgangenitals to "penis">>
-		<<else>>
-			<<set $morgangenitals to "vagina">>
-		<</if>>
-	<<elseif $morgangender is "f">>
-		<<if random(0, 99) gte $dgchance>>
-			<<set $morgangenitals to "vagina">>
-		<<else>>
-			<<set $morgangenitals to "penis">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $kylargender is undefined>>
-	<<if $malechance lt random(1, 100)>>
-		<<set $kylargender to "f">>
-	<<else>>
-		<<set $kylargender to "m">>
-	<</if>>
-<</if>>
-
-<<if $kylargenitals is undefined>>
-	<<if $kylargender is "m">>
-		<<if random(0, 99) gte $cbchance>>
-			<<set $kylargenitals to "penis">>
-		<<else>>
-			<<set $kylargenitals to "vagina">>
-		<</if>>
-	<<elseif $kylargender is "f">>
-		<<if random(0, 99) gte $dgchance>>
-			<<set $kylargenitals to "vagina">>
-		<<else>>
-			<<set $kylargenitals to "penis">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $blackwolfgender is undefined>>
-	<<set $rng to random(1, 100)>>
-	<<if $beastmalechance lt $rng>>
-		<<set $blackwolfgender to "f">>
-	<<else>>
-		<<set $blackwolfgender to "m">>
-	<</if>>
-<</if>>
-
-<<if $blackwolfgenitals is undefined>>
-	<<if $blackwolfgender is "m">>
-		<<if random(0, 99) gte $cbchance>>
-			<<set $blackwolfgenitals to "penis">>
-		<<else>>
-			<<set $blackwolfgenitals to "vagina">>
-		<</if>>
-	<<elseif $blackwolfgender is "f">>
-		<<if random(0, 99) gte $dgchance>>
-			<<set $blackwolfgenitals to "vagina">>
-		<<else>>
-			<<set $blackwolfgenitals to "penis">>
-		<</if>>
-	<</if>>
+<<if $averygender isnot undefined>>
+	<<for _npc range ["avery", "morgan", "kylar", "blackwolf"]>>
+		<<run delete V[_npc + "gender"]>>
+		<<run delete V[_npc + "genitals"]>>
+	<</for>>
 <</if>>
 
 <<if $blackwolfmonster is undefined>>
@@ -432,6 +341,14 @@
 	<<set $baileydefeated to 0>>
 	<<set $baileydefeatedlewd to 0>>
 	<<set $baileydefeatedchain to 0>>
+<</if>>
+
+<<if $soldCount is undefined>>
+	<<if $rentsale isnot undefined>>
+		<<set $soldCount to $rentsale>>
+	<<else>>
+		<<set $soldCount to 0>>
+	<</if>>
 <</if>>
 
 <<if $robinmoney is undefined>>
@@ -831,28 +748,10 @@
 	<<set $tanned to 0>>
 <</if>>
 
-<<if $avery_penis_size is undefined>>
-	<<set $avery_penis_size to 2>>
-	<<set $bailey_penis_size to 2>>
-	<<set $briar_penis_size to 2>>
-	<<set $charlie_penis_size to 2>>
-	<<set $darryl_penis_size to 2>>
-	<<set $doren_penis_size to 2>>
-	<<set $eden_penis_size to 2>>
-	<<set $gwylan_penis_size to 2>>
-	<<set $harper_penis_size to 2>>
-	<<set $jordan_penis_size to 2>>
-	<<set $kylar_penis_size to 2>>
-	<<set $landry_penis_size to 2>>
-	<<set $leighton_penis_size to 2>>
-	<<set $mason_penis_size to 2>>
-	<<set $morgan_penis_size to 2>>
-	<<set $river_penis_size to 2>>
-	<<set $robin_penis_size to 2>>
-	<<set $sam_penis_size to 2>>
-	<<set $sirris_penis_size to 2>>
-	<<set $whitney_penis_size to 2>>
-	<<set $winter_penis_size to 2>>
+<<if $avery_penis_size isnot undefined>>
+	<<for _npc range ["avery", "bailey", "charlie", "darryl", "doren", "eden", "gwylan", "harper", "jordan", "kylar", "landry", "leighton", "mason", "morgan", "river", "robin", "sam", "sirris", "whitney", "winter"]>>
+		<<run delete V[_npc + "_penis_size"]>>
+	<</for>>
 <</if>>
 
 <<if $breast_mod lt -12>>
@@ -870,6 +769,22 @@
 		"secColorSet":null,
 		"disableReturn": false
 	}>>
+<</if>>
+<<if $shopDefaults.alwaysBackToShopButton is undefined>>
+	<<set $shopDefaults.alwaysBackToShopButton to false>>
+<</if>>
+<<if $shopDefaults.colourItems is undefined>>
+	<<set $shopDefaults.colourItems = "random">>
+<</if>>
+<<if $shopDefaults.mannequinGender is undefined>>
+	<<set $shopDefaults.mannequinGender = "same">>
+<</if>>
+<<if $shopDefaults.noHelp is undefined>>
+	<<set $shopDefaults.compactMode to false>>
+	<<set $shopDefaults.mannequinGenderFromClothes to false>>
+	<<set $shopDefaults.highContrast to false>>
+	<<set $shopDefaults.noTraits to false>>
+	<<set $shopDefaults.noHelp to false>>
 <</if>>
 
 <<if $tentacles is undefined>>
@@ -988,6 +903,26 @@
 	<<set $brothel_basement_price to 1000>>
 <</if>>
 
+<<if $brothelshowdata is undefined>>
+	<<set $brothelshowdata to { counts:{ agreed:0, done:0 }, type:"none", intro:false, done:false, missed:false }>>
+	<<if $brothelshow isnot undefined>>
+		<<set $brothelshowdata.type to $brothelshow>>
+		<<unset $brothelshow>>
+	<</if>>
+	<<if $brothelshowintro isnot undefined>>
+		<<set $brothelshowdata.intro to !!$brothelshowintro>>
+		<<unset $brothelshowintro>>
+	<</if>>
+	<<if $brothelshowdone isnot undefined>>
+		<<set $brothelshowdata.done to !!$brothelshowdone>>
+		<<unset $brothelshowdone>>
+	<</if>>
+	<<if $brothelshowmissed isnot undefined>>
+		<<set $brothelshowdata.missed to !!$brothelshowmissed>>
+		<<unset $brothelshowmissed>>
+	<</if>>
+<</if>>
+
 <<if $money is undefined>>
 	<<set $money to 0>>
 <</if>>
@@ -1033,6 +968,10 @@
 	<<set $masturbation_milk to 0>>
 	<<set $bunstat to 0>>
 	<<set $famesocial to 0>>
+<</if>>
+<<if $creamstat is undefined>>
+	<<set $creamstat to 0>>
+	<<set $lube_produced_stat to 0>>
 <</if>>
 
 <<if $chef_sus is undefined>>
@@ -1324,9 +1263,9 @@
 	<<set $wear_hands to "none">>
 <</if>>
 
-<<if $objectVersion.updateClothes lt 23 or $objectVersion.updateClothes is undefined>>
+<<if $objectVersion.updateClothes lt 27 or $objectVersion.updateClothes is undefined>>
 	<<updateClothes>>
-	<<set $objectVersion.updateClothes to 23>>
+	<<set $objectVersion.updateClothes to 27>>
 	<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 	Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 <</if>>
@@ -1453,10 +1392,10 @@
 	<<set $closinghour to 21>>
 <</if>>
 
-<<if $objectVersion.specialClothes lt 3 or $objectVersion.specialClothes is undefined>>
+<<if $objectVersion.specialClothes lt 4 or $objectVersion.specialClothes is undefined>>
 	<<specialClothesSetup>>
 	<<specialClothesUpdate>>
-	<<set $objectVersion.specialClothes to 3>>
+	<<set $objectVersion.specialClothes to 4>>
 <</if>>
 
 <<if $objectVersion.uncomfortable lt 2 or $objectVersion.uncomfortable is undefined>>
@@ -1645,7 +1584,7 @@
 <</if>>
 
 <<if $pbdisable is undefined>>
-	<<set $pbdisable to "f">>
+	<<set $pbdisable to "t">>
 <</if>>
 
 <<if $facestyle is undefined>>
@@ -1682,9 +1621,14 @@
 	<<set $homochance to 4>>
 <</if>>
 
-<<if $livestock_intro is 0 and $remy_seen is undefined>>
-	<<set $remy_seen to "livestock">>
-	<<set $livestock_robin to 1>>
+<<if $livestock_intro is 0>>
+	<<if $remy_seen is undefined>>
+		<<set $remy_seen to "livestock">>
+		<<set $livestock_robin to 1>>
+	<</if>>
+	<<if $livestock_noise is undefined>>
+		<<set $livestock_noise to false>>
+	<</if>>
 <</if>>
 
 <<if $birdbuild is undefined>>
@@ -1772,6 +1716,22 @@
 <<if typeof $farm_yield is "string">>
 	<<set $farm_yield to 0>>
 <</if>>
+
+<<if $farm is undefined>>
+<<elseif $farm.build_finished is "parasite 1">>
+	<<set $farm.build_finished to ["parasites 1"]>>
+<<elseif $farm.build_finished is "parasite 2">>
+	<<set $farm.build_finished to ["parasites 2"]>>
+<</if>>
+
+<<if $farm is undefined>>
+<<elseif $farm.build_finished is undefined or $farm.build_finished is 0>>
+	<<set $farm.build_finished to []>>
+<<elseif Array.isArray($farm.build_finished)>>
+<<else>>
+	<<set $farm.build_finished to [$farm.build_finished]>>
+<</if>>
+
 <<if typeof $money is "string">>
 	<<set $money to 0>>
 <</if>>
@@ -1936,7 +1896,7 @@
 	<<case "spring">>
 		<<set $chill_day += 70>>
 	<<case "summer">>
-		
+
 	<<case "autumn">>
 		<<set $chill_day += 80>>
 	<<case "winter">>
@@ -2017,9 +1977,6 @@
 	<<set $mannequinHasPenis = $player.penisexist ? 1 : 0>>
 	<<set $mannequinBreastsSize = $mannequinHasPenis ? 0 : 3>>
 <</if>>
-<<if $shopDefaults.mannequinGender is undefined>>
-	<<set $shopDefaults.mannequinGender = "same">>
-<</if>>
 <<if $shopPage is undefined>>
 	<<set $shopPage = 0>>
 <</if>>
@@ -2029,10 +1986,7 @@
 <<if $shopItemsPerPage is undefined>>
 	<<set $shopItemsPerPage = 12>>
 <</if>>
-<<if $shopDefaults.colourItems is undefined>>
-	<<set $shopDefaults.colourItems = "random">>
-<</if>>
-	
+
 <<if $saveDetails is undefined>>
 	<<set $saveDetails to {
 		exported:{
@@ -2087,4 +2041,194 @@
 	<<set $clothesPriceLewd to 1>>
 <</if>>
 
-<</widget>>
+<<if $analingusdisablegiving is undefined or $analingusdisablereceiving is undefined>>
+	<<set $analingusdisablegiving to $analdisable>>
+	<<set $analingusdisablereceiving to $analdisable>>
+<</if>>
+
+<<if $rentmod is undefined>>
+	<<set $rentmod to 1>>
+<<elseif $rentmod gt 3>>
+	<<set $rentmod to 3>>
+<</if>>
+
+<<if $money % 1>>
+	<<set $money to Math.floor($money)>>
+<</if>>
+
+<<if $blackjack_played is undefined>>
+	<<set $blackjack_played to 0>>
+	<<set $blackjack_won to 0>>
+	<<set $blackjack_streak to 0>>
+	<<set $blackjack_streak_high to 0>>
+<</if>>
+
+/*To prevent the wardrobe from being inaccessable due to nulls*/
+<<for $_label, $_value range $wardrobe>>
+	<<if $_label is "space">>
+		<<continue>>
+	<</if>>
+	<<run $wardrobe[$_label].delete(null)>>
+<</for>>
+
+<<if $fringetype is "flaps">>
+	<<set $fringetype to "thin flaps">>
+<</if>>
+<<if $player.virginity.penile is "Great Hawk" or $player.virginity.vaginal is "Great Hawk">>
+	<<earnFeat "Great Hawk the Terror">>
+<</if>>
+<<if $player.virginity.penile is "Black Wolf" or $player.virginity.vaginal is "Black Wolf">>
+	<<earnFeat "Great Wolf the Alpha">>
+<</if>>
+<<if $bodyPartSelectedKey isnot undefined>>
+	<<set $bodyPartSelected to $bodyPartSelectedKey>>
+	<<unset $bodyPartSelectedKey>>
+<</if>>
+<<if $hoodDown is undefined>>
+	<<set $hoodDown to 0>>
+<</if>>
+
+<<if $cardcover is undefined>>
+	<<set $cardcover = { style: 0, colour: 'red' }>>
+<</if>>
+
+<<if $sidebarRenderer is undefined>>
+	<<set $sidebarRenderer to 'canvas'>>
+<</if>>
+<<if $showDebugRenderer is undefined>>
+	<<set $showDebugRenderer to !!StartConfig.debug>>
+<</if>>
+
+<<if $makeup.pbcolour isnot 0 and !($makeup.pbcolour in setup.colours.hair_map)>>
+	<<set _record to setup.guessColourInMap(setup.colours.hair_map, $makeup.pbcolour)>>
+	<<if _record>>
+		<<set $makeup.pbcolour to _record.variable>>
+	<<else>>
+		<<run Errors.report("Failed to update makeup.pbcolour from " + $makeup.pbcolour)>>
+	<</if>>
+<</if>>
+<<for _item range $makeup.owned.hairdye>>
+	<<if !(_item.colour in setup.colours.hair_map)>>
+		<<set _record to setup.guessColourInMap(setup.colours.hair_map, _item.colour)>>
+		<<if _record>>
+			<<set _item.colour to _record.variable>>
+		<<else>>
+			<<run Errors.report("Failed to update dye from " + _item.colour)>>
+		<</if>>
+	<</if>>
+<</for>>
+
+<<if $notifyUpdate is undefined>>
+	<<set $notifyUpdate = true>>
+<</if>>
+
+<<if $beedisable is undefined>>
+	<<set $beedisable to "f">>
+<</if>>
+<<if $lurkerdisable is undefined>>
+	<<set $lurkerdisable to "f">>
+<</if>>
+<<if $prof is undefined>>
+	<<set $prof to {}>>
+	<<set $prof.spray to 0>>
+	<<set $stat_lurkers_captured to 0>>
+	<<set $stat_aphrodisiacs_sold to 0>>
+	<<set $sadism to 0>>
+	<<set $sadism_level to 0>>
+<</if>>
+
+<<if $horsedisable is undefined>>
+	<<set $horsedisable to "f">>
+<</if>>
+<<if $farm_stage gte 10 and $lurkers_held is undefined>>
+	<<set $lurkers_held to 0>>
+<</if>>
+
+<<if $edenprepare is 1 and $edenwall is undefined>>
+	<<set $edenwall to 0>>
+	<<set $edenchimney to 0>>
+	<<set $edenroof to 0>>
+<</if>>
+
+<<if $stat_panties_stolen is undefined>>
+	<<set $stat_panties_stolen to 0>>
+	<<set $stat_police to {}>>
+	<<set $stat_police.pillory to 0>>
+	<<set $stat_police.community to 0>>
+	<<set $stat_police.prison to 0>>
+<</if>>
+
+<<if [undefined, NaN, null].includes($locker_suspicion) or [undefined, NaN, null].includes($panties_held) or $locker_suspicion lt 0>>
+	<<set $locker_suspicion to 0>>
+	<<set $panties_held to 0>>
+<</if>>
+
+<<if $footdisable is undefined>>
+	<<set $footdisable to "f">>
+	<<set $uncomfortable.lewd to true>>
+<</if>>
+
+<<if $player.bodyliquid is undefined>>
+	<<set $player.bodyliquid to {}>>
+
+	<<for _bodypart range setup.bodyliquid.bodyparts>>
+		<<set $player.bodyliquid[_bodypart] to {}>>
+		<<set $player.bodyliquid[_bodypart].goo to V[_bodypart+"goo"]>>
+		<<set $player.bodyliquid[_bodypart].semen to V[_bodypart+"semen"]>>
+		<<run delete V[_bodypart+"goo"]>>
+		<<run delete V[_bodypart+"semen"]>>
+	<</for>>
+<</if>>
+
+<<if $npcdescription isnot undefined>>
+	<<unset $npcdescription>>
+<</if>>
+
+<<if $npc is 0>>
+	<<unset $npc>>
+	<<set $npc to []>>
+<<elseif !(Array.isArray($npc))>>
+	<<set _npcsubstitute to clone($npc)>>
+	<<unset $npc>>
+	<<set $npc to [_npcsubstitute]>>
+	<<unset _npcsubstitute>>
+<</if>>
+
+<<if $npcnum is undefined>>
+	<<set $npcnum to []>>
+<<elseif !(Array.isArray($npcnum))>>
+	<<set _npcsubstitute to clone($npcnum)>>
+	<<unset $npcnum>>
+	<<set $npcnum to [_npcsubstitute]>>
+	<<unset _npcsubstitute>>
+<</if>>
+
+<<if $npcrow is undefined>>
+	<<set $npcrow to []>>
+	<<if $npc[0]>>
+		<<set $npcrow[0] to 0>>
+	<</if>>
+<</if>>
+
+<<if $choketrait is undefined>>
+	<<set $choketrait to 0>>
+<</if>>
+
+<<if $museumAntiqueJournalHints is undefined>>
+	<<set $museumAntiqueJournalHints to []>>
+<</if>>
+
+<<if $plants_known.includes("red rose")>>
+	<<run $plants_known.delete("red rose")>>
+	<<set $plants_known.push("red_rose")>>
+<</if>>
+
+<<if $transformdisabledivine is undefined>>
+	<<if $transformdisable is "f">>
+		<<set $transformdisabledivine to "f">>
+	<<else>>
+		<<set $transformdisabledivine to "t">>
+	<</if>>
+<</if>>
+
+<<init_customSetting>><</widget>>

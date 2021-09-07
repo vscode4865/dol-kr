@@ -1,4 +1,4 @@
-:: Tailor Shop[nobr]
+:: Tailor Shop
 <<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
 
 You are in the tailor shop. It has cloth of various colours hanging on racks.
@@ -29,12 +29,12 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 		<</if>>
 	<</if>>
 	<<if $worn[_active_clothes].integrity lt $worn[_active_clothes].integrity_max and $worn[_active_clothes].integrity gt 0 and $worn[_active_clothes].integrity_max gt 0>>
-		<<set $tailor_cost += Math.trunc($worn[_active_clothes].cost * (1 - $worn[_active_clothes].integrity / $worn[_active_clothes].integrity_max))>>
+		<<set $tailor_cost += Math.trunc(getClothingCost($worn[_active_clothes]) * (1 - $worn[_active_clothes].integrity / $worn[_active_clothes].integrity_max))>>
 		<<set _time += 5>>
 	<</if>>
 <</for>>
 
-<<if $stress gte 10000>>
+<<if $stress gte $stressmax>>
 	<<passoutshop>>
 <<else>>
 	<<if $hour is 21>>
@@ -42,7 +42,7 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 	<br><br>
 
 		<<if $exposed lte 0>>
-			<<link [[Go Outside|High Street]]>><<endevent>><</link>>
+			<<link [[Go outside|High Street]]>><<endevent>><</link>>
 			<br>
 		<<else>>
 			<<link [[Hide until it's over (1:00)|Tailor Shop]]>><<pass 1 hour>><<endevent>><</link>>
@@ -62,17 +62,17 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 			You are hiding behind bolts of cloth to protect your dignity.
 			<br><br>
 		<<else>>
-			<<generate1>><<person1>>"Welcome" <<He>> says, "What services are you looking for today?
+			<<generate1>><<person1>>"Welcome," the tailor says. "What services are you looking for today?
 			We offer repairs on clothes. We also offer a monthly service to repair by delivery."
 			<br><br>
 			<<if $tailor_cost gte 1 and $money gte $tailor_cost>>
-				<<He>> offers to fix what you're currently wearing for <span class="gold">£<<print Math.trunc($tailor_cost / 100)>>.<<if $tailor_cost % 100 lte 9>>0<</if>><<print $tailor_cost % 100>>.</span>
+				<<He>> offers to fix what you're currently wearing for <<printmoney `Math.trunc($tailor_cost)`>>.
 				<br>
-				<<print'<<link [[Fix Clothes (0:'+(_time lt 10 ? "0":"")+_time+')|Fix Clothes]]>><<set $money -= $tailor_cost>><<pass _time>><</link>>'>>
+				<<print'<<link [[Fix clothes (0:'+(_time lt 10 ? "0":"")+_time+')|Fix Clothes]]>><<set $money -= $tailor_cost>><<pass _time>><</link>>'>>
 				<br><br>
 				<<set _options to true>>
 			<<elseif $money lt $tailor_cost>>
-				You don't have enough cash to repair your current clothes. (<span class="red">£<<print Math.trunc($tailor_cost / 100)>>.<<if $tailor_cost % 100 lte 9>>0<</if>><<print $tailor_cost % 100>>.</span>)
+				You don't have enough cash to repair your current clothes. (<span class="red"><<printmoney `Math.trunc($tailor_cost)` true>>.</span>)
 				<br><br>
 				<<set _options to true>>
 			<</if>>
@@ -80,7 +80,7 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 			<<if ($worn.upper.set is $worn.lower.set and $worn.lower.integrity lt $worn.lower.integrity_max) or ($worn.under_upper.set is $worn.under_lower.set and $worn.under_lower.integrity lt $worn.under_lower.integrity_max)>>
 				The tailor will repair the lower halves of outfits for free.
 				<br>
-				<<print '<<link [[Fix Clothes (0:'+(_outfitTime lt 10 ? "0":"")+_outfitTime+')|Fix Lower]]>><<pass _outfitTime>><</link>>'>>
+				<<print '<<link [[Fix clothes (0:'+(_outfitTime lt 10 ? "0":"")+_outfitTime+')|Fix Lower]]>><<pass _outfitTime>><</link>>'>>
 				<br><br>
 				<<set _options to true>>
 			<</if>>
@@ -108,7 +108,7 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 			<br><br>
 
 			<<if $sewingKit isnot 1 and $dev is 1>>
-				<<link [[Approach the Display Cabinet|Tailor Shop Sewing Machine]]>><</link>>
+				<<link [[Approach the display cabinet|Tailor Shop Sewing Machine]]>><</link>>
 				<br><br>
 			<</if>>
 		<</if>>
@@ -116,7 +116,7 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 	<</if>>
 <</if>>
 
-:: Fix Clothes[nobr]
+:: Fix Clothes
 
 Your clothes have been fixed.
 <br><br>
@@ -132,7 +132,7 @@ Your clothes have been fixed.
 
 <<link [[Back|Tailor Shop]]>><<endevent>><</link>>
 
-:: Fix Lower[nobr]
+:: Fix Lower
 
 Your lower clothes have been fixed.
 <br><br>
@@ -146,7 +146,7 @@ Your lower clothes have been fixed.
 
 <<link [[Back|Tailor Shop]]>><<endevent>><</link>>
 
-:: Tailor Shop Sneak [nobr]
+:: Tailor Shop Sneak
 <<set $outside to 0>><<effects>><<set $lock to 0>>
 
 	<<if $skulduggery gte $lock>>
@@ -164,7 +164,7 @@ Your lower clothes have been fixed.
 <<link [[Leave|Shopping Centre Top]]>><<endevent>><</link>>
 <br>
 
-:: Tailor Shop Sewing Machine[nobr]
+:: Tailor Shop Sewing Machine
 <<effects>>
 	You approach the display, inside it lies a sewing machine. An advertisement poster hangs beside the display, it reads:
 
@@ -186,9 +186,9 @@ Your lower clothes have been fixed.
 		<<link [[Purchase Sewing Machine - Repair your clothes in your room! £1000|Tailor Shop]]>><<set $money -= 100000>><<set $sewingKit to 1>><<set $sewingBought to 1>><<endevent>><</link>>
 		<br>
 	<</if>>
-	<<link [[Go Back|Tailor Shop]]>><<endevent>><</link>>
+	<<link [[Go back|Tailor Shop]]>><<endevent>><</link>>
 
-:: Tailor Monthly Discard[nobr]
+:: Tailor Monthly Discard
 "Certainly <<if $player.gender_appearance is "m">>sir<<else>>madam<</if>>. We'll have the crate delivered. Fill it as soon as you're ready to sell them. Please bear in mind that we are not allowed to return any items. We will also only take items we can repair and resell."
 <br><br>
 
@@ -201,10 +201,10 @@ Your lower clothes have been fixed.
 		<<if _items[_i].outfitSecondary isnot undefined>>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor(_items[_i].cost * (_items[_i].integrity / _items[_i].integrity_max) / 3)>>
+		<<set _value += Math.floor(getClothingCost(_items[_i]) * (_items[_i].integrity / _items[_i].integrity_max) / 3)>>
 	<</for>>
 <</for>>
-You think it will earn you £<<print ((_value / 100) + 50).toFixed(2)>> currently after getting the deposit back.
+You think it will earn you <<printmoney `_value + 5000`>> currently after getting the deposit back.
 
 <br><br>
 <<if $money gte 5000>>
@@ -219,7 +219,7 @@ You think it will earn you £<<print ((_value / 100) + 50).toFixed(2)>> currentl
 <br>
 <<link [[Back out of the sale|Tailor Shop]]>><<endevent>><</link>>
 
-:: Tailor Monthly Repair[nobr]
+:: Tailor Monthly Repair
 "Certainly <<if $player.gender_appearance is "m">>sir<<else>>madam<</if>>. We'll have the crate delivered. Fill it as soon as you're ready for repairs. Please bear in mind that it will take a day before we get them back to you.
 Please make sure you don't buy too many new clothes once you send them to us, or our driver will have to take them back as a donation."
 <br><br>
@@ -230,12 +230,12 @@ Please make sure you don't buy too many new clothes once you send them to us, or
 		<<if _items[_i].outfitSecondary isnot undefined>>
 			<<continue>>
 		<</if>>
-		<<set _value += Math.floor(_items[_i].cost * (1 - (_items[_i].integrity / _items[_i].integrity_max)) * 1.25)>>
+		<<set _value += Math.floor(getClothingCost(_items[_i]) * (1 - (_items[_i].integrity / _items[_i].integrity_max)) * 1.25)>>
 	<</for>>
 <</for>>
 You think it will cost you
 <<if _value gt 5000>>
-	£<<print ((_value / 100) - 50).toFixed(2)>>
+	<<printmoney `_value - 5000`>>
 <<else>>
 	nothing
 <</if>>
@@ -253,7 +253,7 @@ currently with the deposit reducing the cost.
 <br>
 <<link [[Back out of the repair|Tailor Shop]]>><<endevent>><</link>>
 
-:: Tailor Monthly Driver[nobr]
+:: Tailor Monthly Driver
 The tailor picks up the crate and carries it into the back of the shop.
 <br><br>
 <<link [[Next|Tailor Shop]]>><<endevent>><</link>>

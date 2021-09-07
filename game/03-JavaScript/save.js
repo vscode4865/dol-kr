@@ -32,7 +32,7 @@ window.prepareSaveDetails = function (forceRun){
 				saveDetails.slots[i] = null;
 			}
 		}
-	
+
 		localStorage.setItem("dolSaveDetails" ,JSON.stringify(saveDetails));
 	}
 	return;
@@ -42,14 +42,14 @@ window.setSaveDetail = function (saveSlot, metadata, story){
 	var saveDetails = JSON.parse(localStorage.getItem("dolSaveDetails"));
 	if(saveSlot === "autosave"){
 		saveDetails.autosave = {
-			title:SugarCube.Story.get(SugarCube.State.variables.passage).description(),
+			title:SugarCube.Story.get(V.passage).description(),
 			date:Date.now(),
 			metadata:metadata
 		};
 	}else{
 		var slot = parseInt(saveSlot);
 		saveDetails.slots[slot] = {
-			title:SugarCube.Story.get(SugarCube.State.variables.passage).description(),
+			title:SugarCube.Story.get(V.passage).description(),
 			date:Date.now(),
 			metadata:metadata
 		};
@@ -86,7 +86,7 @@ window.resetSaveMenu = function () {
 }
 
 window.loadSave = function (saveSlot, confirm) {
-	if (SugarCube.State.variables.confirmLoad === true && confirm === undefined) {
+	if (V.confirmLoad === true && confirm === undefined) {
 		new Wikifier(null, '<<loadConfirm ' + saveSlot + '>>');
 	} else {
 		if (saveSlot === "auto") {
@@ -100,14 +100,14 @@ window.loadSave = function (saveSlot, confirm) {
 window.save = function (saveSlot, confirm, saveId, saveName) {
 	if (saveId == null) {
 		new Wikifier(null, '<<saveConfirm ' + saveSlot + '>>');
-	} else if ((SugarCube.State.variables.confirmSave === true && confirm != true) || (SugarCube.State.variables.saveId != saveId && saveId != null)) {
+	} else if ((V.confirmSave === true && confirm != true) || (V.saveId != saveId && saveId != null)) {
 		new Wikifier(null, '<<saveConfirm ' + saveSlot + '>>');
 	} else {
 		if (saveSlot != undefined) {
 			updateSavesCount();
 			Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName });
 			setSaveDetail(saveSlot, { "saveId": saveId, "saveName": saveName })
-			SugarCube.State.variables.currentOverlay = null;
+			V.currentOverlay = null;
 			overlayShowHide("customOverlay");
 		}
 	}
@@ -123,7 +123,7 @@ window.deleteSave = function (saveSlot, confirm) {
 			deleteAllSaveDetails();
 		}
 	} else if (saveSlot === "auto") {
-		if (SugarCube.State.variables.confirmDelete === true && confirm === undefined) {
+		if (V.confirmDelete === true && confirm === undefined) {
 			new Wikifier(null, '<<deleteConfirm ' + saveSlot + '>>');
 			return;
 		} else {
@@ -131,7 +131,7 @@ window.deleteSave = function (saveSlot, confirm) {
 			deleteSaveDetails("autosave");
 		}
 	} else {
-		if (SugarCube.State.variables.confirmDelete === true && confirm === undefined) {
+		if (V.confirmDelete === true && confirm === undefined) {
 			new Wikifier(null, '<<deleteConfirm ' + saveSlot + '>>');
 			return;
 		} else {
@@ -213,17 +213,17 @@ window.copySavedata = function (id) {
 }
 
 window.updateExportDay = function(){
-	if(SugarCube.State.variables.saveDetails != undefined && SugarCube.State.history[0].variables.saveDetails != undefined){
-		SugarCube.State.variables.saveDetails.exported.days = clone(SugarCube.State.variables.days);
+	if(V.saveDetails != undefined && SugarCube.State.history[0].variables.saveDetails != undefined){
+		V.saveDetails.exported.days = clone(V.days);
 		SugarCube.State.history[0].variables.saveDetails.exported.days = clone(SugarCube.State.history[0].variables.days);
-		SugarCube.State.variables.saveDetails.exported.count++;
+		V.saveDetails.exported.count++;
 		SugarCube.State.history[0].variables.saveDetails.exported.count++;
-		SugarCube.State.variables.saveDetails.exported.dayCount++;
+		V.saveDetails.exported.dayCount++;
 		SugarCube.State.history[0].variables.saveDetails.exported.dayCount++;
 		var sessionJson = sessionStorage.getItem(SugarCube.Story.domId + ".state");
 		if(sessionJson != undefined){
 			var session = JSON.parse(sessionJson);
-			session.delta[0].variables.saveDetails.exported.days = clone(SugarCube.State.variables.days);
+			session.delta[0].variables.saveDetails.exported.days = clone(V.days);
 			session.delta[0].variables.saveDetails.exported.dayCount++;
 			session.delta[0].variables.saveDetails.exported.count++;
 			sessionStorage.setItem(SugarCube.Story.domId + ".state", JSON.stringify(session));
@@ -232,10 +232,10 @@ window.updateExportDay = function(){
 }
 
 window.updateSavesCount = function(){
-	if(SugarCube.State.variables.saveDetails != undefined && SugarCube.State.history[0].variables.saveDetails != undefined){
-		SugarCube.State.variables.saveDetails.slot.count++;
+	if(V.saveDetails != undefined && SugarCube.State.history[0].variables.saveDetails != undefined){
+		V.saveDetails.slot.count++;
 		SugarCube.State.history[0].variables.saveDetails.slot.count++;
-		SugarCube.State.variables.saveDetails.slot.dayCount++;
+		V.saveDetails.slot.dayCount++;
 		SugarCube.State.history[0].variables.saveDetails.slot.dayCount++;
 		var sessionJson = sessionStorage.getItem(SugarCube.Story.domId + ".state");
 		if(sessionJson != undefined){
@@ -250,13 +250,13 @@ window.updateSavesCount = function(){
 window.importSettings = function (data, type) {
 	switch(type){
 		case "text":
-			SugarCube.State.variables.importString = document.getElementById("settingsDataInput").value
+			V.importString = document.getElementById("settingsDataInput").value
 			new Wikifier(null, '<<displaySettings "importConfirmDetails">>');
 			break;
 		case "file":
 			var reader = new FileReader();
 			reader.addEventListener('load', function (e) {
-				SugarCube.State.variables.importString = e.target.result;
+				V.importString = e.target.result;
 				new Wikifier(null, '<<displaySettings "importConfirmDetails">>');
 			});
 			reader.readAsBinaryString(data[0]);
@@ -268,7 +268,6 @@ window.importSettings = function (data, type) {
 }
 
 var importSettingsData = function (data) {
-	var V = State.variables;
 	var S = null;
 	var result = data;
 	if (result != null && result != undefined) {
@@ -287,7 +286,7 @@ var importSettingsData = function (data) {
 			var namedObjects = ["player", "skinColor"];
 
 			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.contains(listKey[i]) && S.starting[listKey[i]] != undefined) {
+				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != undefined) {
 					var itemKey = Object.keys(listObject[listKey[i]]);
 					for (var j = 0; j < itemKey.length; j++) {
 						if (V[listKey[i]][itemKey[j]] != undefined && S.starting[listKey[i]][itemKey[j]] != undefined) {
@@ -296,7 +295,7 @@ var importSettingsData = function (data) {
 							}
 						}
 					}
-				} else if (!namedObjects.contains(listKey[i])) {
+				} else if (!namedObjects.includes(listKey[i])) {
 					if (V[listKey[i]] != undefined && S.starting[listKey[i]] != undefined) {
 						if (validateValue(listObject[listKey[i]], S.starting[listKey[i]])) {
 							V[listKey[i]] = S.starting[listKey[i]];
@@ -309,10 +308,10 @@ var importSettingsData = function (data) {
 		if (S.general != undefined) {
 			var listObject = settingsObjects("general");
 			var listKey = Object.keys(listObject);
-			var namedObjects = ["map", "skinColor"];
+			var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 			for (var i = 0; i < listKey.length; i++) {
-				if (namedObjects.contains(listKey[i]) && S.general[listKey[i]] != undefined) {
+				if (namedObjects.includes(listKey[i]) && S.general[listKey[i]] != undefined) {
 					var itemKey = Object.keys(listObject[listKey[i]]);
 					for (var j = 0; j < itemKey.length; j++) {
 						if (V[listKey[i]][itemKey[j]] != undefined && S.general[listKey[i]][itemKey[j]] != undefined) {
@@ -321,7 +320,7 @@ var importSettingsData = function (data) {
 							}
 						}
 					}
-				} else if (!namedObjects.contains(listKey[i])) {
+				} else if (!namedObjects.includes(listKey[i])) {
 					if (V[listKey[i]] != undefined && S.general[listKey[i]] != undefined) {
 						if (validateValue(listObject[listKey[i]], S.general[listKey[i]])) {
 							V[listKey[i]] = S.general[listKey[i]];
@@ -338,7 +337,7 @@ var importSettingsData = function (data) {
 				if (S.npc[V.NPCNameList[i]] != undefined) {
 					for (var j = 0; j < listKey.length; j++) {
 						//Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-						if (SugarCube.State.variables.passage === "Start" && ["pronoun","gender"].includes(listKey[j]) && S.npc[V.NPCNameList[i]][listKey[j]] === "none"){
+						if (V.passage === "Start" && ["pronoun","gender"].includes(listKey[j]) && S.npc[V.NPCNameList[i]][listKey[j]] === "none"){
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						}
 						else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
@@ -387,11 +386,11 @@ window.validateValue = function (keys, value) {
 }
 
 window.exportSettings = function (data, type) {
-	var V = State.variables;
 	var S = {
 		general: {
 			map: {},
 			skinColor: {},
+			shopDefaults: {},
 		},
 		npc: {}
 	};
@@ -405,7 +404,7 @@ window.exportSettings = function (data, type) {
 		var namedObjects = ["player", "skinColor"];
 
 		for (var i = 0; i < listKey.length; i++) {
-			if (namedObjects.contains(listKey[i]) && V[listKey[i]] != undefined) {
+			if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
 				var itemKey = Object.keys(listObject[listKey[i]]);
 				for (var j = 0; j < itemKey.length; j++) {
 					if (V[listKey[i]][itemKey[j]] != undefined) {
@@ -414,7 +413,7 @@ window.exportSettings = function (data, type) {
 						}
 					}
 				}
-			} else if (!namedObjects.contains(listKey[i])) {
+			} else if (!namedObjects.includes(listKey[i])) {
 				if (V[listKey[i]] != undefined) {
 					if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 						S.starting[listKey[i]] = V[listKey[i]];
@@ -426,10 +425,10 @@ window.exportSettings = function (data, type) {
 
 	var listObject = settingsObjects("general");
 	var listKey = Object.keys(listObject);
-	var namedObjects = ["map", "skinColor"];
+	var namedObjects = ["map", "skinColor", "shopDefaults"];
 
 	for (var i = 0; i < listKey.length; i++) {
-		if (namedObjects.contains(listKey[i]) && V[listKey[i]] != undefined) {
+		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != undefined) {
 			var itemKey = Object.keys(listObject[listKey[i]]);
 			for (var j = 0; j < itemKey.length; j++) {
 				if (V[listKey[i]][itemKey[j]] != undefined) {
@@ -438,7 +437,7 @@ window.exportSettings = function (data, type) {
 					}
 				}
 			}
-		} else if (!namedObjects.contains(listKey[i])) {
+		} else if (!namedObjects.includes(listKey[i])) {
 			if (V[listKey[i]] != undefined) {
 				if (validateValue(listObject[listKey[i]], V[listKey[i]])) {
 					S.general[listKey[i]] = V[listKey[i]];
@@ -452,7 +451,7 @@ window.exportSettings = function (data, type) {
 		S.npc[V.NPCNameList[i]] = {};
 		for (var j = 0; j < listKey.length; j++) {
 			//Overwrite to allow for "none" default value in the start passage to allow for rng to decide
-			if (SugarCube.State.variables.passage === "Start" && ["pronoun","gender"].includes(listKey[i]) && V.NPCName[i][listKey[j]] === "none"){
+			if (V.passage === "Start" && ["pronoun","gender"].includes(listKey[i]) && V.NPCName[i][listKey[j]] === "none"){
 				S.npc[V.NPCNameList[i]][listKey[j]] = V.NPCName[i][listKey[j]];
 			}
 			else if (validateValue(listObject[listKey[j]], V.NPCName[i][listKey[j]])) {
@@ -525,6 +524,7 @@ window.settingsObjects = function (type) {
 				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1 },
 				clothesPriceSchool: { min: 1, max: 2, decimals: 1 },
 				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1 },
+				rentmod: { min: 0.1, max: 3, decimals: 1 },
 				beastmalechance: { min: 0, max: 100, decimals: 0 },
 				monsterchance: { min: 0, max: 100, decimals: 0 },
 				monsterhallucinations: { boolLetter: true, bool: true },
@@ -535,7 +535,10 @@ window.settingsObjects = function (type) {
 				voredisable: { boolLetter: true, bool: true },
 				tentacledisable: { boolLetter: true, bool: true },
 				analdisable: { boolLetter: true, bool: true },
+				analingusdisablegiving: { boolLetter: true, bool: true },
+				analingusdisablereceiving: { boolLetter: true, bool: true },
 				transformdisable: { boolLetter: true, bool: true },
+				transformdisabledivine: { boolLetter: true, bool: true },
 				hirsutedisable: { boolLetter: true, bool: true },
 				breastfeedingdisable: { boolLetter: true, bool: true },
 				analpregdisable: { boolLetter: true, bool: true },
@@ -545,6 +548,10 @@ window.settingsObjects = function (type) {
 				parasitedisable: { boolLetter: true, bool: true},
 				slugdisable: { boolLetter: true, bool: true},
 				waspdisable: {boolLetter: true, bool: true},
+				beedisable: { boolLetter: true, bool: true},
+				lurkerdisable: {boolLetter: true, bool: true},
+				horsedisable: {boolLetter: true, bool: true},
+				footdisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 3, decimals: 0 },
 				breastsizemax: { min: 0, max: 13, decimals: 0 },
 				bottomsizemax: { min: 0, max: 9, decimals: 0 },
@@ -562,7 +569,7 @@ window.settingsObjects = function (type) {
 				checkstyle: { strings: ["percentage", "words", "skillname"] },
 				tipdisable: { boolLetter: true, bool: true },
 				debugdisable: { boolLetter: true, bool: true },
-				cheatdisable: { boolLetter: true, bool: true },
+				cheatdisabletoggle: { boolLetter: true, bool: true },
 				showCaptionText: { bool: true },
 				confirmSave: { bool: true },
 				confirmLoad: { bool: true },
@@ -574,6 +581,7 @@ window.settingsObjects = function (type) {
 				combatControls: { strings: ["radio", "lists", "limitedLists"] },
 				reducedLineHeight: { bool: true },
 				neverNudeMenus: { bool: true },
+				skipStatisticsConfirmation: { bool: true},
 				map: {
 					movement: { bool: true },
 					top: { bool: true },
@@ -582,7 +590,20 @@ window.settingsObjects = function (type) {
 				skinColor: {
 					tanImgEnabled: { boolLetter: true, bool: true },
 					tanningEnabled: { bool: true },
-				}
+				},
+				shopDefaults: {
+					alwaysBackToShopButton: { bool: true },
+					color: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+					colourItems: { strings: ["disable","random","default"] },
+					compactMode: { bool: true },
+					disableReturn: { bool: true },
+					highContrast: { bool: true },
+					mannequinGender: { strings: ["same","opposite","male","female"] },
+					mannequinGenderFromClothes:  { bool: true },
+					noHelp: { bool: true },
+					noTraits: { bool: true },
+					secColor: { strings: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow", "custom", "random"] },
+				},
 			};
 			break;
 		case "npc":
@@ -590,7 +611,7 @@ window.settingsObjects = function (type) {
 				pronoun: { strings: ["m", "f"] },
 				gender: { strings: ["m", "f"] },
 				penissize: { min: 0, max: 4, decimals: 0 },
-				breastsize: { min: 0, max: 5, decimals: 0 },
+				breastsize: { min: 0, max: 12, decimals: 0 },
 			}
 			break;
 	}
@@ -604,29 +625,33 @@ window.settingsConvert = function(exportType, type, settings){
 	var keys = Object.keys(listObject);
 	for (var i = 0; i < keys.length; i++){
 		if (result[keys[i]] === undefined) continue;
-		if(["map", "skinColor", "player"].includes(keys[i])){
+		if(["map", "skinColor", "player", "shopDefaults"].includes(keys[i])){
 			var itemKey = Object.keys(listObject[keys[i]]);
 			for (var j = 0; j < itemKey.length; j++) {
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
 				var keyArray = Object.keys(listObject[keys[i]][itemKey[j]]);
 				if(exportType){
-					if (result[keys[i]][itemKey[j]] === "t") {
-						result[keys[i]][itemKey[j]] = true;
-					}else if(result[keys[i]][itemKey[j]] === "f"){
-						result[keys[i]][itemKey[j]] = false;
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === "t") {
+							result[keys[i]][itemKey[j]] = true;
+						}else if(result[keys[i]][itemKey[j]] === "f"){
+							result[keys[i]][itemKey[j]] = false;
+						}
 					}
 				}else{
-					if (result[keys[i]][itemKey[j]] === true) {
-						result[keys[i]][itemKey[j]] = "t";
-					}else if(result[keys[i]][itemKey[j]] === false){
-						result[keys[i]][itemKey[j]] = "f";
+					if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
+						if (result[keys[i]][itemKey[j]] === true) {
+							result[keys[i]][itemKey[j]] = "t";
+						}else if(result[keys[i]][itemKey[j]] === false){
+							result[keys[i]][itemKey[j]] = "f";
+						}
 					}
-				}	
+				}
 			}
 		}else{
 			var keyArray = Object.keys(listObject[keys[i]]);
 			if(exportType){
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === "t") {
 						result[keys[i]] = true;
 					}else if(result[keys[i]] === "f"){
@@ -634,7 +659,7 @@ window.settingsConvert = function(exportType, type, settings){
 					}
 				}
 			}else{
-				if (keyArray.includes("boolLetter")) {
+				if (keyArray.includes("boolLetter") && keyArray.includes("bool")) {
 					if (result[keys[i]] === true) {
 						result[keys[i]] = "t";
 					}else if(result[keys[i]] === false){
@@ -663,11 +688,11 @@ window.loadExternalExportFile = function () {
 // !!Hack warning!! Don't use it maybe?
 window.updateMoment = function () {
 	// change last (and only) moment in local history
-	State.history[State.history.length - 1].variables = JSON.parse(JSON.stringify(State.variables));
+	State.history[State.history.length - 1].variables = JSON.parse(JSON.stringify(V));
 	// prepare the moment object with modified history
 	let moment = SugarCube.State.marshalForSave();
 	// replace moment.history with moment.delta, because that's what SugarCube expects to find
-	// this is a bad thing to do probably btw, because while history and delta appear to look very similar, 
+	// this is a bad thing to do probably btw, because while history and delta appear to look very similar,
 	// they're not always the same thing, SugarCube actually decodes delta into history (see: https://github.com/tmedwards/sugarcube-2/blob/36a8e1600160817c44866205bc4d2b7730b2e70c/src/state.js#L527)
 	// but for my purpose it works (i think?)
 	delete Object.assign(moment, {delta: moment.history}).history;
@@ -678,4 +703,13 @@ window.updateMoment = function () {
 	//SugarCube.session._engine[gameName + ".state"] = JSON.stringify(moment);
 
 	// Voilà! F5 will reload the current state now without going to another passage!
+}
+
+window.isJsonString = function(s) {
+	try {
+		JSON.parse(s);
+	} catch (e) {
+		return false;
+	}
+	return true;
 }

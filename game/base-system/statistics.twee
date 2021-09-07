@@ -1,5 +1,5 @@
 :: Statistics [widget]
-<<widget "statistics">><<nobr>>
+<<widget "statistics">>
 <h3>통계</h3>
 __순결__
 <br>
@@ -39,10 +39,16 @@ __직업__
 <br>
 카페에서 판매한 빵: $bunstat개
 <br>
+가장 많이 생산한 "크림"의 양: $creamstat ml
+<br>
 가로챈 밀수꾼들: $smuggler_stolen_stat명
 <br>
 판매한 농산물: $produce_sold개
 <br>
+<<if $farmersProduce>>
+	벌크로 판매한 농산물: $farmersProduce.totalSold
+	<br>
+<</if>>
 비료 사용: $fertiliser.used개
 <br>
 농장에서 일한 시간: <<print Math.trunc($farm_shift / 60)>>시간
@@ -53,12 +59,18 @@ __직업__
 <br>
 야생 식물 채집: $wild_plant_stat회
 <br>
+판매한 미약: $stat_aphrodisiacs_sold병
+<br>
 <br>
 
 __섹스__
 <br>
 절정을 느낀 횟수: $orgasmstat번
 <br>
+<<if $asphyxiaLvl gte 2>>
+	목이 졸린 상태에서 절정을 느낀 횟수: $chokeorgasm번
+	<br>
+<</if>>
 다른 이에게 박은 횟수: $penilestat번
 <br>
 다른 이에게 사정한 횟수: $penileejacstat번
@@ -83,9 +95,9 @@ __섹스__
 <br>
 발로 사정시킨 횟수: $feetejacstat번
 <br>
-허벅지로 해준 횟수: $thighstat번
+넓적다리로 해준 횟수: $thighstat번
 <br>
-허벅지로 사정시킨 횟수: $thighejacstat번
+넓적다리로 사정시킨 횟수: $thighejacstat번
 <br>
 가슴으로 해준 횟수: $cheststat번
 <br>
@@ -119,12 +131,14 @@ __섹스__
 <br>
 모유 생산량: $milk_produced_stat ml
 <br>
-<<if $penisexist is 1>>정액<<else>>애액<</if>> 생산량: $semen_produced_stat ml
-<br>
+<<if $penisexist is 1>>정액 생산량: <<print Math.floor($semen_produced_stat)>> ml
+<br><</if>>
+<<if $vaginaexist is 1>>음란한 액체 생산량: $lube_produced_stat ml
+<br><</if>>
 강제로 짜내진 양: $fluid_forced_stat ml
 <br>
 <<if $knot_stat isnot undefined>>
-뒤틀린 욕망: $knot_stat회
+개와 혹으로 연결된 횟수: $knot_stat회
 <br>
 <</if>>
 <br>
@@ -161,9 +175,11 @@ __섹스__
 	<br>
 	사용한 후추 스프레이 갯수: $spraystat개
 	<br>
-	총격 수: $stat_shoot번
+	에덴과 사격연습한 횟수: $stat_shoot번
 	<br>
 	망가뜨린 기계: $machine_stat대
+	<br>
+	잡은 럴커 수: $stat_lurkers_captured마리
 	<br><br>
 <</if>>
 
@@ -220,6 +236,19 @@ __기타__
 우수 성적: $distinction_stat회
 <br>
 수면 시간: $sleepStat시간
+<br>
+블랙잭을 한 횟수: $blackjack_played번
+<br>
+블랙잭에서 이긴 횟수: $blackjack_won번
+<br>
+블랙잭에서 연속으로 이긴 최고 횟수: $blackjack_streak_high번
+<br>
+속옷을 훔친 횟수: $stat_panties_stolen번<<if $locker_suspicion isnot undefined>><br>속옷도둑 의심지수: $locker_suspicion /* 테스트용 */<</if>>
+<br>
+사회봉사 명령을 받은 횟수: $stat_police.community번
+<br>
+공개굴욕형을 받은 횟수:	$stat_police.pillory번
+<br>
 
 <br><br>
 __게임 세이브 상세__
@@ -237,7 +266,7 @@ __게임 세이브 상세__
 	<br>
 	<<for _i to 0; _i lt $saveVersions.length; _i++>>
 		<<if _i gt 0>>
-			<<if SugarCube.State.variables.saveVersions[_i].split(".")[2] is SugarCube.State.variables.saveVersions[_i - 1].split(".")[2]>>
+			<<if V.saveVersions[_i].split(".")[2] is V.saveVersions[_i - 1].split(".")[2]>>
 				--
 			<<else>>
 				<br>
@@ -247,19 +276,29 @@ __게임 세이브 상세__
 	<</for>>
 	<br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "extraStatistics">><<nobr>>
+<<widget "extraStatisticsWarning">>
+
+<<if $skipStatisticsConfirmation is undefined>><<set $skipStatisticsConfirmation to false>><</if>>
+
 <h3>추가 통계</h3>
+
 <div id="spoilerWarning">
 	정말로 확인하시겠습니까? 스포일러가 포함되어 있을 수도 있어요!
 	<br>
 	<<link 네>>
-		<<addclass #spoilerWarning "hidden">>
-		<<removeclass #spoilerWarningConfirmed "hidden">>
+		<<overlayReplace "extraStatistics">>
 	<</link>>
+	&nbsp;&nbsp;&nbsp;<<checkbox "$skipStatisticsConfirmation" false true autocheck>> Don't Show Again
+	<!-- ignore the nbsp's, they're just for formatting -->
 </div>
-<div id="spoilerWarningConfirmed" class="hidden">
+<</widget>>
+
+<<widget "extraStatistics">>
+
+<h3>추가 통계</h3>
+<div id="spoilerWarningConfirmed">
 	__상태__
 	<br>
 	고통: <<print Math.trunc($pain)>>
@@ -311,6 +350,8 @@ __게임 세이브 상세__
 	<br>
 	마조히즘: <<print Math.trunc($masochism)>>
 	<br>
+	새디즘: <<print Math.trunc($sadism)>>
+	<br>
 	크로스드레서 진행:
 	<<if $crossdressingTrait isnot undefined>>
 		<<print Math.trunc($crossdressingTrait)>> %
@@ -318,7 +359,7 @@ __게임 세이브 상세__
 		0
 	<</if>>
 	<br>
-	젖분비: <<print ($lactating is 1 ? "True" : "False")>>
+	젖분비: <<print ($lactating is 1 ? "네" : "아니오")>>
 	<br>
 	<<if $lactating is 1>>
 		모유량: <<print Math.trunc($milk_amount)>>
@@ -432,6 +473,5 @@ __게임 세이브 상세__
 		<<print Math.trunc($fallenangel)>>
 	<</if>>
 	<br>
-
 </div>
-<</nobr>><</widget>>
+<</widget>>

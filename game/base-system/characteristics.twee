@@ -1,6 +1,6 @@
 :: Characteristics [widget]
 
-<<widget "characteristics">><<nobr>>
+<<widget "characteristics">>
 
 오늘은 $year년 <<month>> $monthday<<monthday>>이다.
 
@@ -62,12 +62,17 @@
 <br><br>
 
 <<switch $devlevel>>
-	<<case 6>>You are tiny compared to others.
-	<<case 10>>You are small compared to others.
-	<<case 12>>You are of average height.
-	<<case 16>>You are large compared to others.
+	<<case 6>>당신은 또래보다 몸집이 왜소하다.
+	<<case 10>>당신은 또래보다 몸집이 작다.
+	<<case 12>>당신은 또래와 몸집이 비슷하다.
+	<<case 16>>당신은 또래보다 몸집이 크다.
 <</switch>>
-당신의 눈은 <<trColour $eyecolour>>_trResult이다. 피부는 <<skincolourtext>> <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 엉덩이는 <<bottomPost "이다">>. <<if $penisexist is 1>>당신은 <<penisPost "을">> 갖고 있다.<</if>>
+<<if $makeup.eyelenses>>
+	당신의 눈은 <<trColour $eyecolour>>_trResult이며 <<trColour $makeup.eyelenses>>_trResult 렌즈를 끼고 있다.
+<<else>>
+	당신의 눈은 <<trColour $eyecolour>>_trResult이다.
+<</if>>
+피부는 <<skincolourtext>> <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 엉덩이는 <<bottomPost "이다">>. <<if $penisexist is 1>>당신에게는 <<penisPost "이">> 있다.<</if>>
 
 <!--Hair Details-->
 <<set _hairTextConfig = { currentValue : $hairlength, states : [
@@ -78,7 +83,7 @@
 		{ requiredValue: 400,   color: '',	preText: '자연스럽게 둘 때, 당신의 기다란 ',			description: '<<haircolourtext>>', postText: ' 머리카락은 유두까지 내려오고, <<fringelength>>' },
 		{ requiredValue: 500,   color: '',	preText: '자연스럽게 둘 때, 당신의 기다란 ',			description: '<<haircolourtext>>', postText: ' 머리카락은 배 위까지 내려오고, <<fringelength>>' },
 		{ requiredValue: 600,   color: '',	preText: '자연스럽게 둘 때, 당신의 기다란 ',			description: '<<haircolourtext>>', postText: ' 머리카락은 배꼽까지 내려오고, <<fringelength>>' },
-		{ requiredValue: 700,  	color: '',	preText: '자연스럽게 둘 때, 당신의 매우 기다란 ',		description: '<<haircolourtext>>', postText: ' 머리카락은 허벅지까지 내려오고, <<fringelength>>' },
+		{ requiredValue: 700,  	color: '',	preText: '자연스럽게 둘 때, 당신의 매우 기다란 ',		description: '<<haircolourtext>>', postText: ' 머리카락은 넓적다리까지 내려오고, <<fringelength>>' },
 		{ requiredValue: 800,   color: '',	preText: '자연스럽게 둘 때, 당신의 매우 기다란 ',		description: '<<haircolourtext>>', postText: ' 머리카락은 무릎까지 내려오고, <<fringelength>>' },
 		{ requiredValue: 900,   color: '',	preText: '자연스럽게 둘 때, 당신의 지나칠 정도로 기다란 ',	description: '<<haircolourtext>>', postText: ' 머리카락은 발목까지 내려오고, <<fringelength>>' },
 		{ requiredValue: 1000,  color: '',	preText: '자연스럽게 둘 때, 당신의 ',				description: '<<haircolourtext>>', postText: ' 머리카락이 너무 길어 걸려 넘어지지 않도록 조심해야 할 정도며, <<fringelength>>' }
@@ -113,15 +118,15 @@
 	<<if $semen_volume gt 0>>
 		<<characteristic-text _semenVolumeTextConfig>>
 		<<if $semen_amount gte $semen_volume>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 				이미 가득 쌓인 상태에서, <span class="pink">흥분으로 용량이 증가한다.</span>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 				이미 가득 쌓인 상태에서, <span class="purple">흥분으로 용량이 증가한다.</span>
 			<</if>>
 		<<else>>
-			<<if $arousal gte 8000>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
 				<span class="pink">흥분한 것이 회복하는 데에 도움을 준다.</span>
-			<<elseif $arousal gte 6000>>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
 				<span class="purple">흥분한 것이 회복하는 데에 도움을 준다.</span>
 			<</if>>
 		<</if>>
@@ -199,7 +204,7 @@
 		<!--Core skill configurations-->
 		<<silently>>
 			<!--AWARENESS-->
-			<<set _awarenessConfig = { name : "성지식", icon : "ui/sym_awareness", displayType : "level", currentValue : $awareness,
+			<<set _awarenessConfig = { name : "성지식", icon : "ui/sym_awareness", displayType : "level", currentValue : $awareness, modifier: 100,
 				states : [
 					{ requiredValue: -200, 	level: 7, color: 'green',	description: '당신은 순수하다.'},
 					{ requiredValue: 1, 	level: 6, color: 'teal',	description: '당신은 거의 완전히 순수하다.'},
@@ -220,7 +225,7 @@
 			<<else>>
 				<<set _purityIcon='ui/sym_purity'>>
 			<</if>>
-			<<set _purityConfig = { name : "순결성", icon : _purityIcon, displayType : "level", currentValue : $purity,
+			<<set _purityConfig = { name : "순결성", icon : _purityIcon, displayType : "level", currentValue : $purity, modifier: 100,
 				states : [
 					{ requiredValue: 0, 	level: 0, color: 'red',		description: '당신은 그 이상으로 더럽혀져 있다.'},
 					{ requiredValue: 1, 	level: 1, color: 'red',		description: '당신은 완전히 더럽혀진 느낌이다.'},
@@ -234,7 +239,7 @@
 			}>>
 
 			<!--PHYSIQUE-->
-			<<set _physiqueConfig = { name : "체격", icon : "ui/sym_physique", displayType : "level", currentValue : $physique, maxValue: $physiquesize,
+			<<set _physiqueConfig = { name : "체격", icon : "ui/sym_physique", displayType : "level", currentValue : $physique, maxValue: $physiquesize, modifier: 100,
 				states : [
 					{ requiredValue: 0, 						level: 0, color: 'red',		description: '당신은 쇠약해져있다.'},
 					{ requiredValue:  $physiquesize / 7, 		level: 1, color: 'pink',	description: '당신은 비쩍 말랐다.'},
@@ -249,7 +254,7 @@
 				<<set _physiqueConfig.modifier to Math.floor(_physiqueConfig.modifier * (1 + ($moorLuck / 100)))>>
 			<</if>>
 			<<switch $location>>
-				<<case "forest" "moor" "farm">>
+				<<case "forest" "moor" "farm" "alex_farm">>
 					<<if $worn.feet.type.includes("heels")>>
 						<<set _physiqueConfig.modifier to Math.floor(_physiqueConfig.modifier * (1 - ($worn.feet.reveal / 5000)))>>
 					<</if>>
@@ -259,7 +264,7 @@
 			<</switch>>
 
 			<!--WILLPOWER-->
-			<<set _willpowerConfig = { name : "의지력", icon : "ui/redbolt", displayType : "level", currentValue : $willpower, maxValue: $willpowermax,
+			<<set _willpowerConfig = { name : "의지력", icon : "ui/redbolt", displayType : "level", currentValue : $willpower, maxValue: $willpowermax, modifier: 100,
 				states : [
 					{ requiredValue: 0, 						level: 0, color: 'red',		description: '당신은 소심하다.'},
 					{ requiredValue:  $willpowermax / 7, 		level: 1, color: 'pink',	description: '당신은 겁이 많다.'},
@@ -278,7 +283,7 @@
 			<</if>>
 
 			<!--BEAUTY-->
-			<<set _beautyConfig = { name : "미모", icon : "ui/sym_beauty", displayType : "level", currentValue : $beauty, maxValue: $beautymax, 
+			<<set _beautyConfig = { name : "미모", icon : "ui/sym_beauty", displayType : "level", currentValue : $beauty, maxValue: $beautymax, modifier: 100,
 				states : [
 					{ requiredValue: 0, 					level: 0, color: 'red',		description: '당신은 평범하다.'},
 					{ requiredValue:  $beautymax / 7, 		level: 1, color: 'pink',	description: '당신은 귀엽다.'},
@@ -291,7 +296,7 @@
 			}>>
 
 			<!--PROMISCUITY-->
-			<<set _promiscuityConfig = { name : "음란", icon : "ui/sym_promiscuity", displayType : "level", currentValue : $promiscuity, maxValue: 100,
+			<<set _promiscuityConfig = { name : "음란", icon : "ui/sym_promiscuity", displayType : "level", currentValue : $promiscuity, maxValue: 100, modifier: 100,
 				states : [
 					{ requiredValue: 0,		level: 0, color: 'green',	description: '당신은 순결하고 순수하다.'},
 					{ requiredValue: 1,		level: 1, color: 'teal',	description: '당신은 내숭을 떨고 있다.'},
@@ -304,7 +309,7 @@
 			}>>
 
 			<!--EXHIBITIONISM-->
-			<<set _exhibitionismConfig = { name : "노출증", icon : "ui/sym_exhibitionism", displayType : "level", currentValue : $exhibitionism, maxValue: 100,
+			<<set _exhibitionismConfig = { name : "노출증", icon : "ui/sym_exhibitionism", displayType : "level", currentValue : $exhibitionism, maxValue: 100, modifier: 100,
 				states : [
 					{ requiredValue: 0, 	level: 0, color: 'green',	description: '당신은 수줍다.'},
 					{ requiredValue: 1,		level: 1, color: 'teal',	description: '당신은 부끄러움을 탄다.'},
@@ -317,7 +322,7 @@
 			}>>
 
 			<!--DEVIANCY-->
-			<<set _deviancyConfig = { name : "이상성욕", icon : "ui/sym_deviancy", displayType : "level", currentValue : $deviancy, maxValue: 100,
+			<<set _deviancyConfig = { name : "이상성욕", icon : "ui/sym_deviancy", displayType : "level", currentValue : $deviancy, maxValue: 100, modifier: 100,
 				states : [
 					{ requiredValue: 0, 	level: 0, color: 'green',	description: '당신은 비위가 약하다.'},
 					{ requiredValue: 1,		level: 1, color: 'teal',	description: '당신은 평범하다.'},
@@ -371,13 +376,13 @@
 	<div id="base-skills" class="characteristic-box-list" @style="($parasite.left_ear.name == 'slime' || $parasite.right_ear.name == 'slime') ? '--min-width: 30%;' : ''">
 		<!--Additional skills configurations-->
 		<<silently>>
-			<<set _corruptionConfig = 	{ name : "오염", 	displayType : "none",	currentValue : $corruption_slime, meterColor: 'red'}>>
-			<<set _skulduggeryConfig = 	{ name : "속임수", 	displayType : "grade",	currentValue : $skulduggery, 	states : _detailedSkillGrades}>>
-			<<set _dancingConfig = 		{ name : "춤", 		displayType : "grade",	currentValue : $danceskill, 	states : _basicSkillGrades}>>
-			<<set _swimmingConfig = 	{ name : "수영", 	displayType : "grade",	currentValue : $swimmingskill, 	states : _detailedSkillGrades}>>
-			<<set _athleticsConfig = 	{ name : "운동", 	displayType : "grade",	currentValue : $athletics, 		states : _detailedSkillGrades}>>
-			<<set _tendingConfig = 		{ name : "관리", 	displayType : "grade",	currentValue : $tending, 		states : _detailedSkillGrades}>>
-						
+			<<set _corruptionConfig = 	{ name : "오염", 	displayType : "none",	currentValue : $corruption_slime, modifier: 100,	meterColor: 'red'}>>
+			<<set _skulduggeryConfig = 	{ name : "속임수", 	displayType : "grade",	currentValue : $skulduggery, 	modifier: 100,	states : _detailedSkillGrades}>>
+			<<set _dancingConfig = 		{ name : "춤", 		displayType : "grade",	currentValue : $danceskill, 	modifier: 100,	states : _basicSkillGrades}>>
+			<<set _swimmingConfig = 	{ name : "수영", 	displayType : "grade",	currentValue : $swimmingskill, 	modifier: 100,	states : _detailedSkillGrades}>>
+			<<set _athleticsConfig = 	{ name : "운동", 	displayType : "grade",	currentValue : $athletics, 		modifier: 100,	states : _detailedSkillGrades}>>
+			<<set _tendingConfig = 		{ name : "관리", 	displayType : "grade",	currentValue : $tending, 		modifier: 100,	states : _detailedSkillGrades}>>
+
 			<<if $moorLuck gt 0>>
 				<<set _skulduggeryConfig.modifier to Math.floor(_skulduggeryConfig.modifier * (1 + ($moorLuck / 100)))>>
 				<<set _dancingConfig.modifier to Math.floor(_dancingConfig.modifier * (1 + ($moorLuck / 100)))>>
@@ -410,7 +415,7 @@
 				<<set _swimmingConfig.modifier to Math.floor(_swimmingConfig.modifier * (0.9 + ($feetskill / 10000) - _heels))>>
 			<</if>>
 			<<switch $location>>
-				<<case "forest" "moor" "farm">>
+				<<case "forest" "moor" "farm" "alex_farm">>
 					<<if $worn.feet.type.includes("heels")>>
 						<<set _athleticsConfig.modifier to Math.floor(_athleticsConfig.modifier * (1 - ($worn.feet.reveal / 5000)))>>
 					<</if>>
@@ -418,6 +423,11 @@
 						<<set _athleticsConfig.modifier to Math.floor(_athleticsConfig.modifier * (1 + ($feetskill / 10000)))>>
 					<</if>>
 			<</switch>>
+			<<if $worn.feet.type.includes("shackle")>>
+				<<set _athleticsConfig.modifier to 0>>
+				<<set _swimmingConfig.modifier to Math.floor(_swimmingConfig.modifier * 0.5)>>
+				<<set _dancingConfig.modifier to Math.floor(_dancingConfig.modifier * 0.5)>>
+			<</if>>
 		<</silently>>
 
 		<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
@@ -441,24 +451,32 @@
 			<</if>>
 		<</for>>
 		<<if _plant_temp is 1>>코누다투스 가에 가판대를 빌려서 새벽에 팔 수 있다.<</if>>
+		<<if $phials_held gte 2>>
+			당신은 $phials_held 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다.
+		<<elseif $phials_held gte 1>>
+			당신은 한 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다.
+		<</if>>
+		<<if $lurkers_held gte 1>>
+			당신은 럴커를 가지고 있다.
+		<</if>>
 	</div>
 
 	<h4>성기술</h4>
 	<!--Sex skills configurations-->
 	<<silently>>
-		<<set _seductionConfig =	{ name : "유혹",		displayType : "grade",	currentValue : $seductionskill,	states : _basicSkillGrades}>>
-		<<set _oralConfig = 		{ name : "입", 			displayType : "grade",	currentValue : $oralskill,		states : _basicSkillGrades}>>
-		<<set _chestConfig = 		{ name : "가슴", 		displayType : "grade",	currentValue : $chestskill,		states : _basicSkillGrades}>>
-		<<set _handsConfig = 		{ name : "손", 			displayType : "grade",	currentValue : $handskill,		states : _basicSkillGrades}>>
-		<<set _buttocksConfig =		{ name : "엉덩이", 		displayType : "grade",	currentValue : $bottomskill,	states : _basicSkillGrades}>>
-		<<set _analConfig = 		{ name : "항문", 		displayType : "grade",	currentValue : $analskill,		states : _basicSkillGrades}>>
-		<<set _thighsConfig = 		{ name : "허벅지", 		displayType : "grade",	currentValue : $thighskill,		states : _basicSkillGrades}>>
-		<<set _feetConfig = 		{ name : "발", 			displayType : "grade",	currentValue : $feetskill,		states : _basicSkillGrades}>>
+		<<set _seductionConfig =	{ name : "유혹",		displayType : "grade",	currentValue : $seductionskill,	modifier: 100,	states : _basicSkillGrades}>>
+		<<set _oralConfig = 		{ name : "입", 			displayType : "grade",	currentValue : $oralskill,		modifier: 100,	states : _basicSkillGrades}>>
+		<<set _chestConfig = 		{ name : "가슴", 		displayType : "grade",	currentValue : $chestskill,		modifier: 100,	states : _basicSkillGrades}>>
+		<<set _handsConfig = 		{ name : "손", 			displayType : "grade",	currentValue : $handskill,		modifier: 100,	states : _basicSkillGrades}>>
+		<<set _buttocksConfig =		{ name : "엉덩이", 		displayType : "grade",	currentValue : $bottomskill,	modifier: 100,	states : _basicSkillGrades}>>
+		<<set _analConfig = 		{ name : "항문", 		displayType : "grade",	currentValue : $analskill,		modifier: 100,	states : _basicSkillGrades}>>
+		<<set _thighsConfig = 		{ name : "넓적다리", 		displayType : "grade",	currentValue : $thighskill,		modifier: 100,	states : _basicSkillGrades}>>
+		<<set _feetConfig = 		{ name : "발", 			displayType : "grade",	currentValue : $feetskill,		modifier: 100,	states : _basicSkillGrades}>>
 		<<if $penisexist is 1>>
-			<<set _penileConfig = 	{ name : "자지", 		displayType : "grade",	currentValue : $penileskill,	states : _basicSkillGrades}>>
+			<<set _penileConfig = 	{ name : "자지", 		displayType : "grade",	currentValue : $penileskill,	modifier: 100,	states : _basicSkillGrades}>>
 		<</if>>
 		<<if $vaginaexist is 1>>
-			<<set _vaginalConfig = 	{ name : "보지", 		displayType : "grade",	currentValue : $vaginalskill,	states : _basicSkillGrades}>>
+			<<set _vaginalConfig = 	{ name : "보지", 		displayType : "grade",	currentValue : $vaginalskill,	modifier: 100,	states : _basicSkillGrades}>>
 		<</if>>
 	<</silently>>
 	<<if $images is 1>>
@@ -562,10 +580,10 @@
 				{ requiredValue: 4,		level: 'A*', color: 'green'}
 			]>>
 
-			<<set _scienceConfig = 	{ name : '과학', 	icon : 'misc/icon/science', displayType : "grade",	currentValue : $sciencetrait,	percent: $science_exam, 	showStars: true, starLevel: $science_star,	states : _schoolGradeStates}>>
-			<<set _mathsConfig = 	{ name : '수학', 	icon : 'misc/icon/math', 	displayType : "grade",	currentValue : $mathstrait, 	percent: $maths_exam,	 	showStars: true, starLevel: $maths_star,	states : _schoolGradeStates}>>
-			<<set _englishConfig = 	{ name : '영어', 	icon : 'misc/icon/english', displayType : "grade",	currentValue : $englishtrait,	percent: $english_exam, 	showStars: true, starLevel: $english_star,	states : _schoolGradeStates}>>
-			<<set _historyConfig = 	{ name : '역사', 	icon : 'misc/icon/history', displayType : "grade",	currentValue : $historytrait,	percent: $history_exam, 	showStars: true, starLevel: $history_star,	states : _schoolGradeStates}>>
+			<<set _scienceConfig = 	{ name : '과학', 	icon : 'misc/icon/science', displayType : "grade",	currentValue : $sciencetrait,	modifier: 100,	percent: $science_exam, 	showStars: true, starLevel: $science_star,	states : _schoolGradeStates}>>
+			<<set _mathsConfig = 	{ name : '수학', 	icon : 'misc/icon/math', 	displayType : "grade",	currentValue : $mathstrait, 	modifier: 100,	percent: $maths_exam,	 	showStars: true, starLevel: $maths_star,	states : _schoolGradeStates}>>
+			<<set _englishConfig = 	{ name : '영어', 	icon : 'misc/icon/english', displayType : "grade",	currentValue : $englishtrait,	modifier: 100,	percent: $english_exam, 	showStars: true, starLevel: $english_star,	states : _schoolGradeStates}>>
+			<<set _historyConfig = 	{ name : '역사', 	icon : 'misc/icon/history', displayType : "grade",	currentValue : $historytrait,	modifier: 100,	percent: $history_exam, 	showStars: true, starLevel: $history_star,	states : _schoolGradeStates}>>
 			<<if $moorLuck gt 0>>
 				<<set _scienceConfig.modifier to Math.floor(_scienceConfig.modifier * (1 + ($moorLuck / 100)))>>
 				<<set _mathsConfig.modifier to Math.floor(_mathsConfig.modifier * (1 + ($moorLuck / 100)))>>
@@ -580,7 +598,7 @@
 		<<characteristic-box _historyConfig>>
 	</div>
 	<div class="characteristic-box-extras">
-		<<set _schoolPerformanceConfig = { currentValue : $school, preText: '당신의 전반적인 성적은 ', states : [
+		<<set _schoolPerformanceConfig = { currentValue : $school, preText: '당신의 전반적인 성적은 ', modifier: 100,	states : [
 				{ requiredValue: 0,   	color: 'red',		description: '형편없다.'},
 				{ requiredValue: 1, 	color: 'pink',		description: '끔찍하다.'},
 				{ requiredValue: 400,   color: 'purple',	description: '나쁘다.'},
@@ -594,6 +612,21 @@
 		<br>
 		<<if $antiquemoney gt 0>>
 			당신은 £<<print $antiquemoney>> 어치의 골동품을 갖고 있다.
+		<</if>>
+	</div>
+
+<h4>무기 스킬</h4>
+	<div id="prof" class="characteristic-box-list">
+		<<silently>>
+			<<set _sprayConfig = 		{ name : "스프레이", 		displayType : "grade",	currentValue : $prof.spray, 		modifier: 100,		states : _basicSkillGrades}>>
+			<<set _netConfig = 		{ name : "채집망", 		displayType : "grade",	currentValue : $prof.net, 		modifier: 100,		states : _basicSkillGrades}>>
+			<<set _hiddenConfig = 		{ name : "????", 		displayType : "grade",	currentValue : 0, 		modifier: 100,		states : _basicSkillGrades}>>
+		<</silently>>
+		<<characteristic-box _sprayConfig>>
+		<<if $prof.net isnot undefined>>
+			<<characteristic-box _netConfig>>
+		<<else>>
+			<<characteristic-box _hiddenConfig>>
 		<</if>>
 	</div>
 </div>
@@ -720,4 +753,5 @@ __불안감__ - <i>불안감이 증가할수록 세밀한 조사가 어려워지
 <</if>>
 
 <br>
-<</nobr>><</widget>>
+
+<</widget>>

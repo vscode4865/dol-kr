@@ -1,5 +1,5 @@
 :: Widgets Tending [widget]
-<<widget "plots_init">><<nobr>>/*First variable: location. Second variable: number of plots. Third variable: ground type (earth, water). Fourth variable: plot quality, fifth variable: plot size*/
+<<widget "plots_init">>/*First variable: location. Second variable: number of plots. Third variable: ground type (earth, water). Fourth variable: plot quality, fifth variable: plot size*/
 <<set $plots[$args[0]] to []>>
 <<for _i to 0; _i lt $args[1]; _i++>>
 	<<set $plots[$args[0]][_i] to clone(setup.plot_base)>>
@@ -8,17 +8,17 @@
 	<<set $plots[$args[0]][_i].size to $args[4]>>
 <</for>>
 
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "add_plot">><<nobr>>/*Adds a plot to an existing location. Arguments are as in the plots_init widget, but the second variable and beyond are shifted down one.*/
+<<widget "add_plot">>/*Adds a plot to an existing location. Arguments are as in the plots_init widget, but the second variable and beyond are shifted down one.*/
 	<<set _i to $plots[$args[0]].length>>
 	<<set $plots[$args[0]].push(clone(setup.plot_base))>>
 	<<set $plots[$args[0]][_i].bed to $args[1]>>
 	<<set $plots[$args[0]][_i].quality to $args[2]>>
 	<<set $plots[$args[0]][_i].size to $args[3]>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "clear_plot">><<nobr>>/*Returns a plot to its default state. First argument: location. Second argument: index of plot to be reset.*/
+<<widget "clear_plot">>/*Returns a plot to its default state. First argument: location. Second argument: index of plot to be reset.*/
 <<if $plots[$args[0]][$args[1]].baseQuality isnot undefined and $backgroundTraits.includes("greenthumb") is false>>
 		<<if $plots[$args[0]][$args[1]].fertiliserDecay gt 0>>
 			<<set $plots[$args[0]][$args[1]].fertiliserDecay-->>
@@ -41,30 +41,30 @@
 	<<set $plots[$args[0]][$args[1]].plant to "none">>
 	<<set $plots[$args[0]][$args[1]].till to 0>>
 	<<set $plots[$args[0]][$args[1]].stage to 0>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "display_quality">><<nobr>>
+<<widget "display_quality">>
 <<silently>>
 <<switch $plots[$args[0]][$args[1]].bed>>
-	<<case "water">><<set _bedType to "water">>
-	<<case "earth">><<set _bedType to "soil">>
+	<<case "water">><<set _bedType to "수질">>
+	<<case "earth">><<set _bedType to "토양">>
 	<<default>><<set _bedType to clone($plots[$args[0]][$args[1]].bed)>>
 <</switch>>
 <<if $plots[$args[0]][$args[1]].quality is 1>>
-	<<set $_result to `<span class="blue">poor `+_bedType+`</span>`>>
+	<<set $_result to `<span class="blue">척박한 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality is 2>>
-	<<set $_result to `<span class="lblue">decent `+_bedType+`</span>`>>
+	<<set $_result to `<span class="lblue">적당한 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality is 3>>
-	<<set $_result to `<span class="teal">good `+_bedType+`</span>`>>
+	<<set $_result to `<span class="teal">괜찮은 `+_bedType+`</span>`>>
 <<elseif $plots[$args[0]][$args[1]].quality gt 3>>
-	<<set $_result to `<span class="green">excellent `+_bedType+`</span>`>>
+	<<set $_result to `<span class="green">최상의 `+_bedType+`</span>`>>
 <</if>>
 <</silently>><<print $_result>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "display_plot">><<nobr>>/*Argument is the plot location you want to display.*/
+<<widget "display_plot">>/*Argument is the plot location you want to display.*/
 <<set _water_needed to 0>>
-경작할 수 있는
+경작할 수 있는 <<trNumber $plots[$args[0]].length>> 개의
 <<if $plots[$args[0]][0].size is "small">>
 	<span class="lblue">모판</span>이
 <<elseif $plots[$args[0]][0].size is "medium">>
@@ -72,12 +72,12 @@
 <<else>>
 	<span class="green">밭</span>이
 <</if>>
-<<print $plots[$args[0]].length>>개 있다. <<if $fertiliser.current gt 0 or $fertiliser.used gt 0>>당신은 지금 $fertiliser.current개의 비료가 있다.<</if>>
+있다. <<if $fertiliser.current gt 0 or $fertiliser.used gt 0>>당신은 비료를 <<trNumber $fertiliser.current>> 개 가지고 있다.<</if>> 경작하는 시간은 관리 스킬에 따라 줄어든다.
 <br><br>
 <<for _i to 0; _i lt $plots[$args[0]].length; _i++>>
 <<set _tending_temp to _i>>
 <<capture _tending_temp>>
-<span class="gold"><<wordify_i _i cap>> 터 <<if $plots[$args[0]][_i].bed isnot "earth">>(<<print $plots[$args[0]][_i].bed>>)<</if>>:</span>
+<span class="gold"><<wordify_i _i cap>> 터 (<<display_quality $args[0] _tending_temp>>):</span>
 	<<if $plots[$args[0]][_i].stage gte 5>>
 		<<trPlants setup.plants[$plots[$args[0]][_i].name].plural>><span class="green">_trResult에 꽃이 펴, 이제 딸 수 있을 것 같다.</span>
 		<br>
@@ -108,22 +108,36 @@
 			<<for _e to 0; _e lt $plants_known.length; _e++>>
 			<<capture _e>>
 			<br>
+			<<switch $args[0]>>
+				<<case "farm">>
+					<<if $farm.irrigation>>
+						<<set _irrigation to $farm.irrigation>>
+					<<else>>
+						<<set _irrigation to 0>>
+					<</if>>
+				<<default>>
+					<<set _irrigation to 0>>
+			<</switch>>
+			<<if setup.plants[$plants_known[_e]].season.includes($season) or ($args[0] is "garden" and $alex_greenhouse gte 3)>>
 				<<if setup.plants[$plants_known[_e]].bed is $plots[$args[0]][_i].bed>>
 					<<if $plots[$args[0]][_i].size is "small">>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (0:30)"` $passage>><<pass 30>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (0:30)"` $passage>><<pass 30>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<<elseif $plots[$args[0]][_i].size is "medium">>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (1:30)"` $passage>><<pass 90>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (1:30)"` $passage>><<pass 90>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<<else>>
-						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (3:00)"` $passage>><<pass 3 hours>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain">><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> days)</span>
+						<<trPlants setup.plants[$plants_known[_e]].plural>><<link `_trResult + " 심기 (3:00)"` $passage>><<pass 3 hours>><<set $plots[$args[0]][_tending_temp].name to $plants_known[_e]>><<set $plots[$args[0]][_tending_temp].stage to 1>><<set $plot_planted to 1>><<if $weather is "rain" or _e lt _irrigation>><<set $plots[$args[0]][_tending_temp].water to 1>><</if>><</link>> <span class="orange">(<<print setup.plants[$plants_known[_e]].days>> 일)</span>
 					<</if>>
 				<<else>>
-					<<trPlants setup.plants[$plants_known[_e]].plural "은">><span class="blue"><<print _trResult>> <<print setup.plants[$plants_known[_e]].bed>>에서만 자란다.</span>
+					<<trPlants setup.plants[$plants_known[_e]].plural "은">><span class="blue"><<print _trResult>> <<putpost setup.plants[$plants_known[_e]].bed>>에서만 자란다.</span>
 				<</if>>
+			<<else>>
+				<<tending_season_notice>>
+			<</if>>
 			<</capture>>
 			<</for>>
 			<br>
 		<<else>>
-			The soil is ready for tilling.
+			토지를 경작할 수 있다.
 			<br>
 			<<if $tending gte 1000>>
 				<<set _baseTime to 5>>
@@ -160,13 +174,16 @@
 				<<set _displayedMinutes to "0" + _displayedMinutes>>
 			<</if>>
 			<<capture _baseTiredsness _baseHours _baseTime>>
-				<<link [["Till (" + _displayedHours + ":" + _displayedMinutes + ")"|$passage]]>>
+				<<link [["경작한다 (" + _displayedHours + ":" + _displayedMinutes + ")"|$passage]]>>
 					<<set $plot_tilled to 1>>
 					<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
 					<<if _baseHours>>
 						<<pass _baseHours hours>>
 					<<else>>
 						<<pass _baseTime>>
+					<</if>>
+					<<if $location is "farm">>
+						<<farm_count _baseTime>>
 					<</if>>
 					<<set $plots[$args[0]][_tending_temp].till to 1>>
 				<</link>><<gtiredness>>
@@ -183,7 +200,7 @@
 					<<set _displayedMinutesFert to "0" + _displayedMinutesFert>>
 				<</if>>
 				<<capture _baseTimeFert _baseHoursFert _baseTiredsness>>
-					<<link [["Till and apply fertiliser (" + _displayedHoursFert + ":" + _displayedMinutesFert + ")"|$passage]]>>
+					<<link [["토지를 경작하고 비료를 뿌린다 (" + _displayedHoursFert + ":" + _displayedMinutesFert + ")"|$passage]]>>
 						<<set $plot_tilled_fertiliser to 1>>
 						<<tiredness `Math.floor(_baseTiredsness * 1.5)`>>
 						<<physique `Math.floor(_baseTiredsness * 1.5)`>>
@@ -191,6 +208,9 @@
 							<<pass _baseHoursFert hours>>
 						<<else>>
 							<<pass _baseTimeFert>>
+						<</if>>
+						<<if $location is "farm">>
+							<<farm_count _baseTimeFert>>
 						<</if>>
 						<<set $plots[$args[0]][_tending_temp].till to 1>>
 						<<set $fertiliser.current-->><<set $fertiliser.used++>>
@@ -239,7 +259,7 @@
 	<<if $plots[$args[0]][0].size is "small">>
 		<<link [[모든 마른 모판에 물을 준다 (개당 0:05)|$passage]]>>
 			<<for _i to 0; _i lt $plots[$args[0]].length; _i++>><<capture _i>>
-				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
+				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].stage lt 5 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
 					<<set $plots[$args[0]][_i].water to 1>><<pass 5>><<tending 1>><<event_trigger>>
 				<</if>>
 			<</capture>>
@@ -251,7 +271,7 @@
 	<<elseif $plots[$args[0]][0].size is "medium">>
 		<<link [[모든 마른 터에 물을 준다 (개당 0:15)|$passage]]>>
 			<<for _i to 0; _i lt $plots[$args[0]].length; _i++>><<capture _i>>
-				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
+				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].stage lt 5 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
 					<<set $plots[$args[0]][_i].water to 1>><<pass 15>><<tending 2>><<event_trigger>>
 				<</if>>
 			<</capture>>
@@ -264,7 +284,7 @@
 	<<else>>
 		<<link [[모든 마른 밭에 물을 준다 (개당 1:00)|$passage]]>>
 			<<for _i to 0; _i lt $plots[$args[0]].length; _i++>><<capture _i>>
-				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
+				<<if $plots[$args[0]][_i].stage gte 1 and $plots[$args[0]][_i].stage lt 5 and $plots[$args[0]][_i].bed isnot "water" and $plots[$args[0]][_i].water is 0>>
 					<<set $plots[$args[0]][_i].water to 1>><<pass 60>><<tending 6>><<event_trigger>>
 				<</if>>
 			<</capture>>
@@ -276,9 +296,9 @@
 		<br>
 	<</if>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "plot_effects">><<nobr>>
+<<widget "plot_effects">>
 <<if $plot_watered is 1>><<unset $plot_watered>>
 	당신은 터에 물을 준다. <span class="gold">좋은 운동이 되었다.</span>
 	<br>
@@ -297,7 +317,7 @@
 	<br>
 <</if>>
 <<if $plot_tilled_fertiliser is 1>>
-	You get to work removing weeds and tilling the soil while mixing in some fertiliser. It's hard going, but when you're done the soil is ready for planting. <span class="gold">You get a good workout.</span>
+	당신은 잡초를 뽑고 비료를 섞어가며 흙을 경작한다. 힘든 작업이지만, 다 끝내고 나자 씨앗을 심을 준비가 끝난다. <span class="gold">좋은 운동이 되었다.</span>
 	<<unset $plot_tilled_fertiliser>>
 <</if>>
 <<if $plot_planted is 1>>
@@ -305,15 +325,27 @@
 	<<unset $plot_planted>>
 	<br>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "tending_day">><<nobr>>
+<<widget "tending_day">>
 <<set _plotKeys to Object.keys($plots)>>
 <<for _s to 0; _s lt _plotKeys.length; _s++>>
 	<<set _plot to _plotKeys[_s]>>
+	<<switch _plot>>
+		<<case "farm">>
+			<<if $farm.irrigation>>
+				<<set _irrigation to $farm.irrigation>>
+			<<else>>
+				<<set _irrigation to 0>>
+			<</if>>
+		<<default>>
+			<<set _irrigation to 0>>
+	<</switch>>
 	<<for _t to 0; _t lt $plots[_plot].length; _t++>>
 		<<capture _t>>
-		<<set $plots[_plot][_t].days += 1>>
+		<<if $plots[_plot][_t].stage gte 1 and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
+			<<set $plots[_plot][_t].days += 1>>
+		<</if>>
 		<<switch $plots[_plot][_t].stage>>
 		<<case 4>>
 			<<if $plots[_plot][_t].days gte setup.plants[$plots[_plot][_t].name].days and ($plots[_plot][_t].water is 1 or $plots[_plot][_t].bed is "water")>>
@@ -334,15 +366,18 @@
 		<</switch>>
 		<<if $weather is "rain">>
 			<<set $plots[_plot][_t].water to 1>>
+		<<elseif _irrigation gt 0>>
+			<<set $plots[_plot][_t].water to 1>>
+			<<set _irrigation-->>
 		<<else>>
 			<<set $plots[_plot][_t].water to 0>>
 		<</if>>
 		<</capture>>
 	<</for>>
 <</for>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "tending_harvest">><<nobr>>
+<<widget "tending_harvest">>
 <<if $plants[$args[0]] is undefined>>
 	<<set $plants[$args[0]] to {}>>
 	<<set $plants[$args[0]].amount to 0>>
@@ -362,9 +397,9 @@
 <<elseif $args[1] is 2>>
 	<<set _tending_amount *= 1.2>>
 <</if>>
-<<if !$backgroundTraits.includes("greenthumb") and $tending is 1000 and ($fertiliser.used gte 40 or ($fertiliser.used gte 25 and $farm_stage gte 6)) and $plants_known.length gte 8>>
+<<if !$backgroundTraits.includes("greenthumb") and $tending is 1000 and ($fertiliser.used gte 40 or ($fertiliser.used gte 25 and $farm_stage gte 6)) and $plants_known.length gte 16>>
 	<<run $backgroundTraits.pushUnique("greenthumb")>>
-	<span class="gold">Spending a large amount of time in the dirt has given you a green thumb.</span>
+	<span class="gold">흙에서 오랜 시간을 보낸 결과 당신은 원예가의 재능을 얻게 되었다.</span>
 	<br>
 <</if>>
 <<if $backgroundTraits.includes("greenthumb")>>
@@ -374,14 +409,14 @@
 <<set $plants[$args[0]].amount += _tending_amount>>
 <<set $plants[$args[0]].plural to clone(setup.plants[$args[0]].plural)>>
 <<set $plants[$args[0]].name to clone(setup.plants[$args[0]].name)>>
-당신은 <<trPlants setup.plants[$args[0]].plural "을">>_trResult <<print _tending_amount>>개 수확한다.
+당신은 <<trPlants setup.plants[$args[0]].plural "을">>_trResult <<trNumber _tending_amount>> 개 수확한다.
 <<if $plotDecay>>
-	The fertiliser effect has decayed<<if $plotDecay is 2>> completely<</if>>.
+	비료의 효과가<<if $plotDecay is 2>> 완전히<</if>> 줄어들었다.
 	<<unset $plotDecay>>
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "tending_pick">><<nobr>>
+<<widget "tending_pick">>
 <<if $plants[$args[0]] is undefined>>
 	<<set $plants[$args[0]] to {}>>
 	<<set $plants[$args[0]].amount to 0>>
@@ -404,10 +439,57 @@
 <<set _tending_amount to Math.trunc(_tending_amount)>>
 <<set $plants[$args[0]].amount += _tending_amount>>
 <<set $wild_plant_stat += _tending_amount>>
-You pick 
+당신은
 <<if _tending_amount is 1>>
-	a <<print setup.plants[$args[0]].name.replace(/_/g," ")>>.
+	<<trPlants setup.plants[$args[0]].name "을">><<print _trResult>> 한 송이 수확한다.
 <<else>>
-	<<print _tending_amount>> <<print setup.plants[$args[0]].plural>>.
+	<<trPlants setup.plants[$args[0]].plural "을">><<print _trResult>> <<trNumber _tending_amount>> 송이 수확한다.
 <</if>>
-<</nobr>><</widget>>
+<</widget>>
+
+<<widget "tending_give">>
+<<if $args[0]>>
+	<<if $plants[$args[0]] is undefined>>
+		<<set $plants[$args[0]] to {}>>
+		<<set $plants[$args[0]].amount to 0>>
+	<</if>>
+	<<set $plants[$args[0]].plural to clone(setup.plants[$args[0]].plural)>>
+	<<set $plants[$args[0]].name to clone(setup.plants[$args[0]].name)>>
+	<<if $args[1]>>
+		<<set $plants[$args[0]].amount += $args[1]>>
+	<<else>>
+		<<set $plants[$args[0]].amount += 1>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "tending_season_notice">>
+<span class="blue">
+<<trPlants setup.plants[$plants_known[_e]].plural "은">><<print _trResult>>
+<<set _season_notice to clone(setup.plants[$plants_known[_e]])>>
+<<for _x to 0; _x lt setup.plants[$plants_known[_e]].season.length; _x++>>
+	<<if _season_notice.season.includes("spring")>>
+		봄<<if setup.plants[$plants_known[_e]].season.length is _x + 1>>에 심을 수 있다.<<else>>,<</if>>
+		<<set _season_notice.season.delete("spring")>>
+		<<set _season_noted to true>>
+		<<continue>>
+	<<elseif _season_notice.season.includes("summer")>>
+		<<if setup.plants[$plants_known[_e]].season.length is _x + 1 and _season_noted>>그리고 <</if>>여름<<if setup.plants[$plants_known[_e]].season.length is _x + 1>>에 심을 수 있다.<<else>>,<</if>>
+		<<set _season_notice.season.delete("summer")>>
+		<<set _season_noted to true>>
+		<<continue>>
+	<<elseif _season_notice.season.includes("autumn")>>
+		<<if setup.plants[$plants_known[_e]].season.length is _x + 1 and _season_noted>>그리고 <</if>>가을<<if setup.plants[$plants_known[_e]].season.length is _x + 1>>에 심을 수 있다.<<else>>,<</if>>
+		<<set _season_notice.season.delete("autumn")>>
+		<<set _season_noted to true>>
+		<<continue>>
+	<<elseif _season_notice.season.includes("winter")>>
+		<<if setup.plants[$plants_known[_e]].season.length is _x + 1 and _season_noted>>그리고 <</if>>겨울<<if setup.plants[$plants_known[_e]].season.length is _x + 1>>에 심을 수 있다.<<else>>,<</if>>
+		<<set _season_notice.season.delete("winter")>>
+		<<set _season_noted to true>>
+		<<continue>>
+	<</if>>
+<</for>>
+</span>
+<<unset _season_noted>>
+<</widget>>

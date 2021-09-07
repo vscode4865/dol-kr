@@ -1,23 +1,38 @@
 :: Widgets Sleep [widget]
 
-<<widget "sleep">><<nobr>>
+<<widget "sleep">>
 	<<sleephour>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "sleephour">><<nobr>>
+<<widget "sleephour">>
 	<<set $sleepHoursTotal to 0>>
-	<<for $sleephour gte 1>><<set $sleephour -= 1>><<set $sleepStat++>>
+	<<set _equip to ["over_upper", "over_lower", "upper", "lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
+	<<set _sleepTraitEffect to 10>>
+	<<if $worn.upper.type.includes("sleep") or $worn.lower.type.includes("sleep")>>
+		<<set _sleepTraitEffect += 5>>
+	<</if>>
+	<<if $robinbed is 1 or $kylarbed is 1>>
+		<<set _sleepTraitEffect += 5>>
+	<</if>>
+	<<for $_i to 0; $_i lt _equip.length; $_i++>>
+		<<if $worn[_equip[$_i]].type.includes("naked") or $worn[_equip[$_i]].type.includes("sleep") or $worn[_equip[$_i]].type.includes("eerie")>>
+			<<continue>>
+		<</if>>
+		<<set _sleepTraitEffect to 0>>
+		<<break>>
+	<</for>>
+	<<for $sleephour gte 1 or $sleephour lte -1>><<set $sleephour -= 1>><<set $sleepStat++>>
 		<<effectstime>>
 		<<if $location is "asylum">>
 			<<asylumeffects>>
 		<</if>>
-		<<if $robinromance is 1 and $NPCName[$NPCNameList.indexOf("Robin")].lust gte 20 and $robinbed isnot 1 and $location is "home" and $robinwakeday isnot 1>>
+		<<if $robinromance is 1 and $NPCName[$NPCNameList.indexOf("Robin")].lust gte 20 and $robinbed isnot 1 and $location is "home" and $robinwakeday isnot 1 and $kylarbed isnot 1>>
 			<<if $hour gte 18 or $hour lte 6>>
 				<<set $schoolwake to 1>>
 				<<set $NPCName[$NPCNameList.indexOf("Robin")].lovewake to 1>>
 				<<set $robinwakeday to 1>>
 			<</if>>
-		<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 100 and $robindebtknown isnot 1 and $location is "home">>
+		<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 100 and $robindebtknown isnot 1 and $location is "home" and $kylarbed isnot 1>>
 			<<if $hour gte 18 or $hour lte 6>>
 				<<set $schoolwake to 1>>
 				<<set $robindebtwake to 1>>
@@ -30,8 +45,15 @@
 		<<elseif $location is "asylum" and $suspicion gte 80 and random(1, 10) gte 10>>
 			<<set $schoolwake to 1>>
 			<<set $rapewake to 1>>
-		<<elseif $schoolday is 1 and $hour is 7 and $location is "home">>
+		<<elseif $location is "alex_cottage" and ($hour gte 21 or $hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
+			<<set $alexwake to 1>>
 			<<set $schoolwake to 1>>
+		<<elseif $location is "alex_cottage" and $farm_attack_timer is 0 and $hour gte 21>>
+			<<set $remywake to 1>>
+			<<set $schoolwake to 1>>
+		<<elseif $schoolday is 1 and $hour is 7 and $location is "home" and !$bailey_wake_day>>
+			<<set $schoolwake to 1>>
+			<<set $bailey_wake_day to true>>
 		<<elseif $hour lte 6 and $location is "cabin" and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
 			<<set $edenwake to 1>>
 			<<set $schoolwake to 1>>
@@ -42,10 +64,9 @@
 			<<set $schoolwake to 1>>
 		<<elseif $location is "tower" and $bird.state is "home" and $bird.satisfied isnot true and random(1, 10) is 10>>
 			<<set $schoolwake to 1>>
-		<<elseif $location is "home" and $corruption_slime gte ($willpower / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0>>
+		<<elseif $location is "home" and $corruption_slime gte ($willpower / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
 			<<set $slimeWake to 1>>
 			<<break>>
-		<<else>>
 		<</if>>
 		<<if $schoolwake isnot 1>>
 			<<set $sleepHoursTotal += 1>>
@@ -53,6 +74,9 @@
 				<<set $tiredness -= 200>>
 			<<else>>
 				<<set $tiredness -= 250>>
+			<</if>>
+			<<if _sleepTraitEffect>>
+				<<set $tiredness -= _sleepTraitEffect>>
 			<</if>>
 			<<if $location isnot "tower">>
 				<<pass 1 hour>>
@@ -62,10 +86,15 @@
 			<<if $nightmares gte 1 and $controlled is 0>>
 				<<stress 6>>
 			<</if>>
+			<<if ($sleephour lte -1 and $tiredness lte 0) or $sleephour lte (-1 - 10)>>
+				<<set $sleephour to 0>>
+			<</if>>
+		<<else>>
+			<<break>>
 		<</if>>
 	<</for>>
-<</nobr>><</widget>>
-<<widget "sleepeffects">><<nobr>>
+<</widget>>
+<<widget "sleepeffects">>
 	<<if $sleeptransform is 1>>
 		<<if $wolfgirl is 0 and $wolfbuild gte 5>>
 			<<set $wolfgirl to 1>>
@@ -118,7 +147,7 @@
 			<br><br>
 		<</if>>
 	<</if>>
-	<<if $stress gte 10000>>
+	<<if $stress gte $stressmax>>
 		<<set $stress -= 2000>>
 		<<trauma 10>>
 		<span class="red">스트레스가 자는 동안 최고점을 찍었다가 가라앉았지만, 그 대신 정신 건강이 많이 상했다.</span>
@@ -130,22 +159,27 @@
 		일어나자마자 야한 생각이 떠오른다. <span class="gold">과학 프로젝트 주제로 "지역 남근"을 선택할 수 있다.</span> 세부 사항은 관계 페이지의 일기 항목을 확인하라.
 		<br><br>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "bedclotheson">><<nobr>>
+<<widget "bedclotheson">>
+	<<if $args[0] is undefined>>
+		<<set _store to "bed">>
+	<<else>>
+		<<set _store to $args[0]>>
+	<</if>>
 	<<set $wardrobe_location to "wardrobe">>
 	<<if $wear_outfit is "clotheson">>
 		<<undress "wardrobe">>
-		<<storeon "bed">>
+		<<storeon _store>>
 	<<elseif $wear_outfit isnot "none">>
-		<<storeon "bed">>
+		<<storeon _store>>
 		<<undress "wardrobe">>
 		<<wearoutfit>>
 	<</if>>
 	<<set $wear_outfit to "none">>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeNoSleep">><<nobr>>
+<<widget "slimeNoSleep">>
 	<<if $corruption_slime gte 80>>
 		<<set _eventsList to ["have sex with someone or something", "only sleep naked from now on"]>>
 
@@ -171,9 +205,9 @@
 	<br>
 	<<link [[반항한다|SleepSlimeEventDefy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<set $submissive -= 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeEventResult">><<nobr>>
+<<widget "slimeEventResult">>
 	<<if $slimeEvent is "go running or swimming naked for an hour" or "go running or swimming for an hour">>
 		<<set $slimeEventLength to 2>>
 	<</if>>
@@ -189,9 +223,9 @@
 		<br><br>
 		<<link [[다음|Bedroom]]>><</link>>
 	<</if>>
-<</nobr>><</widget>>
+<</widget>>
 
-<<widget "slimeEventEnd">><<nobr>>
+<<widget "slimeEventEnd">>
 <<switch $slimeEvent>>
 	<<case "go running or swimming naked for an hour">>
 		<<if $slimeEventLength is 1 and $exposed is 2>>
@@ -210,7 +244,7 @@
 	<<default>>
 		<<unset $slimeEvent>>
 <</switch>>
-<</nobr>><</widget>>
+<</widget>>
 
 :: SleepSlimeEventObey
 	당신은 슬라임의 요구를 따른다.

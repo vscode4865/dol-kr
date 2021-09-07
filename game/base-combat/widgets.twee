@@ -11,6 +11,9 @@
 			<<case "Avery">><<earnFeat "Avery the Moneybags">>
 			<<case "Leighton">><<earnFeat "Leighton the Shady">>
 			<<case "Alex">><<earnFeat "Alex the Robust">>
+			<<case "Great Hawk">><<earnFeat "Great Hawk the Terror">>
+			<<case "Wren">><<earnFeat "Wren the Sly">>
+			<<case "Black Wolf">><<earnFeat "Great Wolf the Alpha">>
 		<</switch>>
 	<</if>>
 	<<if $player.virginity[$args[1]] is true>>
@@ -34,6 +37,8 @@
 			<span class="lewd">당신은 이런 로맨틱한 손잡기를 경험해본 적이 없다.</span><<arousal 2000>><<ggarousal>>
 		<<case "rape">>
 			<span class="red">당신은 이처럼 누군가 자신의 손을 잡도록 강요당하는 것에 소름끼치는 감각을 느낀다.</span><<stress 40>><<ggstress>>
+		<<case "consensual">>
+			<span class="green">손을 잡아주어서 당신은 기분이 좋다.</span><<lltrauma>><<trauma -18>>
 		<<default>>
 			<span class="blue">당신은 친하지 않은 사람에게 손을 잡혀 초조해진다.</span><<stress 20>><<gstress>>
 	<</switch>>
@@ -86,6 +91,14 @@
 		<<if $syndromewolves is 1 and $deviancy gte 35>>
 			<<set _loveInterest to true>>
 		<</if>>
+	<<case "Great Hawk">>
+		<<if $syndromebird is 1>>
+			<<set _loveInterest to true>>
+		<</if>>
+	<<case "Alex">>
+		<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+			<<set _loveInterest to true>>
+		<</if>>
 	<<default>>
 		<<set _loveInterest to false>>
 <</switch>>
@@ -123,6 +136,11 @@
 	<<set $combatTrain.length-->>
 	<<set $combatTrain.active += 1>>
 	<<loadNPC 0 `"beast_" + $combatTrain.active`>>
+	<<if $NPCList[0].monster is "monster">>
+		<<set $monster to 1>>
+	<<else>>
+		<<set $monster to 0>>
+	<</if>>
 <<else>>
 	<<for _e_n to 0; _e_n lt $combatTrain.total_length + 1; _e_n++>>
 		<<loadNPC _e_n `"beast_" + _e_n`>>
@@ -135,17 +153,17 @@
 <<widget "beastTrainGenerate">>/*Saves all beasts/monsters in $NPCList, then loads the first into slot 0.*/
 <<set _enemyno to $enemyno - 1>>
 <<set $combatTrain to {
-    length: _enemyno,
-    total_length: _enemyno,
-    active: 0,
-    pronouns: [],
+	length: _enemyno,
+	total_length: _enemyno,
+	active: 0,
+	pronouns: [],
 	monsters: [],
-    beastTypes: []
+	beastTypes: []
 }>>
 <<for _e_n to 0; _e_n lt $enemyno; _e_n++>>
-    <<saveNPC _e_n `"beast_" + _e_n`>>
-    <<set $combatTrain.beastTypes.push($NPCList[_e_n].type)>>
-    <<set $combatTrain.pronouns.push($NPCList[_e_n].pronoun)>>
+	<<saveNPC _e_n `"beast_" + _e_n`>>
+	<<set $combatTrain.beastTypes.push($NPCList[_e_n].type)>>
+	<<set $combatTrain.pronouns.push($NPCList[_e_n].pronoun)>>
 	<<set $combatTrain.monsters.push($NPCList[_e_n].monster)>>
 <</for>>
 <<clearnpc>>
@@ -192,4 +210,25 @@
 			<</if>>
 		<</for>>
 	<</if>>
+<</widget>>
+
+<<widget "cover_end">>
+<<if $leftarm is "vagina">>
+	<<set $vaginause to 0>>
+<<elseif $leftarm is "penis">>
+	<<set $penisuse to 0>>
+<<elseif $leftarm is "anus">>
+	<<set $anususe to 0>>
+<<elseif $leftarm is "face">>
+	<<set $face to 0>>
+<</if>>
+<<if $rightarm is "vagina">>
+	<<set $vaginause to 0>>
+<<elseif $rightarm is "penis">>
+	<<set $penisuse to 0>>
+<<elseif $rightarm is "anus">>
+	<<set $anususe to 0>>
+<<elseif $rightarm is "face">>
+	<<set $face to 0>>
+<</if>>
 <</widget>>

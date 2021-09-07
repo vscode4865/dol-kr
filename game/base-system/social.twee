@@ -1,13 +1,13 @@
 :: Social [widget]
 
-<<widget "social">><<nobr>>
+<<widget "social">>
 
 
 <div id="relation-display">
 	<<silently>>
 		<<script>>
 			/*data config for non-standard NPCs boxes, allows for different stat configs, custom display data, and dynamic requirements*/
-			State.temporary.npcConfig = {
+			T.npcConfig = {
 				"Robin" : {
 					important : true,
 					dom :  { name : "신뢰", activeIcon : "img/ui/confidence.png", color: "blue" }
@@ -28,7 +28,7 @@
 				},
 				"Avery" : {
 					important : true,
-					rage : { requirements : State.variables.averyragerevealed }
+					rage : { requirements : V.averyragerevealed }
 				},
 				"Great Hawk" : {
 					important : true,
@@ -37,9 +37,10 @@
 					love : { maxValue : 50 }
 				},
 				"Alex" : {
-					love : { maxValue : 50 },
-					lust : { maxValue : 50 },
-					dom : { maxValue : 50 }
+					important : true,
+					love : { maxValue : 100 },
+					lust : { maxValue : 100 },
+					dom : { maxValue : 100 }
 				},
 				"Darryl" : {
 					love : { maxValue : 50 }
@@ -53,11 +54,11 @@
 			};
 
 			/*This list is backwards due to the method used to sort via index, with unimportant NPCs being assigned -1*/
-			State.temporary.importantNpcOrder = [ "Great Hawk", "Avery", "Kylar", "Eden", "Whitney", "Robin"];
+			T.importantNpcOrder = [ "Alex", "Great Hawk", "Avery", "Kylar", "Eden", "Whitney", "Robin"];
 
 			/*Clones the NPC list, and orderes it by important first, then by alphabetical order*/
-			State.temporary.orderedNPCs = State.variables.NPCName.slice().sort(function(a, b) {
-				let diff = State.temporary.importantNpcOrder.indexOf(a.nam) - State.temporary.importantNpcOrder.indexOf(b.nam);
+			T.orderedNPCs = V.NPCName.slice().sort(function(a, b) {
+				let diff = T.importantNpcOrder.indexOf(a.nam) - T.importantNpcOrder.indexOf(b.nam);
 
 				if(diff == 0) {
 					diff = a.nam < b.nam ? 1 : -1;
@@ -65,11 +66,11 @@
 
 				return diff;
 			});
-			State.temporary.orderedNPCs.reverse();
+			T.orderedNPCs.reverse();
 
 
-			State.temporary.importantNPCs = State.temporary.orderedNPCs.slice(0, State.temporary.importantNpcOrder.length);
-			State.temporary.otherNPCs = State.temporary.orderedNPCs.slice(State.temporary.importantNpcOrder.length);
+			T.importantNPCs = T.orderedNPCs.slice(0, T.importantNpcOrder.length);
+			T.otherNPCs = T.orderedNPCs.slice(T.importantNpcOrder.length);
 		<</script>>
 	<</silently>>
 	<h4>주요 관계</h4>
@@ -97,7 +98,7 @@
 				{ requiredValue: 10000,	color: 'pink',		description: '경찰은 당신 전용 수갑을 갖고 있다.'},
 				{ requiredValue: 30000,	color: 'red',		description: '경찰은 당신 전용 문서 보관함을 갖고 있다.'}
 			]}>>
-			<<set _policeEvidenceConfig = { currentValue : $crimehistory, secondaryValue : $crime, states : [ 
+			<<set _policeEvidenceConfig = { currentValue : $crimehistory, secondaryValue : $crime, states : [
 				{ requiredValue: 0, secondaryStates : [
 					{ requiredValue: 0,	color: 'green',	description: '그리고, 당신을 범죄와 연관짓는 아무런 증거도 없다.'},
 					{ requiredValue: 1,	color: 'teal',	description: '그럼에도 불구하고, 당신을 범죄와 연관짓는 작은 증거를 갖고 있다.'},
@@ -171,7 +172,7 @@
 			]}>>
 			<<set _teacherBoxConfig = { name : "선생님", icon : "img/misc/icon/school.png", description: "<<relation-text _teacherRepConfig>> <<statbar $delinquency 1000>>"}>>
 			<<set _studentBoxConfig = { name : "학생들", icon : "img/misc/icon/oxford.png", description: "<<relation-text _studentRepConfig>> <<statbarinverted $cool $coolmax>>"}>>
-			
+
 			/*Crossdressing*/
 			<<if $schoolrep.crossdress neq 0>>
 				<<set _crossdressRepConfig = { currentValue: $schoolrep.crossdress, states : [
@@ -343,6 +344,8 @@
 		<<relation-box-simple _overallFameBoxConfig>>
 	</div>
 
+	도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost  부른다.
+
 	<<if $syndromewolves is 1>>
 		<h4>기타</h4>
 		<div id="other-relation-blocks">
@@ -360,6 +363,7 @@
 		</div>
 	<</if>>
 
-	<<journal>>
+
 </div>
-<</nobr>><</widget>>
+<br>
+<</widget>>

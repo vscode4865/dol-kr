@@ -51,7 +51,7 @@
 <</widget>>
 
 
-<<widget "trClothes">>
+<<widget "trClothes">><<silently>>
 	<<trClothes_init $args[0]>>
 	
 	<<if _trClothes[$args[0]] isnot undefined>>
@@ -81,15 +81,15 @@
 			<</switch>>
 		<</if>>
 	<</if>>
-<</widget>>
+<</silently>><</widget>>
 
 
-<<widget "trSearchClothes">>
+<<widget "trSearchClothes">><<silently>>
 	<<trClothes_init>>
 	<<set _trClothesIndexTemp to Object.getOwnPropertyNames(_trClothes)>>
 	<<for _trIndexTemp, _trClothesTypeTemp range _trClothesIndexTemp>>
 		<<set _trTemp to _trClothes[_trClothesTypeTemp].find(function(select){
-					if(select.name == $args[0] or select.variable == $args[0]){return true;
+					if(select.name == $args[0] /*or select.variable == $args[0]*/){return true;
 					}})>>
 		<<if _trTemp is undefined>>
 			<<continue>>
@@ -97,15 +97,39 @@
 			<<break>>
 		<</if>>
 	<</for>>
-	<<if $args[1] is undefined or $args[1] is "name">>
-		<<set _trResult to _trTemp.name_ko>>
-	<<elseif $args[1] is "desc" or $args[1] is "description">>
-		<<set _trResult to _trTemp.description>>
-	<<else>>
-		<<set _trResult to "modeSelectionErr: "+$args[1]>>
-	<</if>>
+	<<if _trTemp isnot undefined>>
+		<<if $args[1] is undefined or $args[1] is "name">>
+			<<set _trResult to _trTemp.name_ko>>
+		<<elseif $args[1] is "desc" or $args[1] is "description">>
+			<<set _trResult to _trTemp.description>>
+		<<else>>
+			<<set _trResult to "modeSelectionErr: "+$args[1]>>
+		<</if>>
 
-	<<if $args[2] isnot undefined>>
-		<<trPost _trTemp.post $args[2] $args[3]>>
+		<<if $args[2] isnot undefined>>
+			<<trPost _trTemp.post $args[2] $args[3]>>
+		<</if>>
+	<<else>>
+		<<set _trResult to "notfoundErr: "+$args[0]>>
 	<</if>>
-<</widget>>
+<</silently>><</widget>>
+
+:: Scripts trIntegrityKeyword [script]
+
+/**
+ * window.integrityKeyword (base.js) 의 한글 버전
+ * @param worn clothing article, State.variables.worn.XXXX
+ * @return {string} condition key word ("tattered"|"torn|"frayed"|"full")
+ */
+window.trIntegrityKeyword = function(worn) {
+	const i = worn.integrity/worn.integrity_max;
+	if (i <= 0.2) {
+		return "너덜너덜한"
+	} else if (i <= 0.5) {
+		return "찢긴"
+	} else if (i <= 0.9) {
+		return "해어진"
+	} else {
+		return "full"
+	}
+}

@@ -71,21 +71,30 @@
 <<widget "facesitFlavorText">>
 	<<if $enemyno lt 2>>
 		<<person1>>
-		<<if $npc isnot 0>>
-			$npc
+		<<if $npc.length isnot 0>>
+			<<NPCname_i $npc[0]>>
 		<<else>>
-			<<He>>
+			<<He_ga>>
 		<</if>>
 	<<else>>
-		<<selectNpcWithPartInPosition "vagina" "facesit">>
-		<<if $npc_named is 1>>
-			<<trNamedNPC $npc "이">>_trResult
+		<<if $mouthstate is "anal">>
+			<<selectNpcWithPartInPosition "vagina" "facesitanal">>
+		<<else>>
+			<<selectNpcWithPartInPosition "vagina" "facesit">>
+		<</if>>
+		<<if $npcrow.includes(_j)>>
+			<<trNamedNPC[$npcrow.indexOf(_j)] "이">>_trResult
 		<<else>>
 			<<personPost "이">>
 		<</if>>
 	<</if>>
-	당신의 얼굴에 앉았다.
+	<<if $mouthstate is "anal">>
+		당신의 입 위에 앉는다.
+	<<else>>
+		당신의 얼굴에 앉는다.
+	<</if>>
 <</widget>>
+
 
 :: Widgets Actions Mouth [widget]
 
@@ -182,7 +191,7 @@
 	<</for>>
 <</if>>
 
-<<if $consensual is 1 and $promiscuity lte 34>>
+<<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man")>>
 	<!-- Do Nothing -->
 <<elseif !$gloryhole>>
 	<<for _j = $enemyno-1; _j gte _end; _j-->>
@@ -265,13 +274,16 @@
 
 <<widget "combatOthervagina">>
 <<set _mouthaction["핥는다"] to "vaginalick">>
-<<if $head isnot "grappled" and $head isnot "bound">>
+<<if $head isnot "grappled" and $head isnot "bound" and $mouthuse isnot "facesit">>
 	<<set _mouthaction["밀어낸다"] to "pullawayvagina">>
 <</if>>
 <</widget>>
 
-<<widget "combatFacesit">>
-<<set _mouthaction["핥는다"] to "vaginalick">>
+<<widget "combatMouthOtherAnus">>
+	<<set _mouthaction["항문을 핥는다"] to "anallick">>
+	<<if $submissive gte 1150>>
+		<<set _mouthaction["항문에 키스한다"] to "analkiss">>
+	<</if>>
 <</widget>>
 
 <<widget "combatBreast">>

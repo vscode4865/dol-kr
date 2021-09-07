@@ -66,6 +66,8 @@
 				<span class="meek"> _plural_beast_type을 기분 좋게 만들어 줄 수 있어서 좋았어.</span>
 			<<elseif $enemytype is "tentacles">>
 				<span class="meek">촉수들을 기분 좋게 만들어 줄 수 있어서 좋았어.</span>
+			<<elseif $enemytype is "struggle">>
+				<span class="meek">저런 생물체들을 기분 좋게 만들어 줄 수 있어서 좋았어.</span>
 			<<else>>
 				<span class="meek">사람들을 기분 좋게 만들어 줄 수 있어서 좋았어.</span>
 			<</if>>
@@ -95,7 +97,8 @@
 <<unset $deepthroating>>
 <<unset $bodywriting_special>>
 <<unset $machine_tattoo_success>>
-
+<<unset $dodging>>
+<<unset $feet_planted>>
 
 <<switch $player.gender>>
 <<case "f">>
@@ -124,6 +127,13 @@
 <<set $anusstate to 0>>
 <<set $mouthstate to 0>>
 <<set $finish to 0>>
+<<unset $stalk_end>>
+<<unset $stalk_event>>
+<<unset $stalk_clothes>>
+<<unset $stalk>>
+<<unset $stalk_assess>>
+<<unset $audience_active>>
+<<unset $combat_end_text>>
 <<set $gloryhole to 0>>
 <<set $mouthuse to 0>>
 <<set $anususe to 0>>
@@ -172,6 +182,7 @@
 <<set $novaginal to 0>>
 <<set $noanal to 0>>
 <<set $nopenile to 0>>
+<<set $nochoke to 0>>
 <<unset $noupper>>
 <<unset $noupperasked>>
 <<set $askedtochoke to 0>>
@@ -365,7 +376,7 @@
 <<if $thighskillup gte 1>>
 	<<set $thighskillup to 0>>
 	<<if $thighskill lt 1000>>
-		<span class="gold">당신은 허벅지로 기분 좋게 해주는 능력에 더 자신감을 느낀다.</span>
+		<span class="gold">당신은 넓적다리로 기분 좋게 해주는 능력에 더 자신감을 느낀다.</span>
 		<br>
 	<</if>>
 <</if>>
@@ -420,6 +431,9 @@
 	<<set $NPCList[_i].maxOrgasms to 1>>
 	<<set $NPCList[_i].orgasms to 0>>
 	<<set $NPCList[_i].paid to 0>>
+	<<set $NPCList[_i].state to 0>>
+	<<set $NPCList[_i].legs to 0>>
+	<<set $NPCList[_i].size to 0>>
 	<<if _i < 1>>
 		<<set $NPCList[_i].breastsize to 3>>
 		<<set $NPCList[_i].breastsdesc to "breasts">>
@@ -444,10 +458,62 @@
 <<set $enemyno to 0>>
 
 <<set $combattype to 0>>
+<!-- Clear the arrays but don't unset them. -->
+<<set $npc.splice(0)>>
+<<set $npcnum.splice(0)>>
+<<set $npcrow.splice(0)>>
+<</widget>>
 
-<<unset $npcdescription>>
-<<set $npc to 0>>
-<<unset $npcnum>>
+:: Widgets Clear Single NPC [widget]
+
+<!-- usage tip: if you want to clear an npc and copy another into its position, don't forget to use clone(). example:
+	<<set $NPCList[1] to clone($NPCList[2])>>
+	<<clearsinglenpc 2>>
+-->
+<<widget "clearsinglenpc">>
+
+<<if typeof $args[0] isnot "number">>
+	<span class="red">Widget "clearsinglenpc" used incorrectly! Please report this!</span>
+<</if>>
+
+<<set _i to $args[0]>>
+<<set $NPCList[_i].lefthand to "none">>
+<<set $NPCList[_i].righthand to "none">>
+<<set $NPCList[_i].penis to "none">>
+<<set $NPCList[_i].vagina to "none">>
+<<set $NPCList[_i].mouth to "none">>
+<<set $NPCList[_i].chest to "none">>
+<<set $NPCList[_i].gender to 0>>
+<<set $NPCList[_i].pronoun to 0>>
+<<set $NPCList[_i].description to 0>>
+<<set $NPCList[_i].fullDescription to 0>>
+<<set $NPCList[_i].insecurity to 0>>
+<<set $NPCList[_i].lactation to 0>>
+<<set $NPCList[_i].intro to 0>>
+<<set $NPCList[_i].speechanusescape to 0>>
+<<set $NPCList[_i].speechpenisescape to 0>>
+<<set $NPCList[_i].speechvaginaescape to 0>>
+<<set $NPCList[_i].type to 0>>
+<<set $NPCList[_i].stance to 0>>
+<<set $NPCList[_i].monster to 0>>
+<<set $NPCList[_i].maxOrgasms to 1>>
+<<set $NPCList[_i].orgasms to 0>>
+<<set $NPCList[_i].paid to 0>>
+<<if _i < 1>>
+	<<set $NPCList[_i].breastsize to 3>>
+	<<set $NPCList[_i].breastsdesc to "breasts">>
+	<<set $NPCList[_i].breastdesc to "breast">>
+	<<set $NPCList[_i].penisdesc to "penis">>
+	<<set $NPCList[_i].penissize to 2>>
+	<<set $NPCList[_i].health to 200>><!-- This is set for compatibility elsewhere if needed, v2.2.0... -->
+<<else>>
+	<<set $NPCList[_i].breastsize to 0>>
+	<<set $NPCList[_i].breastsdesc to 0>>
+	<<set $NPCList[_i].breastdesc to 0>>
+	<<set $NPCList[_i].penisdesc to 0>>
+	<<set $NPCList[_i].penissize to 0>>
+	<<set $NPCList[_i].health to 0>>
+<</if>>
 
 <</widget>>
 
@@ -497,6 +563,9 @@
 
 <<set $beastname to "none">>
 
+<<set $action_unclad_over_outfit to 0>>
+<<set $action_unclad_over_upper to 0>>
+<<set $action_unclad_over_lower to 0>>
 <<set $action_unclad_outfit to 0>>
 <<set $action_unclad_upper to 0>>
 <<set $action_unclad_lower to 0>>
@@ -543,6 +612,9 @@
 <<unset $speechhit>>
 <<unset $speechtribentrance>>
 <<unset $speechfacesit>>
+<<unset $speechmouthotheranus>>
+<<unset $speechanallick>>
+<<unset $speechanalkiss>>
 
 <<unset $speechheadbreasts>>
 <<unset $speechheadchest>>
@@ -594,8 +666,8 @@
 
 <<widget "turnend">>
 
-<<unset $speechcum>>
-<<unset $speechorgasmrepeat>>
+<<set $speechcum to 0>>
+<<set $speechorgasmrepeat to 0>>
 
 <<unset $speechgenitals>>
 <<unset $speechbreasts>>
@@ -610,6 +682,8 @@
 <<unset $speechapologiseno>>
 <<unset $speechforgive>>
 <<unset $speechspray>>
+
+
 
 <<if $speechcrossdressangry is 2>>
 	<<set $speechcrossdressangry to 1>>
@@ -657,6 +731,10 @@
 	<<set $speechhermdisappointed to 1>>
 <<elseif $speechhermdisappointed is 1>>
 	<<unset $speechhermdisappointed>>
+<</if>>
+
+<<if $enemyarousal lt 0>>
+	<<set $enemyarousal to 0>>
 <</if>>
 
 <</widget>>

@@ -13,7 +13,9 @@
 <<set $enemyangermax to 200>>
 <<set $enemyhealthmax to $enemyhealth>>
 <<if $enemyhealthmax is 0>><<set $enemyhealthmax to 199>><</if>><!-- This is set for compatibility elsewhere if needed, v2.2.0... -->
-
+<<for _i = 0; _i < $NPCList.length; _i++>>
+	<<set $NPCList[_i].bold to $allure / 10>>
+<</for>>
 <<if $dissociation gte 1>>
 	<<set $enemytrust -= 40>>
 <</if>>
@@ -447,7 +449,7 @@
 <<set $traumagain to 0>>
 <<set $stressgain to 0>>
 
-<<if $daystate isnot "night">><<set $rescue to 1>><</if>>
+<<if $daystate isnot "night">><<enable_rescue>><</if>>
 
 <<hand_gag 0 left>>
 
@@ -485,7 +487,7 @@
 <<set $traumagain to 0>>
 <<set $stressgain to 0>>
 
-<<if $daystate isnot "night">><<set $rescue to 1>><</if>>
+<<if $daystate isnot "night">><<enable_rescue>><</if>>
 
 <<combatinit>>
 <</widget>>
@@ -524,7 +526,7 @@
 <<set $traumagain to 0>>
 <<set $stressgain to 0>>
 
-<<if $daystate isnot "night">><<set $rescue to 1>><</if>>
+<<if $daystate isnot "night">><<enable_rescue>><</if>>
 
 <<combatinit>>
 <</widget>>
@@ -607,7 +609,7 @@
 <<set $NPCList[0].mouth to "penisentrance">>
 <<set $NPCList[0].location.head = "genitals">>
 <<set $NPCList[0].location.genitals = "idle">>
-<!-- 'dont' is just an invalid value so that the NPC won't know how to use its genitals, 
+<!-- 'dont' is just an invalid value so that the NPC won't know how to use its genitals,
 otherwise there's no easy way of stopping NPC from shoving their stuff in PC's face -->
 
 <<combatinit>>
@@ -850,10 +852,21 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 
 <<set $combatgoal to 0>>
 
-<<if $genderknown.includes($npc)>>
-	<<set $crossdressing to 0>>
+<<set _genderexposed to $exposed gte 2 and !($worn.genitals.type.includesAll("chastity", "hidden"))>>
+<<if $npc.length gt 0>>
+  <<for _iii to 0; _iii lt $npc.length; _iii++>>
+    <<if $genderknown.includes($npc[_iii])>>
+      <<set _genderknownbeforehand to true>>
+    <<elseif _genderexposed>>
+      <<run $genderknown.pushUnique($npc[_iii])>>
+    <</if>>
+  <</for>>
+<</if>>
+
+<<if _genderknownbeforehand or _genderexposed>>
+  <<set $crossdressing to 0>>
 <<else>>
-	<<crossdressing_check>>
+  <<crossdressing_check>>
 <</if>>
 
 <<if $enemytype is "beast">>
@@ -887,7 +900,12 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <</if>>
 
 <<if $worn.face.type.includes("gag")>>
-<<set $mouthuse to "gagged">>
+	<<set $mouthuse to "gagged">>
+<</if>>
+<<if $worn.feet.type.includes("shackle")>>
+	<<set $leftleg to "bound">>
+	<<set $rightleg to "bound">>
+	<<set $feetuse to "bound">>
 <</if>>
 <<resetLastOptions>>
 <<getCombatDefaultsType>>
@@ -909,43 +927,58 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	<<if $enemyno gte 1>>
 		<br>
 		<<man-combat 1>>
-		<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $enemyno gte 2>>
 	<<man-combat 2>>
-	<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $enemyno gte 3>>
 		<<man-combat 3>>
-		<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $enemyno gte 4>>
 		<<man-combat 4>>
-		<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $enemyno gte 5>>
 		<<man-combat 5>>
-		<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 	<<if $enemyno gte 6>>
 		<<man-combat 6>>
-		<br><br>
+		<<if $position isnot "stalk">>
+			<br><br>
+		<</if>>
 	<</if>>
 </div>
 <</if>>
 
 <<set $rng to random(1, 100)>>
 
-<<if $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc isnot 0 and $worn.genitals.type.includesAll("chastity", "hidden")>>
-<<elseif $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc isnot 0>>
-<<set $genderknown.pushUnique($npc)>>
+<<if $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc.length isnot 0 and $worn.genitals.type.includesAll("chastity", "hidden")>>
+<<elseif $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $npc.length isnot 0>>
+	<<for _iii to 0; _iii lt $npc.length; _iii++>>
+		<<set $genderknown.pushUnique($npc[_iii])>>
+	<</for>>
 <</if>>
 
-<<if $worn.genitals.type.includesAll("chastity", "hidden")>>
-<<elseif $crossdressing is 2 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1>>
+<<if $worn.genitals.type.includesAll("chastity", "hidden") or $NPCList[0].state is "stalk" or $NPCList[0].state is "pursuit">>
+<<elseif $crossdressing is 2 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.over_lower.vagina_exposed gte 1>>
 	/*Comment for seeing herm character genitals for the first time*/
 	<<set $crossdressing to 0>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and $npc isnot "Kylar">>
+	<<exposedcheck true>>
+	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and $npc[0] is "Kylar")>>
 		<<schoolrep herm 1>>
 	<</if>>
 	<<if $enemyno gte 2>>
@@ -966,10 +999,10 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 		<br><br>
 	<<else>>
-		<<if $rng gte 96>>
+		<<if $rng gte 96 and !$npc.includes("Kylar")>>
 			<span class="red">저들은 당신의 <<genitalsPost "을">>보고 공포와 역겨움에 물러선다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
-		<<elseif $rng gte 85>>
+		<<elseif $rng gte 85 or $npc.includes("Kylar")>>
 			<span class="purple">저들은 당신의 <<genitalsPost "을">> 보고 손을 떨며 숨을 가파르게 쉰다.</span>
 			<<set $enemyarousal += (50 * $enemyno)>><<set $speechhermaroused to 2>>
 		<<elseif $rng gte 50>>
@@ -983,8 +1016,9 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 		<br><br>
 	<</if>>
-<<elseif $crossdressing is 1 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1>>
+<<elseif $crossdressing is 1 and $worn.under_lower.vagina_exposed gte 1 and $worn.lower.vagina_exposed gte 1 and $worn.over_lower.vagina_exposed gte 1>>
 	<<set $crossdressing to 0>>
+	<<exposedcheck true>>
 	<<if !$backgroundTraits.includes("crossdresser")>>
 		<<if $crossdressingTrait is undefined>>
 			<<set $crossdressingTrait to 1>>
@@ -996,7 +1030,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 			<<set _newTrait to true>>
 		<</if>>
 	<</if>>
-	<<if $NPCList[0].teen is 1 and $location is "school" and $npc isnot "Kylar">>
+	<<if $NPCList[0].teen is 1 and $location is "school" and !($npc.length is 1 and $npc[0] is "Kylar")>>
 		<<schoolrep crossdress 1>>
 	<</if>>
 	<<if $enemyno gte 2>>
@@ -1017,16 +1051,16 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 		<br><br>
 	<<else>>
-		<<if $rng gte 96>>
+		<<if $rng gte 96 and !$npc.includes("Kylar")>>
 			<span class="red"><<HePost "이">> 당신의 <<genitalsPost "을">> 보고 공포에 물러선다. 속았다 느낀 <<HePost "은">> 분노에 미쳐 버린 것 같다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechcrossdressangry to 2>>
-		<<elseif $rng gte 86>>
+		<<elseif $rng gte 86 or ($npc.includes("Kylar") and $NPCList[0].gender isnot $player.gender)>>
 			당신의 <<genitalsPost "은">> 완전히 <<HePost "이">> 예측한 것과 딴판이었다. 하지만 저들은 신경 쓰지 않는 것 같다. <span class="purple">사실, <<HePost "은">> 그저 욕구를 배출할 생각에 가득찬것 같다.</span>
 			<<set $enemyarousal += 50>><<set $speechcrossdressaroused to 2>>
-		<<elseif $rng gte 50>>
+		<<elseif $rng gte 50 and !$npc.includes("Kylar")>>
 			<<HePost "이">> 당신의 <<genitalsPost "을">> 보자 충격에 눈이 휘둥그레진다. <<HePost "은">> 뭘 해야 할지 모르는 것 같다.
 			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechcrossdressshock to 2>>
-		<<elseif $rng gte 30>>
+		<<elseif $rng gte 30 or ($npc.includes("Kylar") and $NPCList[0].gender is $player.gender)>>
 		<<HePost "이">> 당신의 <<genitalsPost "을">> 보고 실망한다. 이건 <<HePost "이">> 기대하던 것이 아니었다.
 			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
 		<<else>>

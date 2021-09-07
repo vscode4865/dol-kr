@@ -2,7 +2,7 @@
 <<widget "tentacleact">>
 
 <<if $tentacles[$tentacleindex].health lte 0 and $tentacles[$tentacleindex].shaft isnot "finished">>
-	낡은, <<trTentacle $tentacles[$tentacleindex].name>> 촉수가 retracts from you.
+	지쳐서, <<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신에게서 떨어져 나간다.
 	<<tentacledisable>>
 	<<set $tentacles[$tentacleindex].shaft to "finished">>
 	<<set $tentacles[$tentacleindex].head to "finished">>
@@ -13,7 +13,7 @@
 <</if>>
 
 <<if $tentacles[$tentacleindex].shaft is "thighs">>
-	<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 허벅지 사이에서 <<slithers>>.
+	<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 넓적다리 사이에서 <<slithers>>.
 <</if>>
 
 <<if $tentacles[$tentacleindex].shaft is "breasts">>
@@ -69,28 +69,32 @@
 
 <<if $tentacles[$tentacleindex].head is "leftnipplesuck">>
 	그리고 당신의 <<breastsPost>>까지 가서, 왼쪽 유두를 빤다.
-	<<neutral 3>><<playWithBreasts>>
+	<<neutralbreast 3>><<playWithBreasts>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "rightnipplesuck">>
 	그리고 당신의 <<breastsPost>>까지 가서, 오른쪽 유두를 빤다.
-	<<neutral 3>><<playWithBreasts>>
+	<<neutralbreast 3>><<playWithBreasts>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "leftnipple">>
 	그리고 당신의 왼쪽 유두를 계속 괴롭힌다. <span class="purple">촉수의 끝이 열리자 유두를 덮고, 빨기 시작한다.</span>
-	<<neutral 3>><<set $tentacles[$tentacleindex].head to "leftnipplesuck">><<set $leftnipple to "tentaclesuck">><<playWithBreasts>>
+	<<neutralbreast 3>><<set $tentacles[$tentacleindex].head to "leftnipplesuck">><<set $leftnipple to "tentaclesuck">><<playWithBreasts>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "rightnipple">>
 	그리고 당신의 오른쪽 유두를 계속 괴롭힌다. <span class="purple">촉수의 끝이 열리자 유두를 덮고, 빨기 시작한다.</span>
-	<<neutral 3>><<set $tentacles[$tentacleindex].head to "rightnipplesuck">><<set $rightnipple to "tentaclesuck">><<playWithBreasts>>
+	<<neutralbreast 3>><<set $tentacles[$tentacleindex].head to "rightnipplesuck">><<set $rightnipple to "tentaclesuck">><<playWithBreasts>>
+<</if>>
+
+<<if $parasite.nipples.name isnot undefined>>
+	유두에 붙어있는 <<trParasite $parasite.nipples.name "이">>_trResult 촉수에 빨려지며 광란한다.
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "chest">>
 	<<if $chestuse is "squeezed">>
 		그리고 당신의 <<breastsPost>> 사이에 가서, 스스로 비비기 시작했다.
-		<<neutral 2>>
+		<<neutralbreast 2>>
 	<<else>>
 		당신의 <<breastsPost>>에서 떨어진다.
 		<<set $tentacles[$tentacleindex].head to 0>><<set $breastuse to 0>>
@@ -99,7 +103,7 @@
 
 <<if $tentacles[$tentacleindex].head is "mouthdeep">>
 	그리고 입으로 올라가서, 최대한 반동을 담아서 당신의 목구멍에 달콤한 액체를 뿜어낸다.
-	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $mouthgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
+	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $player.bodyliquid.mouth.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "mouth">>
@@ -124,7 +128,7 @@
 
 <<if $tentacles[$tentacleindex].head is "vaginadeep">>
 	그리고 당신의 <<pussyPost>> 안에서 <<slithers>>. 최대한 반동을 담아 끈적거리는 액체를 뿜어낸다.
-	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $vaginagoo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
+	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $player.bodyliquid.vagina.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "vagina">>
@@ -152,7 +156,7 @@
 			<<sex 5>>
 			<<if random(1, 3) gte 3>>
 				<span class="purple">끈적한 액체가 끝에서 나와 당신에게 윤활액을 바른다.</span>
-				<<set $vaginaoutsidegoo += 1>>
+				<<set $player.bodyliquid.vaginaoutside.goo += 1>>
 			<</if>>
 		<</if>>
 	<<else>>
@@ -185,13 +189,13 @@
 	<<if !$worn.genitals.type.includes("chastity")>>
 		<<if $penisWetness + ($tentacles[$tentacleindex].size * 10) gte ($penissize * 15) + random(1, 40) or random(1, 2) is 2>>
 			그리고 당신의 <<penisPost>> 위에서 <<slithers>>. <<penis_lube_text>> <span class="purple">끝이 열리고 당신의 귀두를 누르며, 감쌀 준비를 한다.</span>
-			<<set $penisstate to "tentacleimminent">><<set $tentacles[$tentacleindex].head to "penisimminent">><<neutral 4>>
+			<<set $penisstate to "tentacleimminent">><<set $tentacles[$tentacleindex].head to "penisimminent">><<neutralgenitals 4>>
 		<<else>>
 			그리고 당신의 <<penisPost>> 위에서 <<slithers>>. 끝이 열리고 당신의 귀두를 누르지만, <span class="blue"> 감싸는데 실패한다.</span>
 			<<sex 5>>
 			<<if random(1, 3) gte 3>>
 				<span class="purple">끈적한 액체가 끝에서 나와 당신에게 윤활액을 바른다.</span>
-				<<set $penisgoo += 1>>
+				<<set $player.bodyliquid.penis.goo += 1>>
 			<</if>>
 		<</if>>
 	<<else>>
@@ -202,7 +206,7 @@
 
 <<if $tentacles[$tentacleindex].head is "anusdeep">>
 	그리고 당신의 <<bottomPost>> 안에서 <<slithers>>. 최대한 반동을 담아 끈적거리는 액체를 뿜어낸다.
-	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $anusgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
+	<<purity -1>><<internalejac>><<sex 5>><<set $drugged += 3>><<set $player.bodyliquid.anus.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>>
 <</if>>
 
 <<if $tentacles[$tentacleindex].head is "anus">>
@@ -230,11 +234,11 @@
 			<<sex 5>>
 			<<if random(1, 3) gte 3>>
 				<span class="purple">끈적한 액체가 끝에서 나와 당신에게 윤활액을 바른다.</span>
-				<<set $bottomgoo += 1>>
+				<<set $player.bodyliquid.bottom.goo += 1>>
 			<</if>>
 		<</if>>
 	<<else>>
-		그리고 방법을 찾지만 실패하고, 장치를 후려친다.
+		그리고 방법을 찾지만 실패하고, 금속을 후려친다.
 		<<set $worn.genitals.integrity -= 10>><<violence 1>>
 	<</if>>
 <</if>>
@@ -244,34 +248,36 @@
 		<<if $tentacles[$tentacleindex].shaft is "thighs">>
 			당신의 <<pussyPost "에">> 가까이 붙어, 당신의 클리토리스를 누른다.
 		<<else>>
-			그리고 허벅지 사이의 <<pussyPost "에서">> <<slithers>>. 당신의 클리토리스를 누른다.
+			그리고 넓적다리 사이의 <<pussyPost "에서">> <<slithers>>. 당신의 클리토리스를 누른다.
 		<</if>>
 		<<sex 3>>
 	<<else>>
 		<<if $tentacles[$tentacleindex].shaft is "thighs">>
 			<span class="blue">당신의 <<pussyPost "에">> 가까이 붙어서 <<slithers>>.</span>
 		<<else>>
-			그리고 허벅지 사이의 <span class="blue"> <<pussyPost>> 앞에서 <<slithers>>.</span>
+			그리고 넓적다리 사이의 <span class="blue"> <<pussyPost>> 앞에서 <<slithers>>.</span>
 		<</if>>
-		<<neutral 3>><<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "vaginaentrance">><<set $thighuse to 0>>
+		<<neutralgenitals 3>><<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "vaginaentrance">><<set $thighuse to 0>>
+
 	<</if>>
 <</if>>
 <<set $rng to random(1, 100)>>
 <<if $tentacles[$tentacleindex].head is "penisrub">>
 	<<if $rng gte 21>>
 		<<if $tentacles[$tentacleindex].shaft is "thighs">>
-			당신의 <<penisPost "에">> 붙어 <<slithers>> 휘감는다.
+			당신의 <<penisPost "에">> 붙어 <<slithers>>.
 		<<else>>
-			그리고 허벅지 사이의 <<penisPost "에">> 붙어 <<slithers>> 휘감는다.
+			그리고 넓적다리 사이의 <<penisPost "에">> 붙어 <<slithers>>.
 		<</if>>
 		<<sex 3>>
 	<<else>>
 		<<if $tentacles[$tentacleindex].shaft is "thighs">>
 			<span class="blue"><<penisPost "에">> 붙어 끝을 열면서 <<slithers>>.</span>
 		<<else>>
-			그리고 당신의 허벅지 사이에서, <span class="blue"><<penisPost "에">> 붙어 끝을 열면서 <<slithers>>.</span>
+			그리고 당신의 넓적다리 사이에서, <span class="blue"><<penisPost "에">> 붙어 끝을 열면서 <<slithers>>.</span>
 		<</if>>
-		<<neutral 3>><<set $penisuse to "tentacle">><<set $penisstate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "penisentrance">><<set $thighuse to 0>>
+		<<neutralgenitals 3>><<set $penisuse to "tentacle">><<set $penisstate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "penisentrance">><<set $thighuse to 0>>
+
 	<</if>>
 <</if>>
 <<set $rng to random(1, 100)>>
@@ -290,21 +296,21 @@
 	<<if $rng lte 10>>
 		<<if $chestuse is "squeezed" and $breastuse is 0>>
 			<<upperslither>><span class="blue">그리고 당신의 <<breastsPost "을">> 쥐어짠다.</span>
-			<<set $tentacles[$tentacleindex].head to "chest">><<neutral 2>><<set $breastuse to "tentacle">><<cheststat>>
+			<<set $tentacles[$tentacleindex].head to "chest">><<neutralbreast 2>><<set $breastuse to "tentacle">><<cheststat>>
 		<<else>>
 			<<tentacledefault>>
 		<</if>>
 	<<elseif $rng lte 20>>
 		<<if $leftnipple is 0>>
 			<<upperslither>> <<playWithBreasts>><span class="blue">그리고 당신의 왼쪽 유두를 괴롭힌다.</span>
-			<<neutral 2>><<set $tentacles[$tentacleindex].head to "leftnipple">><<set $leftnipple to "tentacle">>
+			<<neutralbreast 2>><<set $tentacles[$tentacleindex].head to "leftnipple">><<set $leftnipple to "tentacle">>
 		<<else>>
 			<<tentacledefault>>
 		<</if>>
 	<<elseif $rng lte 30>>
 		<<if $rightnipple is 0>>
 			<<upperslither>> <<playWithBreasts>><span class="blue">그리고 당신의 오른쪽 유두를 괴롭힌다.</span>
-			<<neutral 2>><<set $tentacles[$tentacleindex].head to "rightnipple">><<set $rightnipple to "tentacle">>
+			<<neutralbreast 2>><<set $tentacles[$tentacleindex].head to "rightnipple">><<set $rightnipple to "tentacle">>
 		<<else>>
 			<<tentacledefault>>
 		<</if>>
@@ -325,14 +331,14 @@
 	<<elseif $rng lte 60>>
 		<<if $vaginaexist is 1 and $vaginause is 0>>
 			<<underslither>> <span class="blue">그리고 당신의 <<pussyPost>> 앞에서 <<slithers>>.</span>
-			<<neutral 2>><<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "vaginaentrance">>
+			<<neutralgenitals 2>><<set $vaginause to "tentacle">><<set $vaginastate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "vaginaentrance">>
 		<<else>>
 			<<tentacledefault>>
 		<</if>>
 	<<elseif $rng lte 70>>
 		<<if $penisexist is 1 and $penisuse is 0>>
 			<<underslither>> <span class="blue">그리고 당신의 <<penisPost>> 앞에서 <<slithers>>.</span>
-			<<neutral 2>><<set $penisuse to "tentacle">><<set $penisstate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "penisentrance">>
+			<<neutralgenitals 2>><<set $penisuse to "tentacle">><<set $penisstate to "tentacleentrance">><<set $tentacles[$tentacleindex].head to "penisentrance">>
 		<<else>>
 			<<tentacledefault>>
 		<</if>>
@@ -342,14 +348,14 @@
 				<<if $tentacles[$tentacleindex].shaft is "thighs">>
 					<<underslither>> <span class="blue">당신의 배와 <<penisPost "에">> 붙어서 <<slithers>>.</span>
 				<<else>>
-					<<underslither>> <span class="blue">당신의 허벅지 사이와 배와 <<penisPost "에">> 붙어서 <<slithers>>.</span>
+					<<underslither>> <span class="blue">당신의 넓적다리 사이와 배와 <<penisPost "에">> 붙어서 <<slithers>>.</span>
 				<</if>>
 				<<set $penisuse to "tentaclerub">><<set $thighuse to "tentaclerub">><<set $tentacles[$tentacleindex].head to "penisrub">><<sex 3>><<thighstat>>
 			<<elseif $vaginaexist is 1 and $vaginause is 0>>
 				<<if $tentacles[$tentacleindex].shaft is "thighs">>
 					<<underslither>> <span class="blue">당신의 배와 <<pussyPost>>에 붙어서 <<slithers>>.</span>
 				<<else>>
-					<<underslither>> <span class="blue">당신의 허벅지 사이와 배와 <<pussyPost "에">> 붙어서 <<slithers>>.</span>
+					<<underslither>> <span class="blue">당신의 넓적다리 사이와 배와 <<pussyPost "에">> 붙어서 <<slithers>>.</span>
 				<</if>>
 				<<set $vaginause to "tentaclerub">><<set $thighuse to "tentaclerub">><<set $tentacles[$tentacleindex].head to "vaginarub">><<sex 3>><<thighstat>>
 			<<else>>
@@ -381,13 +387,13 @@
 			<<violence 1>><<hitstat>>
 		<</if>>
 	<<elseif $rng lte 20>>
-		<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 허벅지 사이에서 <<slithers>>.
+		<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 넓적다리 사이에서 <<slithers>>.
 		<<neutral 1>><<set $tentacles[$tentacleindex].shaft to "thighs">>
 	<<elseif $rng lte 30>>
 		<<if $position isnot "wall">>
 			<<if $breastsize gte 2 and $chestuse is 0>>
-				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 <<breastsPost>> 주변에서 <<slithers>>. <span class="blue">그리고 동시에 촉수에게 짜여진다.</span
-				<<neutral 1>><<set $tentacles[$tentacleindex].shaft to "breasts">><<set $chestuse to "squeezed">>
+				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 <<breastsPost>> 주변에서 <<slithers>>. <span class="blue">그리고 동시에 촉수에게 짜여진다.</span>
+				<<neutralbreast 1>><<set $tentacles[$tentacleindex].shaft to "breasts">><<set $chestuse to "squeezed">>
 			<<else>>
 				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 <<bottomPost "을">> 부드럽게 찰싹거린다.
 				<<violence 1>><<hitstat>>
@@ -399,7 +405,7 @@
 	<<elseif $rng lte 40>>
 		<<if $position isnot "wall">>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 가슴 주변을 토닥거리고, 당신의 <<breastsPost "을">> 휘감는다.
-			<<neutral 1>><<set $tentacles[$tentacleindex].shaft to "chest">>
+			<<neutralbreast 1>><<set $tentacles[$tentacleindex].shaft to "chest">>
 		<<else>>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 당신의 <<bottomPost "을">> 부드럽게 찰싹거린다.
 			<<violence 1>><<hitstat>>
@@ -410,7 +416,7 @@
 	<<elseif $rng lte 60>>
 		<<if $position isnot "wall">>
 			<<if $head is 0>>
-				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 목을 휘감고, <span class="blue">머리를 억누른다.</span
+				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 목을 휘감고, <span class="blue">머리를 억누른다.</span>
 				<<neutral 1>><<set $tentacles[$tentacleindex].shaft to "neck">><<set $head to "grappled">>
 			<<else>>
 				<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 어깨를 휘감는다.
@@ -425,7 +431,7 @@
 		<<violence 1>><<hitstat>>
 	<<elseif $rng lte 80>>
 		<<if $leftleg is 0>>
-			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 왼쪽 다리를 휘감고, <span class="blue">억누른다.</span
+			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 왼쪽 다리를 휘감고, <span class="blue">억누른다.</span>
 			<<neutral 1>><<feettentacledisable>><<set $tentacles[$tentacleindex].shaft to "leftleg">><<set $leftleg to "grappled">>
 		<<else>>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 발을 간지럽힌다.
@@ -433,7 +439,7 @@
 		<</if>>
 	<<elseif $rng lte 85>>
 		<<if $rightleg is 0>>
-			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 오른쪽 다리를 휘감고, <span class="blue">억누른다.</span
+			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 오른쪽 다리를 휘감고, <span class="blue">억누른다.</span>
 			<<neutral 1>><<feettentacledisable>><<set $tentacles[$tentacleindex].shaft to "rightleg">><<set $rightleg to "grappled">>
 		<<else>>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 발을 간지럽힌다.
@@ -441,7 +447,7 @@
 		<</if>>
 	<<elseif $rng lte 90>>
 		<<if $leftarm is 0>>
-			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 왼팔을 휘감고, <span class="blue">억누른다.</span
+			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 왼팔을 휘감고, <span class="blue">억누른다.</span>
 			<<neutral 1>><<leftarmtentacledisable>><<set $tentacles[$tentacleindex].shaft to "leftarm">><<set $leftarm to "grappled">><<set $leftarmstate to 0>>
 		<<else>>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 겨드랑이를 간지럽힌다.
@@ -449,7 +455,7 @@
 		<</if>>
 	<<elseif $rng lte 95>>
 		<<if $rightarm is 0>>
-			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 오른팔을 휘감고, <span class="blue">억누른다.</span
+			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 오른팔을 휘감고, <span class="blue">억누른다.</span>
 			<<rightarmtentacledisable>><<neutral 1>><<set $tentacles[$tentacleindex].shaft to "rightarm">><<set $rightarm to "grappled">><<set $rightarmstate to 0>>
 		<<else>>
 			<<trTentacle $tentacles[$tentacleindex].name>> 촉수가 겨드랑이를 간지럽힌다.
@@ -466,34 +472,34 @@
 	<<set $rng to random(1, 100)>>
 	<<if $rng gte 90>>
 		그리고 당신의 목에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $neckgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<neckejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.neck.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<neckejacstat>><<ejacstat>>
 	<<elseif $rng gte 80>>
 		그리고 당신의 오른팔에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $rightarmgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<handejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.rightarm.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<handejacstat>><<ejacstat>>
 	<<elseif $rng gte 70>>
 		그리고 당신의 왼팔에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $leftarmgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<handejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.leftarm.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<handejacstat>><<ejacstat>>
 	<<elseif $rng gte 60>>
-		그리고 당신의 허벅지에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $thighgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<thighejacstat>><<ejacstat>>
+		그리고 당신의 넓적다리에 따뜻한 액체를 뿜는다.
+		<<neutral 1>><<set $player.bodyliquid.thigh.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<thighejacstat>><<ejacstat>>
 	<<elseif $rng gte 50>>
 		그리고 당신의 <<bottomPost "에">> 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $bottomgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<bottomejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.bottom.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<bottomejacstat>><<ejacstat>>
 	<<elseif $rng gte 40>>
 		그리고 당신의 배에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $tummygoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<tummyejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.tummy.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<tummyejacstat>><<ejacstat>>
 	<<elseif $rng gte 30>>
 		그리고 당신의 가슴에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $chestgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<chestejacstat>><<ejacstat>>
+		<<neutralbreast 1>><<set $player.bodyliquid.chest.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<chestejacstat>><<ejacstat>>
 	<<elseif $rng gte 20>>
 		그리고 당신의 얼굴에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $facegoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<faceejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.face.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<faceejacstat>><<ejacstat>>
 	<<elseif $rng gte 10>>
 		그리고 당신의 머리카락에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $hairgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<hairejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.hair.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<hairejacstat>><<ejacstat>>
 	<<else>>
 		그리고 당신의 발에 따뜻한 액체를 뿜는다.
-		<<neutral 1>><<set $feetgoo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<feetejacstat>><<ejacstat>>
+		<<neutral 1>><<set $player.bodyliquid.feet.goo += 1>><<set $tentacles[$tentacleindex].health -= 1>><<feetejacstat>><<ejacstat>>
 	<</if>>
 <</widget>>
 
