@@ -1005,22 +1005,55 @@
 
 * putpost
     ```
-    <<putpost *target *post 'sep'>>
+	<<putpost>>
+		<<putpost *target *post 'sep'>>
 
-    단어 뒤에 조사를 붙인다.
-    + 해당 파일의 _putpostList에 미리 정의되어 있어야 함.
+		단어 뒤에 조사를 붙인다.
+		+ 해당 파일의 _putpostList에 미리 정의되어 있어야 함.
 
-    필수사항
-    - target: 조사를 붙일 대상
-    - post: 번역 결과의 뒤에 조사를 붙인다.
+		필수사항
+		- target: 조사를 붙일 대상
+		- post: 번역 결과의 뒤에 조사를 붙인다.
 
-    선택사항
-    - sep: 조사를 분리하여 저장한다.
+		선택사항
+		- sep: 조사를 분리하여 저장한다.
 
-    e.g.
-    <<putpost "man" "이">>              // "남자가"
+		e.g.
+		<<putpost "man" "이">>              // "남자가"
     ```
 
+* sydneyPost
+	시드니 관련 Post 시리즈. 위젯 원본은 overworld-town/special-sydney/widgets.twee 에 있으므로 해당 파일이 변경되면 확인할 것
+	
+    ```
+	<<sydneyGenitalsPost>>
+		<<sydneyGenitalsPost short post 'sep'>>
+
+		<<sydneyGenitals>>의 대체 유닛. 조사를 붙일 수 있다.
+
+		선택사항
+		- short: 원본 매크로에 사용되는 인수값
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<sydenyGenitals "이">>              // "자지가"
+    ```
+	
+    ```
+	<<sydneyGenitalsPost>>
+		<<sydneyGenitalsPost short post 'sep'>>
+
+		<<sydneyGenitals>>의 대체 유닛. 조사를 붙일 수 있다.
+
+		선택사항
+		- short: 원본 매크로에 사용되는 인수값
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<sydenyGenitals "이">>              // "자지가"
+    ```
 
 -----------------
 # Tentacle
