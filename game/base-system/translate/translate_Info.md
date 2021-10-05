@@ -1575,6 +1575,17 @@
         + 그윌란이 들고 다니는 물건. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
+* overworld-plains/loc-livestock/widget.twee
+    ```
+    <<livestock_cows>>
+        + 암소들. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<livestock_horse>>
+        + 말. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 -----------------
 # EasyPost
 
