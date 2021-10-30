@@ -781,6 +781,11 @@
     ```
 
     ```
+    <<monksPost>>
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<monks_and_nunsPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
@@ -791,7 +796,7 @@
     ```
 
     ```
-    <<priests>>
+    <<priestsPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1668,7 +1673,7 @@
 		```
 		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<father_(조사)>>, <<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
-		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
+		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
 		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>
