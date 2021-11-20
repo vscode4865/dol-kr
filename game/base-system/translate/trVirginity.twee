@@ -1,8 +1,20 @@
 :: Widgets trVirginity [widget nobr]
 
 <<widget "trVirginity">><<silently>>
-    <<if (typeof $args[0] === 'string')>>
-        <<trNPCdesc $args[0]>>
+	<<if (typeof $args[0] === 'string')>>
+		<<set $_tempArray to $args[0].split(" ")>>
+		<<set $_idxAnd to $_tempArray.findIndex(x => x == "and")>>
+		<<if $_idxAnd gte 0>>	/* double fuck */
+			<<set $_desc1 to $_tempArray.slice(0,$_idxAnd).join(" ")>>
+			<<set $_desc2 to $_tempArray.slice($_idxAnd+1).join(" ")>>
+			<<trNPCdesc $_desc1 "과">><<set $_desc1 to _trResult>>
+			<<trNPCdesc $_desc2>><<set $_desc2 to _trResult>>
+			<<set _trResult to $_desc1+" "+$_desc2>>
+		<<else>>
+			<<trNPCdesc $args[0]>>
+		<</if>>
+	<<elseif (typeof $args[0] === 'boolean'>> 
+		<<set _trResult to ($args[0])?"존재":"불명">>
     <<else>>
         <<set _trResult to $args[0]>>
     <</if>>

@@ -104,29 +104,19 @@
 <<widget "lowerbodyparts">><<print either("hands", "feet", "thighs", "bottom")>><</widget>>
 
 <<widget "word">><<silently>>
+	/* usage example: <<word "upper">> */
 	<<set _text_output to "">>
-	<<if $args[0] and $worn[$args[0]].word isnot "n">>
-		/*<<set _text_output to $worn[$args[0]].word>>한글에 관사는 없음*/<<set _text_output to "">>
+	<<if $args[0]>>
+		/* note: we rely on the .index of clothing items to never change. */
+		<<set $_result to setup.clothes[$args[0]][$worn[$args[0]].index].word>>
+		<<set _text_output to ($_result isnot "n" ? $_result : "")>>
 	<</if>>
 <</silently>>_text_output <</widget>>
 
-<<widget "overupperword">><<word "over_upper">><</widget>>
-<<widget "overlowerword">><<word "over_lower">><</widget>>
-<<widget "upperword">>
-<<if $worn.upper.name is "oversized sweater">>
-	/*<<set _text_output to "an">>한글에 관사는 없음*/<<set _text_output to "">>
-	<<print _text_output>>
-<<else>>
-	<<word "upper">>
-<</if>>
-<</widget>>
-<<widget "lowerword">><<word "lower">><</widget>>
-<<widget "underupperword">><<word "under_upper">><</widget>>
-<<widget "underlowerword">><<word "under_lower">><</widget>>
 <<widget "genitalsword">><<word "genitals">><</widget>>
 
 <<widget "plural">><<silently>>
-	<<if $worn[$args[0]].plural is 1>>
+	<<if setup.clothes[$args[0]][$worn[$args[0]].index].plural is 1>>
 		<<set _text_output to "are">>
 	<<else>>
 		<<set _text_output to "is">>
@@ -142,7 +132,7 @@
 <<widget "genitalsplural">><<plural "genitals">><</widget>>
 
 <<widget "itis">><<silently>>
-	<<if $worn[$args[0]].plural is 1>>
+	<<if setup.clothes[$args[0]][$worn[$args[0]].index].plural is 1>>
 		<<set _text_output to "they are">>
 	<<else>>
 		<<set _text_output to "it is">>
@@ -157,7 +147,7 @@
 <<widget "underloweritis">><<itis "under_lower">><</widget>>
 
 <<widget "it">><<silently>>
-	<<if $worn[$args[0]].plural is 1>>
+	<<if setup.clothes[$args[0]][$worn[$args[0]].index].plural is 1>>
 		<<set _text_output to "them">>
 	<<else>>
 		<<set _text_output to "it">>
@@ -175,7 +165,7 @@
 <<widget "handsit">><<it "hands">><</widget>>
 
 <<widget "has">><<silently>>
-	<<if $worn[$args[0]].plural is 1>>
+	<<if setup.clothes[$args[0]][$worn[$args[0]].index].plural is 1>>
 		<<set _text_output to "have">>
 	<<else>>
 		<<set _text_output to "has">>
@@ -190,7 +180,7 @@
 <<widget "underlowerhas">><<has "under_lower">><</widget>>
 
 <<widget "that">><<silently>>
-	<<if $worn[$args[0]].plural is 1>>
+	<<if setup.clothes[$args[0]][$worn[$args[0]].index].plural is 1>>
 		<<set _text_output to "those">>
 	<<else>>
 		<<set _text_output to "that">>
@@ -243,7 +233,7 @@
 		<<set $args[0].pronouns.he = "그자는">>
 		<<set $args[0].pronouns.his = "그자의">>
 		<<set $args[0].pronouns.hers = "그자의 것">>
-		<<set $args[0].pronouns.his = "그자를">>
+		<<set $args[0].pronouns.him = "그자를">>
 		<<set $args[0].pronouns.himself = "그자 자신">>
 		<<set $args[0].pronouns.man = "어른">>
 		<<set $args[0].pronouns.boy = "아이">>
@@ -262,9 +252,9 @@
 <</widget>>
 
 <<widget "updatePronouns">>
-<<for _i to 0; _i lt $NPCNameList.length; _i++>>
-	<<generatePronouns $NPCName[_i]>>
-<</for>>
+	<<for _i to 0; _i lt $NPCNameList.length; _i++>>
+		<<generatePronouns $NPCName[_i]>>
+	<</for>>
 <</widget>>
 
 <<widget "clearPronouns">>
@@ -281,11 +271,11 @@
 <</widget>>
 
 <<widget "a">><<silently>>
-<<if $enemyno gte 2 and $enemytype is "man">>
-<<set _text_output to "한 ">>
-<<else>>
-<<his_yi>><<set _text_output to _trResult>>
-<</if>>
+	<<if $enemyno gte 2 and $enemytype is "man">>
+		<<set _text_output to "한 ">>
+	<<else>>
+		<<his_yi>><<set _text_output to _trResult>>
+	<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "theowner">><<silently>>
@@ -502,7 +492,7 @@
 <<elseif $pronoun is "f">>
 	<<set _text_output to "she's">>
 <<elseif $pronoun is "i">>
-	<<set _text_output to "its">>
+	<<set _text_output to "it's">>
 <<elseif $pronoun is "n">>
 	<<set _text_output to "one is">>
 <<elseif $pronoun is "t">>
@@ -596,8 +586,12 @@
 	<<else>>
 		<<if $enemytype is "beast">>
 			<<beasttype>><<set _person to _text_output>><<set _text_output to "The " + _person>>
-		<<else>>
+		<<elseif $NPCList[0].name_known is 1>>
+			<<set _text_output to $NPCList[0].name>>
+		<<elseif $NPCList[0].role is "normal">>
 			<<person1>><<person>><<set _person to _text_output>><<set _text_output to "그 " + _person>>
+		<<else>>
+			<<person1>><<person>><<set _person to _text_output>><<set _text_output to "The " + $NPCList[0].description + " " + "$NPCList[0].role">>
 		<</if>>
 	<</if>>
 <<elseif $NPCList[1].intro is 1>>
@@ -605,35 +599,55 @@
 	<<if $npcrow.includes(1)>>
 		<<set _text_output to $npc[$npcrow.indexOf(1)]>>
 	<<else>>
-		<<person2>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<<if $NPCList[1].name_known is 1>>
+			<<set _text_output to $NPCList[1].name>>
+		<<else>>
+			<<person2>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<</if>>
 	<</if>>
 <<elseif $NPCList[2].intro is 1>>
 	<<set $NPCList[2].intro to 0>>
 	<<if $npcrow.includes(2)>>
 		<<set _text_output to $npc[$npcrow.indexOf(2)]>>
 	<<else>>
-		<<person3>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<<if $NPCList[2].name_known is 1>>
+			<<set _text_output to $NPCList[2].name>>
+		<<else>>
+			<<person3>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<</if>>
 	<</if>>
 <<elseif $NPCList[3].intro is 1>>
 	<<set $NPCList[3].intro to 0>>
 	<<if $npcrow.includes(3)>>
 		<<set _text_output to $npc[$npcrow.indexOf(3)]>>
 	<<else>>
-		<<person4>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<<if $NPCList[3].name_known is 1>>
+			<<set _text_output to $NPCList[3].name>>
+		<<else>>
+			<<person4>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<</if>>
 	<</if>>
 <<elseif $NPCList[4].intro is 1>>
 	<<set $NPCList[4].intro to 0>>
 	<<if $npcrow.includes(4)>>
 		<<set _text_output to $npc[$npcrow.indexOf(4)]>>
 	<<else>>
-		<<person5>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<<if $NPCList[4].name_known is 1>>
+			<<set _text_output to $NPCList[4].name>>
+		<<else>>
+			<<person5>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<</if>>
 	<</if>>
 <<elseif $NPCList[5].intro is 1>>
 	<<set $NPCList[5].intro to 0>>
 	<<if $npcrow.includes(5)>>
 		<<set _text_output to $npc[$npcrow.indexOf(5)]>>
 	<<else>>
-		<<person6>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<<if $NPCList[5].name_known is 1>>
+			<<set _text_output to $NPCList[5].name>>
+		<<else>>
+			<<person6>><<person>><<set _person to _text_output>><<set _text_output to "The " + _person>>
+		<</if>>
 	<</if>>
 <<else>>
 	<<if $pronoun is "m">>
@@ -850,7 +864,7 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "gendercheck">>
-	<<if !["m", "f"].contains($player.gender_appearance)>><<set _text_output to "<span class=\"red\">ERROR: Unexpected $$player.gender_appearance: [$player.gender_appearance]</span>">><</if>>
+	<<if !["m", "f"].includes($player.gender_appearance)>><<set _text_output to "<span class=\"red\">ERROR: Unexpected $$player.gender_appearance: [$player.gender_appearance]</span>">><</if>>
 <</widget>>
 
 <<widget "pshe">><<silently>>
@@ -894,7 +908,7 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "animals">>
-<<print either("bees", "elephants", "bunnies", "octopi", "chimps", "squid", "molluscs", "monkeys", "wasps", "baboons", "wolves", "bears", "elk", "seals", "dolphins", "whales", "jellyfish", "cats", "lions", "tigers", "cheetahs", "wild dogs", "panthers", "moles", "badgers", "honey badgers", "ducks", "geese", "sparrows", "robins", "perch", "pike", "salmon", "sturgeon", "frogs", "newts", "crocodiles", "toads", "hawks", "eagles", "cuttlefish", "pythons", "anacondas", "adders", "cobras", "sturgeon", "trout", "salmon", "tuna", "deer", "robins")>>
+<<print either("꿀벌들의", "코끼리들의", "토끼들의", "문어들의", "침팬지들의", "오징어들의", "연체동물들의", "원숭이들의", "말벌들의", "개코원숭이들의", "늑대들의", "곰들의", "엘크들의", "물개들의", "돌고래들의", "고래들의", "해파리들의", "고양이들의", "사자들의", "호랑이들의", "치타들의", "들개들의", "흑표범들의", "두더지들의", "오소리들의", "라텔들의", "오리들의", "거위들의", "참새들의", "울새들의", "농어들의", "강꼬치고기들의", "연어들의", "철갑상어들의", "개구리들의", "도룡뇽들의", "악어들의", "두꺼비들의", "매들의", "독수리들의", "갑오징어들의", "비단뱀들의", "아나콘다들의", "살무사들의", "코브라들의cobras", "철갑상어들의", "송어들의", "연어들의", "참치들의", "사슴들의", "울새들의")>>
 <</widget>>
 
 <<widget "garden">>
@@ -927,14 +941,16 @@
 <<widget "nipples">><<nipple>>s<</widget>>
 
 /* 
+in dev alternative to current "breasts" widget
 <<widget "breasts">><<silently>>
 	<<if Number.isInteger($breastsize)>>
 		<<if $breastsize lte 0>>
 			<<set _text_output to "nipples">>
 		<<else>>
-			<<set _text_output to ["", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"][$breastsize] + " breasts">>
+			<<set _text_output to ["", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"][$breastsize]>>
+			<<set _text_output to _text_output + " breasts">>
 		<</if>>
-	<<else>>
+	<<elseif $debugdisable is "f">>
 		<<set _text_output to "ERROR - $$breastsize is not a number: $breastsize">>
 	<</if>>
 	<</silently>><<breastsensitivity>><<print _text_output>>
@@ -974,133 +990,97 @@
 	<</switch>>
 <</silently>><<breastsensitivity>><<print _text_output>><</widget>>
 
-<<widget "undertop">>
-<<silently>>
-<<if $worn.under_upper.name isnot "naked">>
-	<<set _text_output to $worn.under_upper.name>>
-<<else>>
-	<<breasts>>
-<</if>>
-<</silently>>
-<<print _text_output>>
-<</widget>>
+<<widget "undertop">><<silently>>
+	<<if $worn.under_upper.exposed lte 0>>
+		<<set _text_output to $worn.under_upper.name>>
+	<<else>>
+		<<breasts>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
 
-<<widget "underoutfit">>
-<<silently>>
+<<widget "underoutfit">><<silently>>
 <<outfitChecks>>
+<<breasts>><<set _breasts_text to _text_output>>
+<<genitals>><<set _genitals_text to _text_output>>
 <<if _underOutfit>>
 	<<set _text_output to $worn.under_upper.name>>
 <<elseif $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-	<<breasts>>
-	<<set _text_output_temp to _text_output>>
-	<<genitals>>
-	<<set _text_output_temp2 to _text_output>>
-	<<set _text_output to "_text_output_temp and _text_output_temp2">>
+	<<set _text_output to _breasts_text + " and " + _genitals_text>>
 <<elseif $worn.under_lower.name is "naked">>
-	<<genitals>>
-	<<set _text_output_temp to _text_output>>
-	<<set _text_output to "$worn.under_upper.name and _text_output_temp">>
+	<<set _text_output to $worn.under_upper.name + " and " + _breasts_text>>
 <<elseif $worn.under_upper.name is "naked">>
-	<<breasts>>
-	<<set _text_output_temp to _text_output>>
-	<<set _text_output to "_text_output_temp and $worn.under_lower.name">>
+	<<set _text_output to _breasts_text + " and " + $worn.under_lower.name>>
 <<else>>
-	<<set _text_output to "$worn.under_upper.name and $worn.under_lower.name">>
+	<<set _text_output to $worn.under_upper.name + " and " + $worn.under_lower.name>>
 <</if>>
-<</silently>>
-<<print _text_output>>
-<</widget>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "genitalstate">><<silently>>
+	<<set _text_output to "">>
+	<<if $orgasmcount gte 23>>
+		<<if $orgasmdown gte 1>>
+			<<set _text_output to "고문당한 ">>
+		<<else>>
+			<<set _text_output to "기진맥진한 ">>
+		<</if>>
+	<<elseif $orgasmcount gte 9>>
+		<<if $orgasmdown gte 1>>
+			<<set _text_output to "꿈틀거리는 ">>
+		<<else>>
+			<<set _text_output to "지친 ">>
+		<</if>>
+	<<else>>
+		<<if $orgasmdown gte 1>>
+			<<set _text_output to "움찔거리는 ">>
+		<<else>>
+			<<if $arousal gte ($arousalmax / 5) * 4>>
+				<<set _text_output to "욱신거리는 ">>
+			<<elseif $arousal gte ($arousalmax / 5) * 3>>
+				<<set _text_output to "">>
+			<<elseif $arousal gte ($arousalmax / 5) * 2>>
+				<<set _text_output to "">>
+			<<elseif $arousal gte $arousalmax / 5>>
+				<<set _text_output to "">>
+			<<else>>
+				<<set _text_output to "">>
+			<</if>>
+			/* ^^^ placeholders for later if people want to fill them out */
+		<</if>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "bottom">><<silently>>
 	<<set _text_output to ["slender", "slim", "modest", "cushioned", "soft", "round", "plump", "large", "huge"][Math.clamp(0, 8, $bottomsize)]>>
-	<<set _text_output to _text_output += [" ass", " bum", " butt"].pluck()>>
+	<<set _text_output to _text_output + [" ass", " bum", " butt"].pluck()>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "pussy">><<silently>>
-<<if $devstate gte 1>>
-	<<if $orgasmcount gte 23>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "tortured pussy">>
-		<<else>>
-		<<set _text_output to "spent pussy">>
-		<</if>>
-	<<elseif $orgasmcount gte 9>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "twitching pussy">>
-		<<else>>
-		<<set _text_output to "tired pussy">>
-		<</if>>
-	<<else>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "twitching pussy">>
-		<<else>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-			<<set _text_output to "tingling pussy">>
-			<<elseif $arousal gte ($arousalmax / 5) * 3>>
-			<<set _text_output to "pussy">>
-			<<elseif $arousal gte ($arousalmax / 5) * 2>>
-			<<set _text_output to "pussy">>
-			<<elseif $arousal gte $arousalmax / 5>>
-			<<set _text_output to "quim">>
-			<<else>>
-			<<set _text_output to "pussy">>
-			<</if>>
-		<</if>>
-	<</if>>
-<<else>>
-	<<if $orgasmcount gte 23>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "tortured pussy">>
-		<<else>>
-		<<set _text_output to "spent pussy">>
-		<</if>>
-	<<elseif $orgasmcount gte 9>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "twitching pussy">>
-		<<else>>
-		<<set _text_output to "tired pussy">>
-		<</if>>
-	<<else>>
-		<<if $orgasmdown gte 1>>
-		<<set _text_output to "twitching pussy">>
-		<<else>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-			<<set _text_output to "tingling pussy">>
-			<<elseif $arousal gte ($arousalmax / 5) * 3>>
-			<<set _text_output to "pussy">>
-			<<elseif $arousal gte ($arousalmax / 5) * 2>>
-			<<set _text_output to "pussy">>
-			<<elseif $arousal gte $arousalmax / 5>>
-			<<set _text_output to "quim">>
-			<<else>>
-			<<set _text_output to "pussy">>
-			<</if>>
-		<</if>>
-	<</if>>
-<</if>>
+	<<genitalstate>><<set _genital_state_text to _text_output>>
+	<<set _text_output to ["pussy","pussy","pussy","quim"].pluck()>>
+	<<set _text_output to _genital_state_text + _text_output>>
 <</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
 <!-- Too small and too big outputs are intended as error messages
 	so that it's more obvious what's wrong when people report bugs -->
 <<widget "penissize">><<silently>>
 <<if $penissize lt -2>>
-	<<set _text_output to "[TOO SMALL]">>
+	<<set _text_output to "[너무나도 작은]">>
 <<elseif $penissize is -2>>
-	<<set _text_output to "micro">>
+	<<set _text_output to "진짜 작은">>
 <<elseif $penissize is -1>>
-	<<set _text_output to "mini">>
+	<<set _text_output to "아주 작은">>
 <<elseif $penissize is 0>>
-	<<set _text_output to "tiny">>
+	<<set _text_output to "조그마한">>
 <<elseif $penissize is 1>>
-	<<set _text_output to "small">>
+	<<set _text_output to "작은">>
 <<elseif $penissize is 2>>
 	<<set _text_output to "">>
 <<elseif $penissize is 3>>
-	<<set _text_output to "large">>
+	<<set _text_output to "큰">>
 <<elseif $penissize is 4>>
-	<<set _text_output to "enormous">>
+	<<set _text_output to "거대한">>
 <<else>>
-	<<set _text_output to "[TOO BIG]">>
+	<<set _text_output to "[너무나도 거대한]">>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
@@ -1113,60 +1093,31 @@
 <</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
 <<widget "penis">><<silently>>
-<<penissize>>
-<<set _penissize_text to _text_output>>
-<<if _penissize_text isnot "">>
-	<<set _penissize_text to _penissize_text + " ">>
-<</if>>
+	<<penissize>><<set _penissize_text to _text_output>>
+	<<if _penissize_text isnot "">>
+		<<set _penissize_text to _penissize_text + " ">>
+	<</if>>
+	<<genitalstate>><<set _genital_state_text to _text_output>>
 
-<<if $orgasmcount gte 23>>
-	<<if $orgasmdown gte 1>>
-		<<set _text_output to _penissize_text + "tortured penis">>
-	<<else>>
-	<<set _text_output to _penissize_text + "spent penis">>
-	<</if>>
-<<elseif $orgasmcount gte 9>>
-	<<if $orgasmdown gte 1>>
-	<<set _text_output to _penissize_text + "twitching penis">>
-	<<else>>
-	<<set _text_output to _penissize_text + "tired penis">>
-	<</if>>
-<<else>>
-	<<if $orgasmdown gte 1>>
-	<<set _text_output to _penissize_text + "twitching penis">>
-	<<else>>
-		<<if $arousal gte ($arousalmax / 5) * 4>>
-		<<set _text_output to _penissize_text + "tingling penis">>
-		<<elseif $arousal gte ($arousalmax / 5) * 3>>
-		<<set _text_output to _penissize_text + "penis">>
-		<<elseif $arousal gte ($arousalmax / 5) * 2>>
-		<<set _text_output to _penissize_text + "penis">>
-		<<elseif $arousal gte $arousalmax / 5>>
-		<<set _text_output to _penissize_text + "penis">>
-		<<else>>
-		<<set _text_output to _penissize_text + "penis">>
-		<</if>>
-	<</if>>
-<</if>>
-
+	<<set _text_output to _penissize_text + _genital_state_text + "penis">>
 <</silently>><<genitalsensitivity>><<print _text_output>><</widget>>
 
 <<widget "reveal">>
 <<if $args[0]>>
 	<<if $args[0] gte 900>>
-	<span class="red">야한</span>
+		<span class="red">야한</span>
 	<<elseif $args[0] gte 700>>
-	<span class="pink">음란한</span>
+		<span class="pink">음란한</span>
 	<<elseif $args[0] gte 500>>
-	<span class="purple">유혹적인</span>
+		<span class="purple">유혹적인</span>
 	<<elseif $args[0] gte 300>>
-	<span class="blue">편안한</span>
+		<span class="blue">편안한</span>
 	<<elseif $args[0] gte 200>>
-	<span class="lblue">우아한</span>
+		<span class="lblue">우아한</span>
 	<<elseif $args[0] gte 100>>
-	<span class="teal">지적인</span>
+		<span class="teal">지적인</span>
 	<<else>>
-	<span class="green">얌전한</span>
+		<span class="green">얌전한</span>
 	<</if>>
 <</if>>
 <</widget>>
@@ -1175,36 +1126,36 @@
 <<if $args[0]>>
 	<<if $args[1] is "cap">>
 		<<if $args[0] gte 900>>
-		<span class="green">튼튼하고</span>
+			<span class="green">튼튼하고</span>
 		<<elseif $args[0] gte 500>>
-		<span class="teal">견고하고</span>
+			<span class="teal">견고하고</span>
 		<<elseif $args[0] gte 200>>
-		<span class="lblue">굳건하고</span>
+			<span class="lblue">굳건하고</span>
 		<<elseif $args[0] gte 100>>
-		<span class="blue">적당하고</span>
+			<span class="blue">적당하고</span>
 		<<elseif $args[0] gte 50>>
-		<span class="purple">섬세하고</span>
+			<span class="purple">섬세하고</span>
 		<<elseif $args[0] gte 20>>
-		<span class="pink">연약하고</span>
+			<span class="pink">연약하고</span>
 		<<else>>
-		<span class="red">얇고</span>
+			<span class="red">얇고</span>
 		<</if>>
 
 	<<else>>
 		<<if $args[0] gte 900>>
-		<span class="green">튼튼하고</span>
+			<span class="green">튼튼하고</span>
 		<<elseif $args[0] gte 500>>
-		<span class="teal">견고하고</span>
+			<span class="teal">견고하고</span>
 		<<elseif $args[0] gte 200>>
-		<span class="lblue">굳건하고</span>
+			<span class="lblue">굳건하고</span>
 		<<elseif $args[0] gte 100>>
-		<span class="blue">적당하고</span>
+			<span class="blue">적당하고</span>
 		<<elseif $args[0] gte 50>>
-		<span class="purple">섬세하고</span>
+			<span class="purple">섬세하고</span>
 		<<elseif $args[0] gte 20>>
-		<span class="pink">연약하고</span>
+			<span class="pink">연약하고</span>
 		<<else>>
-		<span class="red">얇고</span>
+			<span class="red">얇고</span>
 		<</if>>
 	<</if>>
 <</if>>
@@ -1230,45 +1181,58 @@
 <</widget>>
 
 <<widget "strokes">>
-
-<<if $enemyanger gte ($enemyangermax / 5) * 4 and $enemyarousal gte ($enemyarousalmax / 5) * 4>>잔인하게 가지고 <<if $args[0] isnot undefined>>놀고<<else>>논다<</if>>
-<<elseif $enemyanger gte ($enemyangermax / 5) * 4 and $enemyarousal gte ($enemyarousalmax / 5) * 2>>맹렬하게 가지고 <<if $args[0] isnot undefined>>놀고<<else>>논다<</if>>
-<<elseif $enemyanger gte ($enemyangermax / 5) * 4>>난폭하게 <<if $args[0] isnot undefined>>비벼대고<<else>>비벼댄다<</if>>
-<<elseif $enemyanger gte ($enemyangermax / 5) * 2 and $enemyarousal gte ($enemyarousalmax / 5) * 4>>거칠게 <<if $args[0] isnot undefined>>비벼대고<<else>>비벼댄다<</if>>
-<<elseif $enemyanger gte ($enemyangermax / 5) * 2 and $enemyarousal gte ($enemyarousalmax / 5) * 2>>강하게 <<if $args[0] isnot undefined>>훑고<<else>>훑는다<</if>>
-<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 4>>열렬히 <<if $args[0] isnot undefined>>훑고<<else>>훑는다<</if>>
-<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 2>>힘차게 <<if $args[0] isnot undefined>>훑고<<else>>훑는다<</if>>
-<<else>>부드럽게 <<if $args[0] isnot undefined>>애무하고<<else>>애무한다<</if>>
-<</if>>
-
+	<<if $enemyanger gte ($enemyangermax / 5) * 4>>
+		<<if $enemyarousal gte ($enemyarousalmax / 5) * 4>>
+			잔인하게 가지고 <<if $args[0] isnot undefined>>놀고<<else>>논다<</if>>
+		<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 2>>
+			맹렬하게 가지고 <<if $args[0] isnot undefined>>놀고<<else>>논다<</if>>
+		<<else>>
+			난폭하게 <<if $args[0] isnot undefined>>비벼대고<<else>>비벼댄다<</if>>
+		<</if>>
+	<<elseif $enemyanger gte ($enemyangermax / 5) * 2>>
+		<<if $enemyarousal gte ($enemyarousalmax / 5) * 4>>
+			거칠게 <<if $args[0] isnot undefined>>비벼대고<<else>>비벼댄다<</if>>
+		<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 2>>
+			강하게 <<if $args[0] isnot undefined>>쓰다듬고<<else>>쓰다듬는다<</if>>
+		<<else>>
+			열렬히 <<if $args[0] isnot undefined>>쓰다듬고<<else>>쓰다듬는다<</if>>
+		<</if>>
+	<<else>>
+		<<if $enemyarousal gte ($enemyarousalmax / 5) * 2>>
+			활발하게 <<if $args[0] isnot undefined>>쓰다듬고<<else>>쓰다듬는다<</if>>
+		<<else>>
+			부드럽게 <<if $args[0] isnot undefined>>애무하고<<else>>애무한다<</if>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "personsimple">><<silently>>
-<<if $npcadult is 1>>
-	<<set _text_output to ($pronoun is "m" ? "man" : "woman")>>
-<<else>>
-	<<set _text_output to ($pronoun is "m" ? "boy" : "girl")>>
-<</if>><</silently>><<print _text_output>><</widget>>
+	<<set _text_output to (!$NPCList[$index].type or $NPCList[$index].type is "human" or $args[0] is "normal" ? "" : $NPCList[$index].type)>>
+	<<if $npcadult is 1>>
+		<<set _text_output += ($pronoun is "m" ? "man" : "woman")>>
+	<<else>>
+		<<set _text_output += ($pronoun is "m" ? "boy" : "girl")>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "person">><<silently>>
-<<if $npc_named is 1>>
-	<<set _text_output to $description>>
-<<elseif $npcadult is 1>>
-	<<if $pronoun is "m">>
-		<<set _text_output to $description+" man">>
-	<<elseif $pronoun is "f">>
-		<<set _text_output to $description+" woman">>
+	<<set _text_output to $description + " ">>
+	<<if ($NPCList[$index].type and $NPCList[$index].type isnot "human") and $args[0] isnot "normal">>
+		<<set _text_output += $NPCList[$index].type>>
 	<</if>>
-<<else>>
-	<<if $pronoun is "m">>
-		<<set _text_output to $description+" boy">>
+	<<if $npc_named is 1 or $description is "pale figure">>
+		<<set _text_output to $description>>
+	<<elseif $role isnot "normal">>
+		<<set _text_output to $description + " " + $role>>
+	<<elseif $pronoun is "m">>
+		<<set _text_output += ($npcadult is 1 ? "man" : "boy")>>
 	<<elseif $pronoun is "f">>
-		<<set _text_output to $description+" girl">>
+		<<set _text_output += ($npcadult is 1 ? "woman" : "girl")>>
 	<</if>>
-<</if>><</silently>><<print _text_output>><</widget>>
+<</silently>><<print _text_output>><</widget>>
 
 <<widget "persons">><<silently>>
-	<<person>>
+	<<person $args[0]>>
 	<<set _text_output to _text_output + "'s">>
 <</silently>><<print _text_output>><</widget>>
 
@@ -1277,11 +1241,15 @@
 	<<set _text_output to $NPCList[_j].fullDescription>>
 <<elseif $enemytype is "beast">>
 	<<set _text_output to "the " + $NPCList[_j].type>>
+<<elseif $role isnot "normal">>
+	<<set _text_output to $description + " " + $role>>
 <<elseif $npcadult is 1>>
 	<<if $pronoun is "m">>
 		<<set _text_output to "the " + $description+" man">>
 	<<elseif $pronoun is "f">>
 		<<set _text_output to "the " + $description+" woman">>
+	<<else>>
+		<<set _text_output to "the " + $description>>
 	<</if>>
 <<else>>
 	<<set _text_output to "the " + $NPCList[_j].fullDescription>>
@@ -1300,6 +1268,7 @@
 <!-- This replaces calls person1 person2 etc. Used for NPC object calls -->
 <!-- Note calls are 0-5 corresponding to NPCs 1-6 -->
 <<set _n to $args[0]>>
+<<set $index to _n>>
 
 <<set $npcadult to $NPCList[_n].adult>>
 <<set $pronoun to $NPCList[_n].pronoun>>
@@ -1308,6 +1277,7 @@
 	<<set $npc_named to 1>>
 <<else>>
 	<<set $description to $NPCList[_n].description>>
+	<<set $role to $NPCList[_n].role>>
 	<<set $npc_named to 0>>
 <</if>>
 <</widget>>
@@ -1479,7 +1449,7 @@
 		<<elseif $pblevel gte 8 and $pbdisable is "f">>
 			<<set _text_output += "bushy ">>
 		<</if>>
-		<<set _text_output += ["pussy", "quim"].pluck()>>
+		<<set _text_output += ["pussy", "pussy", "pussy", "quim"].pluck()>>
 	<</if>>
 <</if>>
 <</silently>><<print _text_output>><</widget>>
@@ -1642,6 +1612,50 @@
 
 <<widget "glewdity">> |
 <span class="lewd">+ 음란함</span>
+<</widget>>
+
+<<widget "gglewdity">> |
+<span class="lewd">+ + 음란함</span>
+<</widget>>
+
+<<widget "ggglewdity">> |
+<span class="lewd">+ + + 음란함</span>
+<</widget>>
+
+<<widget "llewdity">> |
+<span class="lewd">- 음란함</span>
+<</widget>>
+
+<<widget "lllewdity">> |
+<span class="lewd">- - 음란함</span>
+<</widget>>
+
+<<widget "llllewdity">> |
+<span class="lewd">- - - 음란함</span>
+<</widget>>
+
+<<widget "gattention">><<if $prison_attention_day isnot true>> |
+<span class="lewd">+ 주목</span>
+<</if>><</widget>>
+
+<<widget "ggattention">><<if $prison_attention_day isnot true>> |
+<span class="lewd">+ + 주목</span>
+<</if>><</widget>>
+
+<<widget "gggattention">><<if $prison_attention_day isnot true>> |
+<span class="lewd">+ + + 주목</span>
+<</if>><</widget>>
+
+<<widget "lattention">> |
+<span class="lewd">- 주목</span>
+<</widget>>
+
+<<widget "llattention">> |
+<span class="lewd">- - 주목</span>
+<</widget>>
+
+<<widget "lllattention">> |
+<span class="lewd">- - - 주목</span>
 <</widget>>
 
 <<widget "lcontrol">> |
@@ -1838,7 +1852,7 @@
 <<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
 	<<glust>>
 <</if>>
-<<set _warnstate to 1>>
+<<set _warnstate to -1>>
 <</widget>>
 
 <<widget "llspurity">> |
@@ -1850,7 +1864,7 @@
 <<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
 	<<glust>>
 <</if>>
-<<set _warnstate to 2>>
+<<set _warnstate to -2>>
 <</widget>>
 
 <<widget "lllspurity">> |
@@ -1862,7 +1876,7 @@
 <<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
 	<<glust>>
 <</if>>
-<<set _warnstate to 3>>
+<<set _warnstate to -3>>
 <</widget>>
 
 <<widget "gslust">> |
@@ -1897,25 +1911,28 @@
 <<else>>
 	<<switch _warnstate>>
 		<<case 1>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
 			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 2) lt 0>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
 			<</if>>
 		<<case 2>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
 			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 5) lt 0>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
 			<</if>>
 		<<case 3>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
 			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10) lt 0>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
+			<</if>>
+		<<case -1>>
+			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
+				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
+			<</if>>
+		<<case -2>>
+			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
+				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
+			<</if>>
+		<<case -3>>
+			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
+				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
 			<</if>>
 	<</switch>>
 <</if>>
@@ -2152,122 +2169,170 @@
 <</widget>>
 
 <<widget "glove">> |
-<span class="green">+ 사랑</span>
+<<if $args[0]>>
+	<span class="green">+ <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="green">+ 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "gglove">> |
-<span class="green">+ + 사랑</span>
+<<if $args[0]>>
+	<span class="green">+ + <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="green">+ + 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "ggglove">> |
-<span class="green">+ + + 사랑</span>
+<<if $args[0]>>
+	<span class="green">+ + + <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="green">+ + + 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "llove">> |
-<span class="red">- 사랑</span>
+<<if $args[0]>>
+	<span class="red">- <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="red">- 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "lllove">> |
-<span class="red">- - 사랑</span>
+<<if $args[0]>>
+	<span class="red">- - <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="red">- - 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "llllove">> |
-<span class="red">- - - 사랑</span>
+<<if $args[0]>>
+	<span class="red">- - - <<NPCname_yi $args[0]>> 사랑</span>
+<<else>>
+	<span class="red">- - - 사랑</span>
+<</if>>
 <</widget>>
 
 <<widget "glust">> |
-<span class="lewd">+ 욕정</span>
+<<if $args[0]>>
+	<span class="lewd">+ <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="lewd">+ 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "gglust">> |
-<span class="lewd">+ + 욕정</span>
+<<if $args[0]>>
+	<span class="lewd">+ + <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="lewd">+ + 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "ggglust">> |
-<span class="lewd">+ + + 욕정</span>
+<<if $args[0]>>
+	<span class="lewd">+ + + <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="lewd">+ + + 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "llust">> |
-<span class="teal">- 욕정</span>
+<<if $args[0]>>
+	<span class="teal">- <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="teal">- 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "lllust">> |
-<span class="teal">- - 욕정</span>
+<<if $args[0]>>
+	<span class="teal">- - <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="teal">- - 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "llllust">> |
-<span class="teal">- - - 욕정</span>
+<<if $args[0]>>
+	<span class="teal">- - - <<NPCname_yi $args[0]>> 욕정</span>
+<<else>>
+	<span class="teal">- - - 욕정</span>
+<</if>>
 <</widget>>
 
 <<widget "gdom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="purple">+ 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="purple">+ 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">+ <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">+ <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="purple">+ <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="purple">+ <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="purple">+ NPC 지배도</span>
+	<span class="purple">+ NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "ggdom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="purple">+ + 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="purple">+ + 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">+ + <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">+ + <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="purple">+ + <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="purple">+ + <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="purple">+ + NPC 지배도</span>
+	<span class="purple">+ + NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "gggdom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="purple">+ + + 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="purple">+ + + 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">+ + + <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">+ + + <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="purple">+ + + <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="purple">+ + + <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="purple">+ + + NPC 지배도</span>
+	<span class="purple">+ + + NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "ldom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="lblue">- 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="lblue">- 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">- <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">- <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="lblue">- NPC 지배도</span>
+	<span class="lblue">- NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "lldom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="lblue">- - 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="lblue">- - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">- - <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">- - <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="lblue">- - NPC 지배도</span>
+	<span class="lblue">- - NPC 지배도</span>
 <</if>>
 <</widget>>
 
 <<widget "llldom">> |
-<<if $npc.includes("Robin") or $args[0] is "Robin">>
-<span class="lblue">- - - 로빈의 자신감</span>
+<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+	<span class="lblue">- - - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-<span class="purple">- - - <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="purple">- - - <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
-<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
+	<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
-<span class="lblue">- - - NPC 지배도</span>
+	<span class="lblue">- - - NPC 지배도</span>
 <</if>>
 <</widget>>
 
@@ -2651,6 +2716,30 @@
 <span class="green">+ 지식</span>
 <</widget>>
 
+<<widget "gbodywriting">> | 
+<span class="purple">+ 신체낙서</span>
+<</widget>>
+
+<<widget "ggbodywriting">> | 
+<span class="purple">+ + 신체낙서</span>
+<</widget>>
+
+<<widget "gggbodywriting">> | 
+<span class="purple">+ + + 신체낙서</span>
+<</widget>>
+
+<<widget "ghallucinogens">> | 
+<span class="lewd">+ 환각</span>
+<</widget>>
+
+<<widget "gghallucinogens">> | 
+<span class="lewd">+ + 환각</span>
+<</widget>>
+
+<<widget "ggghallucinogens">> | 
+<span class="lewd">+ + + 환각</span>
+<</widget>>
+
 <<widget "flight_text">> |
 <<if $harpy gte 6 and $birdFly gte 1>>
 	<span class="gold">튼튼한 날개</span>
@@ -2909,7 +2998,7 @@
 <span class="green">+ + + 의지력</span>
 <</widget>>
 
-<<widget "gphysique">>|
+<<widget "gphysique">> |
 <span class="green">+ 체격</span>
 <</widget>>
 
@@ -2919,6 +3008,18 @@
 
 <<widget "gggphysique">> |
 <span class="green">+ + + 체격</span>
+<</widget>>
+
+<<widget "lphysique">>|
+<span class="red">- 체격</span>
+<</widget>>
+
+<<widget "llphysique">> |
+<span class="red">- - 체격</span>
+<</widget>>
+
+<<widget "lllphysique">> |
+<span class="red">- - - 체격</span>
 <</widget>>
 
 <!-- Exhibitionism -->
@@ -3213,7 +3314,7 @@
 
 <<widget "groin">><<silently>>
 <<genitals>>
-<<if !$worn.lower.type.includes("naked") and $worn.lower.skirt isnot 1>>
+<<if !$worn.lower.type.includes("naked") and setup.clothes.lower[$worn.lower.index].skirt isnot 1>>
 <<set _text_output to $worn.lower.name + " 너머로 " + _text_output + "를">>
 <<elseif !$worn.under_lower.type.includes("naked")>>
 <<set _text_output to $worn.under_lower.name + " 너머로 " + _text_output + "를">>
@@ -3256,25 +3357,25 @@
 
 <<widget "allTops">>
 	<<if $worn.over_upper.name isnot "naked">>
-		$worn.over_upper.name
+		$worn.over_upper.name\
 	<</if>>
 	<<if $worn.upper.name isnot "naked">>
 		<<if $worn.over_upper.name isnot "naked">>
 			그리고
 		<</if>>
-		$worn.upper.name
+		$worn.upper.name\
 	<</if>>
 <</widget>>
 
 <<widget "allBottoms">>
 	<<if $worn.over_lower.name isnot "naked">>
-		$worn.over_lower.name
+		$worn.over_lower.name\
 	<</if>>
 	<<if $worn.lower.name isnot "naked">>
 		<<if $worn.over_lower.name isnot "naked">>
 			그리고
 		<</if>>
-		$worn.lower.name
+		$worn.lower.name\
 	<</if>>
 <</widget>>
 
@@ -3593,15 +3694,17 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "schoolday">>
-<<if $schoolterm is 1 and $weekday is 1>>
-	내일은 학교에 가야 한다.
-	<br>
-<<elseif $schoolterm is 1 and $weekday isnot 1 and $weekday isnot 7>>
-	오늘은 학교에 가야 한다.
-	<br>
-<<elseif $schoolterm is 0 and $weekday is 1>>
-	내일은 학교가 쉰다.
-	<br>
+<<if $location isnot "prison" and $location isnot "asylum">>
+	<<if $schoolterm is 1 and $weekday is 1>>
+		내일은 학교에 가야 한다.
+		<br>
+	<<elseif $schoolterm is 1 and $weekday isnot 1 and $weekday isnot 7>>
+		오늘은 학교에 가야 한다.
+		<br>
+	<<elseif $schoolterm is 0 and $weekday is 1>>
+		내일은 학교가 쉰다.
+		<br>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -3886,191 +3989,56 @@
 <</widget>>
 
 <<widget "covered">>
-<<exposure>>
+	<<exposure>>
 
-<<if $leftarm is "bound" and $rightarm is "bound" and $exposed gte 1>>
-	<<if $exposed gte 2 and $exhibitionism lt 95 or $exposed gte 2 and $uncomfortable.nude is true>>
-	양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다.
+	<<if $exposed gt 0>>
 
-	<<elseif $exposed gte 2>>
-	양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다. 당신은 흥분에 몸을 떤다.
+		/* calculating section */
+		<<silently>>
+			<<genitalsPost "을" "sep">><<set _genitals_text to _trResult>><<set _genitals_post to _trPost>>
+			<<breastsPost "을" "sep">><<set _breasts_text to _trResult>><<set _breasts_post to _trPost>>
+		<</silently>>
 
-	<<elseif $exhibitionism lt 55>>
-	양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다.
+		<<set _parts to "">>
+		<<if $worn.upper.exposed gte 2>>
+			<<if $player.gender_appearance is "m" and $player.gender is "m" and $worn.lower.exposed lte 0>>
+				<<set _parts += "가슴">><<set _trPost to "을">>
+			<<else>>
+				<<trClothes "under_upper" $worn.under_upper.name "name" "을" "sep">><<set _parts += ($worn.under_upper.exposed gte 1 ? _breasts_text : _trResult)>><<set _trPost to ($worn.under_upper.exposed gte 1 ? _breasts_post : _trPost)>>
+			<</if>>
+		<</if>>
+		<<if $worn.lower.exposed gte 2>>
+			<<if _parts isnot "">>
+				<<getPostNum _parts>><<trPost _postNum "와" "sep">><<set _parts += _trPost + " ">>
+			<</if>>
+			<<trClothes "under_lower" $worn.under_lower.name "name" "을" "sep">><<set _parts += ($worn.under_lower.exposed gte 1 ? _genitals_text : _trResult)>><<set _trPost to ($worn.under_lower.exposed gte 1 ? _genitals_post : _trPost)>>
+		<</if>>
 
-	<<elseif $uncomfortable.nude is true>>
-	양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다.
+		/* text output section */
 
-	<<else>>
-	양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다. 당신은 흥분에 몸을 떤다.
-
+		<<if $leftarm is "bound" and $rightarm is "bound" and $exposed gte 1>>
+			양손이 묶여있기에, 누군가의 시선으로부터 당신의 <<lewdnessPost "을">> 가릴 방법은 없다.
+			<<if !$uncomfortable.nude and $exposed gte 2 and $exhibitionism gte 95>>
+				당신은 흥분에 몸을 떤다.
+			<<elseif !$uncomfortable.nude and $exposed is 1 and $exhibitionism gte 55>>
+				당신은 흥분에 몸을 떤다.
+			<</if>>
+		<<elseif ($exposed gte 2 and ($exhibitionism lt 95 or $uncomfortable.nude))
+			or ($exposed is  1 and ($exhibitionism lt 55 or $uncomfortable.nude))>>
+			<<if _parts isnot "">>
+				당신은 양손으로 <span class="lewd">노출된 _parts</span>_trPost 가린다.
+			<<else>>
+				당신은 양손으로 의상의 <span class="lewd">더 야한</span> 부분을 가린다.
+			<</if>>
+		<<else>>
+			<<if _parts isnot "">>
+				당신은 <span class="lewd">노출된 _parts</span> 때문에 흥분에 몸을 떤다.
+			<<else>>
+				당신은 의상의 <span class="lewd">야한</span> 부분 때문에 흥분에 몸을 떤다.
+			<</if>>
+		<</if>>
+		<<embarrassment>>
 	<</if>>
-	<<embarrassment>>
-<<elseif $exposed gte 2 and $exhibitionism lt 95 or $exposed gte 2 and $uncomfortable.nude is true>>
-	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 양손으로 <span class="lewd">노출된 <<genitalsPost "을">></span> 가린다.
-	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 양손으로 <span class="lewd">노출된 <<worn_under_lower_name_ul>></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 가슴을 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_rul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd"><<worn_under_upper_name_ul>></span> 가린다.
-		<</if>>
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 <span class="lewd">노출된 <<worn_under_lower_name_ul>></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_wa>> <<worn_under_lower_name_ul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<worn_under_lower_name_ul>></span> 가린다.
-		<</if>>
-
-	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 <span class="lewd">노출된 <<genitalsPost "을">></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_wa>> <<genitals_rul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<genitals_rul>></span> 가린다.
-		<</if>>
-
-	<<else>>
-	당신은 양손으로 의상의 <span class="lewd">더 야한</span> 부분을 가린다.
-
-	<</if>>
-	<<embarrassment>>
-<<elseif $exposed gte 2>>
-	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 <span class="lewd">노출된 <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 <span class="lewd">노출된 <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 노출된 가슴 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breastsPost>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 <span class="lewd">노출된 <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breasts_wa>> <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 <span class="lewd">노출된 <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breasts_wa>> <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<else>>
-	당신은 의상의 <span class="lewd">야한</span> 부분 때문에 흥분에 몸을 떤다.
-
-	<</if>>
-	<<embarrassment>>
-<<elseif $exposed gte 1 and $exhibitionism lt 55 or $exposed gte 1 and $uncomfortable.nude is true>>
-	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 양손으로 <span class="lewd">노출된 <<genitalsPost "을">></span> 가린다.
-	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 양손으로 <span class="lewd">노출된 <<worn_under_lower_name_ul>></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 가슴을 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_rul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd">노출된 <<worn_under_upper_name_ul>></span> 가린다.
-		<</if>>
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 <span class="lewd">노출된 <<worn_under_lower_name_ul>></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_wa>> <<worn_under_lower_name_ul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<worn_under_lower_name_ul>></span> 가린다.
-		<</if>>
-
-	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 양손으로 <span class="lewd">노출된 <<genitalsPost "을">></span> 가린다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 양손으로 <span class="lewd">노출된 <<breasts_wa>> <<genitals_rul>></span> 가린다.
-		<<else>>
-			당신은 양손으로 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<genitals_rul>></span> 가린다.
-		<</if>>
-
-	<<else>>
-	당신은 양손으로 의상의 <span class="lewd">야한</span> 부분을 가린다.
-
-	<</if>>
-	<<embarrassment>>
-<<elseif $exposed gte 1>>
-	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 <span class="lewd">노출된 <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	당신은 <span class="lewd">노출된 <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 노출된 가슴 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breastsPost>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 <span class="lewd">노출된 <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breasts_wa>> <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<worn_under_lower_name>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-	당신은 <span class="lewd">노출된 <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-		<<if $worn.under_upper.exposed gte 1>>
-			당신은 <span class="lewd">노출된 <<breasts_wa>> <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-		<<else>>
-			당신은 <span class="lewd">노출된 <<worn_under_upper_name_gwa>> <<genitalsPost>></span> 때문에 흥분에 몸을 떤다.
-		<</if>>
-
-	<<else>>
-	당신은 의상의 <span class="lewd">야한</span> 부분 때문에 흥분에 몸을 떤다.
-
-	<</if>>
-	<<embarrassment>>
-<</if>>
 <</widget>>
 
 <<widget "passagestrip">>
@@ -4138,317 +4106,317 @@
 <</widget>>
 
 <<widget "strippedtext">>
-<<if $control gte (($controlmax / 5) * 4)>>
-	<<if $trauma gte (($traumamax / 5) * 4)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+	<<if $control gte (($controlmax / 5) * 4)>>
+		<<if $trauma gte (($traumamax / 5) * 4)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 3)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 2)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 1)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<<else>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 3)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+	<<elseif $control gte (($controlmax / 5) * 3)>>
+		<<if $trauma gte (($traumamax / 5) * 4)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 3)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 2)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 1)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<<else>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 2)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+	<<elseif $control gte (($controlmax / 5) * 2)>>
+		<<if $trauma gte (($traumamax / 5) * 4)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 3)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 2)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 1)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<<else>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 1)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+	<<elseif $control gte (($controlmax / 5) * 1)>>
+		<<if $trauma gte (($traumamax / 5) * 4)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 3)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 2)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 1)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<<else>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<</if>>
-	<<else>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<else>>
 
-		<<else>>
-
-		<</if>>
-	<</if>>
-<<elseif $control gte (($controlmax / 5) * 3)>>
-	<<if $trauma gte (($traumamax / 5) * 4)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 3)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 2)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 1)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<else>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<</if>>
-<<elseif $control gte (($controlmax / 5) * 2)>>
-	<<if $trauma gte (($traumamax / 5) * 4)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 3)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 2)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 1)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<else>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<</if>>
-<<elseif $control gte (($controlmax / 5) * 1)>>
-	<<if $trauma gte (($traumamax / 5) * 4)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 3)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 2)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 1)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<else>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<</if>>
-<<else>>
-	<<if $trauma gte (($traumamax / 5) * 4)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 3)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 2)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
-		<</if>>
-	<<elseif $trauma gte (($traumamax / 5) * 1)>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
-
-		<<else>>
-
+			<</if>>
 		<</if>>
 	<<else>>
-		<<if $stress gte (($stressmax / 5) * 4)>>
+		<<if $trauma gte (($traumamax / 5) * 4)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
-		<<elseif $stress gte (($stressmax / 5) * 3)>>
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
 
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 3)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 2)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
+		<<elseif $trauma gte (($traumamax / 5) * 1)>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<<else>>
+			<<if $stress gte (($stressmax / 5) * 4)>>
 
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<elseif $stress gte (($stressmax / 5) * 3)>>
+
+			<<else>>
+
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "prostate">><<silently>>
@@ -4716,45 +4684,90 @@
 <<widget "slithers">>
 	<<set $rng to random(1, 100)>>
 	<<if $rng gte 95>>
-		미끄러지듯 나아간다
+		미끄러지듯 나아간다.
 	<<elseif $rng gte 90>>
-		온몸을 비튼다
+		온몸을 비튼다.
 	<<elseif $rng gte 85>>
-		꿈틀거린다
+		꿈틀거린다.
 	<<elseif $rng gte 80>>
-		꼼지락거린다
+		꼼지락거린다.
 	<<elseif $rng gte 75>>
-		기어간다
+		기어간다.
 	<<elseif $rng gte 70>>
-		미끄러진다
+		미끄러진다.
 	<<elseif $rng gte 65>>
-		천천히 움직인다
+		천천히 움직인다.
 	<<elseif $rng gte 60>>
-		미끄러지듯 간다
+		미끄러지듯 간다.
 	<<elseif $rng gte 55>>
-		스르르 움직인다
+		스르르 움직인다.
 	<<elseif $rng gte 50>>
-		꿈틀댄다
+		꿈틀댄다.
 	<<elseif $rng gte 45>>
-		꿈틀거리며 나아간다
+		꿈틀거리며 나아간다.
 	<<elseif $rng gte 40>>
-		휜다
+		휘어진다.
 	<<elseif $rng gte 35>>
-		경련한다
+		경련한다.
 	<<elseif $rng gte 30>>
-		떤다
+		떤다.
 	<<elseif $rng gte 25>>
-		덜덜 떨린다
+		덜덜 떨린다.
 	<<elseif $rng gte 20>>
-		홱 움직인다
+		홱 움직인다.
 	<<elseif $rng gte 15>>
-		긴다
+		기어간다.
 	<<elseif $rng gte 10>>
-		가볍게 흔들린다
+		가볍게 흔들린다.
 	<<elseif $rng gte 5>>
-		구불구불하게 움직인다
+		구불구불하게 움직인다.
 	<<elseif $rng gte 0>>
-		스르르 움직인다
+		스르르 움직인다.
+	<</if>>
+<</widget>>
+
+<<widget "slithering">>
+	<<set $rng to random(1, 100)>>
+	<<if $rng gte 95>>
+		미끄러지듯 나아가며
+	<<elseif $rng gte 90>>
+		온몸을 비틀며
+	<<elseif $rng gte 85>>
+		꿈틀거리며
+	<<elseif $rng gte 80>>
+		꼼지락거리며
+	<<elseif $rng gte 75>>
+		기어가며
+	<<elseif $rng gte 70>>
+		미끄러지며
+	<<elseif $rng gte 65>>
+		천천히 움직이며
+	<<elseif $rng gte 60>>
+		미끄러지듯 가며
+	<<elseif $rng gte 55>>
+		스르르 움직이며
+	<<elseif $rng gte 50>>
+		꿈틀대며
+	<<elseif $rng gte 45>>
+		꿈틀거리며 나아가며
+	<<elseif $rng gte 40>>
+		휘어지며
+	<<elseif $rng gte 35>>
+		경련하며
+	<<elseif $rng gte 30>>
+		떨며
+	<<elseif $rng gte 25>>
+		덜덜 떨리며
+	<<elseif $rng gte 20>>
+		홱 움직이며
+	<<elseif $rng gte 15>>
+		기어가며
+	<<elseif $rng gte 10>>
+		가볍게 흔들리며
+	<<elseif $rng gte 5>>
+		구불구불하게 움직이며
+	<<elseif $rng gte 0>>
+		스르르 움직이며
 	<</if>>
 <</widget>>
 
@@ -4794,8 +4807,8 @@
 
 <<widget "pulldownall">>
 <<outfitChecks>>
-<<if $worn.lower.skirt is 1>>
-	<<if $worn.under_lower.skirt is 1>>
+<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
+	<<if setup.clothes.under_lower[$worn.under_lower.index].skirt is 1>>
 		당신은 당신의 <<worn_lower_name_gwa>> <<worn_under_lower_name_yi>> 옷자락을 잡아올려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<<elseif _underOutfit>>
 		당신은 당신의 <<worn_lower_name_yi>> 옷자락을 잡아올리고 <<worn_under_lower_name_ul>> 옆으로 잡아당겨, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
@@ -4805,7 +4818,7 @@
 		당신은 당신의 <<worn_lower_name_yi>> 옷자락을 잡아올려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<</if>>
 <<elseif _middleOutfit>>
-	<<if $worn.under_lower.skirt is 1>>
+	<<if setup.clothes.under_lower[$worn.under_lower.index].skirt is 1>>
 		당신은 당신의 <<worn_lower_name_ul>> 옆으로 잡아당기고 <<worn_under_lower_name_yi>> 옷자락을 잡아올려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<<elseif _underOutfit>>
 		당신은 당신의 <<worn_lower_name_gwa>> <<worn_under_lower_name_ul>> 옆으로 잡아당겨, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
@@ -4815,7 +4828,7 @@
 		당신은 당신의 <<worn_lower_name_ul>> 옆으로 잡아당겨, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<</if>>
 <<elseif !$worn.lower.type.includes("naked")>>
-	<<if $worn.under_lower.skirt is 1>>
+	<<if setup.clothes.under_lower[$worn.under_lower.index].skirt is 1>>
 		당신은 당신의 <<worn_lower_name_ul>> 잡아내리고 <<worn_under_lower_name_yi>> 옷자락을 잡아올려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<<elseif _middleOutfit>>
 		당신은 당신의 <<worn_lower_name_ul>> 잡아내리고 <<worn_under_lower_name_ul>> 옆으로 잡아당겨, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
@@ -4825,7 +4838,7 @@
 		당신은 당신의 <<worn_lower_name_ul>> 잡아내려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<</if>>
 <<else>>
-	<<if $worn.under_lower.skirt is 1>>
+	<<if setup.clothes.under_lower[$worn.under_lower.index].skirt is 1>>
 		당신은 당신의 <<worn_under_lower_name_yi>> 옷자락을 잡아올려, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
 	<<elseif _underOutfit>>
 		당신은 당신의 <<worn_under_lower_name_ul>> 옆으로 잡아당겨, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
@@ -4850,7 +4863,7 @@
 
 <<widget "pulldown">>
 <<outfitChecks>>
-<<if $worn.lower.skirt is 1>>
+<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 	들춰
 <<elseif _middleOutfit is false>>
 	내려
@@ -4872,7 +4885,7 @@
 
 <<widget "pullsdown">>
 <<outfitChecks>>
-<<if $worn.lower.skirt is 1>>
+<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 	올려
 <<elseif _middleOutfit is false>>
 	내려
@@ -4894,7 +4907,7 @@
 
 <<widget "overpulldown">>
 <<outfitChecks>>
-<<if $worn.over_lower.skirt is 1>>
+<<if setup.clothes.over_lower[$worn.over_lower.index].skirt is 1>>
 	올려
 <<elseif _overOutfit is false>>
 	내려
@@ -4916,7 +4929,7 @@
 
 <<widget "overpullsdown">>
 <<outfitChecks>>
-<<if $worn.over_lower.skirt is 1>>
+<<if setup.clothes.over_lower[$worn.over_lower.index].skirt is 1>>
 	올려
 <<elseif _overOutfit is false>>
 	내려
@@ -4933,8 +4946,35 @@
 <</if>>
 <</silently>><<print _text_output>><</widget>>
 
+<<widget "testicle">><<silently>>
+	<<if $args[0] is "clinical">>
+		<<set $_pool to ["testicle"]>>
+	<<else>>
+		<<set $_pool to ["ball", "nut", "testicle"]>>
+	<</if>>
+	<<set _text_output to $_pool.pluck()>>
+<</silently>><<print _text_output>><</widget>>
+
 <<widget "testicles">><<silently>>
-<<set _text_output to "testes">>
+	<<if $args[0] is "clinical">>
+		<<set $_pool to ["testes", "testicles"]>>
+	<<else>>
+		<<set $_pool to ["balls", "nuts", "testicles", "testes"]>>
+	<</if>>
+	<<set _text_output to $_pool.pluck()>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "ballsize">><<silently>>
+	<<switch $ballssize>>
+		<<case -2>><<set _text_output to ["안보이는"].pluck()>>
+		<<case -1>><<set _text_output to ["조그마한", "열등한", "콩 크기의"].pluck()>>
+		<<case 0>> <<set _text_output to ["조그마한", "열등한"].pluck()>>
+		<<case 1>> <<set _text_output to ["작은"].pluck()>>
+		<<case 2>> <<set _text_output to [""].pluck()>>
+		<<case 3>> <<set _text_output to ["큰", "무거운", "두툼한", "커다란"].pluck()>>
+		<<case 4>> <<set _text_output to ["매우 큰", "무거운", "두툼한", "거대한", "장대한"].pluck()>>
+		<<default>><<set _text_output to "Error: $ballssize is [" + $ballssize + "]">>
+	<</switch>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "swimmingdifficultytext0">>
@@ -5042,7 +5082,7 @@
 
 
 <<widget "wolfgirl">>
- | <span class="blue"><<print ($player.gender_appearance is "m" ? "Wolfboy" : "Wolfgirl")>></span>
+ | <span class="blue"><<print ($player.gender_appearance is "m" ? "늑대 소년" : "늑대 소녀")>></span>
 <</widget>>
 
 <<widget "cat">>
@@ -5071,6 +5111,10 @@
 
 <<widget "demon">>
  | <span class="red">악마</span>
+<</widget>>
+
+<<widget "sharp_eyes">>
+ | <span class="gold">날카로운 눈</span>
 <</widget>>
 
 <<widget "laughs">>
@@ -5143,7 +5187,7 @@
 			연한
 		<</if>>
 		피부색이다.
-	<<elseif $skinColor.tanValues[0] gte 80>> 색에 짙게 선태을 했다.
+	<<elseif $skinColor.tanValues[0] gte 80>> 색에 짙게 선탠을 했다.
 	<<elseif $skinColor.tanValues[0] gte 60>> 색에 어느 정도 선탠을 했다.
 	<<elseif $skinColor.tanValues[0] gte 30>> 색에 선탠을 했다.
 	<<elseif $skinColor.tanValues[0] gte 10>> 색에 가볍게 선탠을 했다.
@@ -5175,12 +5219,19 @@
 <<widget "beasttypes">> <<beasttype>>'s<</widget>>
 
 <<widget "beastsplural">><<silently>>
-<<if $NPCList[0].type is "wolf" and $monster isnot 1>>
+<<if typeof $args[0] is "number">>
+	<<set _na to $args[0]>>
+<<else>>
+	<<set _na to 0>>
+<</if>>
+<<if $NPCList[_na].type is "wolf" and $monster isnot 1>>
 	<<set _text_output to "wolves">>
-<<elseif $NPCList[0].type is "fox" and $monster isnot 1>>
+<<elseif $NPCList[_na].type is "fox" and $monster isnot 1>>
 	<<set _text_output to "foxes">>
-<<elseif $monster isnot 1 or $NPCList[0].type is "centaur">>
-	<<set _text_output to "<<beasttype>>s">>
+<<elseif $monster isnot 1 or $NPCList[_na].type is "centaur">>
+	<<set _text_output to "<<beasttype _na>>s">>
+<<elseif $NPCList[_na].type is "harpy">>
+	<<set _text_output to "harpies">>
 <<else>>
 	<<for _i = 0; _i < $NPCList.length; _i++>>
 		<<if $NPCList[_i].pronoun is "m">>
@@ -5192,10 +5243,10 @@
 	<</for>>
 	<<if (_malespresent isnot true or _femalespresent isnot true)>>
 		<<set _text_output to "<<beasttype>>s">>
-	<<elseif $NPCList[2].pronoun is 0>>
+	<<elseif !$NPCList[2].pronoun>>
 		<<set _text_output to "$NPCList[0].type and $NPCList[1].type">>
 	<<else>>
-		<<switch $NPCList[0].type>>
+		<<switch $NPCList[_na].type>>
 			<<case "lizardgirl" "lizardboy">><<set _text_output to "lizardgirls and lizardboys">>
 			<<case "wolfgirl" "wolfboy">><<set _text_output to "wolfgirls and wolfboys">>
 			<<case "doggirl" "dogboy">><<set _text_output to "doggirls and dogboys">>
@@ -5877,9 +5928,9 @@ $worn.genitals.name
 	<<else>>
 		<<set $_hour to ($hour + $args[0]) % 24>>
 		<<if $_hour gte 13>>
-			<<set _text_output to ($_hour - 12) + ":" + ($minute lt 10 ? "0":"") + $minute + "pm">>
+			<<set _text_output to  "오후 " + ($_hour - 12) + ":" + ($minute lt 10 ? "0":"") + $minute>>
 		<<else>>
-			<<set _text_output to ($_hour is 0 ? "12" : $_hour) + ":" + ($minute lt 10 ? "0":"") + $minute + ($_hour is 12? "pm": "am")>>
+			<<set _text_output to  ($_hour is 12? "오후 ": "오전 ") + ($_hour is 0 ? "12" : $_hour) + ":" + ($minute lt 10 ? "0":"") + $minute>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -5942,7 +5993,7 @@ $worn.genitals.name
 
 <<widget "dress">>
 <<if $worn.upper.set is $worn.lower.set>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 		<<set _text_output to "dress">>
 	<<else>>
 		<<set _text_output to "clothes">>
@@ -5955,13 +6006,13 @@ $worn.genitals.name
 
 <<widget "skirt">>
 <<if $worn.upper.set is $worn.lower.set>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 		<<set _text_output to "dress">>
 	<<else>>
 		<<set _text_output to "clothes">>
 	<</if>>
 <<else>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 		<<set _text_output to "skirt">>
 	<<else>>
 		<<set _text_output to "bottoms">>
@@ -5974,7 +6025,7 @@ $worn.genitals.name
 <<if $worn.under_upper.set is $worn.under_lower.set>>
 	<<set _text_output to "underclothes">>
 <<else>>
-	<<if $worn.under_lower.skirt is 1>>
+	<<if setup.clothes.under_lower[$worn.under_lower.index].skirt is 1>>
 		<<set _text_output to "skirt">>
 	<<else>>
 		<<if $worn.under_lower.gender is "f">>
@@ -5995,7 +6046,7 @@ $worn.genitals.name
 <<if $worn.under_upper.set is $worn.under_lower.set>>
 	<<set _text_output to "underclothes">>
 <<else>>
-	<<if $worn.under_upper.gender is "f" and $worn.under_upper.state_base is "midriff">>
+	<<if $worn.under_upper.gender is "f" and setup.clothes.under_upper[$worn.under_upper.index].state_base is "midriff">>
 		<<set _text_output to "bra">>
 	<<else>>
 		<<set _text_output to "top">>
@@ -6019,6 +6070,24 @@ $worn.genitals.name
 	<<set _text_output to $NPCList[_npcGen].penisdesc>>
 <</if>>
 <<print _text_output>>
+<</widget>>
+
+<<widget "npcPenisSimple">>
+	<<if !$args[0]>>
+		<<set _npcGen to 0>>
+	<<else>>
+		<<set _npcGen to $args[0]>>
+	<</if>>
+	<<if $NPCList[_npcGen].chastity.penis is "chastity cage">>
+		<<set _text_output to "caged penis">>
+	<<elseif $NPCList[_npcGen].chastity.penis.includes("chastity")>>
+		<<set _text_output to $NPCList[_npcGen].chastity.penis>>
+	<<elseif $NPCList[_npcGen].penisdesc.includes("strap-on")>>
+		<<set _text_output to "strap-on cock">>
+	<<else>>
+		<<set _text_output to either("penis","cock","shaft")>>
+	<</if>>
+	<<print _text_output>>
 <</widget>>
 
 <<widget "npcVagina">>
@@ -6210,3 +6279,33 @@ $worn.genitals.name
 	<span class="purple"><<He_nun>> 그 천조각을 옆에 벗겨놓는다.</span>
 <</if>>
 <</widget>>
+
+<<widget "plant_details">><<silently>>
+<<if ($location is "moor" and $args[0] isnot "forest") or $args[0] is "moor">>
+	<<switch $season>>
+		<<case "spring">>
+			<<set _text_output to "yellow willow leaves">>
+		<<case "summer">>
+			<<set _text_output to "small purple flowers">>
+		<<case "autumn">>
+			<<set _text_output to "large amber flowers">>
+		<<case "winter">>
+			<<set _text_output to "straw-coloured reeds">>
+	<</switch>>
+<<else>>
+	<<switch $season>>
+		<<case "spring">>
+			<<set _text_output to "pink blossoms">>
+		<<case "summer">>
+			<<set _text_output to "leaves and flowers">>
+		<<case "autumn">>
+			<<set _text_output to "orange and red leaves">>
+		<<case "winter">>
+			<<set _text_output to "small red berries">>
+	<</switch>>
+<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "Plant_details">><<silently>>
+<<plant_details $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<</silently>><<print _text_output>><</widget>>

@@ -2,8 +2,7 @@
 <<widget "bodywriting_init">>
 <<set $skin to {}>>
 <<set $bodypart_number to 12>>
-<<for _e to 0; _e lt $bodypart_number; _e++>>
-	<<activebodypart>>
+<<for _active_bodypart range setup.bodyparts>>
 	<<set $skin[_active_bodypart] to {}>>
 <</for>>
 
@@ -111,7 +110,7 @@
 <<if $args[0] is "left">>
 	<<for _bwn to 0; _bwn lt $enemyno; _bwn++>>
 		<<if _n isnot _bwn and ($NPCList[_bwn].lefthand is "pen" + "_" + _bodypart or $NPCList[_bwn].righthand is "pen" + "_" + _bodypart)>>
-			<<HePost "은">> 당신의 <<bodypart _bodypart>>에 낙서를 하려 하나, <span class="blue">친구가 <<HePost "을">> 밀쳐낸다.</span>
+			<<HePost "은">> 당신의 <<bodypart _bodypart>>에 <<his_yi>> <<lefttool_ro _n>> 낙서를 하려 하나, <span class="blue"> <<his_yi>> 친구가 <<HePost "을">> 밀쳐낸다.</span>
 			<<set $NPCList[_n].lefthand to 0>>
 			<<set _bwn_stop to 1>>
 			<<break>>
@@ -120,7 +119,7 @@
 <<else>>
 	<<for _bwn to 0; _bwn lt $enemyno; _bwn++>>
 		<<if _n isnot _bwn and ($NPCList[_bwn].lefthand is "pen" + "_" + _bodypart or $NPCList[_bwn].righthand is "pen" + "_" + _bodypart)>>
-			<<HePost "은">> 당신의 <<bodypart _bodypart>>에 낙서를 하려 하나, <span class="blue"><<his_yi>> 친구가 <<HePost "을">> 밀쳐낸다.</span>
+			<<HePost "은">> 당신의 <<bodypart _bodypart>>에 <<his_yi>> <<righttool_ro _n>> 낙서를 하려 하나, <span class="blue"> <<his_yi>> 친구가 <<HePost "을">> 밀쳐낸다.</span>
 			<<set $NPCList[_n].righthand to 0>>
 			<<set _bwn_stop to 1>>
 			<<break>>
@@ -215,6 +214,8 @@ Second arg: tool */
 	<<bodywriting_npc_kylar $args[0] $args[1]>>
 <<elseif $npc[$npcrow.indexOf(_n)] is "Sydney">>
 	<<bodywriting_npc_sydney $args[0] $args[1]>>
+<<elseif $NPCList[_n].type is "plant">>
+	<<bodywriting_npc_picture>>
 <<elseif $rng gte 51>>
 	<<bodywriting_npc_special $args[0] $args[1]>>
 <<else>>
@@ -339,6 +340,37 @@ Second arg: tool */
 <<else>>
 	<<add_bodywriting $args[0] interesting $args[1]>>
 <</if>>
+<<bodywriting_finalisation $args[0]>>
+<</widget>>
+
+<<widget "bodywriting_npc_picture">>
+<<if $NPCList[0].type is "plant">>
+	<<set $rng to random(1, 7)>>
+<<else>>
+	<<set $rng to random(1,10)>>
+<</if>>
+<<switch $rng>>
+<<case 1>>
+	<<add_bodywriting $args[0] unicorn $args[1]>>
+<<case 2>>
+	<<add_bodywriting $args[0] heart $args[1]>>
+<<case 3>>
+	<<add_bodywriting $args[0] paw_print $args[1]>>
+<<case 4>>
+	<<add_bodywriting $args[0] flower $args[1]>>
+<<case 5>>
+	<<add_bodywriting $args[0] butterfly $args[1]>>
+<<case 6>>
+	<<add_bodywriting $args[0] star $args[1]>>
+<<case 7>>
+	<<add_bodywriting $args[0] skull $args[1]>>
+<<case 8>>
+	<<add_bodywriting $args[0] cross $args[1]>>
+<<case 9>>
+	<<add_bodywriting $args[0] flame $args[1]>>
+<<case 10>>
+	<<add_bodywriting $args[0] cattle_brand $args[1]>>
+<</switch>>
 <<bodywriting_finalisation $args[0]>>
 <</widget>>
 
@@ -632,7 +664,7 @@ Second arg: tool */
 		<<bodywriting_npc_normal $args[0] $args[1]>>
 	<</if>>
 <<elseif $rng gte 60>>
-	<<if $famepregnancy gte random(200, 1000) and $vaginaexist>>
+	<<if $famepregnancy gte random(200, 1000) and $player.vaginaExist>>
 		<<bodywriting_pregnancy_select $args[0]>>
 		<<bodywriting_finalisation $args[0]>>
 	<<else>>
@@ -702,7 +734,7 @@ Second arg: tool */
 		<<bodywriting_finalisation $args[0] machine>>
 	<</if>>
 <<elseif $rng gte 73>>
-	<<if $famepregnancy gte random(200, 1000) and $vaginaexist>>
+	<<if $famepregnancy gte random(200, 1000) and $player.vaginaExist>>
 		<<bodywriting_pregnancy_select $args[0]>>
 		<<bodywriting_finalisation $args[0]>>
 	<<else>>
@@ -749,7 +781,7 @@ Second arg: tool */
 
 <<widget "bodypart">>
 <<switch $args[0]>>
-	<<case "breasts">>
+	<<case "breasts" "chest">>
 		<<set _text_output to "<<breastsPost>>">>
 	<<case "pubic">>
 		<<set _text_output to "음부">>
@@ -757,6 +789,14 @@ Second arg: tool */
 		<<set _text_output to "왼쪽 엉덩이">>
 	<<case "right_bottom">>
 		<<set _text_output to "오른쪽 엉덩이">>
+	<<case "leftarm">>
+		<<set _text_output to "왼쪽 팔">>
+	<<case "rightarm">>
+		<<set _text_output to "오른쪽 팔">>
+	<<case "vaginaoutside">>
+		<<set _text_output to "음순">>
+	<<case "thigh">>
+		<<set _text_output to "넓적다리">>
 	<<default>>
 		<<trBodypart $args[0]>><<set _text_output to _trResult>>
 <</switch>>
@@ -798,64 +838,74 @@ Second arg: tool */
 <<elseif $skin[$args[0]].degree lte 0>>
 	<<if (($enemyarousal + ($enemytrust * 5) - $enemyanger + ($attractiveness / 10) * ($seductionskill / 200)) gte 1000)>>
 		<<set $enemyanger += 10>><<set $enemytrust -= 100>><<fameprostitution 1>>
-		<<switch random(1, 5)>>
-			<<case 1>><<hePost "이">> 말한다. "비싸군. 좋아."
-			<<case 2>><<hePost "이">> 말한다. "돈은 낼 거지만, 그만한 가치가 있어야 할 거야."
-			<<case 3>><<hePost "이">> 말한다. "이번만은 돈을 내주마, 걸레야."
-			<<case 4>><<hePost "이">> 말한다. "이것보다 나쁜 거래도 해봤으니까."
-			<<case 5>><<hePost "이">> 말한다. "돈은 줘야겠지. 너한테 별다른 쓸모는 없어보이니 말이야."
-		<</switch>>
+		<<if !$speechadmired>><<set $speechadmired to 1>>
+			<<switch random(1, 5)>>
+				<<case 1>><<hePost "이">> 말한다. "비싸군. 좋아."
+				<<case 2>><<hePost "이">> 말한다. "돈은 낼 거지만, 그만한 가치가 있어야 할 거야."
+				<<case 3>><<hePost "이">> 말한다. "이번만은 돈을 내주마, 걸레야."
+				<<case 4>><<hePost "이">> 말한다. "이것보다 나쁜 거래도 해봤으니까."
+				<<case 5>><<hePost "이">> 말한다. "돈은 줘야겠지. 너한테 별다른 쓸모는 없어보이니 말이야."
+			<</switch>>
+		<</if>>
 		<<HePost "은">> 당신 위에 <span class="gold">£10</span> 지폐를 떨군다.
-		<<set $money += 1000>><<earnFeat "Billboard">>
+		<<set $money += 1000>><<earnFeat "Billboard">><<set $NPCList[_n].paid to 1>>
 	<<elseif (($enemyarousal + ($enemytrust * 5) - $enemyanger + ($attractiveness / 10) * ($seductionskill / 200)) gte 500)>>
 		<<set $enemyanger += 10>><<set $enemytrust -= 100>><<fameprostitution 1>>
-		<<switch random(1, 5)>>
-			<<case 1>><<hePost "이">> 말한다. "뭔가 주기라도 한다는 것에 감사하라고."
-			<<case 2>><<hePost "이">> 말한다. "네가 돈으로 존엄성을 살 수라도 있다면 좋을텐데 말이야."
-			<<case 3>><<hePost "이">> 말한다. "너보다 비싼 술도 마셔봤다고."
-			<<case 4>><<hePost "이">> 말한다. "어디다 넣으면 되지?"
-			<<case 5>><<hePost "이">> 말한다. "싸고 더러운 창녀들이 최고라니까."
-		<</switch>>
+		<<if !$speechadmired>><<set $speechadmired to 1>>
+			<<switch random(1, 5)>>
+				<<case 1>><<hePost "이">> 말한다. "뭔가 주기라도 한다는 것에 감사하라고."
+				<<case 2>><<hePost "이">> 말한다. "네가 돈으로 존엄성을 살 수라도 있다면 좋을텐데 말이야."
+				<<case 3>><<hePost "이">> 말한다. "너보다 비싼 술도 마셔봤다고."
+				<<case 4>><<hePost "이">> 말한다. "어디다 넣으면 되지?"
+				<<case 5>><<hePost "이">> 말한다. "싸고 더러운 창녀들이 최고라니까."
+			<</switch>>
+		<</if>>
 		<<HePost "은">> 당신 위에 <span class="gold">£5</span> 지폐를 떨군다.
-		<<set $money += 500>><<earnFeat "Billboard">>
+		<<set $money += 500>><<earnFeat "Billboard">><<set $NPCList[_n].paid to 1>>
 	<<else>><<set $enemytrust -= 20>>
 		<<fameprostitution 1>>
-		<<switch random(1, 5)>>
-			<<case 1>><<hePost "이">> 말한다. "너한테 돈을 주라고? 웃기지도 않네."
-			<<case 2>><<hePost "이">> 말한다. "나한테 따먹힌다는 걸로 충분하지."
-			<<case 3>><<hePost "이">> 말한다. "네게 뭔가 값어치가 존재한다는 생각 따윈 버려."
-			<<case 4>><<hePost "이">> 말한다. "돈을 받길 바라고 있는 건 아니겠지."
-			<<case 5>><<hePost "이">> 말한다. "너 같은 창녀들은 무엇 하나 받을 자격이 없어."
-		<</switch>>
+		<<if !$speechadmired>><<set $speechadmired to 1>>
+			<<switch random(1, 5)>>
+				<<case 1>><<hePost "이">> 말한다. "너한테 돈을 주라고? 웃기지도 않네."
+				<<case 2>><<hePost "이">> 말한다. "나한테 따먹힌다는 걸로 충분하지."
+				<<case 3>><<hePost "이">> 말한다. "네게 뭔가 값어치가 존재한다는 생각 따윈 버려."
+				<<case 4>><<hePost "이">> 말한다. "돈을 받길 바라고 있는 건 아니겠지."
+				<<case 5>><<hePost "이">> 말한다. "너 같은 창녀들은 무엇 하나 받을 자격이 없어."
+			<</switch>>
+		<</if>>
 	<</if>>
 <<elseif $skin[$args[0]].degree lte ($enemyarousal + ($enemytrust * 5) - $enemyanger + ($attractiveness / 10) * ($seductionskill / 200))>>
 	<<set $enemyanger += 10>><<set $enemytrust -= $skin[$args[0]].degree>><<fameprostitution 1>>
-	<<switch random(1, 5)>>
-		<<case 1>><<hePost "이">> 말한다. "돈은 내겠지만, 그만한 가치가 있어야 할 거야."
-		<<case 2>><<hePost "이">> 말한다. "너 같은 창녀들은 정말 거만하다니까."
-		<<case 3>><<hePost "이">> 말한다. "좋아, 하지만 돈 낸 만큼은 해줘야 해."
-		<<case 4>><<hePost "이">> 말한다. "돈 받아간 값은 톡톡히 치르게 해주지."
-		<<case 5>><<hePost "이">> 말한다. "좋아, 돈은 낼게. 이번 한 번 뿐이야."
-	<</switch>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<switch random(1, 5)>>
+			<<case 1>><<hePost "이">> 말한다. "돈은 내겠지만, 그만한 가치가 있어야 할 거야."
+			<<case 2>><<hePost "이">> 말한다. "너 같은 창녀들은 정말 거만하다니까."
+			<<case 3>><<hePost "이">> 말한다. "좋아, 하지만 돈 낸 만큼은 해줘야 해."
+			<<case 4>><<hePost "이">> 말한다. "돈 받아간 값은 톡톡히 치르게 해주지."
+			<<case 5>><<hePost "이">> 말한다. "좋아, 돈은 낼게. 이번 한 번 뿐이야."
+		<</switch>>
+	<</if>>
 	<<HePost "은">> 당신 위에 <span class="gold">£<<print Math.floor($skin[$args[0]].degree / 100)>></span>를 떨군다.
-	<<set $money += $skin[$args[0]].degree>><<earnFeat "Billboard">>
+	<<set $money += $skin[$args[0]].degree>><<earnFeat "Billboard">><<set $NPCList[_n].paid to 1>>
 <<else>>
 	<<set $enemytrust -= 20>><<fameprostitution 1>>
-	<<switch random(1, 5)>>
-		<<case 1>><<hePost "이">> 말한다. "농담하는 거겠지."
-		<<case 2>><<hePost "이">> 말한다. "한 푼도 못 받아, 걸레야."
-		<<case 3>><<hePost "이">> 말한다. "넌 한 푼 가치도 안돼."
-		<<case 4>><<hePost "이">> 말한다. "난 그 돈을 벌려고 열심히 일해. 그런 돈을 너 같은 걸레한테 줄 순 없지."
-		<<case 5>><<hePost "이">> 말한다. "네가 받을 보상은 날 따먹는 것뿐이야."
-	<</switch>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<switch random(1, 5)>>
+			<<case 1>><<hePost "이">> 말한다. "농담하는 거겠지."
+			<<case 2>><<hePost "이">> 말한다. "한 푼도 못 받아, 걸레야."
+			<<case 3>><<hePost "이">> 말한다. "넌 한 푼 가치도 안돼."
+			<<case 4>><<hePost "이">> 말한다. "난 그 돈을 벌려고 열심히 일해. 그런 돈을 너 같은 걸레한테 줄 순 없지."
+			<<case 5>><<hePost "이">> 말한다. "네가 받을 보상은 날 따먹는 것뿐이야."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "bodypart_admire_arrow">>
-<<if $skin[$args[0]].special is "prostitution">>
+<<if $skin[$args[0]].special is "prostitution" and $NPCList[_n].type isnot "plant">>
 	<<bodypart_admire_prostitution $args[0]>>
 <</if>>
-<<if $args[0] is "left_cheek" or $args[0] is "right_cheek" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head">>
+<<if $args[0] is "left_cheek" or $args[0] is "right_cheek" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and ($position isnot "wall" or $walltype is "front")>>
 	<<if $NPCList[_n].penis is 0 and $mouthuse is 0>>
 		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">제 <<trPenisdesc $NPCList[_n].penisdesc "을">>_trResult 당신의 입 앞에 놓는다.</span>
 		<<neutral 5>><<set $mouthuse to "penis">><<set $NPCList[_n].penis to "mouthentrance">><<set $mouthstate to "entrance">><<set $speechmouthentrance to 1>>
@@ -894,17 +944,19 @@ Second arg: tool */
 <<elseif $args[0] is "back" or $args[0] is "right_bottom" or $args[0] is "left_bottom" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals">>
 	<<if $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and $NPCList[0].penis is 0 and $anususe is 0>>
 		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">제 자지를 당신의 <<bottomPost>> 앞에 놓는다.</span>
+		<<if $NPCList[_n].type is "plant" and $NPCList[_n].penissize gte 4>>
+			<span class="green">무언가 당신을 두렵게 한다.</span>
+		<</if>>
 		<<neutral 5>><<set $anususe to "penis">><<set $NPCList[_n].penis to "anusentrance">><<set $anusstate to "entrance">><<set $speechanusentrance to 1>>
 		<<set $NPCList[_n].location.genitals to "genitals">>
 	<</if>>
 <<elseif $args[0] is "pubic" or $args[0] is "left_thigh" or $args[0] is "right_thigh" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals">>
-	<<if $vaginaexist is 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].penis is 0 and $vaginause is 0>>
-		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">당신의 다리를 벌리고는 제 <<trPenisdesc $NPCList[_n].penisdesc "을">>_trResult <<bottomPost>> 앞에 놓는다.</span>
-		<<neutral 5>><<set $anususe to "penis">><<set $NPCList[_n].penis to "anusentrance">><<set $anusstate to "entrance">><<set $speechanusentrance to 1>>
-		<<set $NPCList[_n].location.genitals to "genitals">>
-	<<elseif $penisexist is 1 and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].vagina is 0 and $penisuse is 0>>
+	<<if $player.vaginaExist and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].penis is 0 and $vaginause is 0>>
+		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">당신의 다리를 벌리고는 <<his_yi>> <<trPenisdesc $NPCList[_n].penisdesc "을">>_trResult <<pussyPost>> 앞에 놓는다.</span>
+		<<neutral 5>><<set $NPCList[_n].penis to "vaginaentrance">><<set $vaginause to "penis">><<set $vaginastate to "entrance">><<set $NPCList[_n].location.genitals to "genitals">>
+	<<elseif $player.penisExist and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].vagina is 0 and $penisuse is 0>>
 		<<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisentrance">><<set $penisstate to "entrance">>
-		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">당신의 위에 올라타 <<penisPost "을">> 제 보지 근처로 가져간다.</span>
+		<<HePost "은">> 화살표의 지시를 따라, <span class="blue">당신의 위에 올라타 <<penisPost "을">> <<his_yi>> 보지 근처로 가져간다.</span>
 		<<set $NPCList[_n].location.genitals to "genitals">>
 	<</if>>
 <</if>>
@@ -912,394 +964,889 @@ Second arg: tool */
 
 <<widget "bodypart_admire_rape">>
 <<set $enemytrust -= 20>><<famerape 1>>
-<<if $consensual is 1>>
-	<<switch random(1, 9)>>
-		<<case 1>><<hePost "이">> 말한다. "쓰레기 취급받는 것에 흥분하고 그러나?"
-		<<case 2>><<hePost "이">> 말한다. "그런 류의 <<girlPost>>인줄은 몰랐는데."
-		<<case 3>><<hePost "이">> 말한다. "거칠게 하는 걸 좋아하는 거지, 응?"
-		<<case 4>><<hePost "이">> 말한다. "거 참 추잡한 녀석이로구만."
-		<<case 5>><<hePost "이">> 말한다. "자주 따먹히고 그래?"
-		<<case 6>><<hePost "이">> 말한다. "원하는대로 다뤄줄테니 걱정하지 마."
-		<<case 7>><<hePost "이">> 말한다. "그러니까 피해자 역할을 선호한다는 거지?"
-		<<case 8>><<hePost "이">> 말한다. "그 문구도 분명 직접 써넣었겠지, 이 걸레야."
-		<<case 9>><<hePost "이">> 말한다. "그냥 대놓고 해달라는 거로구만."
-	<</switch>>
-<<else>>
-	<<switch random(1, 9)>>
-		<<case 1>><<hePost "이">> 말한다. "하! 강간중독일줄 알았어."
-		<<case 2>><<hePost "이">> 말한다. "어쨌거나 네가 원하는 걸 주는 거야."
-		<<case 3>><<hePost "이">> 말한다. "걱정하지 마. 네 수준에 맞는 취급을 받을 테니까."
-		<<case 4>><<hePost "이">> 말한다. "이런 이런, 엄청난 걸레로군."
-		<<case 5>><<hePost "이">> 말한다. "네 위치를 알고 있다니 다행이네."
-		<<case 6>><<hePost "이">> 말한다. "해달라 하는 거나 다름 없지."
-		<<case 7>><<hePost "이">> 말한다. "육변기일줄 알고 있었어."
-		<<case 8>><<hePost "이">> 말한다. "네겐 이런 쓸모 밖에 없을줄 알고 있었어."
-		<<case 9>><<hePost "이">> 말한다. "네게 걸맞는 취급을 해주는 거야."
-	<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $consensual is 1>>
+		<<switch random(1, 9)>>
+			<<case 1>><<hePost "이">> 말한다. "쓰레기 취급받는 것에 흥분하고 그러나?"
+			<<case 2>><<hePost "이">> 말한다. "그런 류의 <<girlPost>>인줄은 몰랐는데."
+			<<case 3>><<hePost "이">> 말한다. "거칠게 하는 걸 좋아하는 거지, 응?"
+			<<case 4>><<hePost "이">> 말한다. "거 참 추잡한 녀석이로구만."
+			<<case 5>><<hePost "이">> 말한다. "자주 따먹히고 그래?"
+			<<case 6>><<hePost "이">> 말한다. "원하는대로 다뤄줄테니 걱정하지 마."
+			<<case 7>><<hePost "이">> 말한다. "그러니까 피해자 역할을 선호한다는 거지?"
+			<<case 8>><<hePost "이">> 말한다. "그 문구도 분명 직접 써넣었겠지, 이 걸레야."
+			<<case 9>><<hePost "이">> 말한다. "그냥 대놓고 해달라는 거로구만."
+		<</switch>>
+	<<else>>
+		<<switch random(1, 9)>>
+			<<case 1>><<hePost "이">> 말한다. "하! 강간중독일줄 알았어."
+			<<case 2>><<hePost "이">> 말한다. "어쨌거나 네가 원하는 걸 주는 거야."
+			<<case 3>><<hePost "이">> 말한다. "걱정하지 마. 네 수준에 맞는 취급을 받을 테니까."
+			<<case 4>><<hePost "이">> 말한다. "이런 이런, 엄청난 걸레로군."
+			<<case 5>><<hePost "이">> 말한다. "네 위치를 알고 있다니 다행이네."
+			<<case 6>><<hePost "이">> 말한다. "해달라 하는 거나 다름 없지."
+			<<case 7>><<hePost "이">> 말한다. "육변기일줄 알고 있었어."
+			<<case 8>><<hePost "이">> 말한다. "네겐 이런 쓸모 밖에 없을줄 알고 있었어."
+			<<case 9>><<hePost "이">> 말한다. "네게 걸맞는 취급을 해주는 거야."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "bodypart_admire_exhibitionism">>
 <<fameexhibitionism 1>>
-<<switch random(1, 10)>>
-	<<case 1>><<hePost "이">> 말한다. "걱정 마. 멋진 광경이니까."
-	<<case 2>><<hePost "이">> 말한다. "사진이라도 찍어둬야겠어."
-	<<case 3>><<hePost "이">> 말한다. "분명히 눈호강이네."
-	<<case 4>><<hePost "이">> 말한다. "엄청 섹시하네."
-	<<case 5>><<hePost "이">> 말한다. "추파 받는 걸 좋아하지, 이 걸레야?"
-	<<case 6>><<hePost "이">> 말한다. "넌 추파 받는 것 외엔 가치가 없어."
-	<<case 7>><<hePost "이">> 말한다. "철장 안에 가둬놓으면 좋은 광경이겠는걸."
-	<<case 8>><<hePost "이">> 말한다. "너 같은 귀염둥이는 옷을 입어선 안돼."
-	<<case 9>><<hePost "이">> 말한다. "너도 참 관심종자야."
-	<<case 10>><<hePost "이">> 말한다. "이 도시의 절반은 네 엉덩이를 봤을 거야."
-<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<switch random(1, 10)>>
+		<<case 1>><<hePost "이">> 말한다. "걱정 마. 멋진 광경이니까."
+		<<case 2>><<hePost "이">> 말한다. "사진이라도 찍어둬야겠어."
+		<<case 3>><<hePost "이">> 말한다. "분명히 눈호강이네."
+		<<case 4>><<hePost "이">> 말한다. "엄청 섹시하네."
+		<<case 5>><<hePost "이">> 말한다. "추파 받는 걸 좋아하지, 이 걸레야?"
+		<<case 6>><<hePost "이">> 말한다. "넌 추파 받는 것 외엔 가치가 없어."
+		<<case 7>><<hePost "이">> 말한다. "철장 안에 가둬놓으면 좋은 광경이겠는걸."
+		<<case 8>><<hePost "이">> 말한다. "너 같은 귀염둥이는 옷을 입어선 안돼."
+		<<case 9>><<hePost "이">> 말한다. "너도 참 관심종자야."
+		<<case 10>><<hePost "이">> 말한다. "이 도시의 절반은 네 엉덩이를 봤을 거야."
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "bodypart_admire_bestiality">>
 <<famebestiality 1>>
-<<switch random(1, 10)>>
-	<<case 1>><<hePost "이">> 말한다. "역거운 녀석."
-	<<case 2>><<hePost "이">> 말한다. "짐승을 따먹는 걸 좋아한다고? 놀랄 일도 아니구만."
-	<<case 3>><<hePost "이">> 말한다. "네 취향에 난 털이 부족할 거야."
-	<<case 4>><<hePost "이">> 말한다. "넌 개집에나 있어야해."
-	<<case 5>><<hePost "이">> 말한다. "더러운 암캐년."
-	<<case 6>>
-		<<if $player.gender_appearance is "f">>
-			<<hePost "이">> 말한다. "몸이 달아오른게 발정기라도 왔나보지."
-		<<else>>
-			<<hePost "이">> 말한다. "발정기라도 왔나보지."
-		<</if>>
-	<<case 7>><<hePost "이">> 말한다. "정말이지 더러운 <<girl_iya>>."
-	<<case 8>>
-		<<if $player.gender_appearance is "m">>
-			<<hePost "이">> 말한다. "착한 멍멍이야."
-		<<else>>
-			<<hePost "이">> 말한다. "착한 암캐야."
-		<</if>>
-	<<case 9>><<hePost "이">> 말한다. "너같은 건 공원에다 묶어놓고 도시의 개들이 너한테 스트레스를 풀 수 있게 해야해."
-	<<case 10>><<hePost "이">> 말한다. "개박이일줄 알았어."
-<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<switch random(1, 10)>>
+		<<case 1>><<hePost "이">> 말한다. "역거운 녀석."
+		<<case 2>><<hePost "이">> 말한다. "짐승을 따먹는 걸 좋아한다고? 놀랄 일도 아니구만."
+		<<case 3>><<hePost "이">> 말한다. "네 취향에 난 털이 부족할 거야."
+		<<case 4>><<hePost "이">> 말한다. "넌 개집에나 있어야해."
+		<<case 5>><<hePost "이">> 말한다. "더러운 암캐년."
+		<<case 6>>
+			<<if $player.gender_appearance is "f">>
+				<<hePost "이">> 말한다. "몸이 달아오른게 발정기라도 왔나보지."
+			<<else>>
+				<<hePost "이">> 말한다. "발정기라도 왔나보지."
+			<</if>>
+		<<case 7>><<hePost "이">> 말한다. "정말이지 더러운 <<girl_iya>>."
+		<<case 8>>
+			<<if $player.gender_appearance is "m">>
+				<<hePost "이">> 말한다. "착한 멍멍이야."
+			<<else>>
+				<<hePost "이">> 말한다. "착한 암캐야."
+			<</if>>
+		<<case 9>><<hePost "이">> 말한다. "너같은 건 공원에다 묶어놓고 도시의 개들이 너한테 스트레스를 풀 수 있게 해야해."
+		<<case 10>><<hePost "이">> 말한다. "개박이일줄 알았어."
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "bodypart_admire_promiscuity">>
 <<famesex 1>>
-<<switch random(1, 10)>>
-	<<case 1>><<hePost "이">> 말한다. "엄청난 걸레잖아."
-	<<case 2>><<hePost "이">> 말한다. "분명 아무하고나 놀아나겠지."
-	<<case 3>><<hePost "이">> 말한다. "친구들에게 육변기가 필요하면 누굴 찾을지 말해두도록 하지."
-	<<case 4>><<hePost "이">> 말한다. "수치심이 없는 거야?"
-	<<case 5>><<hePost "이">> 말한다. "자존심이라는 개념을 아는지 모르겠네."
-	<<case 6>><<hePost "이">> 말한다. "걱정하지 마. <<girlPost "을">> 만족시키는 법은 알고 있으니까."
-	<<case 7>><<hePost "이">> 말한다. "이 정도 되는 걸레를 찾아서 다행이야."
-	<<case 8>><<hePost "이">> 말한다. "따먹히는게 마치 숨쉬는 것과 같겠지."
-	<<case 9>><<hePost "이">> 말한다. "넌 분명 제대로 따먹히지 않으면 하루도 못 버티겠지."
-	<<case 10>><<hePost "이">> 말한다. "네가 원하는 걸 제대로 제공해주고 있는 것 같네."
-<</switch>>
-<</widget>>
-
-<<widget "bodypart_admire_pregnancy">>
-<<if pregnancyBellyVisible()>>
-	<<famepregnancy 1>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
 	<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "당장은 내가 도와줄 만한 것이 없는 것 같네."
-		<<case 2>><<hePost "이">> 말한다. "그래서 얼마나 많은 아이들을 낳아봤어?"
-		<<case 3>><<hePost "이">> 말한다. "내 친구들이 몇 달 안에 아이를 원한다면 누구를 찾아봐야 할 지 알려주지."
-		<<case 4>><<hePost "이">> 말한다. "몇 개월이나 됐어?"
-		<<case 5>><<hePost "이">> 말한다. "임신하지 않는 것은 네게는 생소한 개념인가 보네."
-		<<case 6>><<hePost "이">> 말한다. "걱정 마, 너는 이미 임신했으니까."
-		<<case 7>><<hePost "이">> 말한다. "최소한 나는 콘돔에 대해 신경쓰지 않아도 되겠네."
-		<<case 8>><<hePost "이">> 말한다. "번식하는 것은 네게는 숨쉬는 것 같겠네."
-		<<case 9>><<hePost "이">> 말한다. "너는 출산하는 느낌을 사랑하는 것이 분명해."
-		<<case 10>><<hePost "이">> 말한다. "보아하니 네가 추구하는 것을 이미 가진 것 같네."
-	<</switch>>
-<<else>>
-	<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "그렇게 아이를 가지고 싶어, <<slut_a>>?"
-		<<case 2>><<hePost "이">> 말한다. "그래서 얼마나 많은 아이들을 낳아봤어?"
-		<<case 3>><<hePost "이">> 말한다. "내 친구들이 아이를 원한다면 누구를 찾아봐야 할 지 알려주지."
-		<<case 4>><<hePost "이">> 말한다. "지금 배란기야?"
-		<<case 5>><<hePost "이">> 말한다. "임신하지 않는 것은 네게는 생소한 개념인가 보네."
-		<<case 6>><<hePost "이">> 말한다. "걱정 마, 너를 임신시켜주는 방법은 알고 있으니까."
-		<<case 7>><<hePost "이">> 말한다. "콘돔에 대해 신경쓰지 않아도 돼서 기쁘네."
-		<<case 8>><<hePost "이">> 말한다. "번식하는 것은 네게는 숨쉬는 것 같겠네."
-		<<case 9>><<hePost "이">> 말한다. "너는 출산하는 느낌을 사랑하는 것이 분명해."
+		<<case 1>><<hePost "이">> 말한다. "엄청난 걸레잖아."
+		<<case 2>><<hePost "이">> 말한다. "분명 아무하고나 놀아나겠지."
+		<<case 3>><<hePost "이">> 말한다. "친구들에게 육변기가 필요하면 누굴 찾을지 말해두도록 하지."
+		<<case 4>><<hePost "이">> 말한다. "수치심이 없는 거야?"
+		<<case 5>><<hePost "이">> 말한다. "자존심이라는 개념을 아는지 모르겠네."
+		<<case 6>><<hePost "이">> 말한다. "걱정하지 마. <<girlPost "을">> 만족시키는 법은 알고 있으니까."
+		<<case 7>><<hePost "이">> 말한다. "이 정도 되는 걸레를 찾아서 다행이야."
+		<<case 8>><<hePost "이">> 말한다. "따먹히는게 마치 숨쉬는 것과 같겠지."
+		<<case 9>><<hePost "이">> 말한다. "넌 분명 제대로 따먹히지 않으면 하루도 못 버티겠지."
 		<<case 10>><<hePost "이">> 말한다. "네가 원하는 걸 제대로 제공해주고 있는 것 같네."
 	<</switch>>
 <</if>>
 <</widget>>
 
-<<widget "bodypart_admire_girly">>
-<<if $player.gender_appearance is "m">>
-	<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "여자 취급을 받고 싶은 거야? 난 상관 없는데."
-		<<case 2>><<hePost "이">> 말한다. "남자애가 입기엔 좀 그런 옷인데."
-		<<case 3>><<hePost "이">> 말한다. "여자애 같네."
-		<<case 4>><<hePost "이">> 말한다. "여자 같아 보이네."
-		<<case 5>><<hePost "이">> 말한다. "걱정하지 마. 여자애 취급 해줄테니까."
-		<<case 6>><<hePost "이">> 말한다. "그렇게 여자 같은 옷을 두르고 있으면 부끄럽지 않아?"
-		<<case 7>><<hePost "이">> 말한다. "귀엽네."
-		<<case 8>><<hePost "이">> 말한다. "여자처럼 차려입는 걸 좋아하는 거구나, 걸레야."
-		<<case 9>><<hePost "이">> 말한다. "분명 친구들도 놀리겠지."
-		<<case 10>><<hePost "이">> 말한다. "왜 그런 옷을 입는 거야?"
-	<</switch>>
+<<widget "bodypart_admire_pregnancy">>
+<<if pregnancyBellyVisible()>>
+	<<famepregnancy 1>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<switch random(1, 10)>>
+			<<case 1>><<hePost "이">> 말한다. "당장은 내가 도와줄 만한 것이 없는 것 같네."
+			<<case 2>><<hePost "이">> 말한다. "그래서 얼마나 많은 아이들을 낳아봤어?"
+			<<case 3>><<hePost "이">> 말한다. "내 친구들이 몇 달 안에 아이를 원한다면 누구를 찾아봐야 할 지 알려주지."
+			<<case 4>><<hePost "이">> 말한다. "몇 개월이나 됐어?"
+			<<case 5>><<hePost "이">> 말한다. "임신하지 않는 것은 네게는 생소한 개념인가 보네."
+			<<case 6>><<hePost "이">> 말한다. "걱정 마, 너는 이미 임신했으니까."
+			<<case 7>><<hePost "이">> 말한다. "최소한 나는 콘돔에 대해 신경쓰지 않아도 되겠네."
+			<<case 8>><<hePost "이">> 말한다. "번식하는 것은 네게는 숨쉬는 것 같겠네."
+			<<case 9>><<hePost "이">> 말한다. "너는 출산하는 느낌을 사랑하는 것이 분명해."
+			<<case 10>><<hePost "이">> 말한다. "보아하니 네가 추구하는 것을 이미 가진 것 같네."
+		<</switch>>
+	<</if>>
 <<else>>
-	<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "귀엽네."
-		<<case 2>><<hePost "이">> 말한다. "분명 공주 대접을 받고 싶겠지. 하지만 넌 그저 걸레일 뿐이야."
-		<<case 3>><<hePost "이">> 말한다. "납치당한 공주처럼 다뤄주지."
-		<<case 4>><<hePost "이">> 말한다. "정말로 귀엽고 여성스럽네."
-		<<case 5>><<hePost "이">> 말한다. "널 지켜줄 수 있는 더 강한 사람이 필요한 것 같네."
-		<<case 6>><<hePost "이">> 말한다. "대부분의 여자애들은 그런 옷차림으로는 부끄러워서 못 다닌다고."
-		<<case 7>><<hePost "이">> 말한다. "다른 여자애들도 이런게 그려진 채로 다녀?"
-		<<case 8>><<hePost "이">> 말한다. "얼마나 여성스러운지 자랑하고 다니는 거야? 도대체 누가 널 남자애랑 착각한다고 그래."
-		<<case 9>><<hePost "이">> 말한다. "존나 섹시하다는 거 하나는 확실하네."
-		<<case 10>><<hePost "이">> 말한다. "이렇게 예쁜 여자애를 갖고 놀 수 있다니 좋네."
-	<</switch>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<switch random(1, 10)>>
+			<<case 1>><<hePost "이">> 말한다. "그렇게 아이를 가지고 싶어, <<slut_a>>?"
+			<<case 2>><<hePost "이">> 말한다. "그래서 얼마나 많은 아이들을 낳아봤어?"
+			<<case 3>><<hePost "이">> 말한다. "내 친구들이 아이를 원한다면 누구를 찾아봐야 할 지 알려주지."
+			<<case 4>><<hePost "이">> 말한다. "지금 배란기야?"
+			<<case 5>><<hePost "이">> 말한다. "임신하지 않는 것은 네게는 생소한 개념인가 보네."
+			<<case 6>><<hePost "이">> 말한다. "걱정 마, 너를 임신시켜주는 방법은 알고 있으니까."
+			<<case 7>><<hePost "이">> 말한다. "콘돔에 대해 신경쓰지 않아도 돼서 기쁘네."
+			<<case 8>><<hePost "이">> 말한다. "번식하는 것은 네게는 숨쉬는 것 같겠네."
+			<<case 9>><<hePost "이">> 말한다. "너는 출산하는 느낌을 사랑하는 것이 분명해."
+			<<case 10>><<hePost "이">> 말한다. "네가 원하는 걸 제대로 제공해주고 있는 것 같네."
+		<</switch>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire_girly">>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $player.gender_appearance is "m">>
+		<<switch random(1, 10)>>
+			<<case 1>><<hePost "이">> 말한다. "여자 취급을 받고 싶은 거야? 난 상관 없는데."
+			<<case 2>><<hePost "이">> 말한다. "남자애가 입기엔 좀 그런 옷인데."
+			<<case 3>><<hePost "이">> 말한다. "여자애 같네."
+			<<case 4>><<hePost "이">> 말한다. "여자 같아 보이네."
+			<<case 5>><<hePost "이">> 말한다. "걱정하지 마. 여자애 취급 해줄테니까."
+			<<case 6>><<hePost "이">> 말한다. "그렇게 여자 같은 옷을 두르고 있으면 부끄럽지 않아?"
+			<<case 7>><<hePost "이">> 말한다. "귀엽네."
+			<<case 8>><<hePost "이">> 말한다. "여자처럼 차려입는 걸 좋아하는 거구나, 걸레야."
+			<<case 9>><<hePost "이">> 말한다. "분명 친구들도 놀리겠지."
+			<<case 10>><<hePost "이">> 말한다. "왜 그런 옷을 입는 거야?"
+		<</switch>>
+	<<else>>
+		<<switch random(1, 10)>>
+			<<case 1>><<hePost "이">> 말한다. "귀엽네."
+			<<case 2>><<hePost "이">> 말한다. "분명 공주 대접을 받고 싶겠지. 하지만 넌 그저 걸레일 뿐이야."
+			<<case 3>><<hePost "이">> 말한다. "납치당한 공주처럼 다뤄주지."
+			<<case 4>><<hePost "이">> 말한다. "정말로 귀엽고 여성스럽네."
+			<<case 5>><<hePost "이">> 말한다. "널 지켜줄 수 있는 더 강한 사람이 필요한 것 같네."
+			<<case 6>><<hePost "이">> 말한다. "대부분의 여자애들은 그런 옷차림으로는 부끄러워서 못 다닌다고."
+			<<case 7>><<hePost "이">> 말한다. "다른 여자애들도 이런게 그려진 채로 다녀?"
+			<<case 8>><<hePost "이">> 말한다. "얼마나 여성스러운지 자랑하고 다니는 거야? 도대체 누가 널 남자애랑 착각한다고 그래."
+			<<case 9>><<hePost "이">> 말한다. "존나 섹시하다는 거 하나는 확실하네."
+			<<case 10>><<hePost "이">> 말한다. "이렇게 예쁜 여자애를 갖고 놀 수 있다니 좋네."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "bodypart_admire_boyish">>
-<<if $player.gender_appearance is "m">>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $player.gender_appearance is "m">>
+			<<switch random(1, 10)>>
+			<<case 1>><<hePost "이">> 말한다. "이렇게 잘생긴 남자애를 갖고 놀 수 있다니 좋네."
+			<<case 2>><<hePost "이">> 말한다. "존나 섹시하다는 거 하나는 확실하네."
+			<<case 3>><<hePost "이">> 말한다. "얼마나 남성스러운지 자랑하고 다니는 거야? 도대체 누가 널 여자애랑 착각하다고 그래."
+			<<case 4>><<hePost "이">> 말한다. "다른 남자애들도 이런게 그려진 채로 다녀?"
+			<<case 5>><<hePost "이">> 말한다. "대부분의 남자애들은 그런 옷차림으로는 부끄러워서 못 다닌다고."
+			<<case 6>><<hePost "이">> 말한다. "널 지켜줄 수 있는 더 강한 사람이 필요한 것 같네."
+			<<case 7>><<hePost "이">> 말한다. "정말로 강하고 남성스럽네."
+			<<case 8>><<hePost "이">> 말한다. "납치당한 왕자처럼 다뤄주지."
+			<<case 9>><<hePost "이">> 말한다. "그야말로 섹시한 고기딜도야."
+			<<case 10>><<hePost "이">> 말한다. "잘못된 건 아니야."
+		<</switch>>
+	<<else>>
 		<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "이렇게 잘생기 남자애를 갖고 놀 수 있다니 좋네."
-		<<case 2>><<hePost "이">> 말한다. "존나 섹시하다는 거 하나는 확실하네."
-		<<case 3>><<hePost "이">> 말한다. "얼마나 남성스러운지 자랑하고 다니는 거야? 도대체 누가 널 여자애랑 착각하다고 그래."
-		<<case 4>><<hePost "이">> 말한다. "다른 남자애들도 이런게 그려진 채로 다녀?"
-		<<case 5>><<hePost "이">> 말한다. "대부분의 남자애들은 그런 옷차림으로는 부끄러워서 못 다닌다고."
-		<<case 6>><<hePost "이">> 말한다. "널 지켜줄 수 있는 더 강한 사람이 필요한 것 같네."
-		<<case 7>><<hePost "이">> 말한다. "정말로 강하고 남성스럽네."
-		<<case 8>><<hePost "이">> 말한다. "납치당한 왕자처럼 다뤄주지."
-		<<case 9>><<hePost "이">> 말한다. "그야말로 섹시한 고기딜도야."
-		<<case 10>><<hePost "이">> 말한다. "잘못된 건 아니야."
-	<</switch>>
-<<else>>
-	<<switch random(1, 10)>>
-		<<case 1>><<hePost "이">> 말한다. "왜 그런 옷을 입는 거야?"
-		<<case 2>><<hePost "이">> 말한다. "분명 친구들도 놀리겠지."
-		<<case 3>><<hePost "이">> 말한다. "남자처럼 차려입는 걸 좋아하겠지만, 넌 그저 걸레일 뿐이야."
-		<<case 4>><<hePost "이">> 말한다. "섹시하네."
-		<<case 5>><<hePost "이">> 말한다. "그렇게 남자 같은 옷을 두르고 있으면 부끄럽지 않아?"
-		<<case 6>><<hePost "이">> 말한다. "걱정하지 마. 남자애 취급 해줄테니까."
-		<<case 7>><<hePost "이">> 말한다. "남자 같아 보이네."
-		<<case 8>><<hePost "이">> 말한다. "남자애 같네."
-		<<case 9>><<hePost "이">> 말한다. "여자애가 입기엔 좀 그런 옷인데."
-		<<case 10>><<hePost "이">> 말한다. "남자 취급을 받고 싶은 거야? 난 상관 없는데."
-	<</switch>>
+			<<case 1>><<hePost "이">> 말한다. "왜 그런 옷을 입는 거야?"
+			<<case 2>><<hePost "이">> 말한다. "분명 친구들도 놀리겠지."
+			<<case 3>><<hePost "이">> 말한다. "남자처럼 차려입는 걸 좋아하겠지만, 넌 그저 걸레일 뿐이야."
+			<<case 4>><<hePost "이">> 말한다. "섹시하네."
+			<<case 5>><<hePost "이">> 말한다. "그렇게 남자 같은 옷을 두르고 있으면 부끄럽지 않아?"
+			<<case 6>><<hePost "이">> 말한다. "걱정하지 마. 남자애 취급 해줄테니까."
+			<<case 7>><<hePost "이">> 말한다. "남자 같아 보이네."
+			<<case 8>><<hePost "이">> 말한다. "남자애 같네."
+			<<case 9>><<hePost "이">> 말한다. "여자애가 입기엔 좀 그런 옷인데."
+			<<case 10>><<hePost "이">> 말한다. "남자 취급을 받고 싶은 거야? 난 상관 없는데."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "bodypart_admire_combat">>
 <<famescrap 1>><<set $enemytrust -= 5>>
-<<switch random(1, 10)>>
-	<<case 1>><<hePost "이">> 말한다. "네 근처에서는 조심 해야겠는걸."
-	<<case 2>><<hePost "이">> 말한다. "사실은 심하게 다뤄지는 걸 좋아할테지."
-	<<case 3>><<hePost "이">> 말한다. "네 그 건방진 태도는 위장에 불과해. 다 보인다고."
-	<<case 4>>
-		<<if $NPCList[_n].pronoun is "f">>
-			<<hePost "이">> 말한다. "핸드백을 계속 지켜보고 있어야 할까?"
-		<<else>>
-			<<hePost "이">> 말한다. "지갑을 계속 지켜보고 있어야 할까?"
-		<</if>>
-	<<case 5>><<hePost "이">> 말한다. "조금이라도 수상한 짓 하면 바로 흠씬 두들겨 패주마."
-	<<case 6>><<hePost "이">> 말한다. "날 어떻게 해볼 수 있을리가 없지."
-	<<case 7>><<hePost "이">> 말한다. "스스로를 되게 높이 평가하나 보네."
-	<<case 8>><<hePost "이">> 말한다. "네가 때려 눕혔다는 사람들은 분명 약골들이겠지."
-	<<case 9>><<hePost "이">> 말한다. "그렇게 강해보이지 않는데."
-	<<case 10>><<hePost "이">> 말한다. "건방진 애새끼가."
-<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<switch random(1, 10)>>
+		<<case 1>><<hePost "이">> 말한다. "네 근처에서는 조심 해야겠는걸."
+		<<case 2>><<hePost "이">> 말한다. "사실은 심하게 다뤄지는 걸 좋아할테지."
+		<<case 3>><<hePost "이">> 말한다. "네 그 건방진 태도는 위장에 불과해. 다 보인다고."
+		<<case 4>>
+			<<if $NPCList[_n].pronoun is "f">>
+				<<hePost "이">> 말한다. "핸드백을 계속 지켜보고 있어야 할까?"
+			<<else>>
+				<<hePost "이">> 말한다. "지갑을 계속 지켜보고 있어야 할까?"
+			<</if>>
+		<<case 5>><<hePost "이">> 말한다. "조금이라도 수상한 짓 하면 바로 흠씬 두들겨 패주마."
+		<<case 6>><<hePost "이">> 말한다. "날 어떻게 해볼 수 있을리가 없지."
+		<<case 7>><<hePost "이">> 말한다. "스스로를 되게 높이 평가하나 보네."
+		<<case 8>><<hePost "이">> 말한다. "네가 때려 눕혔다는 사람들은 분명 약골들이겠지."
+		<<case 9>><<hePost "이">> 말한다. "그렇게 강해보이지 않는데."
+		<<case 10>><<hePost "이">> 말한다. "건방진 애새끼가."
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "bodypart_admire_violence">>
 <<set $enemyanger += 20>>
-<<switch random(1, 10)>>
-	<<case 1>><<hePost "이">> 말한다. "그러니까 거친 걸 좋아한다 이거지."
-	<<case 2>><<hePost "이">> 말한다. "네가 원하는 걸 해주는 것뿐이야."
-	<<case 3>><<hePost "이">> 말한다. "고통에 중독된 거겠지."
-	<<case 4>><<hePost "이">> 말한다. "너 같은 걸레들은 한 번씩 패줘야 해."
-	<<case 5>><<hePost "이">> 말한다. "원하는 것 이상으로 아프게 해주지."
-	<<case 6>><<hePost "이">> 말한다. "뭐 물어볼 필요도 없겠지."
-	<<case 7>><<hePost "이">> 말한다. "드디어 꿈이 이뤄졌는걸."
-	<<case 8>><<hePost "이">> 말한다. "더 거칠게도 할 수 있어."
-	<<case 9>><<hePost "이">> 말한다. "그러니까 그런 걸 좋아한단 말이지."
-	<<case 10>><<hePost "이">> 말한다. "내가 충분히 세게 때리면 가버릴 거야?"
-<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<switch random(1, 10)>>
+		<<case 1>><<hePost "이">> 말한다. "그러니까 거친 걸 좋아한다 이거지."
+		<<case 2>><<hePost "이">> 말한다. "네가 원하는 걸 해주는 것뿐이야."
+		<<case 3>><<hePost "이">> 말한다. "고통에 중독된 거겠지."
+		<<case 4>><<hePost "이">> 말한다. "너 같은 걸레들은 한 번씩 패줘야 해."
+		<<case 5>><<hePost "이">> 말한다. "원하는 것 이상으로 아프게 해주지."
+		<<case 6>><<hePost "이">> 말한다. "뭐 물어볼 필요도 없겠지."
+		<<case 7>><<hePost "이">> 말한다. "드디어 꿈이 이뤄졌는걸."
+		<<case 8>><<hePost "이">> 말한다. "더 거칠게도 할 수 있어."
+		<<case 9>><<hePost "이">> 말한다. "그러니까 그런 걸 좋아한단 말이지."
+		<<case 10>><<hePost "이">> 말한다. "내가 충분히 세게 때리면 가버릴 거야?"
+	<</switch>>
+<</if>>
 <</widget>>
 
 <<widget "bodypart_admire_lewd">>
-<<if $skin[$args[0]].type is "text">>
-	<<switch random(1, 10)>>
-		<<case 1>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "정말이지 음란한 문신이네."
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "정말이지 음란한 낙인이네."
-			<<else>>
-				<<hePost "이">> 말한다. "정말이지 음란한 글이네."
-			<</if>>
-		<<case 2>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "왜 이런 문신을 한 거야?"
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "왜 이런 낙인을 살갗에 지져놓은 거야?"
-			<<else>>
-				<<hePost "이">> 말한다. "네가 직접 쓴 거야?"
-			<</if>>
-		<<case 3>><<hePost "이">> 말한다. "딱 어울리네."
-		<<case 4>><<hePost "이">> 말한다. "걸레들한테 이런 표시가 되어있는게 참 좋다니까."
-		<<case 5>><<hePost "이">> 말한다. "넌 완벽한 캔버스야."
-		<<case 6>><<hePost "이">> 말한다. "다른 사람들이 구역표시를 한게 보이네."
-		<<case 7>><<hePost "이">> 말한다. "간단명료하구만."
-		<<case 8>><<hePost "이">> 말한다. "이제 걸레들이 설명서까지 달고 나오니 좋네."
-		<<case 9>><<hePost "이">> 말한다. "나도 하나 추가할까나."
-		<<case 10>><<hePost "이">> 말한다. "여기다가 추가할 더 심한 것들이 떠오르네."
-	<</switch>>
-<<else>>
-	<<switch random(1, 10)>>
-		<<case 1>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "정말이지 음란한 문신이네."
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "정말이지 음란한 낙인이네."
-			<<else>>
-				<<hePost "이">> 말한다. "정말이지 음란한 그림이네."
-			<</if>>
-		<<case 2>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "왜 이런 문신을 한 거야?"
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "왜 이런 낙인을 살갗에 지져놓은 거야?"
-			<<else>>
-				<<hePost "이">> 말한다. "네가 직접 그린 거야?"
-			<</if>>
-		<<case 3>><<hePost "이">> 말한다. "딱 어울리네."
-		<<case 4>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "문신한 걸레들이 최고야."
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "네 안에 지져넣는 것. 좋아하지."
-			<<else>>
-				<<hePost "이">> 말한다. "그것도 문신으로 남겨봐."
-			<</if>>
-		<<case 5>><<hePost "이">> 말한다. "넌 완벽한 캔버스야."
-		<<case 6>><<hePost "이">> 말한다. "다른 사람들이 구역표시를 한게 보이네."
-		<<case 7>><<hePost "이">> 말한다. "화가 납셨구만."
-		<<case 8>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "더 야한 문신들도 해봐."
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "더 야한 낙인들도 해봐."
-			<<else>>
-				<<hePost "이">> 말한다. "나도 하나 추가해볼까."
-			<</if>>
-		<<case 9>>
-			<<if $skin[$args[0]].pen is "tattoo">>
-				<<hePost "이">> 말한다. "잉크 쓴 보람이 있네."
-			<<elseif $skin[$args[0]].pen is "brand">>
-				<<hePost "이">> 말한다. "네게 낙인 찍어줄 더 심한 것들이 떠오르네."
-			<<else>>
-				<<hePost "이">> 말한다. "여기다가 추가할 더 심한 그림들이 떠오르네."
-			<</if>>
-		<<case 10>><<hePost "이">> 말한다. "더 음란한 것도 봤어."
-	<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $skin[$args[0]].type is "text">>
+		<<switch random(1, 10)>>
+			<<case 1>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "정말이지 음란한 문신이네."
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "정말이지 음란한 낙인이네."
+				<<else>>
+					<<hePost "이">> 말한다. "정말이지 음란한 글이네."
+				<</if>>
+			<<case 2>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "왜 이런 문신을 한 거야?"
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "왜 이런 낙인을 살갗에 지져놓은 거야?"
+				<<else>>
+					<<hePost "이">> 말한다. "네가 직접 쓴 거야?"
+				<</if>>
+			<<case 3>><<hePost "이">> 말한다. "딱 어울리네."
+			<<case 4>><<hePost "이">> 말한다. "걸레들한테 이런 표시가 되어있는게 참 좋다니까."
+			<<case 5>><<hePost "이">> 말한다. "넌 완벽한 캔버스야."
+			<<case 6>><<hePost "이">> 말한다. "다른 사람들이 구역표시를 한게 보이네."
+			<<case 7>><<hePost "이">> 말한다. "간단명료하구만."
+			<<case 8>><<hePost "이">> 말한다. "이제 걸레들이 설명서까지 달고 나오니 좋네."
+			<<case 9>><<hePost "이">> 말한다. "나도 하나 추가할까나."
+			<<case 10>><<hePost "이">> 말한다. "여기다가 추가할 더 심한 것들이 떠오르네."
+		<</switch>>
+	<<else>>
+		<<switch random(1, 10)>>
+			<<case 1>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "정말이지 음란한 문신이네."
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "정말이지 음란한 낙인이네."
+				<<else>>
+					<<hePost "이">> 말한다. "정말이지 음란한 그림이네."
+				<</if>>
+			<<case 2>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "왜 이런 문신을 한 거야?"
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "왜 이런 낙인을 살갗에 지져놓은 거야?"
+				<<else>>
+					<<hePost "이">> 말한다. "네가 직접 그린 거야?"
+				<</if>>
+			<<case 3>><<hePost "이">> 말한다. "딱 어울리네."
+			<<case 4>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "문신한 걸레들이 최고야."
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "네 안에 지져넣는 것. 좋아하지."
+				<<else>>
+					<<hePost "이">> 말한다. "그것도 문신으로 남겨봐."
+				<</if>>
+			<<case 5>><<hePost "이">> 말한다. "넌 완벽한 캔버스야."
+			<<case 6>><<hePost "이">> 말한다. "다른 사람들이 구역표시를 한게 보이네."
+			<<case 7>><<hePost "이">> 말한다. "화가 납셨구만."
+			<<case 8>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "더 야한 문신들도 해봐."
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "더 야한 낙인들도 해봐."
+				<<else>>
+					<<hePost "이">> 말한다. "나도 하나 추가해볼까."
+				<</if>>
+			<<case 9>>
+				<<if $skin[$args[0]].pen is "tattoo">>
+					<<hePost "이">> 말한다. "잉크 쓴 보람이 있네."
+				<<elseif $skin[$args[0]].pen is "brand">>
+					<<hePost "이">> 말한다. "네게 낙인 찍어줄 더 심한 것들이 떠오르네."
+				<<else>>
+					<<hePost "이">> 말한다. "여기다가 추가할 더 심한 그림들이 떠오르네."
+				<</if>>
+			<<case 10>><<hePost "이">> 말한다. "더 음란한 것도 봤어."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "bodypart_admire_criminal">>
 <<set $enemytrust -= 35>>
-<<if $consensual is 1>>
-	<<switch random(1, 9)>>
-		<<case 1>><<hePost "이">> 말한다. "내 돈을 잘 간수해야겠네."
-		<<case 2>><<hePost "이">> 말한다. "네가 뭘 하는지 감시하고 있어."
-		<<case 3>><<hePost "이">> 말한다. "아마 너를 처벌해야 할 것 같아."
-		<<case 4>><<hePost "이">> 말한다. "아무것도 훔치려고 하지 마."
-		<<case 5>><<hePost "이">> 말한다. "훔칠 생각도 하지 말라고."
-		<<case 6>><<hePost "이">> 말한다. "이거 걱정해야 하나?"
-		<<case 7>><<hePost "이">> 말한다. "누구에게서 훔치려고 생각하는 거야?"
-		<<case 8>><<hePost "이">> 말한다. "<<slut_i>> 되는 게 위법인 줄 몰랐는걸."
-		<<case 9>><<hePost "이">> 말한다. "네가 매춘하다 걸렸을 거라고 확신해."
-	<</switch>>
-<<else>>
-	<<switch random(1, 9)>>
-		<<case 1>><<hePost "이">> 말한다. "이렇게 취급당해도 싸지."
-		<<case 2>><<hePost "이">> 말한다. "사회를 위해 내 할 일을 하는 것 뿐이야."
-		<<case 3>><<hePost "이">> 말한다. "<<bitch_rul>> 처벌하는 것은 재밌어."
-		<<case 4>><<hePost "이">> 말한다. "착하게 굴어, 아니면 경찰에게 네가 내게서 도둑질하려 했다고 말 할 거야."
-		<<case 5>><<hePost "이">> 말한다. "내게서 훔치려고 하면 가만 안 놔둬."
-		<<case 6>><<hePost "이">> 말한다. "아무 것도 시도하지 마. 동전 한 닢까지 세어 놓았으니까."
-		<<case 7>><<hePost "이">> 말한다. "네가 매춘하다 걸렸을 거라고 확신해, 바보같은 <<slut_a>>."
-		<<case 8>><<hePost "이">> 말한다. "네겐 이런 쓸모 밖에 없을줄 알고 있었어."
-		<<case 9>><<hePost "이">> 말한다. "네게 걸맞는 취급을 해주는 거야."
-	<</switch>>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $consensual is 1>>
+		<<switch random(1, 9)>>
+			<<case 1>><<hePost "이">> 말한다. "내 돈을 잘 간수해야겠네."
+			<<case 2>><<hePost "이">> 말한다. "네가 뭘 하는지 감시하고 있어."
+			<<case 3>><<hePost "이">> 말한다. "아마 너를 처벌해야 할 것 같아."
+			<<case 4>><<hePost "이">> 말한다. "아무것도 훔치려고 하지 마."
+			<<case 5>><<hePost "이">> 말한다. "훔칠 생각도 하지 말라고."
+			<<case 6>><<hePost "이">> 말한다. "이거 걱정해야 하나?"
+			<<case 7>><<hePost "이">> 말한다. "누구에게서 훔치려고 생각하는 거야?"
+			<<case 8>><<hePost "이">> 말한다. "<<slut_i>> 되는 게 위법인 줄 몰랐는걸."
+			<<case 9>><<hePost "이">> 말한다. "네가 매춘하다 걸렸을 거라고 확신해."
+		<</switch>>
+	<<else>>
+		<<switch random(1, 9)>>
+			<<case 1>><<hePost "이">> 말한다. "이렇게 취급당해도 싸지."
+			<<case 2>><<hePost "이">> 말한다. "사회를 위해 내 할 일을 하는 것 뿐이야."
+			<<case 3>><<hePost "이">> 말한다. "<<bitch_rul>> 처벌하는 것은 재밌어."
+			<<case 4>><<hePost "이">> 말한다. "착하게 굴어, 아니면 경찰에게 네가 내게서 도둑질하려 했다고 말 할 거야."
+			<<case 5>><<hePost "이">> 말한다. "내게서 훔치려고 하면 가만 안 놔둬."
+			<<case 6>><<hePost "이">> 말한다. "아무 것도 시도하지 마. 동전 한 닢까지 세어 놓았으니까."
+			<<case 7>><<hePost "이">> 말한다. "네가 매춘하다 걸렸을 거라고 확신해, 바보같은 <<slut_a>>."
+			<<case 8>><<hePost "이">> 말한다. "네겐 이런 쓸모 밖에 없을줄 알고 있었어."
+			<<case 9>><<hePost "이">> 말한다. "네게 걸맞는 취급을 해주는 거야."
+		<</switch>>
+	<</if>>
 <</if>>
 <</widget>>
 
-<<widget "bodypart_admire">>
-<<if $skin[$args[0]] is undefined>>
-<<elseif $skin[$args[0]].writing>>
-	<<if $args[0] is "forehead" or
-	($args[0] is "left_cheek" or $args[0] is "right_cheek") and !$worn.face.type.includes("mask") or
-	($args[0] is "left_shoulder" or $args[0] is "right_shoulder") and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_open is 1) or
-	$args[0] is "breasts" and $worn.upper.exposed gte 1 and ($worn.under_upper.exposed gte 1 or $worn.under_upper.open is 1) or
-	$args[0] is "back" and ($worn.upper.exposed gte 1 or $worn.upper.state isnot "waist") and ($worn.under_upper.exposed gte 1 or $worn.under_upper.state isnot "waist") or
-	($args[0] is "left_bottom" or $args[0] is "right_bottom") and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic")) or
-	$args[0] is "pubic" and $worn.lower.exposed gte 1 and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic")) or
-	($args[0] is "left_thigh" or $args[0] is "right_thigh") and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>/*Makes sure bodywriting isn't seen if obstructed by clothing.*/
-		<<if $skin[$args[0]].type is "text">>
-			<<HePost "은">> 당신의 <<bodypart $args[0]>>에 써진 <<trBodyWriting $skin[$args[0]].writing>>"_trResult" 문구를 읽는다.
-		<<else>>
-			<<HePost "은">> 당신의 <<bodypart $args[0]>>에 그려진 <<trBodyWriting $skin[$args[0]].writing>>"_trResult" 그림을 살펴본다.
-		<</if>>
-		<<if $npc[$npcrow.indexOf(_n)] isnot "Robin" and $npc[$npcrow.indexOf(_n)] isnot "Kylar" and $npc[$npcrow.indexOf(_n)] isnot "Mason" and $npc[$npcrow.indexOf(_n)] isnot "Sydney">>
-			<<if $skin[$args[0]].arrow is 1 and
-			($args[0] is "left_cheek" or
-			$args[0] is "right_cheek" or
-			$args[0] is "back" or
-			$args[0] is "left_bottom" or
-			$args[0] is "right_bottom" or
-			$args[0] is "pubic" or
-			$args[0] is "left_thigh" or
-			$args[0] is "right_thigh")>>
-				<<bodypart_admire_arrow $args[0]>>
-			<<elseif $skin[$args[0]].special is "prostitution">>
-				<<bodypart_admire_prostitution $args[0]>>
-			<<elseif $skin[$args[0]].special is "rape">>
-				<<bodypart_admire_rape $args[0]>>
-			<<elseif $skin[$args[0]].special is "exhibitionism">>
-				<<bodypart_admire_exhibitionism $args[0]>>
-			<<elseif $skin[$args[0]].special is "bestiality" or $skin[$args[0]].special is "Black Wolf" or $skin[$args[0]].special is "Great Hawk">>
-				<<bodypart_admire_bestiality $args[0]>>
-			<<elseif $skin[$args[0]].special is "sex">>
-				<<bodypart_admire_promiscuity $args[0]>>
-			<<elseif $skin[$args[0]].special is "pregnancy">>
-				<<bodypart_admire_pregnancy $args[0]>>
-			<<elseif $skin[$args[0]].gender is "f">>
-				<<bodypart_admire_girly $args[0]>>
-			<<elseif $skin[$args[0]].gender is "m">>
-				<<bodypart_admire_boyish $args[0]>>
-			<<elseif $skin[$args[0]].special is "combat">>
-				<<bodypart_admire_combat $args[0]>>
-			<<elseif $skin[$args[0]].special is "violence">>
-				<<bodypart_admire_violence $args[0]>>
-			<<elseif $skin[$args[0]].special is "criminal">>
-				<<bodypart_admire_criminal $args[0]>>
-			<<elseif $skin[$args[0]].writing>>
-				<<bodypart_admire_lewd $args[0]>>
+<<widget "bodypart_admire_cum_heavy">>
+<<if $NPCList[_n].type is "plant">>
+	<<He_nun>> <<his_yi>> 입술을 핥는다.
+<<else>>
+	<<famesex 2>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<He_ga>> 말한다.
+
+		<<if $args[0] is "anus" and $player.gender is "m" and $penissize lte 1 and random(1, 5) is 1>>
+			<<if random(1, 2) is 1>>
+				"그렇게 작은 자지로는, 별로 놀랍지도 않네."
+			<<else>>
+				"그렇게 조그마한 자지로는, 아마 그게 네가 누군가에게 쾌락을 줄 수 있는 유일한 방법이겠지."
 			<</if>>
+
+			<<if $penissize is 1>>
+				<<insecurity "penis_small" 1>>
+			<<else>>
+				<<insecurity "penis_tiny" 1>>
+			<</if>>
+		<<else>>
+			<<switch random(1, 11)>>
+				<<case 1>>"젠장할 정액 걸레 같으니."
+				<<case 2>>"정말 추잡한 <<slut_iya>>."
+				<<case 3>>"젠장할 정액변소 같으니."
+				<<case 4>>"역겨운 정액변소 같으니!"
+				<<case 5>>"정액에 뒤덮여 돌아다니는 것이 너를 흥분시키나 보지?"
+				<<case 6>>"너 몸을 씻기는 하는 거냐?"
+				<<case 7>>"젠장할 <<slutPost>>들은 더이상 목욕도 하지 않는다니까."
+				<<case 8>>"너 자신에게 매춘하는 중이었냐?"
+				<<case 9>>"씨팔, 너 정액에 중독되거나 한 거 아냐?"
+				<<case 10>>"누군가가 재미를 보는 방법을 알고 있나 보군."
+				<<case 11>>
+					<<if $args[0] is "vagina">>
+						"너 그렇게 절박하게 아기를 갖고 싶은 거야?"
+					<<elseif $args[0] is "anus">>
+						"보아하니 네 항문이 일을 많이 한 것 같군."
+					<<else>>
+						"누군가가 재미를 보는 방법을 알고 있나 보군."
+					<</if>>
+			<</switch>>
 		<</if>>
 	<</if>>
 <</if>>
 <</widget>>
 
+<<widget "bodypart_admire_cum_light">>
+<<if $NPCList[_n].type is "plant">>
+	<<He_nun>> <<his_yi>> 입술을 핥는다.
+<<else>>
+	<<famesex 1>>
+	<<He_ga>> 말한다.
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<if $args[0] is "vagina">>
+			<<switch random(1, 9)>>
+				<<case 1>>
+					<<if $malechance gt 0>>
+						"네 남자친구와 재미 좀 봤나 보지?"
+					<<else>>
+						"누군가가 벌써 재미 좀 봤구만."
+					<</if>>
+				<<case 2>>
+					<<if $malechance gt 0>>
+						"네 남자친구가 이랬어?"
+					<<else>>
+						"누가 이 정액을 네 안에 싸지른거야?"
+					<</if>>
+				<<case 3>>
+					<<if $malechance gt 0>>
+						"네가 네 남자친구를 행복하게 해 줬다고 장담해."
+					<<else>>
+						"네가 누군가를 아주 행복하게 해 준게 분명한 것 같군."
+					<</if>>
+				<<case 4>>"걱정 마, 내가 네게 좀 더 줄 테니."
+				<<case 5>>"아무래도 내가 질척한 시간을 갖게 될 것 같은데."
+				<<case 6>>"최소한 대 주고 난 뒤에는 좀 씻으라고."
+				<<case 7>>"누군가가 벌써 재미 좀 봤구만."
+				<<case 8>>"보지 속의 정액을 보여주는 것을 좋아하는 거야?"
+				<<case 9>>"임신하려고 노력하고 있는 중이야?"
+			<</switch>>
+		<<elseif $args[0] is "anus">>
+			<<if $player.gender is "m" and $penissize lte 1 and random(1, 5) is 1>>
+				<<if random(1, 2) is 1>>
+					"그렇게 작은 자지로는, 별로 놀랍지도 않네."
+				<<else>>
+					"그렇게 조그마한 자지로는, 아마 그게 네가 누군가에게 쾌락을 줄 수 있는 유일한 방법이겠지."
+				<</if>>
+				
+				<<if $penissize is 1>>
+					<<insecurity "penis_small" 1>>
+				<<else>>
+					<<insecurity "penis_tiny" 1>>
+				<</if>>
+			<<else>>
+				<<switch random(1, 10)>>
+					<<case 1>>
+						<<if $malechance gt 0>>
+							"네 남자친구와 재미 좀 봤나 보지?"
+						<<else>>
+							"누군가가 벌써 재미 좀 봤구만."
+						<</if>>
+					<<case 2>>
+						<<if $malechance gt 0>>
+							"네 남자친구가 이랬어?"
+						<<else>>
+							"누가 이 정액을 네 안에 싸지른거야?"
+						<</if>>
+					<<case 3>>
+						<<if $malechance gt 0>>
+							"네가 네 남자친구를 행복하게 해 줬다고 장담해."
+						<<else>>
+							"네가 누군가를 아주 행복하게 해 준게 분명한 것 같군."
+						<</if>>
+					<<case 4>>"걱정 마, 내가 네게 좀 더 줄 테니."
+					<<case 5>>"아무래도 내가 질척한 시간을 갖게 될 것 같은데."
+					<<case 6>>"최소한 대 주고 난 뒤에는 좀 씻으라고."
+					<<case 7>>"누군가가 벌써 재미 좀 봤구만."
+					<<case 8>>"네가 항문에 정액을 받아들이는 걸 신경쓰지 않는다는 것을 알게 되어 좋네."
+					<<case 9>>"네 항문이 채워지는 것을 즐겼어?"
+					<<case 10>>"처녀로 남으려 노력하고 있는 중이야?"
+				<</switch>>
+			<</if>>
+		<<else>>
+			<<switch random(1, 8)>>
+				<<case 1>>
+					<<if $malechance gt 0>>
+						"네 남자친구와 재미 좀 봤나 보지?"
+					<<else>>
+						"누군가가 벌써 너와 재미 좀 봤구만."
+					<</if>>
+				<<case 2>>
+					<<if $malechance gt 0>>
+						"네 남자친구가 이랬어?"
+					<<else>>
+						"누가 그 정액을 네게 쏟아놓은 거야?"
+					<</if>>
+				<<case 3>>
+					<<if $malechance gt 0>>
+						"네가 네 남자친구를 행복하게 해 줬다고 장담해."
+					<<else>>
+						"네가 누군가를 아주 행복하게 해 준게 분명한 것 같군."
+					<</if>>
+				<<case 4>>"정액을 네 위에 뿌리는 것을 좋아하나 보지?"
+				<<case 5>>"걱정 마, 내가 네게 좀 더 줄 테니."
+				<<case 6>>"최소한 대 주고 난 뒤에는 좀 씻으라고."
+				<<case 7>>"누군가가 벌써 너와 재미 좀 봤구만."
+				<<case 8>>"처녀로 남으려 노력하고 있는 중이야?"
+			<</switch>>
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire_parasite_comment">>
+<<if $NPCList[_n].type is "plant">>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<if $args[0] is "penis">>
+			<<He_ga>> 입술을 불룩 내민다. "그것이 네 정액을<<if $orgasmcurrent gte 1>> 또 다시<</if>> 가로막지 않는 게 좋을 텐데."
+		<<else>>
+			<<He_ga>> 눈썹을 치켜뜬다. "좋아. 인정하지, 그건 새로운데."
+		<</if>>
+	<</if>>
+<<else>>
+	<<famebestiality 1>>
+	<<if !$speechadmired>><<set $speechadmired to 1>>
+		<<He_ga>> 말한다.
+		<<switch random(1, 8)>>
+			<<case 1>>"그게 기분 좋을 것이 틀림없어."
+			<<case 2>>"그게 너를 흥분시키고 있다고 장담해. 그게 네가 지금까지 그걸 떼어버리지 않았던 이유겠지."
+			<<case 3>>"의사에게 그것을 보여주는 게 좋을 거야."
+			<<case 4>>"씨팔, 그거 진짜야?"
+			<<case 5>>"네가 직접 그걸 붙인 거야?"
+			<<case 6>>"도대체 그걸 어디서 찾은 거야?"
+			<<case 7>>"나는 너 같은 <<girl_i>> 그런 것에 관심이 있을 줄은 의심해 본 적도 없어."
+			<<case 8>>"내 취향은 아니지만, 까다롭게 굴면 안 되겠지."
+		<</switch>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire_kylar">>
+<<set _silent to 1>>
+<<switch $skin[$args[0]].special>>
+	<<case "Kylar">>
+		<<if $skin[$args[0]].arrow is 1>>
+			"나를 위해 예약되어 있지," <<he_ga>> 사랑스럽게 말하며 <<he_nun>>
+			<<if $args[0] is "left_cheek" or $args[0] is "right_cheek" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $NPCList[_n].penis is 0 and $mouthuse is 0>>
+				<span class="blue"><<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 입 앞에 둔다</span>.
+				<<neutral 5>><<set $mouthuse to "penis">><<set $NPCList[_n].penis to "mouthentrance">><<set $mouthstate to "entrance">><<set $NPCList[_n].location.genitals to "head">>
+			<<elseif $args[0] is "left_cheek" or $args[0] is "right_cheek" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $NPCList[_n].vagina is 0 and $mouthuse is 0>>
+				<<if random(4) is 0>>
+					부드럽게 당신을 돌아눕혀 등을 바닥에 대도록 하고 <span class="purple">당신의 얼굴에 다리를 벌리고 올라앉아, <<his_yi>> 보지를 당신의 입 위에 내린다</span>.
+					<<submission 5>><<set $NPCList[_n].vagina to "facesit">><<set $mouthuse to "facesit">><<set $mouthstate to "vagina">><<set $position to "missionary">>
+				<<else>>
+					<span class="blue"><<his_yi>> 다리를 당신의 머리에 감싸고, <<his_yi>> 보지를 당신으 입에 누른다</span>.
+					<<submission 5>><<set $mouthuse to "othervagina">><<set $NPCList[_n].vagina to "mouth">><<set $mouthstate to "othervagina">>
+				<</if>>
+			<<elseif $args[0] is "back" or $args[0] is "right_bottom" or $args[0] is "left_bottom" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals" and $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and $NPCList[0].penis is 0 and $anususe is 0>>
+				<span class="blue"><<his_yi>> 자지를 당신의 <<bottomPost>> 앞에 둔다</span>.
+				<<neutral 5>><<set $anususe to "penis">><<set $NPCList[_n].penis to "anusentrance">><<set $anusstate to "entrance">>
+			<<elseif $args[0] is "pubic" or $args[0] is "left_thigh" or $args[0] is "right_thigh" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals" and $player.vaginaExist and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].penis is 0 and $vaginause is 0>>
+				<span class="blue">당신의 다리 사이로 움직여, <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 보지 앞에 둔다</span>.
+				<<neutral 5>><<set $NPCList[_n].penis to "vaginaentrance">><<set $vaginause to "penis">><<set $vaginastate to "entrance">><<set $NPCList[_n].location.genitals to "genitals">>
+			<<elseif $args[0] is "pubic" or $args[0] is "left_thigh" or $args[0] is "right_thigh" and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals" and $player.penisExist and $worn.lower.vagina_exposed gte 1 and $worn.under_lower.vagina_exposed gte 1 and $NPCList[0].vagina is 0 and $penisuse is 0>>
+				<span class="blue">당신에게 다리를 벌리고 올라타, <<his_yi>> 보지를 당신의 <<penisPost>> 가까이 맴돌게 한다</span>.
+				<<neutral 5>><<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $NPCList[_n].location.genitals to "genitals">>
+			<<else>>
+				당신을 향해 미소짓는다.
+			<</if>>
+		<<else>>
+			<<He_nun>> 당신을 향해 미소짓는다.
+			<<unset _silent>>
+		<</if>>
+		<<set $enemyanger -= 10>><<set $enemytrust += 10>><<npcincr Kylar rage -2>>
+	<<case "Robin">>
+		<<if _kylarStatus.includes("Rage")>>
+			<<He_ga>> 으르렁거린다. "<<nnpc_him_un "Robin">> 잊어버려! 내가 <<nnpc_himPost "Robin">>보다 좋다고!"
+		<<else>>
+			<<He_ga>> 소리지른다. "로빈은 내가 하는 만큼 너를 돌봐줄 수 없어!"
+		<</if>>
+		<<set $enemyanger += 30>><<set $enemytrust -= 30>><<npcincr Kylar rage 3>>
+	<<case "Whitney">>
+		<<if _kylarStatus.includes("Rage")>>
+			<<He_ga>> 으르렁거린다. "너는 휘트니 것이 아냐! 너는 내 거야!"
+		<<else>>
+			<<He_nun>> 얼어붙는다. "그... <<nnpc_He_nun "Whitney">> 너를 제대로 대하지 않아! 나는 가능해!"
+		<</if>>
+		<<set $enemyanger += 30>><<set $enemytrust -= 30>><<npcincr Kylar rage 3>>
+	<<case "Sydney">>
+		<<if $skin[$args[0]].lewd isnot 1>>
+			<<He_nun>> 얼굴을 찌푸리지만, 그것에 대해 아무말도 하지 않는다.
+			<<unset _silent>>
+			<<set $enemyanger += 5>><<set $enemytrust -= 5>>
+		<<elseif !$kylarSeen.includes("sydneyWriting") and $args[0].lewd is 1>>
+			<<He_nun>> 얼굴을 찌푸리고, 그것을 다시 읽어보고, <<his_yi>> 입술을 비죽거린다. "<<nnpc_HePost "Sydney">>... <<nnpc_himPost "Sydney">>에 대해서는 잊어버려."
+			<<set $enemyanger += 20>><<set $enemytrust -= 20>><<npcincr Kylar rage 1>><<set $kylarSeen.pushUnique("sydneyWriting")>>
+		<<elseif _kylarStatus.includes("Rage")>>
+			<<He_ga>> 소리지른다. "시드니는 나만큼 너를 알지 못해!"
+			<<set $enemyanger += 30>><<set $enemytrust -= 30>><<npcincr Kylar rage 3>>
+		<<else>>
+			<<He_nun>> 얼굴을 찌푸린다. "나는 네가 <<nnpc_him_gwa "Sydney">> 가까운 것이 싫어."
+			<<set $enemyanger += 20>><<set $enemytrust -= 20>><<npcincr Kylar rage 1>>
+		<</if>>
+	<<case "Black Wolf" "Great Hawk">>
+		<<His_yi>> 눈이 가늘어진다. "나도 짐승이 될 수 있어. 두고 보라고!"
+		<<set $enemyanger += 30>><<set $enemytrust -= 30>><<npcincr Kylar rage 3>>
+	<<case "Eden" "Avery" "Alex">>
+		<<if _kylarStatus.includes("Rage")>>
+			<<He_ga>> 으르렁거린다. "그게 누구이든 간에, 쓸모없어!"
+		<<else>>
+			<<He_ga>> 소리지른다. "너는 그 사람이 필요 없어! 너는 나만을 필요로 한다고!"
+		<</if>>
+		<<set $enemyanger += 30>><<set $enemytrust -= 30>><<npcincr Kylar rage 3>>
+	<<case "prostitution" "rape" "exhibitionism" "sex">>
+		<<He_ga>> 얼굴을 찌푸린다.
+		<<unset _silent>>
+		<<set $enemyanger += 20>><<set $enemytrust -= 20>><<npcincr Kylar rage 1>>
+	<<case "pregnancy">>
+		/*ToDo: Pregnancy, write once Kylar's reaction to/thoughts on pregnancy is better understood.
+		May differ based on gender, jealousy and whether or not Kylar has impregnated the PC in the past.*/
+	<<case "combat" "violence" "criminal">>
+		<<His_yi>> 눈이 커지지만, <<he_nun>> 그것에 대해 아무말도 하지 않는다.
+		<<unset _silent>>
+	<<default>>
+		<<if $skin[$args[0]].lewd is 1>>
+			<<He_nun>> 얼굴을 찌푸린다.
+			<<unset _silent>>
+			<<set $enemyanger += 10>><<set $enemytrust -= 10>><<npcincr Kylar rage 1>>
+		<<else>>
+			/*Do nothing.*/
+			<<unset _silent>>
+		<</if>>
+<</switch>>
+<</widget>>
+
+<<widget "bodypart_admire_plant">>
+<<if !$speechadmired>><<set $speechadmired to 1>>
+	<<if $skin[$args[0]].type is "object">>
+		<<switch $skin[$args[0]].writing>>
+			<<case "unicorn">>
+				"그런 말들이 존재한다고? 우와."
+			<<case "heart" "cross">>
+				"아이, 귀여워라! ...그게 뭐야?"
+			<<case "paw_print">>
+				<<if $location is "forest">>
+					"이봐, 너 그... 아무것도 아냐."
+				<<else>>
+					"이국적인데!"
+				<</if>>
+			<<case "flower" "butterfly">>
+				"오, 나 그거 좋아해!"
+				<<set $enemytrust += 20>>
+			<<case "star">>
+				<<if $location is "forest">>
+					"우리가 별들을 볼 수 있기를 바라지만, 나무들이 그것들을 대부분 가려버려서..."
+				<<elseif $daystate is "night">>
+					"하늘과 똑같아!"
+				<<else>>
+					"밤하늘 같아..."
+				<</if>>
+			<<case "skull">>
+				"네 몸 안에 저런게 하나 있다고? 못 믿겠어."
+			<<case "flame">>
+				<<if $skin[$args[0]].pen is "brand" or $skin[$args[0]].pen is "magic">>
+					"그건... 실제로 너를 불태우지는 않지, 그렇지 않아?"
+				<<else>>
+					"너는 위험한 것에 대한 취향이 있구나."
+				<</if>>
+			<<case "cattle_brand">>
+				<<if $location is "moor">>
+					"걱정 마. 레미가 내게서 너를 뺏어가게 놔두지 않을 테니까."
+				<<else>>
+					"아이, 귀여워라! ...그게 뭐야?"
+				<</if>>
+			<<case "penis">>
+				"오오, 너무 음란해! ...무슨 뜻이야, 사용하지 못한다고?!"
+		<</switch>>
+	<<else>>
+		<<switch $skin[$args[0]].pen>>
+			<<case "tattoo">>
+				"그게 뭐야, 태어날 때부터 있던 점 같은 거야?"
+			<<case "brand">>
+				"아우, 그런 게 내 안으로 타들어오는 것을 원하지 않아."
+			<<case "magic">>
+				"나한테 고약한 버섯이 난 거야, 아니면 그게 진짜로 빛나고 있는 거야?"
+			<<case "lipstick">>
+				"오오, 분홍색!"
+			<<case "mud">>
+				"자연의 화폭이군."
+			<<default>>
+				"그런 귀여운 피부에 그런 걸 그려넣다니 너무하네."
+		<</switch>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire">>
+<<switch $args[1]>>
+	<<case "bodywriting">>
+		<<if $skin[$args[0]] is undefined or $newlyWritten.includes($args[0])>>
+		<<elseif $skin[$args[0]].writing>>
+			<<if $args[0] is "forehead" or
+			($args[0] is "left_cheek" or $args[0] is "right_cheek") and !$worn.face.type.includes("mask") or
+			($args[0] is "left_shoulder" or $args[0] is "right_shoulder") and ($worn.upper.exposed gte 1 or $worn.upper.open is 1) and ($worn.under_upper.exposed gte 1 or $worn.under_open is 1) or
+			$args[0] is "breasts" and $worn.upper.exposed gte 1 and ($worn.under_upper.exposed gte 1 or $worn.under_upper.open is 1) or
+			$args[0] is "back" and ($worn.upper.exposed gte 1 or $worn.upper.state isnot "waist") and ($worn.under_upper.exposed gte 1 or $worn.under_upper.state isnot "waist") or
+			($args[0] is "left_bottom" or $args[0] is "right_bottom") and ($worn.lower.exposed gte 1 or $worn.lower.anus_exposed gte 1) and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic")) or
+			$args[0] is "pubic" and $worn.lower.exposed gte 1 and ($worn.under_lower.exposed gte 1 or !$worn.under_lower.type.includes("athletic")) or
+			($args[0] is "left_thigh" or $args[0] is "right_thigh") and $worn.lower.vagina_exposed gte 1 and !$worn.under_lower.type.includes("athletic")>>/*Makes sure bodywriting isn't seen if obstructed by clothing.*/
+				<<if $skin[$args[0]].type is "text">>
+					<<HePost "은">> 당신의 <<bodypart $args[0]>>에 써진 <<trBodyWriting $skin[$args[0]].writing>>"_trResult" 문구를 읽는다.
+				<<else>>
+					<<He_nun>> 당신의 <<bodypart $args[0]>>에 그려진 <<print $skin[$args[0]].writing>> 문양을 쳐다본다.
+				<</if>>
+				<<if $npc[$npcrow.indexOf(_n)] is "Kylar">>
+					<<bodypart_admire_kylar $args[0]>>
+				<<elseif $npc[$npcrow.indexOf(_n)] isnot "Robin" and $npc[$npcrow.indexOf(_n)] isnot "Mason" and $npc[$npcrow.indexOf(_n)] isnot "Sydney">>
+					<<if $skin[$args[0]].arrow is 1 and
+					($args[0] is "left_cheek" or
+					$args[0] is "right_cheek" or
+					$args[0] is "back" or
+					$args[0] is "left_bottom" or
+					$args[0] is "right_bottom" or
+					$args[0] is "pubic" or
+					$args[0] is "left_thigh" or
+					$args[0] is "right_thigh")>>
+						<<bodypart_admire_arrow $args[0]>>
+					<<elseif $NPCList[_n].type is "plant">>
+						<<bodypart_admire_plant $args[0]>>
+					<<elseif $skin[$args[0]].special is "prostitution">>
+						<<bodypart_admire_prostitution $args[0]>>
+					<<elseif $skin[$args[0]].special is "rape">>
+						<<bodypart_admire_rape $args[0]>>
+					<<elseif $skin[$args[0]].special is "exhibitionism">>
+						<<bodypart_admire_exhibitionism $args[0]>>
+					<<elseif $skin[$args[0]].special is "bestiality" or $skin[$args[0]].special is "Black Wolf" or $skin[$args[0]].special is "Great Hawk">>
+						<<bodypart_admire_bestiality $args[0]>>
+					<<elseif $skin[$args[0]].special is "sex">>
+						<<bodypart_admire_promiscuity $args[0]>>
+					<<elseif $skin[$args[0]].special is "pregnancy">>
+						<<bodypart_admire_pregnancy $args[0]>>
+					<<elseif $skin[$args[0]].gender is "f">>
+						<<bodypart_admire_girly $args[0]>>
+					<<elseif $skin[$args[0]].gender is "m">>
+						<<bodypart_admire_boyish $args[0]>>
+					<<elseif $skin[$args[0]].special is "combat">>
+						<<bodypart_admire_combat $args[0]>>
+					<<elseif $skin[$args[0]].special is "violence">>
+						<<bodypart_admire_violence $args[0]>>
+					<<elseif $skin[$args[0]].special is "criminal">>
+						<<bodypart_admire_criminal $args[0]>>
+					<<elseif $skin[$args[0]].writing>>
+						<<bodypart_admire_lewd $args[0]>>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<<case "cum">>
+		<<bodypart_admire_cum_convert $args[0]>>
+	<<case "parasite">>
+		<<bodypart_admire_parasite_convert $args[0]>>
+<</switch>>
+<</widget>>
+
+<<widget "bodypart_admire_cum_convert">>
+<<switch $args[0]>>
+	<<case "forehead">>
+		<<bodypart_admire_cum hair>>
+	<<case "left_bottom", "right_bottom">>
+		<<if random(1, 2) is 1>>
+			<<bodypart_admire_cum bottom>>
+		<<else>>
+			<<bodypart_admire_cum anus>>
+		<</if>>
+	<<case "left_shoulder">>
+		<<bodypart_admire_cum leftarm>>
+	<<case "right_shoulder">>
+		<<bodypart_admire_cum rightarm>>
+	<<case "pubic">>
+		<<if $player.gender is "m" or ($player.gender is "h" and random(1, 2) is 1)>>
+			<<bodypart_admire_cum penis>>
+		<<else>>
+			<<if random(1, 2) is 1>>
+				<<bodypart_admire_cum vagina>>
+			<<else>>
+				<<bodypart_admire_cum vaginaoutside>>
+			<</if>>
+		<</if>>
+	<<case "back">>
+		<<bodypart_admire_cum neck>>
+	<<case "breasts">>
+		<<bodypart_admire_cum chest>>
+	<<case "left_thigh", "right_thigh">>
+		<<bodypart_admire_cum thigh>>
+	<<case "left_cheek", "right_cheek">>
+		<<if random(1, 2) is 1>>
+			<<bodypart_admire_cum face>>
+		<<else>>
+			<<bodypart_admire_cum mouth>>
+		<</if>>
+	<<default>>
+		<<set _admireNothing to true>>
+<</switch>>
+<<if $NPCList[_n].type is "plant">>
+	<<set _admireNothing to true>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire_parasite_convert">>
+<<switch $args[0]>>
+	<<case "left_bottom", "right_bottom">>
+		<<bodypart_admire_parasite bottom>>
+	<<case "left_shoulder">>
+		<<bodypart_admire_parasite left_arm>>
+	<<case "right_shoulder">>
+		<<bodypart_admire_parasite right_arm>>
+	<<case "pubic">>
+		<<if $player.gender is "m" or ($player.gender is "h" and random(1, 2) is 1)>>
+			<<bodypart_admire_parasite penis>>
+		<<else>>
+			<<bodypart_admire_parasite clit>>
+		<</if>>
+	<<case "breasts">>
+		<<bodypart_admire_parasite nipples>>
+	<<default>>
+		<<set _admireNothing to true>>
+<</switch>>
+<</widget>>
+
+<<widget "bodypart_admire_cum">>
+<<if _admireNothing>>
+<<elseif setup.bodyliquid.combined($args[0]) gte 4>>
+	<<if $player.bodyliquid[$args[0]].goo gte 1 and $player.bodyliquid[$args[0]].semen gte 1>>
+		<<set _bodypartLiquidText to "정액과 점액">>
+	<<elseif $player.bodyliquid[$args[0]].goo gte 1>>
+		<<set _bodypartLiquidText to "점액">>
+	<<else>>
+		<<set _bodypartLiquidText to "정액">>
+	<</if>>
+
+	<<if $args[0] is "vagina" or $args[0] is "anus" or $args[0] is "mouth">>
+		<<He_nun>> 당신의 <<bodypart $args[0]>>에서 <<print either("스며나오는", "쏟아져 나오는 대량의", "흘러나오는")>> <<print _bodypartLiquidText>><<print either("을 쳐다본다", "을 발견한다", "을 주목한다", "에 눈을 둔다", "을 응시한다")>>.
+	<<else>>
+		<<He_nun>> 당신의 <<trBodypart $args[0] "을" "sep">>_trResult<<print either(_trPost+" 뒤덮은", _trPost+" 흠뻑 적신 대량의", "에서 흘러내리는", "에 풍성하게 늘어진")>> <<print _bodypartLiquidText>><<print either("을 쳐다본다", "을 발견한다", "을 주목한다", "에 눈을 둔다", "을 응시한다")>>.
+	<</if>>
+
+	<<if $npc[$npcrow.indexOf(_n)] isnot "Robin" and $npc[$npcrow.indexOf(_n)] isnot "Kylar" and $npc[$npcrow.indexOf(_n)] isnot "Mason" and $npc[$npcrow.indexOf(_n)] isnot "Sydney">>
+		<<bodypart_admire_cum_heavy $args[0]>>
+	<</if>>
+<<elseif setup.bodyliquid.combined($args[0]) gte 2>>
+	<<if $player.bodyliquid[$args[0]].goo gte 1 and $player.bodyliquid.mouth.semen gte 1>>
+		<<set _bodypartLiquidText to "정액과 점액">>
+	<<elseif $player.bodyliquid[$args[0]].goo gte 1>>
+		<<set _bodypartLiquidText to "점액">>
+	<<else>>
+		<<set _bodypartLiquidText to "정액">>
+	<</if>>
+
+	<<if $args[0] is "vagina" or $args[0] is "anus" or $args[0] is "mouth">>
+		<<He_nun>> 당신의 <<bodypart $args[0]>>에서 <<print either("뚝뚝 떨어지는", "새어나오는", "흘러나오는 소량의", "조금씩 흘러나오는")>> <<print _bodypartLiquidText>><<print either("을 쳐다본다", "을 발견한다", "을 주목한다", "에 눈을 둔다", "을 응시한다")>>.
+	<<else>>
+		<<He_nun>> 당신 <<bodypart $args[0]>>의 <<print _bodypartLiquidText>><<print either("을 쳐다본다", "을 발견한다", "을 주목한다", "에 눈을 둔다", "을 응시한다")>>.
+	<</if>>
+	
+	<<if $npc[$npcrow.indexOf(_n)] isnot "Robin" and $npc[$npcrow.indexOf(_n)] isnot "Kylar" and $npc[$npcrow.indexOf(_n)] isnot "Mason" and $npc[$npcrow.indexOf(_n)] isnot "Sydney">>
+		<<bodypart_admire_cum_light $args[0]>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "bodypart_admire_parasite">>
+<<if _admireNothing or $parasite[$args[0]].name is undefined>>
+<<elseif ($args[0] is "nipples" and $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1) or (["bottom","clit","penis"].includes($args[0]) and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1) or !["nipples","bottom","clit","penis"].includes($args[0])>>
+	<<He_nun>> 당신 <<bodypart $args[0]>>의 <<trParasite $parasite[$args[0]].name "을" "sep">><<print either(_trPost+" 알아챈다", _trPost+" 응시한다", _trPost+" 흘낏 본다", "에 눈을 둔다", _trPost+" 쳐다본다")>>.
+	<<if $npc[$npcrow.indexOf(_n)] isnot "Robin" and $npc[$npcrow.indexOf(_n)] isnot "Kylar" and $npc[$npcrow.indexOf(_n)] isnot "Mason" and $npc[$npcrow.indexOf(_n)] isnot "Sydney">>
+		<<bodypart_admire_parasite_comment $args[0]>>
+	<</if>>
+<</if>>
+<</widget>>
+
 <<widget "bodypart_admire_chance">>
-<<if random(1, 5) is 5 and $NPCList[_n].mouth is 0>>
-	<<bodypart_admire $args[0]>>
+<<if $enemytype isnot "beast" and ($NPCList[_n].mouth is 0 or $NPCList[_n].mouth is "speech_only" or ($NPCList[_n].type is "plant" and $speechkissvirgin is 1)) and $speechdisable isnot 1>>
+    <<switch random(1, 5)>>
+		<<case 5>>
+			<<bodypart_admire $args[0] bodywriting>>
+		<<case 4>>
+			<<bodypart_admire $args[0] cum>>
+		<<case 3>>
+			<<bodypart_admire $args[0] parasite>>
+		<<default>>
+			/*Do nothing*/
+	<</switch>>
 <</if>>
 <</widget>>
 
 <<widget "bodywriting">>
 <<bodywriting_exposure_check>>
-<<for _e to 0; _e lt $bodypart_number; _e++>>
-	<<activebodypart>>
+<<for _active_bodypart range setup.bodyparts>>
 	<<if $skin[_active_bodypart].writing>>
 		<<if $skin[_active_bodypart].type is "text">>
 			<<if $skin[_active_bodypart].special is $loveInterest.primary or $skin[_active_bodypart].special is $loveInterest.secondary>>
@@ -1373,6 +1920,7 @@ Second arg: tool */
 <<if _skin_array is undefined or $args[0] is true>>
 	<<set _skin_array to []>>
 	<<set _skin_array_special to []>>
+	<<set _bodywriting_exposed to 0>>
 	<<if $skin.forehead.writing>>
 		<<set _skin_array.push("forehead")>>
 		<<set _skin_array_special.push($skin.forehead.special)>>
@@ -1480,7 +2028,7 @@ Second arg: tool */
 <<if $tattoo_bodypart is "left_bottom" or $tattoo_bodypart is "right_bottom">>
 "좋아," <<hePost "이">> 커튼을 닫으며 말한다. "엉덩이를 한 번 보자고."
 	<<if $worn.lower.name isnot "naked">>
-		<<if $worn.lower.skirt is 1>>
+		<<if setup.clothes.lower[$worn.lower.index].skirt is 1>>
 			<<if $worn.under_lower.name isnot "naked">>
 				당신은 <<nervously>> 치마를 들춰, <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 노출시킨다. "그것도 벗어야 해." <<hePost "이">> 말한다. "작업할 때 걸리적거려."
 					<<if $worn.under_lower.set is $worn.under_upper.set>>
@@ -1539,11 +2087,11 @@ Second arg: tool */
 "좋아." <<hePost "이">> 커튼을 닫으며 말한다.
 	<<if $worn.lower.name is "naked">>
 
-	<<elseif $worn.upper.set is $worn.lower.set and $worn.lower.skirt isnot 1>>
+	<<elseif $worn.upper.set is $worn.lower.set and setup.clothes.lower[$worn.lower.index].skirt isnot 1>>
 		"옷을 완전히 벗어야 해. 작업에 방해되니까 말이야."
 
 		당신은 <<nervously>> <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 벗어, <<undertopPost "과">> <<undiesPost "을">> 노출시킨다.
-	<<elseif $worn.lower.skirt isnot 1>>
+	<<elseif setup.clothes.lower[$worn.lower.index].skirt isnot 1>>
 		"바지도 벗어야 해. 작업에 방해되니까 말이야."
 
 		당신은 <<nervously>> <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 내려, <<undiesPost "을">> 노출시킨다.

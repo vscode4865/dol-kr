@@ -6,9 +6,10 @@ State.prng.init()
 
 window.versionUpdateCheck = true;
 window.saveUpdateCheck = true;
+window.onLoadUpdateCheck = false;
 
 Config.saves.onLoad = function (save) {
-	window.versionUpdateCheck = true;
+	window.onLoadUpdateCheck = true;
 }
 
 Config.saves.onSave = function (save) {
@@ -21,8 +22,12 @@ window.StartConfig = {
 	"debug": false,
 	"enableImages": true,
 	"enableLinkNumberify": true,
-	"version": "0.3.3.4",
+	"version": "0.3.4.8",
 }
+
+/* convert version string to numeric value */
+let tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");
+window.StartConfig.version_numeric = tmpver[0]*1000000 + tmpver[1]*10000 + tmpver[2]*100 + tmpver[3]*1;
 
 config.saves.autosave = "autosave";
 
@@ -146,11 +151,11 @@ function widgetHandler(widgetName, contents) {
 			}
 			else {
 				console.error(`Error rendering widget ${widgetName}`, errList);
-				return this.error(`error${errList.length > 1 ? 's' : ''} within widget contents (${errList.join('; ')})`);
+				return this.error(`${V.args.length > 0 ? '($args=[' + V.args.full + ']): ' : ''}error${errList.length > 1 ? 's' : ''} within widget contents (${errList.join('; ')})`);
 			}
 		}
 		catch (ex) {
-			console.error(`Error executing widget ${widgetName}`, ex); return this.error(`cannot execute widget: ${ex.message}`);
+			console.error(`Error executing widget ${widgetName} ${V.args.length > 0 ? 'with arguments "'+ V.args.full +'"' : ''}`, ex); return this.error(`cannot execute widget: ${ex.message}`);
 		}
 		finally {
 			// Custom code

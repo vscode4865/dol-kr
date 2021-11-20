@@ -45,8 +45,18 @@
  | <<link ">">><<set $money += 1000>><<clamp>><<replace "#statsmoney">><<print Math.trunc($money)>><</replace>><</link>>
  | <<link ">>">><<set $money += 10000>><<clamp>><<replace "#statsmoney">><<print Math.trunc($money)>><</replace>><</link>>
  | <<link ">>>">><<set $money += 100000>><<clamp>><<replace "#statsmoney">><<print Math.trunc($money)>><</replace>><</link>>
-
 <br>
+
+<<if $location is "prison">>
+	<<link "<<<">><<set $prison.teeth -= 100>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>> |
+	<<link "<<">><<set $prison.teeth -= 10>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>> |
+	<<link "<">><<set $prison.teeth -= 1>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>> |
+	이빨: <span id="statsteeth"><<print Math.trunc($prison.teeth)>></span>
+	| <<link ">">><<set $prison.teeth += 1>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>>
+	| <<link ">>">><<set $prison.teeth += 10>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>>
+	| <<link ">>>">><<set $prison.teeth += 100>><<set $prison.teeth = Math.clamp($prison.teeth, 0, 1000000)>><<replace "#statsteeth">><<print Math.trunc($prison.teeth)>><</replace>><</link>>
+	<br>
+<</if>>
 
 무한 스프레이: <span id="statsinfinitespray">$infinitespray</span> |
 <<link "변경">>
@@ -85,10 +95,8 @@
 		<<link [[남자가 된다|$passage]]>>
 			<<set $vaginause to "none">>
 			<<set $vaginastate to "none">>
-			<<set $vaginaexist to 0>>
 			<<set $penisuse to 0>>
 			<<set $penisstate to 0>>
-			<<set $penisexist to 1>>
 			<<set $player.gender to "m">>
 			<<set $player.sex to "m">>
 			<<set $player.ballsExist to true>>
@@ -103,10 +111,8 @@
 		<<link [[여자가 된다|$passage]]>>
 			<<set $vaginause to 0>>
 			<<set $vaginastate to 0>>
-			<<set $vaginaexist to 1>>
 			<<set $penisuse to "none">>
 			<<set $penisstate to "none">>
-			<<set $penisexist to 0>>
 			<<set $player.gender to "f">>
 			<<set $player.sex to "f">>
 			<<set $player.ballsExist to false>>
@@ -119,10 +125,8 @@
 		<<link [[후타나리가 된다|$passage]]>>
 			<<set $vaginause to 0>>
 			<<set $vaginastate to 0>>
-			<<set $vaginaexist to 1>>
 			<<set $penisuse to 0>>
 			<<set $penisstate to 0>>
-			<<set $penisexist to 1>>
 			<<set $player.gender to "h">>
 			<<set $player.sex to "h">>
 			<<set $player.penisExist to true>>
@@ -253,7 +257,7 @@
 	<</replace>>
 <</link>> |
 <br><br>
-<<if $vaginaexist is 1>>
+<<if $player.vaginaExist>>
 	<<trVirginity $player.virginity.vaginal>>보지 처녀: <span id="statsvaginalvirginity"><<print ($player.virginity.vaginal is true ? "존재" : "가져간 사람: " + ($player.virginity.vaginal is false ? "불명" : _trResult))>></span> |
 	<<link "변경">>
 		<<if $player.virginity.vaginal is true>>
@@ -266,7 +270,7 @@
 	<br>
 <</if>>
 
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<trVirginity $player.virginity.penile>>자지 동정: <span id="statspenilevirginity"><<print ($player.virginity.penile is true ? "존재" : "가져간 사람: " + ($player.virginity.penile is false ? "불명" : _trResult))>></span> |
 	<<link "변경">>
 		<<if $player.virginity.penile is true>>
@@ -563,7 +567,7 @@
 <br>
 <<link "액체 비우기">><<set $semen_amount to 0>><<set $milk_amount to 0>><</link>>
 <br>
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<link "<<<">><<set $semen_volume -= 1000>><<clamp>><<replace "#statssemen_volume">><<print Math.trunc($semen_volume)>><</replace>> <<updatesidebarimg>><</link>> |
 	<<link "<<">><<set $semen_volume -= 100>><<clamp>><<replace "#statssemen_volume">><<print Math.trunc($semen_volume)>><</replace>> <<updatesidebarimg>><</link>> |
 	<<link "<">><<set $semen_volume -= 10>><<clamp>><<replace "#statssemen_volume">><<print Math.trunc($semen_volume)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -592,7 +596,7 @@
 	겉옷 상의 내구도: <span id="statsoverupperintegrity"><<print Math.trunc($worn.over_upper.integrity)>></span>
 	| <<link ">">><<set $worn.over_upper.integrity += 1>><<clamp>><<replace "#statsoverupperintegrity">><<print Math.trunc($worn.over_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.over_upper.integrity += 10>><<clamp>><<replace "#statsoverupperintegrity">><<print Math.trunc($worn.over_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.over_upper.integrity += 100>><<clamp>><<replace "#statsoverupperintegrity">><<print Math.trunc($worn.over_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.over_upper.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.over_upper.integrity += 100>><<clamp>><<replace "#statsoverupperintegrity">><<print Math.trunc($worn.over_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('over_upper',$worn.over_upper,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>상반신에 겉옷을 입고 있지 않다.</i>
@@ -605,7 +609,7 @@
 	겉옷 하의 내구도: <span id="statsoverlowerintegrity"><<print Math.trunc($worn.over_lower.integrity)>></span>
 	| <<link ">">><<set $worn.over_lower.integrity += 1>><<clamp>><<replace "#statsoverlowerintegrity">><<print Math.trunc($worn.over_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.over_lower.integrity += 10>><<clamp>><<replace "#statsoverlowerintegrity">><<print Math.trunc($worn.over_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.over_lower.integrity += 100>><<clamp>><<replace "#statsoverlowerintegrity">><<print Math.trunc($worn.over_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.over_lower.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.over_lower.integrity += 100>><<clamp>><<replace "#statsoverlowerintegrity">><<print Math.trunc($worn.over_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('over_lower',$worn.over_lower,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>하반신에 겉옷을 입고 있지 않다.</i>
@@ -627,7 +631,7 @@
 	상의 내구도: <span id="statsupperintegrity"><<print Math.trunc($worn.upper.integrity)>></span>
 	| <<link ">">><<set $worn.upper.integrity += 1>><<clamp>><<replace "#statsupperintegrity">><<print Math.trunc($worn.upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.upper.integrity += 10>><<clamp>><<replace "#statsupperintegrity">><<print Math.trunc($worn.upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.upper.integrity += 100>><<clamp>><<replace "#statsupperintegrity">><<print Math.trunc($worn.upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.upper.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.upper.integrity += 100>><<clamp>><<replace "#statsupperintegrity">><<print Math.trunc($worn.upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('upper',$worn.upper,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>상반신에 옷을 입고 있지 않다.</i>
@@ -650,7 +654,7 @@
 	하의 내구도: <span id="statslowerintegrity"><<print Math.trunc($worn.lower.integrity)>></span>
 	| <<link ">">><<set $worn.lower.integrity += 1>><<clamp>><<replace "#statslowerintegrity">><<print Math.trunc($worn.lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.lower.integrity += 10>><<clamp>><<replace "#statslowerintegrity">><<print Math.trunc($worn.lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.lower.integrity += 100>><<clamp>><<replace "#statslowerintegrity">><<print Math.trunc($worn.lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.lower.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.lower.integrity += 100>><<clamp>><<replace "#statslowerintegrity">><<print Math.trunc($worn.lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('lower',$worn.lower,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>하반신에 옷을 입고 있지 않다.</i>
@@ -673,7 +677,7 @@
 	속옷 하의 내구도: <span id="statsunderlowerintegrity"><<print Math.trunc($worn.under_lower.integrity)>></span>
 	| <<link ">">><<set $worn.under_lower.integrity += 1>><<clamp>><<replace "#statsunderlowerintegrity">><<print Math.trunc($worn.under_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.under_lower.integrity += 10>><<clamp>><<replace "#statsunderlowerintegrity">><<print Math.trunc($worn.under_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.under_lower.integrity += 100>><<clamp>><<replace "#statsunderlowerintegrity">><<print Math.trunc($worn.under_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.under_lower.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.under_lower.integrity += 100>><<clamp>><<replace "#statsunderlowerintegrity">><<print Math.trunc($worn.under_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('under_lower',$worn.under_lower,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>하반신에 속옷을 입고 있지 않다.</i>
@@ -696,7 +700,7 @@
 	속옷 상의 내구도: <span id="statsunderupperintegrity"><<print Math.trunc($worn.under_upper.integrity)>></span>
 	| <<link ">">><<set $worn.under_upper.integrity += 1>><<clamp>><<replace "#statsunderupperintegrity">><<print Math.trunc($worn.under_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.under_upper.integrity += 10>><<clamp>><<replace "#statsunderupperintegrity">><<print Math.trunc($worn.under_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.under_upper.integrity += 100>><<clamp>><<replace "#statsunderupperintegrity">><<print Math.trunc($worn.under_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.under_upper.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.under_upper.integrity += 100>><<clamp>><<replace "#statsunderupperintegrity">><<print Math.trunc($worn.under_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('under_upper',$worn.under_upper,'integrity_max')>> 이 기본 최대치)
 	<br>
 <<else>>
 	<i>상반신에 속옷을 입고 있지 않다.</i>
@@ -710,7 +714,7 @@
 	정조대 내구도: <span id="statsgenitalsintegrity"><<print Math.trunc($worn.genitals.integrity)>></span>
 	| <<link ">">><<set $worn.genitals.integrity += 1>><<clamp>><<replace "#statsgenitalsintegrity">><<print Math.trunc($worn.genitals.integrity)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $worn.genitals.integrity += 10>><<clamp>><<replace "#statsgenitalsintegrity">><<print Math.trunc($worn.genitals.integrity)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $worn.genitals.integrity += 100>><<clamp>><<replace "#statsgenitalsintegrity">><<print Math.trunc($worn.genitals.integrity)>><</replace>> <<updatesidebarimg>><</link>> ($worn.genitals.integrity_max 이 기본 최대치)
+	| <<link ">>>">><<set $worn.genitals.integrity += 100>><<clamp>><<replace "#statsgenitalsintegrity">><<print Math.trunc($worn.genitals.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('genitals',$worn.genitals,'integrity_max')>> 이 기본 최대치)
 <br>
 <<else>>
 	<i>정조대를 하고 있지 않다.</i>
@@ -1114,7 +1118,7 @@
  | <<link ">">><<set $bottomsize += 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($bottomsize)>><</replace>> <<updatesidebarimg>><</link>>
 <br>
 
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 <<link "<">><<set $penissize -= 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>> |
 자지 크기: <span id="statspenissize"><<print Math.trunc($penissize)>></span>
  | <<link ">">><<set $penissize += 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>>
@@ -1166,7 +1170,7 @@
 <</link>>
 <br>
 
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	자지 기생충: <span id="statspenisparasite"><<if $parasite.penis.name>><<trParasite $parasite.penis.name>>_trResult<<else>>없음<</if>></span> |
 	<<link "변경">>
 	<<if !$parasite.penis.name>>
@@ -1182,7 +1186,7 @@
 	<br>
 <</if>>
 
-<<if $penisexist isnot 1>>
+<<if !$player.penisExist>>
 	클리토리스 기생충: <span id="statsclitparasite"><<if $parasite.clit.name>><<trParasite $parasite.clit.name>>_trResult<<else>>없음<</if>></span> |
 	<<link "변경">>
 	<<if !$parasite.clit.name>>
@@ -1607,6 +1611,15 @@
  | <<link ">">><<npcincr Eden love 1>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>>
  | <<link ">>">><<npcincr Eden love 10>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>>
  | <<link ">>>">><<npcincr Eden love 100>><<clamp>><<replace "#statsedenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].love)>><</replace>><</link>> (200 = 최대)
+<br>
+
+<<link "<<<">><<npcincr Eden dom -100>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
+<<link "<<">><<npcincr Eden dom -10>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
+<<link "<">><<npcincr Eden dom -1>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> |
+에덴 지배도: <span id="statsedendom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>></span>
+ | <<link ">">><<npcincr Eden dom 1>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>>
+ | <<link ">>">><<npcincr Eden dom 10>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>>
+ | <<link ">>>">><<npcincr Eden dom 100>><<clamp>><<replace "#statsedendom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].dom)>><</replace>><</link>> (150 = 최대)
 <br>
 
 <<link "<<<">><<npcincr Eden lust -100>><<clamp>><<replace "#statsedenlust">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Eden")].lust)>><</replace>><</link>> |
@@ -2110,6 +2123,7 @@ Wren love: <span id="statswrenlove"><<print Math.trunc($NPCName[$NPCNameList.ind
 	<<link "럴커">><<impregnate "lurker" 1000>><<cheatsImpreg>><</link>> |
 	<<link "말벌">><<impregnate "wasp" 1000>><<cheatsImpreg>><</link>> |
 	<<link "오징어">><<impregnate "squid" 1000>><<cheatsImpreg>><</link>> |
+	<<link "식물">><<impregnate "vine" 1000>><<cheatsImpreg>><</link>> |
 	<br>
 	<<if _pregnancy.motherStatus lt 2>>
 		자웅동체 임신하기 |
@@ -2122,6 +2136,7 @@ Wren love: <span id="statswrenlove"><<print Math.trunc($NPCName[$NPCNameList.ind
 		<<link "럴커">><<cheatsImpregPre>><<impregnate "lurker" 1000>><<cheatsImpreg true>><</link>> |
 		<<link "말벌">><<cheatsImpregPre>><<impregnate "wasp" 1000>><<cheatsImpreg true>><</link>> |
 		<<link "오징어">><<cheatsImpregPre>><<impregnate "squid" 1000>><<cheatsImpreg true>><</link>> |
+		<<link "식물">><<cheatsImpregPre>><<impregnate "vine" 1000>><<cheatsImpreg true>><</link>> |
 	<<else>>
 		자웅동체는 한 번에 하나만 임신 가능합니다.
 	<</if>>

@@ -28,6 +28,8 @@
 	<<set $laketeensfire to 0>>
 <</if>>
 
+<<wPersist "forest">><<getTarget true>>
+
 <</widget>>
 
 <<widget "destinationlake">>
@@ -123,7 +125,7 @@
 
 <<widget "eventlakesafe">>
 
-<<if random(1, 20) is 1>>
+<<if random(1, 20) is 1 and !$possessed>>
 	<<eventAmbient>>
 <</if>>
 
@@ -159,11 +161,15 @@
 	<<link [[다음|Lake Vore]]>><<set $molestationstart to 1>><</link>>
 	<br>
 	<<elseif $rng gte 81 and $swarmdisable is "f">>
-	물이 불안하게 요동친다. 작은 물고기 떼가 당신을 에워싸고 있다.
-	<br><br>
+		<<if $slimedisable is "f" and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+			물이 불안하게 요동친다. 유령 슬라임 떼가 당신을 에워싸고 있다.
+		<<else>>
+			물이 불안하게 요동친다. 작은 물고기 떼가 당신을 에워싸고 있다.
+		<</if>>
+		<br><br>
 
-	<<link [[다음|Lake Depths Swarm]]>><<set $molestationstart to 1>><</link>>
-	<br>
+		<<link [[다음|Lake Depths Swarm]]>><<set $molestationstart to 1>><</link>>
+		<br>
 	<<else>>
 		<<if $daystate is "night" and $weather is "rain">>
 		뭔가가 다리를 스쳐 당신을 놀라게 한다. 당신은 어둡고 격렬한 물 안을 들여다 보지만 아무것도 볼 수 없었다. 기분이 이상하다.
@@ -227,7 +233,7 @@
 		<</if>>
 	<<elseif $weather is "clear">>
 		<<if $daystate is "night">>
-			<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
+			<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
 				붉은 달이 얼음에 비친다. 두려움이 당신을 찌른다.<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<br><br>
 			<<else>>
@@ -270,8 +276,10 @@
 <</widget>>
 
 <<widget "eventlake">>
+<<if ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and ($wraith.hunt or $wraith.timer gte random(0, 10))>>
+	<<wHunt "lake">>
+<<elseif $rng gte 81>>
 <!-- Modified for Monster People -->
-<<if $rng gte 81>>
 <<beastNEWinit 1 boar>>
 당신은 <<beasttype_i>> 나무 밑바닥에서 쓰레기를 뒤지는 것을 본다. 그것이 당신을 발견했다.
 <br><br>
@@ -281,9 +289,14 @@
 <<link [[도망친다|Lake Boar Run]]>><</link>><<athleticsdifficulty>>
 <br>
 <<elseif $rng gte 51>>
-당신은 누군가가 당신의 이름을 불렀다고 생각했지만, 주변에는 아무도 없다.
-<<gtrauma>><<trauma 1>>
-<br><br>
+	<<if $wraith and $wraith.state isnot "" or $hallucinations gte 1>>
+	당신은 누군가가 당신의 이름을 불렀다고 생각했지만, 주변에는 아무도 없다.
+	<<gtrauma>><<trauma 3>>
+	<<else>>
+	바람이 나무들 사이를 지나가며 낮은 으르렁거리는 소리를 낸다. <<if $awarelevel gte 1>>잠시 동안, 마치 나무들이 전부 호수에서 날려가는 것 같이 보인다.<</if>>
+	<<gstress>><<stress 1>>
+	<</if>>
+	<br><br>
 <<set $eventskip to 1>>
 <<destinationlake>>
 <<else>>
@@ -508,31 +521,54 @@
 <</widget>>
 
 <<widget "lakeclothes">>
+<<if !$possessed>>
+	<<wearoutfit>>
+	<br>
+	수영복 세트:
+	<br>
+	<<listswimoutfits "lakeshore">>
+	<br>
 
-<<wearoutfit>>
-<br>
-수영복 세트:
-<br>
-<<listswimoutfits "lakeshore">>
-<br>
+	<<storeactions "lakeshore">>
+	<<temperature>>
+<</if>>
+<</widget>>
 
-<<storeactions "lakeshore">>
-<<temperature>>
+<<widget "destinationlakeruin">>
+<<switch $bus>>
+	<<case "lakeunderwater">>
+		<<link [[다음|Lake Underwater]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<case "lake_ruin">>
+		<<link [[다음|Lake Ruin]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<case "lake_ruin_deep">>
+		<<link [[다음|Lake Ruin Deep]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<case "lake_ruin_prison">>
+		<<link [[다음|Lake Ruin Prison]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<default>>
+		<<link [[다음|Lake Ruin Deep]]>><<endevent>><<set $eventskip to 1>><</link>>
+<</switch>>
+<br>
 <</widget>>
 
 <<widget "schoolpoolclothes">>
-
+<<set $wardrobe_location to $args[0]>>
+<<wardrobeSelection true>>
 <<wearoutfit>>
+<br>
+<<storeon "school pool" "check">>
+<<if _store_check is 1>>
+	<<link [[옷을 입는다|$passage]]>><<storeon "school pool">><</link>>
+<</if>>
 <br>
 수영복 세트:
 <br>
-<<listswimoutfits "school pool">>
-<<storeon "school pool" "check">>
-<<if _store_check is 1>>
-당신의 옷이 벤치에 놓여있다.
-<</if>>
+<<listswimoutfits $wardrobe_location>>
+<br>
+평상옷 세트:
+<br>
+<<listoutfitsPassage $wardrobe_location>>
+<br>
 
-<<storeactions "school pool">>
 <<temperature>>
 <</widget>>
 

@@ -7,7 +7,12 @@
 <<set $enemystrength to 20000>>
 <<set $combat to 1>>
 <<set $enemytrust to 0>>
-<<set $enemyhealth to $NPCList[0].health+$NPCList[1].health+$NPCList[2].health+$NPCList[3].health+$NPCList[4].health+$NPCList[5].health>>
+<<set $enemyhealth to 0>>
+<<for _i to 0; _i lt $enemyno; _i++>>
+	<<if $NPCList[_i].health isnot undefined>>
+		<<set $enemyhealth += $NPCList[_i].health>>
+	<</if>>
+<</for>>
 <<if $enemyhealth is 0>><<set $enemyhealth to 199>><</if>><!-- This is set for compatibility elsewhere if needed, v2.2.0... -->
 <<set $enemyarousalmax to 500 * $enemyno>>
 <<set $enemyangermax to 200>>
@@ -177,6 +182,8 @@
 <<set $enemyhealth6 to $enemyhealthmax>>
 <<set $enemytrust6 to $enemytrust>>
 
+<<set $npcDAP to []>>
+
 <<combatinit>>
 <</widget>>
 
@@ -195,12 +202,9 @@
 <<set _beast_monster to $args[4]>>
 <<set $active_enemy to 0>>
 <!-- Error Checking -->
-<<switch _tpe>>
-	<<case "dog" "cat" "pig" "wolf" "dolphin" "lizard" "bear" "boar" "creature" "horse" "fox" "hawk">>
-	<!-- No action-->
-	<<default>>
+<<if !$BeastList.includes(_tpe)>>
 	<span class="red">ERROR: beastNEWinit unknown type</span>
-<</switch>>
+<</if>>
 
 <<for _xx = 1; _xx < _nn+1; _xx++>>
 	<<generateBEAST _xx _tpe _gnn _beast_genitals _beast_monster>>
@@ -739,7 +743,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <<combatinit>>
 <</widget>>
 
-<<widget "abomination">>
+<<widget "abominationold">>
 
 <<set $enemyhealth to 5555>>
 <<set $enemyarousal to $allure / 50>>
@@ -804,7 +808,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <<combatinit>>
 <</widget>>
 
-<<widget "abomination2">>
+<<widget "abominationold2">>
 
 <<set $enemyhealth to 5555>>
 <<set $enemyarousal to $allure / 50>>
@@ -881,6 +885,8 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
   <</for>>
 <</if>>
 
+<<set $newlyWritten to []>>
+
 <<if _genderknownbeforehand or _genderexposed>>
   <<set $crossdressing to 0>>
 <<else>>
@@ -888,7 +894,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 <</if>>
 
 <<if $enemytype is "beast">>
-	<<if $NPCList[0].penis is "none" and $penisexist is 1>>
+	<<if $NPCList[0].penis is "none" and $player.penisExist>>
 	<<set $position to "missionary">>
 	<<else>>
 		<<if random(1, 100) gte 20>>
@@ -945,37 +951,37 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	<<if $enemyno gte 1>>
 		<br>
 		<<man-combat 1>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
 	<<if $enemyno gte 2>>
 	<<man-combat 2>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
 	<<if $enemyno gte 3>>
 		<<man-combat 3>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
 	<<if $enemyno gte 4>>
 		<<man-combat 4>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
 	<<if $enemyno gte 5>>
 		<<man-combat 5>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
 	<<if $enemyno gte 6>>
 		<<man-combat 6>>
-		<<if $position isnot "stalk">>
+		<<if $position isnot "stalk" and !$breakIgnore>>
 			<br><br>
 		<</if>>
 	<</if>>
@@ -998,7 +1004,7 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 		<</if>>
 	<</if>>
 <</for>>
-<<if $player.condom isnot false>>
+<<if $player.condom>>
 	<<if $player.condom.damaged is false>>
 		<<set $condomPlayerPenisImg to true>>
 	<</if>>
@@ -1041,22 +1047,22 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	<<else>>
 		<<if $npc.includes("Sydney") and !$sydneySeen.includes("herm")>>
 			<<set $sydneySeen.pushUnique("herm")>>
-			<<sydneyStatusCheck>>
+			<<NPCStatusCheck "Sydney">>
 			<<if _sydneyStatus.includes("corrupt")>>
 				<<He_nun>> 당신의 <<genitals_rul>> 경이에 차서 쳐다본다. "우와! <<sydneyMum "은">> 그런게 가능하다고는 전혀 말해주지 않았어."
 			<<else>>
 				<<He_nun>> 당신의 <<genitals_rul>> 엄청난 호기심으로 바라본다. "두...둘 다? 그런게 가능하다는 것은 몰랐어!"
 			<</if>><<npcincr Sydney purity -2>><<lspurity>>
-		<<elseif $rng gte 96>>
+		<<elseif $rng gte 96 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
 			<span class="red">저들은 당신의 <<genitalsPost "을">>보고 공포와 역겨움에 물러선다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechhermangry to 2>>
-		<<elseif $rng gte 85 or $npc.includes("Kylar")>>
+		<<elseif $rng gte 85 and $NPCList[0].type isnot "plant" or $npc.includes("Kylar")>>
 			<span class="purple">저들은 당신의 <<genitalsPost "을">> 보고 손을 떨며 숨을 가파르게 쉰다.</span>
 			<<set $enemyarousal += (50 * $enemyno)>><<set $speechhermaroused to 2>>
-		<<elseif $rng gte 50>>
+		<<elseif $rng gte 50 and $NPCList[0].type isnot "plant">>
 			<span class="blue">저들은 당신의 <<genitalsPost "을">>보고 충격에 물러선다.</span>
 			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechhermshock to 2>>
-		<<elseif $rng gte 30>>
+		<<elseif $rng gte 30 and $NPCList[0].type isnot "plant">>
 			저들은 당신의 <<genitalsPost "을">> 보고 물러선다. 저들은 그나마 화난 것처럼 보이진 않는다.
 			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechhermdisappointed to 2>>
 		<<else>>
@@ -1101,22 +1107,22 @@ otherwise there's no easy way of stopping NPC from shoving their stuff in PC's f
 	<<else>>
 		<<if $npc.includes("Sydney") and !$sydneySeen.includes("crossdress")>>
 			<<set $sydneySeen.pushUnique("crossdress")>>
-			<<sydneyStatusCheck>>
+			<<NPCStatusCheck "Sydney">>
 			<<if _sydneyStatus.includes("corrupt")>>
 				<<He_nun>> 어리둥절하게 당신의 <<genitals_rul>> 바라본다. "원래, 네가 <<gender_rago>>? 뭐, 그게 내가 너에 대해 느끼는 것을 바꾸지는 않겠지만."
 			<<else>>
 				<<He_nun>> 혼란스럽게 당신의 <<genitals_rul>> 쳐다본다. "네가... <<gender_rago>>? 그-그것도 괜찮아! 네가 전혀 달라지지 않았다고 생각해!"
 			<</if>><<npcincr Sydney purity -2>><<lspurity>>
-		<<elseif $rng gte 96>>
+		<<elseif $rng gte 96 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
 			<span class="red"><<HePost "이">> 당신의 <<genitalsPost "을">> 보고 공포에 물러선다. 속았다 느낀 <<HePost "은">> 분노에 미쳐 버린 것 같다!</span>
 			<<set $enemyanger += 200>><<set $enemytrust -= 100>><<set $speechcrossdressangry to 2>>
-		<<elseif $rng gte 86 or ($npc.includes("Kylar") and $NPCList[0].gender isnot $player.gender)>>
+		<<elseif $rng gte 86 and $NPCList[0].type isnot "plant" or ($npc.includes("Kylar") and $NPCList[0].gender isnot $player.gender)>>
 			당신의 <<genitalsPost "은">> 완전히 <<HePost "이">> 예측한 것과 딴판이었다. 하지만 저들은 신경 쓰지 않는 것 같다. <span class="purple">사실, <<HePost "은">> 그저 욕구를 배출할 생각에 가득찬것 같다.</span>
 			<<set $enemyarousal += 50>><<set $speechcrossdressaroused to 2>>
-		<<elseif $rng gte 50 and !$npc.includes("Kylar")>>
+		<<elseif $rng gte 50 and !$npc.includes("Kylar") and $NPCList[0].type isnot "plant">>
 			<<HePost "이">> 당신의 <<genitalsPost "을">> 보자 충격에 눈이 휘둥그레진다. <<HePost "은">> 뭘 해야 할지 모르는 것 같다.
 			<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechcrossdressshock to 2>>
-		<<elseif $rng gte 30 or ($npc.includes("Kylar") and $NPCList[0].gender is $player.gender)>>
+		<<elseif $rng gte 30 and $NPCList[0].type isnot "plant" or ($npc.includes("Kylar") and $NPCList[0].gender is $player.gender)>>
 		<<HePost "이">> 당신의 <<genitalsPost "을">> 보고 실망한다. 이건 <<HePost "이">> 기대하던 것이 아니었다.
 			<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechcrossdressdisappointed to 2>>
 		<<else>>
