@@ -40,6 +40,7 @@
 <<set $voredisable to "f">>
 <<set $tentacledisable to "f">>
 <<set $analdisable to "f">>
+<<set $analdoubledisable to "t">>
 <<set $analingusdisablegiving to "f">>
 <<set $analingusdisablereceiving to "f">>
 <<set $transformdisable to "f">>
@@ -48,6 +49,7 @@
 <<set $breastfeedingdisable to "f">>
 <<set $analpregdisable to "f">>
 <<set $asphyxiaLvl to 3>>
+<<set $NudeGenderDC to 1>>
 <<set $footdisable to "f">>
 <<set $tipdisable to "f">>
 <<set $bodywritingImages to true>>
@@ -64,12 +66,11 @@
 <<set $checkstyle to "words">>
 <<set $blackwolfmonster to 1>>
 <<set $greathawkmonster to 1>>
-<<set $player.ballsExist to false>>
 <<set $blinkingdisable to "f">>
 <<set $halfcloseddisable to "f">>
 
-<<set $newWardrobeStyle to false>>
-<<set $imgLighten to false>>
+<<set $newWardrobeStyle to true>>
+<<set $imgLighten to "">>
 <<set $sidebarStats to "Disabled">>
 <<set $sidebarTime to "Disabled">>
 <<set $combatControls to "radio">>
@@ -90,6 +91,7 @@
 <<set $rentmod to 1>>
 <<set $condomchance to 50>>
 <<set $condomautochance to 50>>
+<<set $multipleWardrobes to "isolated">>
 
 <<set $notifyUpdate = true>>
 
@@ -210,10 +212,12 @@
 	<<set _buttonName to "확인">>
 <</if>>
 <<link _buttonName>>
-	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1))>>
+	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1)) and $maxStates lte 5>>
 		<<settingsExitFunction>>
-	<<else>>
+	<<elseif $maxStates lte 5>><!-- confirm cheats -->
 		<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
+	<<else>><!-- confirm huge history -->
+		<<replace #settingsExit>><<settingsExitConfirmHistory>><</replace>>
 	<</if>>
 <</link>>
 <</widget>>
@@ -241,6 +245,28 @@
 <</link>>
 <</widget>>
 
+<<widget "settingsExitConfirmHistory">>
+<span class="red"><b>주의! 당신의 이력 깊이 설정이 너무 높습니다!</b><br>
+5보다 큰 설정은 새 세이브를 만들 때 에러를 낼 수 있습니다! 계속하기 전에 당신이 하려는 것을 확인하거나, 아니면 설정을 낮추세요!
+</span>
+<br>
+<<link "이 기능을 끈다">>
+	<<set $maxStates to 1>>
+	<<replace #settingsExit>><<settingsExit>><</replace>>
+	<<displaySettings>>
+<</link>>
+<br>
+<<link "설정을 안전한 깊이로 내린다">>
+	<<set $maxStates to 5>>
+	<<replace #settingsExit>><<settingsExit>><</replace>>
+	<<displaySettings>>
+<</link>>
+<br><br><br>
+<<link "나는 내 발에 총 쏘는 게 좋아">>
+	<<settingsExitFunction>>
+<</link>>
+<</widget>>
+
 <<widget "settingsExitFunction">>
 	<<if $settingsExitPassage is "Start2">>
 		<<setSkinColorBase>>
@@ -259,7 +285,7 @@
 	<<hirsuteHideCheck>>
 	<<tanned 0 "ignoreCoverage">>
 	<<if $player.freckles is "random">>
-		<<set $player.freckles to random(1, 5) == 1 ? true : false>>
+		<<set $player.freckles to (random(1, 5) is 1)>>
 	<</if>>
 	<!-- check if specified face style is installed -->
 	<img id="testImage" class="hidden" @scr="'img/face/' + $facestyle + '/base.png'">
@@ -268,8 +294,8 @@
 	<</if>>
 	<!-- Init shop mannequin gender -->
 	<<if $mannequinHasPenis is undefined>>
-		<<set $mannequinHasPenis = $player.penisexist ? 1 : 0>>
-		<<set $mannequinBreastsSize = $mannequinHasPenis ? 0 : 3>>
+		<<set $mannequinHasPenis to $player.penisExist>>
+		<<set $mannequinBreastsSize to ($mannequinHasPenis ? 0 : 3)>>
 	<</if>>
 	<<if $clothesPriceLewd lt Math.ceil(10 / $clothesPrice) * 0.1>>
 		<<set $clothesPriceLewd to parseFloat((Math.ceil(10 / $clothesPrice) * 0.1).toFixed(1))>>
@@ -377,10 +403,13 @@
 
 	<span class="gold">성별</span>
 	<br>
+	<div class="playergender">
 	<label>남성 <<radiobutton "$player.gender" "m" autocheck>></label> |
 	<label>여성 <<radiobutton "$player.gender" "f" autocheck>></label> |
 	<label>후타나리 <<radiobutton "$player.gender" "h" autocheck>></label>
 	<br><br>
+	</div>
+	<<run settingsPCGenderUpdate()>>
 
 	<span class="gold">체형</span>
 	<br>
@@ -611,11 +640,26 @@
 	<</if>>
 	<br>
 
-	<span class="gold">매력에 의해 이밴트가 트리거되는 비율</span> - 기본값: 1.0
+	<span class="gold">매력에 의해 이벤트가 트리거되는 비율</span> - 기본값: 1.0
 	<br>
 	<span class="red">이 설정을 1 미만으로 변경하면, 다시 1 이상으로 변경할 때까지 업적을 얻을 수 없습니다. 또한, 일부 업적의 획득이 영구적으로 막힐 수 있습니다.</span>
 	<br>
 	<<numberslider "$alluremod" $alluremod 0.2 2 0.1>>
+	<br><br>
+
+	<span class="gold">여러 개의 옷장</span>
+	<br>
+	<span class="red">이것은 실험적인 기능이며, 미래에 바뀌거나 삭제될 수 있습니다.</span> 게임 플레이 도중에 설정을 바꿀 수는 있으나, 게임 중에 끄면 옷을 사용하지 못하거나 켜면 당신을 수건 외에는 입을 게 없는 상황에 처하게 할 수 있기 때문에 추천하지 않습니다.
+	<br>
+	<label><<radiobutton "$multipleWardrobes" false autocheck>> 하나의 공유된 옷장만 사용한다</label>
+	<br>
+	<label><<radiobutton "$multipleWardrobes" "isolated" autocheck>> 격리된 장소에서는 독립된 옷장을 사용한다</label>
+	<br>
+	<<if $debug is 1>>
+		<!--This setting will not be ready on initial release-->
+		<label><<radiobutton "$multipleWardrobes" "all" autocheck>> 모든 곳에서 독립된 옷장을 사용한다</label>
+		<br>
+	<</if>>
 	<br><br>
 
 	<div class="gold widerButton">
@@ -782,6 +826,9 @@
 			<label><div class="settingsToggle">
 			<<checkbox "$horsedisable" "t" "f" autocheck>> 말과 켄타우르스 활성화
 			</div></label>
+			<label><div class="settingsToggle">
+			<<checkbox "$plantdisable" "t" "f" autocheck>> 식물사람 활성화
+			</div></label>
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
 	<</widget>>
@@ -904,9 +951,16 @@
 
 	<span class="gold">기능 토글</span>
 	<br>
-	<label><div class="settingsToggle">
-	<<checkbox "$analdisable" "t" "f" autocheck>> 애널 활성화
-	</div></label>
+	/*<label><div class="settingsToggle">
+	<<checkbox "$analdisable" "t" "f" autocheck>> 항문 활성화
+	</div></label>*/
+	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalandDAPHead">
+	<label>
+	<<checkbox "$analdisable" "t" "f" autocheck>> 항문 활성화 |
+	</label>
+	<label>
+	<<checkbox "$analdoubledisable" "t" "f" autocheck>> 항문 동시삽입 활성화
+	</label></div>
 	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
 	<span id="settingsAnalingusHead">항문 핥기:</span>
 	<label>
@@ -936,14 +990,19 @@
 	<label><div class="settingsToggle">
 	<<checkbox "$bodywritingdisable" "t" "f" autocheck>> 신체 낙서 및 강제 문신 활성화
 	</div></label>
+	<label><div class="settingsToggle">
+	<<checkbox "$footdisable" "t" "f" autocheck>> 발 활성화
+	</div></label>
 	<div class="settingsToggle" style="display: inline-flex;">
 	<span style="white-space:nowrap;">질식 강도 설정</span>
 	<<numberslider "$asphyxiaLvl" $asphyxiaLvl 0 4 1>>
 	<<run settingsAsphyxiation()>>
 	</div>
-	<label><div class="settingsToggle">
-	<<checkbox "$footdisable" "t" "f" autocheck>> 발 활성화
-	</div></label>
+	<div class="settingsToggle">
+	나체&nbsp;성별&nbsp;파악
+	<<numberslider "$NudeGenderDC" $NudeGenderDC 0 2 1>>
+	<<run settingsNudeGenderAppearance()>>
+	</div>
 	<div style="clear:both;">/*Keep at end of toggles*/</div><<customSettingToggle>>
 <</widget>>
 
@@ -959,7 +1018,7 @@
 	<span class="gold">플레이어 캐릭터 최소 가슴 크기</span> - 이미 이 이하로 설정된 가슴은 자동으로 커지거나 하지 않습니다.
 	<br>
 	<<for _i to 0; _i lt 5; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$breastsizemin" `_i` autocheck>></label> |
+		<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
 	<</for>>
 	<br><br>
 
@@ -967,7 +1026,7 @@
 	<br>
 	<<set _name to ["호리호리함", "날씬함", "평범함", "푹신함", "부드러움", "둥긂", "포동포동함", "큼", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<print '<<radiobutton "$bottomsizemax" _i ' + ($bottomsizemax is _i ? "checked" : "") + '>>'>></label> |
+		<label><<print _name[_i]>> <<radiobutton "$bottomsizemax" _i autocheck>></label> |
 	<</for>>
 	<br><br>
 
@@ -1087,7 +1146,9 @@
 		<br>
 		설정 불가능
 	<</if>>
+	<br><br>
 	<span class="gold">숫자 링크 탐색</span>
+	<br>
 	<<if StartConfig.enableLinkNumberify is true>>
 		<label><div class="settingsToggleBig">
 		<<checkbox "$numberify_enabled" 0 1 autocheck>> 숫자 링크 탐색 활성화
@@ -1153,6 +1214,7 @@
 	<input type="button" value="줌 설정" onclick="zoom(undefined, true)"/>
 	<br><br>
 
+	
 	<span class="gold">이력 깊이</span><br>
 	<div class="description">이력에서 N-1 단계(passage)까지 뒤로 갈 수 있습니다. 변경은 설정창을 나간 후 적용됩니다.<br>
 	<span class="red"><b>주의:</b> 속도저하를 일으킬 수 있습니다. 그리고, 5 이상의 숫자는 당신의 로컬 스토리지 용량을 넘어 <br>
@@ -1160,6 +1222,7 @@
 	</div>
 	<<numberslider "$maxStates" $maxStates 1 20 1>>
 	<br><br>
+	
 
 	<span class="gold">치트 메뉴</span>
 	<label><div class="settingsToggleBig">
@@ -1197,10 +1260,9 @@
 <</widget>>
 
 <<widget "npcSettings">>
-<<set _penisNames to ["조그마함", "평균", "두꺼움", "커다람"]>>
 <<if $passage is "Start">>
-<span class="red">설정되지 않은 옵션은 자동으로 설정될 것입니다.</span>
-<br>
+	<span class="red">설정되지 않은 옵션은 자동으로 설정될 것입니다.</span>
+	<br>
 <</if>>
 <<link "게임 설정을 기반으로 성별 자동 설정">>
 	<<initnpcgender "genders">>
@@ -1296,7 +1358,7 @@
 <br><br>
 
 <label>
-	<<print '<<checkbox "$disableAutoSelect" false true '+($disableAutoSelect is true? "checked":"")+'>>'>>
+	<<checkbox "$disableAutoSelect" false true autocheck>>
 	자동 선택 비활성화.
 </label>
 
@@ -1325,19 +1387,22 @@
 <label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
 <br>
 <<if $NPCName[_npcId].pregnancy[0] is null>>
-<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
-<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
+	<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
+	<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
+	<<run settingsNamedNpcGenderUpdate()>>
 <<else>>
 	임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
 <</if>>
 <br><br>
 자지 크기 - 가능할 경우:
 <br>
-<<for _j to 0; _j lt _penisNames.length; _j++>>
+<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+<<for _j to 1; _j lt _penisNames.length; _j++>>
 	<label>
-		<<print '<<radiobutton "$NPCName['+_npcId+'].penissize" ' + (_j + 1) + ' ' + ($NPCName[_npcId].penissize is (_j + 1) ? "checked" : "") + '>>'>>
+		<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
 		<<print _penisNames[_j]>>
-	</label> |
+	</label>
+	<<if _j isnot _penisNames.length -1>>|<</if>>
 <</for>>
 <br><br>
 
@@ -1396,5 +1461,6 @@
 <br><br>
 <<link [[확인|$attitudesExitPassage]]>>
 	<<unset $attitudesExitPassage>>
+	<<run DefaultActions.save(T.defaultActions)>>
 <</link>>
 <br>

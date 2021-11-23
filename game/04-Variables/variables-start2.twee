@@ -31,25 +31,14 @@
 <</if>>
 
 <<set $per_npc to {}>>
+<<set $perNPCFix to 2>>
 
 <<set $physique to ($physiquesize / 7) * 3>>
 <<set $beauty to ($beautymax / 7)>>
 
-<<set $playergender to 1>>/*Needed to stop VersionUpdate triggering on first couple of pages.*/
-
 <<set $devstate to 1>>
 
-<<if $breastsize is 0>>
-	<<set $breastsizeold to 0>><<set $breastgrowthtimer to 350>>
-<<elseif $breastsize is 1>>
-	<<set $breastsizeold to 1>><<set $breastgrowthtimer to 350>>
-<<elseif $breastsize is 2>>
-	<<set $breastsizeold to 2>><<set $breastgrowthtimer to 350>>
-<<elseif $breastsize is 3>>
-	<<set $breastsizeold to 3>><<set $breastgrowthtimer to 350>>
-<<else>>
-	<<set $breastsizeold to 4>><<set $breastgrowthtimer to 350>>
-<</if>>
+<<set $breastgrowthtimer to 350>>
 
 <<tryOnInit>>
 
@@ -80,10 +69,8 @@
 <<if $player.gender is "f">>
 	<<set $vaginause to 0>>
 	<<set $vaginastate to 0>>
-	<<set $vaginaexist to 1>>
 	<<set $penisuse to "none">>
 	<<set $penisstate to "none">>
-	<<set $penisexist to 0>>
 	<<set $player.sex to "f">>
 	<<set $player.vaginaExist to true>>
 	<<set $player.penisExist to false>>
@@ -91,10 +78,8 @@
 <<elseif $player.gender is "m">>
 	<<set $vaginause to "none">>
 	<<set $vaginastate to "none">>
-	<<set $vaginaexist to 0>>
 	<<set $penisuse to 0>>
 	<<set $penisstate to 0>>
-	<<set $penisexist to 1>>
 	<<set $player.sex to "m">>
 	<<set $player.vaginaExist to false>>
 	<<set $player.penisExist to true>>
@@ -102,11 +87,8 @@
 <<elseif $player.gender is "h">>
 	<<set $vaginause to 0>>
 	<<set $vaginastate to 0>>
-	<<set $vaginaexist to 1>>
 	<<set $penisuse to 0>>
 	<<set $penisstate to 0>>
-	<<set $penisexist to 1>>
-	<<set $player.gender to "h">>
 	<<set $player.sex to "h">>
 	<<set $player.penisExist to true>>
 	<<set $player.vaginaExist to true>>
@@ -181,7 +163,7 @@
 	<<applyFeatsBoost>>
 <</if>>
 
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<set $semen_amount to 90>>
 	<<set $semen_volume to 90>>
 <<else>>
@@ -217,9 +199,61 @@
 	}>>
 <</if>>
 
+<<set $loveInterest to {
+	primary: "None",
+	secondary: "None",
+	tertiary: "None"
+}>>
+
+<<set $attitudesControl to {
+	showGoldLink:false,
+	unlockExhibitionismUnderwear:false,
+	unlockExhibitionismNude:false,
+	unlockTransformation:false,
+	unlockDemonFlaunt:false,
+	unlockProstitution:false,
+	unlockLoveInterest1:false,
+	unlockLoveInterest2:false,
+	unlockLoveInterest3:false,
+	unlockDefaultActions:false
+}>>
+
+<<set $clothingShop to {
+	ban: 0,
+	banExtension: false,
+	spotted: false,
+	stolenClothes: 0,
+	totalStolenClothes: 0,
+	banCount: 0,
+	rng: random(0,1000)
+}>>
+
+<<set $customColors to {
+	presets:{},
+	action: "set",
+	currentType: "primary",
+	color:{primary:0, secondary:0},
+	saturation:{primary:1, secondary:1},
+	brightness:{primary:1, secondary:1},
+	contrast:{primary:1, secondary:1},
+	sepia:{primary:1, secondary:1}
+}>>
+
+<<set $kylar to {}>>
+<<set $kylar.raped to 0>>
+<<set $kylar.riddle to 0>>
+<<set $kylar.timer to {halls:0,street:0,home:0,love:0}>>
+<<set $kylarSeen to []>>
+<<set $kylarDaily to {}>>
+<<set $museumAntiqueJournalHints to []>>
+
+<<specialClothesSetup>>
+<<pregnancyVar>>
+<<specialClothesEffectsSetup>>
 <<weather_select>>
 <<set $warmth to 0>>
 <<temperature_hour>>
+<<childrenSetup>>
 
 <<setupTransformationPiecesObject>>
 
@@ -227,4 +261,7 @@
 	<<set $fertiliser to {current:0,used:0}>>
 <</if>>
 
+<<set $actionDefaults = DefaultActions.setDefaults()>>
+
+<<set versionUpdateCheck to false>>
 <</widget>>

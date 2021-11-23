@@ -99,6 +99,8 @@
 <<unset $machine_tattoo_success>>
 <<unset $dodging>>
 <<unset $feet_planted>>
+<<unset $speechspraycycleplant>>
+<<unset $newlyWritten>>
 
 <<switch $player.gender>>
 <<case "f">>
@@ -205,12 +207,14 @@
 <</if>>
 <<set $walltype to "wall">>
 <<set $angelforgive to 0>>
+<<unset $banishDisable>>
 <<unset $penisfucked>>
 <<unset $vaginafucked>>
 <<unset $anusfucked>>
 <<set $speechdisable to 0>>
 <<unset $stealstate>>
 <<unset $position_lock>>
+<<set $npcDAP to []>>
 
 <<set $leftactiondefault to $leftaction>>
 <<set $rightactiondefault to $rightaction>>
@@ -262,9 +266,16 @@
 <<set $tentacles.max to 0>>
 <<set $tentacles.active to 0>>
 <<set _tentacles to $tentacles>>
-<<for _i to 1; _i lt 20; _i++>>
+<<for _i to 0; _i lt 20; _i++>>
 	<<set _tentacles[_i] to null>>
 <</for>>
+<<set $abomination to 0>>
+<<unset $tentacleColour>>
+<<set $tentacleMouth to 0>>
+<<set $tentacleAnus to 0>>
+<<set $tentacleAnusBaby to 0>>
+<<set $tentacleVagina to 0>>
+<<set $tentaclePenis to 0>>
 
 <<set $leftaction to 0>>
 <<set $rightaction to 0>>
@@ -415,49 +426,14 @@
 
 <<widget "clearnpc">>
 
-<<for _i = 0; _i < $NPCList.length ; _i++>>
-	<<set $NPCList[_i].lefthand to "none">>
-	<<set $NPCList[_i].righthand to "none">>
-	<<set $NPCList[_i].penis to "none">>
-	<<set $NPCList[_i].vagina to "none">>
-	<<set $NPCList[_i].mouth to "none">>
-	<<set $NPCList[_i].chest to "none">>
-	<<set $NPCList[_i].gender to 0>>
-	<<set $NPCList[_i].pronoun to 0>>
-	<<set $NPCList[_i].description to 0>>
-	<<set $NPCList[_i].fullDescription to 0>>
-	<<set $NPCList[_i].insecurity to 0>>
-	<<set $NPCList[_i].lactation to 0>>
-	<<set $NPCList[_i].intro to 0>>
-	<<set $NPCList[_i].speechanusescape to 0>>
-	<<set $NPCList[_i].speechpenisescape to 0>>
-	<<set $NPCList[_i].speechvaginaescape to 0>>
-	<<set $NPCList[_i].type to 0>>
-	<<set $NPCList[_i].stance to 0>>
-	<<set $NPCList[_i].monster to 0>>
-	<<set $NPCList[_i].maxOrgasms to 1>>
-	<<set $NPCList[_i].orgasms to 0>>
-	<<set $NPCList[_i].paid to 0>>
-	<<set $NPCList[_i].state to 0>>
-	<<set $NPCList[_i].legs to 0>>
-	<<set $NPCList[_i].size to 0>>
-	<<set $NPCList[_i].chastity to {penis:"", vagina:"", anus:""}>>
-	<<clearPronouns $NPCList[_i]>>
-	<<if _i < 1>>
-		<<set $NPCList[_i].breastsize to 3>>
-		<<set $NPCList[_i].breastsdesc to "breasts">>
-		<<set $NPCList[_i].breastdesc to "breast">>
-		<<set $NPCList[_i].penisdesc to "penis">>
-		<<set $NPCList[_i].penissize to 2>>
-		<<set $NPCList[_i].health to 200>><!-- This is set for compatibility elsewhere if needed, v2.2.0... -->
-	<<else>>
-		<<set $NPCList[_i].breastsize to 0>>
-		<<set $NPCList[_i].breastsdesc to 0>>
-		<<set $NPCList[_i].breastdesc to 0>>
-		<<set $NPCList[_i].penisdesc to 0>>
-		<<set $NPCList[_i].penissize to 0>>
-		<<set $NPCList[_i].health to 0>>
-	<</if>>
+<<for _i = 0; _i < $NPCList.length; _i++>>
+	<<set $NPCList[_i] to {
+		"chastity": {},
+		"location": {},
+		"skills": {},
+		"pronouns": {},
+		"traits": []
+	}>>
 <</for>>
 
 <<set $pronoun to 0>>
@@ -471,6 +447,11 @@
 <<set $npc.splice(0)>>
 <<set $npcnum.splice(0)>>
 <<set $npcrow.splice(0)>>
+<<if $endeventerror is undefined>>
+	<<unset $event>>
+	<<unset $eventslot>>
+	<<unset $eventtime>>
+<</if>>
 <</widget>>
 
 :: Widgets Clear Single NPC [widget]
@@ -505,9 +486,11 @@
 <<set $NPCList[_i].type to 0>>
 <<set $NPCList[_i].stance to 0>>
 <<set $NPCList[_i].monster to 0>>
+/* multiple orgasms code needs work
 <<set $NPCList[_i].maxOrgasms to 1>>
-<<set $NPCList[_i].orgasms to 0>>
+<<set $NPCList[_i].orgasms to 0>> */
 <<set $NPCList[_i].paid to 0>>
+<<set $NPCList[_i].name_known to 0>>
 <<if _i < 1>>
 	<<set $NPCList[_i].breastsize to 3>>
 	<<set $NPCList[_i].breastsdesc to "breasts">>
@@ -526,7 +509,19 @@
 <<if $enemyno gt 0>>
 	<<set $enemyno -= 1>>
 <</if>>
-
+<<if $endeventerror is undefined>>
+	<<set $event.splice($eventslot.indexOf(_ii), 1)>>
+	<<set $eventslot.splice($eventslot.indexOf(_ii), 1)>>
+	<<set $eventtime.splice($eventslot.indexOf(_ii), 1)>>
+<</if>>
+<<if $enemyno is 0>>
+	<<set $pronoun to 0>>
+	<<if $endeventerror is undefined>>
+		<<unset $event>>
+		<<unset $eventslot>>
+		<<unset $eventtime>>
+	<</if>>
+<</if>>
 <</widget>>
 
 :: Widgets End Event [widget]
@@ -545,7 +540,7 @@
 	<<set $phase2 to 0>>
 <</if>>
 <<endnpc>>
-<<clearnpc>>
+/*<<clearnpc>> is already called in endnpc */
 <<set $dancelocation to 0>>
 <<set $forceddance to 0>>
 
@@ -578,6 +573,9 @@
 <<unset $speechNPCHandholdingVirgin>>
 <<unset $sydneyComments>>
 <<unset $sydneyUniqueComments>>
+<<unset $noBodyWriting>>
+<<unset $breakIgnore>>
+<<unset $eventforced>>
 
 <<unset $internalejac>>
 
@@ -604,6 +602,8 @@
 
 <<unset $childSelected>>
 <<unset $childrenPassage>>
+
+<<set $index to 0>>
 
 <</widget>>
 
@@ -641,6 +641,9 @@
 <<unset $speechanallick>>
 <<unset $speechanalkiss>>
 
+<<unset $speechfencingentrance>>
+<<unset $speechpenispenis>>
+
 <<unset $speechheadbreasts>>
 <<unset $speechheadchest>>
 <<unset $speechheadnipple>>
@@ -671,17 +674,13 @@
 <<unset $speechchestrub>>
 <<unset $speechbreastrub>>
 <<unset $speechvaginaflaunt>>
-<<unset $speechvaginavirgin>>
-<<unset $speechanusvirgin>>
-<<unset $speechmouthvirgin>>
-<<unset $speechpenisvirgin>>
-<<unset $speechkissvirgin>>
 <<unset $speechpenisbig>>
 <<unset $speechpenisescape>>
 <<unset $speechvaginaescape>>
 <<unset $speechanusescape>>
 <<unset $speechsteal>>
 <<unset $speechnamedrop>>
+<<unset $speechadmired>>
 
 <<unset $speechNPCPenisVirgin>>
 <<unset $speechNPCVaginaVirgin>>
@@ -715,6 +714,11 @@
 <<unset $speechapologiseno>>
 <<unset $speechforgive>>
 <<unset $speechspray>>
+<<unset $speechvaginavirgin>>
+<<unset $speechanusvirgin>>
+<<unset $speechmouthvirgin>>
+<<unset $speechpenisvirgin>>
+<<unset $speechkissvirgin>>
 
 
 

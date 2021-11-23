@@ -72,13 +72,13 @@
 			<<mouthactionInit>>
 		</div>
 
-		<<if $penisexist is 1>>
+		<<if $player.penisExist>>
 			<div id="penisaction" @class="$combatControls + 'Control'">
 				<<penisactionInit>>
 			</div>
 		<</if>>
 
-		<<if $vaginaexist is 1>>
+		<<if $player.vaginaExist>>
 			<div id="vaginaaction" @class="$combatControls + 'Control'">
 				<<vaginaactionInit>>
 			</div>
@@ -105,6 +105,11 @@
 
 /*Generates the required values for defaults to be setup based on the situation*/
 <<widget "getCombatDefaultsType">>
+<<if $consensual == 1>>
+	<<set $defaultsCombatType = "consensual">>
+<<else>>
+	<<set $defaultsCombatType = "rape">>
+<</if>>
 <<switch $enemytype>>
 	<<case "man">>
 		<<if $NPCNameList.includes($NPCList[0].fullDescription)>>
@@ -119,15 +124,9 @@
 	<<case "beast">><<set $defaultsType to "Animals">>
 	<<case "tentacles" "vore">>
 		<<set $defaultsType to "Tentacles">>
-		<<set $regrab to $actionDefaults.Tentacles[($consensual is 1?"consensual":"rape")].regrab>>
+		<<set $regrab = DefaultActions.get($defaultsCombatType, 'Tentacles', 'regrab')[0] ?? 0>>
 	<<default>><<set $defaultsType to "Everyone">>
 <</switch>>
-
-<<if $consensual is 1>>
-	<<set $defaultsCombatType = "consensual">>
-<<else>>
-	<<set $defaultsCombatType = "rape">>
-<</if>>
 <</widget>>
 
 <<widget "getCombatDefaultsTypeClear">>
@@ -160,19 +159,22 @@
 <<widget "replaceAction">>
 <<switch $args[0]>>
 	<<case "Alternative">>
-		<<if $actionDefaults.Alternative is undefined>>
+		<<if $actionDefaults?.rape?.Alternative === undefined
+			|| $actionDefaults?.consensual?.Alternative === undefined>>
 			<<setupDefaults>>
 		<</if>>
 		<<set $defaultsType to "Alternative">>
 		<<set $replaceAction to "Alternative">>
 	<<case "Submissive">>
-		<<if $actionDefaults.Submissive is undefined>>
+		<<if $actionDefaults?.rape?.Submissive === undefined
+			|| $actionDefaults?.consensual?.Submissive === undefined>>
 			<<setupDefaults>>
 		<</if>>
 		<<set $defaultsType to "Submissive">>
 		<<set $replaceAction to "Submissive">>
 	<<case "Defiant">>
-		<<if $actionDefaults.Defiant is undefined>>
+		<<if $actionDefaults?.rape?.Defiant === undefined
+			|| $actionDefaults?.consensual?.Defiant === undefined>>
 			<<setupDefaults>>
 		<</if>>
 		<<set $defaultsType to "Defiant">>
@@ -187,10 +189,10 @@
 <<replace #rightaction>><<rightActionInit true>><</replace>>
 <<replace #feetaction>><<feetactionInit true>><</replace>>
 <<replace #mouthaction>><<mouthactionInit true>><</replace>>
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<replace #penisaction>><<penisactionInit true>><</replace>>
 <</if>>
-<<if $vaginaexist is 1>>
+<<if $player.vaginaExist>>
 	<<replace #vaginaaction>><<vaginaactionInit true>><</replace>>
 <</if>>
 <<replace #anusaction>><<anusactionInit true>><</replace>>
@@ -257,7 +259,7 @@
 	<<if Object.keys(_leftaction).length gt 0>>
 		<<if Object.values(_leftaction).includes($leftactiondefault) is false or $args[0] is true or $leftactiondefault is "rest">>
 			<<set _defaultsCombatAction to "leftaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_leftaction).includes(_actionsSet[_set])>>
@@ -322,7 +324,7 @@
 			<<leftpenwhacknew>>
 			<<leftFixAndCoverActions>>
 			<<leftchoke>>
-			<<leftComdom>>
+			<<leftCondom>>
 			<<leftshacklewhack>>
 			<<handsstrugglefreebodypart "left">>
 			<<leftUndressOther>>
@@ -400,7 +402,7 @@
 	<<if Object.keys(_rightaction).length gt 0>>
 		<<if Object.values(_rightaction).includes($rightactiondefault) is false or $args[0] is true or $rightactiondefault is "rest">>
 			<<set _defaultsCombatAction to "rightaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_rightaction).includes(_actionsSet[_set])>>
@@ -465,7 +467,7 @@
 			<<rightpenwhacknew>>
 			<<rightFixAndCoverActions>>
 			<<rightchoke>>
-			<<rightComdom>>
+			<<rightCondom>>
 			<<rightshacklewhack>>
 			<<handsstrugglefreebodypart "right">>
 			<<rightUndressOther>>
@@ -508,8 +510,30 @@
 <<widget "feetactionInit">>
 	<<switch $feetuse>>
 		<<case 0>>
-			<<set _feetOptions to "free">>
-			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
+			<<if $abomination is 1>>
+				<<if $leftleg is 0 and $rightleg is 0>>
+					<<set _feetOptions to "free">>
+					<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 자유롭다.</span>
+				<<elseif $leftleg is 0>>
+					<<set _feetOptions to "free">>
+					<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 왼발은 자유롭다.</span>
+				<<elseif $rightleg is 0>>
+					<<set _feetOptions to "free">>
+					<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 오른발은 자유롭다.</span>
+				<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
+					<<set _feetOptions to "grappled">>
+					<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 얽혀 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
+				<<elseif $leftleg is "bound" and $rightleg is "bound">>
+					<<set _feetOptions to "bound">>
+					<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 묶여 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
+				<<else>>
+					<<set _feetOptions to "free">>
+					<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
+				<</if>>
+			<<else>>
+				<<set _feetOptions to "free">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
+			<</if>>
 		<<case "penis">>
 			<<set _feetOptions to "penis">>
 			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "feet">>당신의 발은 <<his_yi>> <<npcPenis_rul _j>> <<if $NPCList[_j].chastity.penis.includes("chastity")>>누르고<<else>>쥐고<</if>> 있다.</span>
@@ -537,7 +561,7 @@
 	<<if Object.keys(_feetaction).length gt 0>>
 		<<if Object.values(_feetaction).includes($feetactiondefault) is false or $args[0] is true or $feetactiondefault is "rest">>
 			<<set _defaultsCombatAction to "feetaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_feetaction).includes(_actionsSet[_set])>>
@@ -644,7 +668,7 @@
 					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouthimminent">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 입술을 누른다.</span>
 				<<case "penetrated">>
 					<<set _mouthOptions to "penisPenetrated">>
-					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouth">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 입을 꿰뚫는다.</span>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouth">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 입에 삽입되어 있다.</span>
 				<<case "gagged">>
 					<<set _mouthOptions to "gagged">>
 					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">당신의 입은 무력하게 막혀있다.</span>
@@ -675,7 +699,7 @@
 	<<if Object.keys(_mouthaction).length gt 0>>
 		<<if Object.values(_mouthaction).includes($mouthactiondefault) is false or $args[0] is true or $mouthactiondefault is "rest">>
 			<<set _defaultsCombatAction to "mouthaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_mouthaction).includes(_actionsSet[_set])>>
@@ -819,7 +843,7 @@
 			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "penisentrance">><<HisPost "의">> <<npcVagina_ga _j>> 당신의 <<penisPost>> 근처를 맴돈다.</span>
 		<<case "imminent">>
 			<<set _penisOptions to "pussyImminent">>
-			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "penisentrance">><<HisPost "의">> <<npcVagina_ga _j>> 당신의 <<penisPost "을">> 누른다.</span>
+			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "penisimminent">><<HisPost "의">> <<npcVagina_ga _j>> 당신의 <<penisPost "을">> 누른다.</span>
 		<<case "penetrated">>
 			<<set _penisOptions to "pussyPenetration">>
 			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<HisPost "의">> 보지가 당신의 <<penisPost "을">> 삼킨다.</span>
@@ -832,6 +856,15 @@
 		<<case "otheranus">>
 			<<set _penisOptions to "anusPenetration">>
 			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<HisPost "의">> 엉덩이가 당신의 <<penisPost "을">> 삼킨다.</span>
+		<<case "otherpenisentrance">>
+			<<set _penisOptions to "penisEntrance">>
+			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penisentrance">><<His_yi>> <<npcPenisSimple_i>> 당신의 <<penisPost>> 근처를 맴돈다.</span>
+		<<case "otherpenisimminent">>
+			<<set _penisOptions to "penisImminent">>
+			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penisimminent">><<His_yi>> <<npcPenisSimple_i>> 당신의 <<penis_rul>> 위협한다.</span>
+		<<case "otherpenis">>
+			<<set _penisOptions to "penisPenetration">>
+			<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penis">><<His_yi>> <<npcPenisSimple_i>> 당신의 <<penis_rul>> 누른다.</span>
 		<<default>>
 			<<switch $penisuse>>
 				<<case "clit">>
@@ -850,7 +883,7 @@
 	<<if Object.keys(_penisaction).length gt 0>>
 		<<if Object.values(_penisaction).includes($penisactiondefault) is false or $args[0] is true or $penisactiondefault is "rest">>
 			<<set _defaultsCombatAction to "penisaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_penisaction).includes(_actionsSet[_set])>>
@@ -892,6 +925,12 @@
 	<<case "otheranusbay">><<peniledifficulty>> <<combatpromiscuous4>>
 	<<case "clitrub" "otheranusrub">><<peniledifficulty>>
 	<<case "vaginaEdging" "otheranusEdging">><<combatpromiscuous4>>
+	<<case "penistopenis" "penistopenis">><<peniledifficulty>> <<combatpromiscuous5>>
+	<<case "penistopenisfuck">><<combatpromiscuous5>>
+	<<case "penisthighs">><<thighdifficulty>> <<combatpromiscuous4>>
+	<<case "penisanus">><<analdifficulty>>
+	<<case "penisanusdouble">><<analdifficulty>><<combatpromiscuous5>><span class="pink"><<print "성지식 4">></span>
+
 <</switch>>
 <</widget>>
 
@@ -906,6 +945,7 @@
 			<<set _penisaction["쉰다"] to "rest">>
 			<<actionspenistovaginanew>>
 			<<actionspenistoanusnew>>
+			<<actionspenistopenis>>
 		<<case "mouthEntrance">>
 			<<set _penisaction["쉰다"] to "rest">>
 			<<actionspenisMouthEntrance>>
@@ -934,6 +974,16 @@
 			<<actionspenisAgainstClit>>
 		<<case "penisAgainstAss">>
 			<<actionspenisAgainstAss>>
+		<<case "penisEntrance">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenistopenisfucknew>>
+			<<actionspenisPenisEntrance>>
+		<<case "penisImminent">>
+			<<set _penisaction["쉰다"] to "rest">>
+			<<actionspenistopenisfucknew>>
+			<<actionspenisPenisImminent>>
+		<<case "penisPenetration">>
+			<<actionspenisPenisFencing>>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -951,7 +1001,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<HisPost "의">> 입술이 당신의 음순을 누른다.</span>
 		<<case "othermouth">>
 			<<set _vaginaOptions to "mouthPenetrated">>
-			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<HisPost "의">> 혀가 당신의 <<pussyPost "을">> 꿰뚫는다.</span>
+			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<HisPost "의">> 혀가 당신의 <<pussyPost "에">> 삽입되어 있다.</span>
 		<<case "entrance">>
 			<<set _vaginaOptions to "penisEntrance">>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vaginaentrance">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 <<pussyPost>> 근처를 맴돈다.</span>
@@ -960,7 +1010,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vaginaimminent">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 <<pussyPost "을">> 누른다.</span>
 		<<case "penetrated">>
 			<<set _vaginaOptions to "penisPenetrated">>
-			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vagina">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 <<pussyPost "을">> 꿰뚫는다.</span>
+			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vagina">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 <<pussyPost "에">> 삽입되어 있다.</span>
 			<<case "othervaginaentrance">>
 			<<set _vaginaOptions to "vaginaEntrance">>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<HisPost "의">> 보지가 당신의 것의 근처에서 맴돈다.</span>
@@ -979,7 +1029,7 @@
 	<<if Object.keys(_vaginaaction).length gt 0>>
 		<<if Object.values(_vaginaaction).includes($vaginaactiondefault) is false or $args[0] is true or $vaginaactiondefault is "rest">>
 			<<set _defaultsCombatAction to "vaginaaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_vaginaaction).includes(_actionsSet[_set])>>
@@ -1021,6 +1071,7 @@
 	<<case "thighbay">><<thighdifficulty>> <<combatpromiscuous1>>
 	<<case "penisthighs">><<thighdifficulty>> <<combatpromiscuous4>>
 	<<case "penisanus">><<analdifficulty>>
+	<<case "penisanusdouble">><<analdifficulty>><<combatpromiscuous5>><span class="pink"><<print "성지식 4">></span>
 	<<case "penisEdging">><<combatpromiscuous4>>
 <</switch>>
 <</widget>>
@@ -1086,7 +1137,7 @@
 			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<HisPost "의">> 입술이 당신의 항문을 누른다.</span>
 			<<case "othermouth">>
 			<<set _anusOptions to "mouthPenetration">>
-			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<HisPost "의">> 혀가 당신의 <<bottomPost "을">> 꿰뚫는다.</span>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<HisPost "의">> 혀가 당신의 <<bottomPost "에">> 삽입되어 있다.</span>
 			<<case "entrance">>
 			<<set _anusOptions to "penisEntrance">>
 				<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "anusentrance">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 <<bottomPost>> 근처를 맴돈다.</span>
@@ -1095,7 +1146,38 @@
 				<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "anusimminent">><<HisPost "의">> <<npcPenis_ga _j>> 당신의 항문을 누른다.</span>
 			<<case "penetrated">>
 			<<set _anusOptions to "penisPenetration">>
-				<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "anus">><<HisPost "의">> 자지가 당신의 항문을 꿰뚫는다.</span>
+				<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "anus">><<HisPost "의">> 자지가 당신의 항문에 삽입되어 있다.</span>
+			<<case "doubleentrance">>
+				<<set _anusOptions to "penisDoubleEntrance">>
+					<<if $NPCList[$npcDAP[0]].penis is "anusdoubleentrance" and $NPCList[$npcDAP[1]].penis is "anusdoubleentrance">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">그들의 자지가 당신의 <<bottomPost>> 근처를 맴돈다.</span>
+					<<elseif ($NPCList[$npcDAP[0]].penis is "anusdouble" and $NPCList[$npcDAP[1]].penis is "anusdoubleentrance") or ($NPCList[$npcDAP[0]].penis is "anusdoubleentrance" and $NPCList[$npcDAP[1]].penis is "anusdouble")>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">
+						<<selectNpcWithPartInPosition "penis" "anus">><<His_yi>> 자지가 당신의 항문에 삽입되고 다른 자지는 근처를 맴돈다.
+						</span>
+					<<else>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">그들의 자지가 당신의 <<bottomPost>> 근처를 맴돈다.</span>
+					<</if>>
+
+			<<case "doubleimminent">>
+				<<set _anusOptions to "penisDoubleImminent">>
+					<<if $NPCList[$npcDAP[0]].penis is "anusdoubleimminent" and $NPCList[$npcDAP[1]].penis is "anusdoubleimminent">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">그들의 자지가 당신의 항문을 누른다.</span>
+					<<elseif ($NPCList[$npcDAP[0]].penis is "anusdouble" and $NPCList[$npcDAP[1]].penis is "anusdoubleimminent") or ($NPCList[$npcDAP[0]].penis is "anusdoubleimminent" and $NPCList[$npcDAP[1]].penis is "anusdouble")>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">
+						<<selectNpcWithPartInPosition "penis" "anus">><<His_yi>> 자지가 당신의 항문에 삽입되고 다른 자지는 항문 입구를 누른다.
+						</span>
+					<<else>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">그들의 자지가 당신의 항문을 누른다.</span>
+					<</if>>
+			<<case "doublepenetrated">>
+				<<set _anusOptions to "penisDoublePenetration">>
+				
+				<<if $NPCList[$npcDAP[0]].penis is "anusdouble" and $NPCList[$npcDAP[1]].penis is "anusdouble">>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')">그들의 자지가 당신의 항문에 삽입되어 있다.</span>
+				<<else>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "anus">><<His_yi>> 자지가 당신의 항문에 삽입되고 다른 자지는 근처를 맴돈다.</span>
+				<</if>>
 		<</switch>>
 	<</if>>
 	<<if $lastOptions.anus isnot _anusOptions>>
@@ -1106,7 +1188,7 @@
 	<<if Object.keys(_anusaction).length gt 0>>
 		<<if Object.values(_anusaction).includes($anusactiondefault) is false or $args[0] is true or $anusactiondefault is "rest">>
 			<<set _defaultsCombatAction to "anusaction">>
-			<<set _actionsSet to $actionDefaults[$defaultsType][$defaultsCombatType][_defaultsCombatAction]>>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
 			<<set _pass to false>>
 			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
 				<<if Object.values(_anusaction).includes(_actionsSet[_set])>>
@@ -1147,6 +1229,9 @@
 	<<case "anuspenisfuck">><<combatpromiscuous5>> <<analvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
 	<<case "otherAnusRub" "otherMouthAnusRub">> <<analdifficulty>>
 	<<case "penisEdging">><<combatpromiscuous4>>
+	<<case "penisDoubleEdging">><<combatpromiscuous5>><span class="pink"><<print "성지식 4">></span>
+	<<case "anustopenisdouble">><<analdifficulty>> <<combatpromiscuous5>>
+	<<case "anuspenisdoublefuck">><<combatpromiscuous5>><span class="pink"><<print "성지식 4">></span> <<analvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
 <</switch>>
 <</widget>>
 
@@ -1182,6 +1267,16 @@
 			<<actionsanusFaceAgainstAnus>>
 		<<case "penisAgainstAnus">>
 			<<actionsanusPenisAgainstAnus>>
+		<<case "penisDoubleEntrance">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanuspenisdoublefuck>>
+			<<actionsanusPenisDoubleEntrance>>
+		<<case "penisDoubleImminent">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanuspenisdoublefuck>>
+			<<actionsanusPenisDoubleImminent>>
+		<<case "penisDoublePenetration">>
+			<<actionsanusPenisDoublePenetration>>
 	<</switch>>
 <</if>>
 <</widget>>
