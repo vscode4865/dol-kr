@@ -456,15 +456,15 @@
 <<widget "outfitEditor">>
 <h3>복장 편집기</h3>
 
-<<link "Filter Options">><<toggleclass "#outfitEditorFilter" "hidden">><</link>> |
-<<link "Help">><<toggleclass "#outfitEditorHelp" "hidden">><</link>>
+<<link "필터 설정">><<toggleclass "#outfitEditorFilter" "hidden">><</link>> |
+<<link "도움말">><<toggleclass "#outfitEditorHelp" "hidden">><</link>>
 
 <div id="outfitEditorHelp" class="hidden">
-	All options change the settings the moment you change the option, however, they will only save or be updated in the passage only if you first change the passage (Leave the wardrobe or click on 'Update Wardrobe' at the bottom of this overlay).
+	여기에서 변경하는 복장의 모든 설정들은 바로 변경되지만, 당신이 경로(passage)를 변경해야 변경점이 저장됩니다 (옷장에서 나오거나 이 화면 아래의 '옷장 갱신'을 누르면 됩니다).
 	<br><br>
-	Changing the clothing items may result in the colour settings being reset for that item. This is caused from going from an item with colour options to one that doesnt have any colour options. Just because you can change it to some item's doesn't mean you have access to every item.
+	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 지정된 색상이 있는 옷을 지정된 색상이 없는 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
 	<br><br>
-	Location is where the Outfit is unique to and will only show for that wardrobe. Please note, where it says 'No access', this is either based on the multiple wardrobe setting or may not be avaliable till a later version of the game. In most cases the 'Orphanage' wardrobe will be shared when Multiple wardrobes is set to 'isolated only' or is disabled.
+	위치는 그 복장이 특별하며 그 옷장에서만 보인다는 것을 의미합니다. '접근 불가'라는 표시가 있다면, 이것은 여러 개의 옷장 설정이 되어있거나 게임이 더 진행된 후에 사용이 가능하다는 것을 의미합니다. 대부분의 경우 '고아원' 옷장은 여러 개의 옷장 설정이 '격리된 장소에서는 사용' 이나 하나의 옷장만 사용하는 경우 공유됩니다.
 	<br><br>
 </div>
 <<if _outfitEditorFilter is undefined>>
@@ -479,42 +479,42 @@
 <div id="outfitEditor">
 	<<outfitEditorList>>
 </div>
-<<link [[Update Wardrobe|$passage]]>><</link>>
+<<link [[옷장 갱신|$passage]]>><</link>>
 <</widget>>
 
 <<widget "outfitEditorFilter">>
-<h4>Filter</h4>
-<label>Items Per Page: <<numberslider "$outfitEditorPerPage" $outfitEditorPerPage 5 20 1>></label>
+<h4>필터</h4>
+<label>페이지당 복장 수: <<numberslider "$outfitEditorPerPage" $outfitEditorPerPage 5 20 1>></label>
 <br><br>
-Type:
-<label><<checkbox "_outfitEditorFilter.type.normal" false true autocheck>> Normal</label> |
-<label><<checkbox "_outfitEditorFilter.type.sleep" false true autocheck>> Sleep</label> |
-<label><<checkbox "_outfitEditorFilter.type.swim" false true autocheck>> Swim</label> |
-<label><<checkbox "_outfitEditorFilter.type.school" false true autocheck>> School (Only used by starter outfits, may be added later)</label> |
+종류:
+<label><<checkbox "_outfitEditorFilter.type.normal" false true autocheck>> 평상복</label> |
+<label><<checkbox "_outfitEditorFilter.type.sleep" false true autocheck>> 잠옷</label> |
+<label><<checkbox "_outfitEditorFilter.type.swim" false true autocheck>> 수영복</label> |
+<label><<checkbox "_outfitEditorFilter.type.school" false true autocheck>> 교복 (시작시의 복장에서만 사용되며, 나중에 추가될 수 있음)</label> |
 <br><br>
-Location:
+위치:
 <<for $_label, $_value range _outfitEditorFilter.location>>
 	<<set $_name to $wardrobes[$_label] ? $wardrobes[$_label].name : $_label>>
 	<<set $_var to "_outfitEditorFilter.location." + $_label>>
 	<<capture $_var>>
 		<label>
-			<<checkbox $_var false true autocheck>> <<print $_name>>
+			<<checkbox $_var false true autocheck>> <<trWardrobeName $_name>><<print _trResult>>
 			<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
-				(No access)
+				(접근 불가)
 			<</if>>
 		</label> |
 	<</capture>>
 <</for>>
 <br><br>
-Colour Saved in Outfit:
-<label><<checkbox "_outfitEditorFilter.colors.notSaved" false true autocheck>> No</label> |
-<label><<checkbox "_outfitEditorFilter.colors.saved" false true autocheck>> Yes</label> |
+복장에 저장된 색상:
+<label><<checkbox "_outfitEditorFilter.colors.notSaved" false true autocheck>> 아니오</label> |
+<label><<checkbox "_outfitEditorFilter.colors.saved" false true autocheck>> 네</label> |
 <br><br>
-<<link "Update Filter">>
+<<link "필터 갱신">>
 	<<outfitEditorUpdateFilter>>
 	<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
 <</link>> |
-<<link "Reset Filter">>
+<<link "필터 초기화">>
 	<<outfitEditorDefaultFilter>>
 	<<outfitEditorPageSetup>>
 	<<replace "#outfitEditorFilter">><<outfitEditorFilter>><</replace>>
@@ -594,21 +594,21 @@ Colour Saved in Outfit:
 
 <<widget "outfitEditorPageControls">>
 <<if _outfitEditorPages.page gt 1>>
-	<<link Previous>>
+	<<link "이전">>
 		<<set _outfitEditorPages.page-->>
 		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
 	<</link>> |
 <<else>>
-	Previous |
+	이전 |
 <</if>>
-Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
+페이지 <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 <<if _outfitEditorPages.page lt _outfitEditorPages.maxPages and _outfitEditorPages.maxPages gt 1>>
-	<<link Next>>
+	<<link 다음>>
 		<<set _outfitEditorPages.page++>>
 		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
 	<</link>>
 <<else>>
-	Next
+	다음
 <</if>>
 <</widget>>
 
@@ -617,22 +617,22 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 	<<set _subState[$args[0]] to "">>
 	<div class="name">
 		<<set $_name to "$outfit["+$args[0]+"].name">>
-		<label>Name: <<textbox $_name $outfit[$args[0]].name>></label>
+		<label>이름: <<textbox $_name $outfit[$args[0]].name>></label>
 		<!--Runs too many times for some reason, needs to be improved-->
 		<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
 			let index = e.target.name.replace(/\D/g,'');
-			V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z 0-9.!()]+/g,"").substr(0,30);
+			V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"").substr(0,30);
 		}).trigger('input change') })>>
 	</div>
 	<div>
 		<<set $_type to "$outfit["+$args[0]+"].type[0]">>
 		<label>
-			Type:
+			종류:
 			<<listbox $_type autoselect>>
-				<<option "Normal" "normal">>
-				<<option "Sleep" "sleep">>
-				<<option "Swim" "swim">>
-				<<option "School" "school">>
+				<<option "평상복" "normal">>
+				<<option "잠옷" "sleep">>
+				<<option "수영복" "swim">>
+				<<option "교복" "school">>
 			<</listbox>>
 		</label>
 	</div>
@@ -643,23 +643,23 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 			<<if $_value.unlocked>>
 				<<set _warning to "">>
 				<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
-					<<set _warning to " (No access)">>
+					<<set _warning to " (접근 불가)">>
 				<</if>>
-				<<set $_locations[$_value.name + _warning] to $_label>>
+				<<trWardrobeName $_value.name>><<set $_locations[_trResult + _warning] to $_label>>
 			<</if>>
 		<</for>>
 		<label>
-			Location:
+			위치:
 			<<listbox $_location autoselect>>
-				<<option "All" undefined>>
-				<<option "Disabled" "disabled">>
+				<<option "전부" undefined>>
+				<<option "사용않음" "disabled">>
 				<<optionsfrom $_locations>>
 			<</listbox>>
 		</label>
 	</div>
 	<div>
-		Items:
-		<<link View>>
+		구성:
+		<<link 보기>>
 			<<set _subId to "#outfitItemSub-" + $args[0]>>
 			<<if _subState[$args[0]] is "itemEdit">>
 				<<set _subState[$args[0]] to "">>
@@ -671,9 +671,9 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		<</link>>
 	</div>
 	<div>
-		Colours: <<print $outfit[$args[0]].colors ? "Enabled" : "Disabled">> |
+		색상 지정: <<print $outfit[$args[0]].colors ? "사용" : "사용않음">> |
 		<<if $outfit[$args[0]].colors>>
-			<<link Disable>>
+			<<link 사용않음>>
 				<<set $outfit[$args[0]].colors to false>>
 				<<set _id to "#outfitItem-" + $args[0]>>
 				<<replace `_id`>><<outfitEditorItem $args[0]>><</replace>>
@@ -689,7 +689,7 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 				<</if>>
 			<</link>>
 		<<else>>
-			<<link Enable>>
+			<<link 사용>>
 				<<set $outfit[$args[0]].colors to {}>>
 				<<set _outfitIndex to $args[0]>>
 				<<for _label, _value range setup.clothes>>
@@ -720,11 +720,11 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		<<set $_itemName to $outfit[$args[0]][$_label]>>
 		<<if $_itemName and !["over_upper","over_lower","over_head"].includes($_label)>>
 			<label class="outfitEditorItemClothes">
-				<<set $_options to []>>
+				<<set $_options to {}>>
 				<<for $_value2 range $_value>>
-					<<run $_options.push($_value2.name)>>
+					<<trClothes $_label $_value2.name "name">><<set $_options[_trResult] to $_value2.name>>
 				<</for>>
-				<<print $_label>> -
+				<<trClothesType $_label>><<print _trResult>> -
 				<<set $_var to "$outfit[" + $args[0] + "]['" + $_label + "']">>
 				<<listbox `$_var` autoselect>>
 					<<optionsfrom $_options>>
@@ -765,17 +765,17 @@ Page <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 		<<set $_item to setup.clothes[$_label].filter((item) => item.name === V.outfit[T.colourOutfit][T.colourLabel])[0]>>
 		<<if $_item>>
 			<<if $_item.colour_options.length gt 0 or $_item.accessory_colour_options.length gt 0>>
-				<<print $_label>> - <<print $_item.name>>:
+				<<trClothesType $_label>><<print _trResult>> - <<trClothes $_label $_item.name "name">><<print _trResult>>:
 				<<if $_item.colour_options.length gt 0>>
 					<<set $_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][0]">>
-					<<listbox `$_colour_options` autoselect>>
-						<<optionsfrom $_item.colour_options>>
+					<<set _trTempColours to $_item.colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_colour_options` autoselect>>
+						<<optionsfrom _trListboxItems>>
 					<</listbox>>
 				<</if>>
 				<<if $_item.accessory_colour_options.length gt 0>>
 					<<set $_accessory_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][1]">>
-					<<listbox `$_accessory_colour_options` autoselect>>
-						<<optionsfrom $_item.accessory_colour_options>>
+					<<set _trTempColours to $_item.accessory_colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_accessory_colour_options` autoselect>>
+						<<optionsfrom _trListboxItems>>
 					<</listbox>>
 				<</if>>
 				<br>
