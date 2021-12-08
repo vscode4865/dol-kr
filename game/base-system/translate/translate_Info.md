@@ -1177,6 +1177,21 @@
         e.g.
         <<trBodypart 'left_arm' '을'>>             // '왼팔을'
     ```
+	
+	
+    ```
+    <<trBodysize>>
+        <<trBodysize *bodySize>>
+
+        몸의 크기를 번역한다.
+
+        필수사항
+        - *bodySize: 몸의 크기
+
+
+        e.g.
+        <<trBodysize 'normal'>>             // '평범함'
+    ```
 
 * trBodyWriting
     ```
