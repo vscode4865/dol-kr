@@ -29,42 +29,41 @@
 
 
 <<widget "someonesPost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set $rng to random(1, $enemyno)>>
-        <<if $rng is 1>>
-            <<his1Post $args[0] $args[1]>>
-        <<elseif $rng is 2>>
-            <<his2Post $args[0] $args[1]>>
-        <<elseif $rng is 3>>
-            <<his3Post $args[0] $args[1]>>
-        <<elseif $rng is 4>>
-            <<his4Post $args[0] $args[1]>>
-        <<elseif $rng is 5>>
-            <<his5Post $args[0] $args[1]>>
-        <<elseif $rng is 6>>
-            <<his6Post $args[0] $args[1]>>
-        <</if>>
-    <<else>>
-        <<hisPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] is "two">>
+		<<set _trResult to "그들">><<trPost 2 $args[1] $args[2]>>
+	<<elseif $args[0] isnot undefined and typeof $args[0] eq 'number'>>
+		<<set $_target to $args[0]>>
+		<<hisselectPost $_target $args[1] $args[2]>>
+	<<else>>
+		<<hisPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "someonePost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set _trResult to "누군가">><<trPost 1 $args[0] $args[1]>>
-    <<else>>
-        <<himPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] is "two">>
+		<<set _trResult to "그들">><<trPost 2 $args[1] $args[2]>>
+	<<elseif $args[0] isnot undefined and typeof $args[0] eq 'number'>>
+		<<set $_target to $args[0]>>
+		<<personselect $_target>><<himPost $args[1] $args[2]>>
+	<<else>>
+		<<himPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "theirPost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set _trResult to "그들">><<trPost 2 $args[0] $args[1]>>
-    <<else>>
-        <<hisPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] isnot undefined>>
+		<<if typeof $args[0] eq 'number'>>
+			<<hisselectPost $args[0] $args[1] $args[2]>>
+		<<elseif $enemyno gte 2 and $enemytype is "man">>
+			<<set _trResult to "그들">><<trPost 2 $args[0] $args[1]>>
+		<<else>>
+			<<hisPost $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<hisPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
@@ -521,15 +520,14 @@
 
 /* base-combat/struggle.twee <<widget "struggle_appendage">>*/
 <<widget "struggle_appendagePost">><<silently>>
-<<if $struggle[$args[0]].creature is "insect">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<elseif $struggle[$args[0]].creature is "wasp">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<elseif $struggle[$args[0]].creature is "bee">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<else>>
-	<<set _trResult to "부속 기관">><<trPost 0 $args[1] $args[2]>>
-<</if>>
+	<<switch $struggle[$args[0]].creature>>
+		<<case "wasp" "bee">>
+			<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
+		<<case "squid">>
+			<<set _trResult to "촉수">><<trPost 1 $args[1] $args[2]>>
+		<<default>>
+			<<set _trResult to "부속 기관">><<trPost 0 $args[1] $args[2]>>
+	<</switch>>
 <</silently>><<print _trResult>><</widget>>
 
 /* base-system/nicknames.twee */
@@ -963,3 +961,20 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "Plant_detailsPost">><<plant_detailsPost $args[0]>><</widget>>
+
+<<widget "tower_creature_textPost">><<silently>>
+	<<if $NPCList[0].monster is "monster">>
+		<<set _trResult to "뿔이 난 ">>
+		<<if $NPCList[0].gender is "m">>
+			<<set _trResult += "소년">><<trPost 0 $args[0] $args[1]>>
+		<<else>>
+			<<set _trResult += "소녀">><<trPost 1 $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<set _trResult to either("생물체","괴물","짐승")>>
+		<<if $args[0] isnot undefined>>
+			<<getPostNum _trResult>>
+			<<trPost _postNum $args[0] $args[1]>>
+		<</if>>
+	<</if>>
+<</silently>>	<<print _trResult>><</widget>>

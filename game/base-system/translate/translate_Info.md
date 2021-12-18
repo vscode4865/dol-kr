@@ -262,8 +262,8 @@
             - sep: 조사를 분리하여 저장한다.
 
             e.g.
-            <<beasttypePost 1 "을">>                            //<<breasts 1>>을
-            <<beasttypePost "을">>                              //<<breasts>>을
+            <<beasttypePost 1 "을">>                            //<<beasttypePost 1>>을
+            <<beasttypePost "을">>                              //<<beasttypePost>>을
     ```
 
      ```
@@ -405,7 +405,12 @@
     <<npcAnusPost>>
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
-	
+
+    ```
+    <<vulvaPost>>
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * clothesPost
     ```
@@ -926,6 +931,17 @@
         e.g.
         <<plant_detailsPost "forest" "을">>               // <<plant_details "forest">>을
     ```
+
+    ```
+    <<Plant_detailsPost>>
+        + <<plant_detailsPost>>와 동일. 생략
+    ```
+ 
+    ```
+    <<tower_creature_textPost>>
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * personPost
     ```
@@ -1587,6 +1603,23 @@
 
 * base-combat/struggle.twee
     ```
+    <<struggle_name>>
+        <<struggle_name *arg post "sep">>
+
+        struggle 크리쳐의 fulldesc를 번역한다. 
+
+        필수사항
+        - *arg: 원본 struggle_name 의 인수
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<struggle_name "mouth" "을">>             // "윙윙거리는 럴커를"
+    ```
+
+    ```
     <<struggle_bodypart>>
         + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
     ```
@@ -1692,6 +1725,7 @@
 		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
 		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>, <<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
+		<<vulva_(조사)>>
 		```
 	- clothesPost 계열
 		```
@@ -1714,13 +1748,13 @@
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
-		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>
+		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>,
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- personPost 계열
 		```
-		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
-		<<persons_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<combatPerson_(조사)>>,<<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
+		<<persons_yi>>, <<combatpersons_yi>>, <<combatPersons_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- putpost 계열
 		```

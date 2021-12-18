@@ -57,25 +57,23 @@
 
 <<widget "combatpersonPost">><<silently>>
     <<if $npc_named is 1>>
-        <<trNPCdesc $NPCList[_j].fullDescription $args[0] $args[1]>>
+        <<trNPCdesc $NPCList[$index].fullDescription $args[0] $args[1]>>
     <<elseif $enemytype is "beast">>
-		<<trBeasttypeFun $NPCList[_j].type $args[1] $args[2]>>
-	<<else>>
-		<<trNPCdesc $description>><<set $_desc to _trResult + " ">>
-		<<if $role isnot "normal">>
-			<<putpost $role $args[0] $args[1]>><<set _trResult to $_desc + _trResult>>
-		<<elseif $pronoun is "m">>
-			<<set _trResult to $_desc + ($npcadult is 1 ? "남자" : "소년")>>
-			<<if $npcadult is 0>>
-				<<trPost 0 $args[0] $args[1]>>
-			<<else>>
-				<<trPost 1 $args[0] $args[1]>>
-			<</if>>
+		<<trBeasttypeFun $NPCList[$index].type $args[0] $args[1]>>
+	<<elseif $role isnot "normal">>
+		<<trNPCdesc $description>><<set $_desc to _trResult>>
+		<<putpost $role $args[0] $args[1]>><<set _trResult to $_desc + " " + _trResult>>
+	<<elseif $npcadult is 1>>
+		<<trNPCdesc $description $args[0] "sep">><<set $_desc to _trResult + " ">>
+		<<if $pronoun is "m">>
+			<<set _trResult to $_desc+"남자">><<trPost 0 $args[0] $args[1]>>
 		<<elseif $pronoun is "f">>
-			<<set _trResult to $_desc + ($npcadult is 1 ? "여자" : "소녀")>><<trPost 1 $args[0] $args[1]>>
+			<<set _trResult to $_desc+"여자">><<trPost 0 $args[0] $args[1]>>
 		<<else>>
-			<<trNPCdesc $description $args[0] $args[1]>>
+			<<set _trResult to $_desc>><<if $args[1] isnot "sep">><<set _trResult += _trPost>><</if>>
 		<</if>>
+	<<else>>
+		<<trNPCdesc $NPCList[$index].fullDescription $args[0] $args[1]>>		
 	<</if>>
 <</silently>><<print _trResult>><</widget>>
 

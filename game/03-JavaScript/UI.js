@@ -323,29 +323,24 @@ window.settingsAsphyxiation = function () {
 			case 0:
 				text = "내 목 절대 건들지 마!"; break;
 			case 1:
-				text = "NPC들이 당신의 목을 <span class='blue' style='margin-left: unset; min-width: unset;'>잡을</span> 지도 모릅니다. 숨 쉬는 데 영향을 주진 않아요."; break;
+				text = "NPC들이 당신의 목을 <span class='blue inline-colour'>잡을</span> 지도 모릅니다. 숨 쉬는 데 영향을 주진 않아요."; break;
 			case 2:
-				text = "합의된 교제 중에, NPC들이 당신의 <span class='purple' style='margin-left: unset; min-width: unset;'>숨을 막히게</span> 할지도 모릅니다."; break;
+				text = "합의된 교제 중에, NPC들이 당신의 <span class='purple inline-colour'>숨을 막히게</span> 할지도 모릅니다."; break;
 			case 3:
-				text = "합의되지 않은 교제 중에, NPC들이 당신의 <span class='red' style='margin-left: unset; min-width: unset;'>목을 졸라 질식시킬지도</span> 모릅니다."; break;
+				text = "합의되지 않은 교제 중에, NPC들이 당신의 <span class='red inline-colour'>목을 졸라 질식시킬지도</span> 모릅니다."; break;
 			case 4:
-				text = "합의되지 않은 교제 중에, NPC들이 <span class='red' style='margin-left: unset; min-width: unset;'>자주</span> 당신의 <span class='red' style='margin-left: unset; min-width: unset;'>목을 졸라 질식시키려</span> 시도합니다."; break;
+				text = "합의되지 않은 교제 중에, NPC들이 <span class='red inline-colour'>자주</span> 당신의 <span class='red inline-colour'>목을 졸라 질식시키려</span> 시도합니다."; break;
 
 			default:
 				text = "Error: bad value: " + val;
 				val = 0;
 		}
-		jQuery('#numberslider-value-asphyxialvl').text('').append(text).addClass('small-description')
-												 .css('text-align', 'left')
-												 .css('margin-left', '-7em');
+		jQuery('#numberslider-value-asphyxialvl').text('').append(text).addClass('small-description');
 	};
+	
 	jQuery(document).ready(() => {
 		updateText();
-		jQuery('#numberslider-input-asphyxialvl').on('input change', function (e) { updateText(); })
-												 .css('width', '83%')
-												 .css('min-height', 'unset')
-												 .css('height', '0.75em')
-												 .css('margin-left', '1em');
+		jQuery('#numberslider-input-asphyxialvl').on('input change', function (e) { updateText(); });
 	});
 }
 
@@ -355,27 +350,54 @@ window.settingsNudeGenderAppearance = function () {
 		let text = null;
 		switch (val) {
 			case 0:
-				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='blue' style='margin-left: unset; min-width: unset;'>무시할</span> 것입니다."; break;
+				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다."; break;
 			case 1:
-				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='purple' style='margin-left: unset; min-width: unset;'>고려할</span> 것입니다."; break;
+				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='purple inline-colour'>고려할</span> 것입니다."; break;
 			case 2:
-				text = "NPC들은 당신의 생식기로 당신의 성별을 <span class='red' style='margin-left: unset; min-width: unset;'>판단할</span> 것입니다."; break;
+				text = "NPC들은 당신의 생식기로 당신의 성별을 <span class='red inline-colour'>판단할</span> 것입니다."; break;
 
 			default:
 				text = "Error: bad value: " + val;
 				val = 0;
 		}
 		jQuery('#numberslider-value-nudegenderdc').text('').append(text).addClass('small-description')
-												 .css('text-align', 'left')
-												 .css('margin-left', '1em');
+		                                          .css('margin-left', '1em');
 	};
+
 	jQuery(document).ready(() => {
 		updateText();
 		jQuery('#numberslider-input-nudegenderdc').on('input change', function (e) { updateText(); })
-												 .css('width', '100%')
-												 .css('min-height', 'unset')
-												 .css('height', '0.75em')
-												 .css('margin-left', '1em');
+		                                          .css('width', '100%');
+	});
+}
+
+window.settingsBodywriting = function () {
+	let updateText = () => {
+		let val = V.bodywritingLvl;
+		let text = null;
+		switch (val) {
+			case 0:
+				text = "NPC들은 당신 몸에 무언가를 쓰지 <span class='green inline-colour'>않을</span> 것입니다."; break;
+			case 1:
+				text = "NPC들은 당신 몸에 무언가를 써도 되는지 <span class='blue inline-colour'>물어볼</span> 것입니다."; break;
+			case 2:
+				text = "NPC들은 당신 몸에 무언가를 <span class='purple inline-colour'>강제로</span> 쓰려 할 것입니다."; break;
+			case 3:
+				text = "NPC들은 당신 몸에 무언가를 <span class='red inline-colour'>강제로</span> 쓰고 <span class='red inline-colour'>문신으로 새기려</span> 할 것입니다."; break;
+			default:
+				text = "Error: bad value: " + val;
+				val = 0;
+		}
+		// delete the below code when $bodywritingdisable is fully replaced by $bodywritingLvl
+		V.bodywritingdisable = "f";
+		if (val == 0) V.bodywritingdisable = "t";
+
+		jQuery('#numberslider-value-bodywritinglvl').text('').append(text).addClass('small-description');
+	};
+
+	jQuery(document).ready(() => {
+		updateText();
+		jQuery('#numberslider-input-bodywritinglvl').on('input change', function (e) { updateText(); });
 	});
 }
 
@@ -420,10 +442,22 @@ window.settingsPCGenderUpdate = function () {
 	let updateButtonsActive = () => {
 		jQuery('[id*=radiobutton-penissize]').prop("disabled", V.player.gender == "f");
 		jQuery('[id*=radiobutton-playerballsexist]').prop("disabled", V.player.gender !== "h");
+		jQuery('[id*=radiobutton-background-8]').prop("disabled", V.player.gender == "h");
 	};
 
 	jQuery(document).ready(() => {
 		updateButtonsActive();
 		jQuery('.playergender [id*=radiobutton-playergender]').on('change', function (e) { updateButtonsActive(); });
 	});
+}
+
+window.settingsDoubleAnalToggleGreyOut = function() {
+    let updateButtonsActive = () => {
+        jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
+    };
+
+    jQuery(document).ready(() => {
+        updateButtonsActive();
+        jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
+    });
 }

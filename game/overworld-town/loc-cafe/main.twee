@@ -85,6 +85,9 @@
 당신은 자존감을 보호하기 위해 테이블 밑에 숨어있다.
 <br><br>
 <</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmLocation "cafe">>
+<</if>>
 
 <<if $openinghours is 1 and $exposed lt 1 and $oceanbreezejob isnot 1>>
 	<<if $oceanbreezejoboffer is 1>>
@@ -509,21 +512,22 @@
 <<else>>
 	<<set $rng to random(1, 100)>>
 	<!-- Modified for Monster People -->
-	<<if $rng gte 51>>
 	<<beastNEWinit 1 dog>>
-샘은 당신에게 카페 옆의 쓰레기통에 쓰레기를 버려달라 한다. 쓰레기통에 가자, 그 옆에는 <<beasttypePost "이">> 한 마리가 서있다. 당신이 다가가자 녀석은 으르렁거린다.
-<br><br>
+	<<if $rng gte 51 and ($monster is 1 or $bestialitydisable is "f")>>
+		샘은 당신에게 카페 옆의 쓰레기통에 쓰레기를 버려달라 한다. 쓰레기통에 가자, 그 옆에는 <<beasttypePost "이">> 한 마리가 서있다. 당신이 다가가자 녀석은 으르렁거린다.
+		<br><br>
 
-<<link [[상관 말고 계속한다|Ocean Breeze Dumpster Dog]]>><<stress 6>><</link>><<gstress>>
-<br>
-<<link [[일 따윈 잊어버리고 안으로 돌아간다|Ocean Breeze Dumpster Refuse]]>><</link>>
+		<<link [[상관 말고 계속한다|Ocean Breeze Dumpster Dog]]>><<stress 6>><</link>><<gstress>>
+		<br>
+		<<link [[일 따윈 잊어버리고 안으로 돌아간다|Ocean Breeze Dumpster Refuse]]>><</link>>
 	<<else>>
-<<generate1>><<generate2>>샘은 당신에게 카페 옆의 쓰레기통에 쓰레기를 버려달라 한다. 쓰레기통에 가자, 그 옆에는 <<person1>><<personPost "과">> <<person2>><<personPost "이">> 있다. 뭔가 위험해보인다.
-<br><br>
+		<<endevent>>
+		<<generate1>><<generate2>>샘은 당신에게 카페 옆의 쓰레기통에 쓰레기를 버려달라 한다. 쓰레기통에 가자, 그 옆에는 <<person1>><<personPost "과">> <<person2>><<personPost "이">> 있다. 뭔가 위험해보인다.
+		<br><br>
 
-<<link [[상관 말고 계속한다|Ocean Breeze Dumpster]]>><<stress 6>><</link>><<gstress>>
-<br>
-<<link [[일 따윈 잊어버리고 안으로 돌아간다|Ocean Breeze Dumpster Refuse]]>><</link>>
+		<<link [[상관 말고 계속한다|Ocean Breeze Dumpster]]>><<stress 6>><</link>><<gstress>>
+		<br>
+		<<link [[일 따윈 잊어버리고 안으로 돌아간다|Ocean Breeze Dumpster Refuse]]>><</link>>
 	<</if>>
 
 <</if>>
@@ -884,8 +888,6 @@
 
 <<effects>>
 <<effectsman>><<man>>
-
-<<if $enemyhealth gt 0>><<npcdamage>><</if>>
 
 <<stateman>>
 <br><br>
@@ -1363,6 +1365,10 @@
 			/* for loops seem to hate me so we'll have to do it this way i guess */
 			<<set _photos_taken to 0>>
 			<<if $cameras_raised gte 1>>
+				<!-- Necessary as attempting to clear the first NPC if it did not exist would cause issues with $eventslot. -->
+				<<if $eventslot isnot undefined and $eventslot.includes(0)>>
+					<<clearsinglenpc 0>>
+				<</if>>
 				<span class="pink">
 				<<generate1>><<person1>><<personPost "이">> 사진을 찍기 위해 휴대전화를 꺼내든다.
 				</span>
@@ -1383,6 +1389,9 @@
 			<</if>>
 
 			<<if $cameras_raised gte 2>>
+				<<if $eventslot isnot undefined and $eventslot.includes(1)>>
+					<<clearsinglenpc 1>>
+				<</if>>
 				<span class="pink">
 				<<generate2>><<person2>><<personPost "이">> 사진을 찍기 위해 휴대전화를 꺼내든다.
 				</span>
@@ -1403,6 +1412,9 @@
 			<</if>>
 
 			<<if $cameras_raised gte 3>>
+				<<if $eventslot isnot undefined and $eventslot.includes(2)>>
+					<<clearsinglenpc 2>>
+				<</if>>
 				<span class="pink">
 				<<generate3>><<person3>><<personPost "이">> 사진을 찍기 위해 휴대전화를 꺼내든다.
 				</span>
@@ -1549,23 +1561,21 @@
 		/* show our options depending on our possession of panties */
 		<<if $worn.under_lower.exposed>>
 			<<if $exhibitionism gte 75>>
-			<<link [[다리를 더 벌리고는 윙크한다|Cafe Exhibitionism Legs Part Pantiless Wink]]>><</link>> <<exhibitionist5>>
-			<br>
+				<<link [[다리를 더 벌리고는 윙크한다|Cafe Exhibitionism Legs Part Pantiless Wink]]>><</link>><<exhibitionist5>><br>
 			<</if>>
 			<<if $exhibitionism gte 55>>
-				<<link [[눈치채지 못한 척을 하며 다리를 더 벌린다|Cafe Exhibitionism Legs Part Pantiless]]>><</link>> <<exhibitionist4>> <br>
-				<<link [[변태는 무시하고 음식을 마저 먹는다|Ocean Breeze]]>><</link>>
-				<br>
+				<<link [[눈치채지 못한 척을 하며 다리를 더 벌린다|Cafe Exhibitionism Legs Part Pantiless]]>><</link>><<exhibitionist4>><br>
+				<<link [[변태는 무시하고 음식을 마저 먹는다|Ocean Breeze]]>><<endevent>><</link>><br>
 			<</if>>
 			<<if $exhibitionism lte 54>>
 				당신은 조심스레 다리를 닫아 <<hePost "이">> 더는 그 안쪽을 볼 수 없게 한다. 계속해서 이 맛좋은 팬케이크를 먹고 있자니 다리를 벌려서 저 갈 곳을 잃은 눈에게 모든 것을 노출시키면 어떤 기분일지 상상하지 않을 수가 없다.
 				<<arousal +15>><<garousal>>
 				<br><br>
-				<<link [[음식을 마저 먹는다|Ocean Breeze]]>><</link>>
+				<<link [[음식을 마저 먹는다|Ocean Breeze]]>><<endevent>><</link>>
 			<</if>>
 		<<else>>
-			<<link [[눈치채지 못한 척을 하며 다리를 더 벌린다|Cafe Exhibitionism Legs Part]]>><</link>><<exhibitionist2>> <br>
-			<<link [[변태는 무시하고 음식을 마저 먹는다|Ocean Breeze]]>><</link>> <br>
+			<<link [[눈치채지 못한 척을 하며 다리를 더 벌린다|Cafe Exhibitionism Legs Part]]>><</link>><<exhibitionist2>><br>
+			<<link [[변태는 무시하고 음식을 마저 먹는다|Ocean Breeze]]>><<endevent>><</link>><br>
 		<</if>>
 	<<else>>
 		/* we don't, so shut your legs you dirty normie */

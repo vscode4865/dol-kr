@@ -288,55 +288,37 @@
 
 
 <<widget "someones">><<silently>>
-/* Take target into consideration. Pre-set _target and use it instead.
-	<<if _target isnot undefined>>
-		<<hisselect _target>>
-	<<else>>
-		<<his>>
-	<</if>>
- */
-<<if $enemyno gte 2 and $enemytype is "man">>
-	<<set $rng to random(1, $enemyno)>>
-	<<if $rng is 1>>
-		<<his1_yi>><<set _text_output to _trResult>>
-	<<elseif $rng is 2>>
-		<<his2_yi>><<set _text_output to _trResult>>
-	<<elseif $rng is 3>>
-		<<his3_yi>><<set _text_output to _trResult>>
-	<<elseif $rng is 4>>
-		<<his4_yi>><<set _text_output to _trResult>>
-	<<elseif $rng is 5>>
-		<<his5_yi>><<set _text_output to _trResult>>
-	<<elseif $rng is 6>>
-		<<his6_yi>><<set _text_output to _trResult>>
-	<</if>>
+<<if $args[0] is "two">>
+	<<set _text_output to "그들의">>
+<<elseif $args[0] isnot undefined>>
+	<<set $_target to $args[0]>>
+	<<hisselect $_target>>
 <<else>>
-	<<his_yi>>
+	<<his>>
 <</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "someone">><<silently>>
-/* Same as above
-	<<if _target isnot undefined>>
-		<<personselect _target>>
-	<<else>>
-		<<himPost>><<set _text_output to _trResult>>
-	<</if>>
- */
-<<if $enemyno gte 2 and $enemytype is "man">>
-	<<set _text_output to "누군가">>
+<<if $args[0] is "two">>
+	<<set _text_output to "them">>
+<<elseif $args[0] isnot undefined>>
+	<<set $_target to $args[0]>>
+	<<personselect $_target>><<him>>
 <<else>>
 	<<himPost>><<set _text_output to _trResult>>
 <</if>>
 <</silently>>_text_output<</widget>>
 
-<<widget "their">><<silently>>
-<<if $enemyno gte 2 and $enemytype is "man">>
-	<<set _text_output to "그들의">>
+<<widget "their">>
+<<if $args[0] isnot undefined>>
+	<<set $_target to $args[0]>>
+	<<hisselect $_target>>
+<<elseif $enemyno gte 2 and $enemytype is "man">>
+	their
 <<else>>
 	<<his>>
 <</if>>
-<</silently>>_text_output<</widget>>
+<</widget>>
 
 <<widget "ohe">><<silently>>
 <<if $enemytype is "beast">>
@@ -477,7 +459,31 @@
 <<else>>
 	<<bhimself>>
 <</if>>
-<<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<capitalise>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "bhes">><<silently>>
+<<if typeof $args[0] is "number">>
+	<<set _na to $args[0]>>
+<<elseif $enemyno gte 0>>
+	<<set _na to $enemyno-1>>
+<<else>>
+	<<set _na to 0>>
+<</if>>
+<<if $NPCList[_na].monster is "monster">>
+	<<set _text_output to ($NPCList[_na].pronoun is "m" ? "he's" : "she's")>>
+<<else>>
+	<<set _text_output to "it's">>
+<</if>>
+<</silently>>_text_output<</widget>>
+
+<<widget "bHes">><<silently>>
+<<if typeof $args[0] is "number">>
+	<<bhes $args[0]>>
+<<else>>
+	<<bhes>>
+<</if>>
+<<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "hes">><<silently>>
@@ -744,7 +750,7 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "Him">><<silently>>
-<<him>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<him>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "hisselect">>
@@ -1170,8 +1176,10 @@ in dev alternative to current "breasts" widget
 	냉기를 막는데 도움이 될 것이다.
 <<elseif $args[0] gte 10>>
 	냉기를 막는데 도움이 될 것이다.
-<<else>>
+<<elseif $args[0] gte 1>>
 	가볍고 시원하다.
+<<else>>
+	보온효과가 없다.
 <</if>>
 <<if $images is 1>>
 	(<span class="cold-resist-icon">$args[0]</span>)
@@ -1238,9 +1246,9 @@ in dev alternative to current "breasts" widget
 
 <<widget "combatperson">><<silently>>
 <<if $npc_named is 1>>
-	<<set _text_output to $NPCList[_j].fullDescription>>
+	<<set _text_output to $NPCList[$index].fullDescription>>
 <<elseif $enemytype is "beast">>
-	<<set _text_output to "the " + $NPCList[_j].type>>
+	<<set _text_output to "the " + $NPCList[$index].type>>
 <<elseif $role isnot "normal">>
 	<<set _text_output to $description + " " + $role>>
 <<elseif $npcadult is 1>>
@@ -1252,7 +1260,7 @@ in dev alternative to current "breasts" widget
 		<<set _text_output to "the " + $description>>
 	<</if>>
 <<else>>
-	<<set _text_output to "the " + $NPCList[_j].fullDescription>>
+	<<set _text_output to "the " + $NPCList[$index].fullDescription>>
 <</if>><</silently>><<print _text_output>><</widget>>
 
 <<widget "combatpersons">><<silently>>
@@ -1261,7 +1269,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "combatPerson">><<silently>>
-	<<combatperson>><<set _text_output to _text_output.toLocaleUpperFirst()>>	
+	<<combatperson>><<capitalise>>	
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "personselect">>
@@ -1353,7 +1361,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "Wife">><<silently>>
-<<wife>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<wife>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "victimgirl">>
@@ -1904,34 +1912,34 @@ in dev alternative to current "breasts" widget
 <</widget>>
 
 <<widget "sydneyWarning">>
-<<if $args[0]>>
-	<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
-		| <span class="purple">이 행동은 시드니의 타락도를 높일 수도 있습니다</span>
-	<</if>>
+<<if $args[0] is "corrupt" and $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
+	| <span class="purple">이 행동은 시드니의 타락도를 높일 수도 있습니다</span>
+<<elseif $args[0] is "purify" and $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10) lt 0>>
+	| <span class="teal">이 행동은 시드니의 순결도를 높일 수도 있습니다</span>
 <<else>>
 	<<switch _warnstate>>
 		<<case 1>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 2) lt 0>>
+			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 2)>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
 			<</if>>
 		<<case 2>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 5) lt 0>>
+			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 5)>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
 			<</if>>
 		<<case 3>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption isnot 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10) lt 0>>
+			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10)>>
 				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
 			<</if>>
 		<<case -1>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
+			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
 				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
 			<</if>>
 		<<case -2>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
+			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
 				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
 			<</if>>
 		<<case -3>>
-			<<if $corruptionEvent is 1 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
+			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
 				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
 			<</if>>
 	<</switch>>
@@ -2304,7 +2312,7 @@ in dev alternative to current "breasts" widget
 <<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
 	<span class="lblue">- 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-	<span class="purple">- <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="lblue">- <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
 	<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
@@ -2316,7 +2324,7 @@ in dev alternative to current "breasts" widget
 <<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
 	<span class="lblue">- - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-	<span class="purple">- - <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="lblue">- - <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
 	<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
@@ -2328,7 +2336,7 @@ in dev alternative to current "breasts" widget
 <<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
 	<span class="lblue">- - - 로빈의 자신감</span>
 <<elseif $args[0] isnot undefined>>
-	<span class="purple">- - - <<NPCname_yi $args[0]>> 지배도</span>
+	<span class="lblue">- - - <<NPCname_yi $args[0]>> 지배도</span>
 <<elseif $npc.length isnot 0>>
 	<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
 <<else>>
@@ -3669,12 +3677,13 @@ in dev alternative to current "breasts" widget
 <</silently>>_text_output<</widget>>
 
 <<widget "tendingtext">>
-<<if $tending gte 0 and $tending lt 200>><span class="pink">서투르게</span>
-<<elseif $tending gte 200 and $tending lt 400>><span class="purple">살며시</span>
-<<elseif $tending gte 400 and $tending lt 600>><span class="blue">리드미컬하게</span>
-<<elseif $tending gte 600 and $tending lt 800>><span class="lblue">부드럽게</span>
-<<elseif $tending gte 800 and $tending lt 1000>><span class="teal">솜씨 좋게</span>
-<<elseif $tending gte 1000>><span class="green">능숙히</span><</if>>
+<<if currentSkillValue('tending') gte 0 and currentSkillValue('tending') lt 200>><span class="pink">서투르게</span>
+<<elseif currentSkillValue('tending') gte 200 and currentSkillValue('tending') lt 400>><span class="purple">살며시</span>
+<<elseif currentSkillValue('tending') gte 400 and currentSkillValue('tending') lt 600>><span class="blue">리드미컬하게<</span>
+<<elseif currentSkillValue('tending') gte 600 and currentSkillValue('tending') lt 800>><span class="lblue">부드럽게</span>
+<<elseif currentSkillValue('tending') gte 800 and currentSkillValue('tending') lt 1000>><span class="teal">솜씨 좋게</span>
+<<elseif currentSkillValue('tending') gte 1000 and currentSkillValue('tending') lt 1200>><span class="green">능숙히</span>
+<<elseif currentSkillValue('tending') gte 1200>><span class="gold">수월하게</span><</if>>
 <</widget>>
 
 <<widget "nervously">><<silently>>
@@ -3777,23 +3786,27 @@ in dev alternative to current "breasts" widget
 <<undertop>>
 <<set _undertop to _text_output>>
 <<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	<<set _text_output to "<span class=\"lewd\">exposed _genitals</span>">>
+	<<set _text_output to '<span class="lewd">exposed _genitals</span>'>>
 <<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-   <<set _text_output to "<span class=\"lewd\">exposed $worn.under_lower.name</span>">>
+	<<set _text_output to '<span class="lewd">exposed $worn.under_lower.name</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<set _text_output to "<span class=\"lewd\">lewdness</span>">>
+	<<set _text_output to '<span class="lewd">lewdness</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-   <<set _text_output to "<span class=\"lewd\">exposed _undertop</span>">>
+	<<set _text_output to '<span class="lewd">exposed _undertop</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<set _text_output to "<span class=\"lewd\">exposed $worn.under_lower.name</span>">>
+	<<set _text_output to '<span class="lewd">exposed $worn.under_lower.name</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-   <<set _text_output to "<span class=\"lewd\">exposed _undertop and $worn.under_lower.name</span>">>
+	<<set _text_output to '<span class="lewd">exposed _undertop and $worn.under_lower.name</span>'>>
 <<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<set _text_output to "<span class=\"lewd\">exposed _genitals</span>">>
+	<<set _text_output to '<span class="lewd">exposed _genitals</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-   <<set _text_output to "<span class=\"lewd\">exposed _undertop and _genitals</span>">>
+	<<if $player.penisExist and $player.vaginaExist>>
+		<<set _text_output to '<span class="lewd">exposed _undertop, _genitals</span>'>>
+	<<else>>
+		<<set _text_output to '<span class="lewd">exposed _undertop and _genitals</span>'>>
+	<</if>>
 <<else>>
-   <<set _text_output to "<span class=\"lewd\">lewdness</span>">>
+	<<set _text_output to '<span class="lewd">lewdness</span>'>>
 <</if>>
 <</silently>>_text_output<</widget>>
 
@@ -5046,7 +5059,7 @@ in dev alternative to current "breasts" widget
 
 <<widget "handholdingvirginitywarning">>
 	<<if $player.virginity.handholding is true>>
-		<span class="red">이 행동으로 인해 손 순결성을 상실하게 될 것입니다.</span>
+		| <span class="red">이 행동으로 인해 손 순결성을 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
@@ -5267,13 +5280,15 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "tending_text">>
-<<if $tending gte 800>>
+<<if currentSkillValue('tending') gte 1200>>
+	<span class="gold">당신은 이 일을 믿기지 않을 정도로 잘한다.</span>
+<<elseif currentSkillValue('tending') gte 800>>
 	<span class="green">이젠 훌륭한 일꾼이 되었다.</span>
-<<elseif $tending gte 600>>
+<<elseif currentSkillValue('tending') gte 600>>
 	<span class="teal">일에 능숙해졌다.</span>
-<<elseif $tending gte 400>>
+<<elseif currentSkillValue('tending') gte 400>>
 	<span class="lblue">일이 손에 익어간다.</span>
-<<elseif $tending gte 200>>
+<<elseif currentSkillValue('tending') gte 200>>
 	<span class="blue">요령을 파악하게 된 것 같다.</span>
 <<else>>
 	<span class="purple">당신은 그럭저럭 일을 해나간다.</span>
@@ -5307,7 +5322,7 @@ in dev alternative to current "breasts" widget
 	<<set _text_output to "열한 번째">>
 <</if>>
 <<if $args[1]>>
-	<<print _text_output.toLocaleUpperFirst()>>
+	<<capitalise>>
 <<else>>
 	<<print _text_output>>
 <</if>>
@@ -5610,7 +5625,7 @@ in dev alternative to current "breasts" widget
 
 <<widget "monster_passage">>
 <<if _monster_passage is undefined>>
-	<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f") or ($bestialitydisable is "t")>>
+	<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f")>>
 		<<if $malechance gte 100>>
 			<<set _monster_passage to "m">>
 		<<elseif $malechance lte 0>>
@@ -5626,13 +5641,13 @@ in dev alternative to current "breasts" widget
 
 <<widget "farm_text_many">>
 <<if $args[0] is "horse">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<set _text_output to "centaurs">>
 	<<else>>
 		<<set _text_output to "horses">>
 	<</if>>
 <<elseif $args[0] is "pig">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender_plural is "m">>
 			<<set _text_output to "pigboys">>
 		<<elseif $farm_work[$args[0]].gender_plural is "f">>
@@ -5644,7 +5659,7 @@ in dev alternative to current "breasts" widget
 		<<set _text_output to "pigs">>
 	<</if>>
 <<elseif $args[0] is "dog">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender_plural is "m">>
 			<<set _text_output to "dogboys">>
 		<<elseif $farm_work[$args[0]].gender_plural is "f">>
@@ -5656,7 +5671,7 @@ in dev alternative to current "breasts" widget
 		<<set _text_output to "dogs">>
 	<</if>>
 <<else>>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender_plural is "m">>
 			<<set _text_output to "bullboys">>
 		<<elseif $farm_work[$args[0]].gender_plural is "f">>
@@ -5673,13 +5688,13 @@ in dev alternative to current "breasts" widget
 
 <<widget "farm_text">>
 <<if $args[0] is "horse">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<set _text_output to "켄타우로스">>
 	<<else>>
 		<<set _text_output to "말">>
 	<</if>>
 <<elseif $args[0] is "pig">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender is "m">>
 			<<set _text_output to "돼지 소년">>
 		<<else>>
@@ -5689,7 +5704,7 @@ in dev alternative to current "breasts" widget
 		<<set _text_output to "돼지">>
 	<</if>>
 <<elseif $args[0] is "dog">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender is "m">>
 			<<set _text_output to "개 소년">>
 		<<else>>
@@ -5699,7 +5714,7 @@ in dev alternative to current "breasts" widget
 		<<set _text_output to "개">>
 	<</if>>
 <<else>>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 		<<if $farm_work[$args[0]].gender is "m">>
 			<<set _text_output to "황소 소년">>
 		<<else>>
@@ -5786,7 +5801,7 @@ in dev alternative to current "breasts" widget
 <</silently>>_text_output<</widget>>
 
 <<widget "Master">><<silently>>
-<<master>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<master>><<capitalise>>
 <</silently>>_text_output<</widget>>
 
 <<widget "daughter">><<silently>>
@@ -5803,7 +5818,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_He">><<silently>>
-<<nnpc_he $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_he $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_him">><<silently>>
@@ -5812,7 +5827,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_Him">><<silently>>
-<<nnpc_him $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_him $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_his">><<silently>>
@@ -5821,7 +5836,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_His">><<silently>>
-<<nnpc_his $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_his $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_hers">><<silently>>
@@ -5835,7 +5850,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_Hes">><<silently>>
-<<nnpc_hes $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_hes $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_himself">><<silently>>
@@ -5879,7 +5894,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_Brother">><<silently>>
-<<nnpc_brother $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_brother $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_title">><<silently>>
@@ -5887,7 +5902,7 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "nnpc_Title">><<silently>>
-<<nnpc_title $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<nnpc_title $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "daylight">>
@@ -6057,32 +6072,27 @@ $worn.genitals.name
 
 
 <<widget "npcPenis">>
-<<if !$args[0]>>
-	<<set _npcGen to 0>>
-<<else>>
-	<<set _npcGen to $args[0]>>
-<</if>>
-<<if $NPCList[_npcGen].chastity.penis is "chastity cage">>
+<<set $_npcGen to ($args[0] ? $args[0] : 0)>>
+<<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
 	<<set _text_output to "caged penis">>
-<<elseif $NPCList[_npcGen].chastity.penis.includes("chastity")>>
-	<<set _text_output to $NPCList[_npcGen].chastity.penis>>
+<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
+	<<set _text_output to $NPCList[$_npcGen].chastity.penis>>
 <<else>>
-	<<set _text_output to $NPCList[_npcGen].penisdesc>>
+	<<set _text_output to $NPCList[$_npcGen].penisdesc>>
 <</if>>
 <<print _text_output>>
 <</widget>>
 
 <<widget "npcPenisSimple">>
-	<<if !$args[0]>>
-		<<set _npcGen to 0>>
-	<<else>>
-		<<set _npcGen to $args[0]>>
+	<<if $enemynomax is 1>>
+		<<set $args[0] to 0>>
 	<</if>>
-	<<if $NPCList[_npcGen].chastity.penis is "chastity cage">>
+	<<set $_npcGen to ($args[0] ? $args[0] : 0)>>
+	<<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
 		<<set _text_output to "caged penis">>
-	<<elseif $NPCList[_npcGen].chastity.penis.includes("chastity")>>
-		<<set _text_output to $NPCList[_npcGen].chastity.penis>>
-	<<elseif $NPCList[_npcGen].penisdesc.includes("strap-on")>>
+	<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
+		<<set _text_output to $NPCList[$_npcGen].chastity.penis>>
+	<<elseif $NPCList[$_npcGen].penisdesc.includes("strap-on")>>
 		<<set _text_output to "strap-on cock">>
 	<<else>>
 		<<set _text_output to either("penis","cock","shaft")>>
@@ -6239,7 +6249,7 @@ $worn.genitals.name
 	<</if>>
 <</silently>><<if $args[1] isnot "silent">><<print _text_output>><</if>><</widget>>
 
-<<widget "Number">><<number $args[0] silent>><<print _text_output.toLocaleUpperFirst()>><</widget>>
+<<widget "Number">><<number $args[0] silent>><<capitalise>><</widget>>
 
 <<widget "location_text">>
 <<switch $location>>
@@ -6307,5 +6317,20 @@ $worn.genitals.name
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "Plant_details">><<silently>>
-<<plant_details $args[0]>><<set _text_output to _text_output.toLocaleUpperFirst()>>
+<<plant_details $args[0]>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
+
+<<widget "tower_creature_text">>
+	<<silently>>
+	<<if $NPCList[0].monster is "monster">>
+		<<set _text_output to "horned " + ($NPCList[0].gender is "m" ? "boy" : "girl")>>
+	<<else>>
+		<<set _text_output to either("creature","monster","beast")>>
+	<</if>>
+	<</silently>>
+	<<print _text_output>>
+<</widget>>
+
+<<widget "vulva">>
+<<print either("vulva","vulva","quim","flange","pussy")>>
+<</widget>>

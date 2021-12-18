@@ -126,48 +126,49 @@
 		<</if>>
 		주요 장소
 		<br>
-		<<if $scienceproject is "ongoing" and $sciencelichenknown is 1 and $sciencelichenpark is 0 and $exposed lte 0>>
-			<<link [[과학 프로젝트를 위해 이끼를 조사한다|Park Lichen]]>><</link>>
-			<br>
-		<</if>>
-		<<if !$plants_known.includes("tulip")>>
-			<<if $sciencetrait gte 1>>
-				<<link [[씨앗을 찾는다 (0:30)|Park Tulip]]>><<set $plants_known.push("tulip")>><<pass 30>><<tending 6>><</link>><<gtending>>
-				<br>
-			<<else>>
-				<span class="blue">과학 기술이 뛰어나다면, 튤립 씨앗을 찾을 수 있을 것 같다.</span>
+		<<if $exposed lte 0>>
+			<<if $scienceproject is "ongoing" and $sciencelichenknown is 1 and $sciencelichenpark is 0>>
+				<<link [[과학 프로젝트를 위해 이끼를 조사한다|Park Lichen]]>><</link>>
 				<br>
 			<</if>>
-		<</if>>
-		<<link [[튤립을 딴다 (0:20)|Park Tulip Pick]]>><<pass 20>><<crimeup 20>><</link>><<tendingdifficulty 1 200>><<crime>>
-		<br>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and _robin_location is "park" and $exposed lte 0>>
-			<<if $weekday is 7 and $hour gte 9 and $hour lte 16 or $weekday is 1 and $hour gte 9 and $hour lte 16>>
+			<<if !$plants_known.includes("tulip")>>
+				<<if $sciencetrait gte 1>>
+					<<link [[씨앗을 찾는다 (0:30)|Park Tulip]]>><<set $plants_known.push("tulip")>><<pass 30>><<tending 6>><</link>><<gtending>>
+					<br>
+				<<else>>
+					<span class="blue">과학 기술이 뛰어나다면, 튤립 씨앗을 찾을 수 있을 것 같다.</span>
+					<br>
+				<</if>>
+			<</if>>
+			<<link [[튤립을 딴다 (0:20)|Park Tulip Pick]]>><<pass 20>><<crimeup 20>><</link>><<tendingdifficulty 1 200>><<crime>>
+			<br>
+			<<if _robin_location is "park">>
+				<!-- if robin met, is not missing, trauma < 80%, on winter sundays 09:00 - 16:59 -->
 				<<link [[로빈의 핫초코 가판대|Robin Chocolate]]>><</link>>
 				<br>
 			<</if>>
-		<</if>>
-		<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $weather isnot "rain" and $weather isnot "snow" and $daystate is "day">>
-			<<if $schoolday isnot 1 or $hour lte 8 or $hour gte 15>>
-				<<if $kylar.fountain is 1>>
-					<br>
-					카일라는 분수대에 앉아 가끔 동전을 던진다.
-					<br>
-				<<else>>
-					<br>
-					카일라는 벤치에 앉아 무언가를 스케치한다.
-					<br>
+			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and $daystate is "day">>
+				<<if $schoolday isnot 1 or $hour lte 8 or $hour gte 15>>
+					<<if $kylar.fountain is 1>>
+						<br>
+						카일라는 분수대에 앉아 가끔 동전을 던진다.
+						<br>
+					<<else>>
+						<br>
+						카일라는 벤치에 앉아 무언가를 스케치한다.
+						<br>
+					<</if>>
+					<<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
+					<br><br>
 				<</if>>
-				<<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
+			<</if>>
+			<<if ["active", "rescued"].includes($NPCName[$NPCNameList.indexOf("Whitney")].state) and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and ["snow", "rain"].includes($weather) and $daystate is "day" and ($schoolday isnot 1 or $hour lte 8 or $hour gte 15) and $whitney_park is undefined and $pillory_tenant.special.name isnot "Whitney">>
+				<br>
+				당신은 우산 아래에서 연기가 올라오는 것을 본다. 휘트니가 틀림없다. <<nnpc_He_ga "Whitney">> 공원 분수 근처의 나무 아래에 서 있다.
+				<br>
+				<<link [[다가간다|Whitney Park]]>><<set $whitney_text_trigger to true>><<if $whitney_text is undefined>><<set $whitney_text to 0>><<else>><<set $whitney_text += 1>><</if>><</link>>
 				<br><br>
 			<</if>>
-		<</if>>
-		<<if $exposed lte 0 and ($NPCName[$NPCNameList.indexOf("Whitney")].state is "active" or $NPCName[$NPCNameList.indexOf("Whitney")].state is "rescued") and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and ($weather is "rain" or $weather is "snow") and $daystate is "day" and ($schoolday isnot 1 or $hour lte 8 or $hour gte 15) and $whitney_park is undefined and $pillory_tenant.special.name isnot "Whitney">>
-			<br>
-			당신은 우산 아래에서 연기가 올라오는 것을 본다. 휘트니가 틀림없다. <<nnpc_He_ga "Whitney">> 공원 분수 근처의 나무 아래에 서 있다.
-			<br>
-			<<link [[다가간다|Whitney Park]]>><<set $whitney_text_trigger to true>><<if $whitney_text is undefined>><<set $whitney_text to 0>><<else>><<set $whitney_text += 1>><</if>><</link>>
-			<br><br>
 		<</if>>
 		<<maleicon>><<link [[남자 화장실|Men's Toilets]]>>/*'>>*/<</link>>
 		<br>
@@ -197,10 +198,10 @@
 			<<link [[상자 안에 숨는다 (0:10)|Crate Ex]]>><<pass 10>><</link>>
 			<br>
 			<<if $exposed gte 2 and $exhibitionism gte 75>>
-				<<link [[교차로를 건너 공업 지구로 간다 (0:05)|Flyover Ex Naked]]>><</link>><<if $ex_flyover is undefined>><<exhibitionist5>><</if>>
+				<<link [[육교를 건너 공업 지구로 간다 (0:05)|Flyover Ex Naked]]>><</link>><<if $ex_flyover is undefined>><<exhibitionist5>><</if>>
 				<br>
 			<<elseif $exposed is 1 and $exhibitionism gte 35>>
-				<<link [[교차로를 건너 공업 지구로 간다 (0:05)|Flyover Ex Undies]]>><</link>><<if $ex_flyober is undefined>><<exhibitionist3>><</if>>
+				<<link [[육교를 건너 공업 지구로 간다 (0:05)|Flyover Ex Undies]]>><</link>><<if $ex_flyover is undefined>><<exhibitionist3>><</if>>
 				<br>
 			<</if>>
 		<<else>>

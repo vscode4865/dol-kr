@@ -39,23 +39,18 @@
 	<</if>>
 	<<if $wolfcavedig gte 13>>
 		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>>
-		<br>
 	<<elseif $wolfcavedig gte 12 and $physiquesize lte 12000>>
 		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
-		<br>
 	<<elseif $wolfcavedig gte 11 and $physiquesize lte 10000>>
 		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
-		<br>
 	<<elseif $wolfcavedig gte 10 and $physiquesize lte 6000>>
 		<<link [[구멍으로 내려간다|Forest Wolf Cave Hole]]>><</link>><<small_text>>
-		<br>
 	<<elseif $wolfcavedig gte 1>>
 		<<link [[동굴 뒤쪽을 파낸다 (1:00)|Forest Wolf Cave Dig]]>><<pass 1 hour>><<set $wolfcavedig += 1>><</link>>
-		<br>
 	<<else>>
 		<<link [[동굴 뒤쪽을 살펴본다|Forest Wolf Cave Examine]]>><<set $wolfcavedig to 1>><</link>>
-		<br>
 	<</if>>
+	<br>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
 		<<link [[묶은 것을 푼다|Wolf Cave Unbind]]>><</link>>
 		<br>
@@ -64,11 +59,10 @@
 	<<if $bestialitydisable is "f" and $breastfeedingdisable is "f" and $lactating is 1 and $deviancy gte 35 and ($monsterchance lt 100 or ($monsterhallucinations is "t" and $hallucinations is 0))>>
 		<<if $wolfcavebreast is 3>>
 			<span class="blue">The pups are full of milk.</span>
-			<br>
 		<<else>>
 			<<link [[새끼에게 모유를 먹인다 (0:05)|Wolf Cave Breastfeed]]>><<set $phase to 0>><</link>><<deviant3>>
-			<br>
 		<</if>>
+		<br>
 	<</if>>
 	<<getChildrenIds $location>>
 	<<if _childrenIds.length gt 0>>
@@ -127,6 +121,17 @@
 	<br><br>
 	<<set $foresthunt to 0>>
 <</if>>
+<<if $wolfpatrolsent gte 3>>
+	<<unset $wolfpatrolsent>><<npc "Black Wolf">>
+	The Black Wolf approaches you. There are no wounds on <<bhis>> body, and nothing in <<bhis>> jaws.
+	<<if $monster is 1>>
+		"It was nothing," <<bhe>> grunts out. "No intruder."
+	<<else>>
+		There must have been nothing, when you <<if $wolfpackleader is 1>>sent <<bhim>><<else>>watched <<bhim>> leave<</if>> to investigate.
+	<</if>>
+	<<bHe>> seems almost disappointed.
+	<<endevent>>
+<</if>>
 <<if $wolfevent gte 1 and !$possessed>><<set $wolfevent to 0>>
 	<<wolfcaveselect>>
 <<else>>
@@ -159,6 +164,23 @@
 	<br>
 	<<pregnancyTest "Wolf Cave Clearing">>
 	<br>
+	<<if $wolfstate is "cave" and $daystate isnot "night">>
+		You see the Black Wolf resting by a rock, overlooking the cave and its surroundings.
+		<br>
+		<<link [[Approach|Wolf Relax]]>><<npc "Black Wolf">><<set $phase to 1>><</link>>
+		<br><br>
+	<<elseif $wolfcavepatrol is 1 and $wolfcavepatrolchance is 1 and $daystate is "night">>
+		The Black Wolf rests away from the pack, occasionally surveying passing members before <<nnpc_his "Black Wolf">> attention returns to the treeline. <span class="blue"><<nnpc_He "Black Wolf">> looks agitated.</span>
+		<br>
+		<<link [[Approach|Wolf Patrol Intro]]>><<npc "Black Wolf">><</link>>
+		<br><br>
+	<</if>>
+	<<if $wolfstate is "cave" and $daystate isnot "night" and !["rain","snow"].includes($weather)>>
+		Some of the stronger <<wolf_cave_plural>> lay around the clearing, waiting for a hunt. They look bored.
+		<br>
+		<<link [[Challenge the hunters (0:20)|Wolf Cave Spar]]>><</link>><<gtiredness>><<gphysique>><<lstress>>
+		<br><br>
+	<</if>>
 	<<link [[안으로 들어간다|Wolf Cave]]>><</link>>
 	<br><br>
 	<<if $nextPassageCheck is "Forest">>
@@ -213,7 +235,22 @@
 
 <<effects>>
 <<if $wolfpackharmony gte 10>>
-	당신은 따뜻함을 위해 <<beastNEWinit 1 wolf>><<beasttypePost "을">><<endevent>> 옆에 껴안고 눈을 감는다.
+	<<beastNEWinit 1 wolf>>
+	<<if $rng gte 51>>
+		<<if $wolfstate is "hunt">>
+			You find an empty spot to lie on and close your eyes. As you lay there, you feel warm and fuzzy little bodies moving all around you. It looks like the puppies saw you going to bed and felt safer staying with you as long as the adults of the pack are gone. One of them licks your face before resting <<bhis>> head inside your hair.
+			<br><br>
+			You won't be cold tonight, and they won't be alone. <<lstress>><<ltrauma>><<stress -10>><<trauma -10>>
+		<<else>>
+			You find an empty spot to lie on and close your eyes. As you lay there, you feel a wall of fur moving all around you. It looks like the <<wolf_cave_plural>> saw you going to bed and got sleepy themselves. One of them nuzzles <<bhis>> head under your arm.
+			<br><br>
+			You won't be cold tonight. <<lstress>><<ltrauma>><<stress -6>><<trauma -6>>
+		<</if>>
+		<<set $wolfbed to 1>>
+	<<else>>
+		당신은 따뜻함을 위해 <<beasttypePost "을">> 옆에 껴안고 눈을 감는다.
+	<</if>>
+	<<endevent>>
 <<else>>
 	당신은 비어있는 잠자리를 찾는다.
 <</if>>
@@ -242,7 +279,7 @@
 <br>
 <<link [[그냥 잔다|Wolf Cave Sleep]]>><<set $sleephour to -1>><<set $saveDetails.auto.count++>><</link>> (??:??)<<ltiredness>>
 <br><br>
-<<link [[침대에서 일어난다|Wolf Cave]]>><</link>>
+<<link [[침대에서 일어난다|Wolf Cave]]>><<set $wolfbed to 0>><</link>>
 <br><br>
 
 :: Wolf Cave Settings
@@ -270,7 +307,7 @@
 	<br><br>
 	그것은 전부 안쪽으로 구부러진 나무들로 둘러싸여, 호수 위에 떠 있다. 모든 것이 당신 주위로 움직이며, 당신은 당신이 커다란 유적 위에 떠 있는 것을 알아챈다. 당신은 숨을 쉴 수가 없다.
 	<br><br>
-	당신은 천천히 눈을 뜨고, 느릿느릿 일어난다. 당신의 귀가 울린다.
+	당신은 천천히 눈을 뜨고, 느릿느릿 일어<<if $wolfbed is 1>>나, 당신을 에워싸고 있는 <<wolf_cave_pluralPost>> 에게서 몸을 빼낸다<<else>>난다<</if>>. 당신의 귀가 울린다.
 	<br><br>
 	<<set $possessed to true>><<set $wraith.exit to "wolf_cave">><<set $controlSaved to $control>><<set $control to 0>>
 	<span class="nextLink"><<link [[걸어라.|Wolf Cave]]>><</link>></span>
@@ -306,13 +343,16 @@
 		<<link [[내버려둔다|Wolf Cave Sleep Sex]]>><<set $sexstart to 1>><</link>><<deviant1>>
 		<br>
 		<<link [[밀어낸다|Wolf Cave Sleep Push]]>><</link>>
-		<br>
+	<<elseif $wolfbed is 1>>
+		당신과 같이 자던 동료들은 당신이 일어나기 전에 일어나 낮에 할 일을 위해 떠났다. 당신은 그들이 움직이는 것을 느끼지 못했고, 그들은 당신을 깨우지 않았다.
+		<br><br>
+		<<link [[일어난다|Wolf Cave]]>><</link>>
 	<<else>>
 		<br><br>
 		<<link [[일어난다|Wolf Cave]]>><</link>>
-		<br><br>
 	<</if>>
 <</if>>
+<<set $wolfbed to 0>>
 
 :: Wolf Cave Sleep Sex
 
@@ -542,14 +582,12 @@
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 
 <<if $phase is 1>>
-
-당신은 덜 적극적인 늑대도 젖을 빨도록 도와준다.
-
+	당신은 덜 적극적인 늑대도 젖을 빨도록 도와준다.
 <<else>>
 	<<if $worn.upper.exposed lte 0 or $worn.under_upper.exposed lte 0>>
-	<<upperstrip>><<underupperstrip>>당신은 당신의 <<breastsPost "을">> 드러내며 늑대 새끼들이 젖을 빨도록 부추긴다.
+		<<upperstrip>><<underupperstrip>>당신은 당신의 <<breastsPost "을">> 드러내며 늑대 새끼들이 젖을 빨도록 부추긴다.
 	<<else>>
-	당신은 늑대 새끼들에게 젖을 빨도록 부추긴다.
+		당신은 늑대 새끼들에게 젖을 빨도록 부추긴다.
 	<</if>>
 <</if>>
 <<pass 5>>
@@ -579,11 +617,10 @@
 	<br>
 <<else>>
 
-젖꼭지에서 우유가 나오지 않는다. <span class="pink">당신의 우유가 다 떨어진 것 같다.</span> 늑대들은 좌절감을 느끼며 깨문다.
-<<gpain>><<pain 6>><<milkvolume 1>>
-<br><br>
+	젖꼭지에서 우유가 나오지 않는다. <span class="pink">당신의 우유가 다 떨어진 것 같다.</span> 늑대들은 좌절감을 느끼며 깨문다.
+	<<gpain>><<pain 6>><<milkvolume 1>>
+	<br><br>
 
-<<link [[다음|Wolf Cave]]>><<clotheson>><<set $phase to 0>><</link>>
-<br>
-
+	<<link [[다음|Wolf Cave]]>><<clotheson>><<set $phase to 0>><</link>>
+	<br>
 <</if>>

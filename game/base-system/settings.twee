@@ -33,16 +33,18 @@
 <<set $beedisable to "f">>
 <<set $lurkerdisable to "f">>
 <<set $horsedisable to "f">>
-<<set $bodywritingdisable to "f">>
+<<set $bodywritingLvl to 3>>
 <<set $parasitedisable to "f">>
 <<set $bestialitydisable to "f">>
 <<set $slimedisable to "f">>
 <<set $voredisable to "f">>
 <<set $tentacledisable to "f">>
+<<set $plantdisable to "t">>
 <<set $analdisable to "f">>
-<<set $analdoubledisable to "t">>
+<<set $analdoubledisable to "f">>
 <<set $analingusdisablegiving to "f">>
 <<set $analingusdisablereceiving to "f">>
+<<set $vaginaldoubledisable to "f">>
 <<set $transformdisable to "f">>
 <<set $transformdisabledivine to "f">>
 /*<<set $hirsutedisable to "t">>*/
@@ -92,6 +94,7 @@
 <<set $condomchance to 50>>
 <<set $condomautochance to 50>>
 <<set $multipleWardrobes to "isolated">>
+<<set $targetYourself to false>>
 
 <<set $notifyUpdate = true>>
 
@@ -202,7 +205,7 @@
 	<<settingsExit>>
 </div>
 <</if>>
-<br><br>
+<br><br><br>
 <</widget>>
 
 <<widget "settingsExit">>
@@ -283,6 +286,7 @@
 	<<initnpcgender>>
 	<<updatePronouns>>
 	<<hirsuteHideCheck>>
+	<<generateTipsList>>
 	<<tanned 0 "ignoreCoverage">>
 	<<if $player.freckles is "random">>
 		<<set $player.freckles to (random(1, 5) is 1)>>
@@ -378,9 +382,8 @@
 
 	<<if StartConfig.enableImages is true>>
 		<span class="gold">사이드 바에서 캐릭터 미리보기</span> <label>겉옷 숨기기 <<checkbox "_showClothes" true false autocheck>></label> <label>속옷 숨기기 <<checkbox "_showUnderwear" true false autocheck>></label>
-		<br>
-		<span class="red">'플레이어 캐릭터의 피부색 시각적으로 표현' 기능은 일반 탭에서 활성화해야 정상적으로 게임 플레이 중에 피부색을 볼 수 있습니다.</span>
-		<br>
+	<mouse class="tooltip linkBlue">(?)<span>'플레이어 캐릭터의 피부색 시각적으로 표현' 기능을 일반 탭에서 활성화해야 정상적으로 게임 플레이 중에 피부색을 볼 수 있습니다.</span></mouse>
+	<br>
 	<</if>>
 	<br>
 
@@ -392,7 +395,7 @@
 		<<numberslider "$devlevel" $devlevel 6 16 1>>
 		<br><br>
 	<<else>>
-		<span class="gold">신체 크기</span> - 몸이 작을 수록 인카운터 중에 가할 수 있는 피해량이 적어져, 저항이 힘들어집니다.
+		<span class="gold">신체 크기</span> <mouse class="tooltip linkBlue">(?)<span>몸이 작을 수록 인카운터 중에 가할 수 있는 피해량이 적어져, 저항이 힘들어집니다.</span></mouse>
 		<br>
 		<label>조그마함 <<radiobutton "$bodysize" 0 autocheck>></label> |
 		<label>작음 <<radiobutton "$bodysize" 1 autocheck>></label> |
@@ -516,7 +519,7 @@
 	<label>랜덤 <<radiobutton "$player.freckles" "random" autocheck>></label> |
 	<br><br>
 
-	<span class="gold">피부색</span>
+	<span class="gold">피부색</span> <mouse class="tooltip linkBlue">(?)<span>'플레이어 캐릭터의 피부색 시각적으로 표현'과 '선탠량 변화' 기능을 일반 탭에서 활성화해야 합니다. 이 설정들은 몇몇 기기의 성능 문제로 기본적으로 비활성화 되어 있습니다.</span></mouse>
 	<br>
 	붉게:
 	<label>연하게 <<radiobutton "$skinColor.natural" "light" autocheck>></label> |
@@ -545,13 +548,13 @@
 					<<set $skinColor.tanImgEnabled to "f">>
 				<</if>>
 			<</replace>>
-		<</link>> (근사치) - <span class="red">플레이어 캐릭터 피부색과 선탠량의 시각적 제시는 여기 세팅 메뉴의 일반 탭에서 활성화시켜야 작동합니다. 일부 기기에서 퍼포먼스 문제가 발생해 기본값은 비활성화입니다.</span>
+		<</link>> (근사치)
 		<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($skinColor.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
 		<br>
 	<</if>>
 	<br>
 
-	<span class="gold">성지식</span> - 경험은 없지만 섹스에 대해 조금 알고는 있는지를 결정해주세요.
+	<span class="gold">성지식</span> <mouse class="tooltip linkBlue">(?)<span>경험은 없지만 섹스에 대해 조금 알고는 있는지를 결정해주세요.</span></mouse>
 	<br>
 	<label>순수함 <<radiobutton "$awareselect" "innocent" autocheck>></label> |
 	<label>지식 있음 <<radiobutton "$awareselect" "knowledgeable" autocheck>></label>
@@ -559,27 +562,31 @@
 
 	<span class="gold">배경</span>
 	<br>
-	<label>고아 <<radiobutton "$background" "waif" autocheck>> - 특별한 장점이나 단점 없음. <i>초심자에게 권장합니다.</i></label>
+	<label><span class="green">고아</span> <<radiobutton "$background" "waif" autocheck>> - 특별한 장점이나 단점은 없습니다. <i>초심자에게 권장합니다.</i></label>
 	<br>
-	<label>공부벌레 <<radiobutton "$background" "nerd" autocheck>> - 성적 좋음. 잘 괴롭혀짐. <span class="red">(이 경우 비사회적 나방 도전과제를 달성할 수 없게 됩니다)</span></label>
+	<label><span class="teal">공부벌레</span> <<radiobutton "$background" "nerd" autocheck>> - 성적이 좋습니다. 괴롭힘을 잘 당합니다. <span class="red">(이 경우 비사회적 나방 도전과제를 달성할 수 없게 됩니다)</span></label>
 	<br>
-	<label>운동선수 <<radiobutton "$background" "athlete" autocheck>> - 신체 능력 좋음. 성적은 고통받음.</label>
+	<label><span class="teal">운동선수</span> <<radiobutton "$background" "athlete" autocheck>> - 신체 능력이 좋습니다. 성적은 좋지 않습니다.</label>
 	<br>
-	<label>불량아 <<radiobutton "$background" "delinquent" autocheck>> - 당신의 비행으로 다른 학생들 사이에서 인기가 있습니다. 선생님들에게는 반대지만요.</label>
+	<label><span class="teal">불량아</span> <<radiobutton "$background" "delinquent" autocheck>> - 당신의 비행으로 다른 학생들 사이에서 인기가 있습니다. 선생님들에게는 반대지만요..</label>
 	<br>
-	<label>음란함 <<radiobutton "$background" "promiscuous" autocheck>> - 성적인 실험을 받았습니다.</label>
+	<label><span class="blue">음란함</span> <<radiobutton "$background" "promiscuous" autocheck>> - 성적인 실험을 받았습니다.</label>
 	<br>
-	<label>노출 중독자 <<radiobutton "$background" "exhibitionist" autocheck>> - 당신은 공공장소에서 신체 부위를 드러내길 즐깁니다.</label>
+	<label><span class="blue">노출 중독자</span> <<radiobutton "$background" "exhibitionist" autocheck>> - 당신은 공공장소에서 신체 부위를 드러내길 즐깁니다.</label>
 	<br>
-	<label>이상성욕자 <<radiobutton "$background" "deviant" autocheck>> - 당신은 짐승들을 <i>정말</i> 좋아합니다.</label>
+	<label><span class="blue">이상성욕자</span> <<radiobutton "$background" "deviant" autocheck>> - 당신은 짐승들을 <i>정말</i> 좋아합니다.</label>
 	<br>
-	<label>미인 <<radiobutton "$background" "beautiful" autocheck>> - 당신은 시선을 끕니다. <i>초심자에게 권장하지 않습니다.</i></label>
+	<label><span class="lewd">미인</span> <<radiobutton "$background" "beautiful" autocheck>> - 당신은 시선을 끕니다. <i>초심자에게 권장하지 않습니다.</i></label>
 	<br>
-	<label>크로스드레서 <<radiobutton "$background" "crossdresser" autocheck>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리에겐 아무 효과도 없습니다.</label>
+	<label><span class="lewd">크로스드레서</span> <<radiobutton "$background" "crossdresser" autocheck>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리에겐 아무 효과도 없습니다.</label>
 	<br>
-	<label>성욕 많음 <<radiobutton "$background" "lustful" autocheck>> - 흥분도가 시간에 따라 증가하고, 어떻게든 처리해줘야 합니다.</label>
+	<label><span class="lewd">성욕 많음</span> <<radiobutton "$background" "lustful" autocheck>> - 흥분도가 시간에 따라 증가하고, 어떻게든 처리해줘야 합니다.</label>
+	/*<br>
+	<label>원예가 <<radiobutton "$background" "greenthumb" autocheck>> - 작물 수확량이 증가하고 비료를 사용하면 썩지 않습니다. 비료를 하나 가지고 시작합니다.</label>*/
 	<br>
-	<label>원예가 <<radiobutton "$background" "greenthumb" autocheck>> - 초기 관리 기술을 가지고 있고, 비료를 사용할 때 수확량이 많아지며 부패하지 않습니다.</label>
+	<label><mouse class="tooltip lewd">식물 애호가 <<radiobutton "$background" "plantlover" autocheck>> - 식물들은 당신에게는 전부입니다.<span class="green">당신은 꿀에 중독되어 있습니다. 당신은 미약과 술에 더 영향을 많이 받습니다. 식물사람들과 식물 기반 촉수를 만나기 위해 더 이상 환각이 필요하지 않습니다. 당신은 관리 기술에 추가 보너스를 받지만, 당신의 트라우마가 증가합니다.</span></mouse>
+	</label>
+	<br>
 
 <</widget>>
 
@@ -626,16 +633,16 @@
 <<widget "gameSettings">>
 	<span class="gold">게임 모드</span>
 	<br>
-	<label><span class = "green">일반 모드</span> <<radiobutton "$gamemode" "normal" autocheck>> - 이 위험한 세상에서 살아남으세요.</label>
+	<label><mouse class="tooltip green">일반 모드<span>이 위험한 세상에서 살아남으세요.</span></mouse>
+	<<radiobutton "$gamemode" "normal" autocheck>></label>
 	<br>
-	<label><span class = "blue">소프트 모드</span>
-	<<radiobutton "$gamemode" "soft" autocheck>>
-	- 가벼운 마음으로 야한 모험을 즐기고자 하는 이들을 위한 모드. 그래도 어두운 면이 없지는 않습니다. <span class="red">실험적인 기능으로, 게임 진행이 불가능할 정도의 버그가 존재할 수 있습니다. 미래에 수정되거나 빠질 예정입니다. 소프트 모드로 설정한다면 노말 모드로 설정하기 전까지는 도전과제를 달성할 수 없습니다. 그렇다면 영구적으로 일부 도전과제는 달성할 수 없게 됩니다</span></label>
+	<label><mouse class = "tooltip blue">소프트 모드<span>가벼운 마음으로 야한 모험을 즐기고자 하는 이들을 위한 모드. 그래도 어두운 면이 없지는 않습니다.<span class="red">실험적인 기능으로, 게임 진행이 불가능할 정도의 버그가 존재할 수 있습니다. 미래에 수정되거나 빠질 예정입니다. 소프트 모드로 설정한다면 노말 모드로 설정하기 전까지는 도전과제를 달성할 수 없습니다. 그리고, 영구적으로 일부 도전과제는 달성할 수 없게 됩니다.</span></span></mouse>
+	<<radiobutton "$gamemode" "soft" autocheck>></label>
 	<br>
 	<<if $intro is 1 or $gamemode is "hard">>
-		<label><span class = "purple">하드 모드</span>
+		<label><mouse class = "tooltip purple">하드 모드<span>야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕) 트라우마와 통제력 관리가 매우 어려워집니다. 게임 시작에만 선택 가능하고, 정신병원에 감금되면 노말 모드로 바뀝니다.<span class="red">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</span></span></mouse>
 		<<radiobutton "$gamemode" "hard" autocheck>>
-		- 야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕) 트라우마와 통제력 관리가 매우 어려워집니다. 게임 시작에만 선택 가능하고, 수용소에 감금된다면 노말 모드로 바뀝니다. <span class="red">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</span></label>
+		</label>
 		<br>
 	<</if>>
 	<br>
@@ -647,9 +654,9 @@
 	<<numberslider "$alluremod" $alluremod 0.2 2 0.1>>
 	<br><br>
 
-	<span class="gold">여러 개의 옷장</span>
+	<span class="gold">여러 개의 옷장</span> <mouse class="tooltip linkBlue">(?)<span class="red">이것은 실험적인 기능이며, 미래에 바뀌거나 삭제될 수 있습니다. 게임 플레이 도중에 설정을 바꿀 수는 있으나, 게임 중에 끄면 옷을 사용하지 못하거나 켜면 당신을 수건 외에는 입을 게 없는 상황에 처하게 할 수 있기 때문에 추천하지 않습니다.</span></mouse>
 	<br>
-	<span class="red">이것은 실험적인 기능이며, 미래에 바뀌거나 삭제될 수 있습니다.</span> 게임 플레이 도중에 설정을 바꿀 수는 있으나, 게임 중에 끄면 옷을 사용하지 못하거나 켜면 당신을 수건 외에는 입을 게 없는 상황에 처하게 할 수 있기 때문에 추천하지 않습니다.
+	
 	<br>
 	<label><<radiobutton "$multipleWardrobes" false autocheck>> 하나의 공유된 옷장만 사용한다</label>
 	<br>
@@ -718,12 +725,12 @@
 			<<numberslider "$homochance" $homochance 0 100 1>>
 			<br><br>
 
-			<span class="gold">여성의 평균 가슴 크기</span> - 숫자가 커질 수록 이 세상의 평균 가슴 크기가 커짐을 뜻합니다. 12로 설정하면 모든 여성이 거대한 가슴을 갖습니다. -12로 설정하면 모든 여성이 평평한 가슴을 갖습니다. 기본값은 0으로, 넓은 범위의 크기로 나타납니다.
+			<span class="gold">여성의 평균 가슴 크기</span> <mouse class="tooltip linkBlue">(?)<span>숫자가 커질 수록 이 세상의 평균 가슴 크기가 커짐을 뜻합니다. 12로 설정하면 모든 여성이 거대한 가슴을 갖습니다. -12로 설정하면 모든 여성이 평평한 가슴을 갖습니다. 기본값은 0으로, 넓은 범위의 크기로 나타납니다.</span></mouse>
 			<br>
 			<<numberslider "$breast_mod" $breast_mod -12 12 1>>
 			<br><br>
 
-			<span class="gold">NPC 평균 자지 크기</span> - 숫자가 커질 수록 이 세상의 평균 자지 크기가 커짐을 뜻합니다. 8로 설정하면 모두가 거대한 자지를 갖습니다. -8로 설정하면 모두가 조그마한 자지를 갖습니다. 기본값은 0으로, 넓은 범위의 크기로 나타납니다.
+			<span class="gold">NPC 평균 자지 크기</span> <mouse class="tooltip linkBlue">(?)<span>숫자가 커질 수록 이 세상의 평균 자지 크기가 커짐을 뜻합니다. 8로 설정하면 모두가 거대한 자지를 갖습니다. -8로 설정하면 모두가 조그마한 자지를 갖습니다. 기본값은 0으로, 넓은 범위의 크기로 나타납니다.</span></mouse>
 			<br>
 			<<numberslider "$penis_mod" $penis_mod -8 8 1>>
 			<br><br>
@@ -951,16 +958,10 @@
 
 	<span class="gold">기능 토글</span>
 	<br>
-	/*<label><div class="settingsToggle">
+	<label><div class="settingsToggle">
 	<<checkbox "$analdisable" "t" "f" autocheck>> 항문 활성화
-	</div></label>*/
-	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalandDAPHead">
-	<label>
-	<<checkbox "$analdisable" "t" "f" autocheck>> 항문 활성화 |
-	</label>
-	<label>
-	<<checkbox "$analdoubledisable" "t" "f" autocheck>> 항문 동시삽입 활성화
-	</label></div>
+	</div></label>
+	<<run settingsDoubleAnalToggleGreyOut()>>
 	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
 	<span id="settingsAnalingusHead">항문 핥기:</span>
 	<label>
@@ -970,6 +971,17 @@
 		<<checkbox "$analingusdisablereceiving" "t" "f" autocheck>> 당하는 것
 	</label>
 	</div>
+	<div class="settingsToggle" role="group" aria-labelledby="settingsDoubleHead">
+	<span id="settingsAnalingusHead">동시삽입:</span>
+	<label>
+		<<checkbox "$vaginaldoubledisable" "t" "f" autocheck>> 보지
+	</label>
+	<label>
+		<<checkbox "$analdoubledisable" "t" "f" autocheck>> 항문
+	</label>
+	<mouse class="tooltip linkBlue">(?)<span>항문 동시삽입에는 항문 활성화가 필요합니다.
+	<br>여기의 "동시삽입"이란 두 남근이 플레이어의 같은 구멍안에 들어가는 것을 의미합니다.</span></mouse>
+	</div>
 	<label><div class="settingsToggle">
 	<<checkbox "$pbdisable" "t" "f" autocheck>> 음모 성장 활성화
 	</div></label>
@@ -977,6 +989,7 @@
 	변신:
 	<label><<checkbox "$transformdisable" "t" "f" autocheck>> 짐승</label>
 	<label><<checkbox "$transformdisabledivine" "t" "f" autocheck>> 영적 존재</label>
+	<mouse class="tooltip linkBlue">(?)<span>당신은 하나의 영적 존재 변신과 하나의 짐승 변신을 동시에 할 수 있습니다.</span></mouse>
 	</div>
 	/*<label><div class="settingsToggle">
 	<<checkbox "$hirsutedisable" "t" "f" autocheck>> 추가 음모/털복숭이 늑대로 변신
@@ -986,28 +999,37 @@
 	</div></label>
 	<label><div class="settingsToggle">
 	<<checkbox "$watersportsdisable" "t" "f" autocheck>> 방뇨 활성화
+	<mouse class="tooltip linkBlue">(?)<span>이 설정은 거의 사용되지 않으며, 현재는 단지 하나의 아주 드문 이벤트에서만 사용되고 있습니다.</span></mouse>
 	</div></label>
-	<label><div class="settingsToggle">
-	<<checkbox "$bodywritingdisable" "t" "f" autocheck>> 신체 낙서 및 강제 문신 활성화
-	</div></label>
+
 	<label><div class="settingsToggle">
 	<<checkbox "$footdisable" "t" "f" autocheck>> 발 활성화
+	<mouse class="tooltip linkBlue">(?)<span>플레이어의 발기술을 없애지 않습니다.</span></mouse>
 	</div></label>
+	
 	<div class="settingsToggle" style="display: inline-flex;">
-	<span style="white-space:nowrap;">질식 강도 설정</span>
+	&nbsp;질식 강도 설정
 	<<numberslider "$asphyxiaLvl" $asphyxiaLvl 0 4 1>>
 	<<run settingsAsphyxiation()>>
 	</div>
+
+	<div class="settingsToggle" style="display: inline-flex;">
+	&nbsp;신체낙서
+	<<numberslider "$bodywritingLvl" $bodywritingLvl 0 3 1>>
+	<<run settingsBodywriting()>>
+	</div>
+		
 	<div class="settingsToggle">
-	나체&nbsp;성별&nbsp;파악
+	&nbsp;나체&nbsp;성별&nbsp;파악
 	<<numberslider "$NudeGenderDC" $NudeGenderDC 0 2 1>>
 	<<run settingsNudeGenderAppearance()>>
 	</div>
+
 	<div style="clear:both;">/*Keep at end of toggles*/</div><<customSettingToggle>>
 <</widget>>
 
 <<widget "sizeLimitsSettings">>
-	<span class="gold">플레이어 캐릭터 최대 가슴 크기</span> - 이미 이 이상으로 설정된 가슴은 자동으로 작아지거나 하지 않습니다. 당신의 가슴은 성별 관계 없이 자라납니다. 남성이나 순결도가 높은 캐릭터는 성장 속도가 느려집니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다. 가슴을 갖고 놀아지거나 기생충이 기생하게 될 경우 성장이 빨라집니다.
+	<span class="gold">플레이어 캐릭터 최대 가슴 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이상으로 커진 가슴은 자동으로 작아지거나 하지 않습니다. 당신의 가슴은 성별 관계 없이 자라납니다. 남성이나 순결도가 높은 캐릭터는 성장 속도가 느려집니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다. 가슴을 갖고 놀아지거나 기생충이 기생하게 될 경우 성장이 빨라집니다.</span></mouse>
 	<br>
 	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
@@ -1015,22 +1037,22 @@
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최소 가슴 크기</span> - 이미 이 이하로 설정된 가슴은 자동으로 커지거나 하지 않습니다.
+	<span class="gold">플레이어 캐릭터 최소 가슴 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이하로 작아진 가슴은 자동으로 커지거나 하지 않습니다.</span></mouse>
 	<br>
 	<<for _i to 0; _i lt 5; _i++>>
 		<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최대 엉덩이 크기</span> - 이미 이 이상으로 설정된 엉덩이는 자동으로 작아지거나 하지 않습니다.
+	<span class="gold">플레이어 캐릭터 최대 엉덩이 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이상으로 커진 엉덩이는 자동으로 작아지거나 하지 않습니다.</span></mouse>
 	<br>
-	<<set _name to ["호리호리함", "날씬함", "평범함", "푹신함", "부드러움", "둥긂", "포동포동함", "큼", "거대함"]>>
+	<<set _name to ["호리호리함", "날씬함", "평범함", "푹신함", "부드러움", "둥글음", "포동포동함", "큼", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
 		<label><<print _name[_i]>> <<radiobutton "$bottomsizemax" _i autocheck>></label> |
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최대 자지 크기</span> - 이미 이 이상으로 설정된 자지는 자동으로 작아지거나 하지 않습니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다.
+	<span class="gold">플레이어 캐릭터 최대 자지 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이상으로 커진 자지는 자동으로 작아지거나 하지 않습니다. 수술, 약물과 기생충은 어느 방향으로든 성장에 영향을 줄 수 있습니다.</span></mouse>
 	<br>
 	<<set _name to ["진짜 작음", "아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
@@ -1038,7 +1060,7 @@
 	<</for>>
 	<br><br>
 
-	<span class="gold">플레이어 캐릭터 최소 자지 크기</span> - 이미 이 이하로 설정된 자지는 자동으로 커지거나 하지 않습니다. 더 작은 크기는 줄어들거나/커지려면 추가 요건이 필요합니다.
+	<span class="gold">플레이어 캐릭터 최소 자지 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이하로 작아진 자지는 자동으로 커지거나 하지 않습니다. 더 작은 크기는 줄어들거나/커지려면 추가 요건이 필요합니다.</span></mouse>
 	<br>
 	<<set _name to ["진짜 작음", "아주 작음", "조그마함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
@@ -1198,20 +1220,19 @@
 	<div class="description">세이브 메뉴에서 세이브 id 자리에 표시됩니다.</div>
 	<div class="description"><span class="red">현재 세이브 메뉴 상에서는 최대 10글자까지만 표시가 되고, 세이브 ID를 표시하려면 공란으로 남겨두세요</span></div>
 	<br>
-	<span class="gold">게임 줌</span> - 게임 요소와 텍스트를 조정할 수 있게 됩니다. 기본값은 100입니다.
+	<span class="gold">게임 확대</span> <mouse class="tooltip linkBlue">(?)<span>게임 요소와 텍스트를 조정할 수 있게 됩니다. 기본값은 100입니다.
 	50으로 설정하면 기존의 절반 크기가 되고, 200으로 설정하면 두 배로 커지게 됩니다.
-	테스트 버튼을 눌러도 현재 세이브에 줌 설정치가 저장되진 않습니다.
-	<br>
+	테스트 버튼을 눌러도 현재 세이브에 확대 설정치가 저장되진 않습니다.
 	<span class="red">
 		이 항목을 설정할 때에는 조심하세요! 게임을 다시 기동하면 세이브에서 마지막으로 사용된 값으로 돌아가게 되니까, 변경한 상태가 마음에 드는 경우에만 저장하시기 바랍니다.
 		장치와 브라우저에 따라 이 설정이 작동하지 않을 수도 있고, 예상치 못한 현상이 발생할 수도 있습니다. 그러한 문제가 있을 경우 제보해주시기 바랍니다.
-	</span>
-	<br>
+	</span></span></mouse>
+	<br><br>
 	<<numberslider "$zoom" $zoom 50 200 1>>
 	<input type="button" value="설정한 값 테스트" onclick="zoom()"/>
 	<br><br>
-	<input type="button" value="줌 리셋" onclick="zoom(100, true)"/>
-	<input type="button" value="줌 설정" onclick="zoom(undefined, true)"/>
+	<input type="button" value="확대 설정 리셋" onclick="zoom(100, true)"/>
+	<input type="button" value="확대 설정" onclick="zoom(undefined, true)"/>
 	<br><br>
 
 	

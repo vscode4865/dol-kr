@@ -28,7 +28,7 @@ DefineMacro("addfemininityfromfactor", addfemininityfromfactor);
 
 function addfemininityofclothingarticle(slot, clothing_article, no_overwear_check) {
 	if (setup.clothes[slot][clothing_article.index].femininity) {
-		addfemininityfromfactor(setup.clothes[slot][clothing_article.index].femininity, setup.clothes[slot][clothing_article.index].name_cap, no_overwear_check);
+		Wikifier.wikifyEval("<<trClothes "+slot+" \""+setup.clothes[slot][clothing_article.index].name+"\" 'name'>>"); addfemininityfromfactor(setup.clothes[slot][clothing_article.index].femininity, T.trResult, no_overwear_check);
 	}
 }
 DefineMacro("addfemininityofclothingarticle", addfemininityofclothingarticle);
@@ -305,7 +305,6 @@ function updatehistorycontrols(){
 			jQuery("#ui-bar-toggle").after(`
 				<div id="ui-bar-history">
 					<button id="history-backward" tabindex="0" title="'+t+'" aria-label="'+t+'">\uE821</button>
-					<button id="history-jumpto" tabindex="0" title="'+r+'" aria-label="'+r+'">\uE839</button>
 					<button id="history-forward" tabindex="0" title="'+n+'" aria-label="'+n+'">\uE822</button>
 				</div>`);
 			/* make buttons active/inactive based on the available history states */
@@ -313,8 +312,16 @@ function updatehistorycontrols(){
 					$backward.ariaDisabled(State.length < 2);
 					$forward.ariaDisabled(State.length === State.size);
 				})(jQuery('#history-backward'), jQuery('#history-forward')));
-			/* update uibar to accept it's new masters */
-			UIBar.start();
+			jQuery('#history-backward')
+				.ariaDisabled(State.length < 2)
+				.ariaClick({
+					label : L10n.get('uiBarBackward')
+				}, () => Engine.backward());
+			jQuery('#history-forward')
+				.ariaDisabled(State.length === State.size)
+				.ariaClick({
+					label : L10n.get('uiBarForward')
+				}, () => Engine.forward());
 		}
 		jQuery("#ui-bar-history").show();
 	}
