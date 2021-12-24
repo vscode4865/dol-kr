@@ -401,11 +401,11 @@ window.settingsBodywriting = function () {
 	});
 }
 
-window.settingsNamedNpcBreastSize = function () {
+window.settingsNamedNpcBreastSize = function (id, persist) {
 	const breastSizes = ["유두","약간 솟아오른","조그마한","작은","앙증맞은","평범한","봉긋한","큰","풍만한","커다란","매우 큰","엄청난","거대한"];
 
 	let updateText = () => {
-		const npc = V.NPCName[T.npcId];
+		const npc = persist ? V.per_npc[T.pNPCId] : V.NPCName[T.npcId];
 		const val = npc.breastsize;
 
 		const text = breastSizes[val];
@@ -418,12 +418,12 @@ window.settingsNamedNpcBreastSize = function () {
 			npc.breastsdesc = text;
 		}
 
-		jQuery('#numberslider-value-npcname-npcidbreastsize').text(npc.breastsdesc);
+		jQuery('#numberslider-value-' + id).text(npc.breastsdesc);
 	};
 
 	jQuery(document).ready(() => {
 		updateText();
-		jQuery('#numberslider-input-npcname-npcidbreastsize').on('input change', function (e) { updateText(); });
+		jQuery('#numberslider-input-' + id).on('input change', function (e) { updateText(); });
 	});
 }
 
@@ -435,6 +435,18 @@ window.settingsNamedNpcGenderUpdate = function () {
 	jQuery(document).ready(() => {
 		updateButtonsActive();
 		jQuery('[id*=radiobutton-npcname-npcidgender]').on('change', function (e) { updateButtonsActive(); });
+	});
+}
+
+window.settingsPersistentNpcGenderUpdate = function () {
+	let updateButtonsActive = () => {
+		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].penissize') + ']').prop("disabled", V.per_npc[T.pNPCId].gender == "f");
+		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].pronoun') + ']').prop("disabled", V.per_npc[T.pNPCId].pronoun == "i");
+	};
+
+	jQuery(document).ready(() => {
+		updateButtonsActive();
+		jQuery('[id*=radiobutton-' + Util.slugify('$per_npc[_pNPCId].gender') + ']').on('change', function (e) { updateButtonsActive(); });
 	});
 }
 

@@ -10,122 +10,40 @@
 	<<if $_optionHe>>
 		<!-- Add the option to call for a named NPC's name -->
 		<<if $NPCNameList.includes($_optionHe)>>
-			<<set _args to $_optionHe>>
-			<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
-			<<unset _args>>
+			<<set $pronoun to $NPCName[$NPCNameList.indexOf($_optionHe)].pronoun>>
 		<<else>>
-			<<if $enemytype is "man">>
-				<<if $_optionHe is 1>>
-					<<person1>>
-				<<elseif $_optionHe is 2>>
-					<<person2>>
-				<<elseif $_optionHe is 3>>
-					<<person3>>
-				<<elseif $_optionHe is 4>>
-					<<person4>>
-				<<elseif $_optionHe is 5>>
-					<<person5>>
-				<<elseif $_optionHe is 6>>
-					<<person6>>
-				<</if>>
+			<<if Number.isInteger($_optionHe) and between($_optionHe,1,6)>>
+				<<personselect $_optionHe>>
 			<</if>>
 		<</if>>
-		<<if $pronoun is "m">>
-			<<set _trResult to "그">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "f">>
-			<<set _trResult to "그녀">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "i">>
-			<<set _trResult to "녀석">><<trPost 0 $_post $_sep>>
-		<<elseif $pronoun is "n">>
-			<<set _trResult to "그자">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "t">>
-			<<set _trResult to "그들">><<trPost 2 $_post $_sep>>
-		<</if>>
-	<<elseif $NPCList[0].intro is 1>>
-		<<set $NPCList[0].intro to 0>>
-		<<if $npcrow.includes(0)>>
+	<</if>>
+
+
+	<<if $NPCList[$index].intro is 1>>
+		<<set $NPCList[$index].intro to 0>>
+		<<if $npcrow.includes($index)>>
 			<<if $npc.includes("Black Wolf") or $npc.includes("Great Hawk")>>
-				<<trNamedNPC $npc[$npcrow.indexOf(0)] $_post $_sep>><<set _trResult to "그 " + _trResult>>
+				<<trNamedNPC $npc[$npcrow.indexOf($index)] $_post $_sep>>
 			<<else>>
-				<<trNamedNPC $npc[$npcrow.indexOf(0)] $_post $_sep>>
+				<<trNamedNPC $npc[$npcrow.indexOf($index)] $_post $_sep>>
 			<</if>>
 		<<else>>
 			<<if $enemytype is "beast">>
 				<<beasttypePost $_post $_sep>>
-			<<elseif $NPCList[0].name_known is 1>>
-				<<trNPCname $NPCList[0].name $_post $_sep>>
-			<<elseif $NPCList[0].role is "normal">>
-				<<person1>><<personPost $_post $_sep>>
+			<<elseif $NPCList[$index].name_known is 1>>
+				<<set _text_output to $NPCList[$index].name>>
+				<<trNPCname $NPCList[$index].name $_post $_sep>>
+			<<elseif $NPCList[$index].role is "normal">>
+				<<personPost $_post $_sep>>
 			<<else>>
-				<<person1>><<trNPCdesc $NPCList[0].description>><<set $_desc to _trResult>><<putpost $NPCList[0].role $_post $_sep>><<set _trResult to $_desc + " " + _trResult>>
-			<</if>>
-		<</if>>
-	<<elseif $NPCList[1].intro is 1>>
-		<<set $NPCList[1].intro to 0>>
-		<<if $npcrow.includes(1)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(1)] $_post $_sep>>
-		<<else>>
-			<<if $NPCList[1].name_known is 1>>
-				<<trNPCname $NPCList[1].name $_post $_sep>>
-			<<else>>
-				<<person2>><<personPost $_post $_sep>>
-			<</if>>
-		<</if>>
-	<<elseif $NPCList[2].intro is 1>>
-		<<set $NPCList[2].intro to 0>>
-		<<if $npcrow.includes(2)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(2)] $_post $_sep>>
-		<<else>>
-			<<if $NPCList[2].name_known is 1>>
-				<<trNPCname $NPCList[2].name $_post $_sep>>
-			<<else>>
-				<<person3>><<personPost $_post $_sep>>
-			<</if>>
-		<</if>>
-	<<elseif $NPCList[3].intro is 1>>
-		<<set $NPCList[3].intro to 0>>
-		<<if $npcrow.includes(3)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(3)] $_post $_sep>>
-		<<else>>
-			<<if $NPCList[3].name_known is 1>>
-				<<trNPCname $NPCList[3].name $_post $_sep>>
-			<<else>>
-				<<person4>><<personPost $_post $_sep>>
-			<</if>>
-		<</if>>
-	<<elseif $NPCList[4].intro is 1>>
-		<<set $NPCList[4].intro to 0>>
-		<<if $npcrow.includes(4)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(4)] $_post $_sep>>
-		<<else>>
-			<<if $NPCList[4].name_known is 1>>
-				<<trNPCname $NPCList[4].name $_post $_sep>>
-			<<else>>
-				<<person5>><<personPost $_post $_sep>>
-			<</if>>
-		<</if>>
-	<<elseif $NPCList[5].intro is 1>>
-		<<set $NPCList[5].intro to 0>>
-		<<if $npcrow.includes(5)>>
-			<<trNamedNPC $npc[$npcrow.indexOf(5)] $_post $_sep>>
-		<<else>>
-			<<if $NPCList[5].name_known is 1>>
-				<<trNPCname $NPCList[5].name $_post $_sep>>
-			<<else>>
-				<<person6>><<personPost $_post $_sep>>
+				<<trNPCdesc $NPCList[$index].description>><<set $_desc to _trResult>><<trRole $NPCList[$index].role $_post $_sep>><<set _trResult to $_desc + " " + _trResult>>
 			<</if>>
 		<</if>>
 	<<else>>
-		<<if $pronoun is "m">>
-			<<set _trResult to "그">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "f">>
-			<<set _trResult to "그녀">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "i">>
-			<<set _trResult to "녀석">><<trPost 0 $_post $_sep>>
-		<<elseif $pronoun is "n">>
-			<<set _trResult to "그자">><<trPost 1 $_post $_sep>>
-		<<elseif $pronoun is "t">>
-			<<set _trResult to "그들">><<trPost 2 $_post $_sep>>
+		<<if $pronoun>>
+			<<simpleHePost $_post $_sep>>
+		<<else>>
+			<<set _trResult to `<span class="red">[에러: "He" 위젯에서 알려지지 않은 대명사]</span>`>>
 		<</if>>
 	<</if>>
 <</silently>><<print _trResult>><</widget>>
@@ -135,12 +53,8 @@
 		<<if typeof $args[0] is "string" and $args[0].substring(0,1).search("[가-힣]") gte 0>>	/* 첫번째 옵션이 한글 - 조사 */
 			<<set $_post to $args[0]>><<set $_sep to $args[1]>>
 		<<else>>	/* 첫번째 옵션이 영문 혹은 숫자 - He 매크로의 옵션 */
+			<<set $pronoun to $NPCName[$NPCNameList.indexOf($args[0])].pronoun>>
 			<<set $_post to $args[1]>><<set $_sep to $args[2]>>
-			<<if $NPCNameList.includes($args[0])>>
-				<<set _args to $args[0]>>
-				<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
-				<<unset _args>>
-			<</if>>
 		<</if>>
 	<</if>>
 	<<if $pronoun is "m">>
@@ -172,15 +86,18 @@
 		<<if typeof $args[0] is "string" and $args[0].substring(0,1).search("[가-힣]") gte 0>>	/* 첫번째 옵션이 한글 - 조사 */
 			<<set $_post to $args[0]>><<set $_sep to $args[1]>>
 		<<else>>	/* 첫번째 옵션이 영문 혹은 숫자 - He 매크로의 옵션 */
+			<<set $pronoun to $NPCName[$NPCNameList.indexOf($args[0])].pronoun>>
 			<<set $_post to $args[1]>><<set $_sep to $args[2]>>
-			<<if $NPCNameList.includes($args[0])>>
-				<<set _args to $args[0]>>
-				<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args)].pronoun>>
-				<<unset _args>>
-			<</if>>
 		<</if>>
 	<</if>>
-	<<HePost>><<set _trResult += " 자신">><<trPost 0 $_post $_sep>>
+	<<if $pronoun is "m">>
+		<<set _text_output to "그 자신">>
+	<<elseif $pronoun is "i">>
+		<<set _text_output to "녀석 자신">>
+	<<else>>
+		<<set _text_output to "그녀 자신">>
+	<</if>>
+	<<trPost 0 $_post $_sep>>
 <</silently>><<print _trResult>><</widget>>
 <<widget "himselfPost">><<HimselfPost $args[0] $args[1] $args[2]>><</widget>>
 

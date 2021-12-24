@@ -39,7 +39,7 @@
 <<set $slimedisable to "f">>
 <<set $voredisable to "f">>
 <<set $tentacledisable to "f">>
-<<set $plantdisable to "t">>
+<<set $plantdisable to "f">>
 <<set $analdisable to "f">>
 <<set $analdoubledisable to "f">>
 <<set $analingusdisablegiving to "f">>
@@ -60,7 +60,7 @@
 <<else>>
 	<<set $debugdisable to "t">>
 <</if>>
-	<<set $cheatdisable to "t">>
+<<set $cheatdisable to "t">>
 <<set $watersportsdisable to "f">>
 <<set $timestyle to "military">>
 <<set $saveName to "">>
@@ -284,7 +284,7 @@
 	<</if>>
 	<<updatehistorycontrols>>
 	<<initnpcgender>>
-	<<updatePronouns>>
+	<<updatePersistentNPCs>>
 	<<hirsuteHideCheck>>
 	<<generateTipsList>>
 	<<tanned 0 "ignoreCoverage">>
@@ -1287,16 +1287,19 @@
 <</if>>
 <<link "게임 설정을 기반으로 성별 자동 설정">>
 	<<initnpcgender "genders">>
+	<<updatePersistentNPCs "genders">>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "게임 설정을 기반으로 자지 크기 자동 설정">>
 	<<initnpcgender "penis">>
+	<<updatePersistentNPCs "penis">>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "게임 설정을 기반으로 가슴 크기 자동 설정">>
 	<<initnpcgender "breasts">>
+	<<updatePersistentNPCs "breasts">>
 	<<displaySettings>>
 <</link>>
 <<if $debug is 1>>
@@ -1335,6 +1338,35 @@
 	<<npcSettingsMenu>>
 </div>
 
+<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
+	<<run
+		if (!T.perNPCLock) {
+			$("#passages").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
+				new Wikifier(null, '<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>');
+			});
+
+			T.keys = {};
+			T.keyNames = [];
+			T.allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "tower_creature", "wraith", "pinch"];
+			Object.keys(V.per_npc).forEach(k => {
+				for (let j of T.allowed_npcs){
+					if (k.includes(j)){
+						T.keyNames.push(k);
+						T.keys[k.toUpperFirst().replaceAll('_', ' ')] = k;
+						break
+					}
+				}
+			});
+			T.perNPCLock = true;
+		}
+	>>
+	<<if T.keyNames and T.keyNames.length>>
+		<div id="perNPCSettingsMenu">
+			<<perNPCSettingsMenu>>
+		</div>
+	<</if>>
+<</if>>
+
 <<if _listActive isnot true>>
 	<<NPCSettingsReset>>
 	<<set _listActive to true>>
@@ -1344,134 +1376,213 @@
 
 <<widget "exportsettings">>
 
-<span class="yellow">"저장/옵션" 오버레이의 설정도 불러오기/내보내기 하게 됩니다.</span>
+	<span class="yellow">"저장/옵션" 오버레이의 설정도 불러오기/내보내기 하게 됩니다.</span>
 
-<h4>설정 파일 불러오기/내보내기</h4>
+	<h4>설정 파일 불러오기/내보내기</h4>
 
-<<if SugarCube.Browser.isMobile.any() is true>>
-	파일로부터 저장 및 불러오는 기능은 안드로이드 버전에서는 현재 작동하지 않습니다.
-<<else>>
-	파일에서 불러오기: <input id="saveImport" type="file" value="파일에서 불러오기" onchange="importSettings(this.files, 'file')">
+	<<if SugarCube.Browser.isMobile.any() is true>>
+		파일로부터 저장 및 불러오는 기능은 안드로이드 버전에서는 현재 작동하지 않습니다.
+	<<else>>
+		파일에서 불러오기: <input id="saveImport" type="file" value="파일에서 불러오기" onchange="importSettings(this.files, 'file')">
+		<br><br>
+		<input type="button" value="파일로 저장" onclick="exportSettings(null,'file')">
+	<</if>>
+
+	<h4>설정 텍스트 불러오기/내보내기</h4>
+
+	현재 설정을 저장하려면, "설정 데이터 가져오기"를 누른 뒤, 필요한 부분의 저장 데이터를 복사하여 붙여넣기 하세요.
+	<br>
+	현재 설정을 불러오려면, 설정 데이터를 붙여넣은 뒤 "설정 데이터 불러오기"를 누르세요.
+	<br>
+	안드로이드로부터 설정을 주고 받으려면, 이메일을 사용하거나 페이스트빈 같은 서비스를 이용하시는 걸 추천합니다. 문제가 생기는 것을 방지하기 위해 세이브의 시작과 끝을 꼼꼼하게 점검하세요.
+	<br>
+	"텍스트 영역 복사"를 클릭하여 나온 내용물을 복사하세요. 장치나 브라우저가 지원하지 않는다면 버튼의 이름이 "복사 에러"로 변할 겁니다.
 	<br><br>
-	<input type="button" value="파일로 저장" onclick="exportSettings(null,'file')">
-<</if>>
+	<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();" onfocus="V.tempDisable = true;" onblur="V.tempDisable = false;"></textarea>
+	<br>
+	<input type="button" value="텍스트 상자 비우기" onclick="clearTextBox('settingsDataInput')"/>
+	<input type="button" value="텍스트 상자 최상단" onclick="topTextArea('settingsDataInput')"/>
+	<input type="button" value="텍스트 상자 최하단" onclick="bottomTextArea('settingsDataInput')"/>
+	<input type="button" value="설정 데이터 가져오기" onclick="exportSettings(null,'text')"/>
+	<input type="button" value="설정 데이터 불러오기" onclick="importSettings(null,'text')"/>
+	<input id="CopyTextArea" type="button" value="텍스트 영역 복사" onclick="copySavedata('settingsDataInput')">
+	<input id="LoadExternalExportFile" type="button" value="외부 파일 불러오기" onclick="loadExternalExportFile()">
 
-<h4>설정 텍스트 불러오기/내보내기</h4>
+	<br><br>
 
-현재 설정을 저장하려면, "설정 데이터 가져오기"를 누른 뒤, 필요한 부분의 저장 데이터를 복사하여 붙여넣기 하세요.
-<br>
-현재 설정을 불러오려면, 설정 데이터를 붙여넣은 뒤 "설정 데이터 불러오기"를 누르세요.
-<br>
-안드로이드로부터 설정을 주고 받으려면, 이메일을 사용하거나 페이스트빈 같은 서비스를 이용하시는 걸 추천합니다. 문제가 생기는 것을 방지하기 위해 세이브의 시작과 끝을 꼼꼼하게 점검하세요.
-<br>
-"텍스트 영역 복사"를 클릭하여 나온 내용물을 복사하세요. 장치나 브라우저가 지원하지 않는다면 버튼의 이름이 "복사 에러"로 변할 겁니다.
-<br><br>
-<textarea id="settingsDataInput" rows="4" cols="40" onClick="if(V.disableAutoSelect == false)this.select();" onfocus="V.tempDisable = true;" onblur="V.tempDisable = false;"></textarea>
-<br>
-<input type="button" value="텍스트 상자 비우기" onclick="clearTextBox('settingsDataInput')"/>
-<input type="button" value="텍스트 상자 최상단" onclick="topTextArea('settingsDataInput')"/>
-<input type="button" value="텍스트 상자 최하단" onclick="bottomTextArea('settingsDataInput')"/>
-<input type="button" value="설정 데이터 가져오기" onclick="exportSettings(null,'text')"/>
-<input type="button" value="설정 데이터 불러오기" onclick="importSettings(null,'text')"/>
-<input id="CopyTextArea" type="button" value="텍스트 영역 복사" onclick="copySavedata('settingsDataInput')">
-<input id="LoadExternalExportFile" type="button" value="외부 파일 불러오기" onclick="loadExternalExportFile()">
-
-<br><br>
-
-<label>
-	<<checkbox "$disableAutoSelect" false true autocheck>>
-	자동 선택 비활성화.
-</label>
+	<label>
+		<<checkbox "$disableAutoSelect" false true autocheck>>
+		자동 선택 비활성화.
+	</label>
 
 <</widget>>
 
 <<widget "npcSettingsMenu">>
-<<listbox "_npcId" autoselect>>
-	<<optionsfrom _npcList>>
-<</listbox>>
-| <<link 이전>>
-	<<if _npcId is 0>>
-		<<set _npcId to $NPCNameList.length - 1>>
+	<<listbox "_npcId" autoselect>>
+		<<optionsfrom _npcList>>
+	<</listbox>>
+	| <<link 이전>>
+		<<if _npcId is 0>>
+			<<set _npcId to $NPCNameList.length - 1>>
+		<<else>>
+			<<set _npcId-->>
+		<</if>>
+		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+	<</link>> |
+	<<link 다음>>
+		<<set _npcId++>>
+		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
+	<</link>>
+	<br><br>
+	<span class="gold"><<trNamedNPC $NPCName[_npcId].title>>_trResult <<trNamedNPC $NPCName[_npcId].nam>>_trResult</span>
+	<br>
+	<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> 여자</label> |
+	<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
+	<br>
+	<<if $NPCName[_npcId].pregnancy[0] is null>>
+		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
+		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
+		<<run settingsNamedNpcGenderUpdate()>>
 	<<else>>
-		<<set _npcId-->>
+		임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
 	<</if>>
-	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-<</link>> |
-<<link 다음>>
-	<<set _npcId++>>
-	<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
-<</link>>
-<br><br>
-<span class="gold"><<trNamedNPC $NPCName[_npcId].title>>_trResult <<trNamedNPC $NPCName[_npcId].nam>>_trResult</span>
-<br>
-<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> 여자</label> |
-<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
-<br>
-<<if $NPCName[_npcId].pregnancy[0] is null>>
-	<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
-	<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
-	<<run settingsNamedNpcGenderUpdate()>>
-<<else>>
-	임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
-<</if>>
-<br><br>
-자지 크기 - 가능할 경우:
-<br>
-<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
-<<for _j to 1; _j lt _penisNames.length; _j++>>
-	<label>
-		<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
-		<<print _penisNames[_j]>>
-	</label>
-	<<if _j isnot _penisNames.length -1>>|<</if>>
-<</for>>
-<br><br>
-
-<div class="settingsToggle" style="display: inline-flex;">
-가슴 크기:
-<<numberslider "$NPCName[_npcId].breastsize" $NPCName[_npcId].breastsize 0 12 1>>
-<<run settingsNamedNpcBreastSize()>>
-</div>
-<div style="clear:both;">/*Keep at end of toggles*/</div>
-
-<<if $NPCName[_npcId].nam is "Black Wolf">>
-	짐승 종류:
-	<br>
-	<label><<radiobutton "$blackwolfmonster" 0 autocheck>> 항상 짐승</label> |
-	<label><<radiobutton "$blackwolfmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
-	<label><<radiobutton "$blackwolfmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
 	<br><br>
-<<elseif $NPCName[_npcId].nam is "Great Hawk">>
-	짐승 종류:
+	자지 크기 - 가능할 경우:
 	<br>
-	<label><<radiobutton "$greathawkmonster" 0 autocheck>> 항상 짐승</label> |
-	<label><<radiobutton "$greathawkmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
-	<label><<radiobutton "$greathawkmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
-	<br><br>
-<</if>>
-<<if $debug is 1>>
-	머리카락 색:
-	<br>
-	<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
+	<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+	<<for _j to 1; _j lt _penisNames.length; _j++>>
 		<label>
-			<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
-			<span @class="_hairColorNPCText[_j]"><<trColour _hairColorNPC[_j]>>_trResult</span>
-		</label> |
+			<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
+			<<print _penisNames[_j]>>
+		</label>
+		<<if _j isnot _penisNames.length -1>>|<</if>>
 	<</for>>
 	<br><br>
 
-	눈 색:
+	<div class="settingsToggle" style="display: inline-flex;">
+	가슴 크기:
+	<<numberslider "$NPCName[_npcId].breastsize" $NPCName[_npcId].breastsize 0 12 1>>
+	<<run settingsNamedNpcBreastSize(Util.slugify('$NPCName[_npcId].breastsize'), false)>>
+	</div>
+	<div style="clear:both;">/*Keep at end of toggles*/</div>
 	<br>
-	<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
-		<label>
-			<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
-			<span @class="_eyeColorNPCText[_j]"><<trColour _eyeColorNPC[_j]>>_trResult</span>
-		</label> |
-	<</for>>
-	<br><br>
-<</if>>
 
+	<<if $NPCName[_npcId].nam is "Black Wolf">>
+		짐승 종류:
+		<br>
+		<label><<radiobutton "$blackwolfmonster" 0 autocheck>> 항상 짐승</label> |
+		<label><<radiobutton "$blackwolfmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
+		<label><<radiobutton "$blackwolfmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
+		<br><br>
+	<<elseif $NPCName[_npcId].nam is "Great Hawk">>
+		짐승 종류:
+		<br>
+		<label><<radiobutton "$greathawkmonster" 0 autocheck>> 항상 짐승</label> |
+		<label><<radiobutton "$greathawkmonster" 1 autocheck>> 조건이 맞는다면 몬스터 소녀나 소년</label> |
+		<label><<radiobutton "$greathawkmonster" 2 autocheck>> 항상 몬스터 소녀나 소년</label>
+		<br><br>
+	<</if>>
+	<<if $debug is 1>>
+		머리카락 색:
+		<br>
+		<<for _j to 0; _j lt _hairColorNPC.length; _j++>>
+			<label>
+				<<print '<<radiobutton "$NPCName['+_npcId+'].hairColour" "'+_hairColorNPCData[_j]+'" ' + ($NPCName[_npcId].hairColour is _hairColorNPCData[_j] ? "checked" : "") + '>>'>>
+				<span @class="_hairColorNPCText[_j]"><<trColour _hairColorNPC[_j]>>_trResult</span>
+			</label> |
+		<</for>>
+		<br><br>
+
+		눈 색:
+		<br>
+		<<for _j to 0; _j lt _eyeColorNPC.length; _j++>>
+			<label>
+				<<print '<<radiobutton "$NPCName['+_npcId+'].eyeColour" "'+_eyeColorNPCData[_j]+'" ' + ($NPCName[_npcId].eyeColour is _eyeColorNPCData[_j] ? "checked" : "") + '>>'>>
+				<span @class="_eyeColorNPCText[_j]"><<trColour _eyeColorNPC[_j]>>_trResult</span>
+			</label> |
+		<</for>>
+		<br><br>
+	<</if>>
 <</widget>>
+
+<<widget "perNPCSettingsMenu">>
+	<span class="gold">지속성 NPC 설정 (Persistent; 더 나은 번역이 있으면 수정할 것):</span>
+	<br>
+	<<listbox "_pNPCId" autoselect>>
+		<<optionsfrom _keys>>
+	<</listbox>>
+	<<switch _pNPCId>>
+		<<case "scarred_inmate">>
+			<<if $per_npc[_pNPCId].description isnot "scarred">>
+				<<generate_scarred_inmate 0>>
+				<<clearsinglenpc 0>>
+			<</if>>
+		<<case "veteran_guard">>
+			<<if $per_npc[_pNPCId].description isnot "veteran">>
+				<<generate_veteran_guard 0>>
+				<<clearsinglenpc 0>>
+			<</if>>
+	<</switch>>
+	<<set _index to _keyNames.indexOf(_pNPCId)>>
+	| <<link 이전>>
+		<<set _index to (_index is 0 ? _keyNames.length - 1 : --_index)>>
+		<<set _pNPCId to _keyNames[_index]>>
+		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+	<</link>> |
+	<<link 다음>>
+		<<set _index++>>
+		<<set _pNPCId to _keyNames[_index]>>
+		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+	<</link>>
+	<br><br>
+	<<if $per_npc[_pNPCId].name_known>>
+		<span class="gold"><<print _pNPCId.replaceAll('_', ' ')>> <<trNPCname $per_npc[_pNPCId].name>>_trResult</span>
+	<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
+		<span class="wraith">상아 유령</span>
+	<<elseif _pNPCId is "tower_creature">>
+		<span class="gold">밤의 괴물</span>
+	<<else>>
+		<span class="gold"><<print _pNPCId.toUpperFirst().replaceAll('_', ' ')>></span>
+	<</if>>
+	<<if $per_npc[_pNPCId].name_known and $debug is 1>>
+		| <<link 이름 변경>>
+			<<if $per_npc[_pNPCId].pronoun is "f">>
+				<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
+			<<else>>
+				<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
+			<</if>>
+			<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+		<</link>>
+	<</if>>
+	<br>
+	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
+	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+	<br>
+	<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
+	<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
+	<<run settingsPersistentNpcGenderUpdate()>>
+	<br><br>
+	자지 크기 - 가능할 경우:
+	<br>
+	<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+	<<for _j to 1; _j lt _penisNames.length; _j++>>
+		<label>
+			<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
+			<<print _penisNames[_j]>>
+		</label>
+		<<if _j isnot _penisNames.length -1>>|<</if>>
+	<</for>>
+	<br><br>
+	<div class="settingsToggle" style="display: inline-flex;">
+		가슴 크기:
+		<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
+		<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
+	</div>
+	<div style="clear:both;">
+		/*Keep at end of toggles*/
+	</div>
+<</widget>>
+
 
 :: Settings
 <<settings>>

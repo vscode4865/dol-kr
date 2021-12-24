@@ -1553,6 +1553,25 @@
 		<<getPostNum>>                   //  _postNum = undefined
     ```
 
+* trRole
+    ```
+    <<trRole>>
+        <<trRole *role post "sep">>
+        
+        역할(role)을 번역한다.
+
+        필수사항
+        - *role: NPC의 역할
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trRole "guard" '이' >>_trResult             //  간수가
+    ```
+
+
 * trVirginity
     ```
     <<trVirginity>>

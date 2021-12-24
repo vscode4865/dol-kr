@@ -94,7 +94,7 @@
 			<<set $robinthank to 1>>
 			당신은 입을 열려고 하지만, 로빈이 먼저 말을 꺼낸다. "고마워." <<he_ga>> 말한다. "모든 게 다." <<He_nun>> <<his_yi>> 머리를 당신의 어깨에 기댄다.
 			<br><br>
-		<<else>>
+			
 		<</if>>
 	<<else>>
 		<<if $robinconsoleintro isnot 1>>
@@ -135,8 +135,9 @@
 <</widget>>
 
 <<widget "robinoptions">>
+	<<set _robintrauma to $NPCName[$NPCNameList.indexOf("Robin")].trauma>>
 	<<if $schoolday is 1 and $hour is 8>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 80>>
+		<<if _robintrauma gte 80>>
 			로빈은 벽에 걸린 시계를 바라본다. "곧 학교 갈 시간이야." <<he_ga>> 말한다. "그런데.. 가고 싶지 않아."
 			<br><br>
 			당신은 <<him_ul>> 껴안는다. "모든 게 괜찮을 거야." 당신이 말한다.
@@ -208,7 +209,7 @@
 		<br>
 
 	<<else>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80>>
+		<<if _robintrauma lt 80>>
 			<<if $NPCName[$NPCNameList.indexOf("Robin")].love gte 5 and $NPCName[$NPCNameList.indexOf("Robin")].lovestage is undefined>>
 				<<set $NPCName[$NPCNameList.indexOf("Robin")].lovestage to 0>>
 				"나랑 함께 있어 줘서 고마워." <<he_ga>> 말한다. "혼자서는 덜 즐겁거든."
@@ -220,9 +221,9 @@
 			<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 20 and $NPCName[$NPCNameList.indexOf("Robin")].lovestage is 1>>
 				<<set $NPCName[$NPCNameList.indexOf("Robin")].lovestage to 2>>
 					<<if $robinconsole is 1>>
-					"네가 해보고 싶은 게임 있으면 말해봐." <<he_ga>> 말한다. "넌 항상 내가 고르게 하잖아."
+						"네가 해보고 싶은 게임 있으면 말해봐." <<he_ga>> 말한다. "넌 항상 내가 고르게 하잖아."
 					<<else>>
-					"난 너랑 함께 있는 게 좋아." <<he_ga>> 말한다. "너랑 게임기 중에서 고르라면 매일 너와 함께하는 쪽을 고를 거야."
+						"난 너랑 함께 있는 게 좋아." <<he_ga>> 말한다. "너랑 게임기 중에서 고르라면 매일 너와 함께하는 쪽을 고를 거야."
 					<</if>>
 				<br><br>
 			<<elseif $NPCName[$NPCNameList.indexOf("Robin")].love gte 40 and $NPCName[$NPCNameList.indexOf("Robin")].lovestage is 2>>
@@ -243,7 +244,7 @@
 			<<link [[로빈에게 당신의 수감 사실을 알린다 (0:30)|Robin Dungeon Talk]]>><<set $robinroomentered to 1>><<pass 30>><<stress -12>><<trauma -12>><<npcincr Robin dom 5>><</link>>
 			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 10>>
+		<<if _robintrauma lt 80 and _robintrauma gte 10>>
 			<<link [[대화한다 (0:30)|Robin Trauma Talk]]>><<set $robinroomentered to 1>><<pass 30>><<stress 3>><<npcincr Robin trauma -1>><<npcincr Robin love 1>><<npcincr Robin dom -1>><</link>><<glove>><<ldom>><<gstress>>
 			<br>
 		<</if>>
@@ -253,7 +254,7 @@
 		<</if>>
 
 		<<if $schoolday is 1 and ($hour is 8 or $hour is 7)>>
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 80>>
+			<<if _robintrauma gte 80>>
 				<<link [[학교로 걸어간다 (0:40)|Robin Walk School]]>><<run setRobinLocationOverride("school", 7)>><<pass 40>><</link>>
 				<br>
 			<<else>>
@@ -262,7 +263,7 @@
 			<</if>>
 		<</if>>
 
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and ($robinwalk lt 1 or ($halloween_robin is 1 and $halloween_robin_costume is "ghost") or ($NPCName[$NPCNameList.indexOf("Robin")].love lt 20 and $money gte 1500)) and $passage isnot "Robin Walk">>
+		<<if _robintrauma lt 80 and ($robinwalk lt 1 or ($halloween_robin is 1 and $halloween_robin_costume is "ghost") or ($NPCName[$NPCNameList.indexOf("Robin")].love lt 20 and $money gte 1500)) and $passage isnot "Robin Walk">>
 			<<link [[함께 다른 곳으로 간다|Robin Walk]]>><<set $robinroomentered to 1>><<set $robinhugging to 0>><</link>>
 			<br>
 		<</if>>
@@ -271,39 +272,32 @@
 			<br>
 			<<link [[로빈과 같이 게임한다 (0:30)|Robin Play]]>><<set $robinroomentered to 1>><<set $robinhugging to 0>><<trauma -3>><<pass 30>><<npcincr Robin love 1>><</link>><<glove>><<ltrauma>>
 			<br>
-		<<elseif $money gte 40000 and $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and $robindebtknown is 1>>
+		<<elseif $money gte 40000 and _robintrauma lt 80 and $robindebtknown is 1>>
 			<<link [[로빈에게 새 게임기를 사 준다 (£400 0:30)|Robin Console]]>><<set $robinhugging to 0>><<pass 30>><<npcincr Robin love 10>><<npcincr Robin dom -1>><<set $robinconsole to 1>><<set $money -= 40000>><</link>><<glove>><<ldom>>
 			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and $trauma gte 1000 and $robinhugging isnot 1>>
+		<<if _robintrauma lt 80 and $trauma gte 1000 and $robinhugging isnot 1>>
 			<<link [[안아준다 (0:05)|Robin Hug]]>><<pass 5>><<trauma -1>><<stress -1>><<npcincr Robin love 1>><</link>><<ltrauma>><<lstress>><<glove>>
 			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 20 and $cat gte 6>>
+		<<if _robintrauma lt 20 and $cat gte 6>>
 			<<link [[머리를 쓰다듬어 달라고 한다 (0:20)|Robin Cat]]>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<cat>><<gdom>><<glove>><<ltrauma>><<lstress>>
 			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and $livestock_robin gte 1 and $cow gte 6>>
+		<<if _robintrauma lt 80 and $livestock_robin gte 1 and $cow gte 6>>
 			<<link [[음메 소리를 내어 관심을 끈다 (0:20)|Robin Cow]]>><<transform cow 1>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<cow>><<gdom>><<glove>><<ltrauma>><<lstress>>
 			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 80 and $harpy gte 6>>
-			<<link [[로빈과 노래한다 (0:20)|Robin Harpy]]>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>>
+		<<if _robintrauma lt 80 and $harpy gte 6>>
 			<<if $halloween is 1>>
-				<<npcincr Robin dom -2>>
+				<<link [[로빈과 노래한다 (0:20)|Robin Harpy]]>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>><<npcincr Robin dom -2>><</link>><<harpy>><<ldom>><<glove>><<ltrauma>><<lstress>>
+				<br>
 			<<else>>
-				<<npcincr Robin dom 1>>
+				<<link [[로빈과 노래한다 (0:20)|Robin Harpy]]>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<harpy>><<gdom>><<glove>><<ltrauma>><<lstress>>
+				<br>
 			<</if>>
-			<</link>><<harpy>>
-			<<if $halloween is 1>>
-				<<ldom>>
-			<<else>>
-				<<gdom>>
-			<</if>>
-			<<glove>><<ltrauma>><<lstress>>
-			<br>
 		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 20 and $wolfgirl gte 6>>
+		<<if _robintrauma lt 20 and $wolfgirl gte 6>>
 			<<link [[배를 드러내 보인다 (0:20)|Robin Wolf]]>><<pass 20>><<trauma -2>><<stress -2>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<wolfgirl>><<gdom>><<glove>><<ltrauma>><<lstress>>
 			<br>
 		<</if>>
@@ -324,8 +318,8 @@
 
 <<widget "robinpay">>
 	<<if $robinpaid isnot 1>>
-	<i>지금 당장은 로빈이 안전해졌지만, 베일리는 돈을 계속 받아갈 것입니다. 어쩌면 당신이 이 문제에 관해 베일리와 이야기해봐야 할 지도 모릅니다.</i>
-	<br><br>
+		<i>지금 당장은 로빈이 안전해졌지만, 베일리는 돈을 계속 받아갈 것입니다. 어쩌면 당신이 이 문제에 관해 베일리와 이야기해봐야 할 지도 모릅니다.</i>
+		<br><br>
 	<</if>>
 <</widget>>
 
