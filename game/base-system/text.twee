@@ -99,9 +99,15 @@
 <</if>>
 <</silently>>_text_output<</widget>>
 
+<!-- Commented out for deprecation. Use: ?bodypart
+			See 03-JavaScript/Templates/..
 <<widget "bodyparts">><<print either("hands", "feet", "thighs", "legs", "tummy", "cheek", "bottom", "chest", "face", "arms", "shoulder", "back")>><</widget>>
+-->
 
+<!-- Commented out for deprecation. Use: ?lowerbodypart
+			See 03-JavaScript/Templates/..
 <<widget "lowerbodyparts">><<print either("hands", "feet", "thighs", "bottom")>><</widget>>
+-->
 
 <<widget "word">><<silently>>
 	/* usage example: <<word "upper">> */
@@ -292,9 +298,7 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "someone">><<silently>>
-<<if $args[0] is "two">>
-	<<set _text_output to "them">>
-<<elseif $args[0] isnot undefined>>
+<<if $args[0] isnot undefined>>
 	<<set $_target to $args[0]>>
 	<<personselect $_target>><<him>>
 <<else>>
@@ -652,9 +656,10 @@
 <<if $enemytype is "man" and $enemyno gte 2>>
 	<<personselect _n>>
 	<!-- NPC's name will only appear if they are selected -->
-	<<if $npcrow.includes(_n)>>
+	/* if $npcrow.includes(_n)>>
 		<<print $npc[$npcrow.indexOf(_n)]>>'s
-	<<elseif $NPCList[_n].intro is 1>>
+	elseif $NPCList[_n].intro is 1>> */
+	<<if $NPCList[_n].intro is 1>>
 		<<set $NPCList[_n].intro to 0>>
 		the <<persons>>
 	<<else>>
@@ -732,7 +737,7 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "group">><<silently>>
-<<if $enemyno gte 3>>
+<<if $enemyno gte 3 or ($combat is 1 and $enemynomax gte 3)>>
 	<<for _g to 0; _g lt $NPCList.length; _g++>>
 		<<if $NPCList[_g].pronoun is "m">>
 			<<set $_group_man to true>>
@@ -747,7 +752,7 @@
 	<<elseif !$_group_man and $_group_woman>>
 		<<set _text_output to ($NPCList[0].teen is 1? "girls" : "women")>>
 	<</if>>
-<<elseif $enemyno is 2>>
+<<elseif $enemyno is 2 or ($combat is 1 and $enemynomax is 2)>>
 	<<if $NPCList[0].pronoun isnot $NPCList[1].pronoun>>
 		<<set _text_output to ($NPCList[0].teen is 1? "girl and boy" : "man and woman")>>
 	<<elseif $NPCList[0].pronoun is "m">>
@@ -804,13 +809,19 @@
 	<<pherself>><<capitalise>>
 <</silently>>_text_output<</widget>>
 
+<!-- Commented out for deprecation. Use: ?animals
+			See 03-JavaScript/Templates/..
 <<widget "animals">>
 <<print either("꿀벌들의", "코끼리들의", "토끼들의", "문어들의", "침팬지들의", "오징어들의", "연체동물들의", "원숭이들의", "말벌들의", "개코원숭이들의", "늑대들의", "곰들의", "엘크들의", "물개들의", "돌고래들의", "고래들의", "해파리들의", "고양이들의", "사자들의", "호랑이들의", "치타들의", "들개들의", "흑표범들의", "두더지들의", "오소리들의", "라텔들의", "오리들의", "거위들의", "참새들의", "울새들의", "농어들의", "강꼬치고기들의", "연어들의", "철갑상어들의", "개구리들의", "도룡뇽들의", "악어들의", "두꺼비들의", "매들의", "독수리들의", "갑오징어들의", "비단뱀들의", "아나콘다들의", "살무사들의", "코브라들의cobras", "철갑상어들의", "송어들의", "연어들의", "참치들의", "사슴들의", "울새들의")>>
 <</widget>>
+-->
 
+<!-- Commented out for deprecation. Use: ?garden
+			See 03-JavaScript/Templates/..
 <<widget "garden">>
 <<print either("prune flowers", "prune trees", "prune bushes", "water flowers", "remove weeds")>>
 <</widget>>
+-->
 
 <<widget "semen">>
 <<silently>>
@@ -837,54 +848,25 @@
 
 <<widget "nipples">><<nipple>>s<</widget>>
 
-/* 
-in dev alternative to current "breasts" widget
+<<widget "breastsizedesc">><<silently>>
+	<<set $_breastsize to ($args[0] isnot undefined ? $args[0] : $breastsize)>>
+	<<if Number.isInteger($_breastsize)>>
+		<<set _text_output to setup.breastsizes[$_breastsize]>>
+	<<elseif $debugdisable is "f">>
+		<<set _text_output to "<span class='red'>ERROR - breastsizedesc is not a number: $args[0]</span>">>
+	<</if>>
+<</silently>>_text_output<</widget>>
+
 <<widget "breasts">><<silently>>
 	<<if Number.isInteger($breastsize)>>
 		<<if $breastsize lte 0>>
 			<<set _text_output to "nipples">>
 		<<else>>
-			<<set _text_output to ["", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"][$breastsize]>>
-			<<set _text_output to _text_output + " breasts">>
+			<<set _text_output to setup.breastsizes[$breastsize] + " breasts">>
 		<</if>>
 	<<elseif $debugdisable is "f">>
 		<<set _text_output to "ERROR - $$breastsize is not a number: $breastsize">>
 	<</if>>
-	<</silently>><<breastsensitivity>><<print _text_output>>
-<</widget>> 
-*/
-
-<<widget "breasts">><<silently>>
-	<<switch $breastsize>>
-	<<case 0>>
-		<<set _text_output to "nipples">>
-	<<case 1>>
-		<<set _text_output to "budding breasts">>
-	<<case 2>>
-		<<set _text_output to "tiny breasts">>
-	<<case 3>>
-		<<set _text_output to "small breasts">>
-	<<case 4>>
-		<<set _text_output to "pert breasts">>
-	<<case 5>>
-		<<set _text_output to "modest breasts">>
-	<<case 6>>
-		<<set _text_output to "full breasts">>
-	<<case 7>>
-		<<set _text_output to "large breasts">>
-	<<case 8>>
-		<<set _text_output to "ample breasts">>
-	<<case 9>>
-		<<set _text_output to "massive breasts">>
-	<<case 10>>
-		<<set _text_output to "huge breasts">>
-	<<case 11>>
-		<<set _text_output to "gigantic breasts">>
-	<<case 12>>
-		<<set _text_output to "enormous breasts">>
-	<<default>>
-		<<set _text_output to "breasts">>
-	<</switch>>
 <</silently>><<breastsensitivity>><<print _text_output>><</widget>>
 
 <<widget "undertop">><<silently>>
@@ -1107,7 +1089,7 @@ in dev alternative to current "breasts" widget
 
 <<widget "personsimple">><<silently>>
 	<<set _text_output to (!$NPCList[$index].type or $NPCList[$index].type is "human" or $args[0] is "normal" ? "" : $NPCList[$index].type)>>
-	<<if $role isnot "normal">>
+	<<if $role and $role isnot "normal">>
 		<<set _text_output += $role>>
 	<<elseif $npcadult is 1>>
 		<<set _text_output += ($pronoun is "m" ? "man" : "woman")>>
@@ -1123,7 +1105,7 @@ in dev alternative to current "breasts" widget
 	<</if>>
 	<<if $npc_named is 1 or $description is "pale figure">>
 		<<set _text_output to $description>>
-	<<elseif $role isnot "normal">>
+	<<elseif $role and $role isnot "normal">>
 		<<set _text_output += $role>>
 	<<elseif $pronoun is "m">>
 		<<set _text_output += ($npcadult is 1 ? "man" : "boy")>>
@@ -1144,7 +1126,7 @@ in dev alternative to current "breasts" widget
 	<<set _text_output to $NPCList[$index].name>>
 <<elseif $enemytype is "beast">>
 	<<set _text_output to "the " + $NPCList[$index].type>>
-<<elseif $role isnot "normal">>
+<<elseif $role and $role isnot "normal">>
 	<<set _text_output to "the " + $description + " " + $role>>
 <<elseif $npcadult is 1>>
 	<<if $pronoun is "m">>
@@ -1370,1804 +1352,2497 @@ in dev alternative to current "breasts" widget
 	<</if>>
 <</widget>>
 
-<<widget "lcorruption">> |
-<span class="teal">- 타락도</span>
+<<widget "lcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- 타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "llcorruption">> |
-<span class="teal">- - 타락도</span>
+<<widget "llcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- - 타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllcorruption">> |
-<span class="teal">- - - 타락도</span>
+<<widget "lllcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- - - 타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "gcorruption">> |
-<span class="pink">+ 타락도</span>
+<<widget "gcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ 타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggcorruption">> |
-<span class="pink">+ + 타락도</span>
+<<widget "ggcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + 타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggcorruption">> |
-<span class="pink">+ + + 타락도</span>
+<<widget "gggcorruption">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + +타락도</span>
+	<</if>>
 <</widget>>
 
-<<widget "lstress">> |
-<span class="green">- 스트레스</span>
+<<widget "lstress">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "llstress">> |
-<span class="green">- - 스트레스</span>
+<<widget "llstress">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllstress">> |
-<span class="green">- - - 스트레스</span>
+<<widget "lllstress">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "gstress">> |
-<span class="red">+ 스트레스</span>
+<<widget "gstress">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggstress">> |
-<span class="red">+ + 스트레스</span>
+<<widget "ggstress">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggstress">> |
-<span class="red">+ + + 스트레스</span>
+<<widget "gggstress">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 스트레스</span>
+	<</if>>
 <</widget>>
 
-<<widget "ltiredness">> |
-<span class="green">- 피로</span>
+<<widget "ltiredness">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "lltiredness">> |
-<span class="green">- - 피로</span>
+<<widget "lltiredness">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "llltiredness">> |
-<span class="green">- - - 피로</span>
+<<widget "llltiredness">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "gtiredness">> |
-<span class="red">+ 피로</span>
+<<widget "gtiredness">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggtiredness">> |
-<span class="red">+ + 피로</span>
+<<widget "ggtiredness">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggtiredness">> |
-<span class="red">+ + + 피로</span>
+<<widget "gggtiredness">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 피로</span>
+	<</if>>
 <</widget>>
 
-<<widget "larousal">> |
-<span class="green">- 흥분</span>
+<<widget "larousal">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "llarousal">> |
-<span class="green">- - 흥분</span>
+<<widget "llarousal">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllarousal">> |
-<span class="green">- - - 흥분</span>
+<<widget "lllarousal">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "garousal">> |
-<span class="red">+ 흥분</span>
+<<widget "garousal">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggarousal">> |
-<span class="red">+ + 흥분</span>
+<<widget "ggarousal">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggarousal">> |
-<span class="red">+ + + 흥분</span>
+<<widget "gggarousal">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 흥분</span>
+	<</if>>
 <</widget>>
 
-<<widget "ltrauma">> |
-<span class="green">- 트라우마</span>
+<<widget "ltrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "lltrauma">> |
-<span class="green">- - 트라우마</span>
+<<widget "lltrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "llltrauma">> |
-<span class="green">- - - 트라우마</span>
+<<widget "llltrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "gtrauma">> |
-<span class="red">+ 트라우마</span>
+<<widget "gtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggtrauma">> |
-<span class="red">+ + 트라우마</span>
+<<widget "ggtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggtrauma">> |
-<span class="red">+ + + 트라우마</span>
+<<widget "gggtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "lrtrauma">> |
-<span class="green">- 로빈의 트라우마</span>
+<<widget "lrtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "llrtrauma">> |
-<span class="green">- - 로빈의 트라우마</span>
+<<widget "llrtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllrtrauma">> |
-<span class="green">- - - 로빈의 트라우마</span>
+<<widget "lllrtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "grtrauma">> |
-<span class="red">+ 로빈의 트라우마</span>
+<<widget "grtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggrtrauma">> |
-<span class="red">+ + 로빈의 트라우마</span>
+<<widget "ggrtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggrtrauma">> |
-<span class="red">+ + + 로빈의 트라우마</span>
+<<widget "gggrtrauma">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 로빈의 트라우마</span>
+	<</if>>
 <</widget>>
 
-<<widget "glewdity">> |
-<span class="lewd">+ 음란함</span>
+<<widget "glewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "gglewdity">> |
-<span class="lewd">+ + 음란함</span>
+<<widget "gglewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggglewdity">> |
-<span class="lewd">+ + + 음란함</span>
+<<widget "ggglewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + + 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "llewdity">> |
-<span class="lewd">- 음란함</span>
+<<widget "llewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllewdity">> |
-<span class="lewd">- - 음란함</span>
+<<widget "lllewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- - 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "llllewdity">> |
-<span class="lewd">- - - 음란함</span>
+<<widget "llllewdity">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- - - 음란함</span>
+	<</if>>
 <</widget>>
 
-<<widget "gattention">><<if $prison_attention_day isnot true>> |
-<span class="lewd">+ 주목</span>
-<</if>><</widget>>
-
-<<widget "ggattention">><<if $prison_attention_day isnot true>> |
-<span class="lewd">+ + 주목</span>
-<</if>><</widget>>
-
-<<widget "gggattention">><<if $prison_attention_day isnot true>> |
-<span class="lewd">+ + + 주목</span>
-<</if>><</widget>>
-
-<<widget "lattention">> |
-<span class="lewd">- 주목</span>
+<<widget "gattention">>
+	<<if ($args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+		<span class="lewd">+ 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "llattention">> |
-<span class="lewd">- - 주목</span>
+<<widget "ggattention">>
+	<<if ($args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+		<span class="lewd">+ + 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllattention">> |
-<span class="lewd">- - - 주목</span>
+<<widget "gggattention">>
+	<<if ($args[0] is "prison" and $prison_attention_day isnot true) and $statdisable is "f">> |
+		<span class="lewd">+ + + 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "lcontrol">> |
-<span class="red">- 통제력</span>
+<<widget "lattention">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "llcontrol">> |
-<span class="red">- - 통제력</span>
+<<widget "llattention">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllcontrol">> |
-<span class="red">- - - 통제력</span>
+<<widget "lllattention">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">- 주목</span>
+	<</if>>
 <</widget>>
 
-<<widget "gcontrol">> |
-<span class="green">+ 통제력</span>
+<<widget "lcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 통제력</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggcontrol">> |
-<span class="green">+ + 통제력</span>
+<<widget "llcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 통제력</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggcontrol">> |
-<span class="green">+ + + 통제력</span>
+<<widget "lllcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 통제력</span>
+	<</if>>
 <</widget>>
 
-<<widget "lcombatcontrol">> |
-<span class="red">- 통제력</span> |
+<<widget "gcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 통제력</span>
+	<</if>>
 <</widget>>
 
-<<widget "llcombatcontrol">> |
-<span class="red">- - 통제력</span> |
+<<widget "ggcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 통제력</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllcombatcontrol">> |
-<span class="red">- - - 통제력</span> |
+<<widget "gggcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 통제력</span>
+	<</if>>
+<</widget>>
+
+<<widget "lcombatcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 통제력</span> |
+	<</if>>
+<</widget>>
+
+<<widget "llcombatcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 통제력</span> |
+	<</if>>
+<</widget>>
+
+<<widget "lllcombatcontrol">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - -통제력</span> |
+	<</if>>
 <</widget>>
 
 <<widget "gcombatcontrol">>
-	<<if $control lt $controlstart>> |
-<span class="green">+ 통제력</span> |
+	<<if $control lt $controlstart and $statdisable is "f">> |
+		<span class="green">+ 통제력</span> |
 	<</if>>
 <</widget>>
 
 <<widget "ggcombatcontrol">>
-	<<if $control lt $controlstart>> |
-<span class="green">+ + 통제력</span> |
+<<if $control lt $controlstart and $statdisable is "f">> |
+		<span class="green">+ + 통제력</span> |
 	<</if>>
 <</widget>>
 
 <<widget "gggcombatcontrol">>
-	<<if $control lt $controlstart>> |
-<span class="green">+ + + 통제력</span> |
+	<<if $control lt $controlstart and $statdisable is "f">> |
+		<span class="green">+ + + 통제력</span> |
 	<</if>>
 <</widget>>
 
-<<widget "lpain">> |
-<span class="green">- 고통</span>
+<<widget "lpain">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "llpain">> |
-<span class="green">- - 고통</span>
+<<widget "llpain">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllpain">> |
-<span class="green">- - - 고통</span>
+<<widget "lllpain">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "gpain">> |
-<span class="red">+ 고통</span>
+<<widget "gpain">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggpain">> |
-<span class="red">+ + 고통</span>
+<<widget "ggpain">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggpain">> |
-<span class="red">+ + + 고통</span>
+<<widget "gggpain">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 고통</span>
+	<</if>>
 <</widget>>
 
-<<widget "loxygen">> |
-<span class="blue">- 공기</span>
+<<widget "loxygen">>
+	<<if $statdisable is "f">> |
+		<span class="blue">- 공기</span>
+	<</if>>
 <</widget>>
 
-<<widget "goxygen">> |
-<span class="teal">+ 공기</span>
+<<widget "goxygen">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ 공기</span>
+	<</if>>
 <</widget>>
 
-<<widget "lawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">+ 순수함</span>
-<<else>>
-<span class="blue">- 성지식</span>
-<</if>>
+<<widget "lawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">+ 순수함</span>
+		<<else>>
+			<span class="blue">- 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">+ + 순수함</span>
-<<else>>
-<span class="blue">- - 성지식</span>
-<</if>>
+<<widget "llawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">+ + 순수함</span>
+		<<else>>
+			<span class="blue">- - 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "lllawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">+ + + 순수함</span>
-<<else>>
-<span class="blue">- - - 성지식</span>
-<</if>>
+<<widget "lllawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">+ + + 순수함</span>
+		<<else>>
+			<span class="blue">- - - 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">- 순수함</span>
-<<else>>
-<span class="lblue">+ 성지식</span>
-<</if>>
+<<widget "gawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">- 순수함</span>
+		<<else>>
+			<span class="lblue">+ 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "ggawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">- - 순수함</span>
-<<else>>
-<span class="lblue">+ + 성지식</span>
-<</if>>
+<<widget "ggawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">- - 순수함</span>
+		<<else>>
+			<span class="lblue">+ + 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gggawareness">> |
-<<if $innocencestate is 1>>
-<span class="blue">- - - 순수함</span>
-<<else>>
-<span class="lblue">+ + + 성지식</span>
-<</if>>
+<<widget "gggawareness">>
+	<<if $statdisable is "f">> |
+		<<if $innocencestate is 1>>
+			<span class="blue">- - - 순수함</span>
+		<<else>>
+			<span class="lblue">+ + + 성지식</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gpurity">> |
-<span class="green">+ 순결도</span>
+<<widget "gpurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggpurity">> |
-<span class="green">+ + 순결도</span>
+<<widget "ggpurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggpurity">> |
-<span class="green">+ + + 순결도</span>
+<<widget "gggpurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "lpurity">> |
-<span class="red">- 순결도</span>
+<<widget "lpurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "llpurity">> |
-<span class="red">- - 순결도</span>
+<<widget "llpurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllpurity">> |
-<span class="red">- - - 순결도</span>
+<<widget "lllpurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 순결도</span>
+	<</if>>
 <</widget>>
 
-<<widget "gspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="teal">+ 시드니의 순결도</span>
-<<else>>
-	<span class="teal">- 시드니의 타락도</span>
+<<widget "gspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="teal">+ 시드니의 순결도</span>
+	<<else>>
+		<span class="teal">- 시드니의 타락도</span>
+	<</if>>
 <</if>>
 <<set _warnstate to 1>>
 <</widget>>
 
-<<widget "ggspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="teal">+ + 시드니의 순결도</span>
-<<else>>
-	<span class="teal">- - 시드니의 타락도</span>
+<<widget "ggspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="teal">+ + 시드니의 순결도</span>
+	<<else>>
+		<span class="teal">- - 시드니의 타락도</span>
+	<</if>>
 <</if>>
 <<set _warnstate to 2>>
 <</widget>>
 
-<<widget "gggspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="teal">+ + + 시드니의 순결도</span>
-<<else>>
-	<span class="teal">- - - 시드니의 타락도</span>
+<<widget "gggspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="teal">+ + + 시드니의 순결도</span>
+	<<else>>
+		<span class="teal">- - - 시드니의 타락도</span>
+	<</if>>
 <</if>>
 <<set _warnstate to 3>>
 <</widget>>
 
-<<widget "lspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="purple">- 시드니의 순결도</span>
-<<else>>
-	<span class="purple">+ 시드니의 타락도</span>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
-	<<glust>>
+<<widget "lspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="purple">- 시드니의 순결도</span>
+	<<else>>
+		<span class="purple">+ 시드니의 타락도</span>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
+		<<glust>>
+	<</if>>
 <</if>>
 <<set _warnstate to -1>>
 <</widget>>
 
-<<widget "llspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="purple">- - 시드니의 순결도</span>
-<<else>>
-	<span class="purple">+ + 시드니의 타락도</span>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
-	<<glust>>
+<<widget "llspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="purple">- - 시드니의 순결도</span>
+	<<else>>
+		<span class="purple">+ + 시드니의 타락도</span>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
+		<<glust>>
+	<</if>>
 <</if>>
 <<set _warnstate to -2>>
 <</widget>>
 
-<<widget "lllspurity">> |
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
-	<span class="purple">- - - 시드니의 순결도</span>
-<<else>>
-	<span class="purple">+ + + 시드니의 타락도</span>
-<</if>>
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
-	<<glust>>
+<<widget "lllspurity">>
+<<if $statdisable is "f">> |
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1>>
+		<span class="purple">- - - 시드니의 순결도</span>
+	<<else>>
+		<span class="purple">+ + + 시드니의 타락도</span>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity lte 50 and _lustincrdisplay isnot 1>>
+		<<glust>>
+	<</if>>
 <</if>>
 <<set _warnstate to -3>>
 <</widget>>
 
-<<widget "gslust">> |
-<span class="lewd">+ 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "gslust">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
-<<widget "ggslust">> |
-<span class="lewd">+ + 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "ggslust">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
-<<widget "gggslust">> |
-<span class="lewd">+ + + 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "gggslust">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + + 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
-<<widget "lslust">> |
-<span class="teal">- 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "lslust">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
-<<widget "llslust">> |
-<span class="teal">- - 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "llslust">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- - 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
-<<widget "lllslust">> |
-<span class="teal">- - - 욕정</span><<set _lustincrdisplay to 1>>
+<<widget "lllslust">>
+	<<if $statdisable is "f">> |
+		<span class="teal">- - - 욕정</span>
+	<</if>>
+	<<set _lustincrdisplay to 1>>
 <</widget>>
 
 <<widget "sydneyWarning">>
-<<if $args[0] is "corrupt" and $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
-	| <span class="purple">이 행동은 시드니의 타락도를 높일 수도 있습니다</span>
-<<elseif $args[0] is "purify" and $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10) lt 0>>
-	| <span class="teal">이 행동은 시드니의 순결도를 높일 수도 있습니다</span>
-<<else>>
-	<<switch _warnstate>>
-		<<case 1>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 2)>>
-				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
-			<</if>>
-		<<case 2>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 5)>>
-				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
-			<</if>>
-		<<case 3>>
-			<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10)>>
-				| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
-			<</if>>
-		<<case -1>>
-			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
-		<<case -2>>
-			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
-		<<case -3>>
-			<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
-				| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
-			<</if>>
-	<</switch>>
-<</if>>
-<</widget>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "corrupt" and $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
+			| <span class="purple">이 행동은 시드니의 타락도를 높일 수도 있습니다</span>
+		<<elseif $args[0] is "purify" and $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10) lt 0>>
+			| <span class="teal">이 행동은 시드니의 순결도를 높일 수도 있습니다</span>
+		<<else>>
+			<<switch _warnstate>>
+				<<case 1>>
+					<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 2)>>
+						| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
+					<</if>>
+				<<case 2>>
+					<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 5)>>
+						| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
+					<</if>>
+				<<case 3>>
+					<<if $purityEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].purity is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].corruption - 10)>>
+						| <span class="teal">이 행동은 시드니의 순결도를 높일 것입니다</span>
+					<</if>>
+				<<case -1>>
+					<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 2) lt 0>>
+						| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
+					<</if>>
+				<<case -2>>
+					<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 5) lt 0>>
+						| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
+					<</if>>
+				<<case -3>>
+					<<if $corruptionEvent is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].corruption is 0 and ($NPCName[$NPCNameList.indexOf("Sydney")].purity - 10) lt 0>>
+						| <span class="purple">이 행동은 시드니의 타락도를 높일 것입니다</span>
+					<</if>>
+			<</switch>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "lscience">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 과학</span>
+	<</if>>
+<</widget>>
+
+<<widget "gscience">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 과학</span>
+	<</if>>
+	<<g_science_star>>
+<</widget>>
+
+<<widget "ggscience">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 과학</span>
+	<</if>>
+	<<g_science_star>>
+<</widget>>
+
+<<widget "gggscience">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 과학</span>
+	<</if>>
+	<<g_science_star>>
+<</widget>>
+
+<<widget "lmaths">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 수학</span>
+	<</if>>
+<</widget>>
 
-<<widget "lscience">> |
-<span class="red">- 과학</span>
+<<widget "gmaths">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 수학</span>
+	<</if>>
+	<<g_maths_star>>
 <</widget>>
 
-<<widget "gscience">> |
-<span class="green">+ 과학</span> <<g_science_star>>
+<<widget "ggmaths">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 수학</span>
+	<</if>>
+	<<g_maths_star>>
 <</widget>>
 
-<<widget "ggscience">> |
-<span class="green">+ + 과학</span> <<g_science_star>>
+<<widget "gggmaths">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 수학</span>
+	<</if>>
+	<<g_maths_star>>
 <</widget>>
 
-<<widget "gggscience">> |
-<span class="green">+ + + 과학</span> <<g_science_star>>
+<<widget "lenglish">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 영어</span>
+	<</if>>
 <</widget>>
 
-<<widget "lmaths">> |
-<span class="red">- 수학</span>
+<<widget "genglish">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 영어</span>
+	<</if>>
+	<<g_english_star>>
 <</widget>>
 
-<<widget "gmaths">> |
-<span class="green">+ 수학</span> <<g_maths_star>>
+<<widget "ggenglish">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 영어</span>
+	<</if>>
+	<<g_english_star>>
 <</widget>>
 
-<<widget "ggmaths">> |
-<span class="green">+ + 수학</span> <<g_maths_star>>
+<<widget "gggenglish">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 영어</span>
+	<</if>>
+	<<g_english_star>>
 <</widget>>
 
-<<widget "gggmaths">> |
-<span class="green">+ + +수학</span> <<g_maths_star>>
+<<widget "lhistory">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 역사</span>
+	<</if>>
 <</widget>>
 
-<<widget "lenglish">> |
-<span class="red">- 영어</span>
+<<widget "ghistory">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 역사</span>
+	<</if>>
+	<<g_history_star>>
 <</widget>>
 
-<<widget "genglish">> |
-<span class="green">+ 영어</span> <<g_english_star>>
+<<widget "gghistory">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 역사</span>
+	<</if>>
+	<<g_history_star>>
 <</widget>>
 
-<<widget "ggenglish">> |
-<span class="green">+ + 영어</span> <<g_english_star>>
+<<widget "ggghistory">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 역사</span>
+	<</if>>
+	<<g_history_star>>
 <</widget>>
 
-<<widget "gggenglish">> |
-<span class="green">+ + + 영어</span> <<g_english_star>>
+<<widget "gschool">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 학교</span>
+	<</if>>
 <</widget>>
 
-<<widget "lhistory">> |
-<span class="red">- 역사</span>
+<<widget "gswimming">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 수영</span>
+	<</if>>
 <</widget>>
 
-<<widget "ghistory">> |
-<span class="green">+ 역사</span> <<g_history_star>>
+<<widget "ggswimming">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 수영</span>
+	<</if>>
 <</widget>>
 
-<<widget "gghistory">> |
-<span class="green">+ + 역사</span> <<g_history_star>>
+<<widget "gggswimming">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 수영</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggghistory">> |
-<span class="green">+ + + 역사</span> <<g_history_star>>
+<<widget "gathletics">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 운동</span>
+	<</if>>
 <</widget>>
 
-<<widget "gschool">> |
-<span class="green">+ 학교</span>
+<<widget "ggathletics">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 운동</span>
+	<</if>>
 <</widget>>
 
-<<widget "gswimming">> |
-<span class="green">+ 수영</span>
+<<widget "gggathletics">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 운동</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggswimming">> |
-<span class="green">+ + 수영</span>
+<<widget "gtending">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 관리</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggswimming">> |
-<span class="green">+ + + 수영</span>
+<<widget "ggtending">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 관리</span>
+	<</if>>
 <</widget>>
 
-<<widget "gathletics">> |
-<span class="green">+ 운동</span>
+<<widget "gggtending">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 관리</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggathletics">> |
-<span class="green">+ + 운동</span>
+<<widget "gdanceskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 춤 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggathletics">> |
-<span class="green">+ + + 운동</span>
+<<widget "ggdanceskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 춤 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "gtending">> |
-<span class="green">+ 관리</span>
+<<widget "gggdanceskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 춤 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggtending">> |
-<span class="green">+ + 관리</span>
+<<widget "lharass">>
+	<<if $statdisable is "f">> |
+		<span class="teal">희롱 확률 감소</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggtending">> |
-<span class="green">+ + + 관리</span>
+<<widget "gharass">>
+	<<if $statdisable is "f">> |
+		<span class="pink">희롱 확률 증가</span>
+	<</if>>
 <</widget>>
 
-<<widget "gdanceskill">> |
-<span class="green">+ 춤 기술</span>
+<<widget "ltreasure">>
+	<<if $statdisable is "f">> |
+		<span class="purple">보물 찾을 확률 감소</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggdanceskill">> |
-<span class="green">+ + 춤 기술</span>
+<<widget "gtreasure">>
+	<<if $statdisable is "f">> |
+		<span class="green">보물 찾을 확률 증가</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggdanceskill">> |
-<span class="green">+ + + 춤 기술</span>
+<<widget "gdelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "lharass">> |
-<span class="teal">희롱 확률 감소</span>
+<<widget "ggdelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "gharass">> |
-<span class="pink">희롱 확률 증가</span>
+<<widget "gggdelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "ltreasure">> |
-<span class="purple">보물 찾을 확률 감소</span>
+<<widget "ldelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "gtreasure">> |
-<span class="green">보물 찾을 확률 증가</span>
+<<widget "lldelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "gdelinquency">> |
-<span class="red">+ 불량</span>
+<<widget "llldelinquency">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 불량</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggdelinquency">> |
-<span class="red">+ + 불량</span>
+<<widget "gcool">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggdelinquency">> |
-<span class="red">+ + + 불량</span>
+<<widget "ggcool">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "ldelinquency">> |
-<span class="green">- 불량</span>
+<<widget "gggcool">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "lldelinquency">> |
-<span class="green">- - 불량</span>
+<<widget "lcool">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "llldelinquency">> |
-<span class="green">- - - 불량</span>
+<<widget "llcool">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "gcool">> |
-<span class="green">+ 평판</span>
+<<widget "lllcool">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 평판</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggcool">> |
-<span class="green">+ + 평판</span>
+<<widget "gchaos">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 혼란</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggcool">> |
-<span class="green">+ + + 평판</span>
+<<widget "ggchaos">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 혼란</span>
+	<</if>>
 <</widget>>
 
-<<widget "lcool">> |
-<span class="red">- 평판</span>
+<<widget "gggchaos">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 혼란</span>
+	<</if>>
 <</widget>>
 
-<<widget "llcool">> |
-<span class="red">- - 평판</span>
+<<widget "lchaos">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 혼란</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllcool">> |
-<span class="red">- - - 평판</span>
+<<widget "llchaos">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 혼란</span>
+	<</if>>
 <</widget>>
-
 
+<<widget "lllchaos">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 혼란</span>
+	<</if>>
+<</widget>>
 
-<<widget "gchaos">> |
-<span class="green">+ 혼란</span>
+<<widget "gtrust">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggchaos">> |
-<span class="green">+ + 혼란</span>
+<<widget "ggtrust">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggchaos">> |
-<span class="green">+ + + 혼란</span>
+<<widget "gggtrust">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "lchaos">> |
-<span class="red">- 혼란</span>
+<<widget "ltrust">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "llchaos">> |
-<span class="red">- - 혼란</span>
+<<widget "lltrust">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllchaos">> |
-<span class="red">- - - 혼란</span>
+<<widget "llltrust">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 신뢰</span>
+	<</if>>
 <</widget>>
 
-<<widget "gtrust">> |
-<span class="green">+ 신뢰</span>
+<<widget "glove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="green">+ <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="green">+ 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "ggtrust">> |
-<span class="green">+ + 신뢰</span>
+<<widget "gglove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="green">+ + <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="green">+ + 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gggtrust">> |
-<span class="green">+ + + 신뢰</span>
+<<widget "ggglove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="green">+ + + <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="green">+ + + 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "ltrust">> |
-<span class="red">- 신뢰</span>
+<<widget "llove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="red">- <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="red">- 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "lltrust">> |
-<span class="red">- - 신뢰</span>
+<<widget "lllove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="red">- - <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="red">- - 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llltrust">> |
-<span class="red">- - - 신뢰</span>
+<<widget "llllove">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="red">- - - <<NPCname_yi $args[0]>> 사랑</span>
+		<<else>>
+			<span class="red">- - - 사랑</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "glove">> |
-<<if $args[0]>>
-	<span class="green">+ <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="green">+ 사랑</span>
-<</if>>
+<<widget "glust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="lewd">+ <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="lewd">+ 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gglove">> |
-<<if $args[0]>>
-	<span class="green">+ + <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="green">+ + 사랑</span>
-<</if>>
+<<widget "gglust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="lewd">+ + <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="lewd">+ + 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "ggglove">> |
-<<if $args[0]>>
-	<span class="green">+ + + <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="green">+ + + 사랑</span>
-<</if>>
+<<widget "ggglust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="lewd">+ + + <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="lewd">+ + + 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llove">> |
-<<if $args[0]>>
-	<span class="red">- <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="red">- 사랑</span>
-<</if>>
+<<widget "llust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="teal">- <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="teal">- 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "lllove">> |
-<<if $args[0]>>
-	<span class="red">- - <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="red">- - 사랑</span>
-<</if>>
+<<widget "lllust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="teal">- - <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="teal">- - 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llllove">> |
-<<if $args[0]>>
-	<span class="red">- - - <<NPCname_yi $args[0]>> 사랑</span>
-<<else>>
-	<span class="red">- - - 사랑</span>
-<</if>>
+<<widget "llllust">>
+	<<if $statdisable is "f">> |
+		<<if $args[0]>>
+			<span class="teal">- - - <<NPCname_yi $args[0]>> 욕정</span>
+		<<else>>
+			<span class="teal">- - - 욕정</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "glust">> |
-<<if $args[0]>>
-	<span class="lewd">+ <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="lewd">+ 욕정</span>
-<</if>>
+<<widget "gdom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="purple">+ 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="purple">+ <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="purple">+ <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="purple">+ NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gglust">> |
-<<if $args[0]>>
-	<span class="lewd">+ + <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="lewd">+ + 욕정</span>
-<</if>>
+<<widget "ggdom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="purple">+ + 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="purple">+ + <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="purple">+ + <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="purple">+ + NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "ggglust">> |
-<<if $args[0]>>
-	<span class="lewd">+ + + <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="lewd">+ + + 욕정</span>
-<</if>>
+<<widget "gggdom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="purple">+ + + 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="purple">+ + + <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="purple">+ + + <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="purple">+ + + NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llust">> |
-<<if $args[0]>>
-	<span class="teal">- <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="teal">- 욕정</span>
-<</if>>
+<<widget "ldom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="lblue">- 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="lblue">- <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="lblue">- NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "lllust">> |
-<<if $args[0]>>
-	<span class="teal">- - <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="teal">- - 욕정</span>
-<</if>>
+<<widget "lldom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="lblue">- - 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="lblue">- - <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="lblue">--  NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "llllust">> |
-<<if $args[0]>>
-	<span class="teal">- - - <<NPCname_yi $args[0]>> 욕정</span>
-<<else>>
-	<span class="teal">- - - 욕정</span>
-<</if>>
+<<widget "llldom">>
+	<<if $statdisable is "f">> |
+		<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
+			<span class="lblue">- - - 로빈의 자신감</span>
+		<<elseif $args[0] isnot undefined>>
+			<span class="lblue">- - - <<NPCname_yi $args[0]>> 지배도</span>
+		<<elseif $npc.length isnot 0>>
+			<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
+		<<else>>
+			<span class="lblue">- - - NPC 지배도</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "gdom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="purple">+ 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="purple">+ <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="purple">+ <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="purple">+ NPC 지배도</span>
-<</if>>
+<<widget "grespect">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggdom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="purple">+ + 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="purple">+ + <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="purple">+ + <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="purple">+ + NPC 지배도</span>
-<</if>>
+<<widget "ggrespect">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggdom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="purple">+ + + 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="purple">+ + + <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="purple">+ + + <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="purple">+ + + NPC 지배도</span>
-<</if>>
+<<widget "gggrespect">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "ldom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="lblue">- 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="lblue">- <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="lblue">- <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="lblue">- NPC 지배도</span>
-<</if>>
+<<widget "lrespect">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "lldom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="lblue">- - 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="lblue">- - <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="lblue">- - <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="lblue">- - NPC 지배도</span>
-<</if>>
+<<widget "llrespect">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "llldom">> |
-<<if ($npc.includes("Robin") and $args[0] is undefined) or $args[0] is "Robin">>
-	<span class="lblue">- - - 로빈의 자신감</span>
-<<elseif $args[0] isnot undefined>>
-	<span class="lblue">- - - <<NPCname_yi $args[0]>> 지배도</span>
-<<elseif $npc.length isnot 0>>
-	<span class="lblue">- - - <<NPCname_yi $npc[0]>> 지배도</span>
-<<else>>
-	<span class="lblue">- - - NPC 지배도</span>
-<</if>>
+<<widget "lllrespect">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 존중</span>
+	<</if>>
 <</widget>>
 
-<<widget "grespect">> |
-<span class="green">+ 존중</span>
+<<widget "gadeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggrespect">> |
-<span class="green">+ + 존중</span>
+<<widget "ggadeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggrespect">> |
-<span class="green">+ + + 존중</span>
+<<widget "gggadeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "lrespect">> |
-<span class="red">- 존중</span>
+<<widget "ladeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "llrespect">> |
-<span class="red">- - 존중</span>
+<<widget "lladeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllrespect">> |
-<span class="red">- - - 존중</span>
+<<widget "llladeviancy">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 알렉스의 이상성욕</span>
+	<</if>>
 <</widget>>
 
-<<widget "gadeviancy">> |
-<span class="red">+ 알렉스의 이상성욕</span>
+<<widget "gaggro">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggadeviancy">> |
-<span class="red">+ + 알렉스의 이상성욕</span>
+<<widget "ggaggro">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggadeviancy">> |
-<span class="red">+ + + 알렉스의 이상성욕</span>
+<<widget "gggaggro">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "ladeviancy">> |
-<span class="green">- 알렉스의 이상성욕</span>
+<<widget "laggro">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "lladeviancy">> |
-<span class="green">- - 알렉스의 이상성욕</span>
+<<widget "llaggro">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "llladeviancy">> |
-<span class="green">- - - 알렉스의 이상성욕</span>
+<<widget "lllaggro">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 레미의 침략</span>
+	<</if>>
 <</widget>>
 
-<<widget "gaggro">> |
-<span class="red">+ 레미의 침략</span>
+<<widget "gksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggaggro">> |
-<span class="red">+ + 레미의 침략</span>
+<<widget "ggksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggaggro">> |
-<span class="red">+ + + 레미의 침략</span>
+<<widget "gggksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "laggro">> |
-<span class="green">- 레미의 침략</span>
+<<widget "lksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "llaggro">> |
-<span class="green">- - 레미의 침략</span>
+<<widget "llksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllaggro">> |
-<span class="green">- - - 레미의 침략</span>
+<<widget "lllksuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 질투</span>
+	<</if>>
 <</widget>>
 
-<<widget "gksuspicion">> |
-<span class="red">+ 질투</span>
+<<widget "gsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggksuspicion">> |
-<span class="red">+ + 질투</span>
+<<widget "ggsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggksuspicion">> |
-<span class="red">+ + + 질투</span>
+<<widget "gggsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lksuspicion">> |
-<span class="green">- 질투</span>
+<<widget "lsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "llksuspicion">> |
-<span class="green">- - 질투</span>
+<<widget "llsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllksuspicion">> |
-<span class="green">- - - 질투</span>
+<<widget "lllsuspicion">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 의심</span>
+	<</if>>
 <</widget>>
 
-<<widget "gsuspicion">> |
-<span class="red">+ 의심</span>
+<<widget "garage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="red">+ 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggsuspicion">> |
-<span class="red">+ + 의심</span>
+<<widget "ggarage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="red">+ + 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggsuspicion">> |
-<span class="red">+ + + 의심</span>
+<<widget "gggarage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="red">+ + + 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "lsuspicion">> |
-<span class="green">- 의심</span>
+<<widget "larage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="green">- 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "llsuspicion">> |
-<span class="green">- - 의심</span>
+<<widget "llarage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="green">- - 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllsuspicion">> |
-<span class="green">- - - 의심</span>
+<<widget "lllarage">>
+	<<if $averyragerevealed is 1 and $statdisable is "f">> |
+		<span class="green">- - - 분노</span>
+	<</if>>
 <</widget>>
 
-<<widget "garage">><<if $averyragerevealed is 1>> |
-<span class="red">+ 분노</span>
-<</if>><</widget>>
+<<widget "gendear">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "ggarage">><<if $averyragerevealed is 1>> |
-<span class="red">+ + 분노</span>
-<</if>><</widget>>
+<<widget "ggendear">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ + 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "gggarage">><<if $averyragerevealed is 1>> |
-<span class="red">+ + + 분노</span>
-<</if>><</widget>>
+<<widget "gggendear">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ + + 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "larage">><<if $averyragerevealed is 1>> |
-<span class="green">- 분노</span>
-<</if>><</widget>>
+<<widget "lendear">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "llarage">><<if $averyragerevealed is 1>> |
-<span class="green">- - 분노</span>
-<</if>><</widget>>
+<<widget "llendear">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- - 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "lllarage">><<if $averyragerevealed is 1>> |
-<span class="green">- - - 분노</span>
-<</if>><</widget>>
+<<widget "lllendear">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- - - 애정</span>
+	<</if>>
+<</widget>>
 
-<<widget "gendear">> |
-<span class="teal">+ 애정</span>
+<<widget "ghope">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggendear">> |
-<span class="teal">+ + 애정</span>
+<<widget "gghope">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ + 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggendear">> |
-<span class="teal">+ + + 애정</span>
+<<widget "ggghope">>
+	<<if $statdisable is "f">> |
+		<span class="teal">+ + + 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "lendear">> |
-<span class="pink">- 애정</span>
+<<widget "lhope">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "llendear">> |
-<span class="pink">- - 애정</span>
+<<widget "llhope">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- - 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllendear">> |
-<span class="pink">- - - 애정</span>
+<<widget "lllhope">>
+	<<if $statdisable is "f">> |
+		<span class="pink">- - - 희망</span>
+	<</if>>
 <</widget>>
 
-<<widget "ghope">> |
-<span class="teal">+ 희망</span>
+<<widget "greb">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "gghope">> |
-<span class="teal">+ + 희망</span>
+<<widget "ggreb">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ + 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggghope">> |
-<span class="teal">+ + + 희망</span>
+<<widget "gggreb">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ + + 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lhope">> |
-<span class="pink">- 희망</span>
+<<widget "lreb">>
+	<<if $statdisable is "f">> |
+		<span class="blue">- 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "llhope">> |
-<span class="pink">- - 희망</span>
+<<widget "llreb">>
+	<<if $statdisable is "f">> |
+		<span class="blue">- - 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllhope">> |
-<span class="pink">- - - 희망</span>
+<<widget "lllreb">>
+	<<if $statdisable is "f">> |
+		<span class="blue">- - - 반항심</span>
+	<</if>>
 <</widget>>
 
-<<widget "greb">> |
-<span class="def">+ 반항심</span>
+<<widget "ghandskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 손 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggreb">> |
-<span class="def">+ + 반항심</span>
+<<widget "goralskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 입 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggreb">> |
-<span class="def">+ + + 반항심</span>
+<<widget "gthighskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 넓적다리 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "lreb">> |
-<span class="blue">- 반항심</span>
+<<widget "gbottomskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 엉덩이 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "llreb">> |
-<span class="blue">- - 반항심</span>
+<<widget "gvaginalskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 보지 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllreb">> |
-<span class="blue">- - - 반항심</span>
+<<widget "gpenileskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 자지 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "ghandskill">> |
-<span class="green">+ 손기술</span>
+<<widget "ganalskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 항문 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "goralskill">> |
-<span class="green">+ 입 기술</span>
+<<widget "gfeetskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 발 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "gthighskill">> |
-<span class="green">+ 넓적다리 기술</span>
+<<widget "gchestskill">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 가슴 기술</span>
+	<</if>>
 <</widget>>
 
-<<widget "gbottomskill">> |
-<span class="green">+ 엉덩이 기술</span>
+<<widget "gstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="blue">+ 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "gvaginalskill">> |
-<span class="green">+ 보지 기술</span>
+<<widget "ggstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="blue">+ + 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "gpenileskill">> |
-<span class="green">+ 자지 기술</span>
+<<widget "gggstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="blue">+ + + 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "ganalskill">> |
-<span class="green">+ 항문 기술</span>
+<<widget "lstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">- 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "gfeetskill">> |
-<span class="green">+ 발 기술</span>
+<<widget "llstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">- - 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "gchestskill">> |
-<span class="green">+ 가슴 기술</span>
+<<widget "lllstockholm">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">- - - 스톡홀름 증후군</span>
+	<</if>>
 <</widget>>
 
-<<widget "gstockholm">> |
-<span class="blue">+ 스톡홀름 증후군</span>
+<<widget "gshame">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggstockholm">> |
-<span class="blue">+ + 스톡홀름 증후군</span>
+<<widget "ggshame">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggstockholm">> |
-<span class="blue">+ + + 스톡홀름 증후군</span>
+<<widget "gggshame">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "lstockholm">> |
-<span class="lblue">- 스톡홀름 증후군</span>
+<<widget "lshame">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "llstockholm">> |
-<span class="lblue">- - 스톡홀름 증후군</span>
+<<widget "llshame">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllstockholm">> |
-<span class="lblue">- - - 스톡홀름 증후군</span>
+<<widget "lllshame">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 수치</span>
+	<</if>>
 <</widget>>
 
-<<widget "gshame">> |
-<span class="red">+ 수치</span>
+<<widget "gfarm">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggshame">> |
-<span class="red">+ + 수치</span>
+<<widget "ggfarm">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggshame">> |
-<span class="red">+ + + 수치</span>
+<<widget "gggfarm">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "lshame">> |
-<span class="green">- 수치</span>
+<<widget "lfarm">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "llshame">> |
-<span class="green">- - 수치</span>
+<<widget "llfarm">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllshame">> |
-<span class="green">- - - 수치</span>
+<<widget "lllfarm">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "gfarm">> |
-<span class="green">+ 농장 생산량</span>
+<<widget "gnet">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 농장 생산량</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggfarm">> |
-<span class="green">+ + 농장 생산량</span>
+<<widget "gsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggfarm">> |
-<span class="green">+ + + 농장 생산량</span>
+<<widget "ggsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "lfarm">> |
-<span class="red">- 농장 생산량</span>
+<<widget "gggsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "llfarm">> |
-<span class="red">- - 농장 생산량</span>
+<<widget "lsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllfarm">> |
-<span class="red">- - - 농장 생산량</span>
+<<widget "llsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "gnet">> |
-<span class="green">+ 채집망 숙련도</span>
+<<widget "lllsecurity">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 보안</span>
+	<</if>>
 <</widget>>
 
-<<widget "gsecurity">> |
-<span class="red">+ 보안</span>
+<<widget "ginterest">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggsecurity">> |
-<span class="red">+ + 보안</span>
+<<widget "gginterest">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggsecurity">> |
-<span class="red">+ + + 보안</span>
+<<widget "ggginterest">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lsecurity">> |
-<span class="green">- 보안</span>
+<<widget "linterest">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "llsecurity">> |
-<span class="green">- - 보안</span>
+<<widget "llinterest">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllsecurity">> |
-<span class="green">- - - 보안</span>
+<<widget "lllinterest">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 관심</span>
+	<</if>>
 <</widget>>
 
-<<widget "gdaring">> |
-<span class="green">+ 대담성</span>
+<<widget "gdaring">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggdaring">> |
-<span class="green">+ + 대담성</span>
+<<widget "ggdaring">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggdaring">> |
-<span class="green">+ + + 대담성</span>
+<<widget "gggdaring">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "ldaring">> |
-<span class="red">- 대담성</span>
+<<widget "ldaring">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "lldaring">> |
-<span class="red">- - 대담성</span>
+<<widget "lldaring">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "llldaring">> |
-<span class="red">- - - 대담성</span>
+<<widget "llldaring">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 대담성</span>
+	<</if>>
 <</widget>>
 
-<<widget "gknowledge">> |
-<span class="green">+ 지식</span>
+<<widget "gknowledge">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 지식</span>
+	<</if>>
 <</widget>>
 
-<<widget "gbodywriting">> | 
-<span class="purple">+ 신체낙서</span>
+<<widget "gbodywriting">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ 신체낙서</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggbodywriting">> | 
-<span class="purple">+ + 신체낙서</span>
+<<widget "ggbodywriting">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ + 신체낙서</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggbodywriting">> | 
-<span class="purple">+ + + 신체낙서</span>
+<<widget "gggbodywriting">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ + + 신체낙서</span>
+	<</if>>
 <</widget>>
 
-<<widget "ghallucinogens">> | 
-<span class="lewd">+ 환각</span>
+<<widget "ghallucinogens">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ 환각</span>
+	<</if>>
 <</widget>>
 
-<<widget "gghallucinogens">> | 
-<span class="lewd">+ + 환각</span>
+<<widget "gghallucinogens">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + 환각</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggghallucinogens">> | 
-<span class="lewd">+ + + 환각</span>
+<<widget "ggghallucinogens">>
+	<<if $statdisable is "f">> |
+		<span class="lewd">+ + + 환각</span>
+	<</if>>
 <</widget>>
 
-<<widget "flight_text">> |
-<<if $harpy gte 6 and $birdFly gte 1>>
-	<span class="gold">튼튼한 날개</span>
-<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2 or $harpy gte 6>>
-	<span class="gold">날개</span>
-<</if>>
+<<widget "flight_text">>
+	<<if $statdisable is "f">> |
+		<<if $harpy gte 6 and $birdFly gte 1>>
+			<span class="gold">튼튼한 날개</span>
+		<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2 or $harpy gte 6>>
+			<span class="gold">날개</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "ginsecurity">>
-
-<<if $args[0] is "penis_tiny">>
-	<<if $acceptance_penis_tiny lte 999>>
-	| <span class="red">+ 불안감</span>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "penis_tiny">>
+			<<if $acceptance_penis_tiny lte 999>>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<<elseif $args[0] is "penis_small">>
+			<<if $acceptance_penis_small lte 999>>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<<elseif $args[0] is "penis_big">>
+			<<if $acceptance_penis_big lte 999>>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<<elseif $args[0] is "breasts_tiny">>
+			<<if $acceptance_breasts_tiny lte 999 and $player.gender is "f">>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<<elseif $args[0] is "breasts_small">>
+			<<if $acceptance_breasts_small lte 999>>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<<elseif $args[0] is "breasts_big">>
+			<<if $acceptance_breasts_big lte 999>>
+				| <span class="red">+ 불안감</span>
+			<</if>>
+		<</if>>
 	<</if>>
-<<elseif $args[0] is "penis_small">>
-	<<if $acceptance_penis_small lte 999>>
-	| <span class="red">+ 불안감</span>
-	<</if>>
-<<elseif $args[0] is "penis_big">>
-	<<if $acceptance_penis_big lte 999>>
-	| <span class="red">+ 불안감</span>
-	<</if>>
-<<elseif $args[0] is "breasts_tiny">>
-	<<if $acceptance_breasts_tiny lte 999 and $player.gender is "f">>
-	| <span class="red">+ 불안감</span>
-	<</if>>
-<<elseif $args[0] is "breasts_small">>
-	<<if $acceptance_breasts_small lte 999>>
-	| <span class="red">+ 불안감</span>
-	<</if>>
-<<elseif $args[0] is "breasts_big">>
-	<<if $acceptance_breasts_big lte 999>>
-	| <span class="red">+ 불안감</span>
-	<</if>>
-<</if>>
-
 <</widget>>
 
 <<widget "lgrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="red">- 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="red">- 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="red">- 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="red">- 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="red">- 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="red">- 신앙심</span>
-	<<else>>
-	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="red">- 신앙심</span>
-	<<else>>
-	<</if>>
-<<else>>
- |
-<span class="red">- 신앙심</span>
-<</if>>
-
 <</widget>>
 
 <<widget "llgrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="red">- - 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="red">- - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="red">- - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="red">- - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="red">- - 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="red">- - 신앙심</span>
-	<<else>>
-	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="red">- - 신앙심</span>
-	<<else>>
-	<</if>>
-<<else>>
- |
-<span class="red">- - 신앙심</span>
-<</if>>
-
 <</widget>>
 
 <<widget "lllgrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="red">- - - 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="red">- - - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="red">- - - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="red">- - - 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="red">- - - 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="red">- - - 신앙심</span>
-	<<else>>
-	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="red">- - - 신앙심</span>
-	<<else>>
-	<</if>>
-<<else>>
- |
-<span class="red">- - - 신앙심</span>
-<</if>>
-
 <</widget>>
 
 <<widget "ggrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="green">+ 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="green">+ 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="green">+ 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="green">+ 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="green">+ 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="green">+ 신앙심</span>
-	<<else>>
-	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="green">+ 신앙심</span>
-	<<else>>
-	<</if>>
-<<else>>
- |
-<span class="green">+ 신앙심</span>
-<</if>>
-
 <</widget>>
 
 <<widget "gggrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="green">+ + 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="green">+ + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="green">+ + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="green">+ + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="green">+ + 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="green">+ + 신앙심</span>
-	<<else>>
-	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="green">+ + 신앙심</span>
-	<<else>>
-	<</if>>
-<<else>>
- |
-<span class="green">+ + 신앙심</span>
-<</if>>
-
 <</widget>>
 
 <<widget "ggggrace">>
-<<if $args[1] is "monk">>
-	<<if $temple_rank is "initiate">>
-		|
-		<span class="green">+ + + 신앙심</span>
-	<<else>>
+	<<if $statdisable is "f">>
+		<<if $args[0] is "monk">>
+			<<if $temple_rank is "initiate">> |
+				<span class="green">+ + + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">> |
+				<span class="green">+ + + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<elseif $args[0] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">> |
+				<span class="green">+ + + 신앙심</span>
+			<<else>>
+			<</if>>
+		<<else>> |
+			<span class="green">+ + + 신앙심</span>
+		<</if>>
 	<</if>>
-<<elseif $args[1] is "priest">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk">>
-		|
-		<span class="green">+ + + 신앙심</span>
-	<<else>>
+<</widget>>
+
+<<widget "lobey">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 순종</span>
 	<</if>>
-<<elseif $args[1] is "bishop">>
-	<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-		|
-		<span class="green">+ + + 신앙심</span>
-	<<else>>
+<</widget>>
+
+<<widget "llobey">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 순종</span>
 	<</if>>
-<<else>>
- |
-<span class="green">+ + + 신앙심</span>
-<</if>>
-
 <</widget>>
 
-<<widget "lobey">> |
-<span class="red">- 순종</span>
+<<widget "lllobey">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 순종</span>
+	<</if>>
 <</widget>>
 
-<<widget "llobey">> |
-<span class="red">- - 순종</span>
+<<widget "gobey">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ 순종</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllobey">> |
-<span class="red">- - - 순종</span>
+<<widget "ggobey">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + 순종</span>
+	<</if>>
 <</widget>>
 
-<<widget "gobey">> |
-<span class="pink">+ 순종</span>
+<<widget "gggobey">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + + 순종</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggobey">> |
-<span class="pink">+ + 순종</span>
+<<widget "lhunger">>
+	<<if $statdisable is "f">> |
+		<span class="green">- 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggobey">> |
-<span class="pink">+ + + 순종</span>
+<<widget "llhunger">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "lhunger">> |
-<span class="green">- 배고픔</span>
+<<widget "lllhunger">>
+	<<if $statdisable is "f">> |
+		<span class="green">- - - 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "llhunger">> |
-<span class="green">- - 배고픔</span>
+<<widget "ghunger">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "lllhunger">> |
-<span class="green">- - - 배고픔</span>
+<<widget "gghunger">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "ghunger">> |
-<span class="red">+ 배고픔</span>
+<<widget "ggghunger">>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 배고픔</span>
+	<</if>>
 <</widget>>
 
-<<widget "gghunger">> |
-<span class="red">+ + 배고픔</span>
+<<widget "gacceptance">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 수용</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggghunger">> |
-<span class="red">+ + + 배고픔</span>
+<<widget "gwillpower">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 의지력</span>
+	<</if>>
 <</widget>>
 
-<<widget "gacceptance">> |
-<span class="green">+ 수용</span>
+<<widget "ggwillpower">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 의지력</span>
+	<</if>>
 <</widget>>
 
-<<widget "gwillpower">> |
-<span class="green">+ 의지력</span>
+<<widget "gggwillpower">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 의지력</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggwillpower">> |
-<span class="green">+ + 의지력</span>
+<<widget "gphysique">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 체격</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggwillpower">> |
-<span class="green">+ + + 의지력</span>
+<<widget "ggphysique">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 체격</span>
+	<</if>>
 <</widget>>
 
-<<widget "gphysique">> |
-<span class="green">+ 체격</span>
+<<widget "gggphysique">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 체격</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggphysique">> |
-<span class="green">+ + 체격</span>
+<<widget "lphysique">>
+	<<if $statdisable is "f">> |
+		<span class="red">- 체격</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggphysique">> |
-<span class="green">+ + + 체격</span>
+<<widget "llphysique">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - 체격</span>
+	<</if>>
 <</widget>>
 
-<<widget "lphysique">>|
-<span class="red">- 체격</span>
-<</widget>>
-
-<<widget "llphysique">> |
-<span class="red">- - 체격</span>
-<</widget>>
-
-<<widget "lllphysique">> |
-<span class="red">- - - 체격</span>
+<<widget "lllphysique">>
+	<<if $statdisable is "f">> |
+		<span class="red">- - - 체격</span>
+	<</if>>
 <</widget>>
 
 <!-- Exhibitionism -->
 
-<<widget "exhibitionist">> |
-	<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
-	<span @class="_color">노출증 $args[0]</span>
+<<widget "exhibitionist">>
+	<<if $statdisable is "f">> |
+		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
+		<span @class="_color">노출증 $args[0]</span>
+	<</if>>
 <</widget>>
 
-<<widget "exhibitionist1">> |
-<span class="teal">노출증 1</span>
+<<widget "exhibitionist1">>
+	<<if $statdisable is "f">> |
+		<span class="teal">노출증 1</span>
+	<</if>>
 <</widget>>
 
-<<widget "exhibitionist2">> |
-<span class="lblue">노출증 2</span>
+<<widget "exhibitionist2">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">노출증 2</span>
+	<</if>>
 <</widget>>
 
-<<widget "exhibitionist3">> |
-<span class="blue">노출증 3</span>
+<<widget "exhibitionist3">>
+	<<if $statdisable is "f">> |
+		<span class="blue">노출증 3</span>
+	<</if>>
 <</widget>>
 
-<<widget "exhibitionist4">> |
-<span class="purple">노출증 4</span>
+<<widget "exhibitionist4">>
+	<<if $statdisable is "f">> |
+		<span class="purple">노출증 4</span>
+	<</if>>
 <</widget>>
 
-<<widget "exhibitionist5">> |
-<span class="pink">노출증 5</span>
+<<widget "exhibitionist5">>
+	<<if $statdisable is "f">> |
+		<span class="pink">노출증 5</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist">>
-	<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
-	<span @class="_color">노출증 $args[0]</span>
+	<<if $statdisable is "f">>
+		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
+		<span @class="_color">노출증 $args[0]</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist1">>
-<span class="teal">노출증 1</span>
+	<<if $statdisable is "f">>
+		<span class="teal">노출증 1</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist2">>
-<span class="lblue">노출증 2</span>
+	<<if $statdisable is "f">>
+		<span class="lblue">노출증 2</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist3">>
-<span class="blue">노출증 3</span>
+	<<if $statdisable is "f">>
+		<span class="blue">노출증 3</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist4">>
-<span class="purple">노출증 4</span>
+	<<if $statdisable is "f">>
+		<span class="purple">노출증 4</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist5">>
-<span class="pink">노출증 5</span>
+	<<if $statdisable is "f">>
+		<span class="pink">노출증 5</span>
+	<</if>>
 <</widget>>
 
 <!-- Promiscuity -->
 
-<<widget "promiscuous">> |
-	<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
-	<span @class="_color">음란도 $args[0]</span>
+<<widget "promiscuous">>
+	<<if $statdisable is "f">> |
+		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
+		<span @class="_color">음란도 $args[0]</span>
+	<</if>>
 <</widget>>
 
-<<widget "promiscuous1">> |
-<span class="teal">음란도 1</span>
+<<widget "promiscuous1">>
+	<<if $statdisable is "f">> |
+		<span class="teal">음란도 1</span>
+	<</if>>
 <</widget>>
 
-<<widget "promiscuous2">> |
-<span class="lblue">음란도 2</span>
+<<widget "promiscuous2">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">음란도 2</span>
+	<</if>>
 <</widget>>
 
-<<widget "promiscuous3">> |
-<span class="blue">음란도 3</span>
+<<widget "promiscuous3">>
+	<<if $statdisable is "f">> |
+		<span class="blue">음란도 3</span>
+	<</if>>
 <</widget>>
 
-<<widget "promiscuous4">> |
-<span class="purple">음란도 4</span>
+<<widget "promiscuous4">>
+	<<if $statdisable is "f">> |
+		<span class="purple">음란도 4</span>
+	<</if>>
 <</widget>>
 
-<<widget "promiscuous5">> |
-<span class="pink">음란도 5</span>
+<<widget "promiscuous5">>
+	<<if $statdisable is "f">> |
+		<span class="pink">음란도 5</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
-	<span @class="_color"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> $args[0]</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
+		<span @class="_color"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> $args[0]</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous1">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<span class="teal"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 1</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<span class="teal"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 1</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous2">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<span class="lblue"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 2</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<span class="lblue"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 2</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous3">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<span class="blue"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 3</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<span class="blue"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 3</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous4">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<span class="purple"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 4</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<span class="purple"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 4</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous5">>
-<<if $consensual is 1 and !$promiscuityIgnore>>
-	<span class="pink"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 5</span>
-<</if>>
+	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+		<span class="pink"><<print ($enemytype is "man" ? "음란도" : "이상성욕")>> 5</span>
+	<</if>>
 <</widget>>
 
 <!-- Deviancy -->
 
 <<widget "deviant">> |
-	<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
-	<span @class="_color">이상성욕 $args[0]</span>
+	<<if $statdisable is "f">> |
+		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
+		<span @class="_color">이상성욕 $args[0]</span>
+	<</if>>
 <</widget>>
 
-<<widget "deviant1">> |
-<span class="teal">이상성욕 1</span>
+<<widget "deviant1">>
+	<<if $statdisable is "f">> |
+		<span class="teal">이상성욕 1</span>
+	<</if>>
 <</widget>>
 
-<<widget "deviant2">> |
-<span class="lblue">이상성욕 2</span>
+<<widget "deviant2">>
+	<<if $statdisable is "f">> |
+		<span class="lblue">이상성욕 2</span>
+	<</if>>
 <</widget>>
 
-<<widget "deviant3">> |
-<span class="blue">이상성욕 3</span>
+<<widget "deviant3">>
+	<<if $statdisable is "f">> |
+		<span class="blue">이상성욕 3</span>
+	<</if>>
 <</widget>>
 
-<<widget "deviant4">> |
-<span class="purple">이상성욕 4</span>
+<<widget "deviant4">>
+	<<if $statdisable is "f">> |
+		<span class="purple">이상성욕 4</span>
+	<</if>>
 <</widget>>
 
-<<widget "deviant5">> |
-<span class="pink">이상성욕 5</span>
+<<widget "deviant5">>
+	<<if $statdisable is "f">> |
+		<span class="pink">이상성욕 5</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatdeviant">>
-	<<if $consensual is 1>>
+	<<if $consensual is 1 and $statdisable is "f">>
 		<<set _color to ["","teal","lblue","blue","purple","pink"][$args[0]]>>
 		<span @class="_color">이상성욕 $args[0]</span>
 	<</if>>
 <</widget>>
 
 <<widget "combatdeviant1">>
-<<if $consensual is 1>>
-<span class="teal">이상성욕 1</span>
-<</if>>
+	<<if $consensual is 1 and $statdisable is "f">>
+		<span class="teal">이상성욕 1</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatdeviant2">>
-<<if $consensual is 1>>
-<span class="lblue">이상성욕 2</span>
-<</if>>
+	<<if $consensual is 1 and $statdisable is "f">>
+		<span class="lblue">이상성욕 2</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatdeviant3">>
-<<if $consensual is 1>>
-<span class="blue">이상성욕 3</span>
-<</if>>
+	<<if $consensual is 1 and $statdisable is "f">>
+		<span class="blue">이상성욕 3</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatdeviant4">>
-<<if $consensual is 1>>
-<span class="purple">이상성욕 4</span>
-<</if>>
+	<<if $consensual is 1 and $statdisable is "f">>
+		<span class="purple">이상성욕 4</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatdeviant5">>
-<<if $consensual is 1>>
-<span class="pink">이상성욕 5</span>
-<</if>>
+	<<if $consensual is 1 and $statdisable is "f">>
+		<span class="pink">이상성욕 5</span>
+	<</if>>
 <</widget>>
 
+<!-- Commented out for deprecation. Use: ?admires
+			See 03-JavaScript/Templates/..
 <<widget "admires">>
 <<print either("힐끔거린다", "감상한다", "훑어본다", "유심히 쳐다본다")>>
 <</widget>>
+-->
 
 <<widget "crime">>
- | <span class="red">범죄</span>
+	<<if $statdisable is "f">> |
+		<span class="red">범죄</span>
+	<</if>>
 <</widget>>
 
 <<widget "combatcrime">>
-<span class="red">범죄</span>
+	<<if $statdisable is "f">>
+		<span class="red">범죄</span>
+	<</if>>
 <</widget>>
 
 <<widget "gcrime">>
- | <span class="red">+ 범죄</span>
+	<<if $statdisable is "f">> |
+		<span class="red">+ 범죄</span>
+	<</if>>
 <</widget>>
 
 <<widget "ggcrime">>
- | <span class="red">+ + 범죄</span>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + 범죄</span>
+	<</if>>
 <</widget>>
 
 <<widget "gggcrime">>
- | <span class="red">+ + + 범죄</span>
+	<<if $statdisable is "f">> |
+		<span class="red">+ + + 범죄</span>
+	<</if>>
 <</widget>>
 
 <<widget "gspray">>
- | <span class="green">+ 1 후추 스프레이.</span>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 1 후추 스프레이</span>
+	<</if>>
 <</widget>>
 
 <<widget "gspraymax">>
- | <span class="gold">+ 1 후추 스프레이 최대 소지수.</span>
+	<<if $statdisable is "f">> |
+		<span class="gold">+ 1 후추 스프레이 최대 소지수</span>
+	<</if>>
 <</widget>>
 
 <<widget "defianttext">>
- | <span class="def">반항적</span>
+	<<if $statdisable is "f">> |
+		<span class="def">반항적</span>
+	<</if>>
 <</widget>>
 
 <<widget "submissivetext">>
- | <span class="sub">순종적</span>
+	<<if $statdisable is "f">> |
+		<span class="sub">순종적</span>
+	<</if>>
 <</widget>>
 
-<<widget "gdef">> |
-<span class="def">+ 반항</span>
+<<widget "gdef">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ 반항</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggdef">> |
-<span class="def">+ + 반항</span>
+<<widget "ggdef">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ + 반항</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggdef">> |
-<span class="def">+ + + 반항</span>
+<<widget "gggdef">>
+	<<if $statdisable is "f">> |
+		<span class="def">+ + + 반항</span>
+	<</if>>
 <</widget>>
 
-<<widget "ldef">> |
-<span class="sub">- 반항</span>
+<<widget "ldef">>
+	<<if $statdisable is "f">> |
+		<span class="sub">- 반항</span>
+	<</if>>
 <</widget>>
 
-<<widget "lldef">> |
-<span class="sub">- - 반항</span>
+<<widget "lldef">>
+	<<if $statdisable is "f">> |
+		<span class="sub">- - 반항</span>
+	<</if>>
 <</widget>>
 
-<<widget "llldef">> |
-<span class="sub">- - - 반항</span>
+<<widget "llldef">>
+	<<if $statdisable is "f">> |
+		<span class="sub">- - 반항</span>
+	<</if>>
 <</widget>>
 
 <<widget "month">>
@@ -3480,113 +4155,126 @@ in dev alternative to current "breasts" widget
 <</widget>>
 
 <<widget "seductiontext">><<silently>>
-<<if $seductionskill gte 0 and $seductionskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $seductionskill gte 200 and $seductionskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $seductionskill gte 400 and $seductionskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $seductionskill gte 600 and $seductionskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $seductionskill gte 800 and $seductionskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $seductionskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $seductionskill gte 0 and $seductionskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $seductionskill gte 200 and $seductionskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $seductionskill gte 400 and $seductionskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $seductionskill gte 600 and $seductionskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $seductionskill gte 800 and $seductionskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $seductionskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "oraltext">><<silently>>
-<<if $oralskill gte 0 and $oralskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $oralskill gte 200 and $oralskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $oralskill gte 400 and $oralskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $oralskill gte 600 and $oralskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $oralskill gte 800 and $oralskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $oralskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $oralskill gte 0 and $oralskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $oralskill gte 200 and $oralskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $oralskill gte 400 and $oralskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $oralskill gte 600 and $oralskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $oralskill gte 800 and $oralskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $oralskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "vaginaltext">><<silently>>
-<<if $vaginalskill gte 0 and $vaginalskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $vaginalskill gte 200 and $vaginalskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $vaginalskill gte 400 and $vaginalskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $vaginalskill gte 600 and $vaginalskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $vaginalskill gte 800 and $vaginalskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $vaginalskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $vaginalskill gte 0 and $vaginalskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $vaginalskill gte 200 and $vaginalskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $vaginalskill gte 400 and $vaginalskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $vaginalskill gte 600 and $vaginalskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $vaginalskill gte 800 and $vaginalskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $vaginalskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "peniletext">><<silently>>
-<<if $penileskill gte 0 and $penileskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $penileskill gte 200 and $penileskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $penileskill gte 400 and $penileskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $penileskill gte 600 and $penileskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $penileskill gte 800 and $penileskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $penileskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $penileskill gte 0 and $penileskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $penileskill gte 200 and $penileskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $penileskill gte 400 and $penileskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $penileskill gte 600 and $penileskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $penileskill gte 800 and $penileskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $penileskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "analtext">><<silently>>
-<<if $analskill gte 0 and $analskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $analskill gte 200 and $analskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $analskill gte 400 and $analskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $analskill gte 600 and $analskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $analskill gte 800 and $analskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $analskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $analskill gte 0 and $analskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $analskill gte 200 and $analskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $analskill gte 400 and $analskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $analskill gte 600 and $analskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $analskill gte 800 and $analskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $analskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "handtext">><<silently>>
-<<if $handskill gte 0 and $handskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $handskill gte 200 and $handskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $handskill gte 400 and $handskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $handskill gte 600 and $handskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $handskill gte 800 and $handskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $handskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $handskill gte 0 and $handskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $handskill gte 200 and $handskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $handskill gte 400 and $handskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $handskill gte 600 and $handskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $handskill gte 800 and $handskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $handskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "feettext">><<silently>>
-<<if $feetskill gte 0 and $feetskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $feetskill gte 200 and $feetskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $feetskill gte 400 and $feetskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $feetskill gte 600 and $feetskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $feetskill gte 800 and $feetskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $feetskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $feetskill gte 0 and $feetskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $feetskill gte 200 and $feetskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $feetskill gte 400 and $feetskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $feetskill gte 600 and $feetskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $feetskill gte 800 and $feetskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $feetskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "bottomtext">><<silently>>
-<<if $bottomskill gte 0 and $bottomskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $bottomskill gte 200 and $bottomskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $bottomskill gte 400 and $bottomskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $bottomskill gte 600 and $bottomskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $bottomskill gte 800 and $bottomskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $bottomskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $bottomskill gte 0 and $bottomskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $bottomskill gte 200 and $bottomskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $bottomskill gte 400 and $bottomskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $bottomskill gte 600 and $bottomskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $bottomskill gte 800 and $bottomskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $bottomskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "thightext">><<silently>>
-<<if $thighskill gte 0 and $thighskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $thighskill gte 200 and $thighskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $thighskill gte 400 and $thighskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $thighskill gte 600 and $thighskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $thighskill gte 800 and $thighskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $thighskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">>
+<<if $thighskill gte 0 and $thighskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $thighskill gte 200 and $thighskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $thighskill gte 400 and $thighskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $thighskill gte 600 and $thighskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $thighskill gte 800 and $thighskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $thighskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
 <</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "chesttext">><<silently>>
-<<if $chestskill gte 0 and $chestskill lt 200>><<set _text_output to "<span class=\"pink\">서투르게</span>">>
-<<elseif $chestskill gte 200 and $chestskill lt 400>><<set _text_output to "<span class=\"purple\">살며시</span>">>
-<<elseif $chestskill gte 400 and $chestskill lt 600>><<set _text_output to "<span class=\"blue\">리드미컬하게</span>">>
-<<elseif $chestskill gte 600 and $chestskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $chestskill gte 800 and $chestskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $chestskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
+<<if $chestskill gte 0 and $chestskill lt 200>><<set _text_output to '<span class="pink">서투르게</span>'>>
+<<elseif $chestskill gte 200 and $chestskill lt 400>><<set _text_output to '<span class="purple">살며시</span>'>>
+<<elseif $chestskill gte 400 and $chestskill lt 600>><<set _text_output to '<span class="blue">리드미컬하게</span>'>>
+<<elseif $chestskill gte 600 and $chestskill lt 800>><<set _text_output to '<span class="lblue">부드럽게</span>'>>
+<<elseif $chestskill gte 800 and $chestskill lt 1000>><<set _text_output to '<span class="teal">솜씨 좋게</span>'>>
+<<elseif $chestskill gte 1000>><<set _text_output to '<span class="green">능숙히</span>'>>
+<</if>>
 <</silently>>_text_output<</widget>>
 
-<<widget "swimmingtext">><<silently>>
-<<if $swimmingskill gte 0 and $swimmingskill lt 200>><<set _text_output to "<span class=\"pink\">되는대로</span>">>
-<<elseif $swimmingskill gte 200 and $swimmingskill lt 400>><<set _text_output to "<span class=\"purple\">서투르게</span>">>
-<<elseif $swimmingskill gte 400 and $swimmingskill lt 600>><<set _text_output to "<span class=\"blue\">요령껏</span>">>
-<<elseif $swimmingskill gte 600 and $swimmingskill lt 800>><<set _text_output to "<span class=\"lblue\">부드럽게</span>">>
-<<elseif $swimmingskill gte 800 and $swimmingskill lt 1000>><<set _text_output to "<span class=\"teal\">솜씨 좋게</span>">>
-<<elseif $swimmingskill gte 1000>><<set _text_output to "<span class=\"green\">능숙히</span>">><</if>>
-<</silently>>_text_output<</widget>>
+<<widget "swimmingtext">>
+<<set $_swimmingskillText to currentSkillValue('swimmingskill')>>
+<<if $_swimmingskillText gte 0 and $_swimmingskillText lt 200>><span class="pink">되는대로</span>
+<<elseif $_swimmingskillText gte 200 and $_swimmingskillText lt 400>><span class="purple">서투르게</span>
+<<elseif $_swimmingskillText gte 400 and $_swimmingskillText lt 600>><span class="blue">요령껏</span>
+<<elseif $_swimmingskillText gte 600 and $_swimmingskillText lt 800>><span class="lblue">부드럽게</span>
+<<elseif $_swimmingskillText gte 800 and $_swimmingskillText lt 1000>><span class="teal">솜씨 좋게</span>
+<<elseif $_swimmingskillText gte 1000 and $_swimmingskillText lt 1200>><span class="green">능숙히</span>
+<<elseif $_swimmingskillText gte 1200>><span class="gold">effortlessly</span>
+<</if>>
+<</widget>>
 
 <<widget "tendingtext">>
-<<if currentSkillValue('tending') gte 0 and currentSkillValue('tending') lt 200>><span class="pink">서투르게</span>
-<<elseif currentSkillValue('tending') gte 200 and currentSkillValue('tending') lt 400>><span class="purple">살며시</span>
-<<elseif currentSkillValue('tending') gte 400 and currentSkillValue('tending') lt 600>><span class="blue">리드미컬하게<</span>
-<<elseif currentSkillValue('tending') gte 600 and currentSkillValue('tending') lt 800>><span class="lblue">부드럽게</span>
-<<elseif currentSkillValue('tending') gte 800 and currentSkillValue('tending') lt 1000>><span class="teal">솜씨 좋게</span>
-<<elseif currentSkillValue('tending') gte 1000 and currentSkillValue('tending') lt 1200>><span class="green">능숙히</span>
-<<elseif currentSkillValue('tending') gte 1200>><span class="gold">수월하게</span><</if>>
+<<set $_tendingText to currentSkillValue('tending')>>
+<<if $_tendingText gte 0 and $_tendingText lt 200>><span class="pink">서투르게</span>
+<<elseif $_tendingText gte 200 and $_tendingText lt 400>><span class="purple">살며시</span>
+<<elseif $_tendingText gte 400 and $_tendingText lt 600>><span class="blue">리드미컬하게</span>
+<<elseif $_tendingText gte 600 and $_tendingText lt 800>><span class="lblue">부드럽게</span>
+<<elseif $_tendingText gte 800 and $_tendingText lt 1000>><span class="teal">솜씨 좋게</span>
+<<elseif $_tendingText gte 1000 and $_tendingText lt 1200>><span class="green">능숙히</span>
+<<elseif $_tendingText gte 1200>><span class="gold">수월하게</span><</if>>
 <</widget>>
 
 <<widget "nervously">><<silently>>
@@ -4022,6 +4710,7 @@ in dev alternative to current "breasts" widget
 <</widget>>
 
 <<widget "strippedtext">>
+	<!-- Unused widget -->
 	<<if $control gte (($controlmax / 5) * 4)>>
 		<<if $trauma gte (($traumamax / 5) * 4)>>
 			<<if $stress gte (($stressmax / 5) * 4)>>
@@ -4894,12 +5583,13 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "swimmingdifficultytext0">>
-
- | <span class="green">이쪽 물은 안전해보인다</span>
-
+	<<if $statdisable is "f">> |
+		<span class="green">이쪽 물은 안전해보인다</span>
+	<</if>>
 <</widget>>
 
 <<widget "nexttext">>
+	<!-- Unused widget, sort of -->
 <</widget>>
 
 <<widget "monk">><<silently>>
@@ -4937,37 +5627,37 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "vaginalvirginitywarning">>
-	<<if $player.virginity.vaginal is true>>
+	<<if $player.virginity.vaginal is true and $statdisable is "f">>
 		<span class="red">이 행동으로 인해 처녀를 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
 <<widget "penilevirginitywarning">>
-	<<if $player.virginity.penile is true>>
+	<<if $player.virginity.penile is true and $statdisable is "f">>
 		<span class="red">이 행동으로 인해 동정을 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
 <<widget "analvirginitywarning">>
-	<<if $player.virginity.anal is true>>
+	<<if $player.virginity.anal is true and $statdisable is "f">>
 		<span class="red">이 행동으로 인해 항문 처녀를 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
 <<widget "oralvirginitywarning">>
-	<<if $player.virginity.oral is true>>
+	<<if $player.virginity.oral is true and $statdisable is "f">>
 		<span class="red">이 행동으로 인해 구강 처녀를 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
 <<widget "handholdingvirginitywarning">>
-	<<if $player.virginity.handholding is true>>
+	<<if $player.virginity.handholding is true and $statdisable is "f">>
 		| <span class="red">이 행동으로 인해 손 순결성을 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
 
 <<widget "kissvirginitywarning">>
-	<<if $player.virginity.kiss is true>>
+	<<if $player.virginity.kiss is true and $statdisable is "f">>
 		<span class="red">이 행동으로 인해 첫 키스를 상실하게 될 것입니다.</span>
 	<</if>>
 <</widget>>
@@ -4976,7 +5666,7 @@ in dev alternative to current "breasts" widget
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "NPCvirginitywarning">>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true>>
+<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true and $statdisable is "f">>
 	<<if $combatControls.includes("ists")>>
 		<br>
 	<</if>>
@@ -4996,41 +5686,56 @@ in dev alternative to current "breasts" widget
 <</if>>
 <</widget>>
 
-
 <<widget "wolfgirl">>
- | <span class="blue"><<print ($player.gender_appearance is "m" ? "늑대 소년" : "늑대 소녀")>></span>
+	<<if $statdisable is "f">> |
+		<span class="blue"><<print ($player.gender_appearance is "m" ? "늑대 소년" : "늑대 소녀")>></span>
+	<</if>>
 <</widget>>
 
 <<widget "cat">>
- | <span class="blue">고양이</span>
+	<<if $statdisable is "f">> |
+		<span class="blue">고양이</span>
+	<</if>>
 <</widget>>
 
 <<widget "cow">>
- | <span class="blue">소</span>
+	<<if $statdisable is "f">> |
+		<span class="blue">소</span>
+	<</if>>
 <</widget>>
 
 <<widget "harpy">>
-<<if $hallucinations gte 2 or $bestialitydisable is "t">>
- | <span class="gold">하피</span>
-<<else>>
- | <span class="gold">새</span>
-<</if>>
+	<<if $statdisable is "f">> |
+		<<if $hallucinations gte 2 or $bestialitydisable is "t">>
+		<span class="gold">하피</span>
+		<<else>>
+		<span class="gold">새</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "angel">>
- | <span class="gold">천사</span>
+	<<if $statdisable is "f">> |
+		<span class="gold">천사</span>
+	<</if>>
 <</widget>>
 
 <<widget "fallenangel">>
- | <span class="black">타천사</span>
+	<<if $statdisable is "f">> |
+		<span class="black">타천사</span>
+	<</if>>
 <</widget>>
 
 <<widget "demon">>
- | <span class="red">악마</span>
+	<<if $statdisable is "f">> |
+		<span class="red">악마</span>
+	<</if>>
 <</widget>>
 
 <<widget "sharp_eyes">>
- | <span class="gold">날카로운 눈</span>
+	<<if $statdisable is "f">> |
+		<span class="gold">날카로운 눈</span>
+	<</if>>
 <</widget>>
 
 <<widget "laughs">>
@@ -5111,16 +5816,22 @@ in dev alternative to current "breasts" widget
 	<</if>>
 <</widget>>
 
-<<widget "gtanned">> |
-<span class="green">+ 선탠</span>
+<<widget "gtanned">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 선탠</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggtanned">> |
-<span class="green">+ + 선탠</span>
+<<widget "ggtanned">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 선탠</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggtanned">> |
-<span class="green">+ + + 선탠</span>
+<<widget "gggtanned">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 선탠</span>
+	<</if>>
 <</widget>>
 
 <<widget "beasttype">><<silently>>
@@ -5183,15 +5894,16 @@ in dev alternative to current "breasts" widget
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "tending_text">>
-<<if currentSkillValue('tending') gte 1200>>
+<<set $_tendingText to currentSkillValue('tending')>>
+<<if $_tendingText gte 1200>>
 	<span class="gold">당신은 이 일을 믿기지 않을 정도로 잘한다.</span>
-<<elseif currentSkillValue('tending') gte 800>>
+<<elseif $_tendingText gte 800>>
 	<span class="green">이젠 훌륭한 일꾼이 되었다.</span>
-<<elseif currentSkillValue('tending') gte 600>>
+<<elseif $_tendingText gte 600>>
 	<span class="teal">일에 능숙해졌다.</span>
-<<elseif currentSkillValue('tending') gte 400>>
+<<elseif $_tendingText gte 400>>
 	<span class="lblue">일이 손에 익어간다.</span>
-<<elseif currentSkillValue('tending') gte 200>>
+<<elseif $_tendingText gte 200>>
 	<span class="blue">요령을 파악하게 된 것 같다.</span>
 <<else>>
 	<span class="purple">당신은 그럭저럭 일을 해나간다.</span>
@@ -5502,31 +6214,52 @@ in dev alternative to current "breasts" widget
 <</if>>
 <</widget>>
 
-<<widget "small_text">> |
-<<if $physiquesize lte 6000>>
-	<span class="teal">조그마한 몸</span>
-<<elseif $physiquesize lte 10000>>
-	<span class="teal">작은 몸</span>
-<<elseif $physiquesize lte 12000>>
-	<span class="teal">그렇게 크지 않은 몸</span>
-<<else>>
-	<span class="teal">그렇게 크지 않은 몸</span>
-<</if>>
+<<widget "small_text">>
+	<<if $statdisable is "f">> |
+		<<if $physiquesize lte 6000>>
+			<span class="teal">조그마한 몸</span>
+		<<elseif $physiquesize lte 10000>>
+			<span class="teal">작은 몸</span>
+		<<elseif $physiquesize lte 12000>>
+			<span class="teal">그렇게 크지 않은 몸</span>
+		<<else>>
+			<span class="teal">그렇게 크지 않은 몸</span>
+		<</if>>
+	<</if>>
 <</widget>>
 
-<<widget "large_text">> |
-<<if $physiquesize gte 16000>>
-	<span class="teal">커다란 몸</span>
-<<elseif $physiquesize gte 12000>>
-	<span class="teal">평범한 몸</span>
-<<elseif $physiquesize gte 10000>>
-	<span class="teal">그렇게 작지 않은 몸</span>
-<<else>>
-	<span class="teal">그렇게 작지 않은 몸</span>
-<</if>>
+<<widget "large_text">>
+		<<if $statdisable is "f">> |
+		<<if $physiquesize gte 16000>>
+			<span class="teal">커다란 몸</span>
+		<<elseif $physiquesize gte 12000>>
+			<span class="teal">평범한 몸</span>
+		<<elseif $physiquesize gte 10000>>
+			<span class="teal">그렇게 작지 않은 몸</span>
+		<<else>>
+			<span class="teal">그렇게 작지 않은 몸</span>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "body_size_text">>/* bodyPost.twee */
+	<<switch $physiquesize>>
+		<<case lte 6000>>
+			<<set _text_output to either("tiny", "dainty", "petite", "minuscule", "delicate") + " ">>
+		<<case lte 10000>>
+			<<set _text_output to either("short", "small", "little", "smallish") + " ">>
+		<<case lte 12000>>
+			<<set _text_output to either("average", "normal", "regular") + " ">>
+		<<case lte 16000>>
+			<<set _text_output to either("tall", "strong", "powerful", "large") + " ">>
+		<<default>>
+	<</switch>>
+	<<set _text_output to _text_output + either("body","frame","anatomy", "torso")>>
+	<<print _text_output>>
 <</widget>>
 
 <<widget "monster_passage">>
+<!-- Unused widget -->
 <<if _monster_passage is undefined>>
 	<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f")>>
 		<<if $malechance gte 100>>
@@ -5961,7 +6694,6 @@ $worn.genitals.name
 <<print _text_output>>
 <</widget>>
 
-
 <<widget "npcPenis">>
 <<set $_npcGen to ($args[0] ? $args[0] : 0)>>
 <<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
@@ -6037,40 +6769,158 @@ $worn.genitals.name
 <<print _text_output>>
 <</widget>>
 
-<<widget "gbeauty">> |
-<span class="green">+ 용모</span>
+<!-- Argument 0 is the appropriate NPCName or NPCList object. 
+Argument 1 should be "upper", "lower", or "both" 
+Argument 2, where appropriate, determines whether it's the player undressing the NPC or the NPC undressing themselves-->
+<<widget "npcClothesText">><<silently>> /* clothesPost.twee npcClothesTextPost */
+<<if $args[0]>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to ($args[1] ? $args[1] : "both")>>
+	<<switch $_part>>
+		<<case "both">>
+			<<set _text_output to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc>>
+		<<case "upper">>
+			<<set _text_output to $_npc.clothes.upper.name>>
+		<<case "lower">>
+			<<set _text_output to $_npc.clothes.lower.name>>
+		<<default>>
+			<<set _text_output to '<span class="red">ERROR: Invalid NPC clothing case. (NPC: $_npc.fullDescription, part called: $_part) Please inform PurityGuy</span>'>>
+	<</switch>>
+<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "npcUndressText">><<silently>>
+<<if $args[0]>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to ($args[1] ? $args[1] : "both")>>
+	<<set $_self to ($args[2] eq "self" ? true : false)>><<set $_and_but to ($_self ? $args[3] : $args[2])>>
+	<<set _text_output to "">>
+	<<if !$_npc.clothes>>
+		<<set _text_output += '<span class="red">ERROR: NPC ($_npc.fullDescription) clothes are undefined! Please inform PurityGuy</span>'>>
+	<<elseif $_part is "both">>
+		<<set $_npcClothesName to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).desc>><<trNpcClothes "set" $_npcClothesName "을">>
+		<<set _text_output += " <<hisselect_yi $index>>  " + _trResult +  ($_self ? ($_and_but ? " 벗고":" 벗는다"):($_and_but ? ($_and_but eq "and" ? " 벗기고": " 벗기려 하지만"):" 벗긴다"))>>
+	<<else>>
+		<<set $_clothesAction to setup.npcClothesSets.find(item => item.name === $_npc.clothes.set).clothes[$_part].action>>
+		<<switch $_clothesAction>>
+			<<case "lift">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 들어올리고" : " 들어올리려 하지만") : " 들어올린다")>>
+			<<case "pull">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 내리고" : " 내리려 하지만") : " 내린다")>>
+			<<case "unbutton">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 단추를 풀고" : " 단추를 풀려 하지만") : " 단추를 푼다")>><<set $_trPost to "의">>
+			<<case "unzip">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 지퍼를 내리고" : " 지퍼를 내리려 하지만") : " 지퍼를 내린다")>><<set $_trPost to "의">>
+			<<case "aside">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 옆으로 제치고" : " 옆으로 제치려 하지만") : " 옆으로 제친다")>>
+			<<case "open">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 열고" : " 열려 하지만") : " 연다")>>
+			<<case "unwrap">><<set _actionText to ($_and_but ? ($_and_but eq "and" ? " 풀고" : " 풀려 하지만") : " 푼다")>>
+			<<default>><<set _actionText to '<span class="red">ERROR: Invalid NPC clothing action. (NPC: $_npc.fullDescription, part called: $_part, action: $_clothesAction) Please inform PurityGuy</span>'>>
+		<</switch>>
+		<<trNpcClothes $_part $_npc.clothes[$_part].name "을" "sep">><<set _trPost to ($_trPost? $_trPost: _trPost)>><<set _text_output += " <<hisselect_yi $index>> " +_trResult + _trPost + _actionText>>
+	<</if>>
+<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "npcRevealText">><<silently>>
+	<<set $_npc to $args[0]>>
+	<<set $_part to $args[1]>> /* can be "upper" or "lower" */
+	<<set _text_output to "<<his_yi>> ">><<set $_adjText to "">>
+	<<if $_part is "both">>
+		<!-- placeholder -->
+	<<elseif $_part is "lower">>
+		<<if $_npc.penis isnot "none" and $_npc.vagina isnot "none">>
+			<<set _text_output += "$_adjText<<penisdesc_wa $_npc.penisdesc>> <<his_yi>> ">>
+			<<set _text_output += $enemyarousal gte 40 ? "촉촉한 보지를 드러낸다" : "보지를 드러낸다">>
+			<<if $_npc.chastity.penis.includes("chastity")>>
+				<<trClothes "genitals" $_npc.chastity.penis "name">><<set $_adjText to _trResult + " 안에 있는 ">>
+			<</if>>
+		<<elseif $_npc.penis isnot "none">>
+			<<set _text_output += "$_adjText<<penisdesc_rul $_npc.penisdesc>> 드러낸다">>
+			<<if $_npc.penisdesc.includes("strap-on")>>
+				<!-- placeholder -->
+			<<else>>
+				<<if $_npc.chastity.penis.includes("chastity")>>
+					<<trClothes "genitals" $_npc.chastity.penis "name">><<set $_adjText to _trResult + " 안에 있는 ">>
+				<<else>>
+					<<set $_adjText to "완전히 발기한 ">>
+				<</if>>
+			<</if>>
+		<<elseif $_npc.vagina isnot "none">>
+			<<set _text_output += $enemyarousal gte 40 ? "$_adjText촉촉한 보지를 드러낸다" : "$_adjText보지를 드러낸다">>
+			<<if $_npc.chastity.vagina.includes("chastity")>>
+				<<trClothes "genitals" $_npc.chastity.vagina "name">><<set $_adjText to _trResult + " 뒤에 있는 ">>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<set _text_output += "<<breastsdesc_rul $_npc.breastsdesc>> 드러낸다">>
+	<</if>>
+	<!-- intentionally omitting a period, for flexibility; do not forget to add one after you use this widget -->
+<</silently>>_text_output<</widget>>
+
+<<widget "npcGenitalReaction">>
+	<<set $_npc to $args[0]>>
+	<<if $_npc.penis isnot "none">>
+		<<switch $_npc.penissize>>
+			<<case 4>>
+				<span class="red"> <<print setup.npcPenisRemarks["big"].random()>></span>
+			<<case 1>>
+				<span class="green"> <<print setup.npcPenisRemarks["small"].random()>></span>
+			<<default>>
+		<</switch>>
+	<</if>>
+	<<if $_npc.vagina isnot "none">>
+		<!-- Placeholder -->
+	<</if>>
 <</widget>>
 
-<<widget "ggbeauty">> |
-<span class="green">+ + 용모</span>
+<<widget "gbeauty">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 용모</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggbeauty">> |
-<span class="green">+ + + 용모</span>
+<<widget "ggbeauty">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 용모</span>
+	<</if>>
 <</widget>>
 
-<<widget "gseduction">> |
-<span class="green">+ 유혹</span>
+<<widget "gggbeauty">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 용모</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggseduction">> |
-<span class="green">+ + 유혹</span>
+<<widget "gseduction">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 유혹</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggseduction">> |
-<span class="green">+ + + 유혹</span>
+<<widget "ggseduction">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 유혹</span>
+	<</if>>
 <</widget>>
 
-<<widget "gskulduggery">> |
-<span class="green">+ 속임수</span>
+<<widget "gggseduction">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 유혹</span>
+	<</if>>
 <</widget>>
 
-<<widget "ggskulduggery">> |
-<span class="green">+ + 속임수</span>
+<<widget "gskulduggery">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ 속임수</span>
+	<</if>>
 <</widget>>
 
-<<widget "gggskulduggery">> |
-<span class="green">+ + + 속임수</span>
+<<widget "ggskulduggery">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + 속임수</span>
+	<</if>>
+<</widget>>
+
+<<widget "gggskulduggery">>
+	<<if $statdisable is "f">> |
+		<span class="green">+ + + 속임수</span>
+	<</if>>
 <</widget>>
 
 <<widget "ampm">><!-- [hour] [minute] -->
@@ -6222,6 +7072,61 @@ $worn.genitals.name
 	<<print _text_output>>
 <</widget>>
 
+<!-- Jimmy: Commented out for deprecation. Use: ?vulva
+			See 03-JavaScript/Templates/..
 <<widget "vulva">>
 <<print either("vulva","vulva","quim","flange","pussy")>>
+<</widget>>
+-->
+
+<<widget "gfabric">>
+	<<if $statdisable is "f">>
+		<span class="green">+ 천조각</span>
+	<</if>>
+<</widget>>
+
+<<widget "passPercent">>
+	<<if $statdisable is "f">> |
+		<<if $args[0] gt 0>>
+			<span class="green">+ $args[0]% 합격 기회</span>
+		<<else>>
+			<span class="red">- $args[0]% 합격 기회</span>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "galcohol">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ 술기운</span>
+	<</if>>
+<</widget>>
+
+<<widget "ggalcohol">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ + 술기운</span>
+	<</if>>
+<</widget>>
+
+<<widget "gggalcohol">>
+	<<if $statdisable is "f">> |
+		<span class="purple">+ + + 술기운</span>
+	<</if>>
+<</widget>>
+
+<<widget "gdrugged">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ 약기운</span>
+	<</if>>
+<</widget>>
+
+<<widget "ggdrugged">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + 약기운</span>
+	<</if>>
+<</widget>>
+
+<<widget "gggdrugged">>
+	<<if $statdisable is "f">> |
+		<span class="pink">+ + + 약기운</span>
+	<</if>>
 <</widget>>

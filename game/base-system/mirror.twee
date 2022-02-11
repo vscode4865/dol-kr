@@ -1049,13 +1049,30 @@ __신체 낙서__<br>
 <br><br>
 __머리 모양__
 <br>
-<a onclick="V.hairtype='default';V.fringetype='default';SugarCube.State.display(SugarCube.State.active.title, null)">자연스럽게</a> (옆머리와 앞머리 모두 변경합니다)
-<br><br>
-<<trHairtype $hairtype>>당신의 옆머리는 "_trResult" 스타일이고, 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해있다.
-
-<br>
-<<set _hairTypeByName to {"왼쪽으로 땋은 머리": "braid left", "오른쪽으로 땋은 머리": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "양쪽으로 땋은 머리": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl", "니트": "neat"}>>
+<<if !$savedHairStyles>>
+	<<set $savedHairStyles to {
+		"기본": {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}
+	}>>
+<</if>>
+<<set _hairTypeByName to {"왼쪽으로 땋은 머리": "braid left", "오른쪽으로 땋은 머리": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "양쪽으로 땋은 머리": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl", "니트": "neat", "곱슬머리 피그테일": "curly pigtails", "경단머리": "sailor buns"}>>
 <<set _fringeTypeByName to {"얇게 휘날리는": "thin flaps", "넓게 휘날리는": "wide flaps", "히메": "hime", "루즈": "loose", "지저분한": "messy", "너무 자란": "overgrown", "링렛": "ringlets", "커튼헤어": "split", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "뒤로 넘긴": "back", "가르마": "parted", "납작한": "flat", "고수머리": "quiff", "스트레이트 컬": "straight curl", "링렛 컬": "ringlet curl", "커튼": "curtain"}>>
+
+<div class="no-numberify">
+	<<link [[자연스럽게|$passage]]>>
+		<<set $hairtype to "default">>
+		<<set $fringetype to "default">>
+	<</link>> |
+	<<link [[무작위로|$passage]]>>
+		<<set _hairType to Object.values(_hairTypeByName)>>
+		<<set $hairtype to _hairType[random(0,_hairType.length - 1)]>>
+		<<set _fringeType to Object.values(_fringeTypeByName)>>
+		<<set $fringetype to _fringeType[random(0,_fringeType.length - 1)]>>
+		<<set $hairposition to ["front","back"][random(0,1)]>>
+	<</link>> | (옆머리와 앞머리 모두 변경합니다)
+</div>
+<br>
+<<trHairtype $hairtype>>당신의 옆머리는 "_trResult" 스타일이고, 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해있다.
+<br>
 
 <<linkradiogroup "$hairtype" _hairTypeByName>>
 
@@ -1067,16 +1084,51 @@ __머리 모양__
 }`>>
 <br><br>
 <<trHairtype $fringetype>>앞머리는 "_trResult" 스타일이다.
-
+<br>
 /*<<if $fringetype is "default">>
  *	앞머리 스타일을 자연스럽게 바꾼다면 옆머리가 지저분한 머리로 설정된다.
  *<</if>>
 */
-<br>
-
 <<linkradiogroup "$fringetype" _fringeTypeByName>>
-
 <br><br>
+
+<div class="no-numberify">
+	<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+	<<if _savedHairStylesKeys.length gt 0>>
+		<<listbox '_selectedSavedHairStyle'>>
+			<<optionsfrom _savedHairStylesKeys>>
+		<</listbox>> |
+		<<link [[현재 스타일로 설정|$passage]]>>
+			<<set $hairtype to $savedHairStyles[_selectedSavedHairStyle].hairtype>>
+			<<set $fringetype to $savedHairStyles[_selectedSavedHairStyle].fringetype>>
+			<<set $hairposition to $savedHairStyles[_selectedSavedHairStyle].hairposition>>
+		<</link>> |
+		<<link [[저장된 스타일을 갱신|$passage]]>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairtype to $hairtype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].fringetype to $fringetype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairposition to $hairposition>>
+		<</link>> |
+		<<link [[삭제|$passage]]>>
+			<<if _selectedSavedHairStyle isnot "기본">>
+				<<run $outfit.forEach((o) => {
+					if(o.hairStyle === T.selectedSavedHairStyle){
+						o.hairStyle = undefined;
+					}
+				})>>
+				<<run delete $savedHairStyles[_selectedSavedHairStyle]>>
+			<</if>>
+		<</link>> |
+		<br><br>
+	<</if>>
+	<label>이름: <<textbox "_hairStyleName" "">></label>
+	<mouse class="tooltip linkBlue">(?)<span>중복된 이름은 항목을 덮어씌울 것입니다. 최대 30자, 글자, 숫자, 대시와 밑줄기호만 사용 가능합니다</span></mouse>
+	<br>
+	<<link [["현재 스타일 저장"|$passage]]>>
+		<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z가-힣0-9_-]+/g,"").substring(0,30)>>
+		<<set $savedHairStyles[_hairStyleName] to {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}>>
+	<</link>>
+</div>
+
 <</widget>>
 
 <<widget "mirrorMakeupPart">>
@@ -1202,10 +1254,10 @@ __화장__
 
 <<if !$simpleMirror>>
 	/* CONTACT LENSES */
-	<<if $makeup.owned.eyelenses.length == 0>>
+	<<if $makeup.owned.eyelenses.length == 0 and $makeup.owned.custom_eyelenses.length == 0>>
 		당신은 콘택트 렌즈를 가지고 있지 않다.<br>
 	<<else>>
-		콘택트 렌즈 착용:<br>
+		콘택트 렌즈 착용:<br> /* NON CUSTOMIZED ONES */
 		<<if $makeup.eyelenses != 0>>
 			<span class="no-numberify">
 			<<link "착용하지 않는다">>
@@ -1222,6 +1274,34 @@ __화장__
 			<<run Engine.show()>>
 			<</link>></span>
 			<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes colour-eye"></span></span>
+			<<print " | ">>
+			<</capture>>
+		<</for>>
+		<br>
+				특별주문 콘택트 렌즈 착용:<br> /* CUSTOMIZED ONES */
+		<<if $makeup.eyelenses != 0>>
+			<span class="no-numberify">
+			<<link "착용하지 않는다">>
+			<<set $makeup.eyelenses = 0>>
+			<<run Engine.show()>>
+			<</link>></span>
+			<<print " | ">>
+		<</if>>
+		<<for _i = 0; _i < $makeup.owned.custom_eyelenses.length; _i++>>
+			<<run _colour = $makeup.owned.custom_eyelenses[_i]>>
+			<<for _e = 0; _e < $custom_eyecolours.length; _e++>>
+				<<if $custom_eyecolours[_e].variable == $makeup.owned.custom_eyelenses[_i]>>
+					<<set _background_colour to clone(V.custom_eyecolours[_e].canvasfilter.blend)>>
+				<</if>>
+			<</for>>
+			<<capture _colour _background_colour>>
+			<span class="capitalize no-numberify">
+			<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>><<trColour _colour_name_with_space>>
+			<<link _trResult>>
+			<<set $makeup.eyelenses = _colour>>
+			<<run Engine.show()>>
+			<</link>></span>
+			<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
 			<<print " | ">>
 			<</capture>>
 		<</for>>
@@ -1318,6 +1398,8 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 				<<set $makeup[_makeupNames[$_i]] to 0>>
 			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]])>>
 				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
+			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]])>>
+				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
 			<</if>>
 		<<elseif _presetChosen[_makeupNames[$_i]] is 0 and _makeupNames[$_i] is "hairdye">>
 			/*Do Nothing*/
@@ -1347,7 +1429,7 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 		<span class="green"><<if $args[0] is "eyelenses">>뺀다<<else>>지운다<</if>>.</span>
 	<<else>>
 		<<if $args[0] is "eyelenses">>
-			<<if $makeup.owned.eyelenses.includes($args[1])>>
+			<<if $makeup.owned.eyelenses.includes($args[1]) or $makeup.owned.custom_eyelenses.includes($args[1])>>
 				<span class="green"><<trColour $args[1]>><<print _trResult>> (가지고 있음).</span>
 			<<else>>
 				<span class="red"><<trColour $args[1]>><<print _trResult>> (가지고 있지 않음).</span>

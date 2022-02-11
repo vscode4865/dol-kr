@@ -230,12 +230,15 @@
 	<<if $orgasmdown gte 1>>
 		<<set _leftOptions to "orgasm">>
 		<span class="lewd">당신의 왼팔은 자유로우나, 경련을 멈출 수가 없다.</span>
-	<<elseif $pain gte 100 and $willpowerpain is 0>>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
 		<<set _leftOptions to "pain">>
 		<span class="red">당신의 왼팔은 자유로우나, 아파서 움직일 수가 없다.</span>
-	<<elseif $dissociation gte 2>>
+	<<elseif $dissociation gte 2 and !$possessed>>
 		<<set _leftOptions to "unreal">>
 		<span class="pink">당신의 왼팔은 자유로우나, 진짜처럼 느껴지지 않는다.</span>
+	<<elseif $possessed>>
+		<<set _leftOptions to "possessed">>
+		당신의 왼팔은 자유로우나, <span class="pink">당신이 통제할 수가 없다.</span>
 	<<else>>
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
@@ -273,6 +276,9 @@
 	<<elseif $dissociation gte 2>>
 		<<set _leftOptions to "bothBound">>
 		<span class="pink">당신의 왼팔은 녀석의 손아귀에서 축 처져 있다.</span>
+	<<elseif $possessed>>
+		<<set _leftOptions to "possessedBound">>
+		당신의 왼팔은 당신의 의사와는 무관하게, 녀석의 손아귀에서 몸부림치고 있다.
 	<<else>>
 		<<set _leftOptions to "grappled">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼팔은 붙잡혀있다.</span>
@@ -285,6 +291,8 @@
 		<span class="red">당신의 왼팔은 아프게 묶여 있다.</span>
 	<<elseif $dissociation gte 2>>
 		<span class="pink">당신의 왼팔은 묶인 상태로 축 처져 있다.</span>
+	<<elseif $possessed>>
+		당신의 왼팔은 당신의 의사와는 무관하게, 묶인 상태에서 몸부림치고 있다.
 	<<else>>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 양팔은 무력하게 묶여있다.</span>
 	<</if>>
@@ -360,7 +368,13 @@
 	<<case "leftplay" "leftgrab">><<handdifficulty>> <<combatpromiscuous3>>
 	<<case "steal">><<skulduggerydifficulty>><<combatcrime>>
 	<<case "spray">>잔량: $spray / $spraymax
-	<<case "leftUndressOther">> <<handdifficulty>><<combatpromiscuous2>>
+	<<case "leftUndressOther">>
+	<<if Object.keys(_undressLeftTargets).length gt 1>>
+		<<listbox "$undressLeftTarget">>
+			<<optionsfrom _undressLeftTargets>>
+		<</listbox>>
+		<<handdifficulty>> <<combatpromiscuous2>>
+	<</if>>
 <</switch>>
 <</widget>>
 
@@ -429,6 +443,12 @@
 		<<case "unreal">>
 			<<set _leftaction["자신을 찌른다"] to "leftpoke">>
 			<<set _leftaction["당신의 팔을 그대로 놔둔다"] to "leftcurl">>
+		<<case "possessed">>
+			<<set _leftaction["받아들인다"] to "leftacceptW">>
+			<<set _leftaction["움직이지 않게 힘을 준다"] to "leftresistW">>
+		<<case "possessedBound">>
+			<<set _leftaction["몸부림친다"] to "leftstruggleW">>
+			<<set _leftaction["움직이지 않게 힘을 준다"] to "leftstillW">>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -439,12 +459,15 @@
 	<<if $orgasmdown gte 1>>
 		<<set _rightOptions to "orgasm">>
 		<span class="lewd">당신의 오른팔은 자유로우나, 경련을 멈출 수가 없다.</span>
-	<<elseif $pain gte 100 and $willpowerpain is 0>>
-		<<set _rightOptions to "pain">>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+		<<set _rightOptions to "pain" and !$possessed>>
 		<span class="red">당신의 오른팔은 자유로우나, 아파서 움직일 수가 없다.</span>
 	<<elseif $dissociation gte 2>>
 		<<set _rightOptions to "unreal">>
 		<span class="pink">당신의 오른팔은 자유로우나, 진짜처럼 느껴지지 않는다.</span>
+	<<elseif $possessed>>
+		<<set _rightOptions to "possessed">>
+		당신의 오른팔은 자유로우나, <span class="pink">당신이 통제할 수가 없다.</span>
 	<<else>>
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
@@ -482,6 +505,9 @@
 	<<elseif $dissociation gte 2>>
 		<<set _rightOptions to "bothBound">>
 		<span class="pink">당신의 오른팔은 녀석의 손아귀에서 축 처져 있다.</span>
+	<<elseif $possessed>>
+		<<set _rightOptions to "possessedBound">>
+		당신의 오른팔은 당신의 의사와는 무관하게, 녀석의 손아귀에서 몸부림치고 있다.
 	<<else>>
 		<<set _rightOptions to "grappled">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른팔은 붙잡혀있다.</span>
@@ -494,6 +520,8 @@
 		<span class="red">당신의 오른팔은 아프게 묶여 있다.</span>
 	<<elseif $dissociation gte 2>>
 		<span class="pink">당신의 오른팔은 묶인 상태로 축 처져 있다.</span>
+	<<elseif $possessed>>
+		당신의 오른팔은 당신의 의사와는 무관하게, 묶인 상태에서 몸부림치고 있다.
 	<<else>>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 양팔은 무력하게 묶여있다.</span>
 	<</if>>
@@ -569,7 +597,13 @@
 	<<case "rightplay" "rightgrab">><<handdifficulty>> <<combatpromiscuous3>>
 	<<case "steal">><<skulduggerydifficulty>><<combatcrime>>
 	<<case "spray">>잔량: $spray / $spraymax
-	<<case "rightUndressOther">> <<handdifficulty>><<combatpromiscuous2>>
+	<<case "rightUndressOther">>
+	<<if Object.keys(_undressRightTargets).length gt 1>>
+		<<listbox "$undressRightTarget">>
+			<<optionsfrom _undressRightTargets>>
+		<</listbox>>
+		<<handdifficulty>> <<combatpromiscuous2>>
+	<</if>>
 <</switch>>
 <</widget>>
 
@@ -638,54 +672,65 @@
 		<<case "unreal">>
 			<<set _rightaction["자신을 찌른다"] to "rightpoke">>
 			<<set _rightaction["당신의 팔을 그대로 놔둔다"] to "rightcurl">>
+		<<case "possessed">>
+			<<set _rightaction["받아들인다"] to "rightacceptW">>
+			<<set _rightaction["움직이지 않게 힘을 준다"] to "rightresistW">>
+		<<case "possessedBound">>
+			<<set _rightaction["몸부림친다"] to "rightstruggleW">>
+			<<set _rightaction["움직이지 않게 힘을 준다"] to "rightstillW">>
 	<</switch>>
 <</if>>
 <</widget>>
 
 <<widget "feetActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined or $possessed)>>
 	<<switch $feetuse>>
 	<<case 0>>
-		<<if _targetYourself is true and _targetnumber gt 1>>
-			<<set _targetlistall["당신 자신"] to "self">>
-		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
+		<<if $possessed>>
+			<<set _feetOptions to "possessed">>
+			당신의 다리는 자유롭지만, <span class="pink">그것이 당신 아래 있는 것을 느낄 수가 없다.</span>
+		<<else>>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistall["당신 자신"] to "self">>
+			<</if>>
+			<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+				<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
+					대상: <span onchange="actionsreplace('feet')">
+					<<listbox "$feettarget" autoselect>>
+						<<optionsfrom _targetlistall>>
+					<</listbox>>
+					</span>
+				<</if>>
+			<</if>>
+			<<if $leftleg is 0 and $rightleg is 0>>
+				<<set _feetOptions to "free">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 자유롭다.</span>
+			<<elseif $leftleg is 0>>
+				<<set _feetOptions to "leftFree">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 왼발은 자유롭다.</span>
+			<<elseif $rightleg is 0>>
+				<<set _feetOptions to "rightFree">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 오른발은 자유롭다.</span>
+			<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
+				<<set _feetOptions to "grappled">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 얽혀 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
+			<<elseif $leftleg is "bound" and $rightleg is "bound">>
+				<<set _feetOptions to "bound">>
+				<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 묶여 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
+			<<else>>
+				<<set _feetOptions to "free">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
+			<</if>>
+			<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
 				대상: <span onchange="actionsreplace('feet')">
 				<<listbox "$feettarget" autoselect>>
 					<<optionsfrom _targetlistall>>
 				<</listbox>>
 				</span>
 			<</if>>
-		<</if>>
-		<<if $leftleg is 0 and $rightleg is 0>>
-			<<set _feetOptions to "free">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 자유롭다.</span>
-		<<elseif $leftleg is 0>>
-			<<set _feetOptions to "leftFree">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 왼발은 자유롭다.</span>
-		<<elseif $rightleg is 0>>
-			<<set _feetOptions to "rightFree">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 오른발은 자유롭다.</span>
-		<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
-			<<set _feetOptions to "grappled">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 얽혀 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
-		<<elseif $leftleg is "bound" and $rightleg is "bound">>
-			<<set _feetOptions to "bound">>
-			<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">당신의 양발은 묶여 강제로 벌려져, 당신의 <<genitals_rul>> 제대로 보호하지 못하고 있다.</span>
-		<<else>>
-			<<set _feetOptions to "free">>
-			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
-		<</if>>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-			대상: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
-		<</if>>
-		<<if _targetnumber is 1>>
-			<<set $feettarget to _firsttarget>>
+			<<if _targetnumber is 1>>
+				<<set $feettarget to _firsttarget>>
+			<</if>>
 		<</if>>
 	<<case "penis">>
 		<<set _feetOptions to "penis">>
@@ -694,8 +739,12 @@
 		<<set _feetOptions to "othervagina">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "feet">><<set $feettarget to _j>>당신의 양발은 <<combatpersons_yi>> <<npcVagina_rul _j>> <<if $NPCList[_j].chastity.vagina.includes("chastity")>>누르고<<else>>잡고<</if>> 있다.</span>
 	<<case "bound">>
-		<<set _feetOptions to "bound">>
-		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 다리는 묶여있다.</span>
+		<<if $possessed>>
+			당신의 다리는 당신의 의사와는 무관하게, 족쇄 안에서 몸부림치고 있다.
+		<<else>>
+			<<set _feetOptions to "bound">>
+			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 다리는 묶여있다.</span>
+		<</if>>
 	<<case "walk">>
 		<<set _feetOptions to "walk">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 걷고 있다.</span>
@@ -778,18 +827,22 @@
 <<else>>
 	<<set _feetaction["쉰다"] to "rest">>
 	<<switch _feetOptions>>
-	<<case "free">>
-		<<feetgrabnew>>
-		<<feetKick>>
-		<<feetshoes>>
-		<<feetsocks>>
-	<<case "leftfree" "rightFree">>
-		<<feetgrabnew>>
-		<<feetKick>>
-	<<case "penis">>
-		<<feetGrabRub>>
-	<<case "othervagina">>
-		<<feetOthervagina>>
+		<<case "free">>
+			<<feetgrabnew>>
+			<<feetKick>>
+			<<feetshoes>>
+			<<feetsocks>>
+		<<case "leftfree" "rightFree">>
+			<<feetgrabnew>>
+			<<feetKick>>
+		<<case "penis">>
+			<<feetGrabRub>>
+		<<case "othervagina">>
+			<<feetOthervagina>>
+		<<case "possessed">>
+			<<set _feetaction to {}>>
+			<<set _feetaction["받아들인다"] to "feetacceptW">>
+			<<set _feetaction["움직이지 않게 힘을 준다"] to "feetresistW">>
 	<</switch>>
 <</if>>
 <</widget>>
@@ -804,7 +857,7 @@
 			<<run jQuery("#mouthaction").remove();>>
 		<</timed>>
 	<</if>>
-<<elseif $pain gte 100 and $willpowerpain is 0>>
+<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
 	<<if $mouthuse is 0>>
 		<<set _mouthOptions to "pain">>
 		<span class="red">당신의 입은 자유롭지만, 본의 아니게 내뱉는 흐느낌과 울음소리 때문에 말을 할 수가 없다.</span>
@@ -813,10 +866,22 @@
 			<<run jQuery("#mouthaction").remove();>>
 		<</timed>>
 	<</if>>
-<<elseif $dissociation gte 2>>
+<<elseif $dissociation gte 2 and !$possessed>>
 	<<if $mouthuse is 0>>
 		<<set _mouthOptions to "unreal">>
 		<span class="pink">당신의 입은 자유롭지만, 당신은 왜 그런지 모른다.</span>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#mouthaction").remove();>>
+		<</timed>>
+	<</if>>
+<<elseif $possessed>>
+	<<if $mouthuse is 0>>
+		<<set _mouthOptions to "possessed">>
+		당신의 입은 자유롭지만, <span class="pink">낯선 단어들이 당신의 혀에서 흘러나온다</span>.
+	<<elseif $mouthuse is "lefthand" or $mouthuse is "righthand">>
+		<<set _mouthOptions to "possessedBound">>
+		당신의 입은 막힌 상태로, 당신 안의 존재에게 익숙한 외국어를 중얼거리고 있다.
 	<<else>>
 		<<timed 100ms>>
 			<<run jQuery("#mouthaction").remove();>>
@@ -999,7 +1064,7 @@
 <<widget "mouthActions">>
 /*Generate Actions*/
 <<set _mouthaction to {}>>
-<<if !(["orgasm", "pain", "unreal"].includes(_mouthOptions))>>
+<<if !(["orgasm", "pain", "unreal", "possessed"].includes(_mouthOptions))>>
 	<<set _mouthaction["쉰다"] to "rest">>
 <</if>>
 <<if $position is "stalk">>
@@ -1010,10 +1075,12 @@
 	<<switch _mouthOptions>>
 		<<case "free">>
 			<<if $head isnot "grappled" and $head isnot "bound">>
-				<<if $chestuse is "penis">>
-					<<set _mouthaction["키스한다"] to "peniskiss">>
-				<<else>>
-					<<set _mouthaction["키스한다"] to "kiss">>
+				<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+					<<if $chestuse is "penis">>
+						<<set _mouthaction["키스한다"] to "peniskiss">>
+					<<else>>
+						<<set _mouthaction["키스한다"] to "kiss">>
+					<</if>>
 				<</if>>
 			<</if>>
 			<<oralnew>>
@@ -1056,12 +1123,18 @@
 		<<case "unreal">>
 			<<set _mouthaction["무언가 말하려 시도한다"] to "speak">>
 			<<set _mouthaction["부드러운 소리를 낸다"] to "noises">>
+		<<case "possessed">>
+			<<set _mouthaction["받아들인다"] to "mouthacceptW">>
+			<<set _mouthaction["입을 꽉 다문다"] to "mouthresistW">>
+		<<case "possessedBound">>
+			<<set _mouthaction["문다"] to "handbiteW">>
+			<<set _mouthaction["입을 꽉 다문다"] to "handcloseW">>
 	<</switch>>
 <</if>>
 <</widget>>
 
 <<widget "penisActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $penisstate>>
 	<<case 0>>
 		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
@@ -1253,7 +1326,7 @@
 <</widget>>
 
 <<widget "vaginaActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $vaginastate>>
 	<<case 0>>
 		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
@@ -1352,7 +1425,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">그들의 자지가 당신의 <<pussyPost>> 근처를 맴돈다.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleentrance") or ($NPCList[$vaginatarget].penis is "vaginadoubleentrance" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 <<vulva_rul>> 누르고 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 근처를 맴돈다.
+			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 ?vulva?rul 누르고 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 근처를 맴돈다.
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">그들의 자지가 당신의 <<pussyPost>> 근처를 맴돈다.</span>
@@ -1365,11 +1438,11 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">그들의 자지가 당신의 <<pussyPost "을">> 누른다.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleimminent") or ($NPCList[$vaginatarget].penis is "vaginadoubleimminent" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 보지에 삽입되어 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 당신의 <<vulva_rul>> 누른다. 
+			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 보지에 삽입되어 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 당신의 ?vulva?rul 누른다.
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 <<vulva_rul>> 누르고 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 근처를 맴돈다.
+			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 ?vulva?rul 누르고 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 근처를 맴돈다.
 			</span>
 		<</if>>
 	<<case "doublepenetrated">>
@@ -1380,7 +1453,7 @@
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">그들의 자지가 당신의 <<pussyPost "에">> 삽입되어 있다.</span>
 		<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadoubleimminent") or ($NPCList[$vaginatarget].penis is "vaginadoubleimminent" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
-			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 보지에 삽입되어 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 당신의 <<vulva_rul>> 누른다. 
+			<<personselect $_npcA>><<combatPerson_yi>> <<npcPenisSimple_i $_npcA>> 당신의 보지에 삽입되어 있고 <<personselect $_npcB>><<combatperson_yi>> <<npcPenisSimple_i $_npcB>> 당신의  ?vulva?rul 누른다. 
 			</span>
 		<<else>>
 			<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
@@ -1509,13 +1582,16 @@
 <</widget>>
 
 <<widget "anusActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<if $bottomuse is "mouth">>
 		<<set _anusOptions to "faceAgainstAnus">><<selectNpcWithPartInPosition "mouth" "bottom">><<set $anustarget to _j>>
 		<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">당신은 <<combatpersons_yi>> 얼굴을 <<bottomPost "으로">> 누른다.</span>
 	<<elseif $bottomuse is "penis">>
 		<<set _anusOptions to "penisAgainstAnus">><<selectNpcWithPartInPosition "penis" "cheeks">><<set $anustarget to _j>>
 		<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">당신은 엉덩이골로 <<combatpersons_yi>> <<npcPenis_rul _j>> 잡는다.</span>
+	<<elseif $bottomuse is "hand">>
+		<<set _anusOptions to "handAgainstAnus">><<selectNpcWithPartInPosition "hand" "bottom">><<set $anustarget to _j>>
+		<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">당신은 꽉 조인 엉덩이골로 <<combatpersons_yi>> 손을 문지른다.</span>
 	<<else>>
 		<<switch $anusstate>>
 		<<case 0>>
@@ -1547,6 +1623,12 @@
 		<<case "othermouth">>
 			<<set _anusOptions to "mouthPenetration">><<selectNpcWithPartInPosition "mouth" "anus">><<set $anustarget to _j>>
 			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson_yi>> 혀가 당신의 <<bottomPost "에">> 삽입되어 있다.</span>
+		<<case "handentrance">>
+			<<set _anusOptions to "handEntrance">><<selectNpcWithPartInPosition "hand" "anusentrance">><<set $anustarget to _j>>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">당신은 <<combatperson_yi>> 손을 당신의 <<bottomPost>>에 느낀다.</span>
+		<<case "hand">>
+			<<set _anusOptions to "handPenetration">><<selectNpcWithPartInPosition "hand" "anus">><<set $anustarget to _j>>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson_yi>> 손가락이 당신의 <<bottomPost>>에 삽입되어 있다.</span>
 		<<case "entrance">>
 			<<set _anusOptions to "penisEntrance">><<selectNpcWithPartInPosition "penis" "anusentrance">><<set $anustarget to _j>>
 			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson_yi>> <<npcPenis_ga _j>> 당신의 <<bottomPost>> 근처를 맴돈다.</span>
@@ -1668,6 +1750,7 @@
 <</if>>
 <<switch _diffAction>>
 	<<case "bottombay">><<bottomdifficulty>> <<combatpromiscuous1>>
+	<<case "bottomhandbay">><<bottomdifficulty>> <<combatpromiscuous1>>
 	<<case "penischeeks">><<analdifficulty>> <<combatpromiscuous4>>
 	<<case "anustopenis">><<analdifficulty>> <<combatpromiscuous5>>
 	<<case "anuspenisfuck">><<combatpromiscuous5>> <<analvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
@@ -1700,6 +1783,13 @@
 			<<actionsanusMouthImminent>>
 		<<case "mouthPenetration">>
 			<<actionsanusMouthPenetration>>
+		<<case "handEntrance">>
+			<<set _anusaction["쉰다"] to "rest">>
+			<<actionsanusHandEntrance>>
+		<<case "handPenetration">>
+			<<actionsanusHandPenetration>>
+		<<case "handAgainstAnus">>
+			<<actionsanusHandAgainstAnus>>
 		<<case "penisEntrance">>
 			<<set _anusaction["쉰다"] to "rest">>
 			<<actionsanusPenisEntrance>>
@@ -1725,7 +1815,7 @@
 <</widget>>
 
 <<widget "chestActionInit">>
-<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $chestuse>>
 	<<case "penis">>
 		<<set _chestOptions to "penis">><<selectNpcWithPartInPosition "penis" "chest">><<set $chesttarget to _j>>
@@ -1787,7 +1877,7 @@
 <</widget>>
 
 <<widget "thighActionInit">>
-	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)>>
+	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 		<<switch $thighuse>>
 		<<case "mouth">>
 			<<set _thighOptions to "mouth">><<selectNpcWithPartInPosition "mouth" "thigh">><<set $thightarget to _j>>

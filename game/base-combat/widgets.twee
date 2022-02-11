@@ -56,7 +56,7 @@
 	<<switch $args[1]>>
 		<<case "loveInterest">>
 			<span class="lewd">당신이 원하던 연애 대상과의 첫 키스로 행복해진다.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
-			<<if (!$wraith or $wraith and $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
+			<<if (!$wraith or $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
 		<<case "romantic">>
 			<span class="lewd">로맨틱한 첫 키스로 당신은 행복해진다.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
 		<<case "rape">>
@@ -127,39 +127,66 @@
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "takeNPCVirginity">>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true and (!$wraith or $wraith and $wraith.mimic isnot $args[0])>>
-    <<set $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] to "player">>
-	<<run $virginTaken[$args[1]].pushUnique($args[0])>>
-	<<if $args[0] is "Sydney" and ($args[1] is "vaginal" or $args[1] is "penile")>>
-		<<earnFeat "Sydney the Pure Hearted">>
+	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
+	<<if typeof $args[0] is "string">>
+		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $args[0])>>
+	<<elseif $args[0] isnot undefined>>
+		<<set $_npc to $NPCList[$args[0]]>>
 	<</if>>
-	<<if $enemytype isnot "beast" and $enemytype isnot "tentacle">>
-		<<switch $args[1]>>
-			<<case "vaginal">>
-				<<set $speechNPCVaginaVirgin to 1>>
-				<span class="pink">당신은 <<his_yi>> 처녀막이 찢어지며, 영원히 <<himPost>>에게서 <<his_yi>> 순결을 빼앗은 것을 느낀다.</span> <<if $demon gte 6>><span class="lewd">당신은 <<himPost>> 을 더럽히고 당신의 타락을 퍼뜨렸기에 무엇과도 다른 쾌락에 휩싸이는 것을 느낀다.</span> <<stress -50>><<trauma -50>><<lllstress>><<llltrauma>><<else>><<arousal 2000>><<ggarousal>><</if>><br>
-			<<case "penile">>
-				<<set $speechNPCPenisVirgin to 1>>
-				<span class="pink">당신은 <<his_yi>> 귀두가 포피에서 찢어지며, 영원히 <<himPost>>에게서 <<his_yi>> 순결을 빼앗은 것을 느낀다.</span> <<if $demon gte 6>><span class="lewd">당신은 <<himPost>> 을 더럽히고 당신의 타락을 퍼뜨렸기에 무엇과도 다른 쾌락에 휩싸이는 것을 느낀다.</span> <<stress -50>><<trauma -50>><<lllstress>><<llltrauma>><<else>><<arousal 2000>><<ggarousal>><</if>><br>
-			<<case "anal">>
-				<<set $speechNPCAnusVirgin to 1>>
-				<span class="pink">그곳은 빡빡했다. 아마도 이런 짓을 해 본 것이 이번이 <<his_yi>> 첫 번째 경험일 것이다.</span> <<arousal 2000>><<ggarousal>><br>
-			<<case "oral">>
-				<<set $speechNPCOralVirgin to 1>>
-				<span class="pink"><<He_nun>> 마치 이런 맛을 경험해 본 적이 없는 듯이, 놀란 것 처럼 보인다. 아마도 이번이 <<his_yi>> 첫 번째 경험일 것이다.</span> <<arousal 1500>><<ggarousal>><br>
-			<<case "kiss">>
-				<<set $speechNPCKissVirgin to 1>>
-				<<set _npcKissVirginTemp to 1>>
-			<<case "handholding">>
-				<<set $speechNPCHandholdingVirgin to 1>>
-				<span class="green"><<His_yi>> 손이 꽉 쥐어지며, <<he_nun>> 약간 겁을 먹은 것 처럼 보인다.</span>
-			<<default>>
-		<</switch>>
+
+    <<set $_vType to $args[1]>>
+    <<if $_npc and $_vType and $_npc.virginity and $_npc.virginity[$_vType] and (!$wraith or $wraith.mimic isnot $_npc.nam)>>
+        /* note: virginity must be exactly equal to true; only true means that they still have their virginity. */
+        <<if $_npc.virginity[$_vType] is true>>
+			<<set $_npc.virginity[$_vType] to "player">>
+			<<switch $_vType>>
+				<<case "vaginal">>
+					<<set $speechNPCVaginaVirgin to 1>>
+					<span class="pink">당신은 <<his_yi>> 처녀막이 찢어지며, 영원히 <<himPost>>에게서 <<his_yi>> 순결을 빼앗은 것을 느낀다.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">당신은 <<himPost>> 을 더럽히고 당신의 타락을 퍼뜨렸기에 무엇과도 다른 쾌락에 휩싸이는 것을 느낀다.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "penile">>
+					<<set $speechNPCPenisVirgin to 1>>
+					<span class="pink">당신은 <<his_yi>> 귀두가 포피에서 찢어지며, 영원히 <<himPost>>에게서 <<his_yi>> 순결을 빼앗은 것을 느낀다.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">당신은 <<himPost>> 을 더럽히고 당신의 타락을 퍼뜨렸기에 무엇과도 다른 쾌락에 휩싸이는 것을 느낀다.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "anal">>
+					<<set $speechNPCAnusVirgin to 1>>
+					<span class="pink">그곳은 빡빡했다. 아마도 이런 짓을 해 본 것이 이번이 <<his_yi>> 첫 번째 경험일 것이다.</span>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "oral">>
+					<<set $speechNPCOralVirgin to 1>>
+					<span class="pink"><<He_nun>> 마치 이런 맛을 경험해 본 적이 없는 듯이, 놀란 것 처럼 보인다. 아마도 이번이 <<his_yi>> 첫 번째 경험일 것이다.</span>
+					<<arousal 1500>><<ggarousal>>
+					<br>
+				<<case "kiss">>
+					<<set $speechNPCKissVirgin to 1>>
+					<<set _npcKissVirginTemp to 1>>
+				<<case "handholding">>
+					<<set $speechNPCHandholdingVirgin to 1>>
+					<span class="green"><<His_yi>> 손이 꽉 쥐어지며, <<he_nun>> 약간 겁을 먹은 것 처럼 보인다.</span>
+				<<default>>
+			<</switch>>
+
+			<<run $virginTaken[$_vType].pushUnique($_npc.fullDescription)>>
+			<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
+   			<<if $_i isnot -1>>
+				<<if $_npc.fullDescription is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
+					<<earnFeat "Sydney the Pure Hearted">>
+				<</if>>
+				<<set $NPCName[$_i].virginity to $_npc.virginity>>
+			<</if>>
+		<</if>>
 	<</if>>
-<</if>>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and ($args[1] is "vaginal" or $args[1] is "penile") and $NPCName[$NPCNameList.indexOf($args[0])].virginity.temple is true and $templePromised isnot $args[0]>>
-    <<set $NPCName[$NPCNameList.indexOf($args[0])].virginity.temple to false>>
-<</if>>
 <</widget>>
 
 <<widget "setupMidOrgasm">>
@@ -225,9 +252,9 @@
 
 <<widget "leg_position">>
 	<<set $_parts to [$anususe, $vaginause, $chestuse, $mouthuse]>>
-	<<if $machine and $machine.tattoo and ["left_thigh", "right_thigh"].contains($machine.tattoo.use)>>
+	<<if $machine and $machine.tattoo and ["left_thigh", "right_thigh"].includes($machine.tattoo.use)>>
 		<<set _leg_position to "up">>
-	<<elseif $_parts.contains("penis") or $_parts.contains(1)>>
+	<<elseif $_parts.includes("penis") or $_parts.includes(1)>>
 		<<set _leg_position to "up">>
 	<<else>>
 		<<set _leg_position to "down">>
@@ -241,10 +268,23 @@
 	<<if $args[0] and $args[1]>>
 		<<unset _npc>>
 		<<for _j = 0; _j lt $enemynomax; _j++>>
-			<<if $NPCList[_j][$args[0]] is $args[1]>>
-				<<personselect _j>>
-				<<set _npc to $NPCList[_j]>>
-				<<break>>
+			<<if $args[0] is "hand">>
+				<<if $NPCList[_j]["lefthand"] is $args[1]>>
+					<<personselect _j>>
+					<<set _npc to $NPCList[_j]>>
+					<<break>>
+				<</if>>
+				<<if $NPCList[_j]["righthand"] is $args[1]>>
+					<<personselect _j>>
+					<<set _npc to $NPCList[_j]>>
+					<<break>>
+				<</if>>
+			<<else>>
+				<<if $NPCList[_j][$args[0]] is $args[1]>>
+					<<personselect _j>>
+					<<set _npc to $NPCList[_j]>>
+					<<break>>
+				<</if>>
 			<</if>>
 		<</for>>
 	<</if>>

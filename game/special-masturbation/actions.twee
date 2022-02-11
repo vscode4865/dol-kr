@@ -66,7 +66,7 @@
 		<</if>>
 		| <label><<radiobutton "$leftaction" "mvaginaclit" autocheck>> <span class="sub">클리토리스를 자극한다</span></label>
 	<</if>>
-	| <label><<radiobutton "$leftaction" "mvaginarub" autocheck>> <span class="sub">보지를 비빈다</span></label>
+	| <label><<radiobutton "$leftaction" "mvaginarub" autocheck>> <span class="sub">?vulva?rul 비빈다</span></label>
 	| <label><<radiobutton "$leftaction" "mvaginastop" autocheck>> 손을 뗀다</label>
 
 <<elseif $leftarm is "mvagina">>
@@ -108,6 +108,26 @@
 <<elseif $leftarm is "bound">>
 	당신의 왼팔은 묶여있다.
 	<br>
+<<elseif $leftarm is "possessed">>
+	<<if $lactating and $breastfeedingdisable is "f">>
+		<<if $leftaction is "mbreastW">>
+			당신은 당신의 의사와는 무관하게, <<breasts_rul>> 왼손으로 꼬집고 짓누른다.
+		<<else>>
+			당신의 왼손은 <<breastsPost>> 위에 떠 있다.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$leftaction" "mbreastW" autocheck>> <span class="wraith">가슴을 애무한다</span></label>
+		| <label><<radiobutton "$leftaction" "mbreaststopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+	<<else>>
+		<<if $leftaction is "mpenisW">>
+			당신은 당신의 의사와는 무관하게, <<penis_rul>> 왼손으로 쓰다듬는다.
+		<<else>>
+			당신의 왼손은 <<penisPost>> 위에 떠 있다.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$leftaction" "mpenisW" autocheck>> <span class="wraith">육봉을 문지른다</span></label>
+		| <label><<radiobutton "$leftaction" "mpenisstopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+	<</if>>
 <</if>>
 <<if $leftarm isnot "bound">>
 	<<if $worn.over_upper.exposed lte 1>>
@@ -133,7 +153,9 @@
 	<</if>>
 <</if>>
 
-| <label><<radiobutton "$leftaction" "mrest" autocheck>> 가만히 둔다</label>
+<<if !$possessed>>
+	| <label><<radiobutton "$leftaction" "mrest" autocheck>> 가만히 둔다</label>
+<</if>>
 
 <br><br>
 
@@ -198,7 +220,7 @@
 		<</if>>
 		| <label><<radiobutton "$rightaction" "mvaginaclit" autocheck>> <span class="sub">클리토리스를 자극한다</span></label>
 	<</if>>
-	| <label><<radiobutton "$rightaction" "mvaginarub" autocheck>> <span class="sub">보지를 비빈다</span></label>
+	| <label><<radiobutton "$rightaction" "mvaginarub" autocheck>> <span class="sub">?vulva?rul 비빈다</span></label>
 	| <label><<radiobutton "$rightaction" "mvaginastop" autocheck>> 손을 뗀다</label>
 
 <<elseif $rightarm is "mvagina">>
@@ -240,6 +262,26 @@
 <<elseif $rightarm is "bound">>
 	당신의 오른팔은 묶여있다.
 	<br>
+<<elseif $rightarm is "possessed">>
+	<<if $player.penisExist>>
+		<<if $rightaction is "mpenisW">>
+			당신은 당신의 의사와는 무관하게, <<penis_rul>> 오른손으로 쓰다듬는다.
+		<<else>>
+			당신의 오른손은 <<penisPost>> 위에 떠 있다.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$rightaction" "mpenisW" autocheck>> <span class="wraith">육봉을 문지른다</span></label>
+		| <label><<radiobutton "$rightaction" "mpenisstopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+	<<else>>
+		<<if $rightaction is "mbreastW">>
+			당신은 당신의 의사와는 무관하게, <<breasts_rul>> 오른손으로 꼬집고 짓누른다.
+		<<else>>
+			당신의 오른손은 <<breastsPost>> 위에 떠 있다.
+		<</if>>
+		<br>
+		| <label><<radiobutton "$rightaction" "mbreastW" autocheck>> <span class="wraith">가슴을 애무한다</span></label>
+		| <label><<radiobutton "$rightaction" "mbreaststopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+	<</if>>
 <</if>>
 <<if $rightarm isnot "bound">>
 	<<if $worn.over_upper.exposed lte 1>>
@@ -265,7 +307,9 @@
 	<</if>>
 <</if>>
 
-| <label><<radiobutton "$rightaction" "mrest" autocheck>> 가만히 둔다</label>
+<<if !$possessed>>
+	| <label><<radiobutton "$rightaction" "mrest" autocheck>> 가만히 둔다</label>
+<</if>>
 
 /* Mouth Actions */
 <<if $moorPhallusPlant or $awareness gte 200>>
@@ -417,7 +461,7 @@
 
 <br><br><br><br>
 
-<<if $arousal gte $arousalmax>>
+<<if $arousal gte $arousalmax and !$possessed>>
 	<<orgasm>>
 	<<promiscuity1>>
 	<<set $masturbationorgasmstat += 1>>
@@ -432,5 +476,11 @@
 	<<set $seconds to 0>>
 	<<pass 1>>
 	<<set $masturbationtimestat += 1>>
+<</if>>
+<<if $possessed>>
+	/* Updates the control caption at the top of the screen to include any control gained through the rest of the passage */
+	<<run $(()=>{
+		Dynamic.render("control-caption")
+	})>>
 <</if>>
 <</widget>>

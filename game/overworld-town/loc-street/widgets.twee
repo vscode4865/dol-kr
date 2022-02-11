@@ -9,17 +9,17 @@
 <br><br>
 
 <<if $leftarm isnot "bound" and $rightarm isnot "bound">>
-	<<link [[앞발을 내밀어보라고 한다|Street Dog Paw]]>><</link>><<tendingdifficulty 1 300>> <<if $player.virginity.handholding is true>> | <span class="red">성공한다면 처음 손 잡은 상대가 됩니다.</span><</if>>
+	<<link [[앞발을 내밀어보라고 한다|Street Dog Paw]]>><</link>><<tendingdifficulty 1 300>> <<if $player.virginity.handholding is true and $statdisable is "f">> | <span class="red">성공한다면 처음 손 잡은 상대가 됩니다.</span><</if>>
 	<br>
 	<<link [[쓰다듬는다|Street Dog Pet]]>><<stress -6>><</link>><<lstress>>
 	<br>
 <</if>>
 <<if $wolfgirl gte 6>>
-	<<link [[으르렁거린다|Street Dog Growl]]>><<stress -6>><<transform wolf 1>><</link>> | <span class="gold">Wolf</span>
+	<<link [[으르렁거린다|Street Dog Growl]]>><<stress -6>><<transform wolf 1>><</link>><<wolfgirl>>
 	<br>
 <</if>>
 <<if $cat gte 6>>
-	<<link [[하악질한다|Street Dog Hiss]]>><<def 1>><<transform cat 1>><</link>>
+	<<link [[쉬익거린다|Street Dog Hiss]]>><<def 1>><<transform cat 1>><</link>><<cat>>
 	<br>
 <</if>>
 <<link [[무시한다|Street Dog Ignore]]>><</link>>
@@ -44,9 +44,9 @@
 	<<if $hour lte 3 or $hour gte 18>>
 		"안녕." <<he_ga>> 미소지으며 말한다.
 	<<elseif $hour lte 12>>
-		"안녕." <<he>> 미소지으며 말한다.
+		"안녕." <<he_ga>> 미소지으며 말한다.
 	<<else>>
-		"안녕." <<he>> 미소지으며 말한다.
+		"안녕." <<he_ga>> 미소지으며 말한다.
 	<</if>>
 	<br><br>
 
@@ -378,7 +378,7 @@
 <<set $pain += 5>><<set $molestationstart to 1>>
 <br><br>
 
-[[다음|StreetEx2]]
+<<link [[다음|StreetEx2]]>><</link>>
 <br><br>
 
 <</widget>>
@@ -423,7 +423,7 @@
 <br>
 <<link [[몰래 빠져나간다|StreetEx4]]>><<set $phase to 2>><</link>>
 <br>
-<<link [[구출을 시도한다|StreetEx4]]>><<set $phase to 3>><<famegood 3>><</link>> | <span class = "red">위험함</span>
+<<link [[구출을 시도한다|StreetEx4]]>><<set $phase to 3>><<famegood 3>><</link>><<if $statdisable is "f">> | <span class = "red">Risky</span><</if>>
 <br>
 
 <</widget>>
@@ -481,7 +481,7 @@
 	<<link [[기다린다 (0:10)|Street Ex Wait]]>><<pass 10>><</link>>
 	<br>
 	<<if $promiscuity gte 75>>
-		<<link [[모습을 드러낸다|Street Ex Solicit]]>><</link>><<promiscuous5>> | <span class="red">위험함</span>
+		<<link [[호객 행위를 한다|Street Ex Solicit]]>><</link>><<promiscuous5>><<if $statdisable is "f">> | <span class="red">Dangerous</span><</if>>
 		<br>
 	<</if>>
 
@@ -773,7 +773,7 @@
 		<br><br>
 		<<set $money += 100*_i>>
 	<</switch>>
-<<elseif ($danceskill + $rng) gte 500>><<generate2>><<person2>>
+<<elseif (currentSkillValue('danceskill') + $rng) gte 500>><<generate2>><<person2>>
 	무용수의 유연함과 순발력으로 <span class = "green">당신은 물풍선을 피하고, 풍선은 당신에게 어떠한 해도 미치지 못한 채 지나간다.</span>
 	<br><br>
 	<<if ($rng % 3) is 0>>당신 뒤에 있던 <<person_un>> 그리 운이 좋지 못했다. <<He_nun>> 완전히 흠뻑 젖어 <<his_yi>> 옷 일부가 투명하게 비쳐 그 몸이 드러난다. 차에서 큰 환호성이 들려온다.
@@ -891,6 +891,36 @@
 <br>
 <<link [[도망친다|Street Ex Day2 Run]]>><</link>><<athleticsdifficulty 1 1000>>
 <br>
+<</widget>>
+
+<<widget "streetedenrage">>
+	<<npc Eden>><<person1>><<set $edendays to 0>>
+	Lost in your head, you bump into a large figure. It's Eden. <<He>> looks mad.
+	<br><br>
+
+	<<if $edenCagedEscape>>
+		"Told you I'd find you again, didn't I?" <<he>> snarls, grabbing your arm. "Looks like you still haven't learnt your place. Come on."
+	<<else>>
+		<<He>> grips onto your arm and pulls you close. "Where the fuck have you been?" <<he>> snarls.
+		<<if $allure gte (3000 * $alluremod)>>
+			"I've been worried sick and you've been prancing around town like a slut!"
+		<<else>>
+			"I've been worried sick, and you're just prancing around town!"
+		<</if>>
+		<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 70>>
+			<<set $NPCName[$NPCNameList.indexOf("Eden")].love to 70>>
+			<<llllove>>
+		<</if>>
+		<br><br>
+
+		Before you can speak, Eden begins to drag you away. "I don't want to hear your excuses, either." <<He>> looks uncomfortable, eyes shifting as <<he>> walks. The corner of <<his>> lip curls in disgust. "And you made me come out here to get you. Things aren't going to be pretty when we get home."
+	<</if>>
+	<br><br>
+
+	<<link [[Resist|Street Eden Rage]]>><<set $phase to 0>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+	<br>
+	<<link [[Submit (0:30)|Street Eden Rage]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+	<br>
 <</widget>>
 
 <<widget "streetedenangry">>
@@ -1045,7 +1075,7 @@
 		<<endevent>>
 		<<destinationeventend>>
 	<<else>>
-		<<generate1>><<generate2>><<generates3>><<person1>>
+		<<generatePolice 1>><<generatePolice 2>><<generates3>><<person1>>
 		<<set $streetpolice to 1>>
 		<<if $policemolestation gte 5 and $rng1 gte 50>>
 			경찰차가 끼익 소리를 내며 당신 옆에 멈춰선다. <<person_gwa>> <<person2>><<person_i>> 차에서 내린다.
@@ -1222,11 +1252,13 @@
 				<br><br>
 				그들이 다가와 당신의 어깨에 손을 올려놓는다.
 				<br><br>
+				"거기 남자분,"
 			<<else>>
 				소녀, 거기 멈춰 서."
 				<br><br>
 				그들이 다가와 당신의 어깨에 손을 올려놓는다.
 				<br><br>
+				"거기 여자분,"
 			<</if>>
 			<<person2>><<person_i>> 크게 말한다. "이 근방에서 당신의 인상착의와 완벽히 일치하는 범죄자에 대한 신고를 받았습니다. 강도 및 절도 근절법 제4조에 따라, 우리에겐 당신이 불법 물건을 가지고 있는지 신체를 수색할 법적인 권한이 있습니다. 이에 동의하십니까?"
 			<br><br>
@@ -1263,11 +1295,13 @@
 				<br><br>
 				그들이 다가와 당신을 양쪽으로 마주보고 선다.
 				<br><br>
+				"거기 남자분,"
 			<<else>>
 				소녀, 거기 멈춰 서."
 				<br><br>
 				그들이 다가와 당신을 양쪽으로 마주보고 선다.
 				<br><br>
+				"거기 여자분,"
 			<</if>>
 			<<person2>><<person_i>> 크게 말한다. "이 근방에서 당신의 인상착의와 완벽히 일치하는 범죄자에 대한 신고를 받았습니다. 강도 및 절도 근절법 제4조에 따라, 우리에겐 당신이 불법 물건을 가지고 있는지 신체를 수색할 법적인 권한이 있습니다. 이에 동의하십니까?"
 			<br><br>
@@ -1871,10 +1905,10 @@ You round a corner and walk right into a <<generate1>><<person1>><<person>>, cau
 <<widget "streetexshow">>
 <<generate1>><<generate2>><<generate3>><<person1>>
 <<if $fameexhibitionism gte 1000>>
-	You notice some <<group>> coming towards you. One of them, a <<person>>, points at you, and says something to the other two. Your first instinct is to run, but they’re already too close. They surround you, making sure not to attract any attention.
+	You notice some <<group>> coming towards you. One of them, a <<person>>, points at you, and says something to the other two. Your first instinct is to run, but they're already too close. They surround you, making sure not to attract any attention.
 	<br><br>
 	
-	“Hey <<girl>>,” the <<person>> says. “You’re that slut that likes showing off, right?” <<He>> puts a hand in <<his>> pocket. You feel tense, but relax a little once <<he>> takes out a few bank notes. “How about a little private show?”
+	“Hey <<girl>>,” the <<person>> says. “You're that slut that likes showing off, right?” <<He>> puts a hand in <<his>> pocket. You feel tense, but relax a little once <<he>> takes out a few bank notes. “How about a little private show?”
 	<br><br>
 	
 	<<if $exhibitionism gte 75>>
@@ -1970,7 +2004,7 @@ You round a corner and walk right into a <<generate1>><<person1>><<person>>, cau
 <<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
 	<<pregnancyWatersBrokenPassout "street">>
 <<else>>
-	[[모든 것이 어둠 속으로 멀어져간다...->Passout street]]
+	<<link [[모든 게 깜깜해진다...->Passout street]]>><</link>>
 <</if>>
 <</widget>>
 
@@ -2618,7 +2652,9 @@ You round a corner and walk right into a <<generate1>><<person1>><<person>>, cau
 				<<eventsstreetnight>>
 			<</if>>
 		<<elseif $dangerevent lte 90>>
-			<<if ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
+			<<if $syndromeeden is 1 and (($edenfreedom isnot 2 or $edenCagedEscape) and $edendays gte 7) or ($edenfreedom gte 2 and $edendays gte 21)>>
+				<<streetedenrage>>
+			<<elseif !$edenCagedEscape and ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
 				<<if $edenfreedom gte 2 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 60>>
 					<<streetedenworried>>
 				<<else>>
@@ -2778,7 +2814,9 @@ You round a corner and walk right into a <<generate1>><<person1>><<person>>, cau
 				<<eventsstreetday>>
 			<</if>>
 		<<elseif $dangerevent lte 90>>
-			<<if ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
+			<<if $syndromeeden is 1 and (($edenfreedom isnot 2 or $edenCagedEscape) and $edendays gte 7) or ($edenfreedom gte 2 and $edendays gte 21)>>
+				<<streetedenrage>>
+			<<elseif ($edenfreedom is 1 and $edendays gte 2) or ($edenfreedom gte 2 and $edendays gte 8)>>
 				<<if $edenfreedom gte 2 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 60>>
 					<<streetedenworried>>
 				<<else>>

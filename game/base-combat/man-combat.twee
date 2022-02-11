@@ -210,19 +210,40 @@
 		<span class="blue"><<He_nun>> <<his_yi>> 손을 당신의 엉덩이에서 뗀다.</span>
 		<<combat-reset-hand $args[0]>>
 		<<set $vaginause to 0>>
-	<<elseif $rng gte 21 or $noanal is 1>>
+	<<elseif $rng gte 21 or $noanal is 1 or $cheekaction is "handrub">>
 		<<He_nun>> 당신의 엉덩이를 <<strokes>>
+		<<set $anususe to "hand">>
+		<<set $anusstate to "handentrance">>
 		<<neutral 10 _n>>
 		<<if random(1, 2) is 2>>
 			<<bodypart_admire_chance left_bottom>>
 		<<else>>
 			<<bodypart_admire_chance right_bottom>>
 		<</if>>
-	<<elseif $rng lte 20 and $noanal is 0>>
+	<<elseif $rng lte 20 and $noanal is 0 and $cheekaction is not "handrub">>
 		<span class="pink"><<He_nun>> 당신의 항문 안에 손가락 하나를 밀어넣는다.</span>
 		<<combat-set-hand-target $args[0] "anus">>
+		<<set $anususe to "hand">>
+		<<set $anusstate to "hand">>
 		<<neutral 15 _n>>
 		<<set $speechanus to 1>>
+		<<if random(1, 2) is 2>>
+			<<bodypart_admire_chance left_bottom>>
+		<<else>>
+			<<bodypart_admire_chance right_bottom>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "combat-hand-on-bottom">>
+	<<set $rng to random(1, 100)>>
+	<<if $rng gte 101>>
+		<span class="blue"><<He_nun>> <<his_yi>> 손을 당신의 엉덩이에서 뗀다.</span>
+		<<combat-reset-hand $args[0]>>
+		<<set $vaginause to 0>>
+	<<elseif $rng gte 21 or $noanal is 1>>
+		<<He_nun>> 당신의 꽉 조인 엉덩이살을 <<strokes>>.
+		<<neutral 10 _n>>
 		<<if random(1, 2) is 2>>
 			<<bodypart_admire_chance left_bottom>>
 		<<else>>
@@ -266,179 +287,6 @@
 	<</if>>
 <</widget>>
 
-<<widget "combat-hand-on-overlowerclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.over_lower.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $overlowerstruggle is 1>>
-		<<set $overlowerstruggle to 0>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_over_lower_name_ul>> 벗기는 것을 막아낸다.
-		<<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<<He_nun>> <<his_yi>> 손에서 당신의 <<worn_over_lower_name_ul>> 놓는다.
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
-			<<if $worn.over_lower.skirt_down is 1>>
-				<<He_nun>> 당신의 스커트를 들어올려, 당신의
-				<<if $worn.lower.state is "waist">>
-					<<worn_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<elseif $worn.under_lower.state is "waist">>
-					<<worn_under_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<elseif $worn.genitals.name isnot "naked">>
-					<<worn_genitals_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<else>>
-					<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-					<<neutral 5 _n>><<set $speechgenitals to 1>>
-				<</if>>
-				<<set $worn.over_lower.skirt_down to 0>><<set $worn.over_lower.vagina_exposed to 1>><<set $worn.over_lower.anus_exposed to 1>><<set $worn.over_lower.exposed to 2>>
-			<<elseif $worn.over_lower.skirt_down is 0>>
-				<<if _overOutfit>>
-					<<if $worn.over_upper.state is "waist">>
-						<<if $position is "wall" and $walltype isnot "front">>
-							<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-							<<combat-reset-hand $args[0]>><<neutral 1 _n>><<set $worn.over_lower.integrity -= 10>>
-						<<else>>
-							<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 몸통 위로 들어올린다.
-							<<set $worn.over_lower.state to "midriff">><<set $worn.over_upper.state to "midriff">><<neutral 1 _n>>
-							<<if $worn.over_upper.state_top is "waist">>
-								<<set $worn.over_upper.state_top to "midriff">>
-							<</if>>
-						<</if>>
-					<<elseif $worn.over_upper.state is "midriff">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 들어올려,
-						<<if $worn.upper.name isnot "naked">>
-							당신의 <<worn_upper_name_ul>> 드러낸다.
-						<<else>>
-							<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span><<set $speechbreasts to 1>>
-						<</if>>
-						<<set $worn.over_lower.state to "chest">><<set $worn.over_upper.state to "chest">><<neutral 2 _n>><<set $worn.over_upper.exposed to 2>>
-						<<if $worn.upper.state_top is "midriff">>
-							<<set $worn.upper.state_top to "chest">>
-						<</if>>
-					<<elseif $worn.over_upper.state is "chest">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 완전히 벗겨낸다.</span>
-						<<set $worn.over_lower.state to 0>><<set $worn.over_upper.state to 0>><<overupperstrip>><<overlowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-						<<if $worn.over_upper.state_top is "chest">>
-							<<set $worn.over_upper.state_top to 0>>
-						<</if>>
-					<</if>>
-				<<elseif _overOutfit is false>>
-					<<if $worn.over_lower.state is "waist">>
-						<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 넓적다리까지 끌어내린다.
-						<<set $worn.over_lower.state to "thighs">><<neutral 1 _n>>
-					<<elseif $worn.over_lower.state is "thighs">>
-						<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-						<<set $worn.over_lower.state to "knees">><<neutral 1 _n>>
-					<<elseif $worn.over_lower.state is "knees">>
-						<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 발목까지 끌어내린다.
-						<<set $worn.over_lower.state to "ankles">><<neutral 1 _n>>
-					<<elseif $worn.over_lower.state is "ankles">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 다리에서 완전히 끌어내린다.</span>
-						<<lowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-					<</if>>
-				<</if>>
-			<</if>>
-		<<elseif _overOutfit>>
-			<<if $worn.over_upper.open is 1>>
-				<<if $worn.over_upper.state_top is "chest">>
-					<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 세게 잡아당겨, 당신의 <<worn_over_upper_name_ul>> 끌어내리며
-					<<if $worn.upper.name isnot "naked">>
-						당신의 <<worn_upper_name_ul>> 드러낸다.
-					<<else>>
-						<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span><<set $speechbreasts to 1>>
-					<</if>>
-					<<set $worn.over_upper.state_top to "midriff">><<neutral 3 _n>><<set $worn.over_upper.exposed to 2>>
-					<<if $worn.over_upper.state is "chest">>
-						<<set $worn.over_upper.state to "midriff">>
-					<</if>>
-					<<if $worn.over_lower.state is "chest">>
-						<<set $worn.over_lower.state to "midriff">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "midriff">>
-					<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 세게 잡아당겨, 당신의 <<worn_over_upper_name_ul>> 몸통 아래까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "waist">><<neutral 1 _n>>
-					<<if $worn.over_upper.state is "midriff">>
-						<<set $worn.over_upper.state to "waist">>
-					<</if>>
-					<<if $worn.over_lower.state is "midriff">>
-						<<set $worn.over_lower.state to "waist">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "waist">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 넓적다리까지 끌어내려,
-					<<if $worn.under_lower.state is "waist">>
-						<<worn_lower_name_ul>> 드러낸다.
-						<<neutral 2 _n>>
-					<<elseif $worn.under_lower.state is "waist">>
-						<<worn_under_lower_name_ul>> 드러낸다.
-						<<neutral 2 _n>>
-					<<else>>
-						<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-						<<neutral 5 _n>><<set $speechgenitals to 1>>
-					<</if>>
-					<<set $worn.over_lower.vagina_exposed to 1>><<set $worn.over_lower.anus_exposed to 1>><<set $worn.over_upper.state_top to "thighs">><<set $worn.over_upper.state to "thighs">>
-					<<if $worn.over_lower.state is "waist">>
-						<<set $worn.over_lower.state to "thighs">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "thighs">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "knees">><<set $worn.over_upper.state to "knees">><<neutral 1 _n>>
-					<<if $worn.over_lower.state is "thighs">>
-						<<set $worn.over_lower.state to "knees">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "knees">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 발목까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "ankles">><<set $worn.over_upper.state to "ankles">><<neutral 1 _n>>
-					<<if $worn.over_lower.state is "knees">>
-						<<set $worn.over_lower.state to "ankles">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "ankles">>
-					<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-					<<neutral 5 _n>><<set $worn.over_upper.state_top to 0>><<set $worn.over_upper.state to 0>><<overupperstrip>>
-					<<if $worn.over_lower.state is "ankles">>
-						<<set $worn.over_lower.state to 0>><<overlowerstrip>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-				<<combat-reset-hand $args[0]>><<set $worn.over_lower.integrity -= 10>><<neutral 1 _n>>
-			<</if>>
-		<<elseif _overOutfit is false>>
-			<<if $worn.over_lower.state is "waist">>
-				<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 끌어내려, 당신의
-				<<if $worn.lower.state is "waist">>
-					<<worn_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<elseif $worn.under_lower.state is "waist">>
-					<<worn_under_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<else>>
-					<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-					<<neutral 5 _n>><<set $speechgenitals to 1>>
-				<</if>>
-				<<set $worn.over_lower.vagina_exposed to 1>><<set $worn.over_lower.anus_exposed to 1>><<set $worn.over_lower.exposed to 2>><<set $worn.over_lower.state to "thighs">>
-			<<elseif $worn.over_lower.state is "thighs">>
-				<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-				<<set $worn.over_lower.state to "knees">><<neutral 1 _n>>
-			<<elseif $worn.over_lower.state is "knees">>
-				<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 발목까지 끌어내린다.
-				<<set $worn.over_lower.state to "ankles">><<neutral 1 _n>>
-			<<elseif $worn.over_lower.state is "ankles">>
-				<span class="purple"><<He_nun>> 당신의 <<worn_over_lower_name_ul>> 당신의 다리에서 완전히 끌어내린다.</span>
-				<<overlowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-			<</if>>
-		<<else>>
-			<<He_nun>> 당신의 <<worn_over_lower_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-			<<combat-reset-hand $args[0]>><<neutral 1 _n>><<set $worn.over_lower.integrity -= 10>>
-		<</if>>
-	<</if>>
-	<<bodypart_admire_chance back>>
-<</widget>>
-
 <<widget "combat-hand-on-hair">>
 	<<set $rng to random(1, 100)>>
 	<<if $rng gte 101>>
@@ -458,651 +306,504 @@
 	<</if>>
 <</widget>>
 
-<<widget "combat-hand-on-underclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.under_lower.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $understruggle is 1>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_under_lower_name_ul>> 끌어내리는 것을 막아낸다.
-		<<set $understruggle to 0>><<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<span class="blue"><<He_nun>> <<his_yi>> 손에서 당신의 <<worn_under_lower_name_ul>> 놓는다.</span>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
-			<<if $worn.under_lower.state is "waist">>
-				<<if $combatgoal is "strip" or $rng gt 20 or $worn.under_lower.no_aside>>
-					<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 넓적다리까지 끌어내리고, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
-					<<set $worn.under_lower.state to "thighs">>
-				<<else>>
-					<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 옆으로 밀어내고, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
-					<<set $worn.under_lower.state to "totheside">>
-					<<combat-reset-hand $args[0]>>
-				<</if>>
-				<<neutral 5 _n>><<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.exposed to 1>><<set $speechgenitals to 1>>
-			<<elseif $worn.under_lower.state is "thighs">>
-				<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-				<<set $worn.under_lower.state to "knees">><<neutral 1 _n>>
-			<<elseif $worn.under_lower.state is "knees">>
-				<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 발목까지 끌어내린다.
-				<<set $worn.under_lower.state to "ankles">><<neutral 1 _n>>
-			<<elseif $worn.under_lower.state is "ankles">>
-				<span class="purple"><<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 다리에서 벗겨낸다.</span>
-				<<underlowerstrip>><<neutral 3 _n>><<combat-reset-hand $args[0]>><<clothesstripstat>>
+<<widget "combat-pull-outfit-down">>
+	<<set $_layer to $args[0]>>
+	<<set $_target to $args[1]>>
+	<<set $_hand to $args[2]>>
+
+	<<set $_upperslot to ($_layer is "" ? "upper" : $_layer + "_upper")>>
+	<<set $_lowerslot to ($_layer is "" ? "lower" : $_layer + "_lower")>>
+	<<set $_targetslot to ($_layer is "" ? $_target : $_layer + "_" + $_target)>>
+
+	<<set $_clothing_upper to $worn[$_upperslot]>>
+	<<set $_clothing_lower to $worn[$_lowerslot]>>
+
+
+	<<combat-pull-clothing-state $_upperslot "down" $_hand $_lowerslot>>
+
+	<<set _origin to $_clothing_upper.state_top>>
+	<<set _dest to setup.clothingStateNextDown[_origin]>>
+	<<set $_upperStateSame to setup.clothingStateIndex[$_clothing_upper.state] gte setup.clothingStateIndex[_origin]>>
+	<<set $_lowerStateSame to setup.clothingStateIndex[$_clothing_lower.state] gte setup.clothingStateIndex[_origin]>>
+
+	/* if the top of the outfit is below the original base of the upper portion, pull the upper portion's base down as well */
+	<<if $_upperStateSame or setup.clothingStateIndex[$_clothing_upper.state_base] gte setup.clothingStateIndex[_origin]>>
+		<<set $_clothing_upper.state to _dest>>
+	<</if>>
+
+	/* if the top of the outfit is below the original base of the lower portion, pull the lower portion's base down as well */
+	<<if $_lowerStateSame or setup.clothingStateIndex[$_clothing_lower.state_base] gte setup.clothingStateIndex[_origin]>>
+		<<set $_clothing_lower.state to _dest>>
+	<</if>>
+
+	<<switch _origin>>
+		<<case "chest">>
+			<<if $_target is "upper">>
+				<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name">>_trResult의 윗부분을 <<his_yi>> <<hand_ro $_hand>> 잡고 끌어내려, 
+			<<else>>
+				<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_lower.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 확 끌어당겨, 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult 끌어내리며
 			<</if>>
-		<<elseif $worn.lower.state isnot "waist">>
-			<<if $worn.under_lower.state is "waist">>
-				<<if $combatgoal is "strip" or $rng gt 20 or $worn.under_lower.no_aside>>
-					<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 넓적다리까지 끌어내리고, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
-					<<set $worn.under_lower.state to "thighs">>
-				<<else>>
-					<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 옆으로 밀어내고, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
-					<<set $worn.under_lower.state to "totheside">>
-					<<combat-reset-hand $args[0]>>
-				<</if>>
-				<<neutral 5 _n>><<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.exposed to 1>><<set $speechgenitals to 1>>
-			<<elseif $worn.under_lower.state is "thighs">>
-				<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-				<<set $worn.under_lower.state to "knees">><<neutral 1 _n>>
-			<<elseif $worn.under_lower.state is "knees">>
-				<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 발목까지 끌어내린다.
-				<<set $worn.under_lower.state to "ankles">><<neutral 5 _n>>
-			<<elseif $worn.under_lower.state is "ankles">>
-				<span class="purple"><<He_nun>> 당신의 <<worn_under_lower_name_ul>> 당신의 다리에서 벗겨낸다.</span>
-				<<underlowerstrip>><<neutral 3 _n>><<combat-reset-hand $args[0]>><<clothesstripstat>>
+			<<if !_toplessExposed>>
+				당신의 <<exposedupperPost "을">> 드러낸다.
+				<<neutral 2 _n>>
+			<<else>>
+				<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
+				<<neutral 3 _n>>
 			<</if>>
-		<<else>>
-			<<He_nun>> 당신의 <<worn_under_lower_name_ul>> 끌어내린다.
-			<<neutral 1 _n>><<set $worn.under_lower.integrity -= 10>>
+		<<case "midriff">>
+			<<if $_target is "upper">>
+				<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 몸통 아래까지 끌어내린다.
+				<<neutral 1 _n>>
+			<<else>>
+				<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_lower.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 확 끌어당겨, 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult 몸통 아래까지 끌어내린다.
+				<<neutral 1 _n>>
+			<</if>>
+		<<case "waist">>
+			<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 당신의 넓적다리까지 끌어내려,
+			<<if !_bottomlessExposed>>
+				당신의 <<exposedlowerPost "을">> 드러낸다.
+				<<neutral 2 _n>>
+			<<else>>
+				당신의 <span class="lewd"><<genitals_rul>> 드러낸다.</span>
+				<<neutral 5 _n>>
+			<</if>>
+		<<case "thighs">>
+			<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 무릎까지 끌어내린다.
+			<<neutral 1 _n>>
+		<<case "knees">>
+			<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 발목까지 끌어내린다.
+			<<neutral 1 _n>>
+		<<case "ankles">>
+			<span class="purple"><<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 다리 아래로 끌어내 벗긴다.</span>
+			<<neutral 5 _n>>
+	<</switch>>
+
+<</widget>>
+
+<<widget "combat-pull-outfit-up">>
+	<<set $_layer to $args[0]>>
+	<<set $_target to $args[1]>>
+	<<set $_hand to $args[2]>>
+
+	<<set $_upperslot to ($_layer is "" ? "upper" : $_layer + "_upper")>>
+	<<set $_lowerslot to ($_layer is "" ? "lower" : $_layer + "_lower")>>
+	<<set $_targetslot to ($_layer is "" ? $_target : $_layer + "_" + $_target)>>
+
+
+	<<if $position isnot "wall">>
+		<<set $_clothing_upper to $worn[$_upperslot]>>
+		<<set $_clothing_lower to $worn[$_lowerslot]>>
+
+		<<set _origin to $_clothing_upper.state>>
+		<<set _dest to setup.clothingStateNextUp[_origin]>>
+		<<set $_upperStateSame to setup.clothingStateIndex[$_clothing_upper.state_top] gte setup.clothingStateIndex[_origin]>>
+		<<set $_lowerStateSame to setup.clothingStateIndex[$_clothing_lower.state] gte setup.clothingStateIndex[_origin]>>
+		/* <<set $_clothing_upper.state to _dest>> */
+
+		<<combat-pull-clothing-state $_upperslot "up" $_hand>>
+
+		/* if the base of the outfit is below the original top of the upper portion, pull the upper portion's top up as well */
+		<<if $_upperStateSame or setup.clothingStateIndex[$_clothing_upper.state_top_base] gte setup.clothingStateIndex[_origin]>>
+			<<set $_clothing_upper.state_top to _dest>>
+		<</if>>
+
+		/* if the base of the outfit is below the original base of the lower portion, pull the lower portion's base up as well */
+		<<if $_lowerStateSame or setup.clothingStateIndex[$_clothing_lower.state_base] gte setup.clothingStateIndex[_origin]>>
+			<<set $_clothing_lower.state to _dest>>
+		<</if>>
+
+		<<outfitChecksExposed>>
+
+		<<switch _origin>>
+			<<case "waist">>
+				<<if $position is "wall" and $walltype isnot "front">>
+					<<combat-tug-clothing "over_lower" $_hand>>
+				<<else>>
+					<<if $_target is "upper">>
+						<<He_nun>> 당신의 뭉쳐진 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult 당신의 몸통 위까지 끌어올린다.
+					<<else>>
+						<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 당신의 몸통 위까지 들어올린다.
+					<</if>>
+					<<neutral 2 _n>>
+				<</if>>
+			<<case "midriff">>
+				<<if $_target is "upper">>
+					<<He_nun>> 당신의 뭉쳐진 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult 당신의 <<exposedupperPost>> 위까지 끌어올린다.
+				<<else>>
+					<<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 들어올려,
+					<<if !_toplessExposed>>
+						당신의 <<exposedupperPost "을">> 노출시킨다.
+						<<neutral 2 _n>>
+					<<else>>
+						<span class="lewd">당신의 <<breasts_rul>> 노출시킨다.</span>
+						<<neutral 3 _n>>
+					<</if>>
+				<</if>>
+			<<case "chest">>
+				<<if $_target is "upper">>
+					<span class="purple"><<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 잡아당겨 벗겨낸다.</span>
+				<<else>>
+					<span class="purple"><<He_nun>> 당신의 <<trClothes $_targetslot $_clothing_upper.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 잡아당겨 완전히 벗겨낸다.</span>
+				<</if>>
+				<<neutral 3 _n>>
+		<</switch>>
+
+	<<elseif $walltype isnot "front">>
+		<<combat-tug-clothing $_targetslot $_hand>>
+	<</if>>
+
+<</widget>>
+
+<<widget "combat-pull-clothing-down">>
+	<<set $_slot to $args[0]>>
+	<<set $_clothing to $worn[$_slot]>>
+	<<set $_hand to $args[1]>>
+
+	<<set $_origin to $_clothing.state>>
+
+
+	<<combat-pull-clothing-state $_slot "down" $_hand>>
+	
+	<<switch $_origin>>
+		<<case "chest">>
+			<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 끌어내려,
+			<<if !_toplessExposed>>
+				당신의 <<exposedupperPost "을">> 드러낸다.
+				<<neutral 2 _n>>
+			<<else>>
+				<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
+				<<neutral 3 _n>>
+			<</if>>
+		<<case "midriff">>
+			<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 몸통 아래까지 끌어내린다.
+			<<neutral 1 _n>>
+		<<case "waist">>
+			<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 당신의 넓적다리까지 끌어내려,
+			<<if !_bottomlessExposed>>
+				당신의 <<exposedlowerPost "을">> 드러낸다.
+				<<neutral 2 _n>>
+			<<else>>
+				당신의 <span class="lewd"><<genitals_rul>> 드러낸다.</span>
+				<<neutral 5 _n>><<set $speechgenitals to 1>>
+			<</if>>
+		<<case "thighs">>
+			<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 무릎까지 끌어내린다.
+			<<neutral 1 _n>>
+		<<case "knees">>
+			<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 발목까지 끌어내린다.
+			<<neutral 1 _n>>
+		<<case "ankles">>
+			<span class="purple"><<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 다리 아래로 끌어내 벗긴다.</span>
+			<<neutral 3 _n>>
+	<</switch>>
+<</widget>>
+
+<<widget "combat-pull-clothing-up">>
+	<<set $_slot to $args[0]>>
+	<<set $_clothing to $worn[$_slot]>>
+	<<set $_hand to $args[1]>>
+
+
+	<<if $position isnot "wall">>
+		<<combat-pull-clothing-state $_slot "up" $_hand>>
+		<<switch _dest>>
+			<<case "midriff">>
+				<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 들어올려, 당신의 몸통을 노출시킨다.
+				<<neutral 1 _n>>
+			<<case "chest">>
+				<<if _toplessExposed>>
+					<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 들어올려, <span class="lewd">당신의 <<breasts_rul>> 노출시킨다.</span>
+					<<neutral 2 _n>><<set $speechbreasts to 1>>
+				<<else>>
+					<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 당신의 가슴 위까지 들어올려, 당신의 <<exposedupperPost "을">> 노출시킨다.
+					<<neutral 1 _n>>
+				<</if>>
+			<<case 0>>
+				<span class="purple"><<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 완전히 벗긴다.</span>
+				<<neutral 3 _n>>
+		<</switch>>
+	<<else>>
+		<<if $walltype isnot "front" and $_slot.includes("upper")>>
+			<<combat-tug-clothing $_slot $_hand>>
 		<</if>>
 	<</if>>
-	<<bodypart_admire_chance pubic>>
+
+<</widget>>
+
+<<widget "combat-pull-clothing-to-side">>
+	<<set $_clothing to $worn[$args[0]]>>
+	<<set $_hand to $args[1]>>
+
+	<<He_nun>> 당신의 <<trClothes $_slot $_clothing.name "name" "을">>_trResult 옆으로 밀어내어, <span class="lewd">당신의 <<genitals_rul>> 드러낸다.</span>
+	<<set $_clothing.state to "totheside">>
+	<<combat-reset-hand $_hand>><<neutral 5 _n>>
+	<<set $_clothing.vagina_exposed to 1>><<set $_clothing.anus_exposed to 1>><<set $_clothing.exposed to 1>><<set $speechgenitals to 1>>
+<</widget>>
+
+<<widget "combat-pull-clothing-state">>
+	<<set $_slot to $args[0]>>
+	<<set $_clothing to $worn[$_slot]>>
+	<<set $_up to $args[1] is "up">>
+	<<set $_hand to $args[2]>>
+	<<if $args[3]>>
+		<<set $_otherOutfitSlot to $args[3]>>
+		<<set $_otherClothing to $worn[$_otherOutfitSlot]>>
+	<</if>>
+
+	<<if $_up>>
+		<!-- pulling clothing up -->
+		<<set _origin to $_clothing.state>>
+		<<set _dest to setup.clothingStateNextUp[$_clothing.state]>>
+		<<set $_clothing.state to _dest>>
+		
+		<<if $_clothing.state_top and setup.clothingStateIndex[$_clothing.state] gt setup.clothingStateIndex[$_clothing.state_top]>>
+			<<set $_clothing.state_top to _dest>>
+		<</if>>
+
+		<<if $_otherClothing and setup.clothingStateIndex[$_clothing.state] gt setup.clothingStateIndex[$_otherClothing.state]>>
+			<<set $_otherClothing.state to _dest>>
+		<</if>>
+
+		<<switch _origin>>
+			<<case "midriff">>
+				<<set $_clothing.exposed to 2>><<set $speechbreasts to 1>> <!-- breasts/chest now exposed below clothing bottom -->
+			<<case "waist">>  
+				<<set $_clothing.exposed to 2>><<set $speechgenitals to 1>><!-- genitals now exposed below clothing bottom -->
+				<<set $_clothing.vagina_exposed to 1>><<set $_clothing.anus_exposed to 1>>
+		<</switch>>
+
+	<<else>>
+		<!-- pulling clothing down -->
+		<<if $_clothing.state_top>>
+			<!-- upper clothing has a .state_top variable, and lower doesn't. -->
+			<<set _origin to $_clothing.state_top>>
+			<<set _dest to setup.clothingStateNextDown[$_clothing.state_top]>>
+			<<set $_clothing.state_top to _dest>>
+		
+			<<if setup.clothingStateIndex[$_clothing.state_top] lt setup.clothingStateIndex[$_clothing.state]>>
+				<!-- if the top of the clothing is as low as or lower than the bottom -->
+				<<set $_clothing.state to _dest>>
+			<</if>>
+
+			<!-- adjust exposure -->
+			<<if _origin is "chest">>
+				<<set $_clothing.exposed to 2>><<set $speechbreasts to 1>> <!-- breasts/chest now exposed above clothing top -->
+			<</if>>
+		<<else>>
+			<<set _origin to $_clothing.state>>
+			<<set _dest to setup.clothingStateNextDown[$_clothing.state]>>
+			<<set $_clothing.state to _dest>>
+		
+			<!-- adjust exposure -->
+			<<if _origin is "waist">>
+				<<set $_clothing.exposed to 2>><<set $speechgenitals to 1>> <!-- breasts/chest now exposed above clothing top -->
+				<<set $_clothing.vagina_exposed to 1>><<set $_clothing.anus_exposed to 1>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if _dest is 0>>
+		<<combat-reset-hand $_hand>><<clothesstripstat>><<generalStrip $_slot>>
+	<</if>>
+
+	<<outfitChecksExposed>>
+
+<</widget>>
+
+<<widget "combat-lift-skirt">>
+	<<set $_clothing to $worn[$args[0]]>>
+	<<set $_hand to $args[1]>>
+
+	<<set $_clothing.skirt_down to 0>><<set $_clothing.vagina_exposed to 1>><<set $_clothing.anus_exposed to 1>><<set $_clothing.exposed to 2>>
+	<<outfitChecksExposed>>
+
+	<<He_nun>> 당신의 <<trClothes $args[0] $_clothing.name "name" "을">>_trResult <<his_yi>> <<hand_ro $_hand>> 들어올려, 당신의
+	<<if !_bottomlessExposed>>
+		<<exposedlowerPost "을">> 드러낸다.
+		<<neutral 2 _n>>
+	<<elseif $worn.genitals.name isnot "naked">>
+		<<worn_genitals_name_ul>> 드러낸다.
+		<<neutral 2 _n>>
+	<<else>>
+		<span class="lewd"><<genitals_rul>> 드러낸다.</span>
+		<<neutral 5 _n>><<set $speechgenitals to 1>>
+	<</if>>
+
+<</widget>>
+
+<<widget "combat-tug-clothing">>
+	<<set $_slot to $args[0]>>
+	<<set $_hand to $args[1]>>
+
+	<<He_nun>> 당신의 <<trClothes $_slot $worn[$_slot].name "name" "을">> <<his_yi>> <<hand_ro $_hand>> 세게 잡아당겨, <span class="blue">손을 놓아주기 전에</span> 약간 찢어놓는다.
+	<<combat-reset-hand $_hand>><<neutral 1 _n>>
+	<<set $worn[$_slot].integrity -= 10>>
+<</widget>>
+
+<<widget "combat-hand-on-overlowerclothes">>
+	<<set $_hand to $args[0]>>
+	<<set $_overlowersetup to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)]>>
+
+	<<if $_overlowersetup.skirt is 1>>
+		<<if $worn.over_lower.skirt_down is 1>>
+			<<combat-lift-skirt "over_lower" $_hand>>
+		<<elseif _overOutfit>>
+			<<combat-pull-outfit-up "over" "lower" $_hand>>
+		<<else>>
+			<<combat-pull-clothing-down "over_lower" $_hand>>
+		<</if>>
+	<<elseif _overOutfit>>
+		<<if $worn.over_upper.open is 1>>
+			<<combat-pull-outfit-down "over" "lower" $_hand>>
+		<<else>>
+			<<combat-tug-clothing "over_lower" $_hand>>
+		<</if>>
+	<<else>>
+		<<combat-pull-clothing-down "over_lower" $_hand>>
+	<</if>>
+<</widget>>
+
+<<widget "combat-hand-on-underlowerclothes">>
+	<<set $_hand to $args[0]>>
+	<<set $_overlower_open to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 or $worn.over_lower.type.includes("naked")>>
+	<<set $_lower_open to setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
+	
+	<<if _underOutfit>>
+		<<combat-pull-outfit-down "under" "lower" $_hand>>
+	<<elseif ($_overlower_open and $_lower_open) or $worn.lower.state isnot "waist">>
+		<<if $worn.under_lower.state is "waist" and !($rng gt 20 or $combatgoal is "strip" or $worn.under_lower.no_aside)>>
+			<<combat-pull-clothing-to-side "under_lower" $_hand>>
+		<<else>>
+			<<combat-pull-clothing-down "under_lower" $_hand>>
+		<</if>>
+	<<else>>
+		<<combat-tug-clothing "under_lower" $_hand>>
+	<</if>>
 <</widget>>
 
 <<widget "combat-hand-on-lowerclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.lower.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $lowerstruggle is 1>>
-		<<set $lowerstruggle to 0>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_lower_name_ul>> 벗기는 것을 막아낸다.
-		<<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<span class="lblue"><<He_nun>> <<his_yi>> 손에서 당신의 <<worn_lower_name_ul>> 놓는다.</span>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
-			<<if $worn.lower.skirt_down is 1>>
-				<<He_nun>> 당신의 스커트를 들어올려, 당신의
-				<<if $worn.under_lower.state is "waist">>
-					<<worn_under_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<elseif $worn.genitals.name isnot "naked">>
-					<<worn_genitals_name_ul>> 드러낸다.
-					<<neutral 2 _n>>
-				<<else>>
-					<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-					<<neutral 5 _n>><<set $speechgenitals to 1>>
-				<</if>>
-				<<set $worn.lower.skirt_down to 0>><<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>>
-			<<elseif $worn.lower.skirt_down is 0>>
-				<<if _middleOutfit>>
-					<<if $worn.upper.state is "waist">>
-						<<if $position is "wall" and $walltype isnot "front">>
-							<<He_nun>> 당신의 <<worn_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-							<<combat-reset-hand $args[0]>><<neutral 1 _n>><<set $worn.lower.integrity -= 10>>
-						<<else>>
-							<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 몸통 위로 들어올린다.
-							<<set $worn.lower.state to "midriff">><<set $worn.upper.state to "midriff">><<neutral 1 _n>>
-							<<if $worn.upper.state_top is "waist">>
-								<<set $worn.upper.state_top to "midriff">>
-							<</if>>
-						<</if>>
-					<<elseif $worn.upper.state is "midriff">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 들어올려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-						<<set $worn.lower.state to "chest">><<set $worn.upper.state to "chest">><<neutral 2 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>>
-						<<if $worn.upper.state_top is "midriff">>
-							<<set $worn.upper.state_top to "chest">>
-						<</if>>
-					<<elseif $worn.upper.state is "chest">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 완전히 벗겨낸다.</span>
-						<<set $worn.lower.state to 0>><<set $worn.upper.state to 0>><<upperstrip>><<lowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-						<<if $worn.upper.state_top is "chest">>
-							<<set $worn.upper.state_top to 0>>
-						<</if>>
-					<</if>>
-				<<elseif _middleOutfit is false>>
-					<<if $worn.lower.state is "waist">>
-						<<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 넓적다리까지 끌어내린다.
-						<<set $worn.lower.state to "thighs">><<neutral 1 _n>>
-					<<elseif $worn.lower.state is "thighs">>
-						<<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-						<<set $worn.lower.state to "knees">><<neutral 1 _n>>
-					<<elseif $worn.lower.state is "knees">>
-						<<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 발목까지 끌어내린다.
-						<<set $worn.lower.state to "ankles">><<neutral 1 _n>>
-					<<elseif $worn.lower.state is "ankles">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 다리에서 완전히 끌어내린다.</span>
-						<<lowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-					<</if>>
-				<</if>>
-			<</if>>
+	<<set $_hand to $args[0]>>
+	<<set $_overlower_open to setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 or $worn.over_lower.type.includes("naked")>>
+	<<set $_lower_open to setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	
+	
+	<<if $_overlower_open and $_lower_open>>
+		<<if $worn.lower.skirt_down is 1>>
+			<<combat-lift-skirt "lower" $_hand>>
 		<<elseif _middleOutfit>>
-			<<if $worn.upper.open is 1>>
-				<<if $worn.upper.state_top is "chest">>
-					<<He_nun>> 당신의 <<worn_lower_name_ul>> 세게 잡아당겨, 당신의 <<worn_upper_name_ul>> 끌어내리며 <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-					<<set $worn.upper.state_top to "midriff">><<neutral 3 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>>
-					<<if $worn.upper.state is "chest">>
-						<<set $worn.upper.state to "midriff">>
-					<</if>>
-					<<if $worn.lower.state is "chest">>
-						<<set $worn.lower.state to "midriff">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "midriff">>
-					<<He_nun>> 당신의 <<worn_lower_name_ul>> 세게 잡아당겨, 당신의 <<worn_upper_name_ul>> 몸통 아래까지 끌어내린다.
-					<<set $worn.upper.state_top to "waist">><<neutral 1 _n>>
-					<<if $worn.upper.state is "midriff">>
-						<<set $worn.upper.state to "waist">>
-					<</if>>
-					<<if $worn.lower.state is "midriff">>
-						<<set $worn.lower.state to "waist">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "waist">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 넓적다리까지 끌어내려,
-					<<if $worn.under_lower.state is "waist">>
-						<<worn_under_lower_name_ul>> 드러낸다.
-						<<neutral 2 _n>>
-					<<else>>
-						<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-						<<neutral 5 _n>><<set $speechgenitals to 1>>
-					<</if>>
-					<<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.upper.state_top to "thighs">><<set $worn.upper.state to "thighs">><<set $worn.lower.exposed to 2>>
-					<<if $worn.lower.state is "waist">>
-						<<set $worn.lower.state to "thighs">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "thighs">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-					<<set $worn.upper.state_top to "knees">><<set $worn.upper.state to "knees">><<neutral 1 _n>>
-					<<if $worn.lower.state is "thighs">>
-						<<set $worn.lower.state to "knees">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "knees">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 발목까지 끌어내린다.
-					<<set $worn.upper.state_top to "ankles">><<set $worn.upper.state to "ankles">><<neutral 1 _n>>
-					<<if $worn.lower.state is "knees">>
-						<<set $worn.lower.state to "ankles">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "ankles">>
-					<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-					<<neutral 5 _n>><<set $worn.upper.state_top to 0>><<set $worn.upper.state to 0>><<upperstrip>>
-					<<if $worn.lower.state is "ankles">>
-						<<set $worn.lower.state to 0>><<lowerstrip>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<<He_nun>> 당신의 <<worn_lower_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-				<<combat-reset-hand $args[0]>><<set $worn.lower.integrity -= 10>><<neutral 1 _n>>
-			<</if>>
-		<<elseif _middleOutfit is false>>
-			<<if $worn.lower.state is "waist">>
-				<<He_nun>> 당신의 <<worn_lower_name_ul>> 끌어내려, 당신의
-				<<if $worn.under_lower.state is "waist">>
-					<<worn_under_lower_name_ul>> 드러낸다.
-					<<neutral 2 _n>><<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>>
-				<<else>>
-					<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-					<<neutral 5 _n>><<set $speechgenitals to 1>>
-				<</if>>
-				<<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>><<set $worn.lower.state to "thighs">>
-			<<elseif $worn.lower.state is "thighs">>
-				<<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 무릎까지 끌어내린다.
-				<<set $worn.lower.state to "knees">><<neutral 1 _n>>
-			<<elseif $worn.lower.state is "knees">>
-				<<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 발목까지 끌어내린다.
-				<<set $worn.lower.state to "ankles">><<neutral 1 _n>>
-			<<elseif $worn.lower.state is "ankles">>
-				<span class="purple"><<He_nun>> 당신의 <<worn_lower_name_ul>> 당신의 다리에서 완전히 끌어내린다.</span>
-				<<lowerstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-			<</if>>
+			<<combat-pull-outfit-up "" "lower" $_hand>>
 		<<else>>
-			<<He_nun>> 당신의 <<worn_lower_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-			<<combat-reset-hand $args[0]>><<neutral 1 _n>><<set $worn.lower.integrity -= 10>>
+			<<combat-pull-clothing-down "lower" $_hand>>
 		<</if>>
+	<<elseif _middleOutfit>>
+		<<if $worn.upper.open is 1>>
+			<<combat-pull-outfit-down "" "lower" $_hand>>
+		<<else>>
+			<<combat-tug-clothing "under_lower" $_hand>>
+		<</if>>
+	<<else>>
+		<<combat-pull-clothing-down "lower" $_hand>>
 	<</if>>
-	<<bodypart_admire_chance back>>
 <</widget>>
 
 <<widget "combat-hand-on-overupperclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.over_upper.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $overupperstruggle is 1>>
-		<<set $overupperstruggle to 0>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_over_upper_name_ul>> 벗기는 것을 막아낸다.
-		<<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<span class="lblue"><<He_nun>> <<his_yi>> 손에서 당신의 <<worn_over_upper_name_ul>> 놓는다.</span>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if _overOutfit is false>>
-			<<if $worn.over_upper.open is 1>>
-				<<if $worn.over_upper.state_top is "chest">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 끌어내려,
-					<<if $worn.upper.name isnot "naked">>
-						당신의 <<worn_upper_name_ul>> 드러낸다.
-					<<else>>
-						<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span><<set $speechbreasts to 1>>
-					<</if>>
-					<<set $worn.over_upper.state_top to "midriff">><<neutral 3 _n>><<set $worn.over_upper.exposed to 2>>
-					<<if $worn.over_upper.state is "chest">>
-						<<set $worn.over_upper.state to "midriff">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "midriff">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 몸통 아래까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "waist">><<neutral 1 _n>>
-					<<if $worn.over_upper.state is "midriff">>
-						<<set $worn.over_upper.state to "waist">>
-					<</if>>
-				<<elseif $worn.over_upper.state_top is "waist">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 넓적다리까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "thighs">><<set $worn.over_upper.state to "thighs">>
-				<<elseif $worn.over_upper.state_top is "thighs">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "knees">><<set $worn.over_upper.state to "knees">><<neutral 1 _n>>
-				<<elseif $worn.over_upper.state_top is "knees">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 발목까지 끌어내린다.
-					<<set $worn.over_upper.state_top to "ankles">><<set $worn.over_upper.state to "ankles">><<neutral 1 _n>>
-				<<elseif $worn.over_upper.state_top is "ankles">>
-					<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-					<<neutral 5>><<set $worn.over_upper.state_top to 0>><<set $worn.over_upper.state to 0>><<overupperstrip>><<combat-reset-hand $args[0]>>
-				<</if>>
-			<<elseif $worn.over_upper.open is 0>>
-				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-					<<combat-reset-hand $args[0]>><<set $worn.over_upper.integrity -= 10>><<neutral 1 _n>>
-				<<elseif $position isnot "wall">>
-					<<if $worn.over_upper.state is "waist">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 들어올려, 당신의 몸통을 드러낸다.
-						<<set $worn.over_upper.state to "midriff">><<neutral 1 _n>>
-					<<elseif $worn.over_upper.state is "midriff">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 들어올려,
-						<<if $worn.upper.name isnot "naked">>
-							당신의 <<worn_upper_name_ul>> 드러낸다.
-						<<else>>
-							<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span><<set $speechbreasts to 1>>
-						<</if>>
-						<<set $worn.over_upper.state to "chest">><<neutral 2 _n>><<set $worn.over_upper.exposed to 2>>
-					<<elseif $worn.over_upper.state is "chest">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 완전히 벗겨낸다.</span>
-						<<overupperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-					<</if>>
-				<</if>>
-			<</if>>
-		<<elseif _overOutfit>>
-			<<if $worn.over_upper.open is 1>>
-				<<if $worn.over_lower.state is $worn.over_upper.state_top and $worn.over_lower.state is $worn.over_upper.state and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
-					<<if $position is "wall" and $walltype isnot "front">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-						<<combat-reset-hand $args[0]>><<set $worn.over_upper.integrity -= 10>><<neutral 1 _n>>
-					<<elseif $position isnot "wall">>
-						<<if $worn.over_upper.state is "waist">>
-							<<He_nun>> 당신의 한벌옷 <<worn_over_upper_name_ul>> 당신의 몸통 위로 들어올린다.
-							<<set $worn.over_upper.state to "midriff">><<neutral 1 _n>><<set $worn.lower.state to "midriff">><<set $worn.over_upper.state_top to "midriff">>
-						<<elseif $worn.over_upper.state is "midriff">>
-							<<He_nun>> 당신의 한벌옷 <<worn_over_upper_name_ul>> 들어올려
-							<<if $worn.upper.name isnot "naked">>
-								<<worn_upper_name_ul>> 드러낸다.
-							<<else>>
-								<<breasts_rul>> 드러낸다.<<set $speechbreasts to 1>>
-							<</if>>
-							<<set $worn.over_upper.state to "chest">><<neutral 2 _n>><<set $worn.over_upper.exposed to 2>><<set $worn.over_lower.state to "chest">><<set $worn.over_upper.state_top to "chest">>
-						<<elseif $worn.over_upper.state is "chest">>
-							<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 몸에서 벗겨낸다.</span>
-							<<overupperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-						<</if>>
-					<</if>>
-				<<else>>
-					<<if $worn.over_upper.state_top is "chest">>
-						<<He_nun>> 당신의 <<worn_over_upper_name>> 윗부분을 끌어내려,
-						<<if $worn.upper.name isnot "naked">>
-							당신의 <<worn_upper_name_ul>> 드러낸다.
-						<<else>>
-							<span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span><<set $speechbreasts to 1>>
-						<</if>>
-						<<set $worn.over_upper.state_top to "midriff">><<neutral 2 _n>><<set $worn.over_upper.exposed to 2>>
-						<<if $worn.over_upper.state is "chest">>
-							<<set $worn.over_upper.state to "midriff">>
-						<</if>>
-						<<if $worn.lower.state is "chest">>
-							<<set $worn.lower.state to "midriff">>
-						<</if>>
-					<<elseif $worn.over_upper.state_top is "midriff">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 몸통 아래까지 끌어내린다.
-						<<set $worn.over_upper.state_top to "waist">><<neutral 1 _n>>
-						<<if $worn.over_upper.state is "midriff">>
-							<<set $worn.over_upper.state to "waist">>
-						<</if>>
-						<<if $worn.over_lower.state is "midriff">>
-							<<set $worn.over_lower.state to "waist">>
-						<</if>>
-					<<elseif $worn.over_upper.state_top is "waist">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 넓적다리까지 끌어내려,
-						<<if $worn.lower.state is "waist">>
-							<<worn_lower_name_ul>> 드러낸다.
-							<<neutral 2 _n>>
-						<<elseif $worn.under_lower.state is "waist">>
-							<<worn_under_lower_name_ul>> 드러낸다.
-							<<neutral 2 _n>>
-						<<else>>
-							<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-							<<neutral 5 _n>><<set $speechgenitals to 1>>
-						<</if>>
-						<<set $worn.over_lower.vagina_exposed to 1>><<set $worn.over_lower.anus_exposed to 1>><<set $worn.over_lower.exposed to 2>><<set $worn.over_upper.state_top to "thighs">><<set $worn.over_upper.state to "thighs">>
-						<<if $worn.over_lower.state is "waist">>
-							<<set $worn.over_lower.state to "thighs">>
-						<</if>>
-					<<elseif $worn.over_upper.state_top is "thighs">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-						<<set $worn.over_upper.state_top to "knees">><<set $worn.over_upper.state to "knees">><<neutral 1 _n>>
-						<<if $worn.over_lower.state is "thighs">>
-							<<set $worn.over_lower.state to "knees">>
-						<</if>>
-					<<elseif $worn.over_upper.state_top is "knees">>
-						<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 발목까지 끌어내린다.
-						<<set $worn.over_upper.state_top to "ankles">><<set $worn.over_upper.state to "ankles">><<neutral 1 _n>>
-						<<if $worn.over_lower.state is "knees">>
-							<<set $worn.over_lower.state to "ankles">>
-						<</if>>
-					<<elseif $worn.over_upper.state_top is "ankles">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_over_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-						<<neutral 5 _n>><<set $worn.over_upper.state_top to 0>><<set $worn.over_upper.state to 0>><<overupperstrip>><<combat-reset-hand $args[0]>>
-						<<if $worn.over_lower.state is "ankles">>
-							<<set $worn.over_lower.state to 0>><<overlowerstrip>>
-						<</if>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<<He_nun>> 당신의 <<worn_over_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-				<<combat-reset-hand $args[0]>><<set $worn.over_upper.integrity -= 10>><<neutral 1 _n>>
-			<</if>>
+	<<set $_hand to $args[0]>>
+	
+	<<if _overOutfit is false>>
+		<<if $worn.over_upper.open is 1>>
+			<<combat-pull-clothing-down "over_upper" $_hand>>
+		<<else>>
+			<<combat-pull-clothing-up "over_upper" $_hand>>
 		<</if>>
+	<<elseif $worn.over_upper.open is 1>>
+		<<if $worn.over_lower.state is $worn.over_upper.state_top
+		 and $worn.over_lower.state is $worn.over_upper.state
+		 and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
+			<<combat-pull-outfit-up "over" "upper" $_hand>>
+		<<else>>
+			<<combat-pull-outfit-down "over" "upper" $_hand>>
+		<</if>>
+	<<else>>
+		<<combat-tug-clothing "over_upper" $_hand>>
 	<</if>>
-	<<bodypart_admire_chance breasts>>
 <</widget>>
 
 <<widget "combat-hand-on-upperclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.upper.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $upperstruggle is 1>>
-		<<set $upperstruggle to 0>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_upper_name_ul>> 벗기는 것을 막아낸다.
-		<<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<span class="lblue"><<He_nun>> <<his_yi>> 손에서 당신의 <<worn_upper_name_ul>> 놓는다.</span>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if _middleOutfit is false>>
-			<<if $worn.upper.open is 1>>
-				<<if $worn.upper.state_top is "chest">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 끌어내려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-					<<set $worn.upper.state_top to "midriff">><<neutral 3 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>>
-					<<if $worn.upper.state is "chest">>
-						<<set $worn.upper.state to "midriff">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "midriff">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 몸통 아래까지 끌어내린다.
-					<<set $worn.upper.state_top to "waist">><<neutral 1 _n>>
-					<<if $worn.upper.state is "midriff">>
-						<<set $worn.upper.state to "waist">>
-					<</if>>
-				<<elseif $worn.upper.state_top is "waist">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 넓적다리까지 끌어내린다.
-					<<set $worn.upper.state_top to "thighs">><<set $worn.upper.state to "thighs">>
-				<<elseif $worn.upper.state_top is "thighs">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-					<<set $worn.upper.state_top to "knees">><<set $worn.upper.state to "knees">><<neutral 1 _n>>
-				<<elseif $worn.upper.state_top is "knees">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 발목까지 끌어내린다.
-					<<set $worn.upper.state_top to "ankles">><<set $worn.upper.state to "ankles">><<neutral 1 _n>>
-				<<elseif $worn.upper.state_top is "ankles">>
-					<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-					<<neutral 5 _n>><<set $worn.upper.state_top to 0>><<set $worn.upper.state to 0>><<upperstrip>><<combat-reset-hand $args[0]>>
-				<</if>>
-			<<elseif $worn.upper.open is 0>>
-				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 <<worn_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-					<<combat-reset-hand $args[0]>><<set $worn.upper.integrity -= 10>><<neutral 1 _n>>
-				<<elseif $position isnot "wall">>
-					<<if $worn.upper.state is "waist">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 들어올려, 당신의 몸통을 드러낸다.
-						<<set $worn.upper.state to "midriff">><<neutral 1 _n>>
-					<<elseif $worn.upper.state is "midriff">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 들어올려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-						<<set $worn.upper.state to "chest">><<neutral 2 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>>
-					<<elseif $worn.upper.state is "chest">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 완전히 벗겨낸다.</span>
-						<<upperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-					<</if>>
-				<</if>>
-			<</if>>
-		<<elseif _middleOutfit>>
-			<<if $worn.upper.open is 1>>
-				<<if $worn.lower.state is $worn.upper.state_top and $worn.lower.state is $worn.upper.state and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-					<<if $position is "wall" and $walltype isnot "front">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-						<<combat-reset-hand $args[0]>><<set $worn.upper.integrity -= 10>><<neutral 1 _n>>
-					<<elseif $position isnot "wall">>
-						<<if $worn.upper.state is "waist">>
-							<<He_nun>> 당신의 한벌옷 <<worn_upper_name_ul>> 당신의 몸통 위로 들어올린다.
-							<<set $worn.upper.state to "midriff">><<neutral 1 _n>><<set $worn.lower.state to "midriff">><<set $worn.upper.state_top to "midriff">>
-						<<elseif $worn.upper.state is "midriff">>
-							<<He_nun>> 당신의 한벌옷 <<worn_upper_name_ul>> 들어올려 <<breasts_rul>> 드러낸다.
-							<<set $worn.upper.state to "chest">><<neutral 2 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>><<set $worn.lower.state to "chest">><<set $worn.upper.state_top to "chest">>
-						<<elseif $worn.upper.state is "chest">>
-							<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 몸에서 벗겨낸다.</span>
-							<<upperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-						<</if>>
-					<</if>>
-				<<else>>
-					<<if $worn.upper.state_top is "chest">>
-						<<He_nun>> 당신의 <<worn_upper_name>> 윗부분을 끌어내려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-						<<set $worn.upper.state_top to "midriff">><<neutral 2 _n>><<set $worn.upper.exposed to 2>><<set $speechbreasts to 1>>
-						<<if $worn.upper.state is "chest">>
-							<<set $worn.upper.state to "midriff">>
-						<</if>>
-						<<if $worn.lower.state is "chest">>
-							<<set $worn.lower.state to "midriff">>
-						<</if>>
-					<<elseif $worn.upper.state_top is "midriff">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 몸통 아래까지 끌어내린다.
-						<<set $worn.upper.state_top to "waist">><<neutral 1 _n>>
-						<<if $worn.upper.state is "midriff">>
-							<<set $worn.upper.state to "waist">>
-						<</if>>
-						<<if $worn.lower.state is "midriff">>
-							<<set $worn.lower.state to "waist">>
-						<</if>>
-					<<elseif $worn.upper.state_top is "waist">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 넓적다리까지 끌어내려,
-						<<if $worn.under_lower.state is "waist">>
-							<<worn_under_lower_name_ul>> 드러낸다.
-							<<neutral 2 _n>>
-						<<else>>
-							<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-							<<neutral 5 _n>><<set $speechgenitals to 1>>
-						<</if>>
-						<<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>><<set $worn.upper.state_top to "thighs">><<set $worn.upper.state to "thighs">>
-						<<if $worn.lower.state is "waist">>
-							<<set $worn.lower.state to "thighs">>
-						<</if>>
-					<<elseif $worn.upper.state_top is "thighs">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-						<<set $worn.upper.state_top to "knees">><<set $worn.upper.state to "knees">><<neutral 1 _n>>
-						<<if $worn.lower.state is "thighs">>
-							<<set $worn.lower.state to "knees">>
-						<</if>>
-					<<elseif $worn.upper.state_top is "knees">>
-						<<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 발목까지 끌어내린다.
-						<<set $worn.upper.state_top to "ankles">><<set $worn.upper.state to "ankles">><<neutral 1 _n>>
-						<<if $worn.lower.state is "knees">>
-							<<set $worn.lower.state to "ankles">>
-						<</if>>
-					<<elseif $worn.upper.state_top is "ankles">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-						<<neutral 5 _n>><<set $worn.upper.state_top to 0>><<set $worn.upper.state to 0>><<upperstrip>><<combat-reset-hand $args[0]>>
-						<<if $worn.lower.state is "ankles">>
-							<<set $worn.lower.state to 0>><<lowerstrip>>
-						<</if>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<<He_nun>> 당신의 <<worn_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-				<<combat-reset-hand $args[0]>><<set $worn.upper.integrity -= 10>><<neutral 1 _n>>
-			<</if>>
+	<<set $_hand to $args[0]>>
+
+	<<if _middleOutfit is false>>
+		<<if $worn.upper.open is 1>>
+			<<combat-pull-clothing-down "upper" $_hand>>
+		<<else>>
+			<<combat-pull-clothing-up "upper" $_hand>>
 		<</if>>
+	<<elseif $worn.upper.open is 1>>
+		<<if $worn.lower.state is $worn.upper.state_top
+		 and $worn.lower.state is $worn.upper.state
+		 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<combat-pull-outfit-up "" "upper" $_hand>>
+		<<else>>
+			<<combat-pull-outfit-down "" "upper" $_hand>>
+		<</if>>
+	<<else>>
+		<<combat-tug-clothing "upper" $_hand>>
 	<</if>>
-	<<bodypart_admire_chance breasts>>
 <</widget>>
 
 <<widget "combat-hand-on-underupperclothes">>
-	<<set $rng to random(1, 100)>>
-	<<if $worn.under_upper.name is "naked">>
-		<<cast_aside_clothes>>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $upperstruggle is 1>>
-		<<set $upperstruggle to 0>>
-		당신은 어떻게든 <<him_i>> 당신의 <<worn_under_upper_name_ul>> 벗기는 것을 막아낸다.
-		<<set $speechstripstruggle to 1>>
-	<<elseif $rng gte 101>>
-		<span class="lblue"><<He_nun>> <<his_yi>> 손에서 당신의 <<worn_under_upper_name_ul>> 놓는다.</span>
-		<<combat-reset-hand $args[0]>>
-	<<elseif $rng lte 100>>
-		<<if _underOutfit is false>>
-			<<if $worn.under_upper.open is 1>>
-				<<if $worn.under_upper.state_top is "chest">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 끌어내려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-					<<set $worn.under_upper.state_top to "midriff">><<neutral 3 _n>><<set $worn.under_upper.exposed to 2>><<set $speechbreasts to 1>>
-					<<if $worn.under_upper.state is "chest">>
-						<<set $worn.under_upper.state to "midriff">>
-					<</if>>
-				<<elseif $worn.under_upper.state_top is "midriff">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 몸통 아래까지 끌어내린다.
-					<<set $worn.under_upper.state_top to "waist">><<neutral 1 _n>>
-					<<if $worn.under_upper.state is "midriff">>
-						<<set $worn.under_upper.state to "waist">>
-					<</if>>
-				<<elseif $worn.under_upper.state_top is "waist">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 넓적다리까지 끌어내린다.
-					<<set $worn.under_upper.state_top to "thighs">><<set $worn.under_upper.state to "thighs">>
-				<<elseif $worn.under_upper.state_top is "thighs">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-					<<set $worn.under_upper.state_top to "knees">><<set $worn.under_upper.state to "knees">><<neutral 1 _n>>
-				<<elseif $worn.under_upper.state_top is "knees">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 발목까지 끌어내린다.
-					<<set $worn.under_upper.state_top to "ankles">><<set $worn.under_upper.state to "ankles">><<neutral 1 _n>>
-				<<elseif $worn.under_upper.state_top is "ankles">>
-					<span class="purple"><<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-					<<neutral 5 _n>><<set $worn.under_upper.state_top to 0>><<set $worn.under_upper.state to 0>><<underupperstrip>><<combat-reset-hand $args[0]>>
-				<</if>>
-			<<elseif $worn.under_upper.open is 0>>
-				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-					<<combat-reset-hand $args[0]>><<set $worn.under_upper.integrity -= 10>><<neutral 1 _n>>
-				<<elseif $position isnot "wall">>
-					<<if $worn.under_upper.state is "waist">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 들어올려, 당신의 몸통을 드러낸다.
-						<<set $worn.under_upper.state to "midriff">><<neutral 1 _n>>
-					<<elseif $worn.under_upper.state is "midriff">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 들어올려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-						<<set $worn.under_upper.state to "chest">><<neutral 2 _n>><<set $worn.under_upper.exposed to 2>><<set $speechbreasts to 1>>
-					<<elseif $worn.under_upper.state is "chest">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_under_upper_name_ul>> 완전히 벗겨낸다.</span>
-						<<underupperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-					<</if>>
-				<</if>>
-			<</if>>
-		<<elseif _underOutfit>>
-			<<if $worn.under_upper.open is 1>>
-				<<if $worn.under_lower.state is $worn.under_upper.state_top and $worn.under_lower.state is $worn.under_upper.state and setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].skirt is 1>>
-					<<if $position is "wall" and $walltype isnot "front">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-						<<combat-reset-hand $args[0]>><<set $worn.under_upper.integrity -= 10>><<neutral 1 _n>>
-					<<elseif $position isnot "wall">>
-						<<if $worn.under_upper.state is "waist">>
-							<<He_nun>> 당신의 한벌옷 <<worn_under_upper_name_ul>> 당신의 몸통 위로 들어올린다.
-							<<set $worn.under_upper.state to "midriff">><<neutral 1 _n>><<set $worn.under_lower.state to "midriff">><<set $worn.under_upper.state_top to "midriff">>
-						<<elseif $worn.under_upper.state is "midriff">>
-							<<He_nun>> 당신의 한벌옷 <<worn_under_upper_name_ul>> 들어올려 <<breasts_rul>> 드러낸다.
-							<<set $worn.under_upper.state to "chest">><<neutral 2 _n>><<set $worn.under_upper.exposed to 2>><<set $speechbreasts to 1>><<set $worn.under_lower.state to "chest">><<set $worn.under_upper.state_top to "chest">>
-						<<elseif $worn.under_upper.state is "chest">>
-							<span class="purple"><<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 몸에서 벗겨낸다.</span>
-							<<underupperstrip>><<combat-reset-hand $args[0]>><<neutral 3 _n>><<clothesstripstat>>
-						<</if>>
-					<</if>>
-				<<else>>
-					<<if $worn.under_upper.state_top is "chest">>
-						<<He_nun>> 당신의 <<worn_under_upper_name>> 윗부분을 끌어내려, <span class="lewd">당신의 <<breasts_rul>> 드러낸다.</span>
-						<<set $worn.under_upper.state_top to "midriff">><<neutral 2 _n>><<set $worn.under_upper.exposed to 2>><<set $speechbreasts to 1>>
-						<<if $worn.under_upper.state is "chest">>
-							<<set $worn.under_upper.state to "midriff">>
-						<</if>>
-						<<if $worn.under_lower.state is "chest">>
-							<<set $worn.under_lower.state to "midriff">>
-						<</if>>
-					<<elseif $worn.under_upper.state_top is "midriff">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 몸통 아래까지 끌어내린다.
-						<<set $worn.under_upper.state_top to "waist">><<neutral 1 _n>>
-						<<if $worn.under_upper.state is "midriff">>
-							<<set $worn.under_upper.state to "waist">>
-						<</if>>
-						<<if $worn.under_lower.state is "midriff">>
-							<<set $worn.under_lower.state to "waist">>
-						<</if>>
-					<<elseif $worn.under_upper.state_top is "waist">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 넓적다리까지 끌어내려,
-						<<if $worn.under_lower.state is "waist">>
-							<<worn_under_lower_name_ul>> 드러낸다.
-							<<neutral 2 _n>>
-						<<else>>
-							<span class="lewd"><<genitals_rul>> 드러낸다.</span>
-							<<neutral 5 _n>><<set $speechgenitals to 1>>
-						<</if>>
-						<<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.exposed to 2>><<set $worn.under_upper.state_top to "thighs">><<set $worn.under_upper.state to "thighs">>
-						<<if $worn.under_lower.state is "waist">>
-							<<set $worn.under_lower.state to "thighs">>
-						<</if>>
-					<<elseif $worn.under_upper.state_top is "thighs">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 무릎까지 끌어내린다.
-						<<set $worn.under_upper.state_top to "knees">><<set $worn.under_upper.state to "knees">><<neutral 1 _n>>
-						<<if $worn.under_lower.state is "thighs">>
-							<<set $worn.under_lower.state to "knees">>
-						<</if>>
-					<<elseif $worn.under_upper.state_top is "knees">>
-						<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 발목까지 끌어내린다.
-						<<set $worn.under_upper.state_top to "ankles">><<set $worn.under_upper.state to "ankles">><<neutral 1 _n>>
-						<<if $worn.under_lower.state is "knees">>
-							<<set $worn.under_lower.state to "ankles">>
-						<</if>>
-					<<elseif $worn.under_upper.state_top is "ankles">>
-						<span class="purple"><<He_nun>> 당신의 <<worn_under_upper_name_ul>> 당신의 다리 아래로 끌어내린다.</span>
-						<<neutral 5 _n>><<set $worn.under_upper.state_top to 0>><<set $worn.under_upper.state to 0>><<underupperstrip>><<combat-reset-hand $args[0]>>
-						<<if $worn.under_lower.state is "ankles">>
-							<<set $worn.under_lower.state to 0>><<underlowerstrip>>
-						<</if>>
-					<</if>>
-				<</if>>
-			<<else>>
-				<<He_nun>> 당신의 <<worn_under_upper_name_ul>> 세게 잡아당겨, <span class="blue">손을 놓아주기</span> 전에 옷이 약간 찢어진다.
-				<<combat-reset-hand $args[0]>><<set $worn.under_upper.integrity -= 10>><<neutral 1 _n>>
-			<</if>>
+	<<set $_hand to $args[0]>>
+
+	<<if _underOutfit is false>>
+		<<if $worn.under_upper.open is 1>>
+			<<combat-pull-clothing-down "under_upper" $_hand>>
+		<<else>>
+			<<combat-pull-clothing-up "under_upper" $_hand>>
+		<</if>>
+	<<elseif $worn.under_upper.open is 1>>
+		<<if $worn.under_lower.state is $worn.under_upper.state_top
+		and $worn.under_lower.state is $worn.under_upper.state
+		and setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].skirt is 1>>
+			<<combat-pull-outfit-up "under" "upper" $_hand>>
+		<<else>>
+			<<combat-pull-outfit-down "under" "upper" $_hand>>
 		<</if>>
 	<</if>>
-	<<bodypart_admire_chance breasts>>
+<</widget>>
+
+<<widget "combat-hand-on-clothes">>
+	<<set $_slot to $args[0]>>
+	<<set $_hand to $args[1]>>
+
+	<<set $_strugglevar to $_slot.replace("_","") + "struggle">>
+
+	<<set $rng to random(1, 100)>>
+	<<if $worn[$_slot].name is "naked">>
+		<<cast_aside_clothes>>
+		<<combat-reset-hand $_hand>>
+	<<elseif V[$_strugglevar] is 1>>
+		<<set V[$_strugglevar] to 0>>
+		당신은 어떻게든 <<him_i>> 당신의 <<trClothes $_slot $worn[$_slot].name "name" "을">> 벗기는 것을 막아낸다.
+		<<set $speechstripstruggle to 1>>
+	<<elseif $rng gte 101>>
+		<span class="lblue"><<He_nun>> <<his_yi>> 손에서 당신의 <<trClothes $_slot $worn[$_slot].name "name" "을">> 놓는다.</span>
+		<<combat-reset-hand $_hand>>
+	<<elseif $rng lte 100>>
+		<<switch $_slot>>
+			<<case "under_lower">> <<combat-hand-on-underlowerclothes $_hand>>
+			<<case "lower">> <<combat-hand-on-lowerclothes $_hand>>
+			<<case "over_lower">> <<combat-hand-on-overlowerclothes $_hand>>
+			<<case "under_upper">> <<combat-hand-on-underupperclothes $_hand>>
+			<<case "upper">> <<combat-hand-on-upperclothes $_hand>>
+			<<case "over_upper">> <<combat-hand-on-overupperclothes $_hand>>
+		<</switch>>
+	<</if>>
+
+	<<switch $_slot>>
+		<<case "under_lower" "lower" "over_lower">> <<bodypart_admire_chance "breasts">>
+		<<case "under_upper" "upper">> <<bodypart_admire_chance "back">>
+		<<case "over_upper">> <<bodypart_admire_chance "pubic">>
+	<</switch>>
+
 <</widget>>
 
 <<widget "combat-hand-on-lube">>
@@ -1165,7 +866,21 @@
 
 <<widget "combat-hand-on-head_breasts">>
 	<<set $rng to random(1, 100)>>
-	<<if $rng gte 70>>
+	<<if $rng gte 69 and ($worn.face.type.includes("covered") or $worn.face.type.includes("gag"))>>
+		<<He_nun>> 당신의 입을 <<hisselect_yi _n>> <<trBreastsdesc $NPCList[_n].breastdesc>>_trResult에 눌러대지만, 당신의 <<worn_face_name>>에 막힌다.
+		<<set $speechheadbreasts to 1>>
+		<<if $NPCList[_n].type is "plant" and $NPCList[_n].pronoun is "f" and $breastfeedingdisable is "f">>
+			<span class="pink">꿀이 <<hisselect_yi _n>> 유두에서 흘러나온다.</span>
+			<<damageFaceCover 1>>
+		<<elseif $NPCList[_n].lactation is 1 and $breastfeedingdisable is "f">>
+			<span class="pink">모유가 <<hisselect_yi _n>> 유두에서 흘러나온다.</span>
+			<<set $speechheadsuckleclosed to 1>>
+			<<damageFaceCover 1>>
+		<<else>>
+			<<set $speechheadnippleclosed to 1>>
+		<</if>>
+		<<damageFaceCover 1>>
+	<<elseif $rng gte 70>>
 		<<sex 3 _n>>
 		<<combat-set-hand-target $args[0] "head_nipples">>
 		<<if $mouthstate isnot "nipple">>
@@ -1201,13 +916,18 @@
 
 <!-- pass "left", "right" or "both" as the first argument, and "hand" or "hands" for the second argument -->
 <<widget "combat-hand-on-mask">>
-	<<if $worn.face.type.includes("mask")>>
+	<<if $worn.face.type.includes("mask") or $worn.face.type.includes("covered")>>
 		<<set $_hishand to ($args[0] isnot "both" ? "<<his_yi>> " : "") + $args[0] + " " + $args[1]>>
 		<<if $face is "covered">>
 			<<He_nun>> <<hand_ro $_hishand>> 당신의 <<worn_face_name_ul>> 벗겨내려 하지만, <span class="lblue">당신은 그것을 꽉 잡고 있다.</span>
 			<<if random(1, 3) is 3>>
 				<span class="lblue"><<He_nun>> 불만스러운 한숨을 쉬며 그것을 놓는다.</span>
 				<<combat-reset-hand $args[0]>>
+			<<else>>
+				<<if $enemyanger gt ($enemyangermax / 2)>>
+					<span class="red"><<He_ga>> 당신의 <<worn_face_name_ul>> 강제로 벗기려 한다!</span>
+					<<damageFaceCover 4>>
+				<</if>>
 			<</if>>
 		<<else>>
 			<<He_nun>> <<hand_ro $_hishand>> 당신의 <<worn_face_name_ul>> 벗겨내어, <span class="pink">당신의 정체를 드러낸다.</span>
@@ -1258,7 +978,7 @@
 <<widget "combat-pen-on-bodypart">>
 	<<set $_hand to $args[0]>><<set $_penbodypart to $args[1]>>
 	<<He_nun>> 당신의 <<trBodypart $_penbodypart>>_trResult 위에 다음과 같이 휘갈겨 쓴다:
-	<<bodywriting_npc $_penbodypart $NPCList[_n][$_hand + "tool"]>>
+	<<bodywriting_npc $_penbodypart `$NPCList[_n][$_hand + "tool"]`>>
 	<<set $newlyWritten.pushUnique($_penbodypart)>>
 	<<combat-reset-hand $_hand>><<set $NPCList[_n][$_hand + "tool"] to 0>>
 <</widget>>
@@ -1297,7 +1017,7 @@
 		<<elseif $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside" and $walltype isnot "front">>
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
 			<<neutral 1 _n>>
-			<<set $handtarget to "underclothes">>
+			<<set $handtarget to "underlowerclothes">>
 		<<elseif $worn.genitals.name isnot "naked" and $walltype isnot "front">>
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 			<<neutral 1 _n>>
@@ -1419,7 +1139,7 @@
 			<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-					<<set $handtarget to "underclothes">><<neutral 1 _n>>
+					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
 				<<elseif $worn.genitals.name isnot "naked">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 					<<set $handtarget to "genitals">><<neutral 1 _n>>
@@ -1427,14 +1147,14 @@
 					<<if $worn.lower.anus_exposed is 1 and $worn.over_lower.anus_exposed is 1>>
 						<<if $anususe is 0 and $analdisable is "f">>
 							<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul $args[0]>> 당신의 <<bottomPost>>에 누른다.</span>
-							<<set $handtarget to "anusentrance">><<set $anususe to 1>><<neutral 1 _n>>
+							<<set $handtarget to "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">><<neutral 1 _n>>
 						<</if>>
 					<</if>>
 				<</if>>
 			<<elseif $worn.lower.state isnot "waist">>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-					<<set $handtarget to "underclothes">><<neutral 1 _n>>
+					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
 				<<elseif $worn.genitals.name isnot "naked">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 					<<set $handtarget to "genitals">><<neutral 1 _n>>
@@ -1442,7 +1162,7 @@
 					<<if $worn.lower.anus_exposed is 1 and $worn.over_lower.anus_exposed is 1>>
 						<<if $anususe is 0 and $analdisable is "f">>
 							<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul $args[0]>> 당신의 <<bottomPost>>에 누른다.</span>
-							<<set $handtarget to "anusentrance">><<set $anususe to 1>><<neutral 1 _n>>
+							<<set $handtarget to "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">><<neutral 1 _n>>
 						<</if>>
 					<</if>>
 				<</if>>
@@ -1459,7 +1179,7 @@
 			<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-					<<set $handtarget to "underclothes">><<neutral 1 _n>>
+					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
 				<<elseif $worn.genitals.name isnot "naked">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 					<<set $handtarget to "genitals">><<neutral 1 _n>>
@@ -1477,7 +1197,7 @@
 			<<elseif $worn.lower.state isnot "waist">>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-					<<set $handtarget to "underclothes">><<neutral 1 _n>>
+					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
 				<<elseif $worn.genitals.name isnot "naked">>
 					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 					<<set $handtarget to "genitals">><<neutral 1 _n>>
@@ -1527,7 +1247,7 @@
 			<<else>>
 				<<bodypart_admire_chance right_thigh>>
 			<</if>>
-		<<elseif $worn.face.type.includes("mask")>>
+		<<elseif $worn.face.type.includes("mask") or $worn.face.type.includes("gag")>>
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_face_name_ul>> 움켜잡는다.</span>
 			<<neutral 1 _n>><<combat-set-hand-target $args[0] "mask">>
 		<<else>>
@@ -1562,8 +1282,13 @@
 			<<neutral 4 _n>><<playWithBreasts>>
 			<<bodypart_admire_chance breasts>>
 		<</if>>
-	<<elseif $enemyanger + $rng lte 70 and $pronoun is "f" and $position isnot "wall" and ($head is 0 or $NPCList[_n].chest is "head") and ($mouthuse is 0 or $mouthuse is "breasts") and $NPCList[_n].chest is 0 and $NPCList[_n].location.genitals isnot "head">>
-		<<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 머리 뒤를 부드럽게 잡고, <span class="pink">당신의 얼굴을 <<trBreastsdesc $NPCList[_n].breastsdesc>>_trResult에 누른다.</span>
+	<<elseif $enemyanger + $rng lte 70 and $pronoun is "f" and $position isnot "wall" and $head is 0 and ($mouthuse is 0 or $mouthuse is "breasts") and ($NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed") and $NPCList[_n].location.genitals isnot "head">>
+		<<if $NPCList[_n].chest is "clothed">>
+			<span class="blue"><<He_nun>> <<npcUndressText $NPCList[_n] "upper" "self" "and">>,</span> <span class="pink">당신의 얼굴을 <<trBreastsdesc $NPCList[_n].breastsdesc>>_trResult에</span> <<his_yi>> <<hand_ro $args[0]>> 누른다.
+			<<set $NPCList[_n].chest to 0>>
+		<<else>>
+			<<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 머리 뒤를 부드럽게 잡고, <span class="pink">당신의 얼굴을 <<trBreastsdesc $NPCList[_n].breastsdesc>>_trResult에 누른다.</span>
+		<</if>>
 		<<if $NPCList[_n].type is "plant" and $breastfeedingdisable is "f">>
 			<span class="purple">거기에서는 달콤한 냄새가 난다.</span>
 		<<elseif $NPCList[_n].lactation is 1 and $breastfeedingdisable is "f">>
@@ -1767,7 +1492,7 @@
 		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-				<<combat-set-hand-target $args[0] "underclothes">><<neutral 1 _n>>
+				<<combat-set-hand-target $args[0] "underlowerclothes">><<neutral 1 _n>>
 			<<elseif $worn.genitals.name isnot "naked">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target $args[0] "genitals">><<neutral 1 _n>>
@@ -1775,7 +1500,7 @@
 				<<if $worn.lower.anus_exposed is 1 and $worn.over_lower.anus_exposed is 1>>
 					<<if $anususe is 0 and $analdisable is "f">>
 						<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul $args[0]>> 당신의 <<bottomPost>>에 누른다.</span>
-						<<combat-set-hand-target $args[0] "anusentrance">><<set $anususe to 1>><<neutral 1 _n>>
+						<<combat-set-hand-target $args[0] "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">><<neutral 1 _n>>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -1784,7 +1509,7 @@
 		<<elseif $worn.lower.state isnot "waist">>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-				<<combat-set-hand-target $args[0] "underclothes">><<neutral 1 _n>>
+				<<combat-set-hand-target $args[0] "underlowerclothes">><<neutral 1 _n>>
 			<<elseif $worn.genitals.name isnot "naked">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target $args[0] "genitals">><<neutral 1 _n>>
@@ -1792,7 +1517,7 @@
 				<<if $worn.lower.anus_exposed is 1 and $worn.over_lower.anus_exposed is 1>>
 					<<if $anususe is 0 and $analdisable is "f">>
 						<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul $args[0]>> 당신의 <<bottomPost>>에 누른다.</span>
-						<<combat-set-hand-target $args[0] "anusentrance">><<set $anususe to 1>><<neutral 1 _n>>
+						<<combat-set-hand-target $args[0] "anusentrance">><<set $anususe to "handentrance">><<set $anusstate to "handentrance">><<neutral 1 _n>>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -1806,7 +1531,7 @@
 		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-				<<combat-set-hand-target $args[0] "underclothes">><<neutral 1 _n>>
+				<<combat-set-hand-target $args[0] "underlowerclothes">><<neutral 1 _n>>
 			<<elseif $worn.genitals.name isnot "naked">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target $args[0] "genitals">><<neutral 1 _n>>
@@ -1825,7 +1550,7 @@
 		<<elseif $worn.lower.state isnot "waist">>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
-				<<combat-set-hand-target $args[0] "underclothes">><<neutral 1 _n>>
+				<<combat-set-hand-target $args[0] "underlowerclothes">><<neutral 1 _n>>
 			<<elseif $worn.genitals.name isnot "naked">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro $args[0]>> 당신의 <<worn_genitals_name_ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target $args[0] "genitals">><<neutral 1 _n>>
@@ -2072,9 +1797,7 @@
 <<set _n to $args[0]>>
 <!-- Converted his1-6 to hisselect #. Person1-6 to personselect #. $intro1-6 as array $NPCList[_n].intro -->
 <!-- Converted man1-6speech to manspeech #. Randomized penissize reaction.-->
-<<set _ppbigreaction to ["그것을 보고 당신의 몸에서 힘이 빠지는 것을 느낀다.","그것을 보고 당신은 몸서리친다.","그 크기를 보고 무의식중에 신음소리를 낸다.","그 거대한 두께에 헉 소리를 낸다.","그것을 보고 있자니 당신의 넓적다리에 힘이 풀리는 것을 느낀다."]>>
-<<set _ppsmallreaction to ["그것을 보고 당신은 비웃음을 꾹 참는다.","그것을 보고 당신은 실실 웃는다.","그것을 보고 당신은 나오려는 웃음을 꾹 참는다.","그것을 보고 당신은 킥킥 웃으려는 것을 꾹 참는다.","당신은 웃지 않으려 노력한다."]>>
-<<set _pprng to random(0, 4)>>
+
 <<if ["m", "f", "i", "n", "t"].includes($NPCList[_n].pronoun)>>
 	<<set $pronoun to $NPCList[_n].pronoun>>
 <<elseif $debugdisable is "f">>
@@ -2104,29 +1827,12 @@
 
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].penis is "clothed" and $npcSub isnot 1>>
-		<<if $pronoun is "m">>
-			<<if $enemyarousal gte 40>>
-				<<He_nun>> <<his_yi>> 지퍼를 열고, <span class="blue"><<his_yi>> <<if $NPCList[_n].chastity.penis.includes("chastity")>><<trClothes "genitals" $NPCList[_n].chastity.penis "name">>_trResult 안의<<elseif $NPCList[_n].penisdesc.includes("strap-on")>><<else>>완전히 발기한<</if>> <<penisdesc_rul $NPCList[_n].penisdesc>> 드러낸다.</span>
-				<<switch $NPCList[_n].penissize>>
-				<<case 4>>
-					<span class="red"> _ppbigreaction[_pprng]</span>
-				<<case 1>>
-					<span class="green"> _ppsmallreaction[_pprng]</span>
-				<<default>>
-				<</switch>>
-				<<set $NPCList[_n].penis to 0>>
-			<</if>>
-		<<else>>
-			<<if $enemyarousal gte 40>>
-				<<He_nun>> <<his_yi>> 스커트를 들어올려, <span class="blue"><<his_yi>> <<if $NPCList[_n].chastity.penis.includes("chastity")>><<trClothes "genitals" $NPCList[_n].chastity.penis "name">>_trResult 안의<<elseif $NPCList[_n].penisdesc.includes("strap-on")>><<else>>완전히 발기한<</if>> <<penisdesc_rul $NPCList[_n].penisdesc>> 드러낸다.</span>
-				<<switch $NPCList[_n].penissize>>
-				<<case 4>>
-					<span class="red"> 당신은 그 거대한 크기에 헉 하는 소리를 낸다.</span>
-				<<case 1>>
-					<span class="green"> 당신은 비웃음을 참는다.</span>
-				<<default>>
-				<</switch>>
-				<<set $NPCList[_n].penis to 0>>
+		<<if $enemyarousal gte 40>>
+			<span class="blue"><<He_nun>> <<npcUndressText $NPCList[_n] "lower" "self" "and">>, <<npcRevealText $NPCList[_n] "lower">>.</span>
+			<<npcGenitalReaction $NPCList[_n]>>
+			<<set $NPCList[_n].penis to 0>>
+			<<if $NPCList[_n].vagina isnot "none">>
+				<<set $NPCList[_n].vagina to 0>>
 			<</if>>
 		<</if>>
 		<<if $NPCList[_n].fullDescription is "Sydney">>
@@ -2306,7 +2012,7 @@
 					<<sex 100 _n>><<set $NPCList[_n].penis to "vagina">><<raped>><<vaginaraped>><<set $vaginastate to "penetrated">><<set $speechvaginavirgin to 1>><<bruise vagina>><<vaginalstat>>
 					<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 				<</if>>
-				<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
+				<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
 			<<else>>
 				당신이 바라는 대로, <<he_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에 눌러대지만 삽입하지는 않는다.
 				<<sex 15 _n>><<set $speechvaginawithhold to 1>>
@@ -2461,6 +2167,7 @@
 		<<elseif _npcB is _n>>
 			<<set _dvp to ($NPCList[_npcA].penis isnot "anusdouble" ? 1 : 2)>>
 		<</if>>
+		<<set $_n to _n>> /* backup _n so that we can use personselect widget without errors */
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에 눌러대는 것을 그만둔다.</span>
@@ -2471,13 +2178,13 @@
 					<<set _pain to Math.floor($vaginalPain * (1.5 / (5 - ($NPCList[_n].penissize or 1))))>>
 					<<if $player.virginity.vaginal isnot true>>
 						<<if $enemyanger gte 80>>
-							<span class="pink"><<He_nun>> 미친듯이 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 찔러넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span>
+							<span class="pink"><<He_nun>> 미친듯이 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 찔러넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span><<set _n to $_n>>
 							<<personselect _npcA>><<set _pain *= 1.5>>
 						<<elseif $enemyanger gte 20>>
-							<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 찔러넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span>
+							<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 찔러넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span><<set _n to $_n>>
 							<<personselect _npcA>>
 						<<else>>
-							<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 미끌어뜨려 넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span>
+							<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>> 안에 깊게 미끌어뜨려 넣어, <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참한다.</span><<set _n to $_n>>
 							<<personselect _npcA>>
 						<</if>>
 						<<switch $NPCList[_n].penissize>>
@@ -2494,20 +2201,20 @@
 						<<else>>
 							<<switch $NPCList[_n].penissize>>
 							<<case 4 5>>
-								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 영원히 당신의 순결을 빼앗아 버린다. 당신은 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 비명을 지른다.</span>
+								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 영원히 당신의 순결을 빼앗아 버린다. 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 당신은 비명을 지른다.</span><<set _n to $_n>>
 								<<violence 200>>
 							<<case 1>>
-								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span>
+								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span><<set _n to $_n>>
 								<<violence 25>>
 							<<default>>
-								<span class="pink"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span>
+								<span class="pink"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span><<set _n to $_n>>
 								<<violence 100>>
 							<</switch>>
 						<</if>>
 						<<sex 100>><<set $NPCList[_n].penis to "vaginadouble">><<raped>><<vaginaraped>><<set $vaginastate to "doublepenetrated">><<set $speechvaginavirgin to 1>><<bruise vagina>><<vaginalstat>>
 						<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 					<</if>>
-					<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
+					<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
 				<<else>>
 					당신이 바라는 대로, <<he_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에 눌러대지만 삽입하지는 않는다.
 					<<sex 15>><<set $speechvaginawithhold to 1>>
@@ -2551,7 +2258,7 @@
 						<<sex 100>><<set $NPCList[_n].penis to "vaginadouble">><<raped>><<vaginaraped>><<set $vaginastate to "doublepenetrated">><<set $speechvaginavirgin to 1>><<bruise vagina>><<vaginalstat>>
 						<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 					<</if>>
-					<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
+					<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "vaginal">>
 				<<else>>
 					당신이 바라는 대로, <<he_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에 눌러대지만 삽입하지는 않는다.
 					<<sex 15>><<set $speechvaginawithhold to 1>>
@@ -2685,7 +2392,7 @@
 					<<sex 100 _n>><<set $NPCList[_n].penis to "anus">><<bruise anus>><<analstat>><<violence 50>><<raped>><<anusraped>><<set $anusstate to "penetrated">><<set $speechanusvirgin to 1>>
 					<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 				<</if>>
-				<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
+				<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
 			<<else>>
 				당신이 바라는 대로, <<he_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에 눌러대지만 삽입하지는 않는다.
 				<<sex 15 _n>><<set $speechanuswithhold to 1>>
@@ -2828,6 +2535,7 @@
 			<<set _dap to ($NPCList[$anustarget].penis isnot "anusdouble" ? 1 : 2)>>
 			<<set _otherNPCindex to $anustarget>>
 		<</if>>
+		<<set $_n to _n>> /* backup _n so that we can use personselect widget without errors */
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에 눌러대는 것을 그만둔다.</span>
@@ -2837,10 +2545,10 @@
 				<<if $noanal is 0>>
 					<<set _pain to Math.floor($analPain * (1.5 / (5 - ($NPCList[_n].penissize or 1))))>>
 					<<if $player.virginity.anal isnot true>>
-						<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<bottomPost>> 안에 깊게 찔러넣어, <<personselect _otherNPCindex>><<combatpersons_yi _otherNPCindex>> <<npcPenisSimplePost _otherNPCindex>>에 동참한다.</span><<personselect _n>>
+						<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<bottomPost>> 안에 깊게 찔러넣어, <<personselect _otherNPCindex>><<combatpersons_yi _otherNPCindex>> <<npcPenisSimplePost _otherNPCindex>>에 동참한다.</span><<set _n to $_n>><<personselect _n>>
 						<<switch $NPCList[_n].penissize>>
 							<<case 4>>
-								<span class="red">당신은 당신의 항문이 <<his_yi>> 자지를 받아들이기 위해 늘어나면서 훌쩍인다.</span>
+								<span class="red">당신의 항문이 <<his_yi>> 자지를 받아들이기 위해 늘어나면서 당신은 훌쩍인다.</span>
 							<<default>>
 						<</switch>>
 						<<sex 30 _n>><<set $NPCList[_n].penis to "anusdouble">><<bruise anus>><<analstat>><<violence 1>><<raped>><<anusraped>><<set $anusstate to "doublepenetrated">><<set $speechanuspenetrated to 1>>
@@ -2864,7 +2572,7 @@
 						<<sex 100 _n>><<set $NPCList[_n].penis to "anusdouble">><<bruise anus>><<analstat>><<violence 50>><<raped>><<anusraped>><<set $anusstate to "doublepenetrated">><<set $speechanusvirgin to 1>>
 						<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 					<</if>>
-					<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
+					<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
 				<<else>>
 					당신이 바라는 대로, <<he_nun>> 다른 자지와 함께, <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에 눌러대지만 삽입하지는 않는다.
 					<<sex 15 _n>><<set $speechanuswithhold to 1>>
@@ -2900,7 +2608,7 @@
 						<<sex 100 _n>><<set $NPCList[_n].penis to "anusdouble">><<bruise anus>><<analstat>><<violence 50>><<raped>><<anusraped>><<set $anusstate to "doublepenetrated">><<set $speechanusvirgin to 1>>
 						<<if $enemyanger gte 100>><<set _pain *= 1.5>><</if>><<pain _pain>>
 					<</if>>
-					<<takeNPCVirginity $NPCList[_n].fullDescription "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
+					<<takeNPCVirginity _n "penile">><<takeVirginity $NPCList[_n].fullDescription "anal">>
 				<<else>>
 					당신이 바라는 대로, <<he_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에 눌러대지만, 삽입하지는 않는다.
 					<<sex 15 _n>><<set $speechanuswithhold to 1>>
@@ -3036,6 +2744,20 @@
 			<<if $rng gte 101>>
 				<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 입에 눌러대는 것을 그만둔다.</span>
 				<<set $NPCList[_n].penis to "mouthentrance">><<submission 5 _n>><<set $mouthstate to "entrance">>
+			<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<if $enemyanger lt $enemyangermax/2>>
+					<span class="lblue"><<He_nun>> <<his_yi>> 자지를 입에서 치운다.</span>
+					<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+				<<else>>
+					<<switch random(0,2)>>
+						<<case 0 1>>
+							<<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<worn_face_name>>에 눌러댄다. <<He_nun>> 불만스러운 듯 보인다.
+							<<damageFaceCover 2>>
+						<<case 2>>
+							<span class="lblue"><<He_nun>> <<his_yi>> 자지를 입에서 치운다.</span>
+							<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+					<</switch>>
+				<</if>>
 			<<elseif $rng lte 20>>
 				<<if $player.virginity.oral isnot true>>
 					<span class="pink"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 입 속에 찔러넣는다.</span>
@@ -3093,6 +2815,20 @@
 			<<elseif $NPCList[_n].chastity.penis.includes("chastity")>>
 				<span class="purple"><<if $npcSub>>당신은<<else>><<He_nun>><</if>> <<his_yi>> <<trClothes "genitals" $NPCList[_n].chastity.penis "name" "을">>_trResult 당신의 입에 눌러댄다.</span>
 				<<sex 25 _n>><<set $speechNPCChastity to 1>>
+			<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<if $enemyanger lt $enemyangermax/2>>
+					<span class="lblue"><<He_nun>> <<his_yi>> 자지를 입에서 치운다.</span>
+					<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+				<<else>>
+					<<switch random(0,2)>>
+						<<case 0 1>>
+							<<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<worn_face_name>>에 눌러댄다. <<He_nun>> 불만스러운 듯 보인다.
+							<<damageFaceCover 2>>
+						<<case 2>>
+							<span class="lblue"><<He_nun>> <<his_yi>> 자지를 입에서 치운다.</span>
+							<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+					<</switch>>
+				<</if>>
 			<<elseif $rng gte 1 and !$npcSub>>
 				<span class="purple"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 입술에 밀어댄다.</span>
 				<<if $NPCList[_n].type is "plant" and !["peniskiss","penislick"].includes($mouthactiondefault)>>
@@ -3201,7 +2937,7 @@
 						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
 						<<sex 100 _n>><<set $NPCList[_n].penis to "otheranus">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechpenisvirgin to 1>>
 					<</if>>
-					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity $NPCList[_n].fullDescription "anal">>
+					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "anal">>
 					<<if $penissize gte 4>>
 						<<He_nun>> 그렇게 큰 것을 집어넣었다는 것에 자랑스러워 하는 것 같다.
 					<</if>>
@@ -3341,15 +3077,12 @@
 
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].vagina is "clothed" and $npcSub isnot 1>>
-		<<if $pronoun is "f">>
-			<<if $enemyarousal gte 40>>
-				<span class="blue"><<He_nun>> <<his_yi>> 스커트를 들어올려,<<if $NPCList[_n].chastity.vagina.includes("chastity")>> <<trClothes "genitals" $NPCList[_n].chastity.vagina "name">>_trResult 뒤로<</if>> <<his_yi>> 촉촉해진 보지를 드러낸다.</span>
-				<<set $NPCList[_n].vagina to 0>>
-			<</if>>
-		<<else>>
-			<<if $enemyarousal gte 40>>
-				<span class="blue"><<He_nun>> <<his_yi>> 지퍼를 열고,<<if $NPCList[_n].chastity.vagina.includes("chastity")>> <<trClothes "genitals" $NPCList[_n].chastity.vagina "name">>_trResult 뒤로<</if>> <<his_yi>> 촉촉해진 보지를 드러낸다.</span>
-				<<set $NPCList[_n].vagina to 0>>
+		<<if $enemyarousal gte 40>>
+			<span class="blue"><<He_nun>> <<npcUndressText $NPCList[_n] "lower" "self" "and">>, <<npcRevealText $NPCList[_n] "lower">>.</span>
+			<<set $NPCList[_n].vagina to 0>>
+			<<if $NPCList[_n].penis isnot "none">>
+				<<npcGenitalReaction $NPCList[_n]>>
+				<<set $NPCList[_n].penis to 0>>
 			<</if>>
 		<</if>>
 		<<if $NPCList[_n].fullDescription is "Sydney">>
@@ -3418,7 +3151,7 @@
 						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 보지 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
 						<<sex 100 _n>><<set $NPCList[_n].vagina to "penis">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "penetrated">><<set $speechpenisvirgin to 1>>
 					<</if>>
-					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity $NPCList[_n].fullDescription "vaginal">>
+					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "vaginal">>
 					<<if $penissize gte 4>>
 						<<He_nun>> 그렇게 큰 것을 집어넣었다는 것에 자랑스러워 하는 것 같다.
 					<</if>>
@@ -3727,7 +3460,7 @@
 						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
 						<<sex 100 _n>><<set $NPCList[_n].vagina to "otheranus">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechpenisvirgin to 1>>
 					<</if>>
-					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity $NPCList[_n].fullDescription "anal">>
+					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "anal">>
 					<<if $penissize gte 4>>
 						<<He_nun>> 그렇게 큰 것을 집어넣었다는 것에 자랑스러워 하는 것 같다.
 					<</if>>
@@ -3795,6 +3528,22 @@
 		<<if $consensual is 0 and $underwater isnot 1>>
 			<<if ($oxygen gt 150 and $enemyanger gte 30) or $enemyanger gte (($enemyangermax / 5) * 4)>>
 				<<oxygen -150>>
+				
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					<<if $enemyanger lt $enemyangermax/2>>
+						<span class="lblue"><<He_nun>> <<his_yi>> 보지를 당신의 입에서 치운다.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+					<<else>>
+						<<switch random(0,2)>>
+							<<case 0 1>>
+								<<He_nun>> 계속 당신의 <<worn_face_name>> 위에 몸무게 전체를 실은 채로 앉아있는다.
+								<<damageFaceCover 2>>
+							<<case 2>>
+								<span class="lblue"><<He_nun>> <<his_yi>> 보지를 당신의 입에서 치운다.</span>
+								<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+						<</switch>>
+					<</if>>
+				<<else>>
 				<<print either(
 					"<<He_nun>> 당신의 얼굴을 <<his_yi>> 보지와 엉덩이로 가리고 있다.",
 					"<<His_yi>> 보지와 엉덩이가 당신의 얼굴을 내리누르고 있다.",
@@ -3802,6 +3551,7 @@
 					"<<He_nun>> <<himPost>> 아래에서 당신을 질식시키고 있다.",
 					"<<His_yi>> 보지와 엉덩이가 당신의 입과 코를 내리누르고 있다."
 				)>>
+				<</if>>
 				<<sex 1 _n>><<bruise face>><<bruise face>>
 
 				<<if $suffocationPhase isnot 2>>
@@ -3840,6 +3590,21 @@
 			<<He_nun>> 당신 위에서 <<his_yi>> 자세를 바꿔, <<his_yi>> 엉덩이를 당신 입 위에 누른다.
 			<<set $mouthstate to "anal">><<set $NPCList[_n].vagina to "facesitanal">>
 			<<set $speechmouthotheranus to 1>>
+		
+		<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+			<<if $enemyanger lt $enemyangermax/2>>
+				<span class="lblue"><<He_nun>> <<his_yi>> 보지를 당신의 입에서 치운다.</span>
+				<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+			<<else>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He_nun>> <<his_yi>> ?vulva?rul 당신의 <<worn_face_name>>에 비벼댄다.
+						<<damageFaceCover 2>>
+					<<case 2>>
+						<span class="lblue"><<He_nun>> <<his_yi>> 보지를 당신의 입에서 치운다.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+				<</switch>>
+			<</if>>
 		<<elseif $rng gte 0>>
 			<<if $mouthactiondefault is "vaginalick" and random(1) is 0>>
 				<<if !$npcSub>>
@@ -3871,7 +3636,15 @@
 	<<set $rng to random(1, 100)>>
 	<<if $NPCList[_n].vagina is "facesitanal">>
 		<<if $rng gt 10 or ($rng gt 5 and $enemyanger gte $enemyangermax / 10)>>
-			<<if $enemyarousal gte (($enemyarousalmax / 5) * 3)>>
+			<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He_nun>> <<his_yi>> 엉덩이를 당신의 <<worn_face_name>>에 비벼댄다.
+					<<case 2>>
+						<span class="lblue"><<He_nun>> <<his_yi>> 엉덩이를 당신의 입에서 치운다.</span>
+						<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $NPCList[_n].vagina to 0>>
+				<</switch>>
+			<<elseif $enemyarousal gte (($enemyarousalmax / 5) * 3)>>
 				<<He_nun>> <<his_yi>> 항문을 당신의 입에 비벼댄다.
 			<<else>>
 				<<He_nun>> 천천히 <<his_yi>> 항문을 당신의 입술 위에서 움직인다.
@@ -3908,6 +3681,18 @@
 	<<elseif $NPCList[_n].penis is 0>>
 		<<penisinit>>
 	<</if>>
+
+	<!-- CHEST START -->
+
+	<<set $rng to random(1, 100)>>
+	<<if $NPCList[_n].chest is "clothed" and $npcSub isnot 1>>
+		<<if ($NPCList[_n].pronoun is "f" and ($NPCList[_n].lactation is 1 or $rng lte ($enemyarousal - 80))) or 
+		($rng lte 15 and $enemyarousal gte 105)>>
+			<span class="blue"><<He_nun>> <<npcUndressText $NPCList[_n] "upper" "self" "and">>, <<npcRevealText $NPCList[_n] "upper">>.</span>
+			<<set $NPCList[_n].chest to 0>>
+		<</if>>
+	<</if>>
+	<<chest_section>>
 
 	<!-- MOUTH START -->
 
@@ -4159,7 +3944,7 @@
 					<span class="pink"><<He_nun>> <<his_yi>> 입술을 당신의 동정 <<penisPost>>에 눌러대며, 당신을 <<his_yi>> 입 안에 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
 					<<sex 100 _n>><<set $NPCList[_n].mouth to "penis">><<takeVirginity $NPCList[_n].fullDescription "penile">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "othermouth">>
 				<</if>>
-				<<takeNPCVirginity $NPCList[_n].fullDescription "oral">>
+				<<takeNPCVirginity _n "oral">>
 			<<else>>
 				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 입에 집어넣지 않고, 대신 그 끝과 귀두를 핥기 시작한다.
 				<<sex 15 _n>>
@@ -4249,6 +4034,21 @@
 				<span class="lblue"><<He_nun>> <<his_yi>> 입을 당신의 입에서 치운다.</span>
 				<<set $NPCList[_n].mouth to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
 				<<set $NPCList[_n].location.head to 0>>
+			<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+				<<switch random(0,2)>>
+					<<case 0 1>>
+						<<He_nun>> <<his_yi>> 입술을 당신의 <<worn_face_name>>에 눌러댄다. <<He_nun>> 실망한 듯 보인다.
+						<<damageFaceCover 2>>
+						<<if $consensual isnot 1>>
+							<<brat 2>>
+						<</if>>
+					<<case 2>>
+						<span class="lblue"><<He_nun>> <<his_yi>> 자지를 입에서 치운다.</span>
+						<<set $NPCList[_n].penis to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
+						<<if $consensual isnot 1>>
+							<<brat 2>>
+						<</if>>
+				<</switch>>
 			<<elseif $rng lte 100>>
 				<<He_nun>> <<his_yi>> 혀를 당신의 입술 사이로 밀어넣는다.
 				<<set $NPCList[_n].mouth to "kiss">><<set $mouthstate to "kiss">><<sex 2 _n>>
@@ -4454,11 +4254,11 @@
 		<<elseif !$gloryhole>>
 			<<set $rng to random(1, 100)>>
 			<<if $enemyanger + $rng lte 20>>
-				<<He_nun>> 당신의 몸을 <<admires>>.
+				<<He_nun>> 당신의 몸을 ?admires.
 				<<neutral 1 _n>>
 			<<elseif $enemyanger + $rng lte 25>>
 				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 무력한 <<bottom_ul>> <<admires>>.
+					<<He_nun>> 당신의 무력한 <<bottom_ul>> ?admires.
 					<<neutral 1 _n>>
 					<<if random(1, 2) is 2>>
 						<<bodypart_admire right_bottom>>
@@ -4466,7 +4266,7 @@
 						<<bodypart_admire left_bottom>>
 					<</if>>
 				<<else>>
-					<<He_nun>> 당신의 머리카락을 <<admires>>.
+					<<He_nun>> 당신의 머리카락을 ?admires.
 					<<neutral 1 _n>>
 					<<if random(1, 2) is 2>>
 						<<bodypart_admire left_shoulder>>
@@ -4476,17 +4276,17 @@
 				<</if>>
 			<<elseif $enemyanger + $rng lte 30>>
 				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 무력한 엉덩이를 <<admires>>.
+					<<He_nun>> 당신의 무력한 엉덩이를 ?admires.
 					<<neutral 1 _n>>
 					<<bodypart_admire pubic>>
 				<<else>>
-					<<He_nun>> 당신의 가슴을 <<admires>>.
+					<<He_nun>> 당신의 가슴을 ?admires.
 					<<neutral 1 _n>>
 					<<bodypart_admire breasts>>
 				<</if>>
 			<<elseif $enemyanger + $rng lte 35>>
 				<<if $walltype is "front">>
-					<<He_nun>> 당신의 얼굴을 <<admires>>.
+					<<He_nun>> 당신의 얼굴을 ?admires.
 					<<neutral 1 _n>>
 					<<if random(1, 2) is 2>>
 						<<bodypart_admire left_cheek>>
@@ -4494,7 +4294,7 @@
 						<<bodypart_admire right_cheek>>
 					<</if>>
 				<<else>>
-					<<He_nun>> 당신의 다리를 <<admires>>.
+					<<He_nun>> 당신의 다리를 ?admires.
 					<<neutral 1 _n>>
 					<<if random(1, 2) is 2>>
 						<<bodypart_admire left_thigh>>
@@ -4504,7 +4304,7 @@
 				<</if>>
 			<<elseif $enemyanger + $rng lte 40>>
 				<<if $position is "wall" and $walltype isnot "front">>
-					<<He_nun>> 당신의 무력한 다리를 <<admires>>.
+					<<He_nun>> 당신의 무력한 다리를 ?admires.
 					<<neutral 1 _n>>
 					<<if random(1, 2) is 2>>
 						<<bodypart_admire left_thigh>>
@@ -4599,7 +4399,7 @@
 						<<bodypart_admire right_thigh>>
 					<</if>>
 				<<else>>
-					<<if $mouthuse is 0>>
+					<<if $mouthuse is 0 and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 						<<if $NPCList[_n].penis is "chest">>
 							<<combatspeech _n>><<neutral 1 _n>>
 						<<elseif $NPCList[_n].location.genitals isnot "head">>
@@ -4817,11 +4617,11 @@
 				<</if>>
 			<<elseif $enemyanger + $rng lte 155>>
 				<<if $walltype isnot "front">>
-					<<He_nun>> 갈증으로 가득한 눈으로, 당신의 <<breasts_rul>> <<admires>>.
+					<<He_nun>> 갈증으로 가득한 눈으로, 당신의 <<breasts_rul>> ?admires.
 					<<neutral 5 _n>>
 					<<bodypart_admire chest>>
 				<<else>>
-					<<He_nun>> 갈증으로 가득한 눈으로, 당신의 사타구니를 <<admires>>.
+					<<He_nun>> 갈증으로 가득한 눈으로, 당신의 사타구니를 ?admires.
 					<<neutral 5 _n>>
 					<<bodypart_admire pubic>>
 				<</if>>
@@ -5059,12 +4859,30 @@
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions. 
 				While in sync, they display the double version text and combat outcomes.
 			-->
+
+			/* Error handling for escaped penises. Divert to regular penetration */
+			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
+			<<set $vaginadoubletarget to _n>>
+			<<if $vaginatarget is $vaginadoubletarget>>
+				<<set $_error to "[" + $NPCList[$vaginatarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$vaginatarget].penis + "] but player state remains ["+$vaginastate + "]">>
+				<<set $_source to "Occurred in man-combat -> penisinit: DVP. Please export and report.">>
+				<br><br><<error $_error $_source>><br><br>
+				<<He_nun>> 당신의 <<pussy_rul>> <<his_yi>> <<penisdesc_ro $NPCList[$vaginatarget].penisdesc>> 희롱한다.
+				<<set $NPCList[$vaginatarget].penis to "vaginaentrance">>
+
+				<<if $vaginastate is "entrance">><<set $NPCList[$vaginatarget].penis to "vaginaentrance">>
+				<<elseif $vaginastate is "imminent">><<set $NPCList[$vaginatarget].penis to "vaginaimminent">>
+				<<elseif $vaginastate is "penetrated">><<set $NPCList[$vaginatarget].penis to "vagina">>
+				<</if>>
+			<<else>>
+			/* End error catch */
+
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
 				<<equipCondom _n>>
 				<span class="green"><<He_nun>> <<his_yi>> 자지에 콘돔을 씌운다.</span>
 			<</if>>
-			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 다리 사이로 움직여, 당신의 <<pussyPost>> 앞에 있는 다른 자지와 동참한다.</span>
+			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 다리 사이로 움직여, 당신의 <<pussyPost>> 앞에 있는 다른 자지에 동참한다.</span>
 			<<neutral 5>><<set $vaginause to "penisdouble">><<set $NPCList[_n].penis to "vaginadoubleentrance">><<if $vaginastate isnot "doublepenetration" and $vaginastate isnot "doubleimminent">><<set $vaginastate to "doubleentrance">><</if>><<set $speechvaginaentrance to 1>>
 			<<set $NPCList[_n].location.genitals = "genitals">>
 			<<set $vaginadoubletarget to _n>>
@@ -5075,7 +4893,9 @@
 			<<elseif $NPCList[$vaginatarget].penis is "vaginaentrance">>
 				<<set $NPCList[$vaginatarget].penis to "vaginadoubleentrance">>
 			<</if>>
-			
+
+			<</if>>
+
 		<<elseif $analdisable is "f" and $anususe is 0>>
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
@@ -5100,6 +4920,33 @@
 			There are two primary states; in sync and out of sync. While out of sync, they typically display text more or less the same as their singular versions. 
 				While in sync, they display the double version text and combat outcomes.
 			-->
+			
+			/* Error handling for escaped penises. Divert to regular penetration */
+			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
+			<<set $anusdoubletarget to _n>>
+			<<if $anustarget is $anusdoubletarget>>
+				<<set $_error to "[" + $NPCList[$anustarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$anustarget].penis + "] but player state remains ["+$anusstate + "]">>
+				<<set $_source to "Occurred in man-combat -> penisinit: DAP. Please export and report.">>
+				<br><br><<error $_error $_source>><br><br>
+				<<He_nun>> 당신의 <<bottom_ul>> <<his_yi>> <<penisdesc_ro $NPCList[$anustarget].penisdesc>> 희롱한다.
+				<<set $NPCList[$vaginatarget].penis to "anusentrance">>
+				<<if $anusstate is "entrance">>
+					<<set $NPCList[$anustarget].penis to "anusentrance">>
+					<<He_nun>> 삽입하려고 하지만, 미끄러져 나간다.
+				<<elseif $vaginastate is "imminent">>
+					<<set $NPCList[$vaginatarget].penis to "anusimminent">>
+					<<He_nun>> <<his_yi>> 자지를 당신의 구멍에 눌러대며, 무엇이 다가올 지에 대해 희롱한다.
+				<<elseif $vaginastate is "penetrated">>
+					<<set $NPCList[$vaginatarget].penis to "anus">>
+					<<He_nun>> 계속 당신의 <<bottomPost>> 안으로 찔러넣는다.
+				<</if>>
+			<<else>>
+				/*<br>
+				<span class="red">Penis escaped. Please inform Vrelnir. Enjoy the "feature" ;).</span>
+				<br>
+				<span class="pink"><<He>> dons a double penetrator strap-on, pressing it against your ass.</span>*/
+			/* End error catch */
+
 			<<if $condomUse is false>>
 			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[_n].condom is false>>
 				<<equipCondom _n>>
@@ -5116,13 +4963,16 @@
 			<<elseif $NPCList[$anustarget].penis is "anusentrance">>
 				<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
 			<</if>>
+
+			<</if>>
 		<</if>>
 	<<elseif $enemyanger + $rng lte 120>>
 		<<if $analingusdisablegiving is "f" and $enemyno gte 2 and $position isnot "wall"
-				and $mouthuse is 0 and $NPCList[_n].location.head isnot "head" and $NPCList[_n].location.genitals is 0
-				and (!$player.vaginaExist or $vaginause isnot 0)
-				and (!$player.penisExist or $penisuse isnot 0)
-				and ($analdisable is "t" or $anususe isnot 0)>>
+			and $mouthuse is 0 and $NPCList[_n].location.head isnot "head" and $NPCList[_n].location.genitals is 0
+			and (!$player.vaginaExist or $vaginause isnot 0)
+			and (!$player.penisExist or $penisuse isnot 0)
+			and ($analdisable is "t" or $anususe isnot 0)
+			and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 			<span class="purple"><<He_nun>> 뒤로 돌아 <<his_yi>> 엉덩이를 당신의 얼굴 앞으로 움직인다.</span>
 			<<submission 5 _n>><<set $mouthuse to "otheranus">><<set $mouthstate to "otheranus">><<set $NPCList[_n].penis to "mouthotheranus">>
 			<<set $NPCList[_n].location.genitals = "head">><<set $speechmouthotheranus to 1>><<set $mouthtarget to _n>>
@@ -5133,7 +4983,7 @@
 	<<elseif $enemyanger + $rng lte 140>>
 		<<if $penisbitten is 0>>
 			<<if $position isnot "wall">>
-				<<if $mouthuse is 0 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head">>
+				<<if $mouthuse is 0 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head"and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 					<<if $NPCList[_n].condom isnot false>>
 						<<removeCondom _n>>
 						<<He_nun>> <<his_yi>> 자지에서 콘돔을 뺀다.
@@ -5276,7 +5126,7 @@
 		<span class="blue"><<He_nun>> 당신 위에 다리를 벌리고 올라앉아, <<his_yi>> 엉덩이를 당신의 <<penisPost>>에 비벼댄다.</span>
 		<<neutral 5>><<set $penisuse to "otheranus">><<set $NPCList[_n].vagina to "otheranusentrance">><<set $penisstate to "otheranusentrance">><<set $speechotheranusentrance to 1>><<set $penistarget to _n>>
 		<<set $NPCList[_n].location.genitals = "genitals">>
-	<<elseif $enemyanger + $rng lte 60 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and ($position isnot "wall" or $walltype is "front")>>
+	<<elseif $enemyanger + $rng lte 60 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and ($position isnot "wall" or $walltype is "front") and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 		<<if $rng % 5 is 0>>
 			<<if $position is "doggy">>
 				<<He_nun>> 부드럽게 당신을 등을 바닥에 댄 자세로 돌린다.
@@ -5396,7 +5246,7 @@
 					<<He_nun>> 당신의 <<pussy_rul>> 발로 찬다.
 					<<violence 20>><<hitstat>><<bruise vagina>><<set $speechbeat to 1>>
 				<</if>>
-			<<elseif $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0>>
+			<<elseif $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "head" and $mouthuse is 0 and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 				<<if $rng % 2 is 0>>
 					<<if $position is "doggy">>
 						<<He_nun>> 당신을 등을 바닥에 댄 자세로 돌린다.
@@ -5436,6 +5286,108 @@
 			<<violence 10>><<bruise face>><<set $speechbeat to 1>><<hitstat>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "chest_section">>
+<<if $NPCList[_n].chest isnot "none">>
+	<<if $NPCList[_n].breastsize lte 1>>
+		<<set $_NPCBreastDesc to "가슴">><<set $_NPCBreastDesc_ga to "가슴이">>
+	<<else>>
+		<<trBreastsdesc $NPCList[_n].breastsdesc "이" "sep">><<set $_NPCBreastDesc to ($NPCList[_n].chest is "clothed" ? "옷 속의" : either("드러난", "노출된")) + " _trResult">><<set $_NPCBreastDesc_ga to $_NPCBreastDesc+_trPost>>
+	<</if>>
+<</if>>
+<<if $NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed">>
+	<<if $NPCList[_n].pronoun is "f" and ($NPCList[_n].location.genitals is "genitals" or $NPCList[_n].stance is "top")>>
+		<!-- Doggy -->
+		<<if $position is "doggy">>
+			<!-- Being under the player -->
+			<<if $NPCList[_n].vagina.toString().includes("penis")
+			or $NPCList[_n].vagina is "frot"
+			or $NPCList[_n].vagina.toString().includes("vagina")
+			or $NPCList[_n].penis.toString().includes("otheranus")
+			or $NPCList[_n].penis is "vaginadouble">>
+				<<if $NPCList[_n].mouth is "kiss">>
+					<<if $NPCList[_n].breastsize lte 1>>
+						<<His_yi>> 젖꼭지가 당신의 것에 스쳐 지나간다.
+					<<else>>
+						<<His_yi>> $_NPCBreastDesc_ga <<if $NPCList[_n].breastsize is $breastsize>>당신의 것을<<else>>당신의 <<breasts_rul>><</if>> 짓누른다.
+					<</if>>
+				<<else>>
+					<<if $NPCList[_n].breastsize gte 6>>
+						<<if $NPCList[_n].righthand is 0 and $NPCList[_n].lefthand is 0>>
+							<<He_nun>> 당신을 <<his_yi>> $_NPCBreastDesc 사이로 껴안는다.
+						<<else>>
+							<<His_yi>> <<breastsdesc_ga $NPCList[_n].breastsdesc>> <<if $NPCList[_n].chest is "clothed">><<his_yi>> <<trClothes "upper" $NPCList[_n].clothes.upper.name "name">>에 싸여 당신 아래에서<<else>><<his_yi>> 움직임에 따라 당신 아래에서 자유로이<</if>> 튀어오른다.
+						<</if>>
+					<<else>>
+						<<His_yi>> $_NPCBreastDesc_ga 당신 아래에서 벌어진 채 놓여있다.
+					<</if>>
+				<</if>>
+			<!-- Being above/behind the player -->		
+			<<else>>
+				<<if $NPCList[_n].breastsize gte 8>>
+					당신은 <<his_yi>> $_NPCBreastDesc_ga 당신의 등을 무겁게 누르는 것을 느낀다.
+				<<else>>
+					당신은 <<his_yi>> $_NPCBreastDesc_ga 당신의 등을 누르는 것을 느낀다.
+				<</if>>
+			<</if>>
+		<!-- Missionary -->
+		<<else>>
+			<!-- Being under the player -->
+			<<if $NPCList[_n].penis.toString().includes("anus") or
+			$NPCList[_n].penis is "vaginadouble">>
+				<<if $NPCList[_n].breastsize gte 10>>
+					<<if $NPCList[_n].righthand is 0 and $NPCList[_n].lefthand is 0>>
+						<<He_nun>> 당신을 <<his_yi>> $_NPCBreastDesc 사이로 껴안는다.
+					<<else>>
+						<<His_yi>> $_NPCBreastDesc_ga 당신이 그 사이에 눕자 당신 주변에서 튀어오른다.
+					<</if>>
+				<<else>>
+					당신은 <<his_yi>> $_NPCBreastDesc_ga 당신의 등을 누르는 것을 느낀다.
+				<</if>>
+			<!-- Being above/riding the player -->
+			<<else>>
+				<<if $NPCList[_n].mouth is "kiss">>
+					<<if $NPCList[_n].breastsize lte 1>>
+						<<His_yi>> 젖꼭지가 당신의 것에 스쳐 지나간다.
+					<<else>>
+						<<His_yi>> $_NPCBreastDesc_ga <<if $NPCList[_n].breastsize is $breastsize>>당신의 것을<<else>>당신의 <<breasts_rul>><</if>> 짓누른다.
+					<</if>>
+				<<else>>
+					<<if $NPCList[_n].breastsize gte 6>>
+						<<His_yi>> <<breastsdesc_ga $NPCList[_n].breastsdesc>> <<if $NPCList[_n].chest is "clothed">><<his_yi>> <<trClothes "upper" $NPCList[_n].clothes.upper.name "name">>에 싸여 당신 위에서<<else>><<his_yi>> 움직임에 따라 당신 위에서 자유로이<</if>> 튀어오른다.
+					<<else>>
+						<<His_yi>> $_NPCBreastDesc_ga 당신 위에서 벌어진 채 놓여있다.
+					<</if>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<<elseif $NPCList[_n].chest.toString().includes("mouth")>>
+	<<if $mouthstate is "breasts">>
+		<<if $enemyarousal gte (($enemyarousalmax / 10) * 6)>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His_yi>> 심장이 당신의 볼 옆에서 빠르게 두근거린다.
+			<<else>>
+				당신은 <<his_yi>> 심박이 <<his_yi>> $_NPCBreastDesc에서 점점 빨라지는 것을 느낄 수 있다.
+			<</if>>
+		<<else>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His_yi>> 가슴이 당신의 얼굴을 비벼댄다.
+			<<else>>
+				<<His_yi>> 가슴이 숨 쉴 때 마다 부풀어 올라, <<his_yi>> $_NPCBreastDesc_ga 리드미컬하게 당신의 얼굴을 비벼댄다.
+			<</if>>
+		<</if>>
+	<<elseif $mouthstate is "nipple">>
+		<<if $enemyarousal gte (($enemyarousalmax / 10) * 6)>>
+			<<if $NPCList[_n].breastsize lte 1>>
+				<<His_yi>> 가슴이 불규칙하게 들썩거린다. <<He_nun>> 당신의 입이 <<his_yi>> 젖꼭지에 계속 붙어있게 하려고 몸부림친다.
+			<<else>>
+				<<His_yi>> 호흡이 빠르고 거칠어서, 당신의 머리를 <<his_yi>> 가슴으로 거칠게 밀치고 있다.
+			<</if>>	
+		<</if>>
+	<</if>>
+<</if>>
 <</widget>>
 
 <<widget "mancombat_strangle">>
@@ -5608,18 +5560,24 @@
 
 <<widget "suffocatepass">>
 <<set $suffocating = Math.clamp($suffocating + ($args[0] or 1), 0, 10)>>
-<<if $suffocating gte 2 and $suffocationPhase isnot 2>><span class="red"> 당신은 의식을 잃으려 한다.</span><</if>>
+<<if $suffocating gte 1 and $suffocationPhase isnot 2>><span class="red"> You're about to lose consciousness.</span><</if>>
 <!-- Lose consciousness if it has been 20+ seconds since PC ran out of air -->
-<<if $suffocating gte 3 and $suffocated isnot 1>>
+<<if $suffocating gte 2 and $suffocated isnot 1>>
 	<<set $previousPassage = $passage>>
 	<<set $suffocationPhase to 1>>
 	<<set $suffocated to 1>>
-	<<goto "Man combat suffocated">>
+
+	<<set $nextPassage to "Man combat suffocated">>
 <</if>>
 <</widget>>
 
-:: Man combat suffocated
-
+:: Man combat suffocated [exitCheckBypass]
+<<if $npc.includes("Sydney")>>
+	<<NPCStatusCheck "Sydney">>
+<</if>>
+<<if $npc.includes("Kylar")>>
+	<<NPCStatusCheck "Kylar">>
+<</if>>
 <<if $suffocationPhase lte 1>>
 	<span class='red'>당신은 질식했다.</span><br>
 	당신의 시야는 안개 낀 것처럼 점점 희미해진다.

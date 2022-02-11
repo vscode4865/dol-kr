@@ -57,26 +57,37 @@
 	<<homeStudyOptions>>
 	<br>
 	<<christmas_options>>
-	<<if $debug is 1>>
-		/*indev radio testing*/
-		라디오가 틀어져있다:
+		<<if $debug is 1>>
+		<span class="green">Debugging starts here</span>
 		<br>
-		<<radio_placehere>>
-		<span class="green">More debugging:</span>
-		<br>
-		<<link [[테스트 뉴스 추가|Bedroom]]>><<radio_addnews "meteor_fall" "2">><</link>> radio_addnews "meteor_fall" "2"
-		<br>
-		<<link [[테스트 뉴스 추가|Bedroom]]>><<radio_addnews "godzilla_awaken" "3">><</link>> radio_addnews "godzilla_awaken" "3"
-		<br>
-		<<link [[뉴스 하드 리셋|Bedroom]]>><<radio_hardreset>><</link>> radio_hardreset
-		<br>
-		<<link [[자정 중요도 감소|Bedroom]]>><<radio_midnight>><</link>> radio_midnight
-		<br>
+		<<if $debugradio or $debugradio is undefined>>
+			/*indev radio testing*/
+			라디오가 틀어져있다:
+			<br>
+		
+			<<radio_placehere>>
+		
+			<span class="green">More debugging:</span>
+			<br>
+			<<link [[테스트 뉴스 추가|Bedroom]]>><<radio_addnews "meteor_fall" "2">><</link>> radio_addnews "meteor_fall" "2"
+			<br>
+			<<link [[테스트 뉴스 추가|Bedroom]]>><<radio_addnews "godzilla_awaken" "3">><</link>> radio_addnews "godzilla_awaken" "3"
+			<br>
+			<<link [[뉴스 하드 리셋|Bedroom]]>><<radio_hardreset>><</link>> radio_hardreset
+			<br>
+			<<link [[자정 중요도 감소|Bedroom]]>><<radio_midnight>><</link>> radio_midnight
+			<br>
+			<<link [[Turn off radio|$passage]]>><<set $debugradio to false>><</link>>
+			<br><br>
+		<<else>>
+			<<link [[Turn on radio|$passage]]>><<set $debugradio to true>><</link>>
+			<br>
+		<</if>>
 		<<link [[23시 58분으로 스킵|Bedroom]]>><<set $time to 1438>><</link>>
 		<br>
 		<<link [[DoL 새 기능 시험 (0:15)|Bedroom]]>><<pass 15>><</link>>
 		<br><<link [[커스텀 테스트|custom Testroom]]>><</link>><br>
-		<span class="green">디버깅 끝</span>
+		<span class="green">Debugging ends here</span>
 		<br><br>
 	<</if>>
 	침대가 방의 대부분을 차지한다.
@@ -111,10 +122,10 @@
 	<br>
 	옷은 한쪽 구석에 놓여있다.
 	<br>
-	<<wardrobeicon>>[[옷장|Wardrobe]]
+	<<wardrobeicon>><<link [[옷장|Wardrobe]]>><</link>>
 	<br>
 	<<if $nextPassageCheck is "Mirror">>
-		<span class="nextLink"><<mirroricon>>[[거울|Mirror]]</span>
+		<span class="nextLink"><<mirroricon>><<link [[거울|Mirror]]>><</link>></span>
 		<br>
 	<<elseif $christmas is 1 and !$christmas_wraith and _wraithEvent>>
 		<br>
@@ -129,7 +140,7 @@
 		<<bloodmirroricon>><<link [[거울|Eerie Mirror]]>><<set $mirrortentacles to 1>><<set $phase to 0>><</link>>
 		<br>
 	<<else>>
-		<<homemirroricon>>[[거울|Mirror]]
+		<<homemirroricon>><<link [[거울|Mirror]]>><</link>>
 		<br>
 	<</if>>
 
@@ -401,7 +412,7 @@
 	<</if>>
 	당신의 귀가 울린다.
 	<br><br>
-	<<storeon "bed" "wardrobe">><<set $possessed to true>><<set $wraith.exit to "home">><<set $controlSaved to $control>><<set $control to 0>>
+	<<storeon "bed" "wardrobe">><<wraithPossess "home">>
 	<span class="nextLink"><<link [[걸어라.|Bedroom]]>><</link>></span>
 	<br>
 <<elseif $baileyrapewake is 1>>
@@ -546,7 +557,9 @@
 			<br><br>
 			<<set $motherwake to 1>>
 		<<else>>
-			<<wakingEffects $sleepHoursTotal>>
+			<<if !_wakingEffect>>
+				<<wakingEffects $sleepHoursTotal>>
+			<</if>>
 			<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
 				당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다. <<stress 5>><<gstress>>
 				<br><br>
@@ -995,7 +1008,7 @@ They back away from you, still watching. "Privacy please," you say. They blush a
 <<elseif $dangerhome gte 1>><<link [[일어난다|Molestation]]>><<set $phase to 0>><<set $molestationstart to 1>><</link>>
 <</if>>
 
-<<if $safehome gte 1>>[[잔다|Bailey Rescue]]
+<<if $safehome gte 1>><<link [[잔다|Bailey Rescue]]>><</link>>
 <</if>>
 
 <<pass 1 hour>>
@@ -1053,7 +1066,7 @@ They back away from you, still watching. "Privacy please," you say. They blush a
 <br><br>
 <<clotheson>>
 <<endcombat>>
-[[다음|Bedroom]]
+<<link [[다음|Bedroom]]>><</link>>
 
 :: Bed
 
@@ -1102,7 +1115,7 @@ They back away from you, still watching. "Privacy please," you say. They blush a
 	<<link [[그냥 잔다|Sleep]]>><<set $sleephour to -1>><<set $saveDetails.auto.count++>><</link>> (??:??)<<ltiredness>>
 	<br><br>
 
-	<<link [[침대에서 나온다|Bedroom]]>><<storeon "bed">><<set $wardrobe_location to "wardrobe">><<endevent>><</link>>
+	<<link [[침대에서 나온다|Bedroom]]>><<storeon "bed">><<set $wardrobe_location to "wardrobe">><<loadTempHairStyle>><<endevent>><</link>>
 	<br><br>
 <<else>>
 	<<unset _skip>>
@@ -1149,7 +1162,7 @@ They back away from you, still watching. "Privacy please," you say. They blush a
 			<br>
 		<</if>>
 	<<else>>
-		[[다음|Bedroom]]
+		<<link [[다음|Bedroom]]>><</link>>
 	<</if>>
 <<elseif $baileyReunionScene is "dungeon">>
 	<<npc Bailey>><<person1>>
@@ -1422,7 +1435,7 @@ No soldier is a match for your unstoppable onslaught. Cheater.
 	<<set $skulduggerydifficulty to 400>>
 	<<link [[속인다|Orphanage Hide Skul]]>><</link>><<skulduggerydifficulty>>
 	<br>
-	<<link [[빗자루를 던진다|Orphanage Hide Throw]]>><</link>> <span class="blue">(Medium)</span>
+	<<link [[빗자루를 던진다|Orphanage Hide Throw]]>><</link>><<difficulty 50>>
 	<br>
 <<else>>
 	<<personPost "은">> 눈길조차 주지 않고 지나쳐간다. 당신은 심장이 쿵쾅거리는 채로 안전한 자신의 방으로 돌아간다.
@@ -1485,12 +1498,7 @@ No soldier is a match for your unstoppable onslaught. Cheater.
 <<if $skulduggerysuccess is 1>>
 	<span class="green"><<personPost "이">> 손잡이를 놓는다.</span> "아." <<hePost "이">> 말한다. "알았어. 방에서 기다리고 있을게." <<HePost "은">> 당신을 어둠 속에 두고 간다. 당신은 문이 닫히는 소리가 들릴 때까지 기다린다. 당신은 심장이 쿵쾅거리는 채로 안전한 자신의 방으로 돌아온다.
 	<br><br>
-	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
-		<<skulduggeryskilluse>>
-	<<else>>
-		<span class="blue">너무 쉬웠다. 아무 것도 배우지 못했다.</span>
-		<br><br>
-	<</if>>
+	<<skulduggeryuse>>
 	<<link [[다음|Bedroom]]>><<endevent>><</link>>
 	<br>
 <<else>>
@@ -1509,12 +1517,7 @@ No soldier is a match for your unstoppable onslaught. Cheater.
 	얼굴이 붉어지고 심장이 쿵쾅거리는 채로, 당신은 <<hePost "을">> 지나쳐 복도를 달려가 자신의 방에 들어간다.
 	<br><br>
 	<<if $orphanageexposed is undefined>><<set $orphanageexposed to 1>><<else>><<set $orphanageexposed += 1>><</if>>
-	<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
-		<<skulduggeryskilluse>>
-	<<else>>
-		<span class="blue">너무 쉬웠다. 아무 것도 배우지 못했다.</span>
-		<br><br>
-	<</if>>
+	<<skulduggeryuse>>
 	<<if $orphanageexposed gte 10 and random(1, 100) gte 51>>
 		아직도 거칠게 숨을 내쉬고 있자니, 조용한 발걸음이 가까워져서는 가볍게 문 두들기는 소리가 난다.
 		<br><br>
@@ -1634,7 +1637,7 @@ No soldier is a match for your unstoppable onslaught. Cheater.
 <<npc Bailey>><<person1>>"이 도시가 어떻게 되려는 건지 모르겠네." 베일리가 창문을 닫으며 말한다. <<HePost "은">> 당신을 향해 몸을 돌린다. "중요한 일이 아니면 귀찮게 하지 마." 베일리는 방을 나서면서 문을 쾅 닫고 나간다.
 <<endevent>>
 <br><br>
-[[다음|Bedroom]]
+<<link [[다음|Bedroom]]>><</link>>
 
 :: Molestation Escape
 
@@ -1646,7 +1649,7 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <br><br>
 <<clotheson>>
 <<endcombat>>
-[[다음|Bedroom]]
+<<link [[다음|Bedroom]]>><</link>>
 
 :: Bask
 
@@ -1657,7 +1660,7 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <br><br>
 <<link [[옷을 벗는다|Nude Bask]]>><<set $stress -= 40>><</link>><<exhibitionist1>><<lstress>>
 <br>
-[[그만 둔다|Garden]]
+<<link [[그만 둔다|Garden]]>><</link>>
 
 :: Nude Bask
 
@@ -1696,7 +1699,7 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
 	<<pregnancyWatersBrokenPassout "home">>
 <<else>>
-	[[모든 것이 암흑 속으로 사라져간다...->Passout home]]
+	<<link [[모든 게 깜깜해진다...->Passout home]]>><</link>>
 <</if>>
 <</widget>>
 
@@ -1733,7 +1736,7 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <<if $timer lte 0>>
 	<span id="next"><<link [[다음|Bath Slime Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link "다음">><<script>>state.display(state.active.title, null)<</script>><</link>></span><<nexttext>>
+	<span id="next"><<link [[다음|$passage]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Bath Slime Finish
@@ -2024,7 +2027,7 @@ After thirty minutes pass without event, you quietly head back to your bedroom. 
 <<else>>
 	<<set $kylarDaily.sleepRape to true>>
 	Kylar's eyes snap open the moment you cry out. <<nnpc_He "Kylar">> lunges out of the bed, tackling the <<person>> to the floor. <<nnpc_He "Kylar">> pulls out a knife from
-	<<if $skulduggery gte 200>>
+	<<if currentSkillValue('skulduggery') gte 200>>
 		a hidden pocket on the inside of <<nnpc_his "Kylar">> <<if $NPCName[$NPCNameList.indexOf("Kylar")].pronoun is "m">>pant leg<<else>>skirt<</if>>
 	<<else>>
 		out of nowhere

@@ -33,8 +33,8 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trClothes *upper "sundress">>                                 //  "선 드레스"
-        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "선 드레스", _trPost: "를"
+        <<trClothes *upper "sundress">>                                 //  "선드레스"
+        <<trClothes "upper" "sundress" "name" "을" "sep">>              //  _trResult: "선드레스", _trPost: "를"
         <<trClothes "upper" "sundress" "desc">>                         //  "뛰어 놀기에 좋다."
     ```
 
@@ -58,9 +58,30 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trSearchClothes "sundress">>                                  //  "선 드레스"
-        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "선 드레스", _trPost: "를"
+        <<trSearchClothes "sundress">>                                  //  "선드레스"
+        <<trSearchClothes "sundress" "name" "을" "sep">>                //  _trResult: "선드레스", _trPost: "를"
         <<trSearchClothes "sundress" "desc">>                           //  "뛰어 놀기에 좋다."
+    ```
+
+    ```
+    <<trNpcClothes>>
+        <<trNpcClothes *part *clothes_name>>
+        <<trNpcClothes *part *clothes_name post "sep">>
+
+        trClothes 의 NPC 버전. 옷의 이름이나 설명을 번역한다.
+
+
+        필수사항
+        - *part: 착용 부위 ("upper"/"lower"), 세트("set"), 혹은 전체에서 검색 ("all")
+        - *clothes_name: 옷의 이름 혹은 세트명 혹은 세트의 설명
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trNpcClothes "lower" "skirt">>_trResult                                 //  "스커트"
+        <<trNpcClothes "set" "shirt and trousers" "을" "sep">>              //  _trResult: "셔츠와 바지", _trPost: "를"
     ```
 
     ```
@@ -407,10 +428,17 @@
     ```
 
     ```
-    <<vulvaPost>>
-        + <<breastsPost>>와 용도 및 방식 같음. 생략
-    ```
+    <<body_size_textPost>>
+        <<body_size_textPost post "sep">>
+        
+        <<body_size_text>>의 대체 위젯. 조사를 붙일 수 있다.
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
 
+        e.g.
+        <<body_size_textPost "을">>               // 조그마한 신체를
+    ```
 
 * clothesPost
     ```
@@ -545,6 +573,25 @@
     <<braPost>>
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
+
+    ```
+    <<npcClothesTextPost>>
+        <<npcClothesTextPost *NpcObject *part post "sep">>
+        
+        <<npcClothesText>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        필수사항
+		- NpcObject: npc 객체. 보통 $NPCList[_n] 같은 식으로 들어간다.
+		- part: 옷의 부위. "both", "upper", "lower" 중 하나.
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<npcClothesTextPost $NPCList[_n] "upper" "을">>               // 티셔츠를
+    ```
+
 
 * EasyPost
 	```
@@ -1558,6 +1605,54 @@
 		<<getPostNum>>                   //  _postNum = undefined
     ```
 
+    ```
+	trPostTemplate :  원본 0.3.7.x 부터 추가된 템플릿(Template) 을 지원하기 위해 추가된 조사 템플릿 모음
+		?[템플릿_명사]?[템플릿_조사]
+		
+		템플릿 명사에 맞는 조사를 출력한다. 종류는 EasyPost (하단 참조) 에서 사용하는 것과 동일.
+			?un/?nun - 은/는
+			?i/?ga - 이/가
+			 ?ul/?rul - 을/를
+			 ?gwa/?wa - 과/와
+			?irang/?rang - 이랑/랑
+			?a/?ya - 아/야
+			?iyo/?yo - 이여/여
+			?iya ( ?ya 는 아/야 에서 이미 사용하고 있어서 ?iya로 통일시킴) - 이야/야
+			?uro/?ro - 으로/로
+			?uroseo/?roseo - 으로서/로서
+			?urosseo/?rosseo - 으로써/로써
+			?urobuter/?robuter - 으로부터/로부터
+			?ira/?ra - 이라/라
+			?irago/?rago - 이라고/라고
+			?ina/?na - 이나/나
+			?iran/?ran - 이란/란
+			?idunga/?dunga - 이든가/든가
+			?idonga/?donga - 이던가/던가
+			?idunji/?dunji - 이든지/든지
+			?idonji/?donji - 이던지/던지
+			?iyamalro/?yamalro - 이야말로/야말로
+			?iguna/?guna - 이구나/구나
+			?ida/?da - 이다/다
+			?iji/?ji - 이지/지
+			?yi - 의
+	
+		사용법
+		1. 먼저 추가된 템플릿의 개조가 필요하다. 템플릿은 03-JavaScript/03-Templates 에 정의되어 있다.
+			- 원본
+				Template.add('vulva',
+					either("vulva", "quim", "flange", "pussy"));
+			- 번역/개조본
+				Template.add('vulva', function () {
+					T.trResult = either("외음부", "음부", "보지 테두리", "보지"); getPostNum(T.trResult); return T.trResult;});
+			- 첫줄 끝에 "function {" 를 넣고 둘째줄 앞에 "T.trResult =", 뒤의 ) 두개 사이에 "; getPostNum(T.trResult); return T.trResult;}" 를 넣으면 된다.
+		2. 이러면 조사 종류가 _postNum 에 저장된다.
+		3. 템플릿을 사용하는 방법은 ?[템플릿_이름] 식으로 쓰면 되며, ?[템플릿_명사]?[템플릿_조사] 처럼 바로 템플릿 조사를 붙여주면 끝.
+			- e.g
+				?vulva?rul			//보지를
+
+    ```
+
+
 * trRole
     ```
     <<trRole>>
@@ -1609,8 +1704,26 @@
         <<trWeather "rain">>                //  "비"
     ```
 
+    ```
+    <<trSeason>>
+        <<trSeason *season post "sep">>
+
+        계절을 번역한다.
+
+        필수사항
+        - *season: 계절 혹은 계절 배열. 배열인 경우 쉼표로 붙여서 표시한다.
+
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trSeason "spring">>                //  봄
+        <<trSeason ["autumn", "winter"] "과">>                //  가을, 겨울과
+    ```
+
 -----------------
-# 기타
+# 기타 명사 매크로
    - 사용 횟수가 너무 적어 새로 만들지 않고 기존 매크로를 변경시켜 사용하는 매크로들. 조사를 받는 것만 기재한다.
 
 * base-combat/audience.twee
@@ -1669,12 +1782,6 @@
         + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
-* overworld-forest/loc-forest/widget.twee
-    ```
-    <<gwilanItem>>
-        + 그윌란이 들고 다니는 물건. <<pShePost>>와 용도 및 방식 같음. 생략
-    ```
-
 * overworld-plains/loc-livestock/widget.twee
     ```
     <<livestock_cows>>
@@ -1685,6 +1792,22 @@
     <<livestock_horse>>
         + 말. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
+
+-----------------
+# 기타
+	- 동사 매크로중 몇몇은 영어와 한글의 차이 때문에 추가 옵션을 받는 매크로가 존재한다.
+	
+* text.twee
+    ```
+	<<strokes>> 
+		원래는 "애무한다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "애무하고" 로 표시됨
+    ```
+
+    ```
+	<<npcUndressText>> 
+		원래는 "벗긴다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "벗기고", "but" 이 추가되면 "벗기려 하지만" 으로 표시됨
+    ```
+
 
 -----------------
 # EasyPost
@@ -1749,7 +1872,6 @@
 		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
 		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>, <<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
-		<<vulva_(조사)>>
 		```
 	- clothesPost 계열
 		```

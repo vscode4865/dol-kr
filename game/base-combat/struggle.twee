@@ -355,6 +355,9 @@
 	<<if _lurker_net_possible is true>>
 		<<set _leftaction["채집망을 던진다"] to "capture">>
 	<</if>>
+
+	<<leftclothesnew>>
+
 	<<if $combatControls isnot "radio">>
 		<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 			<<if V[$_part + 'use'] is "struggle" and $struggle[$_part].creature>>
@@ -502,6 +505,9 @@
 	<<if _lurker_net_possible is true>>
 		<<set _rightaction["채집망을 던진다"] to "capture">>
 	<</if>>
+
+	<<rightclothesnew>>
+
 	<<if $combatControls isnot "radio">>
 		<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 			<<if V[$_part + 'use'] is "struggle" and $struggle[$_part].creature>>
@@ -643,9 +649,11 @@
 	<</switch>>
 	<<if $_changetype isnot true>>
 		<<set _mouthaction to {}>>
-		<<if $mouthstate is "struggle">>
+		<<if $mouthstate is "struggle" and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 			<<set _mouthaction["입다물고 있는다"] to "rest">>
 			<<set _mouthaction["벌린다"] to "open">>
+		<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+			<<set _mouthaction["쉰다"] to "rest">>
 		<<elseif $mouthstate is "struggle_pen">>
 			<<set _mouthaction["쉰다"] to "rest">>
 			<<set _mouthaction["빤다"] to "suck">>
@@ -1011,7 +1019,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<set $struggle.mouth.progress += 1>>
 		<</if>>
 	<<elseif $mouthaction is "bite" and $mouthstate is "struggle_pen">>
-		<<if $wolfgirl gte 2 or $cat gte 2>>
+		<<if $transformationParts.traits.fangs isnot "disabled">>
 			당신은 그것의 <<struggle_appendage_rul mouth>> 당신의 송곳니로 깨문다. <span class="green">그것은 당신의 얼굴에서 황급히 떨어진다.</span>
 			<<set $mouthuse to 0>>
 			<<set $mouthstate to 0>>
@@ -1031,7 +1039,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 	<</if>>
 
 	<!-- FEET -->
-	<<set _grip_strength to $physique / 20 + $handskill>>
+	<<set _grip_strength to currentSkillValue('physique') / 20 + $handskill>>
 	<<if $feetaction is "rest">>
 		<<unset $dodging>>
 		당신은 다리를 가만히 둔다.
@@ -1064,6 +1072,10 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set _action to "grasp">>
 			<<elseif _handaction.includes("spray")>>
 				<<set _action to "spray">>
+			<<elseif _handaction.includes("upper")>>
+				<<set _action to "clothes">>
+			<<elseif _handaction.includes("lower")>>
+				<<set _action to "clothes">>
 			<<else>>
 				<<set _action to _handaction>>
 			<</if>>
@@ -1184,8 +1196,32 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<if $leftaction is $rightaction>>
 					<<break>>
 				<</if>>
+
+				<<if $spray gte 1>>
+					당신은 <<trStruggle $struggle[_actionpart].creature>>_trResult에게 스프레이를 뿌린다. <span class="green">그것은 당신의 <<struggle_region _actionpart>>에서 황급히 떨어진다.</span>
+					<<set $spraystat++>><<spray -1>>
+					<<set V[_actionpart + 'use'] to 0>>
+					<<set V[_actionpart + 'state'] to 0>>
+					<<struggle_part_init _actionpart>>
+					<<set $struggle.warded++>>
+					<<struggleClearActions _actionpart>>
+				<<else>>
+					당신은 당신의 <<struggle_region _actionpart>>에 달라붙어 있는 <<trStruggle $struggle[_actionpart].creature>>_trResult에게 스프레이를 뿌리려고 하지만, <span class="purple">당신의 스프레이통은 비어 있다!</span>
+				<</if>>
+				<br>
+				<<if $leftaction is $rightaction>>
+					<<break>>
+				<</if>>
+
+			<<case "clothes">>
+		        <<effectshandsclothes>>
+		        <br>
+		        <<if _hand is "left" and ($rightaction.toString().includes("upper") or $rightaction.toString().includes("lower"))>>
+		          <<break>>
+		        <</if>>
 		<</switch>>
 	<</for>>
+
 
 	/* lose grasp on the lurkers that you have no contact with */
 	<<if !$carryblock>>
@@ -1262,13 +1298,21 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<case 0>>
 				<<if $struggle.mouth.legs is "tentacles">>
 					그 <<struggle_mouth_creature_yi>> 촉수가 당신의 목 주위를 휘감는다.<<neutral 2>>
+				<<elseif $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					그 <<struggle_mouth_creature_yi>> <<struggle_appendage_ga mouth>> 당신의 <<worn_face_name_ul>> 비벼댄다.<<neutral 1>>
 				<<else>>
 					그 <<struggle_mouth_creature_yi>> <<struggle_appendage_ga mouth>> 당신의 얼굴을 비벼댄다.<<neutral 1>>
 				<</if>>
 			<<case 1>>
-				그 <<struggle_mouth_creature_ga>> 당신의 입술을 가지고 놀며, <span class="blue">안으로 들어갈 방법을 찾는다.</span><<neutral 2>>
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					그 <<struggle_mouth_creature_ga>> 당신의 <<worn_face_name_ul>> 가지고 놀며, <span class="blue">안으로 들어갈 방법을 찾는다.</span><<neutral 2>>
+					/*<<struggle_clothes mouth>>*/
+				<<else>>
+					그 <<struggle_mouth_creature_ga>> 당신의 입술을 가지고 놀며, <span class="blue">안으로 들어갈 방법을 찾는다.</span><<neutral 2>>
+				<</if>>
 			<<case 2>>
-				그 <<struggle_mouth_creature_yi>> <<struggle_appendage_ga mouth>> <span class="purple">당신의 입술을 눌러댄다.</span><<neutral 4>>
+				<<struggle_clothes mouth>>
+				/*The <<print $struggle.mouth.creature>>'s <<struggle_appendage mouth>> <span class="purple">pushes against your lips.</span><<neutral 4>>*/
 			<<case 3>>
 				그 <<struggle_mouth_creature_yi>> <<struggle_appendagePost mouth>> 끝이 당신의 입술을 벌리기 시작한다. <span class="pink">그것이 완전히 삽입될락 말락 한다.</span><<neutral 5>>
 			<<case 4>>
@@ -1708,7 +1752,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<!-- lurkers attacc -->
 			<<set $rng to random(1, 100)>>
 			<<if $dodging gte 1>>
-				<<set _doge_chance to (($feetskill / 3) + ($danceskill / 3) - $drunk - (!!$worn.feet.type.includes("heels") * 200))>>
+				<<set _doge_chance to (($feetskill / 3) + (currentSkillValue('danceskill') / 3) - $drunk - (!!$worn.feet.type.includes("heels") * 200))>>
 				<<feetskilluse>>
 			<</if>>
 			<<set _hit_chance to random(1, 1000)>>
@@ -1805,7 +1849,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 
 <<widget "struggle_difficulty_set">>
 	<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
-		<<set $struggle[$_part].success to Math.trunc(($struggle[$_part].grip * 17) + ($physique / 600))>>
+		<<set $struggle[$_part].success to Math.trunc(($struggle[$_part].grip * 17) + (currentSkillValue('physique') / 600))>>
 		<<if $struggle[$_part].success gte 100>>
 			<!-- can't strengthen anymore, default to pull -->
 			<<if $leftactiondefault is $_part + '_strengthen'>>
@@ -1871,6 +1915,12 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		<<set _struggle_exposed to "main_top">>
 	<<elseif !$worn.under_upper.type.includes("naked") and $worn.under_upper.exposed is 0>>
 		<<set _struggle_exposed to "under_top">>
+	<<else>>
+		<<set _struggle_exposed to "naked">>
+	<</if>>
+<<elseif $args[0] is "mouth">>
+	<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+		<<set _struggle_exposed to "mask">>
 	<<else>>
 		<<set _struggle_exposed to "naked">>
 	<</if>>
@@ -2049,6 +2099,27 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<set $struggle[$args[0]].damage += 1>>
 		<</if>>
 	<</if>>
+<<elseif _struggle_exposed is "mask">>
+	<<set $struggle[$args[0]].progress -= 1>>
+	<<if $struggle[$args[0]].legs is "tentacles">>
+		그 <<struggle_creature_yi $struggle[$args[0]].creature>> 촉수가 그 아래의 <<struggle_bodypart $args[0]>>에 다가가려고, 당신의 <<worn_face_name_yi>> 안쪽으로 꿈틀거리며 들어간다.<<neutral 2>><<damageFaceCover 5 struggle>>
+	<<else>>
+		그 <<struggle_creature_ga $struggle[$args[0]].creature>> 그 아래의 <<struggle_bodypart $args[0]>>에 다가가려고, 당신의 <<worn_face_name_ul>> 찢는다.<<neutral 1>>
+	<</if>>
+	<<damageFaceCover 5 struggle>>
+	<<if $struggle[$args[0]].creature is "slime">>
+		<span class="purple">슬라임 안에서 천이 녹으면서 쉬익 하는 소리가 난다.</span><<damageFaceCover 20 struggle>>
+	<<elseif $struggle[$args[0]].creature is "pale slime">>
+		<span class="purple">창백한 슬라임 안에서 천이 녹으면서 격렬하게 쉬익 하는 소리가 난다.</span><<damageFaceCover 30 struggle>>
+	<</if>>
+	<<if $worn.face.integrity lte 0>>
+		<<if $struggle[$args[0]].legs is "tentacles">>
+			그것의 촉수가 천 안으로 꿈틀거리며 들어와, <span class="pink">휙 움직이면서 그것을 찢어, 당신의 입을 노출시킨다.</span>
+		<<else>>
+			그것의 부속 기관이 천을 뚫고, <span class="pink">휙 움직이면서 그것을 찢어, 당신의 입을 노출시킨다.</span>
+		<</if>>
+		<<faceruined>><<set $worn.face.type.push("broken")>>
+	<</if>>
 <<elseif _struggle_exposed is "naked">>
 	<<if $args[0] is "vagina">>
 		그 <<struggle_creature_yi $struggle[$args[0]].creature>> <<struggle_appendage_ga $args[0]>> <span class="purple">당신의 <<pussy_rul>> 눌러댄다.</span><<neutral 4>>
@@ -2058,6 +2129,8 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		그 <<struggle_creature_yi $struggle[$args[0]].creature>> <<struggle_appendage_ga $args[0]>> <span class="purple">당신의 <<bottom_ul>> 눌러댄다.</span><<neutral 4>>
 	<<elseif $args[0] is "chest">>
 		그 <<struggle_creature_yi $struggle[$args[0]].creature>> <<struggle_appendage_ga $args[0]>> <span class="purple">당신의 <<breasts_rul>> 눌러댄다.</span><<neutral 4>>
+	<<elseif $args[0] is "mouth">>
+		그 <<struggle_creature_yi $struggle[$args[0]].creature>> 부속 기관이 <span class="purple">당신의 입을 누른다.</span><<neutral 4>>
 	<</if>>
 <</if>>
 
@@ -2073,6 +2146,8 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<bottomPost $args[1] $args[2]>>
 		<<case "chest">>
 			<<breastsPost $args[1] $args[2]>>
+		<<case "mouth">>
+			<<set _trResult to "입">><<trPost 0 $args[1] $args[2]>>
 	<</switch>>
 <</silently>><<print _trResult>>
 <</widget>>

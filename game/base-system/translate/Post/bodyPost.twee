@@ -1,35 +1,14 @@
 :: Widgets bodyPost [widget nobr]
 <<widget "breastsPost">><<silently>>
-    <<switch $breastsize>>
-        <<case 0>>
-            <<set _trResult to "유두">>
-        <<case 1>>
-            <<set _trResult to "약간 솟아오른 가슴">>
-        <<case 2>>
-            <<set _trResult to "조그마한 가슴">>
-        <<case 3>>
-            <<set _trResult to "작은 가슴">>
-        <<case 4>>
-            <<set _trResult to "앙증맞은 가슴">>
-        <<case 5>>
-            <<set _trResult to "평범한 가슴">>
-        <<case 6>>
-            <<set _trResult to "봉긋한 가슴">>
-        <<case 7>>
-            <<set _trResult to "큰 가슴">>
-        <<case 8>>
-            <<set _trResult to "풍만한 가슴">>
-        <<case 9>>
-            <<set _trResult to "커다란 가슴">>
-        <<case 10>>
-            <<set _trResult to "매우 큰 가슴">>
-        <<case 11>>
-            <<set _trResult to "엄청난 가슴">>
-        <<case 12>>
-            <<set _trResult to "거대한 가슴">>
-        <<default>>
-            <<set _trResult to "가슴">>
-    <</switch>>
+	<<if Number.isInteger($breastsize)>>
+		<<if $breastsize lte 0>>
+			<<set _trResult to "유두">>
+		<<else>>
+			<<set _trResult to setup.breastsizes[$breastsize] + " 가슴">>
+		<</if>>
+	<<elseif $debugdisable is "f">>
+		<<set _trResult to "ERROR - $$breastsize 가 숫자가 아님: $breastsize">>
+	<</if>>
     <<if $args[0] isnot undefined>>
         <<if $breastsize is 0>>
             <<trPost 1 $args[0] $args[1]>>
@@ -296,7 +275,19 @@
 <</if>>
 <</silently>><<print _trResult>><</widget>>
 
-<<widget "vulvaPost">><<silently>>
-	<<set _trResult to either("외음부","음부","여성기","보지 테두리","보지")>>
-	<<trPost 1 $args[0] $args[1]>>
-<</silently>><<print _trResult>><</widget>>
+<<widget "body_size_textPost">><<silently>>
+	<<switch $physiquesize>>
+		<<case lte 6000>>
+			<<set _trResult to either("조그마한", "앙증맞은", "자그마한", "연약한", "여린") + " ">>
+		<<case lte 10000>>
+			<<set _trResult to either("키 작은", "작은", "가는", "여리여리한") + " ">>
+		<<case lte 12000>>
+			<<set _trResult to either("평균 크기의", "일반적인 크기의", "균형잡힌") + " ">>
+		<<case lte 16000>>
+			<<set _trResult to either("키 큰", "튼튼한", "힘이 넘치는", "커다란") + " ">>
+		<<default>>
+	<</switch>>
+	<<set _trResult to _trResult + either("신체","몸매","몸", "몸통")>>
+	<<getPostNum _trResult>>
+	<<trPost _postNum $args[0] $args[1]>>
+<<silently>><<print _trResult>><</widget>>
