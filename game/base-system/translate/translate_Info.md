@@ -149,7 +149,7 @@
 * trCreature
     ```
 	<<trCreature>>
-		<<trCreature *type *name post "sep">>
+		<<trCreature *type *name [num] post "sep">>
 		
 		생물체를 번역한다.
 		
@@ -158,6 +158,7 @@
 		- *name: 생물체 이름/종류명 (생략 불가)
 		
         선택사항
+		- num: 생물체 숫자
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 		
