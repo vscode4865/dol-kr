@@ -1549,14 +1549,16 @@
         선택사항
         - 'name': 식물의 이름을 이용해서 번역
         - 'plural': 식물의 복수형태 단어를 이용해서 번역
+        - 'unit': 식물의 단위를 번역
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trPlants 'daisy' '을'>>                       // '데이지를'
-        <<trPlants 'daisies' 'name' '을'>>              // '데이지를'
-        <<trPlants 'daisies' '을'>>                     // '데이지들을'
-        <<trPlants 'daisy' 'plural' '을'>>              // '데이지를을'
+        <<trPlants 'daisy' '을'>>_trResult		// '데이지를'
+        <<trPlants 'daisies' 'name' '을'>>_trResult              // '데이지를'
+        <<trPlants 'daisies' '을'>>_trResult                     // '데이지들을'
+        <<trPlants 'daisy' 'plural' '을'>>_trResult              // '데이지들을'
+        <<trPlants 'daisies' 'unit'>>_trResult                     // '송이'
     ```
 
 
