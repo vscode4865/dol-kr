@@ -1681,13 +1681,22 @@
         <<trVirginity *NPCdesc>>
         <<trVirginity *Boolean>>
 
-        순결성을 번역한다.
+        순결성의 유무, 혹은 빼앗아간 NPC의 상세를 번역한다.
 
         필수사항
         - NPCdesc: 순결을 빼앗아간 NPC의 상세
         - Boolean: 순결성 (true , false)
     ```
 
+    ```
+    <<trNPCVirginity>>
+        <<trNPCVirginity *NPCdesc>>
+
+        플레이어가 순결을 빼앗은 NPC의 상세를 번역한다.
+
+        필수사항
+        - NPCdesc: 순결을 빼앗은 NPC의 상세 리스트
+    ```
 
 * trWeather
     ```
