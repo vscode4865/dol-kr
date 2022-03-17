@@ -1052,7 +1052,7 @@
 		<<handtoolPost *target *post 'sep'>>
 
 		손에 있는 도구 이름을 번역한다. + 메이크업 이름도 번역한다.
-		+ trinit.twee의 _handtoolList에 미리 정의되어 있어야 함.
+		+ trinit.twee의 trHandtoolList에 미리 정의되어 있어야 함.
 
 		필수사항
 		- target: 툴 이름

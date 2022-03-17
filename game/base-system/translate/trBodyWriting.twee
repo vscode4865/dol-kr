@@ -1,6 +1,6 @@
 :: Widgets trBodyWriting [widget nobr]
 <<widget "trBodyWriting_init">>
-    <<set _BodyWritingList to [
+    <<set setup.trBodyWritingList to [
             {
                 name: "rape_me",
                 writing: "Rape me",
@@ -1124,19 +1124,29 @@
 				},
 	
     ]>>
+	<<set $_nameIndex to {}>>
+	<<set $_writingIndex to {}>>
+	<<for $_i, $_entry range setup.trBodyWritingList>>
+		<<set $_nameIndex[$_entry.name] to $_entry.writing_ko>>
+		<<set $_writingIndex[$_entry.writing] to $_entry.writing_ko>>
+	<</for>>
+	<<set setup.trBodyWritingList.nameIndex to $_nameIndex>>
+	<<set setup.trBodyWritingList.writingIndex to $_writingIndex>>
 <</widget>>
 
 <<widget "trBodyWriting">><<silently>>
-    <<if _BodyWritingList is undefined>>
+    <<if setup.trBodyWritingList is undefined>>
         <<trBodyWriting_init>>
     <</if>>
 
-    <<set _trTemp to _BodyWritingList.find(function(select){
-                        if (select.name  == $args[0] or select.writing == $args[0]){return true;}})>>
-    <<if _trTemp is undefined>>
+	<<set _trResult to setup.trBodyWritingList.nameIndex[$args[0]]>>
+	<<if _trResult is undefined>>
+		<<set _trResult to setup.trBodyWritingList.writingIndex[$args[0]]>>
+	<</if>>
+
+    <<if _trResult is undefined>>
         <<set _trResult to "BodyWritingList에 정의되지 않음: "+$args[0]>>
     <<else>>
-        <<set _trResult to _trTemp.writing_ko>>
 		<<getPostNum _trResult>>
         <<trPost _postNum $args[1] $args[2]>>
     <</if>>

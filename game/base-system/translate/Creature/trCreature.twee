@@ -27,33 +27,24 @@
 		
 		<<set $_foundArray to []>>
 		
-		
 		<<if $_creatureName isnot undefined>>
-			<<trinit_creature $_creatureType>>
+			<<if setup.trCreatures is undefined>>
+				<<trinit_creature>>
+			<</if>>
 			<<set $_creatureNameArray to $_creatureName.toLowerCase().split(" ")>>
 			
-			
 			<<for $_i, $_value range $_creatureNameArray>>
-			
-			
 				<<if $_creatureType isnot "all">>
-					<<set $_found to _trCreatureLists[$_creatureType].find(function(select){
-						if (select.name == $_value or select.plural == $_value){return true;
-						}})>>
+					<<set $_found to setup.trCreatures[$_creatureType].nameIndex[$_value]>>
+					<<if $_found is undefined>>
+						<<set $_found to setup.trCreatures[$_creatureType].pluralIndex[$_value]>>
+					<</if>>
 				<<else>>
-					<<set $_trCreatureListsIndex to Object.getOwnPropertyNames(_trCreatureLists)>>
-					<<for $_index, $_creatureTypeIndex range $_trCreatureListsIndex>>
-						<<set $_found to _trCreatureLists[$_creatureTypeIndex].find(function(select){
-							if (select.name == $_value or select.plural == $_value){return true;
-							}})>>
-						<<if $_found is undefined>>
-							<<continue>>
-						<<else>>
-							<<break>>
-						<</if>>
-					<</for>>
+					<<set $_found to setup.trCreatures.nameIndex[$_value]>>
+					<<if $_found is undefined>>
+						<<set $_found to setup.trCreatures.pluralIndex[$_value]>>
+					<</if>>
 				<</if>>
-				
 				<<if $_found isnot undefined>>
 					<<if $_value is $_found.name>>
 						<<set $_found.isplural to false>>
@@ -65,11 +56,9 @@
 					<<set $_foundArray to []>>
 					<<break>>
 				<</if>>
-				
 			<</for>>
-			
-			
 		<</if>>
+
 		<<if $_foundArray.length gt 0>>
 			<<set _trResult to "">>
 			<<for $_i, $_value range $_foundArray>>

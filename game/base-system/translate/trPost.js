@@ -1,51 +1,63 @@
-:: Widgets trPost [widget nobr]
+/* trPostsList : "대표조사" : ["받침O", "받침X", "ㄹ받침"], */
+const trPostsList = {
+	 "은" : ["은", "는", "은"],
+	 "이" : ["이", "가", "이"],
+	 "을" : ["을", "를", "을"],
+	 "과" : ["과", "와", "과"],
+	 "이랑" : ["이랑", "랑", "이랑"],
+	 "아" : ["아", "야", "아"],
+	 "이여" : ["이여", "여", "이여"],
+	 "이야" : ["이야", "야", "이야"],
+	 "으로" : ["으로", "로", "로"],
+	 "으로서" : ["으로서", "로서", "로서"],
+	 "으로써" : ["으로써", "로써", "로써"],
+	 "으로부터" : ["으로부터", "로부터", "로부터"],
+	 "이라" : ["이라", "라", "이라"],
+	 "이라고" : ["이라고", "라고", "이라고"],
+	 "이나" : ["이나", "나", "이나"],
+	 "이란" : ["이란", "란", "이란"],
+	 "이든가" : ["이든가", "든가", "이든가"],
+	 "이던가" : ["이던가", "던가", "이던가"],
+	 "이든지" : ["이든지", "든지", "이든지"],
+	 "이던지" : ["이던지", "던지", "이던지"],
+	 "이던지" : ["이던지", "던지", "이던지"],
+	 "이구나" : ["이구나", "구나", "이구나"],
+	 "이다" : ["이다", "다", "이다"],
+	 "이지" : ["이지", "지", "이지"]
+};
 
-<<widget "trPost">><<silently>>
-    <<if $args[1] isnot undefined>>
-        <<trinit_post>>
-        <<if $args[2] is "sep">>
-            <<if $args[0] is 1>>	/* 종성 없음 - 조사 변경 */
-                <<if _Post.hasOwnProperty($args[1])>>
-                    <<set _trPost to _Post[$args[1]]>>
-                <<else>>
-                    <<set _trPost to $args[1]>>
-                <</if>>
-            <<elseif $args[0] is 0>>	/* 종성 있음 - 조사 그대로 */
-                <<set _trPost to $args[1]>>
-            <<elseif $args[0] is 2>>	/* 종성이 ㄹ - "으로"인 경우에만 조사 변경 (ex. 팔"로", 손"으로") */
-                <<if ["으로", "으로서", "으로써", "으로부터"].includes($args[1])>>
-                    <<set _trPost to _Post[$args[1]]>>
-                <<else>>
-                    <<set _trPost to $args[1]>>
-                <</if>>
-            <<else>>
-                <<set _trPost to " / PostNumErr:"+$args[0]>>
-            <</if>>
-        <<else>>
-            <<if $args[0] is 1>>	/* 종성 없음 - 조사 변경 */
-                <<if _Post.hasOwnProperty($args[1])>>
-                    <<set _trResult to _trResult+_Post[$args[1]]>>
-                <<else>>
-                    <<set _trResult to _trResult+$args[1]>>
-                <</if>>
-            <<elseif $args[0] is 0>>	/* 종성 있음 - 조사 그대로 */
-                <<set _trResult to _trResult+$args[1]>>
-            <<elseif $args[0] is 2>>	/* 종성이 ㄹ - "으로"인 경우에만 조사 변경 (ex. 팔"로", 손"으로") */
-                <<if ["으로", "으로서", "으로써", "으로부터"].includes($args[1])>>
-                    <<set _trResult to _trResult+_Post[$args[1]]>>
-                <<else>>
-                    <<set _trResult to _trResult+$args[1]>>
-                <</if>>
-            <<else>>
-                <<set _trResult to _trResult+" / PostNumErr:"+$args[0]>>
-            <</if>>
-        <</if>>
-    <</if>>
-<</silently>><</widget>>
-
-:: Scripts getPostNum [script]
-
-/* 조사 관련 자바스크립트 */
+function trPost(postNum, post, sep)
+{
+	if (post)
+	{
+		if (typeof(postNum) === "number")
+		{
+			let trPostData = trPostsList[post];
+			if (trPostData)
+				T.trPost = trPostData[postNum];
+			else
+				T.trPost = post;
+		}
+		else if (typeof(postNum) === "string")
+		{
+			getPostNum(T.trResult);
+			T.trPost = trPostsList[postNum][T.postNum];
+		}
+		else
+			delete T.trPost;
+		
+		if (!T.trPost)
+			T.trPost = "<span class='red'>에러: trPost: postNum= "+ postNum + ", post= " + post + ", sep = " + sep + "</span>";		
+	}
+	else
+		T.trPost = "";
+	
+	if (!sep)
+		T.trResult += T.trPost;
+	
+	return '';
+}
+DefineMacroS("trPost", trPost);
 
 /* getPostNum : 문자열에서 조사 번호를 찾아 _postNum에 넣는다 (0: 종성 있음 1: 종성 없음 2: 종성 ㄹ) */
 function getPostNum(txt)
@@ -75,8 +87,7 @@ function getPostNum(txt)
 
 DefineMacroS("getPostNum", getPostNum);
 
-:: Scripts trPostTemplate [script]
-
+/* trPostTemplate : trPost 의 템플릿 버전 */
 Template.add(['un', 'nun'], function () { return ["은", "는", "은"][T.postNum]});
 Template.add(['i', 'ga'], function () { return ["이", "가", "이"][T.postNum]});
 Template.add(['ul', 'rul'], function () { return ["을", "를", "을"][T.postNum]});

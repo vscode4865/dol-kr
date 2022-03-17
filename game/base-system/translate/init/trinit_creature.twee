@@ -1,10 +1,7 @@
 :: Widgets trinit_creature[widget nobr]
 <<widget "trinit_creatureParasite">>
-	<<if _trCreatureLists is undefined>>
-		<<set _trCreatureLists to {}>>
-	<</if>>
-	<<if _trCreatureLists.parasite is undefined>>
-		<<set _trCreatureLists.parasite to [
+	<<if setup.trCreatures.parasite is undefined>>
+		<<set setup.trCreatures.parasite to [
 			{name:"urchin",koName:"성게형 기생충",post:0,plural:"urchins"},
 			{name:"slime",koName:"슬라임",post:0,plural:"slimes"},
 			{name:"maggot",koName:"구더기",post:1,plural:"maggots"},		
@@ -13,11 +10,8 @@
 <</widget>>
 
 <<widget "trinit_creatureStruggle">>
-	<<if _trCreatureLists is undefined>>
-		<<set _trCreatureLists to {}>>
-	<</if>>
-	<<if _trCreatureLists.struggle is undefined>>
-		<<set _trCreatureLists.struggle to [
+	<<if setup.trCreatures.struggle is undefined>>
+		<<set setup.trCreatures.struggle to [
 			{name:"lurker",koName:"럴커",post:1,plural:"lurkers"},
 			{name:"wasp",koName:"말벌",post:2,plural:"wasps"},
 			{name:"bee",koName:"벌",post:2,plural:"bees"},
@@ -30,11 +24,8 @@
 <</widget>>
 
 <<widget "trinit_creatureSwarm">>
-	<<if _trCreatureLists is undefined>>
-		<<set _trCreatureLists to {}>>
-	<</if>>
-	<<if _trCreatureLists.swarm is undefined>>
-		<<set _trCreatureLists.swarm to [
+	<<if setup.trCreatures.swarm is undefined>>
+		<<set setup.trCreatures.swarm to [
 			/*swarm.type*/
 			{name:"fish",koName:"물고기",post:1,plural:"fishes"},
 			{name:"eel",koName:"장어",post:1,plural:"eels"},
@@ -55,11 +46,8 @@
 <</widget>>
 
 <<widget "trinit_creatureTentacle">>
-	<<if _trCreatureLists is undefined>>
-		<<set _trCreatureLists to {}>>
-	<</if>>
-	<<if _trCreatureLists.tentacle is undefined>>
-		<<set _trCreatureLists.tentacle to [
+	<<if setup.trCreatures.tentacle is undefined>>
+		<<set setup.trCreatures.tentacle to [
 			/* tentacle.type */
 			{name:"tentacle",koName:"촉수",post:1,plural:"tentacles"},
 			{name:"root",koName:"뿌리",post:1,plural:"roots"},
@@ -132,11 +120,8 @@
 <</widget>>
 
 <<widget "trinit_creatureVore">>
-	<<if _trCreatureLists is undefined>>
-		<<set _trCreatureLists to {}>>
-	<</if>>
-	<<if _trCreatureLists.vore is undefined>>
-		<<set _trCreatureLists.vore to [
+	<<if setup.trCreatures.vore is undefined>>
+		<<set setup.trCreatures.vore to [
             {name:"whale",koName:"고래",post:1,plural:"whales"},
             {name:"snake",koName:"뱀",post:0,plural:"snakes"},
             {name:"frog",koName:"개구리",post:1,plural:"frogs"},
@@ -152,24 +137,32 @@
 
 
 <<widget "trinit_creature">>
-	<<switch $args[0]>>
-		<<case "parasite">>
-			<<trinit_creatureParasite>>
-		<<case "struggle">>
-			<<trinit_creatureStruggle>>
-		<<case "swarm">>
-			<<trinit_creatureSwarm>>
-		<<case "tentacle">>
-			<<trinit_creatureTentacle>>
-		<<case "vore">>
-			<<trinit_creatureVore>>
-		<<default>>
-			<<trinit_creatureParasite>>
-			<<trinit_creatureStruggle>>
-			<<trinit_creatureSwarm>>
-			<<trinit_creatureTentacle>>
-			<<trinit_creatureVore>>
-	<</switch>>
+	<<if setup.trCreatures is undefined>>
+		<<set setup.trCreatures to {}>>
+		<<trinit_creatureParasite>>
+		<<trinit_creatureStruggle>>
+		<<trinit_creatureSwarm>>
+		<<trinit_creatureTentacle>>
+		<<trinit_creatureVore>>
+		
+		<<set $_trCreaturesAllNameIndex to {}>>
+		<<set $_trCreaturesAllPluralIndex to {}>>
+		<<set $_trCreatureTypes to Object.getOwnPropertyNames(setup.trCreatures)>>
+		<<for $_i, $_trCreatureType range $_trCreatureTypes>>
+			<<set $_trCreaturesNameIndex to {}>>
+			<<set $_trCreaturesPluralIndex to {}>>
+			<<for $_j, $_trCreatureData range setup.trCreatures[$_trCreatureType]>>
+				<<set $_trCreaturesNameIndex[$_trCreatureData.name] to $_trCreatureData>>
+				<<set $_trCreaturesPluralIndex[$_trCreatureData.plural] to $_trCreatureData>>
+			<</for>>
+			<<set setup.trCreatures[$_trCreatureType].nameIndex to $_trCreaturesNameIndex>>
+			<<set setup.trCreatures[$_trCreatureType].pluralIndex to $_trCreaturesPluralIndex>>
+			<<run Object.assign($_trCreaturesAllNameIndex, $_trCreaturesNameIndex)>> 
+			<<run Object.assign($_trCreaturesAllPluralIndex, $_trCreaturesPluralIndex)>> 
+		<</for>>
+		<<set setup.trCreatures.nameIndex to $_trCreaturesAllNameIndex>>
+		<<set setup.trCreatures.pluralIndex to $_trCreaturesAllPluralIndex>>
+	<</if>>
 <</widget>>
 
 <<widget "trinit_swarmAction">>

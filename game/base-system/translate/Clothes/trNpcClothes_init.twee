@@ -1,25 +1,39 @@
 :: Widgets trNpcClothes_init [widget nobr]
 <<widget "init_trNpcClothes">>
-	<<switch $args[0]>>
-		<<case "upper">>
-			<<init_trNpcClothesUpper>>
-		<<case "lower">>
-			<<init_trNpcClothesLower>>
-		<<case "set">>
-			<<init_trNpcClothesSet>>
-		<<default>>
-			<<init_trNpcClothesUpper>>
-			<<init_trNpcClothesLower>>
-			<<init_trNpcClothesSet>>
-	<</switch>>
+	<<if setup.trNpcClothes is undefined>>
+		<<set setup.trNpcClothes to {}>>
+		<<init_trNpcClothesUpper>>
+		<<init_trNpcClothesLower>>
+		<<init_trNpcClothesSet>>
+
+		<<set $_trClothesAllNameIndex to {}>>
+		<<set $_trClothesParts to Object.getOwnPropertyNames(setup.trNpcClothes)>>
+		<<for $_i, $_trClothesType range $_trClothesParts>>
+			<<set $_desc to false>>
+			<<set $_trClothesNameIndex to {}>>
+			<<if $_trClothesType eq "set">>
+				<<set $_trClothesDescIndex to {}>>
+				<<set $_desc to true>>
+			<</if>>
+			<<for $_j, $_trClothesData range setup.trNpcClothes[$_trClothesType]>>
+				<<set $_trClothesNameIndex[$_trClothesData.name] to $_trClothesData>>
+				<<if $_desc is true>>
+					<<set $_trClothesDescIndex[$_trClothesData.desc] to $_trClothesData>>
+				<</if>>
+			<</for>>
+			<<set setup.trNpcClothes[$_trClothesType].nameIndex to $_trClothesNameIndex>>
+			<<if $_desc is true>>
+				<<set setup.trNpcClothes[$_trClothesType].descIndex to $_trClothesDescIndex>>
+			<</if>>
+			<<run Object.assign($_trClothesAllNameIndex, $_trClothesNameIndex)>> 
+		<</for>>
+		<<set setup.trNpcClothes.nameIndex to $_trClothesAllNameIndex>>
+	<</if>>
 <</widget>>
 
 <<widget "init_trNpcClothesUpper">>
-	<<if _trNpcClothes is undefined>>
-		<<set _trNpcClothes to {}>>
-	<</if>>
-	<<if _trNpcClothes.upper is undefined>>
-		<<set _trNpcClothes.upper to [
+	<<if setup.trNpcClothes.upper is undefined>>
+		<<set setup.trNpcClothes.upper to [
 			{name:"shirt",                   name_ko:"셔츠",	post: 1},
 			{name:"naked",                   name_ko:"알몸",	post: 0},
 			{name:"school shirt",            name_ko:"교복 셔츠",	post: 1},
@@ -115,11 +129,8 @@
 	<</if>>
 <</widget>>
 <<widget "init_trNpcClothesLower">>
-	<<if _trNpcClothes is undefined>>
-		<<set _trNpcClothes to {}>>
-	<</if>>
-	<<if _trNpcClothes.lower is undefined>>
-		<<set _trNpcClothes.lower to [
+	<<if setup.trNpcClothes.lower is undefined>>
+		<<set setup.trNpcClothes.lower to [
 			{name:"naked",                   name_ko:"알몸",	post: 0},
 			{name:"trousers",                name_ko:"바지",	post: 1},
 			{name:"skirt",                   name_ko:"스커트",	post: 1},
@@ -204,11 +215,8 @@
 <</widget>>
 
 <<widget "init_trNpcClothesSet">>
-	<<if _trNpcClothes is undefined>>
-		<<set _trNpcClothes to {}>>
-	<</if>>
-	<<if _trNpcClothes.set is undefined>>
-		<<set _trNpcClothes.set to [
+	<<if setup.trNpcClothes.set is undefined>>
+		<<set setup.trNpcClothes.set to [
 			{name: "naked",               name_ko: "알몸",	post: 0,	desc: "naked"},
 			{name: "maleDefault",         name_ko: "셔츠와 바지",	post: 1,	desc: "shirt and trousers"},
 			{name: "femaleDefault",       name_ko: "셔츠와 스커트",	post: 1,	desc: "shirt and skirt"},
