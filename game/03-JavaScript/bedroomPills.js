@@ -4,8 +4,34 @@
  * place the widgets that need to be run inside effects array
  * if you feel lost just ask away :)
  * take_condition == 1 means the "Take Pill" button is not greyed out and is clickable
+ * display_condition controls wether or not pill should be displayed in the pill menu
 */
 
+/*
+--- Please change this comment as needed when the format of setup.pills changes ---
+This is the setup.pills array.
+It contains a list of all the possible pills.
+A single pill object contains multiple 'properties' which define the pill.
+
+ * name:'example pill' - The name displayed in the medicine drawer screen. Auto-capitalizes first word. Capitalize other words if desired.
+ * description: 'this pill is green.' - The description displayed when the pill is selected.
+ * onTakeMessage: 'You swallow the green pill.' - Text displayed when a pill is taken.
+ * warning_label: 'Warning: example pill may cause explosive decompression.' - Warning label displayed in text box. <span class="hpi_notice_label"> is used in several of these.
+ * indicators: - Array of indicators.  Example: `<span class="hpi_indic_green">+ Control</span>`
+ * icon: 'img/misc...blahblah' - file path of the png icon for this pill.
+ * 
+ * autoTake: - Code or statement that determines if this pill is set to auto-take ??? **
+ * doseTaken: - Code or statement showing how many doses were taken already. **
+ * owned: - Code or statement to determined the number owned. **
+ * overdose: - Code or statement to determine overdose. **
+ * display_condition: - Code or statement to determine if the pill displays in list. **
+ * take_condition: - Code or statement to determine if the take button displays for this pill - can a dose currently be taken. **
+ * 
+ * type: "various" - Type of pill. Pill code uses this to determine what the effects are and where they apply.  Example: "bottom" or "breast"
+ * subtype: "various" - Action the pill has on bodypart 'type'. Optional for the asylum & harper meds apparently. Example: "reduction" or "growth"
+ * shape: "pill" or "galenic" - Helps to properly space the icon.
+ * effects: - Array of effects - can be used to issue quick macros for setting results.  Example: `<<control 25>>`
+*/
 setup.pills = [
 	{
 		name:'bottom reduction',
@@ -43,7 +69,7 @@ setup.pills = [
 	},
 	{
 		name:'bottom blocker',
-		description: '1정 당 200mg의 프라베롤을 함유하고 있으며, 이 성분은 특히 둔부의 트리글리세리드에 작용하여 천천히 분해시킵니다. 적정 용량을 투여하면 지방의 증가와 분해의 균형을 맞출 수 있습니다.',
+		description: '1정 당 200mg의 프라베롤-NG2를 함유하고 있으며, 이 성분은 특히 둔부의 트리글리세리드에 작용하여 천천히 분해시킵니다. 적정 용량을 투여하면 지방의 증가와 분해의 균형을 맞출 수 있습니다.',
 		onTakeMessage: '당신은 당신의 엉덩이 크기를 유지하기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.',
 		warning_label: '<span class="hpi_notice_label">주의사항: 이 약의 투약중 어떤 부작용도 보고되어 있지 않습니다. 24시간 내에 1정 이상 투약하는 것은 효과가 없을 것입니다</span>',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},
@@ -60,7 +86,7 @@ setup.pills = [
 	},
 	{
 		name:'breast reduction',
-		description: '1정 당 500mg의 프라베롤-NG2를 함유하고 있으며, 이 성분은 특히 유방의 트리글리세리드에 작용하여 천천히 분해시킵니다.',
+		description: '1정 당 500mg의 프라베롤 (NG2)를 함유하고 있으며, 이 성분은 특히 유방의 트리글리세리드에 작용하여 천천히 분해시킵니다.',
 		onTakeMessage: '당신은 당신의 가슴 크기를 줄이기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.',
 		warning_label: '주의사항: 일일 최대용량을 초과해 복용할 경우 심각한 부작용을 일으킬 수 있습니다. 확신이 들지 않을 시에는 의사와 상의하십시오. 다른 호르몬 치료와 병행해 투여하지 마십시오.',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},
@@ -77,7 +103,7 @@ setup.pills = [
 	},
 	{
 		name:'breast growth',
-		description: '1mg의 에스트라디올을 함유한 에스트로겐 요법 제제입니다. 유방의 성장을 촉진하는 것을 목표로 제조되었습니다',
+		description: '호르몬 mRNA 요법 제제입니다. 유방의 성장을 유발하는 특정 호르몬의 자연적인 분비를 위한 5mg의 다이파르딘이 함유되어 있습니다. mRNA가 유방 내의 세포조직들을 증식시키며, 지방을 저장하는 능력을 늘려, 효과적으로 유방 크기를 키우는 새로운 종류의 호르몬을 당신의 세포들이 분비하는데 도움을 줄 것입니다.',
 		onTakeMessage: '당신은 당신의 가슴 크기를 늘리기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.',
 		warning_label: '주의사항: 일일 최대용량을 초과해 복용할 경우 심각한 부작용을 일으킬 수 있습니다. 확신이 들지 않을 시에는 의사와 상의하십시오. 다른 호르몬 치료와 병행해 투여하지 마십시오.',
 		autoTake: function(){return V.sexStats.pills["pills"][this.name].autoTake},
@@ -199,7 +225,8 @@ setup.pills = [
 		description: '강력한 항정신병 치료제.',
 		onTakeMessage: '당신은 정신병원에서 처방된 약을 먹는다. 당신은 정신이 흐릿해지는 것을 느낀다.',
 		warning_label: '<span class="hpi_notice_label">주의사항: 이 약은 임상단계이고 어떤 부작용도 보고되어 있지 않으며, 모든 안전 규정을 통과하였습니다. \
-						<span class="hpi_blur unselectable">이 제약 회사는 거의 나를 끝내버리려고 하는 것 같아. 부작용이 보고되어 있지 않아 ? 누구한테 농담하고 있는 거야 ?!</span></span>',		autoTake: false,
+						<span class="hpi_blur unselectable">이 제약 회사는 거의 나를 끝내버리려고 하는 것 같아. 부작용이 보고되어 있지 않아 ? 누구한테 농담하고 있는 거야 ?!</span></span>',
+		autoTake: false,
 		indicators: [
 			`<span class="hpi_indic_green">++ 통제력</span>`,
 			`<span class="hpi_indic_blue">- 성지식</span>`
@@ -455,7 +482,7 @@ window.onSecondDoseTakenSetVars = function() { // If player take two doses of an
 
 			doseTaken[i] = doseTaken[i + 1]
 			doseTaken[i + 1] = tmp;
-			i = 0
+			i = -1
 		}
 	}
 	i = (doseTaken[0][1] > doseTaken[1][1]) ? 1 : (doseTaken[0][1] == doseTaken[1][1]) ? 2 : (doseTaken[0][1] == doseTaken[2][1]) ? 3 : 1 // determine how many have same value
@@ -470,51 +497,85 @@ window.getRandomIntInclusive = function(min, max) { // return a random number be
 	return Math.floor(Math.random() * (max - min +1)) + min;
 }
 
-window.backCompPillsInventory = function (){ // for back compatibility
-	if (typeof V.sexStats != undefined){
-		if (typeof V.sexStats.pills == undefined) // if the variable doesnt exist, we set it, with everything to 0
-			V.sexStats.pills = {
-				"pills":{
-					'bottom reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'bottom growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'bottom blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'breast blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis reduction':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis growth':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'penis blocker':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'fertility booster':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'contraceptive':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'asylum\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'Dr Harper\'s prescription':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0}
-				},
-				"boughtOnce": false,
-				"lastTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''},
-				"mostTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''}
-			}
-		else if (V.sexStats.pills.hasOwnProperty("mostTaken") == false){
-			V.sexStats.pills = { // if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it), then we try to  port the old one to the new one
-				"pills":{
-					'bottom reduction':{autoTake: (V.sexStats.pills.bottom.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.reduction, overdose: 0},
-					'bottom growth':{autoTake: (V.sexStats.pills.bottom.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.growth, overdose: 0},
-					'bottom blocker':{autoTake: (V.sexStats.pills.bottom.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.bottom.owned.blocker, overdose: 0},
-					'breast reduction':{autoTake: (V.sexStats.pills.breast.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.reduction, overdose: 0},
-					'breast growth':{autoTake: (V.sexStats.pills.breast.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.growth, overdose: 0},
-					'breast blocker':{autoTake: (V.sexStats.pills.breast.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.breast.owned.blocker, overdose: 0},
-					'penis reduction':{autoTake: (V.sexStats.pills.penis.autoTake == "reduction") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.reduction, overdose: 0},
-					'penis growth':{autoTake: (V.sexStats.pills.penis.autoTake == "growth") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.growth, overdose: 0},
-					'penis blocker':{autoTake: (V.sexStats.pills.penis.autoTake == "blocker") ? true : false, doseTaken: 0, owned: V.sexStats.pills.penis.owned.blocker, overdose: 0},
-					'fertility booster':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'contraceptive':{autoTake: false, doseTaken: 0, owned: 0, overdose: 0},
-					'asylum\'s prescription':{autoTake: false, doseTaken: 0, owned: Number.isInteger(V.asylumpills) ? V.asylumpills : 0, overdose: 0},
-					'Dr Harper\'s prescription':{autoTake: false, doseTaken: 0, owned: Number.isInteger(V.pills) ? V.pills : 0, overdose: 0}
-				},
-				"boughtOnce": (V.sexStats.pills.boughtOnce == true) ? true : false,
-				"lastTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''},
-				"mostTaken":{"bottom":'', "breast":'', "penis":'', "pregnancy":''}
-			}
+window.backCompPillsInventory = function() {
+	/* Return immediately if $sexStats doesn't exist. */
+	if (typeof V.sexStats == 'undefined') return;
+	const oPills = V.sexStats.pills;
+	const pills = {};
+	if (typeof oPills === 'object') {
+		/* If our $sexStats.pills is an object and has this property, it is ready for production. */
+		if (oPills.hasOwnProperty('mostTaken')) return;
+		try {
+			pillsObjectRepair(oPills, pills);
+		} catch (error) {
+			Errors.report('Compatibility patch for pills object failed: ' + error, { oPills, pills });
 		}
+	}
+	Object.assign(pills, {
+		'bottom reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'bottom growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'bottom blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'breast blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis reduction' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis growth' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'penis blocker' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'fertility booster' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		'contraceptive' : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"asylum's prescription" : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"Dr Harper's prescription" : { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 }
+	});
+	if (typeof oPills === 'undefined') {
+		/* If our $sexStats.pills was empty, simply set the object in preparation to assign. */
+		V.sexStats.pills = {};
+	}
+	Object.assign(V.sexStats.pills, {
+		"boughtOnce": pills.boughtOnce == true,
+		"lastTaken" : { "bottom":'', "breast":'', "penis":'', "pregnancy":'' },
+		"mostTaken" : { "bottom":'', "breast":'', "penis":'', "pregnancy":''},
+		"pills" : pills,
+	});
+}
+
+function pillsObjectRepair(oPills, pills) {
+	/* if the variable already exist, and is not of the new version(new version has "mostTaken" property that's why we check it), 
+	then we try to  port the old one to the new one */
+	if (typeof oPills.bottom === 'object') {
+		Object.assign(pills, {
+			'bottom reduction' : { autoTake: oPills.bottom.autoTake === "reduction", owned: oPills.bottom.owned.reduction },
+			'bottom growth' : { autoTake: oPills.bottom.autoTake === "growth", owned: oPills.bottom.owned.growth },
+			'bottom blocker' : { autoTake: oPills.bottom.autoTake === "blocker", owned: oPills.bottom.owned.blocker }
+		});
+		delete oPills.bottom;
+	}
+	if (typeof oPills.breast === 'object') {
+		Object.assign(pills, {
+			'breast reduction' : { autoTake: oPills.breast.autoTake === "reduction", owned: oPills.breast.owned.reduction },
+			'breast growth' : { autoTake: oPills.breast.autoTake === "growth", owned: oPills.breast.owned.growth },
+			'breast blocker' : { autoTake: oPills.breast.autoTake === "blocker", owned: oPills.breast.owned.blocker }
+		});
+		delete oPills.breast;
+	}
+	if (typeof oPills.penis === 'object') {
+		Object.assign(pills, {
+			'penis reduction' : { autoTake: oPills.penis.autoTake === "reduction", owned: oPills.penis.owned.reduction },
+			'penis growth' : { autoTake: oPills.penis.autoTake === "growth", owned: oPills.penis.owned.growth },
+			'penis blocker' : { autoTake: oPills.penis.autoTake === "blocker", owned: oPills.penis.owned.blocker }
+		});
+		delete oPills.penis;
+	}
+	if (typeof V.asylumpills === 'number') {
+		Object.assign(pills, {
+			"asylum's prescription" : { owned: Number.isInteger(V.asylumpills) ? V.asylumpills : 0 }
+		});
+		delete V.asylumpills;
+	}
+	if (typeof V.pills === 'number') {
+		Object.assign(pills, {
+			"Dr Harper's prescription" : { owned: Number.isInteger(V.pills) ? V.pills : 0 }
+		});
+		delete V.pills;
 	}
 }
 

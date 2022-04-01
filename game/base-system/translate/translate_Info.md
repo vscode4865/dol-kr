@@ -65,8 +65,8 @@
 
     ```
     <<trNpcClothes>>
-        <<trNpcClothes *part *clothes_name>>
-        <<trNpcClothes *part *clothes_name post "sep">>
+        <<trNpcClothes *part *[clothes_name|npcnum]>>
+        <<trNpcClothes *part *[clothes_name|npcnum] post "sep">>
 
         trClothes 의 NPC 버전. 옷의 이름이나 설명을 번역한다.
 
@@ -74,11 +74,16 @@
         필수사항
         - *part: 착용 부위 ("upper"/"lower"), 세트("set"), 혹은 전체에서 검색 ("all")
         - *clothes_name: 옷의 이름 혹은 세트명 혹은 세트의 설명
+		- *npcnum: NPC의 $NPCList 번호
 
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
         - sep: 조사를 분리하여 저장한다.
 
+		NOTE: npcnum 을 사용할 때는 다음과 같이 사용한다.
+		(원문) <<print setup.npcClothesSets.find(item => item.name === $NPCList[0].clothes.set).clothes["lower"].name>>
+		(번역문) <<trNpcClothes "lower" 0 "을">>_trResult
+		
         e.g.
         <<trNpcClothes "lower" "skirt">>_trResult                                 //  "스커트"
         <<trNpcClothes "set" "shirt and trousers" "을" "sep">>              //  _trResult: "셔츠와 바지", _trPost: "를"
@@ -1642,12 +1647,12 @@
 		사용법
 		1. 먼저 추가된 템플릿의 개조가 필요하다. 템플릿은 03-JavaScript/03-Templates 에 정의되어 있다.
 			- 원본
-				Template.add('vulva',
+				Template.add('vulva', () =>
 					either("vulva", "quim", "flange", "pussy"));
 			- 번역/개조본
-				Template.add('vulva', function () {
-					T.trResult = either("외음부", "음부", "보지 테두리", "보지"); getPostNum(T.trResult); return T.trResult;});
-			- 첫줄 끝에 "function {" 를 넣고 둘째줄 앞에 "T.trResult =", 뒤의 ) 두개 사이에 "; getPostNum(T.trResult); return T.trResult;}" 를 넣으면 된다.
+				Template.add('vulva', () =>
+					{T.trResult = either("외음부", "음부", "보지 테두리", "보지"); getPostNum(T.trResult); return T.trResult;});
+			- 둘째줄 앞에 "{T.trResult =", 뒤의 ) 두개 사이에 "; getPostNum(T.trResult); return T.trResult;}" 를 넣으면 된다.
 		2. 이러면 조사 종류가 _postNum 에 저장된다.
 		3. 템플릿을 사용하는 방법은 ?[템플릿_이름] 식으로 쓰면 되며, ?[템플릿_명사]?[템플릿_조사] 처럼 바로 템플릿 조사를 붙여주면 끝.
 			- e.g
@@ -1893,11 +1898,12 @@
 	- HePost 계열
 		```
 		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, 
-		<<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<pShe_(조사)>>, <<pshe_(조사)>>,<<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
+		<<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<ohe_(조사)>>, 
+		<<pShe_(조사)>>, <<pshe_(조사)>>, <<pher_(조사)>>, <<pHer_(조사)>>, <<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>,
 		<<nnpc_brother_(조사)>>, <<nnpc_Brother_(조사)>>, <<nnpc_title_(조사)>>, <<nnpc_Title_(조사)>>, 
-		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<pher_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- otherPost 계열
 		```
@@ -1905,7 +1911,7 @@
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<whore_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
-		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
+		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>,
 		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>,
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 		```

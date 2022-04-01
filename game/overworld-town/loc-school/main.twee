@@ -39,6 +39,17 @@
 
 <<if $stress gte $stressmax>>
 	<<link [[모든 것이 암흑 속으로 사라져간다...|School Passout]]>><</link>>
+<<elseif $adultshopintro is undefined and $adultshopunlocked is undefined and $adultshopintrosirris is undefined and $schoolstate is "afternoon" and $weekday is 6 and $exposed lte 0>>
+	<<set $adultshopintrosirris to 1>>
+	
+	Sirris rushes from the main building, both arms clutching a large cardboard box. <<npc Sirris>><<person1>><<He>> seems eager about something. <<He>> stops by <<his>> car, and awkwardly fumbles for the keys jangling in <<his>> pocket.
+	<br><br>
+	
+	
+	<<link [[Offer to help|School Sirris Help]]>><<npcincr Sirris love 1>><</link>><<glove>>
+	<br>
+	<<link [[Just watch|School Sirris Watch]]>><</link>>
+	
 <<else>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 <<if $danger gte (9900 - $allure) and $eventskip is 0>>
@@ -122,11 +133,11 @@
 				<br><br>
 			<</if>>
 			<<if $exposed lte 0 and $schoolstate is "lunch">>
-				<<link [[그루터기에 앉아 쉰다 (0:10)|School Stump]]>><<stress -1>><<pass 10>><<tiredness -1>><</link>><<ltiredness>><<lstress>>
+				<<ind>><<link [[그루터기에 앉아 쉰다 (0:10)|School Stump]]>><<stress -1>><<pass 10>><<tiredness -1>><</link>><<ltiredness>><<lstress>>
 				<br>
 			<</if>>
 			<<if $schoolstate is "lunch" and $panty_thief gte 1>>
-				<<link [[속옷 도둑을 찾는다 (0:10)|School Panty]]>><<pass 10>><</link>>
+				<<ind>><<link [[속옷 도둑을 찾는다 (0:10)|School Panty]]>><<pass 10>><</link>>
 				<br>
 			<</if>>
 			<<entranceicon>><<link [[학교 안으로 들어간다 (0:01)|Hallways]]>><<pass 1>><</link>>
@@ -587,8 +598,15 @@
 		<</if>>
 		<<trauma 6>><<set $stress -= 2000>>
 	<<else>>
-		<<link [[다음|School Passout Infirmary]]>><</link>>
-		<br>
+		<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+			<<link [[Wake up|Kylar Basement]]>><<pass 1 hour>><</link>>
+			<br>
+		<<elseif $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+			<<link [[다음|School Passout Infirmary]]>><</link>>
+			<br>
+		<<else>>
+			<<ambulance>>
+		<</if>>
 		<<trauma 6>><<set $stress -= 2000>>
 	<</if>>
 <</if>>
@@ -713,7 +731,7 @@
 			"You're not going anywhere, <<girl>>".
 			<br><br>
 
-			This leaves you powerless to stop the <<person1>><<person>>'s penis from pressing insistently against your mouth.
+			This leaves you powerless to stop the <<person1>><<person>> pressing <<his>> penis against your mouth.
 			<<set $NPCList[0].penis to "mouthentrance">><<set $NPCList[0].location.genitals = "head">>
 			<<set $mouthuse to "penis">><<set $mouthstate to "entrance">><<set $mouthtarget to 0>>
 		<<else>>
@@ -725,11 +743,16 @@
 			<<He>> <<if $pronoun is "f">>giggles mischievously<<else>>chuckles softly<</if>>.
 			"You're not going anywhere, <<girl>>".
 			<br><br>
-
-			You are powerless to stop the <<person1>><<person>>. You watch as <<his>> pussy draws closer and closer.
-			<<He>> removes <<his>> hand from over your mouth, only for it to be replaced by <<his>> wet pussy as <<he>> sits on your face.
-			<<set $NPCList[0].vagina to "facesit">><<set $NPCList[_n].location.genitals = "head">>
-			<<set $mouthuse to "facesit">><<set $mouthstate to "vagina">><<set $mouthtarget to 0>>
+			<<if $facesitdisable is "f">>
+				You are powerless to stop the <<person1>><<person>>. You watch as <<his>> pussy draws closer and closer.
+				<<He>> removes <<his>> hand from over your mouth, only for it to be replaced by <<his>> wet pussy as <<he>> sits on your face.
+				<<set $NPCList[0].vagina to "facesit">><<set $NPCList[_n].location.genitals = "head">>
+				<<set $mouthuse to "facesit">><<set $mouthstate to "vagina">><<set $mouthtarget to 0>>
+			<<else>>
+				This leaves you powerless to stop the <<person1>><<person>> pressing <<his>> pussy against your mouth.
+				<<set $NPCList[0].vagina to "mouth">><<set $NPCList[0].location.genitals to "head">>
+				<<set $mouthuse to "othervagina">><<set $mouthstate to "othervagina">><<set $mouthtarget to 0>>
+			<</if>>
 		<</if>>
 
 		<<if random(1) is 0>>
@@ -742,7 +765,11 @@
 		<<set $position to "missionary">>
 	<</if>>
 	<br><br>
-	<<if $pillory_tenant.special.name isnot "Leighton">><<enable_rescue>><</if>>
+	<<if $drugged lte 0 and $pillory_tenant.special.name isnot "Whitney" and $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte random(10, 25)>>
+		<<set $rescue to 2>>
+	<<elseif $pillory_tenant.special.name isnot "Leighton">>
+		<<enable_rescue>>
+	<</if>>
 <</if>>
 
 <<effects>>
@@ -756,7 +783,7 @@
 	<span id="next"><<link [[다음|School Passout Rape Finish]]>><</link>></span><<nexttext>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<span id="next"><<link [[다음|School Passout Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $rescue is 1 and $alarm is 1>>
+<<elseif $rescue gte 1 and $alarm is 1>>
 	<span id="next"><<link [[다음|School Passout Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|School Passout Rape]]>><</link>></span><<nexttext>>
@@ -812,15 +839,50 @@
 
 <<link [[다음|School Rear Playground]]>><</link>>
 
-<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
-<<endevent>>
-<<npc Leighton>>레이턴이 창고 안으로 불쑥 들어온다. <<group_un>> 당황하여 눈을 크게 뜨고는, 횡설수설하며 어떻게든 변명을 하려 한다. 레이턴은 귓등으로도 듣지 않고는 둘의 목덜미를 잡고 창고 바깥으로 질질 끌고 나간다. <<tearful>> 당신은 몸을 추스른다.
-<br><br>
+<<elseif $rescue gte 1 and $alarm is 1>><<set $rescued += 1>>
+	<<if $rescue is 2>>
+		The door flies open. Whitney barges in, <<nnpc_his "Whitney">> buddies stood behind <<nnpc_him "Whitney">>.
+		<<if $pillory_tenant.special.name isnot "Leighton">>
+			<<nnpc_He "Whitney">> looks between you and the two students, then scowls. You can't tell who <<nnpc_his "Whitney">> anger is directed at.<<status 1>><<gcool>>
+			<br><br>
 
-<<clotheson>>
-<<endcombat>>
+			Before things can escalate, another figure steps into the doorway. It's Leighton.
+			<<npc Leighton 3>>
+			"Whatever's going on here, it's over. I expect the lot of you in my office-"
+			<br><br>
 
-<<link [[다음|School Rear Playground]]>><</link>>
+			Whitney slugs the <<person1>><<person>> in the face before Leighton can finish. Egged on by <<nnpc_his "Whitney">> friends, a brawl quickly ensues, with Leighton angrily trying to reign them all in.
+			<br><br>
+
+			<<tearful>> you take advantage of the confusion and slip outside.
+			<br><br>
+
+			<<clotheson>>
+			<<endcombat>>
+
+			<<link [[다음|School Rear Playground]]>><</link>>
+			<br>
+		<<else>>
+			The <<person1>><<person>> and <<person2>><<person>> cry out as Whitney's goons descend on them. You seize the opportunity to scurry outside.<<status 1>><<gcool>>
+			<br><br>
+
+			<<clotheson>>
+			<<endcombat>>
+			<<npc Whitney>><<person1>>
+
+			<<link [[다음|Whitney Rescue 2]]>><<set $whitneyRescueExit to "playground">><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<endevent>>
+		<<npc Leighton>>레이턴이 창고 안으로 불쑥 들어온다. <<group_un>> 당황하여 눈을 크게 뜨고는, 횡설수설하며 어떻게든 변명을 하려 한다. 레이턴은 귓등으로도 듣지 않고는 둘의 목덜미를 잡고 창고 바깥으로 질질 끌고 나간다. <<tearful>> 당신은 몸을 추스른다.
+		<br><br>
+
+		<<clotheson>>
+		<<endcombat>>
+
+		<<link [[다음|School Rear Playground]]>><</link>>
+	<</if>>
 <</if>>
 
 :: School Passout Gang Rape Finish
@@ -2197,7 +2259,7 @@ You're aware of all the other students looking at their phones. How many of them
 You snatch the phone away, and climb atop a nearby table. "Hey!" you shout. "Everyone!" Heads turn. Some look surprised or bemused, but others bear knowing looks.
 <br><br>
 
-"You wanna see me naked? You let the sentence hang a moment. "You can." You look down at the phone, and read the website address aloud.
+"You wanna see me naked?" You let the sentence hang a moment. "You can." You look down at the phone, and read the website address aloud.
 <<famemodel 20>>
 <<fameexhibitionism 20>>
 <<exhibitionism5>>
@@ -2322,4 +2384,48 @@ You've made <<moneyGain `$panties_held * 10`>>.
 <br><br>
 
 <<link [[다음|School Rear Playground]]>><<endevent>><</link>>
+<br>
+
+
+:: School Sirris Help
+<<effects>>
+
+"Oh thank you," Sirris says. "Could you unlock the car for me? My keys are in my pocket."
+<br><br>
+
+You reach inside as Sirris balances the box on the car's roof. Your fingers clutch something plastic. Part of the key chain? You pull it out.
+
+<<if $awareness gte 200>>
+	<span class="pink">It's a small pink vibrator.</span>
+<<else>>
+	It's a small pink object. Your finger presses a button, <span class="pink">and it begins to vibrate.</span>
+<</if>>
+<br><br>
+"Oh!" Sirris says. "Wrong pocket. Sorry." You return the item, walk around to the other pocket, and fish out the key.
+<br><br>
+"Thank you," Sirris says as you unlock the door. <<He>> lays the box on the passenger seat. "I'm on my way to my shop. It's not open, we're still getting things ready. If you wanted to help more, <span class="gold">you can find us on Elk Street on Friday afternoons.</span> I'm sure we'd open sooner if you did."
+<br><br>
+
+<<He>> climbs into <<his>> car, and drives away.
+<br><br>
+
+<<link [[다음|School Front Playground]]>><<endevent>><</link>>
+<br>
+
+
+:: School Sirris Watch
+<<effects>>
+
+You watch Sirris awkwardly balance the cardboard box on roof of <<his>> car while fishing in <<his>> pocket for the key. <<He>> manages to get the door open, but the base of the box gives way as <<he>> lifts it.
+<<if $awareness gte 200>>
+	<span class="purple">A large purple dildo rolls out,</span> and bounces on the floor.
+<<else>>
+	A long, thick purple object rolls out, and bounces on the floor.
+<</if>>
+<br><br>
+
+Sirris lays the box on the passenger seat, before retrieving the rogue object. <<He>> jumps into the driver's seat, and drives towards Elk Street.
+<br><br>
+
+<<link [[다음|School Front Playground]]>><<endevent>><</link>>
 <br>

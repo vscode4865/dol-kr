@@ -356,26 +356,33 @@
 괴물은 뒷걸음치며 어둠 속으로 사라진다. <<tearful>> 당신은 주위를 둘러보지만 다른 위협은 보이지 않는다.
 <<clotheson>>
 <<endcombat>>
-<<link [[다음|Lake Ruin Plinth]]>><</link>>
+<<link [[다음|Lake Ruin Plinth]]>><<set $phase to 1>><</link>>
 <br>
 
 :: Lake Ruin Plinth
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
 당신은 호수 깊은 곳에 있는 유적의 대좌가 있는 작은 방에 있다.
-<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+<<set _leave to 1>>
+<<set _bmoon to (($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6))>>
+<<set _parasite to ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
+<<if _bmoon>>
+	/* Display these on every blood moon entry */
 	<<if $wraith and $wraith.hunt>>
 		당신은 당신을 따라오는 존재가 멈춘 것을 느낀다. <span class="blue">그것은 여기에서는 당신에게 다가올 수 없다.</span>
 		<<set $wraith.hunt to 0>><<set $foresthunt to 0>><<set $wraith.timer += 5>>
 	<</if>>
 	붉은 달빛이 천장의 틈새로 스며든다. 많지는 않지만 대좌의 빛이 닿는 곳이 빛나는 것처럼 보인다.
-	<<if $moonEvent is true and $parasite.left_ear.name is undefined and $parasite.right_ear.name is undefined and $worn.genitals.name is "gold chastity belt">>
+	<<if $moonEvent and !_parasite and $worn.genitals.name is "gold chastity belt">>
+		/* Moon event if no parasites and has gold cb */
 		<<unset $moonEvent>><<set $worn.genitals.integrity *= 0.5>><<control 50>>
 		당신은 대좌에 이끌려, 이상한 평온함을 느낀다.
-		<<gggcontrol>>
+		<<gggcontrol>><br><br>
+		<<set $phase to 1>>
 	<</if>>
 <</if>>
-<<if $moonstate is "evening" and $hour gte 21 and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") or $moonstate is "morning" and $hour lt 6 and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
+<<if _bmoon and _parasite>>
+	/* Clear the possibility of the other moon event, but this event can be revisited if it is skipped */
 	<<unset $moonEvent>>
 	당신은 그것이 당신에게 끌리는 것을 느낀다.
 	<br><br>
@@ -385,18 +392,36 @@
 <<elseif $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
 	상아 목걸이가 그 위에 있다. 그것은 파란색 보석으로 장식되어 있다.
 	<br><br>
+
 	<<link [[가져간다|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
 	<br>
-<<elseif $tentacledisable is "f" and $hallucinations gte 2>>
+<<elseif $tentacledisable is "f" and $hallucinations gte 2 and !_bmoon>>
 	당신은 무미건조한 방을 둘러본다. 대좌 이외에는 아무것도 보이지 않지만, 희미한 미끄러지는 소리가 들린다. <span class="blue">누군가 당신을 보고 있다.</span>
 	<br><br>
+
 	<<link [[수색한다|Lake Ruin Deep Offer]]>><<loxygen>><</link>>
 	<br>
+<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1>>
+	<<set _leave to 0>>
+	<br><br>
+	당신은 당신 주위의 물이 움직이는 것을 느끼고, 당신이 주위를 둘러보는 동안 점점 빨라지는 것을 느낀다. 어둠 속에서, 붉은 달빛에 의해 옅게 비추는 가운데, 촉수들이 뻗어나온다. <span class="red">그것들 중 둘은 당신의 발목을 감싸고, 당신을 방 안으로 더 깊게 잡아당기기 시작한다!</span>
+	<br><br>
+
+	<<link [[포기한다|Lake Ruin Deep NonConsentacles]]>><<set $molestationstart to 1>><</link>>
+	<br>
+	<<link [[탈출한다|Lake Ruin Deep Consentacles Leave]]>><<loxygen>><</link>><<swimmingdifficulty 600 1200>>
+	<br>
+<<elseif _bmoon and ($phase is 1 or $tentacledisable isnot "f")>>
+	당신 주위의 물은 으스스하게 조용하고, 죽은 듯이 고요하며, 방은 붉은 빛 안에서 겨우 밝혀져 있다.
+	<br><br>
 <<else>>
+	물은 어두운 방 안에서 당신의 움직임에 따라 흔들리고 있다.
 	<br><br>
 <</if>>
-<<link [[떠난다|Lake Ruin Deep]]>><</link>>
-<br>
+<<if _leave>>
+	<<link [[떠난다|Lake Ruin Deep]]>><<set $phase to 0>><</link>>
+	<br>
+<</if>>
 
 :: Lake Ruin Ivory
 <<effects>>
@@ -845,7 +870,7 @@
 <<tentacles>>
 <<actionstentacles>>
 <<if $tentacles.active lte ($tentacles.max / 2)>>
-	<span id="next"><<link [[다음|Lake Underwater Tentacles Finish Figure]]>><<set $phase2 to 1>><</link>></span><<nexttext>>
+	<span id="next"><<link [[다음|Lake Underwater Tentacles Finish]]>><<set $phase2 to 1>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Lake Underwater Tentacles]]>><</link>></span><<nexttext>>
 <</if>>
@@ -862,10 +887,17 @@
 :: Lake Underwater Tentacles Finish
 
 <<underwater>><<effects>>
-괴물은 뒷걸음치며 어둠 속으로 사라진다. <<tearful>> 당신은 출구로 향한다.
+<<set _phase to $phase2>>
+<<if $bus is "lake_ruin_deep">>
+	<<set _nextroom to "Lake Ruin Deep">>
+<<elseif $bus is "lake_ruin">>
+	<<set _nextroom to "Lake Ruin">>
+<</if>>
+그 생물은 당신에게서 움츠러들어 어둠 속으로 사라진다. <<tearful>> 당신을 출구로 몸을 돌린다. <<if _phase is 1>>당신이 뒤돌아 봤을 때, 그 창백한 형체는 사라져 있다.<</if>>
 <<clotheson>>
 <<endcombat>>
-<<link [[다음|Lake Ruin]]>><</link>>
+<<if _phase is 1>><<endWraith>><</if>>
+<<link [[다음|_nextroom]]>><</link>>
 <br>
 
 :: Lake Underwater Rape

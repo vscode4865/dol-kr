@@ -1,35 +1,11 @@
 :: Widgets Orgasm [widget]
 
 <<widget "orgasm">>
-	<<if $player.penisExist and $penissize is -2>>
-		<<set $femaleclimax to 1>>
-	<<elseif $femaleclimax isnot -1 and $orgasmdown lt 0>>
-		<<set $femaleclimax to -1>>
-	<</if>>
 	<<orgasmstat>><<set $orgasmcount += 1>><<set $orgasmdown to 3>>
 	<<if $combat is 1>>
 		<<set $speechcum to 1>><<set $speechorgasmcount += 1>>
 	<</if>>
-	<<if $player.penisExist and $femaleclimax is -1 and $penissize lt 0>>
-		<<set $_femaleclimaxchance to 50>>
-		<<if $anusstate is "penetrated" or $anusstate is "tentacle" or $anusstate is "tentacledeep" or $anusstate is "doublepenetrated">>
-			<<set $_femaleclimaxchance += 40>>
-			<<if $anusstate is "doublepenetrated">>
-				<<set $_femaleclimaxchance += 20>>
-			<</if>>
-		<</if>>
-		<<if $mouthstate is "penetrated" or $mouthstate is "tentacle" or $mouthstate is "tentacledeep">>
-			<<set $_femaleclimaxchance += 20>>
-		<</if>>
-		<<if $penisstate is "penetrated" or $penisstate is "otheranus" or $penisstate is "tentacledeep" or $penisstate is "tentacle">>
-			<<set $_femaleclimaxchance -= 40>>
-		<</if>>
-		<<if random(1, 100) lte $_femaleclimaxchance>>
-			<<set $femaleclimax to 1>>
-		<<else>>
-			<<set $femaleclimax to 0>>
-		<</if>>
-	<</if>>
+	<<tinyPenisDryOrgasmChance>>
 	<<if $player.penisExist>>
 		<<if $femaleclimax is 1>>
 			<span class="pink">당신은 몸의 감각과 절정에 계집애처럼 굴복한다.</span>
@@ -39,7 +15,9 @@
 			<<set $femaleclimax to 1>>
 			<<semenvolume -1>>
 		<<else>>
-			<<set $player.bodyliquid.penis.semen += 1>>
+			<<if !playerHasStrapon()>>
+				<<set $player.bodyliquid.penis.semen += 1>>
+			<</if>>
 			<<if $player.condom>>
 				<<if $player.condom.damaged is true or ($player.condom.cum is true and random(0,100) gte 95)>>
 					<<set _condom to "damaged">>
@@ -47,7 +25,9 @@
 					<<set _condom to true>>
 				<</if>>
 			<</if>>
-			<<if $parasite.penis.name>>
+			<<if playerHasStrapon()>>
+				<span class="pink">당신은 당신의 페니스 밴드 아래에서 자극과 절정에 압도된다.</span>
+			<<elseif $parasite.penis.name>>
 				당신은 몸의 감각에 굴복하여 자지에 달라붙은 기생충 안에 사정한다.
 			<<elseif _condom is true>>
 				당신은 몸의 감각에 굴복하여 자지를 감싼 콘돔 안에 사정한다.
@@ -167,12 +147,20 @@
 			<</if>>
 
 		<</if>>
-	<<else>>
-		<span class="pink">당신은 몸의 감각과 절정에 굴복한다.</span>
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<if !$player.penisExist>>
+			<span class="pink">당신은 몸의 감각과 절정에 굴복한다.</span>
+		<</if>>
+		<<if $leftarm is "mvaginafist" or $rightarm is "mvaginafist">>
+			<span class="pink">당신은 절정의 끝에 가까워지자, 당신의 근육이 당신의 손 주위에서 꽉 조이며 고동치는 것을 느낀다.</span>
+		<<elseif $leftarm is "mvagina" or $rightarm is "mvagina">>
+			<span class="pink">당신은 절정의 끝에 가까워지자, 당신의 근육이 당신의 손가락 주위에서 꽉 조이며 고동치는 것을 느낀다.</span>
+		<</if>>
 	<</if>>
 
 	<<if $arousalmasochism/$arousal gte 0.70>>
-	<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
+		<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
 		<span class="green"> 당신은 몸부림을 치며 더 큰 고통을 갈구한다.</span>
 		<<set $masochism += 5>>
 	<</if>>
@@ -323,16 +311,12 @@
 		<<set $stress += 100>><<combattrauma 10>><<set $pain += 5>>
 		<span class="red">단기간에 너무 많은 절정을 느껴버려 더는 그런 행위로부터 즐거움을 느끼지 못하게 되어버렸다. 신체적으로나 정신적으로나 고통스럽기만 하다.</span>
 	<</if>>
-	<!-- Chance to get dick drunk after 3rd orgasm, chance is 45% and +5% for each following orgasm, unless under effect of aphrodisiacs -->
-	<<set $rng to random(1, 100)>>
-	<<if $player.vaginaExist and $orgasmcount gte 3 and $orgasmcount lte 8>>
-		<<if $drugged gt 0 or ($consensual and $orgasmcount / 0.2 + 30 gte $rng)>>
+
+	<!-- Chance to get "dick drunk" after 3rd orgasm, chance is 45% for consensual and 15% otherwise, +5% for each following orgasm, but aphrodisiacs make it 100% -->
+	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated()>>
+		<<if $drugged gt 0 or (random(1,100) + ($orgasmcount * 5) gte ($consensual ? 70 : 100))>>
 			<<set $drunk += 25>>
-			<<switch random(1, 3)>>
-				<<case 1>><span class="pink"> 당신은 어지럽다.</span>
-				<<case 2>><span class="pink"> 당신은 현기증을 느낀다.</span>
-				<<case 3>><span class="pink"> 당신은 똑바로 생각할 수 없다.</span>
-			<</switch>>
+			<span class="purple"><<print either("당신은 어지럽다.", "당신은 현기증을 느낀다.", "당신은 똑바로 생각할 수 없다.")>></span>
 		<</if>>
 	<</if>>
 	<!-- If came while being choked -->
@@ -423,57 +407,83 @@
 <</widget>>
 
 <<widget "orgasmstage">>
-<<if $exhibitionism gte 75 and $backgroundTraits.includes("lustful") and $orgasmtrait gte 1>>
-	당신은 엄청난 절정이 몰려오는 것을 느낀다.
-	<br><br>
-	당신의 <span class="lewd">성욕과</span> 당신의 <span class="lewd">쾌락에</span> 못 견뎌, 당신은
-		<<if $exposed lte 1>>
+	<<if $exhibitionism gte 75 and $backgroundTraits.includes("lustful") and $orgasmtrait gte 1>>
+		당신은 엄청난 절정이 몰려오는 것을 느낀다.
+		<br><br>
+		당신의 <span class="lewd">성욕과</span> 당신의 <span class="lewd">쾌락에</span> 못 견뎌, 당신은
+		<<if $exposed lte 1 and $leftarm isnot "bound" and $rightarm isnot "bound">>
 			아직 당신을 가리고 있는 옷을 찢으며
 			<<clothesstrip>>
 		<</if>>
-		무대의 가장자리 끝에 무릎을 꿇고, 당신의 벌거벗은 <<body_size_textPost "과">> <<breastsensitivity>> <<breasts_rul>> 관중들에게 드러낸다. 손들이 뻗어나와 당신을 더듬는다. <<arousal 500>><<garousal>>
+		무대의 가장자리 끝에 무릎을 꿇고, 당신의 벌거벗은 <<body_size_textPost "과">> <<breastsensitivity>> <<breasts_rul>> 관중들에게 드러낸다. 
+		손들이 뻗어나와 당신을 더듬는다. <<arousal 500>><<garousal>>
 		<br><br>
-			<<set $audience += 26>>
+		<<set $audience += 26>>
+		/* Fills all unoccupied NPC slots; generatel not to be confused with generate1 */
+		<<if $enemyno is 0>>
+			<<generatel>><<generatel>><<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 1>>
+			<<generatel>><<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 2>>
+			<<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 3>>
+			<<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 4>>
+			<<generatel>><<generatel>>
+		<<elseif $enemyno is 5>>
 			<<generatel>>
-			<<generatel>>
-			<<generatel>>
-			<<generatel>>
-			<<generatel>>
-			<<generatel>>
-			당신의 다리와 배의 근육이 긴장한다. 당신의 골반이 앞뒤로 씰룩거린다. 당신이 신음하며 아픔과 쾌락이 섞인 경련을 하자 관객들이 환호한다.
-			<br><br>
-			<<orgasm>>
-			잠시 후, 경련이 잦아든다. 당신은 바닥에 누워 공기를 들이마시려 헉헉댄다. 음악은 멈추었다. 당신 주위의 군중들은 땀과 체액으로 뒤덮인, 당신의 몸을 응시하고 있다.
-			<br><br>
-			당신은 다리를 떨며, 일어나, 허리를 굽혀 인사한다. 모여있는 관중들은 박수를 터뜨린다.
-				<<fameexhibitionism 15>>
-				<<set $audiencearousal += 80>>
-				<<set $audienceexcitement += 50>>
-				<<set $audiencemod += 5>>
+		<</if>>
+		당신의 다리와 배의 근육이 긴장한다. 당신의 골반이 앞뒤로 씰룩거린다. 당신이 신음하며 아픔과 쾌락이 섞인 경련을 하자 관객들이 환호한다.
+		<br><br>
+		<<orgasm>>
+		잠시 후, 경련이 잦아든다. 당신은 바닥에 누워 공기를 들이마시려 헉헉댄다. 음악은 멈추었다. 
+		당신 주위의 군중들은 땀과 체액으로 뒤덮인, 당신의 몸을 응시하고 있다.
+		<br><br>
+		당신은 다리를 떨며, 일어나, 허리를 굽혀 인사한다. 모여있는 관중들은 박수를 터뜨린다.
+		<<fameexhibitionism 15>>
+		<<set $audiencearousal += 80>>
+		<<set $audienceexcitement += 50>>
+		<<set $audiencemod += 5>>
 	<<else>>
 		당신은 절정이 안에서 몰려오는 것을 느끼며, 춤을 멈춘다. <<orgasm>>
 		<<if $danceskill lte 500>>
-			그것은 당신의 집중을 흐트러뜨린다. 당신은 균형을 잡으려 하지만, 당신의 무릎이 풀리며 당신은 무릎으로 넘어진다. 모여있는 관중들은 당신을 비웃으며, 당신의 춤 기술을 조롱한다.<br><br> 
+			그것은 당신의 집중을 흐트러뜨린다. 당신은 균형을 잡으려 하지만, 당신의 무릎이 풀리며 당신은 무릎으로 넘어진다. 
+			모여있는 관중들은 당신을 비웃으며, 당신의 춤 기술을 조롱한다.
+			<br><br>
+
 			<<if $worn.feet.type.includes("heels")>>
-				당신은 발로 일어서려 하지만, 마지막 절정의 경련이 당신의 균형을 붕괴시킨다. 당신의 신발 중 한 짝의 힐이 당신이 넘어지는 것을 막으며, 당신의 몸무게가 하이힐을 부러뜨린다. 당신은 다시 한번 바닥에 충돌하고, 관중들에게서 웃음소리를 끌어낸다.<<ggpain>> <<pain 10>>
+				당신은 발로 일어서려 하지만, 마지막 절정의 경련이 당신의 균형을 붕괴시킨다. 
+				당신의 신발 중 한 짝의 힐이 당신이 넘어지는 것을 막으며, 당신의 몸무게가 하이힐을 부러뜨린다. 
+				당신은 다시 한번 바닥에 충돌하고, 관중들에게서 웃음소리를 끌어낸다.<<ggpain>> <<pain 10>>
 				<<feetruined>>
 				<br><br>  
 			<</if>>
-			 <<tearful>> 부끄러워 얼굴이 빨갛게 된 채로, 시선 밖으로 기어나간다. 
-			<<gtrauma>><<gstress>><<trauma 10>><<stress 10>>
-			<<set $danceevent to "finish">>
+			<<if $dancelocation is "smuggler_forced" or $dancelocation is "underground">>
+				당신은 부끄러웠지만, 도망갈 곳이 없다.
+				<<ggtrauma>><<gggstress>><<trauma 12>><<stress 24>>
+			<<else>>
+				<<tearful>> 부끄러워 얼굴이 빨갛게 된 채로, 시선 밖으로 기어나간다. 
+				<<gtrauma>><<gstress>><<trauma 10>><<stress 10>>
+				<<set $danceevent to "finish">>
+			<</if>>
 		<<elseif $danceskill lte 1000 and $exhibitionism gte 50 and $promiscuity gte 50>>
 			당신은 완전히 쓰러지기 전에 무릎을 꿇는다. 당신의 <<body_size_textPost "은">> 격렬한 경련으로 괴로워한다. 관중들이 당신에게 환호를 보낸다.
 			<br><br>
 			당신은 일어나 다시 춤추기 시작하고, 관중들은 야유를 보낸다.
 			<<fameexhibitionism 15>>
-				<<set $audiencearousal += 10>>
-				<<set $audienceexcitement += 5>>
-				<<set $audiencemod += 2>>
+			<<set $audiencearousal += 10>>
+			<<set $audienceexcitement += 5>>
+			<<set $audiencemod += 2>>
 		<<else>>
-			당신은 당신의 경련하는 <<body_size_text "을">> 춤 솜씨로 가리려 한다. 하지만 그건 견디기에는 너무 힘들었다. 당신은 가능한 한 우아하게 무대를 벗어난다.
-			<<gtrauma>><<gstress>><<trauma 5>><<stress 5>>
-			<<set $danceevent to "finish">> 
+			당신은 당신의 경련하는 <<body_size_textPost "을">> 춤 솜씨로 가리려 한다. 
+			<<if $dancelocation is "smugger_forced" or $dancelocation is "underground">>
+				그건 견디기에는 너무 힘들었지만, 당신은 당신을 포획한 자들에 대한 공포로 그대로 있는다.
+				<<trauma 10>><<stress 12>><<gtrauma>><<ggstress>>
+			<<else>>
+				하지만 그건 견디기에는 너무 힘들었다. 당신은 가능한 한 우아하게 무대를 벗어난다.
+				<<gtrauma>><<gstress>><<trauma 5>><<stress 5>>
+				<<set $danceevent to "finish">> 
+			<</if>>
 		<</if>>
 	<</if>>
 
@@ -481,7 +491,7 @@
 
 <<widget "orgasmLocation">>
 	<<orgasm>>
-	<<switch $args[0]>>
+	<<switch _args[0]>>
 		<<case "schoolHallway">>
 			<<if ["early","late","earlynoschool","latenoschool","daynoschool"].includes($schoolstate)>>
 				당신은 당신의 경련이 잦아들자 몸을 진정시킨다. 당신은 복도가 지금 비어있다는 것이 행운이라고 생각하면서, 그 소음이 주의를 끌지 않았기를 바란다.
@@ -527,20 +537,19 @@
 				당신은 당신의 경련이 잦아들자 몸을 진정시킨다. 당신은 도서관이 지금 비어있다는 것이 행운이라고 생각하면서, 그 소음이 주의를 끌지 않았기를 바란다.
 			<<elseif $exposed gte 1>>
 				<<set $_hidden to true>>
-			<<elseif _sydney_location is "library">>
+			<<else>>
 				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 사람들의 주의를 끌었고, 당신이 몸의 통제권을 되찾고 나서 당신은 모든 방향에서 동료 학생들이 당신을 응시하고 있다는 것을 알아차린다. 그들 중 일부의 수근대는 소리가 도서관에 퍼지기 시작한다.
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
-				<br><br>
-				시드니가 헛기침을 한다. 다른 학생들은 그 의미를 깨닫고 수근거림이 멈춘다.
-			<<else>>
-				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 사람들의 주의를 끌었고, 당신이 몸의 통제권을 되찾고 나서 당신은 모든 방향에서 동료 학생들이 당신을 응시하고 있다는 것을 알아차린다. 그들 중 일부의 수근대는 소리가 도서관에 퍼지기 시작한다. 얼굴이 빨개져서, 당신은 자신을 숨기려 시도한다.
-				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+				<<if $sydneySeen and _sydney_location is "library">>
+					<br><br>
+					시드니가 헛기침을 한다. 다른 학생들은 그 의미를 깨닫고 수근거림이 멈춘다.
+				<</if>>
 			<</if>>
 		<<case "boyChangingRoom">>
 			<<if $changingroomstate is "empty">>
 				당신은 당신의 경련이 잦아들자 몸을 진정시킨다. 당신은 탈의실이 지금 비어있다는 것이 행운이라고 생각하면서, 그 소음이 주의를 끌지 않았기를 바란다.
 			<<elseif $player.gender_appearance is "f">>
-				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 <<girls_yi>> 주의를 끌었다. 그들의 반응은 각각 다르다. 몇몇은 당신을 응원한다. 몇몇은 시선을 피한다. 그리고 몇몇은 당신에게 온갖 종류의 욕설을 질러댄다.
+				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 <<if $bus is "girls">>소녀들의<<else>>소년들의<</if>> 주의를 끌었다. 그들의 반응은 각각 다르다. 몇몇은 당신을 응원한다. 몇몇은 시선을 피한다. 그리고 몇몇은 당신에게 온갖 종류의 욕설을 질러댄다.
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
 			<<else>>
 				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 사람들의 주의를 끌었고, 당신이 몸의 통제권을 되찾고 나서 당신은 모든 방향에서 동료 학생들이 당신을 응시하고 있다는 것을 알아차린다. 그들 중 일부의 수근대는 소리가 탈의실에 퍼지기 시작한다. 얼굴이 빨개져서, 당신은 얼굴을 숨기기 위해 몸을 돌린다.
@@ -550,7 +559,7 @@
 			<<if $changingroomstate is "empty">>
 				당신은 당신의 경련이 잦아들자 몸을 진정시킨다. 당신은 탈의실이 지금 비어있다는 것이 행운이라고 생각하면서, 그 소음이 주의를 끌지 않았기를 바란다.
 			<<elseif $player.gender_appearance is "m">>
-				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 <<girls_yi>> 주의를 끌었다. 그들의 반응은 각각 다르다. 몇몇은 당신을 응원한다. 몇몇은 시선을 피한다. 그리고 몇몇은 당신에게 온갖 종류의 욕설을 질러댄다.
+				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 <<if $bus is "girls">>소녀들의<<else>>소년들의<</if>> 주의를 끌었다. 그들의 반응은 각각 다르다. 몇몇은 당신을 응원한다. 몇몇은 시선을 피한다. 그리고 몇몇은 당신에게 온갖 종류의 욕설을 질러댄다.
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
 			<<else>>
 				한 <<girl_i>> 절정으로 경련하는 장면과 소리는 사람들의 주의를 끌었고, 당신이 몸의 통제권을 되찾고 나서 당신은 모든 방향에서 동료 학생들이 당신을 응시하고 있다는 것을 알아차린다. 그들 중 일부의 수근대는 소리가 탈의실에 퍼지기 시작한다. 얼굴이 빨개져서, 당신은 얼굴을 숨기기 위해 몸을 돌린다.
@@ -672,6 +681,19 @@
 				<<default>>
 					<<set $_quiet to "시골길">>
 			<</switch>>
+		<<case "meadow">>
+			<<if $rng gte 91>>
+				당신은 잎사귀들을 잡고, 경련이 잦아들자 몸을 진정시킨다. 당신은 주위에 당신이 절정하는 소리를 들은 자가 아무도 없다고 생각했지만, 한
+				<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f") or ($bestialitydisable is "t")>>
+					<<if $malechance lt random(1, 100)>> 여우소녀가 <<else>> 여우소년이 <</if>>
+				<<else>>
+					여우가
+				<</if>>
+				풀숲에 숨어서, 당신을 쳐다보고 있는 것을 알아차린다. 녀석은 당신이 그곳에서 벗어날 수 있게 되기 전에 도망간다.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+			<<else>>
+				당신은 잎사귀들을 잡고, 경련이 잦아들자 몸을 진정시킨다. 당신이 절정하는 소리는 산들바람을 타고 퍼졌지만, 다행히도 주위에는 들을 자가 아무도 없다.
+			<</if>>
 		<<case "alexFarmWork">>
 			<<if $daystate is "night">>
 				당신은 당신의 경련이 잦아들자 몸을 진정시키고, 그 소음이 동물들을 방해하지 않았기를 바란다.
@@ -684,13 +706,18 @@
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
 			<</if>>
 		<<case "alexFarmTending">>
-				당신의 절정을 알아채고, 알렉스는 당신이 괜찮은지 보러 온다. 그러나, <<nnpc_he_ga "Alex">> 당신의 절정이 잦아드는 것을 쳐다보고, 무엇이 일어났는지를 이해하자 마자, <<nnpc_he_nun "Alex">> <<nnpc_himself_rul "Alex">> 멈춰세운다. 얼굴이 진홍색이 되어, 당신 둘은 눈을 마주치는 것을 피하면서, 아무 일도 일어나지 않은 척 한다.
-				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
+			당신의 절정을 알아채고, 알렉스는 당신이 괜찮은지 보러 온다. 그러나, <<nnpc_he_ga "Alex">> 당신의 절정이 잦아드는 것을 쳐다보고, 무엇이 일어났는지를 이해하자 마자, <<nnpc_he_nun "Alex">> <<nnpc_himself_rul "Alex">> 멈춰세운다. 얼굴이 진홍색이 되어, 당신 둘은 눈을 마주치는 것을 피하면서, 아무 일도 일어나지 않은 척 한다.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
 		<<case "alexFarmTendingAlone">>
-				당신은 당신의 경련이 잦아들자 몸을 진정시키고, 알렉스가 지금 여기에 없어서 당신이 그런 상태라는 것을 볼 수 없다는 사실에 고마움을 느낀다.
+			당신은 당신의 경련이 잦아들자 몸을 진정시키고, 알렉스가 지금 여기에 없어서 당신이 그런 상태라는 것을 볼 수 없다는 사실에 고마움을 느낀다.
+		<<case "alexFarmAdmin">> 
+			당신의 커다란 신음소리는 알렉스와 전화통화하고 있는 사람의 주의를 끌었다. "죄-죄송합니다," <<nnpc_he_ga "Alex">> 말을 더듬는다. "그-그건 그냥 바람 소리였어요." 
+			<br><br>
+			<<nnpc_He_nun "Alex">> <<nnpc_his_yi "Alex">> 얼굴이 진홍색이 된 채로 계속 통화를 하고, 당신의 경련이 잦아들자 당신 둘은 눈을 마주치는 것을 피한다.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
 		<<case "sewers">>
 			당신의 커다란 신음소리가 터널을 통해 메아리친다.
-			<<if $args[1]>>
+			<<if _args[1]>>
 				당신은 당신의 경련이 잦아들자, 당신은 그 소음이 또 다른 주의를 끌지 않았기를 바란다.
 				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 				<<set $sewerschasedstep -= 1>>
@@ -698,7 +725,7 @@
 				당신은 당신의 경련이 잦아들자, 당신은 그 소음이 주의를 끌지 않았기를 바란다.
 			<</if>>
 		<<case "lake">>
-			<<if $args[1]>>
+			<<if _args[1]>>
 				당신은 당신의 경련이 잦아들자 나무에 기대 몸을 진정시킨다. 다행히, 거기에는 당신이 그런 상태라는 것을 볼 사람이 아무도 없다.
 			<<elseif $exposed gte 1>>
 				<<set $_hidden to true>>
@@ -748,8 +775,8 @@
 		<<set $masturbation_milk += $_milk_released>>
 		<!-- If the player is using both hands, only print this text the second time, and report the total milk released this turn -->
 		<<set _milk_this_turn to (_milk_this_turn is undefined ? $_milk_released : _milk_this_turn + $_milk_released)>>
-		<!-- $args[0] is how many times this widget has been called this turn -->
-		<<if $args[0] and $args[0] is _handsOnBreasts>>
+		<!-- _args[0] is how many times this widget has been called this turn -->
+		<<if _args[0] and _args[0] is _handsOnBreasts>>
 			<span class="gold">당신은 <<print (_milk_this_turn).toFixed(1)>> mL의 모유를 얻었다.</span>
 		<</if>>
 	<</if>>
@@ -831,6 +858,7 @@
 
 	<<set $semen_produced_stat += $_semen_released>>
 	<<set $semen_amount -= $_semen_released>>
+	<<set _semen_released to $_semen_released>>
 <</widget>>
 
 <<widget "wetnessCalculate">>
@@ -952,3 +980,31 @@
 	<</if>>
 	<<set $lube_produced_stat += _lube_released>>
 <</widget>>
+
+<<widget "tinyPenisDryOrgasmChance">>
+	<<if !$player.penisExist or $player.penissize gte 0>>
+		<!-- Cannot have a "femaleclimax" (aka an orgasm with no cum, but with extra humiliation) without a size -1 or lower penis -->
+		<<set $femaleclimax to 0>>
+	<<else>>
+		<!-- Guaranteed at size -2 -->
+		<<set $femaleclimax to 1>>
+		<!-- chance at -1, if haven't cum in a while -->
+		<<if $player.penissize is -1 and $orgasmdown lt 0>>
+			<<set $_femaleclimaxchance to 50>>
+			<<if ['penetrated', 'tentacle', 'tentacledeep', 'doublepenetrated'].includes($anusstate)>>
+				<<set $_femaleclimaxchance += 40>>
+				<<if $anusstate is "doublepenetrated">>
+					<<set $_femaleclimaxchance += 20>>
+				<</if>>
+			<</if>>
+			<<if ['penetrated', 'tentacle', 'tentacledeep'].includes($mouthstate)>>
+				<<set $_femaleclimaxchance += 20>>
+			<</if>>
+			<<if ['penetrated', 'otheranus', 'tentacle', 'tentacledeep'].includes($penisstate)>>
+				<<set $_femaleclimaxchance -= 40>>
+			<</if>>
+			<<set $femaleclimax to (random(1, 100) lte $_femaleclimaxchance ? 1 : 0)>>
+		<</if>>
+	<</if>>
+<</widget>>
+

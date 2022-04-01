@@ -28,7 +28,7 @@
 <</widget>>
 
 <<widget "actionspenistovaginanew">>
-<<if !$worn.genitals.type.includes("chastity")>>
+<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is 0>>
 		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -53,12 +53,14 @@
 		<<set _pp to "">>
 		<<if $_target.chastity.penis.includes("chastity")>>
 			<<set _pp to "갇혀있는 자지">>
-		<<elseif $_target.penisdesc.includes("strap-on")>>
+		<<elseif npcHasStrapon($penistarget)>>
 			<<set _pp to "페니스 밴드 자지">>
 		<<else>>
 			<<set _pp to "자지">>
 		<</if>>
-		<<if $worn.genitals.type.includes("chastity")>>
+		<<if playerHasStrapon()>>
+			<<set _penisaction[$_target.pronouns.his + " " + _pp + "에 대고 당신의 페니스 밴드 자지를 누른다"] to "penistopenisfuck">>
+		<<elseif $worn.genitals.type.includes("chastity")>>
 			<<set _penisaction[$_target.pronouns.his + " " + _pp + "에 대고 당신의 정조대를 누른다"] to "penistopenisfuck">>
 		<<else>>
 			<<set _penisaction[$_target.pronouns.his + " " + _pp + "에 대고 당신의 자지를 누른다"] to "penistopenisfuck">>
@@ -75,6 +77,8 @@
 	<<elseif $_target.stance isnot "topface" and ($enemytype isnot "man" or ($_target.location.genitals is 0 and $_target.location.head isnot "genitals"))>>
 		<<if $_target.chastity.penis.includes("chastity")>>
 			<<trClothes "genitals" $_target.chastity.penis "name">><<set _penisaction[$_target.pronouns.his + " " + _trResult + "에 비빈다"] to "penistopenis">>
+		<<elseif npcHasStrapon($penistarget)>>
+			<<set _penisaction[$_target.pronouns.his + " 페니스 밴드 자지에 비빈다"] to "penistopenis">>
 		<<else>>
 			<<set _penisaction[$_target.pronouns.his + " 자지에 비빈다"] to "penistopenis">>
 		<</if>>
@@ -155,7 +159,7 @@
 
 <<widget "actionspenistoanusnew">>
 <<set $_target to $NPCList[$penistarget]>>
-<<if !$worn.genitals.type.includes("chastity")>>
+<<if !$worn.genitals.type.includes("chastity") or playerHasStrapon()>>
 	<<if $_target.stance isnot "topface">>
 		<<if $_target.vagina is 0 or $_target.penis is 0>>
 			<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore>>
@@ -201,7 +205,7 @@
 <</widget>>
 
 <<widget "actionspenisvaginafucknew">>
-<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is "penisentrance" or $_target.vagina is "penisimminent">>
 		<<if $consensual is 1 and (($enemytype is "man" ? $promiscuity : $deviancy) lte 74 and !$promiscuityIgnore) or $_target.chastity.vagina.includes("chastity")>>
@@ -243,7 +247,7 @@
 <</widget>>
 
 <<widget "actionspenisanusfucknew">>
-<<if !$worn.genitals.type.includes("chastity") and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+<<if (!$worn.genitals.type.includes("chastity") or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
 	<<set $_target to $NPCList[$penistarget]>>
 	<<if $_target.vagina is "otheranusentrance" or $_target.vagina is "otheranusimminent" or $_target.penis is "otheranusentrance" or $_target.penis is "otheranusimminent">>
 		<<if $_target.chastity.anus.includes("shield") or ($consensual is 1 and !$promiscuityIgnore and ($enemytype is "man" ? $promiscuity : $deviancy) lte 74)>>
@@ -451,21 +455,26 @@
 <</widget>>
 
 <<widget "effectspenisvaginafuck">>
-<<if $penisaction is "penisvaginafuck" and ($penissize gte 0 or $arousal gte $arousalmax * (3 / 4))>>
+<<if $penisaction is "penisvaginafuck" and ($player.penissize gte 0 or $arousal gte $arousalmax * (3 / 4))>>
 	<<personselect $penistarget>>
 	<<set $penisaction to 0>><<submission 20 $penistarget>><<penileskilluse>><<combatpromiscuity5>>
-	<<if random(0,1) is 1 or ($penisWetness + ($penileskill / 10)) gte ($penissize * 15) + random(1, 40)>>
+	<<if random(0,1) is 1 or ($penisWetness + ($penileskill / 10)) gte ($player.penissize * 15) + random(1, 40)>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<set $_target.vagina to "penis">><<set $penisactiondefault to "cooperate">>
-		<<if $player.virginity.penile isnot true>>
+		<<if playerHasStrapon()>>
 			<<penis_lube_text>> <span class="pink">당신은 <<peniletext>> <<combatpersonPost "의">> 보지 깊숙이 찔러 넣는다.</span>
 			<<sex 30 $penistarget>>
+		<<elseif $player.virginity.penile isnot true>>
+			<<penis_lube_text>> <span class="pink">당신은 <<peniletext>> <<combatpersonPost "의">> 보지 깊숙이 찔러 넣는다.</span>
+			<<sex 30 $penistarget>>
+			<<penilestat>><<raped>><<penisraped>>
 		<<elseif $player.virginity.penile is true>>
 			<<penis_lube_text>> <span class="pink">당신은 동정 자지를 <<combatpersonPost "의">> 보지에 찔러 넣는다.</span>
 			<span class="red">포피가 귀두로부터 벗겨지며, 순수함이 영영 사라지는 것이 느껴진다.</span>
 			<<sex 100 $penistarget>><<violence 30 $penistarget>><<bruise penis>><<set $speechpenisvirgin to 1>>
+			<<penilestat>><<raped>><<penisraped>>
 		<</if>>
-		<<penilestat>><<raped>><<penisraped>><<set $penisstate to "penetrated">>
+		<<set $penisstate to "penetrated">>
 		<<takeVirginity $_target.fullDescription "penile">>
 		<<takeNPCVirginity $penistarget "vaginal">>
 	<<else>>
@@ -480,10 +489,10 @@
 <</widget>>
 
 <<widget "effectspenisanusfuck">>
-<<if $penisaction is "penisanusfuck" and ($penissize gte 0 or $arousal gte ($arousalmax / 4) * 3)>>
+<<if $penisaction is "penisanusfuck" and ($player.penissize gte 0 or $arousal gte ($arousalmax / 4) * 3)>>
 	<<personselect $penistarget>>
 	<<set $penisaction to 0>><<submission 20 $penistarget>><<penileskilluse>><<combatpromiscuity5>>
-	<<if random(0,1) is 1 or ($penisWetness + ($penileskill / 10)) gte ($penissize * 15) + random(1, 40)>>
+	<<if random(0,1) is 1 or ($penisWetness + ($penileskill / 10)) gte ($player.penissize * 15) + random(1, 40)>>
 		<<set $_target to $NPCList[$penistarget]>>
 		<<if $_target.vagina is "otheranusentrance" or $_target.vagina is "otheranusimminent">>
 			<<set $_target.vagina to "otheranus">>
@@ -492,15 +501,20 @@
 			<<set $_target.penis to "otheranus">>
 		<</if>>
 		<<set $penisactiondefault to "otheranuscooperate">>
-		<<if $player.virginity.penile isnot true>>
+		<<if playerHasStrapon()>>
 			<<penis_lube_text>> <span class="pink">당신은 <<peniletext>> <<combatpersonPost "의">> 엉덩이 깊숙이 찔러 넣는다.</span>
 			<<sex 30 $penistarget>>
+		<<elseif $player.virginity.penile isnot true>>
+			<<penis_lube_text>> <span class="pink">당신은 <<peniletext>> <<combatpersonPost "의">> 엉덩이 깊숙이 찔러 넣는다.</span>
+			<<sex 30 $penistarget>>
+			<<penilestat>><<raped>><<penisraped>>
 		<<elseif $player.virginity.penile is true>>
 			<<penis_lube_text>> <span class="pink">당신은 <<peniletext>> 동정 자지를 <<combatpersonPost "의">> 항문에 찔러 넣는다.</span>
 			<span class="red">포피가 귀두로부터 벗겨지며, 순수함이 영영 사라지는 것이 느껴진다.</span>
 			<<sex 100 $penistarget>><<violence 30 $penistarget>><<bruise penis>><<set $speechpenisvirgin to 1>>
+			<<penilestat>><<raped>><<penisraped>>
 		<</if>>
-		<<penilestat>><<raped>><<penisraped>><<set $penisstate to "otheranus">>
+		<<set $penisstate to "otheranus">>
 		<<takeVirginity $_target.fullDescription "penile">>
 		<<takeNPCVirginity $penistarget "anal">>
 	<<else>>
@@ -529,7 +543,7 @@
 			<<if $rightarm is "coverpenis">>
 				<<set $rightarm to 0>>
 			<</if>>
-			<span class="lblue">당신은 <<combatperson_yi>> <<npcPenisSimple_ul $penistarget>><<if $worn.genitals.type.includes("chastity")>> 당신의 <<worn_genitals_name_ul>> 통해<</if>> 당신의 자지로 애무한다.</span>
+			<span class="lblue">당신은 <<combatpersons_yi>> <<npcPenisSimple_ul $penistarget>><<if $worn.genitals.type.includes("chastity")>> 당신의 <<worn_genitals_name_ul>> 통해<</if>> 당신의 <<penisSimple_ro>> 애무한다.</span>
 			<<if $enemytype is "beast">>
 				<<set $_target.stance to "top">>
 			<</if>>

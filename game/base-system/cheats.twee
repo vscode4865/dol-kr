@@ -721,6 +721,20 @@
 	<br>
 <</if>>
 
+<<if $worn.face.type.includesAny("covered", "gag", "mask")>>
+	<<link "<<<">><<set $worn.face.integrity -= 100>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>> |
+	<<link "<<">><<set $worn.face.integrity -= 10>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>> |
+	<<link "<">><<set $worn.face.integrity -= 1>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>> |
+	마스크/재갈 내구도: <span id="statsfaceintegrity"><<print Math.trunc($worn.face.integrity)>></span>
+	| <<link ">">><<set $worn.face.integrity += 1>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>>
+	| <<link ">>">><<set $worn.face.integrity += 10>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>>
+	| <<link ">>>">><<set $worn.face.integrity += 100>><<clamp>><<replace "#statsfaceintegrity">><<print Math.trunc($worn.face.integrity)>><</replace>> <<updatesidebarimg>><</link>> (<<print clothingData('face',$worn.face,'integrity_max')>> 이 기본 최대치)
+	<br>
+<<else>>
+	<i>마스크나 재갈을 하고 있지 않다.</i>
+	<br>
+<</if>>
+
 <br>
 
 <u>기술</u>
@@ -1101,7 +1115,11 @@
 <<for _i = 0; _i < setup.colours.eyes.length; _i++>>
 	<<if setup.colours.eyes[_i].natural>>
 		<<if _bar>>|<</if>>
-		<label><span @class="setup.colours.eyes[_i].csstext"><<trColour setup.colours.eyes[_i].name>><<print _trResult>></span> <<radiovar "$eyecolour" setup.colours.eyes[_i].variable>> <<updatesidebarimg>><</radiovar>></label>
+		<label><span @class="setup.colours.eyes[_i].csstext">
+			<<trColour setup.colours.eyes[_i].name>>_trResult</span>
+			<<radiovar "$eyeselected" setup.colours.eyes[_i].variable>>
+				<<cheatMenuEyesSelected>>
+			<</radiovar>></label>
 		<<set _bar to true>>
 	<</if>>
 <</for>>
@@ -1121,22 +1139,22 @@
 <u>신체 부위 크기 및 민감도</u>
 <br>
 
-<<link "<<">><<set $breastsize -= 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
-<<link "<">><<set $breastsize -= 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
-가슴 크기: <span id="statsbreastsize"><<print Math.trunc($breastsize)>></span>
- | <<link ">">><<set $breastsize += 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
- | <<link ">>">><<set $breastsize += 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
+<<link "<<">><<set $player.breastsize -= 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
+<<link "<">><<set $player.breastsize -= 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
+가슴 크기: <span id="statsbreastsize"><<print Math.trunc($player.breastsize)>></span>
+ | <<link ">">><<set $player.breastsize += 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
+ | <<link ">>">><<set $player.breastsize += 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
 <br>
 
-<<link "<">><<set $bottomsize -= 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($bottomsize)>><</replace>> <<updatesidebarimg>><</link>> |
-엉덩이 크기: <span id="statsbottomsize"><<print Math.trunc($bottomsize)>></span>
- | <<link ">">><<set $bottomsize += 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($bottomsize)>><</replace>> <<updatesidebarimg>><</link>>
+<<link "<">><<set $player.bottomsize -= 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($player.bottomsize)>><</replace>> <<updatesidebarimg>><</link>> |
+엉덩이 크기: <span id="statsbottomsize"><<print Math.trunc($player.bottomsize)>></span>
+ | <<link ">">><<set $player.bottomsize += 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($player.bottomsize)>><</replace>> <<updatesidebarimg>><</link>>
 <br>
 
 <<if $player.penisExist>>
-<<link "<">><<set $penissize -= 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>> |
-자지 크기: <span id="statspenissize"><<print Math.trunc($penissize)>></span>
- | <<link ">">><<set $penissize += 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>>
+<<link "<">><<set $player.penissize -= 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($player.penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>> |
+자지 크기: <span id="statspenissize"><<print Math.trunc($player.penissize)>></span>
+ | <<link ">">><<set $player.penissize += 1>><<clamp>><<replace "#statspenissize">><<print Math.trunc($player.penissize)>><</replace>><<replace "#statsgenitals">><<genitalsPost>><</replace>> <<updatesidebarimg>><</link>>
 <br>
 <</if>>
 
@@ -1570,6 +1588,12 @@
 <br>
 <</widget>>
 
+<<widget "cheatMenuEyesSelected">>
+	<<set $leftEyeColour to $eyeselected>>
+	<<set $rightEyeColour to $eyeselected>>
+	<<updatesidebarimg>>
+<</widget>>
+
 <<widget "cheats-npcs">>
 
 <u>순결</u>
@@ -1583,7 +1607,7 @@
 <<link [[확인|$passage]]>>
 	<<initNNPCVirginity $NPCNameList.indexOf(_npcId)>>
 	<<for _virginType, _virginList range $virginTaken>>
-		<<set $virginTaken[_virginType] to _virginList.delete($NPCNameList.indexOf(_npcId))>>
+		<<run _virginList.delete(_npcId)>>
 	<</for>>
 <</link>>
 <br><br>
@@ -1824,6 +1848,15 @@
  | <<link ">">><<npcincr Wren love 1>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>>
  | <<link ">>">><<npcincr Wren love 10>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>>
  | <<link ">>>">><<npcincr Wren love 100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Wren")].love)>><</replace>><</link>> (50 = 최대)
+<br>
+
+<<link "<<<">><<npcincr Charlie love -100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
+<<link "<<">><<npcincr Charlie love -10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
+<<link "<">><<npcincr Charlie love -1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> |
+찰리 사랑: <span id="statscharlielove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>></span>
+ | <<link ">">><<npcincr Charlie love 1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
+ | <<link ">>">><<npcincr Charlie love 10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
+ | <<link ">>>">><<npcincr Charlie love 100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> (50 = full)
 <br>
 
 <br>
@@ -2213,7 +2246,7 @@
 <<if _pregnancy.seenDoctor lt 2>>
 	<<set _pregnancy.seenDoctor to 2>>
 <</if>>
-<<if $args[0]>>
+<<if _args[0]>>
 	<<set _pregnancy.motherStatus to 2>>
 	<<set _pregnancy.maxCount to 4>>
 	<<set _pregnancy[_pregPre].stats.gender to "Futa">>

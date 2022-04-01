@@ -39,22 +39,22 @@ window.prepareSaveDetails = function (forceRun){
 }
 
 window.setSaveDetail = function (saveSlot, metadata, story){
-	var saveDetails = JSON.parse(localStorage.getItem("dolSaveDetails"));
+	const saveDetails = JSON.parse(localStorage.getItem("dolSaveDetails"));
 	if(saveSlot === "autosave"){
 		saveDetails.autosave = {
-			title:SugarCube.Story.get(V.passage).description(),
+			title: Story.get(V.passage).description(),
 			date:Date.now(),
 			metadata:metadata
 		};
 	}else{
 		var slot = parseInt(saveSlot);
 		saveDetails.slots[slot] = {
-			title:SugarCube.Story.get(V.passage).description(),
+			title: Story.get(V.passage).description(),
 			date:Date.now(),
 			metadata:metadata
 		};
 	}
-	localStorage.setItem("dolSaveDetails" ,JSON.stringify(saveDetails));
+	localStorage.setItem("dolSaveDetails", JSON.stringify(saveDetails));
 }
 
 window.getSaveDetails = function (saveSlot){
@@ -85,19 +85,64 @@ window.resetSaveMenu = function () {
 	new Wikifier(null, '<<resetSaveMenu>>');
 }
 
-window.loadSave = function (saveSlot, confirm) {
+window.ironmanAutoSave = function() {
+	const saveSlot = 8;
+	updateSavesCount();
+	const success = Save.slots.save(saveSlot, null, { "saveId": V.saveId, "saveName": V.saveName, "ironman": V.ironmanmode });
+	if (success) {
+		const save = Save.slots.get(saveSlot);
+		setSaveDetail(saveSlot, {
+			"saveId": V.saveId, "saveName": V.saveName, 
+			"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
+		});
+	}
+}
+
+window.getStateDelta = function (saveSlot) {
+	let saveDetails = getSaveDetails()
+	if (saveDetails == undefined)
+		saveDetails = returnSaveDetails()
+	else if(saveDetails.autosave == undefined || saveDetails.slots == undefined)
+		saveDetails = returnSaveDetails()
+	return saveDetails.slots[saveSlot];
+}
+
+window.loadSave = function(saveSlot, confirm) {
 	if (V.confirmLoad === true && confirm === undefined) {
 		new Wikifier(null, '<<loadConfirm ' + saveSlot + '>>');
 	} else {
 		if (saveSlot === "auto") {
 			Save.autosave.load();
 		} else {
+			const saveDetails = JSON.parse(localStorage.getItem("dolSaveDetails"));
+			const metadata = saveDetails.slots[saveSlot].metadata;
+			/* Check if metadata for save matches the save's computed md5 hash. If it matches, the ironman save was not tampered with. */
+			if (metadata.ironman) {
+				const save = Save.slots.get(saveSlot);
+				const signature = md5(JSON.stringify(save.state.delta[0]));
+				// (if ironman mode enabled) following checks md5 signature of the save to see if the variables have been modified
+				if (signature !== metadata.ironman_signature) {
+					new Wikifier(null, '<<loadIronmanCheater ' + saveSlot + '>>');
+					return;
+				}
+			}
 			Save.slots.load(saveSlot);
+			if (V.ironmanmode) {
+				// (ironman) remove all saves(except auto-save) with the same saveId than loaded save
+				[0, 1, 2, 3, 4, 5, 6, 7].forEach(id => {
+					const saveDetail = saveDetails.slots[id];
+					if (saveDetail == null) return;
+					if (saveDetail.metadata.saveId === metadata.saveId) {
+						Save.slots.delete(id);
+						deleteSaveDetails(id);
+					}
+				});
+			}
 		}
 	}
 }
 
-window.save = function (saveSlot, confirm, saveId, saveName) {
+window.save = function(saveSlot, confirm, saveId, saveName) {
 	if (saveId == null) {
 		new Wikifier(null, '<<saveConfirm ' + saveSlot + '>>');
 	} else if ((V.confirmSave === true && confirm != true) || (V.saveId != saveId && saveId != null)) {
@@ -105,10 +150,18 @@ window.save = function (saveSlot, confirm, saveId, saveName) {
 	} else {
 		if (saveSlot != undefined) {
 			updateSavesCount();
-			Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName });
-			setSaveDetail(saveSlot, { "saveId": saveId, "saveName": saveName })
-			V.currentOverlay = null;
-			overlayShowHide("customOverlay");
+			const success = Save.slots.save(saveSlot, null, { "saveId": saveId, "saveName": saveName, "ironman": V.ironmanmode });
+			if (success) {
+				const save = Save.slots.get(saveSlot);
+				setSaveDetail(saveSlot, {
+					"saveId": saveId, "saveName": saveName, 
+					"ironman": V.ironmanmode, "ironman_signature": (V.ironmanmode ? md5(JSON.stringify(save.state.delta[0])) : false)
+				});
+				V.currentOverlay = null;
+				overlayShowHide("customOverlay");
+				if (V.ironmanmode === true)
+					SugarCube.Engine.restart();
+			}
 		}
 	}
 }
@@ -136,7 +189,7 @@ window.deleteSave = function (saveSlot, confirm) {
 			return;
 		} else {
 			Save.slots.delete(saveSlot);
-			deleteSaveDetails(saveSlot)
+			deleteSaveDetails(saveSlot);
 		}
 	}
 	new Wikifier(null, '<<resetSaveMenu>>');
@@ -232,17 +285,17 @@ window.updateExportDay = function(){
 }
 
 window.updateSavesCount = function(){
-	if(V.saveDetails != undefined && SugarCube.State.history[0].variables.saveDetails != undefined){
+	if(V.saveDetails != undefined && State.history[0].variables.saveDetails != undefined){
 		V.saveDetails.slot.count++;
-		SugarCube.State.history[0].variables.saveDetails.slot.count++;
+		State.history[0].variables.saveDetails.slot.count++;
 		V.saveDetails.slot.dayCount++;
-		SugarCube.State.history[0].variables.saveDetails.slot.dayCount++;
-		var sessionJson = sessionStorage.getItem(SugarCube.Story.domId + ".state");
+		State.history[0].variables.saveDetails.slot.dayCount++;
+		var sessionJson = sessionStorage.getItem(Story.domId + ".state");
 		if(sessionJson != undefined){
 			var session = JSON.parse(sessionJson);
 			session.delta[0].variables.saveDetails.slot.dayCount++;
 			session.delta[0].variables.saveDetails.slot.count++;
-			sessionStorage.setItem(SugarCube.Story.domId + ".state", JSON.stringify(session));
+			sessionStorage.setItem(Story.domId + ".state", JSON.stringify(session));
 		}
 	}
 }
@@ -484,9 +537,6 @@ window.settingsObjects = function (type) {
 		case "starting":
 			result = {
 				bodysize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-				penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
-				breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance"  },
-				bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
 				breastsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				genitalsensitivity: { min: 0, max: 5, decimals: 0, randomize: "characterTrait" },
 				eyeselect: { strings: ["purple", "dark blue", "light blue", "amber", "hazel", "green", "lime green", "red", "pink", "grey", "light grey", "random"], randomize: "characterAppearance" },
@@ -495,11 +545,16 @@ window.settingsObjects = function (type) {
 				awareselect: { strings: ["innocent", "knowledgeable"], randomize: "characterTrait" },
 				background: { strings: ["waif", "nerd", "athlete", "delinquent", "promiscuous", "exhibitionist", "deviant", "beautiful", "crossdresser", "lustful", "greenthumb", "plantlover"], randomize: "characterTrait" },
 				gamemode: { strings: ["normal", "soft", "hard"] },
+				ironmanmode: {bool: false, bool:true},
+				maxStates: {min: 1, max:20, decimals: 0},
 				player: {
 					gender: { strings: ["m", "f", "h"], randomize: "characterAppearance" },
 					gender_body: { strings: ["m", "f", "a"], randomize: "characterAppearance" },
 					ballsExist: { bool: true, randomize: "characterAppearance" },
 					freckles: { bool: true, strings: ["random"], randomize: "characterAppearance" },
+					breastsize: { min: 0, max: 4, decimals: 0, randomize: "characterAppearance"  },
+					penissize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" },
+					bottomsize: { min: 0, max: 3, decimals: 0, randomize: "characterAppearance" }
 				},
 				skinColor: {
 					natural: { strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"], randomize: "characterAppearance" },
@@ -526,6 +581,7 @@ window.settingsObjects = function (type) {
 				clothesPriceUnderwear: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
 				clothesPriceSchool: { min: 1, max: 2, decimals: 1, randomize: "gameplay" },
 				clothesPriceLewd: { min: 0.1, max: 2, decimals: 1, randomize: "gameplay" },
+				tending_yield_factor: { min: 1, max: 10, decimals: 1, randomize: "gameplay" },
 				rentmod: { min: 0.1, max: 3, decimals: 1, randomize: "gameplay" },
 				beastmalechance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
 				monsterchance: { min: 0, max: 100, decimals: 0, randomize: "encounter" },
@@ -549,6 +605,7 @@ window.settingsObjects = function (type) {
 				breastfeedingdisable: { boolLetter: true, bool: true },
 				analpregdisable: { boolLetter: true, bool: true },
 				watersportsdisable: { boolLetter: true, bool: true },
+				facesitdisable: { boolLetter: true, bool: true },
 				spiderdisable: { boolLetter: true, bool: true },
 				bodywritingdisable: { boolLetter: true, bool: true },
 				parasitedisable: { boolLetter: true, bool: true},
@@ -559,6 +616,8 @@ window.settingsObjects = function (type) {
 				horsedisable: {boolLetter: true, bool: true},
 				plantdisable: {boolLetter: true, bool: true},
 				footdisable: {boolLetter: true, bool: true},
+				toydildodisable: {boolLetter: true, bool: true},
+				toywhipdisable: {boolLetter: true, bool: true},
 				asphyxiaLvl: { min: 0, max: 4, decimals: 0 },
 				NudeGenderDC: { min: 0, max: 2, decimals: 0 },
 				breastsizemin: { min: 0, max: 4, decimals: 0 },

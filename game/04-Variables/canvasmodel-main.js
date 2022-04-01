@@ -81,8 +81,8 @@ replace (?<!["'\w])_(?=\w) with T.
  * "blink": boolean - blinking enabled
  * "eyes_half": boolean - eyes half closed
  * "eyes_bloodshot":boolean - bloodshot sclera
- * "eyes_colour":string - key from setup.colours.eyes_map
- *                        or "custom" (need to configure "eyes" filter manually)
+ * "left_eye": string - colour of left eye
+ * "right_eye": string - colour of right eye
  * "brows": "none"|"top"|"low"|"orgasm"|"mid"
  * "mouth": "none"|"neutral"|"cry"|"frown"|"smile"
  * "tears":number - tears level, 0..4, 0 is "no tears"
@@ -225,6 +225,7 @@ Renderer.CanvasModels["main"] = {
 			"show_tf": true,
 			"show_clothes": true,
 			// body
+			"fools": setup.isFools(),
 			"mannequin": false,
 			"breasts": "",
 			"breast_size": 1,
@@ -267,7 +268,8 @@ Renderer.CanvasModels["main"] = {
 			"blink": true,
 			"eyes_half": false,
 			"eyes_bloodshot": false,
-			"eyes_colour": "purple",
+			"left_eye":"purple",
+			"right_eye":"purple",
 			"brows": "none",
 			"mouth": "none",
 			"tears": 0,
@@ -459,6 +461,7 @@ Renderer.CanvasModels["main"] = {
 		 * @param prefilterName name of prefilter to apply
 		 * @return {CompositeLayerParams}
 		 */
+
 		function lookupColour(dict, key, debugName, customFilterName, prefilterName) {
 			let filter;
 			if (key === "custom") {
@@ -484,7 +487,8 @@ Renderer.CanvasModels["main"] = {
 			return filter
 		}
 
-		options.filters.eyes = lookupColour(setup.colours.eyes_map, options.eyes_colour, "eyes", "eyes_custom", "eyes");
+		options.filters.left_eye = lookupColour(setup.colours.eyes_map, options.left_eye, "eyes", "eyes_custom", "eyes");
+		options.filters.right_eye = lookupColour(setup.colours.eyes_map, options.right_eye, "eyes", "eyes_custom", "eyes");
 		options.filters.hair = lookupColour(setup.colours.hair_map, options.hair_colour, "hair", "hair_custom", "hair");
 		options.filters.brows = lookupColour(setup.colours.hair_map, options.brows_colour||options.hair_colour, "brows", "brows_custom", "brows");
 		options.filters.pbhair = lookupColour(setup.colours.hair_map, options.pbhair_colour||options.hair_colour, "pbhair", "pbhair_custom", "pbhair");
@@ -603,6 +607,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"base": {
 			srcfn(options) {
+				if (options.fools) return "img/body/fools/basenoarms.png";
 				if (options.mannequin) return "img/body/mannequin/basenoarms.png"
 				return "img/body/basenoarms.png"
 			},
@@ -837,14 +842,25 @@ Renderer.CanvasModels["main"] = {
 			},
 			z: ZIndices.sclera
 		},
-		"iris": {
+		"left_iris": {
 			srcfn(options) {
-				return 'img/face/' + options.facestyle + '/' + (options.trauma?"irisempty":"iris") + (options.eyes_half ? "_halfclosed" : "") + '.png'
+				return 'img/face/' + options.facestyle + '/' + (options.trauma?"irisempty":"iris") + (options.eyes_half ? "_halfclosed" : "") + '_left.png'
 			},
 			showfn(options) {
 				return options.show_face;
 			},
-			filters: ["eyes"],
+			filters: ["left_eye"],
+			z: ZIndices.iris,
+			animation: "idle"
+		},
+		"right_iris": {
+			srcfn(options) {
+				return 'img/face/' + options.facestyle + '/' + (options.trauma?"irisempty":"iris") + (options.eyes_half ? "_halfclosed" : "") + '_right.png'
+			},
+			showfn(options) {
+				return options.show_face;
+			},
+			filters: ["right_eye"],
 			z: ZIndices.iris,
 			animation: "idle"
 		},
@@ -1072,10 +1088,12 @@ Renderer.CanvasModels["main"] = {
 					return "img/body/mannequin/penis.png"
 				} else if (options.genitals_chastity) {
 					return "img/body/penis/penis_chastity.png"
-				} else {
+				} else if (!playerHasStrapon()) {
 					return "img/body/" +
 						(options.balls ? 'penis/':'penisnoballs/') +
 						(options.penis === "virgin" ? "penis_virgin" : "penis") +options.penis_size + ".png"
+				} else {
+					return; //if the player has a strapon, then we want to hide their penis
 				}
 			},
 			showfn(options) {

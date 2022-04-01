@@ -2,14 +2,13 @@
 
 <<widget "trColour">><<silently>>
 
-<<if $args[0]>>
+<<if _args[0]>>
 	<<if _koColour is undefined>>
 		<<trinit_colorList>>
 	<</if>>
-	<<set $_colour to $args[0].toLowerCase()>>
-	
+	<<set $_colour to _args[0].toLowerCase()>>
 	/* Case 1: 04-Variables/colours.js 에 있는지 찾는다 */
-	<<set $_found to _koColour[$_colour.replace(/\s/gi, "")]>>
+	<<set $_found to _koColour[$_colour.replace(/[\-\s]/gi, "")]>>
 
 	/* Case 2: 03-JavaScript/colour-namer.js의 커스텀 색상인지 찾는다 */
 	<<if $_found is undefined>>
@@ -42,14 +41,30 @@
 	
 	<<if $_found is undefined>>
 		/* 없음 */
-		<<set _trResult to "trColour에 정의되지 않음: " + $args[0]>>
+		<<set _trResult to "trColour에 정의되지 않음: " + _args[0]>>
 	<<else>>
 		<<set _trResult to $_found>>
-		<<if $args[1]>>
+		<<if _args[1]>>
 			<<getPostNum _trResult>>
-			<<trPost _postNum $args[1] $args[2]>>
+			<<trPost _postNum _args[1] _args[2]>>
 		<</if>>
     <</if>>
 	
 <</if>>
 <</silently>><</widget>>
+
+:: Scripts trColour [script]
+/* 03-Javascript/eyesRelated.js 에서 눈/콘택트 렌즈 색상 번역이 필요하여 추가하는 간단 js코드
+   만약 퍼포먼스에 문제가 생기면 trColour 위젯 자체를 js화 하는 것을 생각해볼것 */
+function trColourJS(colour, post, sep)
+{
+	let cmdText = '<<trColour "' + colour + '"';
+	if (post)
+		cmdText += ' "' + post + '"';
+	if (sep)
+		cmdText += ' "' + sep + '"';
+	cmdText += ">>";
+	Wikifier.wikifyEval(cmdText);
+	return T.trResult;
+}
+window.trColourJS = trColourJS;

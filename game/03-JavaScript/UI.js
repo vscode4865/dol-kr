@@ -6,7 +6,7 @@ window.overlayShowHide = function (elementId) {
 			V.debugMenu[0] = !V.debugMenu[0];
 		}
 	}
-	window.cacheDebugDiv()
+	window.cacheDebugDiv();
 }
 
 window.overlayMenu = function (elementId, type) {
@@ -25,10 +25,10 @@ window.overlayMenu = function (elementId, type) {
 			window.researchEvents("")
 		}
 		if (elementId == "debugFavourites"){
-			window.patchDebugMenu()
+			window.patchDebugMenu();
 		}
 	}
-	window.cacheDebugDiv()
+	window.cacheDebugDiv();
 }
 
 /*Sidebar swipe*/
@@ -481,3 +481,17 @@ window.settingsDoubleAnalToggleGreyOut = function() {
 $(document).on('click', '#cbtToggleMenu .cbtToggle', function (e) {
 	$('#cbtToggleMenu').toggleClass('visible');
 });
+
+function sliderPerc(e){
+	let valSpan = $(e.currentTarget).siblings().first();
+	let value = valSpan.text();
+
+	valSpan.text((i, value) => Math.round(value * 100) + '%');
+
+	if (value > 1)
+		valSpan.css('color', 'gold');
+	else if (value < 1)
+		valSpan.css('color', 'green');
+	else
+		valSpan.css('color', 'unset');
+}

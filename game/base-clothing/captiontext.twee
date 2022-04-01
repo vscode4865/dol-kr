@@ -48,24 +48,24 @@
 
 <<widget "pushClothingCaption">>/* args[0] = part, args[1] = article */
 	<<set $_output to " ">>
-	<<set $_wornItem to $worn[$args[0]]>>
+	<<set $_wornItem to $worn[_args[0]]>>
 
 	/* word 1: article, example: "a" or "an" or "a pair of" */
-	<<if def $args[1]>>
-		/*<<set $_output += $args[1] + " ">> 한글에는 관사 같은 건 없음 */
+	<<if def _args[1]>>
+		/*<<set $_output += _args[1] + " ">> 한글에는 관사 같은 건 없음 */
 	<<else>>
-		<<set $_wornItemWord to setup.clothes[$args[0]][clothesIndex($args[0],$_wornItem)].word>>
+		<<set $_wornItemWord to setup.clothes[_args[0]][clothesIndex(_args[0],$_wornItem)].word>>
 		/*<<set $_output += ($_wornItemWord isnot "n" ? $_wornItemWord : "") + " ">> 한글에는 관사 같은 건 없음 */
 	<</if>>
 	
 	/* word 2: damage, example "frayed" */
-	<<run $_output += window.integrityWord($_wornItem,$args[0])>>
+	<<run $_output += window.integrityWord($_wornItem,_args[0])>>
 
 	/* word 3: colour, example: "red" */
 	<<run $_colour = window.clothesColour($_wornItem)>><<trColour $_colour>><<run $_output += _trResult + " ">>
 	
 	/* word 4: clothes name, example: "school shirt" */
-	<<trClothes $args[0] $_wornItem.name 'name'>><<set $_output += _trResult>>
+	<<trClothes _args[0] $_wornItem.name 'name'>><<set $_output += _trResult>>
 
 	/* push */
 	<<set _clothingCaptionItems.pushUnique($_output)>>	
@@ -128,11 +128,11 @@
 		<</if>>
 	<<elseif $worn.under_lower.name isnot "naked">>
 		<!--Lower only-->
-		<<set $_pair to ($worn.under_lower.name.last() is "s" ? "a pair of" : "<<word under_lower>>")>>
+		/*<<set $_pair to ($worn.under_lower.name.last() is "s" ? "a pair of" : "<<word under_lower>>")>> 한글에는 관사 같은 건 없음 */<<set $_pair to "">>
 		<<pushClothingCaption "under_lower" $_pair>>
 
 		<<set _nothingBut to $_exposed>>
-		<<if !$_exposed and !_topless and $breastsize gte 4 and ($player.gender isnot "m" or $backgroundTraits.includes("crossdresser"))>>
+		<<if !$_exposed and !_topless and $player.breastsize gte 4 and ($player.gender isnot "m" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _finally to " 있다. <span class='purple'>당신은 브라를 하고 있지 않다.</span>">>
 		<</if>>
 	<</if>>
@@ -151,7 +151,7 @@
 <</widget>>
 
 <<widget "clothingCaptionTextMask">>
-	<<if $worn.face.type.includes("mask")>><br>당신의 정체는 <<worn_face_name_uro>> 숨겨져 있다.<</if>>
+	<<if $worn.face.type.includes("mask")>><br>당신의 정체는 <<faceintegrity>> <<worn_face_name_uro>> 숨겨져 있다.<</if>>
 <</widget>>
 
 <<widget "clothingCaptionTextNothing">><<silently>>
@@ -171,8 +171,8 @@
 	/* One argument, a clothing article whose state you want to compare against its original state. Must be the ENTIRE variable, not .name! */
 	/* Returns the difference between the current and base states. Negative means it's pulled down, positive means it's pulled up.  */
 	/* If the clothing was pulled to the side, this returns 0. It would also return 0 if the current state is the base state. */
-	<<set _compare_result to _clothing_levels.indexOf($worn[$args[0]].state) - _clothing_levels.indexOf(setup.clothes[$args[0]][clothesIndex($args[0],$worn[$args[0]])].state_base)>>
-	<<if $worn[$args[0]].state is "totheside">><<set _compare_result to 0>><</if>>
+	<<set _compare_result to _clothing_levels.indexOf($worn[_args[0]].state) - _clothing_levels.indexOf(setup.clothes[_args[0]][clothesIndex(_args[0],$worn[_args[0]])].state_base)>>
+	<<if $worn[_args[0]].state is "totheside">><<set _compare_result to 0>><</if>>
 <</widget>>
 
 <<widget "clothingCaptionTextStrip">>
@@ -194,7 +194,7 @@
 	<<set $_revealColour to "purple">>
 	<<set $_highestLevelCovered to "">>
 	<<set $_clothingRevealType to {}>>
-	<<set $_outfitType to $args[0]>>
+	<<set $_outfitType to _args[0]>>
 
 	/* Find which clothes are failing to cover the player */
 	<<for $_i, $_outfitLayer range ["over", "", "under"]>>

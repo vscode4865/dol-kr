@@ -895,31 +895,12 @@
 
 <<widget "streetedenrage">>
 	<<npc Eden>><<person1>><<set $edendays to 0>>
-	Lost in your head, you bump into a large figure. It's Eden. <<He>> looks mad.
+	<<set $NPCList[0].skills to {athletics: random(750, 1500), security: random(750, 1500)}>>
+
+	당신은 뒤에서 무거운 발소리를 듣는다. <span class="red">누군가가 당신을 사냥하고 있다.</span>
 	<br><br>
 
-	<<if $edenCagedEscape>>
-		"Told you I'd find you again, didn't I?" <<he>> snarls, grabbing your arm. "Looks like you still haven't learnt your place. Come on."
-	<<else>>
-		<<He>> grips onto your arm and pulls you close. "Where the fuck have you been?" <<he>> snarls.
-		<<if $allure gte (3000 * $alluremod)>>
-			"I've been worried sick and you've been prancing around town like a slut!"
-		<<else>>
-			"I've been worried sick, and you're just prancing around town!"
-		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 70>>
-			<<set $NPCName[$NPCNameList.indexOf("Eden")].love to 70>>
-			<<llllove>>
-		<</if>>
-		<br><br>
-
-		Before you can speak, Eden begins to drag you away. "I don't want to hear your excuses, either." <<He>> looks uncomfortable, eyes shifting as <<he>> walks. The corner of <<his>> lip curls in disgust. "And you made me come out here to get you. Things aren't going to be pretty when we get home."
-	<</if>>
-	<br><br>
-
-	<<link [[Resist|Street Eden Rage]]>><<set $phase to 0>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
-	<br>
-	<<link [[Submit (0:30)|Street Eden Rage]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+	<<link [[다음|Street Stalk Eden]]>><<set $molestationstart to 1>><</link>>
 	<br>
 <</widget>>
 
@@ -1744,7 +1725,7 @@
 			<br>
 		<</if>>
 	<</if>>
-	<<if $player.gender_appearance is "f" or $breastsize gt 2>>
+	<<if $player.gender_appearance is "f" or $player.breastsize gt 2>>
 		<<if $exhibitionism gte 55 and $worn.under_upper.type.includes("naked") and $uncomfortable.nude is false>>
 			<<link [[가슴을 내보인다|Street Exhibitionism Fame Flaunt]]>><<set $flaunt_type to 'top'>> <<set $flaunt_part to 'breasts'>><</link>><<exhibitionist4>><<lstress>><<garousal>>
 			<br>
@@ -1996,6 +1977,38 @@
 
 <<endevent>>
 <<destinationeventend>>
+<</widget>>
+
+<<widget "streetmodelshow">>
+<<generate1>><<person1>>
+<<if $famemodel gte 400>>
+	<<personPost>> 하나가 당신 앞에 걸어나오며, <<his_yi>> 얼굴에 미소를 띄운다.
+	<br><br>
+
+	"너를 알아," <<person_i>> 외친다. "네가 그 모델하는 <<girl_iji>>, 그렇지?" <<He_nun>> 당신의 손을 잡으며 <<his_yi>> 미소를 더 크게 짓는다. "나는 네 진짜 팬이야."
+	<br><br>
+	"네 개인적인 사진을 찍고 싶어," <<he_ga>> 당신이 대답하기도 전에 덧붙인다. <<He_nun>> <<his_yi>> 휴대폰을 꺼낸다. "몇 분만, 내 모델이 되어줄 수 있겠어?"
+	<br><br>
+
+	<<link [[동의한다 (0:05)|Street Private Photoshoot Alley]]>><<pass 5>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[돈을 요구한다 (0:05)|Street Private Photoshoot Alley]]>><<pass 5>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[거절한다|Street Private Photoshoot Refuse]]>><</link>>
+	<br>
+<<else>>
+	당신은 <<personPost>> 하나가 당신에게 다가오는 것을 알아차린다. <<he_ga>> 다가오자, <<he_nun>> 갑자기 싱긋 웃기 시작하며 당신 앞에 걸어와, 당신의 팔을 잡는다.
+	<br><br>
+
+	"너는 모델처럼 보이는데, <<lassPost>>," <<he_nun>> 히죽 웃는다. "사진 몇 장 찍게 포즈좀 취해주겠어? 내 카메라는 바로 여기 있어." <<His_yi>> 손이 <<his_yi>> 사타구니를 받치며, <<his_yi>> 의도를 파악하는 데 일말의 의심도 남기지 않는다.
+	<br><br>
+	
+	당신의 얼굴은 붉어진다. <<his_yi>> 손을 밀쳐 풀어내며, <<person_gwa>> <<his_yi>> 노골적인 말들을 뒤로 하면서 당신은 서둘러 그 자리를 떠난다.<<stress 3>><<trauma 3>><<gstress>><<gtrauma>>
+	<br><br>
+	
+	<<endevent>>
+	<<destinationeventend>>
+<</if>>
 <</widget>>
 
 :: Widget Passout Street [widget]
@@ -2899,9 +2912,12 @@
 <</widget>>
 
 <<widget "eventsstreetday">>
-<<set $dangerevent to random(1, 176)>>
+<<set $dangerevent to random(1, 180)>>
 <<set $rng to random(1, 100)>>
-<<if $rng lte 10 and $worn.feet.type.includes("heels") and $feetskill lt $worn.feet.reveal>>
+<<if $location is "alley" and $schoolday isnot 1 and $bullytimer gte $rng and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon" and $pillory_tenant.special.name isnot "Whitney" and $whitney_park is undefined>>
+	<<set $bullytimer to 0>>
+	<<eventsWhitneyStreet>>
+<<elseif $rng lte 10 and $worn.feet.type.includes("heels") and $feetskill lt $worn.feet.reveal>>
 	<<streetheeltrip>>
 <<elseif $rng gte 91>>
 	<<street1>>
@@ -2948,13 +2964,18 @@
 	<<streetdog>>
 <<elseif $dangerevent lte 176>>
 	<<streetexshow>>
+<<elseif $dangerevent lte 180>>
+	<<streetmodelshow>>
 <</if>>
 <</widget>>
 
 <<widget "eventsstreetnight">>
-<<set $dangerevent to random(1, 149)>>
+<<set $dangerevent to random(1, 154)>>
 <<set $rng to random(1, 100)>>
-<<if $rng lte 10 and $worn.feet.type.includes("heels") and $feetskill lt $worn.feet.reveal>>
+<<if $location is "alley" and $schoolday isnot 1 and $bullytimer gte $rng and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon" and $pillory_tenant.special.name isnot "Whitney" and $whitney_park is undefined>>
+	<<set $bullytimer to 0>>
+	<<eventsWhitneyStreet>>
+<<elseif $rng lte 10 and $worn.feet.type.includes("heels") and $feetskill lt $worn.feet.reveal>>
 	<<streetheeltrip>>
 <<elseif $rng gte 91>>
 	<<street1>>
@@ -2999,6 +3020,8 @@
 <<elseif $dangerevent lte 149>>
 	<<eventAmbient>>
 	<<destinationeventend>>
+<<elseif $dangerevent lte 154>>
+	<<streetmodelshow>>
 <</if>>
 <</widget>>
 

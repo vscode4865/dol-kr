@@ -21,6 +21,9 @@
 <<elseif $forestmove is "careful_search">>
 	덤불을 몰래 뚫고 땅바닥을 훑어보면서 가치 있는 것을 찾아낸다.
 <</if>>
+<<if $forestmove or $possessed>>
+	<br><br>
+<</if>>
 <<set $forestmove to 0>>
 <</widget>>
 
@@ -721,7 +724,17 @@ The <<person "normal">> thinks for a moment, before smiling. "Hey, before you go
 
 <<widget "foresthunt">>
 <<set $foresthunt to 0>>
-<<if $blackwolfhunt is 1>>
+<<if $wraith and $wraith.hunt>>
+	<<set $wraith.hunt to 0>>
+	<<if $location is "forest">>
+		<<set $wraith.exit to "forest">>
+	<<elseif $location is "lake_ruin">>
+		<<set $wraith.exit to "lake_ruin">>
+	<<else>>
+		<<set $wraith.exit to "lake">>
+	<</if>>
+	<<wraithCaught>>
+<<elseif $blackwolfhunt is 1>>
 	<!-- Modified for monster people -->
 	<<npc "Black Wolf">>/*<<beastNNPCinit>>*/
 	<<if $syndromewolves is 1 and $wolfpacktrust gte 24 and ($monster is 1 or $bestialitydisable is "f")>>
@@ -760,16 +773,6 @@ The <<person "normal">> thinks for a moment, before smiling. "Hey, before you go
 		<<link [[다음|Forest]]>><<endevent>><</link>>
 		<br>
 	<</if>>
-<<elseif $wraith and $wraith.hunt>>
-	<<set $wraith.hunt to 0>>
-	<<if $location is "forest">>
-		<<set $wraith.exit to "forest">>
-	<<elseif $location is "lake_ruin">>
-		<<set $wraith.exit to "lake_ruin">>
-	<<else>>
-		<<set $wraith.exit to "lake">>
-	<</if>>
-	<<wraithCaught>>
 <<else>>
 	<<rngWraith 2 "night">>
 	<<if $wraith and _wraithEvent and ($wraith.state is "haunt" or $wraith.offspring is "dead") and $syndromeeden is 1>>
@@ -787,9 +790,11 @@ The <<person "normal">> thinks for a moment, before smiling. "Hey, before you go
 		<<He>> pins you against a tree, rage flashing in <<his>> eyes.
 		<br><br>
 
-		<<link [[Struggle|Eden Caged Caught Resist]]>><<set $molestationstart to 1>><</link>>
+		<<link [[Fight|Eden Caged Caught Resist]]>><<set $fightstart to 1>><</link>>
 		<br>
-		<<link [[Submit (0:30)|Eden Caged Caught]]>><<set $phase to 0>><<pass 30>><<npcincr Eden dom 1>><</link>><<gdom>>
+		<<link [[Try to pull away|Eden Caged Caught Pull]]>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+		<br>
+		<<link [[Submit (0:30)|Eden Caged Caught]]>><<set $phase to 1>><<pass 30>><<npcincr Eden dom 1>><</link>><<gdom>>
 		<br>
 	<<elseif $syndromeeden is 1 and (($edenfreedom isnot 2 and $edendays gte 7) or ($edenfreedom gte 2 and $edendays gte 21))>>
 		<<npc Eden>><<person1>>
@@ -799,9 +804,11 @@ The <<person "normal">> thinks for a moment, before smiling. "Hey, before you go
 		Before you can speak, Eden begins to drag you away. "I don't want to hear your excuses, either." <<He>> glances scornfully in the direction of the town. "I could figure what you've been up to, anyway. Things aren't going to be pretty when we get home."
 		<br><br>
 
-		<<link [[Resist|Forest Eden Rage]]>><<set $phase to 0>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+		<<link [[Fight|Eden Caged Caught Resist]]>><<set $fightstart to 1>><</link>>
 		<br>
-		<<link [[Submit (0:30)|Forest Eden Rage]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+		<<link [[Try to pull away|Eden Caged Caught Pull]]>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+		<br>
+		<<link [[Submit (0:30)|Eden Caged Caught]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
 		<br>
 	<<elseif $edenfreedom gte 2 and $edendays gte 8>>
 
@@ -1171,5 +1178,5 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <</widget>>
 
 <<widget "gwylanitem">>
-	<<print either("트로피","야구공","야구 방망이","스노우 글로브","마법의 8번 당구공","탁구채","체스 세트","돼지저금통","머그컵","쿠키 상자","프라이팬","효자손","연필통","도시락 상자","용암 램프","손전등","뻐꾸기 시계","루빅스 큐브","지구본","물총","사전","손거울","싸구려 카메라","조개껍데기가 꽉찬 집락 비닐백","작은 발판사다리","어디 쓰이는지 모를 골동품")>> <<set _trResult to "하나">><<trPost 1 $args[0]>>_trResult
+	<<print either("트로피","야구공","야구 방망이","스노우 글로브","마법의 8번 당구공","탁구채","체스 세트","돼지저금통","머그컵","쿠키 상자","프라이팬","효자손","연필통","도시락 상자","용암 램프","손전등","뻐꾸기 시계","루빅스 큐브","지구본","물총","사전","손거울","싸구려 카메라","조개껍데기가 꽉찬 집락 비닐백","작은 발판사다리","어디 쓰이는지 모를 골동품")>> <<set _trResult to "하나">><<trPost 1 _args[0]>>_trResult
 <</widget>>
