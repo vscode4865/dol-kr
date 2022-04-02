@@ -20,7 +20,7 @@
         <<trClothes *part *clothes_name *[desc | description]>>
 
         옷의 이름이나 설명을 번역한다.
-
+		butt_plug 도 여기서 번역될 수 있다. (내부적으로 sextoyPost 를 불러옴)
 
         필수사항
         - *part: 착용 부위
@@ -91,7 +91,7 @@
 
     ```
 	trIntegrityKeyword()
-		옷의 해어진 상태를 번역합니다.
+		옷의 해어진 상태를 번역한다.
 		 
 		 이것은 window.integrityKeyword (base.js) 의 한글 대용 버전이며
 		 function integrityWord() (base.js) 에서 integrityKeyword 대신 사용됩니다.
@@ -104,7 +104,7 @@
     <<trClothesType>>
         <<trClothesType *clothesType post>>
 
-        옷의 타입을 번역합니다.
+        옷의 타입을 번역한다.
 
         필수사항
         - *clothesType: 옷의 타입
@@ -121,7 +121,7 @@
     <<trClothingTrait>>
         <<trClothingTrait *clothingTrait>>
 
-        옷의 특성을 번역합니다.
+        옷의 특성을 번역한다.
 
         필수사항
         - *clothingTrait: 옷의 특성
@@ -135,7 +135,7 @@
     <<trWardrobeName>>
         <<trWardrobeName *wardrobename post sep>>
 
-        옷장 이름을 번역합니다.
+        옷장 이름을 번역한다.
 
         필수사항
         - *wardrobename: 옷장 이름
@@ -273,7 +273,25 @@
 
 -----------------
 # Post
-    + 바로 출력하기 때문에 _trResult를 사용하지 않음
+    + ~Post 계열은 바로 출력하기 때문에 _trResult를 사용하지 않음
+
+* trBeasttypeFun
+    ```
+    <<trBeasttypeFun>>
+        <<trBeasttypeFun *typename post "sep">>
+
+            <<beasttypePost>>의 실제 종족명 번역 위젯. Post 계열이 아니므로 _trResult 필요.
+        
+        필수사항
+        - typename: 종족명
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trBeasttypeFun "dog" "을">>_trResult                     // 개를
+    ```
 
 * beasttypePost
     ```
@@ -327,21 +345,25 @@
 
     ```
     <<nipplePost>>
+	     <<nipple>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<nipplesPost>>
+	     <<nipples>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<bottomPost>>
+	     <<bottom>>의 대체 위젯. <<bottomsPost>> 와는 다르므로 주의.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<pussyPost>>
+	     <<pussy>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -363,26 +385,43 @@
 
     ```
     <<genitalsandbreastsPost>>
+	     <<genitalsandbreasts>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<clitPost>>
+	     <<clit>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<penisPost>>
+	     <<penis>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<penisSimplePost>>
+	     <<penisSimple>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<glansPost>>
+	     <<glans>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<testiclesPost>>
+	     <<testicles>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<testiclePost>>
+	     <<testicle>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -420,16 +459,25 @@
 
     ```
     <<npcPenisSimplePost>>
+        <<npcPenisSimple>>의 대체 위젯.
+        + <<npcPenisPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<npcPenisColoredPost>>
+        <<npcPenisColored>>의 대체 위젯.
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<npcVaginaPost>>
+        <<npcVagina>>의 대체 위젯.
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<npcAnusPost>>
+        <<npcAnus>>의 대체 위젯.
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -464,61 +512,73 @@
 
     ```
     <<groinPost>>
+        <<groin>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<crotchPost>>
+        <<crotch>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<undiesPost>>
+        <<undies>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<bottomsPost>>
+        <<bottoms>>의 대체 위젯. <<bottomPost>> 와 다르니 주의.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<underbottomsPost>>
+        <<underbottoms>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<topPost>>
+        <<top>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<topasidePost>>
+        <<topaside>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<breastsasidePost>>
+        <<breastsaside>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<outfitPost>>
+        <<outfit>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<underoutfitPost>>
+        <<underoutfit>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<lewdnessPost>>
+        <<lewdness>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<nudityPost>>
+        <<nudity>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 다만, 문장의 매끄러운 처리를 위해 <<nudityPostend>>를 문장의 끝에 붙여야 한다.
     ```
 
@@ -532,51 +592,61 @@
 
     ```
     <<allTopsPost>>
+        <<allTops>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<allBottomsPost>>
+        <<allBottoms>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<allTopsUnderwearPost>>
+        <<allTopsUnderwear>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<allBottomsUnderwearPost>>
-        + <<undertopPost>>와 용도 및 방식 같음. 생략
+         <<allBottomsUnderwear>>의 대체 위젯.
+       + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<exposedupperPost>>
+        <<exposedupper>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<exposedlowerPost>>
+        <<exposedunder>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<dressPost>>
+        <<dress>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<skirtPost>>
+        <<skirt>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<pantiesPost>>
+        <<panties>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<braPost>>
+        <<bra>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -610,7 +680,8 @@
         <<HePost [num] post "sep">>
         
         <<He>>의 대체 위젯. 조사를 붙일 수 있다.
-        + <<hePost>> , <<HimPost>>, <<ShePost>>등도 사용할 수 있음.
+        + <<hePost>> , <<ShePost>>, <<shePost>>, <<hisPost>>, <<HisPost>>, <<HerPost>>, <<herPost>>,
+		+ <<HimPost>>, <<himPost>>, <<HesPost>>, <<hesPost>> 등도 사용할 수 있음.
 
         선택사항
         - num: 원본 매크로에 사용되는 인수값.
@@ -623,11 +694,38 @@
     ```
 
     ```
+    <<HimselfPost>>
+        <<Himself>>의 대체 위젯. <<himselfPost>> 도 사용할 수 있음.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+
+        e.g.
+        <<HimselfPost "을">>               //  그 자신을
+
+    ```
+
+    ```
+    <<HersPost>>
+        <<Hers>>의 대체 위젯. <<hersPost>> 도 사용할 수 있음.
+		영어에서 남성의 소유대명사가 his로 같기 때문에 hers 를 소유대명사로 사용
+        + <<HePost>>와 용도 및 방식 같음. 생략
+
+        e.g.
+        <<HersPost "을">>               //  그녀의 것을
+
+    ```
+
+    ```
+    <<simpleHePost>>
+        <<simpleHe>>의 대체 위젯.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<bHePost>>
         <<bHePost [num] post "sep">>
         
-        <<bHe>>의 대체 위젯. 조사를 붙일 수 있다.
-        + <<bhePost>> , <<bHimPost>>, <<bhisPost>>등도 사용할 수 있음.
+        <<bHe>>의 대체 위젯. <<HePost>>의 짐승 버전. 조사를 붙일 수 있다.
+        + <<bhePost>>, <<bHisPost>>, <<bhisPost>>, <<bHimPost>>, <<bhimPost>>등도 사용할 수 있음.
 
         선택사항
         - num: 원본 매크로에 사용되는 인수값.
@@ -640,11 +738,18 @@
     ```
 
     ```
+    <<bHimselfPost>>
+        <<bHimself>>의 대체 위젯. <<bhimselfPost>> 도 사용할 수 있음. <<himselfPost>>의 짐승 버전.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<pShePost>>
         <<pShePost post "sep">>
         
-        <<pShe>>의 대체 위젯. 조사를 붙일 수 있다.
-        + <<pshePost>> , <<pHimPost>>, <<pherPost>>등도 사용할 수 있음.
+        <<pShe>>의 대체 위젯. <<HePost>> 의 플레이어 버전. 조사를 붙일 수 있다.
+        + <<pshePost>> , <<pHerPost>>, <<pherPost>>, <<phimPost>>, <<pHimPost>>, 
+		<<pShesPost>>, <<pshesPost>>등도 사용할 수 있음.
 
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
@@ -654,21 +759,38 @@
         <<pShePost "을">>               // <<pShe>>을 | <<pShe>>를
     ```
 
+   ```
+    <<pHerselfPost>>
+        <<pHerself>>의 대체 위젯. <<pherselfPost>> 도 사용할 수 있음. <<himselfPost>>의 플레이어 버전.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
     ```
     <<ohePost>>
+        <<ohe>>의 대체 위젯.
         + <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<hisselectPost>>
-        + <<pShePost>>와 용도 및 방식 같음. 생략
+	     <<hisselectPost *num post sep>>
+
+        <<hisselect>>의 대체 위젯. <<personselect *num>><<hisPost>>와 동일
+
+        필수사항
+		- num: <<hisselect>> 의 인수
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+        + <<HePost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<his1Post>>
         <<his1Post post "sep">>
 
-        <<his1>>의 대체 위젯. 조사를 붙일 수 있다.
+        <<his1>>의 대체 위젯. 조사를 붙일 수 있다. <<person1>><<hisPost>>와 동일
         + <<his1Post>>부터 <<his6Post>>까지 사용할 수 있음.
 
         선택사항
@@ -777,141 +899,163 @@
 
     ```
     <<aPost>>
+        <<a>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<theownerPost>>
+        <<theowner>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<someonePost>>
+        <<someone>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<someonesPost>>
+        <<someones>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<theirPost>>
+        <<their>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<spousePost>>
+        <<spouse>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<fatherPost>>
+        <<father>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<girlPost>>
+        <<girl>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<girlsPost>>
+        <<girls>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<girlfriendPost>>
+        <<girlfriend>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<wifePost>>
+        <<wife>>의 대체 위젯. <<WifePost>> 로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<victimgirlPost>>
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
+         <<victimgirl>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<victimgirlsPost>>
+        <<victimgirls>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<lassPost>>
+        <<lass>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<genderPost>>
+        <<gender>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<bitchPost>>
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
-    ```
-
-    ```
-    <<whorePost>>
+        <<bitch>>의 대체 위젯. <<whorePost>> 로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<slutPost>>
+        <<slut>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<semenPost>>
+        <<semen>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<prostatePost>>
+        <<prostate>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<personpenisPost>>
+        <<personpenis>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<walletPost>>
+        <<wallet>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<sirPost>>
+        <<sir>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<monkPost>>
+        <<monk>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<monksPost>>
+        <<monks>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<monks_and_nunsPost>>
+        <<monks_and_nuns>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<priestPost>>
+        <<priest>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<priestsPost>>
+        <<priests>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -932,54 +1076,152 @@
 
     ```
     <<farm_textPost>>
+        <<farm_text>>의 대체 위젯.
         + <<farm_text_manyPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<MasterPost>>
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
-    ```
-
-    ```
-    <<masterPost>>
+        <<Master>>의 대체 위젯. <<masterPost>>로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<daughterPost>>
+        <<daughter>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<daylight>>
+        <<daylight>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<ppackbrotherPost>>
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
-    ```
-
-    ```
-    <<pPackbrotherPost>>
+        <<ppackbrother>>의 대체 위젯. <<pPackbrotherPost>>로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<pheatPost>>
+        <<pheat>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<wolf_cave_pluralPost>>
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
+        <<wolf_cave_plural>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<beast_jaws_textPost>>
+        <<beast_jaws_text>>의 대체 위젯. <<beast_Jaws_textPost>>로도 사용가능.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
     
     ```
+    <<beast_teeth_textPost>>
+        <<beast_teeth_text>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<handtoolPost>>
+        <<handtoolPost *toolname post "sep">>
+
+        손에 쥐고 있는 도구를 번역힌다. 조사를 붙일 수 있다.
+		
+		필수사항
+		- *toolname: 도구 이름. 펜 등의 낙서도구, 아이섀도우, 마스카라, 섹스 장난감 (NPC사용) 등.
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+
+        NOTE: NPC 가 들고 있는 섹스 장난감만을 번역한다. 플레이어용은 <<sextoyPost>> 참조.
+        e.g.
+        <<handtoolPost "pen" "을">>               // 펜을
+    ```
+
+    ```
+    <<lefttoolPost>>
+        <<leftoolPost *[num] post "sep">>
+
+       특정 NPC 번호의 왼손에 쥐고 있는 도구를 번역힌다. 조사를 붙일 수 있다.
+	   오른손 버전으로 <<righttoolPost>> 사용가능.
+		
+		필수사항
+		- *num: NPC 객체 번호. <<lefttoolPost [num] post sep>> = <<handtoolPost $NPCList[num].lefttool post sep>>
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+
+        NOTE: NPC 가 들고 있는 섹스 장난감만을 번역한다. 플레이어용은 <<sextoyPost>> 참조.
+    ```
+
+    ```
+    <<struggle_appendagePost>>
+        <<struggle_appendagePost *[num] post "sep">>
+
+       <<struggle_appendage>> 대체 위젯. 조사를 붙일 수 있다.
+		
+		필수사항
+		- *num: <<struggle_appendage>> 의 인수
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<struggle_appendagePost 0 "을">>               // <<struggle_appendage 0>>을
+    ```
+    
+    ```
+    <<underworld_nicknamePost>>
+        <<underworld_nickname>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+     
+    ```
+    <<overworld_nicknamePost>>
+        <<overworld_nickname>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+     
+    ```
+    <<pcpetnamePost>>
+        <<pcpetname>>의 대체 위젯.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+    
+    ```
+    <<tattooPost>>
+       <<tattooPost *part post "sep">>
+
+       <<tattoo>>의 대체 위젯. 조사를 붙일 수 있다.
+		
+		필수사항
+		- *part: <<tattoo>> 의 인수. 몸의 부위.
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<tattooPost "forehead" "을">>               // <<tattoo "forehead">>을
+    ```
+
+   ```
     <<plant_detailsPost>>
         <<plant_detailsPost [arg] post "sep">>
 
-        <<plant_details>>의 대체 위젯. 조사를 붙일 수 있다.
+        <<plant_details>>의 대체 위젯. 조사를 붙일 수 있다. <<Plant_detailsPost>>로도 사용가능.
         
         선택사항
             - arg: 원본 매크로에 사용되는 인수값.
@@ -989,17 +1231,41 @@
         e.g.
         <<plant_detailsPost "forest" "을">>               // <<plant_details "forest">>을
     ```
-
-    ```
-    <<Plant_detailsPost>>
-        + <<plant_detailsPost>>와 동일. 생략
-    ```
  
     ```
     <<tower_creature_textPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
+   ```
+    <<anusandButtPlugPost>>
+        <<anusandButtPlugPost post "sep">>
+
+        <<andButtPlug>>의 대체 위젯. 조사를 붙일 수 있다. 
+		<<andButtPlug>> 앞에 anus 가 붙으면 anus<<andButtPlug>>의 anus까지 포함하여 <<anusandButtPlugPost>> 를 사용.
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<anusandButtPlugPost "을">>               // 항문과 항문 마개를
+    ```
+
+   ```
+    <<bottomandButtPlugPost>>
+        <<bottomandButtPlugPost post "sep">>
+
+       <<andButtPlug>>의 대체 위젯. 조사를 붙일 수 있다. 
+		<<andButtPlug>> 앞에 <<bottom>> 이 붙으면 <<bottom>><<andButtPlug>>의 <<bottom>>까지 포함하여 <<bottomandButtPlugPost>> 를 사용.
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<bottomandButtPlugPost "을">>               // <<bottomPost "과">> 항문 마개를
+    ```
 
 * personPost
     ```
@@ -1018,135 +1284,45 @@
 
     ```
     <<personsPost>>
-        <<personsPost post "sep">>
+        <<persons>>의 대체 위젯.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<personsimplePost>>
+        <<personsimple>>의 대체 위젯.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<combatpersonPost>>
+        <<combatperson>>의 대체 위젯. <<combatpersonsPost>>, <<combatPersonPost>>로도 사용가능.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<peoplePost>>
+        <<people>>의 대체 위젯.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<peopleyPost>>
-        + <<personPost>>와 용도 및 방식 같음. 생략
+         <<peopley>>의 대체 위젯.
+       + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<personyPost>>
+        <<persony>>의 대체 위젯.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
     ```
     <<groupPost>>
+        <<group>>의 대체 위젯.
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
-
-    ```
-	<<handtoolPost>>
-		<<handtoolPost *target *post 'sep'>>
-
-		손에 있는 도구 이름을 번역한다. + 메이크업 이름도 번역한다.
-		+ trinit.twee의 trHandtoolList에 미리 정의되어 있어야 함.
-
-		필수사항
-		- target: 툴 이름
-		
-		선택사항
-		- post: 번역 결과의 뒤에 조사를 붙인다.
-		- sep: 조사를 분리하여 저장한다.
-
-		e.g.
-		<<handtoolPost "marker" "을">>              // "마커펜을"
-    ```
-
-    ```
-	<<lefttoolPost>>
-		<<lefttoolPost [num] *post 'sep'>>
-
-		NPC 손에 있는 도구 이름을 번역한다.
-		(내부적으로 handtoolPost 를 부름)
-
-		
-		선택사항
-		- num: NPCList 의 번호. 생략시 0번.
-		- post: 번역 결과의 뒤에 조사를 붙인다.
-		- sep: 조사를 분리하여 저장한다.
-
-		e.g.
-		<<lefttoolPost 0 "을">>             // $NPCList[0].lefttool을
-    ```
-
-    ```
-	<<righttoolPost>>
-        + <<lefttoolPost>>와 용도 및 방식 같음. 생략
-    ```
-
-    ```
-	<<struggle_appendagePost>>
-		<<struggle_appendagePost *part *post 'sep'>>
-
-		base-combat/struggle.twee 의 struggle_appendage 대체 매크로.
-		해당 부분의 크리쳐의 부속 기관 이름을 번역한다.
-
-		필수사항
-		- part: 몸의 부분
-		
-		선택사항
-		- post: 번역 결과의 뒤에 조사를 붙인다.
-		- sep: 조사를 분리하여 저장한다.
-
-		e.g.
-		<<struggle_appendagePost "mouth" "을">>              // "독침을"
-    ```
-
-    ```
-    <<underworld_nicknamePost>>
-        <<underworld_nicknamePost post "sep">>
-
-        <<underworld_nickname>>의 대체 위젯. 조사를 붙일 수 있다.
-
-        선택사항
-        - post: 번역결과의 뒤에 조사를 붙인다.
-        - sep: 조사를 분리하여 저장한다.
-        
-        e.g.
-        <<underworld_nicknamePost "을">>               // "고깃구멍을"
-    ```
-
-    ```
-    <<overworld_nicknamePost>>
-        + <<underworld_nicknamePost>>와 용도 및 방식 같음. 생략
-    ```
-
-    ```
-    <<tattooPost>>
-        <<tattooPost *bodypart post "sep">>
-
-        <<tattoo>>의 대체 위젯. 조사를 붙일 수 있다.
-
-		필수사항
-             - bodypart: 신체 부위
-
-        
-        선택사항
-            - post: 번역결과의 뒤에 조사를 붙인다.
-            - sep: 조사를 분리하여 저장한다.
-
-        e.g.
-        <<tattooPost "back" "을">>               // (등에 "Cute girl" 글씨가 있을 경우) "귀여운 소녀"글씨를
-    ```
-
 
 * putpost
     ```
@@ -1167,6 +1343,27 @@
 		<<putpost "man" "이">>              // "남자가"
     ```
 
+* sextoyPost
+    ```
+	<<sextoyPost>>
+		<<sextoyPost *name type post 'sep'>>
+
+		섹스 장난감을 번역한다. 조사를 붙일 수 있다.
+
+		필수사항
+		- name: 장난감 이름
+
+		선택사항
+		- type: 표시할 내용. "name" - 이름, "desc" - 설명. 생략시 이름 표시.
+		- post: 번역결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		NOTE: 플레이어가 소지한 장난감은 <<sextoyPost>>로 번역되고, 착용한 장난감은 strap-on은 <<trClothes "under_lower">>, butt plug는 <<trClothes "butt_plug">> 에서 번역됨.
+		          NPC 가 손에 든 장난감은 <<handtoolPost>> 에서 번역되고 착용한 strap-on은 <<trPenisdesc>>에서 번역됨.
+		e.g.
+		<<sextoyPost "dildo" "name" "을">>              // "딜도를"
+    ```
+
 * sydneyPost
 	시드니 관련 Post 시리즈. 위젯 원본은 overworld-town/special-sydney/widgets.twee 에 있으므로 해당 파일이 변경되면 확인할 것
 	
@@ -1174,7 +1371,7 @@
 	<<sydneyGenitalsPost>>
 		<<sydneyGenitalsPost short post 'sep'>>
 
-		<<sydneyGenitals>>의 대체 유닛. 조사를 붙일 수 있다.
+		<<sydneyGenitals>>의 대체 위젯. 조사를 붙일 수 있다.
 
 		선택사항
 		- short: 원본 매크로에 사용되는 인수값
@@ -1186,18 +1383,41 @@
     ```
 	
     ```
-	<<sydneyGenitalsPost>>
-		<<sydneyGenitalsPost short post 'sep'>>
+	<<sydneymumPost>>
+		<<sydneymumPost post 'sep'>>
 
-		<<sydneyGenitals>>의 대체 유닛. 조사를 붙일 수 있다.
+		<<sydneymum>>의 대체 위젯. 조사를 붙일 수 있다. <<sydneyMumPost>>로도 사용가능.
 
 		선택사항
-		- short: 원본 매크로에 사용되는 인수값
 		- post: 번역 결과의 뒤에 조사를 붙인다.
 		- sep: 조사를 분리하여 저장한다.
 
 		e.g.
-		<<sydenyGenitals "이">>              // "자지가"
+		<<sydneymumPost "이">>              // "엄마가"
+    ```
+
+    ```
+    <<sydneymotherPost>>
+        <<sydneymother>>의 대체 위젯. <<sydneyMotherPost>>로도 사용가능.
+        + <<sydneymumPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<sydneyOtherParentPost>>
+        <<sydneyOtherParent>>의 대체 위젯.
+        + <<sydneymumPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<sydneyGlassesPost>>
+        <<sydneyGlasses>>의 대체 위젯.
+        + <<sydneymumPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<sydneySwimwearPost>>
+        <<sydneySwimwear>>의 대체 위젯.
+        + <<sydneymumPost>>와 용도 및 방식 같음. 생략
     ```
 
 -----------------
@@ -1230,9 +1450,25 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trBeastdesc 'large dog girl' '을'>>             // '큰 개 소녀를'
+        <<trBeastdesc 'large dog girl' '을'>>_trResult             // '큰 개 소녀를'
     ```
 
+    ```
+    <<trBeastClaws>>
+        <<rBeastClaws *claws post "sep">>
+
+        짐승의 발톱를 번역한다.
+
+        필수사항
+        - claws: 짐승의 상세
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trBeastClaws 'claws' '을'>> _trResult            // '발톱을'
+    ```
 
 * trBodypart
     ```
@@ -1249,7 +1485,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trBodypart 'left_arm' '을'>>             // '왼팔을'
+        <<trBodypart 'left_arm' '을'>>_trResult              // '왼팔을'
     ```
 	
 	
@@ -1264,7 +1500,7 @@
 
 
         e.g.
-        <<trBodysize 'normal'>>             // '평범함'
+        <<trBodysize 'normal'>>_trResult              // '평범함'
     ```
 
 * trBodyWriting
@@ -1282,7 +1518,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trBodyWriting "heart">>               //  "하트"
+        <<trBodyWriting "heart">>_trResult                //  "하트"
     ```
 * trBodyWritingCategory
     ```
@@ -1313,13 +1549,13 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trBreastsdesc "budding breasts" "을">>             //"약간 솟아오른 가슴을"
+        <<trBreastsdesc "budding breasts" "을">>_trResult              //"약간 솟아오른 가슴을"
     ```
 
 * trColour
     ```
     <<trColour>>
-        <<trColour *colour>>
+        <<trColour *colour post sep>>
 
         색을 번역한다.
 
@@ -1329,7 +1565,12 @@
         e.g.
         <<trColour 'red'>>
     ```
-
+ 
+   ```
+    trColourJS
+        trColourJS(colour, post, sep)
+        <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. 리팩토링될 수 있음.
+    ```
 * trHairtype
     ```
     <<trHairtype>>
@@ -1829,7 +2070,7 @@
 -----------------
 # EasyPost
 
-위의 매크로들을 좀 더 직관적으로 쉽게 사용하기 위해 추가한 매크로입니다.
+위의 매크로들을 좀 더 직관적으로 쉽게 사용하기 위해 추가한 매크로 군입니다.
 
 * 규칙
     ```
@@ -1880,6 +2121,7 @@
 		```
 		<<worn_(착용부위)_name_(조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
 		<<worn_(착용부위)_name>> 시리즈. 조사 없이 이름만 가져오게 함
+		NOTE: 플레이어가 착용중인 buttplug 는 butt_plug, 플레이어가 착용중인 strap-on 은 under_lower 부위
 		```
 	- beasttypePost 계열
 		```
@@ -1888,22 +2130,25 @@
 	- bodyPost 계열
 		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
-		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>, <<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
+		<<clit_(조사)>>, <<penis_(조사)>>, <<penisSimple_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<testicle_(조사)>>, <<hand_(조사)>>, 
+		<<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
 		```
 	- clothesPost 계열
 		```
 		<<undertop_(조사)>>, <<groin_(조사)>>, <<crotch_(조사)>>, <<undies_(조사)>>, <<bottoms_(조사)>>, <<underbottoms_(조사)>>, <<top_(조사)>>, 
-		<<topaside_(조사)>>, <<breastsaside_(조사)>>, <<outfit_(조사)>>, <<underoutfit_(조사)>>, <<lewdness_(조사)>>, <<nudity_(조사)>>
+		<<topaside_(조사)>>, <<breastsaside_(조사)>>, <<outfit_(조사)>>, <<underoutfit_(조사)>>, <<lewdness_(조사)>>, <<nudity_(조사)>>, 
+		<<allTops_(조사)>>, <<allBottoms_(조사)>>, <<allTopsUnderwear_(조사)>>, <<allBottomsUnderwear_(조사)>>, 
 		```
 	- HePost 계열
 		```
-		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, <<bHe_(조사)>>, <<bhe_(조사)>>, 
-		<<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<ohe_(조사)>>, 
-		<<pShe_(조사)>>, <<pshe_(조사)>>, <<pher_(조사)>>, <<pHer_(조사)>>, <<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, 
+		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, 
+		<<bHe_(조사)>>, <<bhe_(조사)>>, <<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>,
+		<<pShe_(조사)>>, <<pshe_(조사)>>, <<pher_(조사)>>, <<pHer_(조사)>>, <<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>,
 		<<nnpc_brother_(조사)>>, <<nnpc_Brother_(조사)>>, <<nnpc_title_(조사)>>, <<nnpc_Title_(조사)>>, 
-		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, <<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<Bhis_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, 
+		<<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- otherPost 계열
 		```
@@ -1924,19 +2169,16 @@
 		```
 		<<putpost_(조사)>>
 		```
-	- tentacle 계열
-		```
-		<<tentacle_(조사)>>
-		```
 	- creature 계열
 		```
-		<<creature_(조사)>>,  <<vorecreature_(조사)>>, <<struggle_creature_(조사)>>, <<swarm_(조사>>, <<swarmtype_(조사)>>, <<swarmname_(조사)>>,
-		<<struggle_mouth_creature_(조사)>>, <<struggle_vagina_creature_(조사)>>, <<struggle_penis_creature_(조사)>>, <<struggle_anus_creature_(조사)>>, <<struggle_chest_creature_(조사)>>,
+		<<creature_(조사)>>,  <<tentacle_(조사)>>, <<vorecreature_(조사)>>, <<struggle_creature_(조사)>>,
+		<<struggle_mouth_creature_(조사)>>, <<struggle_vagina_creature_(조사)>>, <<struggle_penis_creature_(조사)>>, <<struggle_anus_creature_(조사)>>, <<struggle_chest_creature_(조사)>>, 
+		<<swarmtype_(조사)>>, <<swarmname_(조사)>>, <<swarm_(조사>>, 
 		<<swarmmove>>, <<swarmspill>>, <<swarmsteady>> 는 서술어 번역이라 조사가 필요없음
 		```
 	- 기타
 		```
 		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>,
 		<<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
-		<<weather_(조사)>>
+		<<weather_(조사)>>, <<sextoy_(조사)>>
 		```
