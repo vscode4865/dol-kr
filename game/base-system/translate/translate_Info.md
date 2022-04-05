@@ -1324,6 +1324,73 @@
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
+* prisonPost
+	교도소 관련 Post 시리즈. 위젯 원본은 overworld-town/loc-prison/widgets.twee 에 있으므로 해당 파일이 변경되면 확인할 것
+    ```
+	<<trPrisonPerson>>
+		<<trPrisonPerson *id *role post 'sep'>>
+
+        <<*_guardPost>> <<*_inmatePost>>의 기초 위젯. 조사를 붙일 수 있다.
+
+		필수사항
+		- id: NPC 객체번호. <<*_guardPost>> <<*_inmatePost>> 의 원래 옵션.
+		- role: NPC 의 역할. "relaxed guard" 등.
+
+		선택사항
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<trPrisonPerson 0 "relaxed guard" "이">>_trResult              // "너그러운 간수가"
+    ```
+
+    ```
+    <<relaxed_guardPost>>
+		<<relaxed_guardPost *id post sep>>
+       <<relaxed_guard>>의 대체 위젯.
+
+		필수사항
+		- id: NPC 객체번호. <<*_guardPost>> <<*_inmatePost>> 의 원래 옵션.
+		- role: NPC 의 역할. "relaxed guard" 등.
+
+		선택사항
+		- post: 번역 결과의 뒤에 조사를 붙인다.
+		- sep: 조사를 분리하여 저장한다.
+
+		e.g.
+		<<relaxed_guardPost 0 "이">>              // "너그러운 간수가"
+    ```
+
+    ```
+    <<anxious_guardPost>>
+        <<anxious_guard>>의 대체 위젯.
+        + <<relaxed_guardPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<veteran_guardPost>>
+        <<veteran_guard>>의 대체 위젯.
+        + <<relaxed_guardPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<methodical_guardPost>>
+        <<methodical_guard>>의 대체 위젯.
+        + <<relaxed_guardPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<tattooed_inmatePost>>
+        <<tattooed_inmate>>의 대체 위젯.
+        + <<relaxed_guardPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<scarred_inmatePost>>
+        <<scarred_inmate>>의 대체 위젯.
+        + <<relaxed_guardPost>>와 용도 및 방식 같음. 생략
+    ```
+
 * putpost
     ```
 	<<putpost>>
