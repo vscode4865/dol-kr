@@ -1851,8 +1851,8 @@
 * trPlants
     ```
     <<trPlants>>
-        <<trPlants *plantName ["name"|"plural"] post "sep">>
-        <<trPlants *plantPlural ["name"|"plural"] post "sep">>
+        <<trPlants *plantName ["name"|"plural"|"unit"] post "sep">>
+        <<trPlants *plantPlural ["name"|"plural"|"unit"] post "sep">>
 
         식물을 번역한다.
 
