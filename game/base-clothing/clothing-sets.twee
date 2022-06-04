@@ -43,6 +43,10 @@
 		<<set _passage to 'Prison Bed'>>
 		<<set $wardrobe_location to "prison">>
 		<<set $storeLocation to "prison bed">>
+	<<case "Robin Bed">>
+		<<set _passage to "Robin Room Bed">>
+		<<set $wardrobe_location to "wardrobe">>
+		<<set $storeLocation to "bed">>
 	<<default>>
 		<<set _passage to "Bed">>
 		<<set $wardrobe_location to "wardrobe">>
@@ -52,7 +56,15 @@
 <<if $alwaysSleepNaked isnot true>>
 	<<for _i to 0; _i lt $outfit.length; _i++>>
 		<<if $outfit[_i].type.includes("sleep")>>
-			<<bedicon>><<print '<<link [[$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]") + " 입고 침대에 들어간다"|"'+_passage+'"]]>><<set $wear_outfit to ' + _i + '>><<saveTempHairStyle>><</link>>'>>
+			<<if _passage is "Bed">>
+				<<furnitureicon _bed.iconFile>>
+			<<else>>
+				<<bedicon>>
+			<</if>>
+			<<capture _i>>
+				<<set _outfitname to $outfit[_i].name + ($outfit[_i].colors is false? "" : " [C]")>>
+				<<link [[_outfitname+" 입고 침대에 들어간다"|_passage]]>><<set $wear_outfit to _i>><<saveTempHairStyle>><</link>>
+			<</capture>>
 			<br>
 		<</if>>
 	<</for>>
@@ -211,7 +223,7 @@
 						<</if>>
 						/*Check for slime corruption*/
 						<<if _corruptionEquipSkip.includes(_equip[_i])>>
-							<<if $corruption_slime gte 80 and $willpower lt 800 and _selectedWardrobe[_equip[_i]][_j].reveal lt 500 and !_selectedWardrobe[_equip[_i]][_j].type.includesAny("school", "event")>>
+							<<if $corruption_slime gte 80 and currentSkillValue('willpower') lt 800 and _selectedWardrobe[_equip[_i]][_j].reveal lt 500 and !_selectedWardrobe[_equip[_i]][_j].type.includesAny("school", "event")>>
 								<<set _notEquipped[_equip[_i]] to {"name": $outfit[$wear_outfit][_equip[_i]], "reason": "corruption_slime_deny"}>>
 								<<break>>
 							<</if>>
@@ -353,7 +365,7 @@
 	<</if>>
 <</if>>
 
-<<if $wear_outfit isnot "none">>
+<<if $wear_outfit isnot "none" and _notEquipped>>
 	<<set _keys to Object.keys(_notEquipped)>>
 	<<if _keys.length gt 0>>
 		<<set _resultStrings to {}>>
@@ -482,7 +494,7 @@
 <div id="outfitEditorHelp" class="hidden">
 	여기에서 변경하는 복장의 모든 설정들은 바로 변경되지만, 당신이 경로(passage)를 변경해야 변경점이 저장됩니다 (옷장에서 나오거나 이 화면 아래의 '옷장 갱신'을 누르면 됩니다).
 	<br><br>
-	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 지정된 색상이 있는 옷을 지정된 색상이 없는 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
+	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 색상 지정이 가능한 옷을 색상 지정이 불가능한 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
 	<br><br>
 	위치는 그 복장이 특별하며 그 옷장에서만 보인다는 것을 의미합니다. '접근 불가'라는 표시가 있다면, 이것은 여러 개의 옷장 설정이 되어있거나 게임이 더 진행된 후에 사용이 가능하다는 것을 의미합니다. 대부분의 경우 '고아원' 옷장은 여러 개의 옷장 설정이 '격리된 장소에서는 사용' 이나 하나의 옷장만 사용하는 경우 공유됩니다.
 	<br><br>

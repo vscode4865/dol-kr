@@ -357,6 +357,35 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<span class="blue"><<He_nun>> <<his_yi>> 손을 당신의 엉덩이에서 뗀다.</span>
 		<<combat-reset-hand _args[0]>>
 		<<set $anususe to 0>>
+	<<elseif playerHasButtPlug()>>
+		<<if $rng gte 21 or $noanal is 1 or $cheekaction is "handrub">>
+			<<print either(
+				`<<He_nun>> 당신의 <<worn_butt_plug_name_ul>> 넣었다 뺐다 하면서, 당신의 항문을 희롱한다.`,
+				`<<He_nun>> 당신의 <<worn_butt_plug_name_ul>> 넣었다 뺐다 하면서, 당신의 항문을 희롱한다.`,
+				`<<He_nun>> 당신의 엉덩이와 <<worn_butt_plug_name_ul>> 찰싹 때린다.`
+			)>>
+			<<set $anususe to "hand">>
+			<<set $anusstate to "handentrance">>
+		<<else>>
+			<<set $worn.butt_plug.state to "removed">>
+			<<his_yi>> <<hand_ro _args[0]>>,
+			<<if random(0,2) isnot 0>>
+				<<he_nun>> 당신의 <<worn_butt_plug_name_ul>> 뽑아낸다.
+				<<set $anususe to "hand">>
+				<<set $anusstate to "handentrance">>
+			<<else>>
+				<<he_nun>> 당신의 <<worn_butt_plug_name_ul>> 뽑아내고 <<his_yi>> 손을 치운다.
+				<<combat-reset-hand $_hand>><<neutral 5 _n>>
+			<</if>>
+		<</if>>
+		<<set $anususe to "hand">>
+		<<set $anusstate to "handentrance">>
+		<<neutral 10 _n>>
+		<<if random(1, 2) is 2>>
+			<<bodypart_admire_chance left_bottom>>
+		<<else>>
+			<<bodypart_admire_chance right_bottom>>
+		<</if>>
 	<<elseif $rng gte 21 or $noanal is 1 or $cheekaction is "handrub">>
 		<<He_nun>> 당신의 엉덩이를 <<strokes>>
 		<<set $anususe to "hand">>
@@ -562,26 +591,31 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<combat-set-hand-target _args[0] "dildo">><<set $NPCList[_n][$_hand + "tool"] to 0>>
 		<<neutral 15 _n>>
 	<<elseif $rng lte 100>>
-		<<switch $penisstate>>
-			<<case "otheranus">><<set $_teased to "항문을">><<set $_fucking to "찔러대며">>
-			<<case "penetrated">><<set $_teased to "보지를">><<set $_fucking to "찔러대며">>
-			<<case "penispenetrated">><<set $_teased to "자지를">><<set $_fucking to "비벼대며">>
-		<</switch>>
-		<<He_nun>> <<his_yi>> <<handPost _args[0]>>에 쥐고 있는 <<handtool_ro $_toy>> 당신의 <<penisPost>>에  <<print either("마사지하듯 비벼대고","비벼대고","서로 부딪혀대고","문질러대고")>>,<<if $penisstate is "otheranus" or $penisstate is "penetrated">><<set $_n to _n>> <<personselect $penistarget>><<combatperson_yi>> $_teased $_fucking,<<personselect $_n>><</if>>
-		<<neutral 20 _n>><<set $speechpenis to 1>>
-		<<if !playerHasStrapon()>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-				무심결에 당신의 몸을 전율시킨다.
-			<<elseif $arousal gte $arousalmax / 5>>
-				당신의 음란한 액체를 흘러나오게 한다.
-			<<else>>
-				당신의 몸의 자연스러운 반응을 가장 추잡한 방식으로 이용한다.
-			<</if>>
+		<<if ["otheranus","penetrated","penispenetrated"].includes($penisstate)>>
+			<<switch $penisstate>>
+				<<case "otheranus">><<set $_teased to "항문에">><<set $_fuck to "삽입한다">>
+				<<case "penetrated">><<set $_teased to "보지를">><<set $_fuck to "범한다">>
+				<<case "penispenetrated">><<set $_teased to "자지를">><<set $_fuck to "문질러댄다">>
+			<</switch>>
+			<<his_yi>> <<hand_ro _args[0]>>, <<he_ga>> 당신의 <<penisPost>> 전체에 <<print either("마사지하듯 비벼대는 동안","비벼대는 동안","서로 부딪혀대는 동안","문질러대는 동안")>>
+			당신은 <<set $_n to _n>><<personselect $penistarget>><<combatpersons_yi>> $_teased $_fuck.<<personselect $_n>>
 		<<else>>
-			<<if $arousal gte ($arousalmax / 5) * 4>>
-				무심결에 당신의 몸을 전율시킨다.
+			<<He_ga>> <<his_yi>> <<handPost _args[0]>>에 쥐고 있는 <<handtool_ro $_toy>> 당신의 <<penisPost>> 전체를 <<print either("마사지하듯 비벼대며","비벼대며","서로 부딪혀대며","문질러대며")>>,
+			<<neutral 20 _n>><<set $speechpenis to 1>>
+			<<if !playerHasStrapon()>>
+				<<if $arousal gte ($arousalmax / 5) * 4>>
+					무심결에 당신의 몸을 전율시킨다.
+				<<elseif $arousal gte $arousalmax / 5>>
+					당신의 음란한 액체를 흘러나오게 한다.
+				<<else>>
+					당신의 몸의 자연스러운 반응을 가장 추잡한 방식으로 이용한다.
+				<</if>>
 			<<else>>
-				기묘하게 당신을 흥분시킨다.
+				<<if $arousal gte ($arousalmax / 5) * 4>>
+					무심결에 당신의 몸을 전율시킨다.
+				<<else>>
+					기묘하게 당신을 흥분시킨다.
+				<</if>>
 			<</if>>
 		<</if>>
 		<<bodypart_admire_chance pubic>>
@@ -723,22 +757,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <<widget "combat-hand-on-sextoy">>
 	/* used for both dildo types and whip types */
 	<<set $_hand to _args[0]>>
-	<<set $_dildotypes to ["dildo","length of anal beads"]>>
-	<<set $_whiptypes to ["riding crop","flog"]>>
 	<<set $_toy to $_hand + "tool">>
 	<<set $_rand to random(0,9)>>
-	
-	<<if $_rand lte 8 and npcHasSexToyOfType(_n,"dildo") or $_rand lte 1 and npcHasSexToyOfType(_n,"whip")>>
+
+	<<if $_rand lte 8 and npcHasSexToyOfType(_n,"dildo") or $_rand lt 1 and npcHasSexToyOfType(_n,"whip")>>
 		/* find orifice to penetrate */
-		<<if random(0,1) is 0 or $analdisable is "t">>
+		<<if $analdisable is "t" or random(0,2) isnot 0>>
 			<<if $player.penisExist and $player.vaginaExist>>
-				<<if (random(0,1) is 0 or (playerHasStrapon() and random(0,9) is 0))>>
+				<<if random(0,3) is 0>>
 					<<combat-dildo-on-penisentrance $_hand>>
 				<<else>>
 					<<combat-dildo-on-vaginaentrance $_hand>>
 				<</if>>
-			<<elseif $player.penisExist or (playerHasStrapon() and random(0,9) is 0)>>
-				<<combat-dildo-on-penisentrance $_hand>>
+			<<elseif $player.penisExist>>
+				<<if random(0,2) is 0>>
+					<<combat-dildo-on-penisentrance $_hand>>
+				<<else>>
+					<<combat-dildo-on-anusentrance $_hand>>
+				<</if>>
 			<<elseif $player.vaginaExist>>
 				<<combat-dildo-on-vaginaentrance $_hand>>
 			<</if>>
@@ -769,8 +805,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<He_nun>> <span class="blue">$_dildo_rul</span> <<his_yi>> 주머니에서 꺼내, $_eagerly <<his_yi>> $_npcpart 탁 친다.
 		<<else>>
 			<<switch random(0,3)>>
-				<<case 0>>   <<He_nun>> <<his_yi>> $_dildocolouredtext_rul, $_eagerly <<print either("흔들어 댄다","과시한다","휘두른다","흔든다")>>.
-				<<case 1 2>> <<He_nun>> <<his_yi>> $_dildocolouredtext_rul <<his_yi>> $_npcpart <<print either("탁 친다","찰싹 때린다")>>.
+				<<case 0>>	<<He_nun>> <<his_yi>> $_dildocolouredtext_rul, $_eagerly <<print either("흔들어 댄다","과시한다","휘두른다","흔든다")>>.
+				<<case 1 2>><<He_nun>> <<his_yi>> $_dildocolouredtext_rul <<his_yi>> $_npcpart <<print either("탁 친다","찰싹 때린다")>>.
 				<<case 3>>
 					<<set $_slaps to ($consensual is 1 ? ["쓸어낸다","애무한다"].random() : "찰싹 친다")>>
 					<<if $consensual isnot 1>><<violence 5>><</if>>
@@ -1156,7 +1192,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <</widget>>
 
 <<widget "combat-remove-buttplug">>
-	<<set $_hand to _args[1]>>
+	<<set $_hand to _args[0]>>
 
 	<<He_nun>> 당신의 <<worn_butt_plug_name_ul>> 뽑아, <span class="lewd">당신의 항문을 드러낸다.</span>
 	<<set $worn.butt_plug.state to "removed">>
@@ -1222,7 +1258,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<set $_hand to _args[0]>>
 
 	<<if random(0,3) is 0>>
-		<<his_yi>> <<hand_ro $_hand>>, 그는 당신의 <<trClothes "butt_plug" $_clothing "name" "과">>_trResult 함께 당신의 항문을 희롱한다.
+		<<his_yi>> <<hand_ro $_hand>>, <<he_nun>> 당신의 <<trClothes "butt_plug" $_clothing "name" "을">>_trResult 사용해 당신의 항문을 희롱한다.
 	<<else>>
 		<<combat-remove-buttplug $_hand>>
 	<</if>>
@@ -1264,8 +1300,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<<elseif $worn.over_upper.open is 1>>
 		<<if $worn.over_lower.state is $worn.over_upper.state_top
-		 and $worn.over_lower.state is $worn.over_upper.state
-		 and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
+		and $worn.over_lower.state is $worn.over_upper.state
+		and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
 			<<combat-pull-outfit-up "over" "upper" $_hand>>
 		<<else>>
 			<<combat-pull-outfit-down "over" "upper" $_hand>>
@@ -1286,8 +1322,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<<elseif $worn.upper.open is 1>>
 		<<if $worn.lower.state is $worn.upper.state_top
-		 and $worn.lower.state is $worn.upper.state
-		 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		and $worn.lower.state is $worn.upper.state
+		and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 			<<combat-pull-outfit-up "" "upper" $_hand>>
 		<<else>>
 			<<combat-pull-outfit-down "" "upper" $_hand>>
@@ -1371,10 +1407,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<elseif $NPCList[_n].vagina is "otheranusentrance" and $player.bodyliquid.penis.goo lt 5>>
 			<<He_nun>> 윤활액 통을 <<his_yi>> <<hand_ro _args[0]>> 쥐어짜서, <span class="pink">당신의 <<penis_rul>> 끈적끈적한 액체로 뒤덮는다.</span>
 			<<neutral 10>><<set $player.bodyliquid.penis.goo += 1>>
-	<<elseif ($NPCList[_n].penis is "vaginadoubleentrance" or $NPCList[_n].penis is "vaginadoubleimminent") and $player.bodyliquid.vaginaoutside.goo lt 5>>
+	<<elseif ($NPCList[_n].penis is "vaginaentrancedouble" or $NPCList[_n].penis is "vaginaimminentdouble") and $player.bodyliquid.vaginaoutside.goo lt 5>>
 			<<He_nun>> 윤활액 통을 <<his_yi>> <<hand_ro _args[0]>> 쥐어짜서, <span class="pink">당신의 <<pussy_rul>> 끈적끈적한 액체로 뒤덮는다.</span>
 			<<neutral 10>><<set $player.bodyliquid.vaginaoutside.goo += 1>>
-	<<elseif ($NPCList[_n].penis is "anusdoubleentrance" or $NPCList[_n].penis is "anusdoubleimminent") and $player.bodyliquid.bottom.goo lt 5>>
+	<<elseif ($NPCList[_n].penis is "anusentrancedouble" or $NPCList[_n].penis is "anusimminentdouble") and $player.bodyliquid.bottom.goo lt 5>>
 			<<He_nun>> 윤활액 통을 <<his_yi>> <<hand_ro _args[0]>> 쥐어짜서, <span class="pink">당신의 <<bottom_ul>> 끈적끈적한 액체로 뒤덮는다.</span>
 			<<neutral 10>><<set $player.bodyliquid.bottom.goo += 1>>
 	<<else>>
@@ -1396,7 +1432,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $worn.legs.name isnot "naked">>
 		<<He_nun>> 당신의 <<worn_legs_name_ul>> 잡아당겨 벗겨서, 당신의 발을 노출시킨다.
 		<<legsstrip>>
-		<<neutral 5  _n>>
+		<<neutral 5 _n>>
 	<</if>>
 	<<combat-reset-hand _args[0]>>
 <</widget>>
@@ -1567,7 +1603,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 <<worn_under_lower_name_ul>> 움켜잡는다.</span>
 			<<neutral 1 _n>>
 			<<set $handtarget to "underlowerclothes">>
-		<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1 is 0)>>
+		<<elseif $analdisable is "f" and playerHasButtPlug() and random(0,1) is 0>>
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul _args[0]>> 당신의 <<worn_butt_plug_name>> 위에 놓는다.</span>
 			<<neutral 1 _n>><<set $handtarget to "buttplug">>
 		<<elseif $worn.genitals.name isnot "naked" and $walltype isnot "front">>
@@ -1582,6 +1618,11 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set _stripped to true>>
 		<</if>>
 		<<combat-set-hand-target _args[0] $handtarget>>
+
+	<<elseif $NPCList[_n].heldSexToy isnot undefined and $rng lt 25 and !getSexToysofType("all").includes($NPCList[_n].lefttool) and !getSexToysofType("all").includes($NPCList[_n].righttool)>>
+		<<giveNPCsextoy _n $NPCList[_n].heldSexToy _args[0]>>
+		<<combat-reveal-sextoy _args[0]>>
+
 	<<elseif $rng lte 7 and ($consensual isnot 1 or ["Whitney", "Kylar", "Sydney"].includes($npc[$npcrow.indexOf(_n)])) and $bodywritingLvl gte 2 and $enemytype isnot "beast" and !$noBodyWriting>>
 		<<set _rng to random(1, 5)>>
 		<<if (_rng is 5 and $NPCList[_n].type isnot "plant") or $npc.includes("Sydney")>>
@@ -1605,72 +1646,6 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<set $NPCList[_n].righthand to "pen">>
 		<</if>>
 		<<neutral 1 _n>>
-
-	<<elseif $enemyanger + $rng lte 8 and $toydildodisable is "f" and !getSexToysofType("dildos and strokers").includes($NPCList[_n].lefttool) and !getSexToysofType("dildos and strokers").includes($NPCList[_n].righttool) and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[0].fullDescription isnot "Ivory Wraith">>
-		/* Sex toys, dildo types and strokers specifically */
-		<<NPCStatusCheck "Sydney">>
-		<<if $position is "wall" and $walltype is "front">>
-			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 머리카락을 <<print either("토닥거린다","쓰다듬는다","애무한다")>>.</span>
-			<<set $speechhair to 1>>
-			<<bodypart_admire_chance forehead>>
-		<<elseif ["Robin", "Kylar","Great Hawk","Black Wolf","Eden","Bailey","Alex", "Bailey"].includes($npc[$npcrow.indexOf(_n)]) or ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ($NPCList[_n].teen is 1 and !["Alex","Whitney","Sydney"].includes($npc[$npcrow.indexOf(_n)]) and random(0,9) isnot 0)>>
-			/* Skip toys for certain NPCs */
-			<<set $handtarget to 0>>
-			<<if $worn.over_lower.name isnot "naked">>
-				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 <<worn_over_lower_name_ul>> 움켜잡는다.</span>
-				<<set $handtarget to "overlowerclothes">><<neutral 1 _n>>
-			<<elseif $worn.lower.name isnot "naked">>
-				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 <<worn_lower_name_ul>> 움켜잡는다.</span>
-				<<set $handtarget to "lowerclothes">><<neutral 1 _n>>
-			<<elseif $worn.genitals.type.includes("chastity")>>
-				<<He_nun>> 당신의 넓적다리 안쪽을 <<strokes and>> <<his_yi>> 손가락을 당신의 <<worn_genitals_name>>에 쓸어댄다.
-				<<neutral 10 _n>><<set $speechchastity to 1>>
-			<<elseif $analdisable is "f" and random(0,1) is 0 and playerHasButtPlug()>>
-				<span class="purple"><<He_nun>> <<his_yi>> <<hand_rul _args[0]>> 당신의 <<worn_butt_plug_name>> 위에 놓는다.</span>
-				<<neutral 1 _n>><<set $handtarget to "buttplug">>
-			<<elseif $player.penisExist and $player.vaginaExist>>
-				<<if $player.ballsExist and random(0,1) is 1>>
-					<<He_nun>> 당신의 <<testicles_rul>> <<strokes and>>, 당신의 귀두를 희롱한다.
-					<<neutral 10 _n>><<set $speechglans to 1>>
-				<<else>>
-					<<He_nun>> 당신의 <<pussy_wa>> 만나는 당신의 <<penisPost>> 밑동을 <<strokes>>
-					<<neutral 10 _n>><<set $speechfutapenis to 1>>
-				<</if>>
-			<<elseif $player.penisExist and $player.ballsExist>>
-				<<He_nun>> 당신의 <<testicles_rul>> <<strokes and>>, 당신의 귀두를 희롱한다.
-				<<neutral 10 _n>><<set $speechglans to 1>>
-			<<elseif $player.vaginaExist>>
-				<<He_nun>> 당신의 치골 둔덕을 <<strokes and>> 당신의 <<clit_ul>> 희롱한다.
-				<<neutral 10 _n>><<set $speechclit to 1>>
-			<<else>>
-				<<He_nun>> 당신의 <<print either("넓적다리를","엉덩이를","궁둥이를")>> <<strokes>>.
-			<</if>>
-			<<combat-set-hand-target _args[0] $handtarget>>
-		<<else>>
-			<<set $_dildo to randomSexToy("dildo")>>
-			<<if $NPCList[_n].penis isnot 0 and $NPCList[_n].penis isnot "none" and !$NPCList[_n].penisdesc.includes("strap-on") and $player.penisExist>>
-				<<set $_dildo to randomSexToy("dildos and strokers")>>
-			<</if>>
-			<<set $_hand to _args[0]>>
-			<<set $_otherhand to ($_hand is "left" ? "right" : "left" )>>
-			<<set $_freehand to ($NPCList[_n][$_otherhand+"hand"] is 0 ? true : false)>>
-			<<set $_palm to ($_freehand is true ? either("손바닥에","손바닥에","손바닥에","넓적다리에","넓적다리에","어깨에") : either("넓적다리에","어깨에"))>>
-			<<set $_eagerly to ($consensual is 1 ? "열성적으로" : "위협적으로")>>
-
-			<<if random(0,4) is 0>>
-				<span class="purple"><<He_nun>> <span class="blue"><<handtool_ul $_dildo>></span> <<his_yi>> 주머니에서 꺼내, <<print $_eagerly>> <<his_yi>> <<print $_palm>> 탁 친다.</span>
-			<<else>>
-				<span class="purple"><<He_nun>> <span class="blue"><<handtool_ul $_dildo>></span> <<his_yi>> 주머니에서 꺼낸다.</span>
-			<</if>>
-
-			<<if getSexToysofType("stroker").includes($_dildo)>>
-				<<set $NPCList[_n][$_hand+"tool"] to $_dildo>>
-				<<set $NPCList[_n][$_hand+"hand"] to "stroker">>
-			<<else>>
-				<<set $NPCList[_n][$_hand+"tool"] to $_dildo>>
-				<<set $NPCList[_n][$_hand+"hand"] to "dildo">>
-			<</if>>
-		<</if>>
 
 	<<elseif $enemyanger + $rng lte 20>>
 		<<if $walltype is "front">>
@@ -1713,6 +1688,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<elseif $worn.lower.name isnot "naked">>
 				<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 <<worn_lower_name_ul>> 움켜잡는다.</span>
 				<<set $handtarget to "lowerclothes">><<neutral 1 _n>>
+			<<elseif playerHasStrapon()>>
+				<<He_nun>> 당신의 넓적다리 안쪽을 <<strokes and>> <<his_yi>> 손가락을 당신의 <<worn_under_lower_name>>에 쓸어댄다.
+				<<neutral 10 _n>>
 			<<elseif $worn.genitals.type.includes("chastity")>>
 				<<He_nun>> 당신의 넓적다리 안쪽을 <<strokes and>> <<his_yi>> 손가락을 당신의 <<worn_genitals_name>>에 쓸어댄다.
 				<<neutral 10 _n>><<set $speechchastity to 1>>
@@ -2073,6 +2051,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<elseif $worn.lower.name isnot "naked">>
 			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 <<worn_lower_name_ul>> 움켜잡는다.</span>
 			<<combat-set-hand-target _args[0] "lowerclothes">><<neutral 1 _n>>
+		<<elseif playerHasStrapon()>>
+			<<He_nun>> 당신의 엉덩이를 때린다.
+			<<neutral 15 _n>>
 		<<elseif $player.penisExist>>
 			/*$penis use need to be checked inside of $player.penisExist check to prevent mention of the clitoris*/
 			<<if $penisuse is 0>>
@@ -2211,58 +2192,6 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 		<<bodypart_admire_chance pubic>>
 
-	<<elseif $enemyanger + $rng lte 132 and $toywhipdisable is "f" and !getSexToysofType("whip").includes($NPCList[_n].lefttool) and !getSexToysofType("whip").includes($NPCList[_n].righttool) and ($NPCList[_n].teen isnot 1 or random(0,4) isnot 0) and $enemytype isnot "beast" and $NPCList[_n].type isnot "plant" and $NPCList[0].fullDescription isnot "Ivory Wraith">>
-		<<NPCStatusCheck "Sydney">>
-		/* Leather crop start */
-		<<if $position is "wall" and $walltype is "front">>
-			<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 머리카락을 잡는다.</span>
-			<<combat-set-hand-target _args[0] "hair">><<violence 2>><<set $speechhair to 1>>
-			<<bodypart_admire_chance forehead>>
-		<<elseif ($npc[$npcrow.indexOf(_n)] is "Sydney" and !_sydneyStatus.includes("corrupt")) or ["Robin", "Kylar","Great Hawk","Black Wolf"].includes($npc[$npcrow.indexOf(_n)])>>
-			/* Named NPCs excluded */
-			<<set $_smacks to either("찰싹 때린다","찰싹 친다","꼬집는다")>>
-			<<switch random(0,3)>>
-				<<case 0>><span class="red"><<He_nun>> 당신의 <<bottom_ul>> <<print $_smacks>>.</span>
-					<<violence 1>><<bruise bottom>><<hitstat>>
-				<<case 1>>
-					<<if $player.penisExist and $player.vaginaExist>>
-						<span class="red"><<He_nun>> 당신의 육봉과 음순을 <<print $_smacks>>.</span>
-					<<elseif $player.penisExist>>
-						<span class="red"><<He_nun>> 당신의 <<penis_rul>> <<print $_smacks>>.</span>
-					<<elseif $player.vaginaExist>>
-						<span class="red"><<He_nun>> 당신의 <<pussy_rul>> <<print $_smacks>>.</span>
-					<</if>>
-				<<case 2>>
-						<span class="red"><<He_nun>> 당신의 목을 강하게 <<print either("쥐어짜지만","움켜잡지만","조르지만","조여대지만","옥죄지만")>>, 금방 힘을 뺀다.</span>
-				<<case 3>>
-					<span class="purple"><<He_nun>> <<his_yi>> <<hand_ro _args[0]>> 당신의 머리카락을 잡는다.</span>
-					<<combat-set-hand-target _args[0] "hair">><<violence 2>><<set $speechhair to 1>>
-					<<bodypart_admire_chance forehead>>
-			<</switch>>
-		<<else>>
-			/* Use crops, flogs, whips, whatever */
-			<<set $_whip to randomSexToy("whip")>>
-			<<set $_smacking to either("찰싹 친다","찰싹 친다","찰싹 때린다","후려친다")>>
-
-			<<set $_hand to _args[0]>>
-			<<set $_otherhand to ($_hand is "left" ? "right" : "left" )>>
-			<<set $_freehand to ($NPCList[_n][$_otherhand+"hand"] is 0 ? true : false)>>
-
-			<span class="purple"><<He_nun>> <<his_yi>> 주머니에서 <span class="red">가죽 <<handtool_ul $_whip>></span> 꺼내,
-			<<if $_freehand is true>>
-			<<his_yi>> 손바닥에 $_smacking.
-			<<else>>
-			<<his_yi>> <<print either("어깨에","넓적다리에")>> $_smacking.
-			<</if>>
-			</span>
-			<<if _args[0] is "left">>
-				<<set $NPCList[_n].lefttool to $_whip>>
-				<<set $NPCList[_n].lefthand to "dildo">>
-			<<elseif _args[0] is "right">>
-				<<set $NPCList[_n].righttool to $_whip>>
-				<<set $NPCList[_n].righthand to "dildo">>
-			<</if>>
-		<</if>>
 	<<elseif $enemyanger + $rng lte 140>>
 		<<if $position is "wall" and $walltype isnot "front">>
 			<<He_nun>> 당신의 <<bottom_ul>> 찰싹 친다.
@@ -2381,7 +2310,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="purple"><<He_nun>> 당신의 <<worn_feet_name_ul>> 잡는다.</span>
 				<<combat-set-hand-target _args[0] "shoes">>
 				<<neutral 3 _n>>
-			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed>>
+			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed and !$robinmist>>
 				<span class="pink"><<He_nun>> 위협적인 금속 족쇄를 꺼낸다.</span>
 				<<combat-set-hand-target _args[0] "shackle_entrance">>
 				<<neutral 4 _n>>
@@ -2490,7 +2419,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 <<outfitChecks>>
 <<set _n to _args[0]>>
 <!-- Converted his1-6 to hisselect #. Person1-6 to personselect #. $intro1-6 as array $NPCList[_n].intro -->
-<!-- Converted man1-6speech to manspeech #. Randomized penissize reaction.-->
+<!-- Converted man1-6speech to manspeech #. Randomised penissize reaction.-->
 
 <<if ["m", "f", "i", "n", "t"].includes($NPCList[_n].pronoun)>>
 	<<set $pronoun to $NPCList[_n].pronoun>>
@@ -2701,13 +2630,13 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<else>>
 						<<switch $NPCList[_n].penissize>>
 						<<case 4>>
-							<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 영원히 당신의 순결을 빼앗아 버린다. 당신은 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 비명을 지른다.</span>
+							<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 <<virginitylosttext $NPCList[_n].fullDescription>> 당신은 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 비명을 지른다.</span>
 							<<violence 200>>
 						<<case 1>>
-							<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span>
+							<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span>
 							<<violence 25>>
 						<<default>>
-							<span class="pink"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span>
+							<span class="pink"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 							<<violence 100>>
 						<</switch>>
 					<</if>>
@@ -2796,7 +2725,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 		<<if $rng gte 101>>
 			<span class="purple"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에서 뽑아낸다.</span>
-			<<sex 30>><<set $NPCList[_n].penis to "vaginadoubleimminent">><<bruise vagina>><<violence 1>><<set $vaginastate to "doubleimminent">>
+			<<sex 30>><<set $NPCList[_n].penis to "vaginaimminentdouble">><<bruise vagina>><<violence 1>><<set $vaginastate to "doubleimminent">>
 		<<elseif $rng gte 1>>
 			<<if _dvp is 2>>
 				<<set $_alongsidearray to ["와 함께","와 함께","에 박자를 맞추어","에 신경쓰지 않고","와 함께 쳐대며","와 함께 찔러대며"]>>
@@ -2868,7 +2797,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<</if>>
 	<<set $rng to random(1, 100)>>
-	<<if $NPCList[_n].penis is "vaginadoubleimminent">>
+	<<if $NPCList[_n].penis is "vaginaimminentdouble">>
 		<<set _dvp to 0>>
 		<<set _npcA to (_n is $vaginatarget ? $vaginatarget : $vaginadoubletarget)>>
 		<<set _npcB to (_n is $vaginatarget ? $vaginadoubletarget : $vaginatarget)>>
@@ -2881,7 +2810,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 <<pussyPost>>에 눌러대는 것을 그만둔다.</span>
-			<<set $NPCList[_n].penis to "vaginadoubleentrance">><<set $vaginastate to "doubleentrance">>
+			<<set $NPCList[_n].penis to "vaginaentrancedouble">><<set $vaginastate to "doubleentrance">>
 		<<elseif $rng gte 1>>
 			<<if _dvp is 2>>
 				<<if $novaginal is 0>>
@@ -2911,13 +2840,13 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<else>>
 							<<switch $NPCList[_n].penissize>>
 							<<case 4 5>>
-								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 영원히 당신의 순결을 빼앗아 버린다. 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 당신은 비명을 지른다.</span><<set _n to $_n>>
+								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 <<virginitylosttext $NPCList[_n].fullDescription>> 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 당신은 비명을 지른다.</span><<set _n to $_n>>
 								<<violence 200>>
 							<<case 1>>
-								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span><<set _n to $_n>>
+								<span class="red"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며, 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span><<set _n to $_n>>
 								<<violence 25>>
 							<<default>>
-								<span class="pink"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span><<set _n to $_n>>
+								<span class="pink"><<His_yi>> <<penisdesc_ga $NPCList[_n].penisdesc>> <<personselect _npcB>><<combatperson_yi>> <<npcPenisSimplePost _npcB>>에 동참해 <<personselect _npcA>>당신의 처녀 보지에 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span><<set _n to $_n>>
 								<<violence 100>>
 							<</switch>>
 						<</if>>
@@ -2955,13 +2884,13 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<else>>
 							<<switch $NPCList[_n].penissize>>
 							<<case 4>>
-								<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 영원히 당신의 순결을 빼앗아 버린다. 당신은 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 비명을 지른다.</span>
+								<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 흔적도 없이 날려보내고 <<virginitylosttext $NPCList[_n].fullDescription>> 당신은 당신의 <<pussy_ga>> <<his_yi>> 자지를 받아들이려 고군분투하며 비명을 지른다.</span>
 								<<violence 200>>
 							<<case 1>>
-								<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span>
+								<span class="red"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며, 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span> <span class="green"> 엄밀하게 당신은 더 이상 처녀가 아니지만, 당신은 자지가 들어왔다는 것을 거의 느낄 수가 없다.</span>
 								<<violence 25>>
 							<<default>>
-								<span class="pink"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span>
+								<span class="pink"><<He_ga>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 처녀 보지 깊숙이 찔러넣으며,</span><span class="red"> 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 								<<violence 100>>
 							<</switch>>
 						<</if>>
@@ -2978,7 +2907,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<</if>>
 
 	<<set $rng to random(1, 100)>>
-	<<if $NPCList[_n].penis is "vaginadoubleentrance">>
+	<<if $NPCList[_n].penis is "vaginaentrancedouble">>
 		<<if $rng gte 101>>
 			<span class="lblue"><<He_nun>> <<his_yi>> 자지를 당신의 <<pussy_wa>>, 다른 자지에게서 치운다.</span>
 			<<set $NPCList[_n].penis to 0>><<set $vaginause to 0>><<set $vaginastate to 0>>
@@ -3005,7 +2934,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<elseif !$npcSub>>
 							<<if $vaginaWetness gte ($NPCList[_n].penissize * 15) + random(1, 40) or random(1, 3) is 2>>
 								<<He_nun>> 당신의 <<pussyPost>>에 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 눌러댄다. <<vagina_lube_text>><span class="pink">그 끝이 당신의 안쪽으로 눌려서, 한 번만 더 찌르면 삽입이 될 것 같다.</span>
-								<<sex 20>><<set $NPCList[_n].penis to "vaginadoubleimminent">><<set $speechvaginaimminent to 1>>
+								<<sex 20>><<set $NPCList[_n].penis to "vaginaimminentdouble">><<set $speechvaginaimminent to 1>>
 								<<if $vaginastate isnot "doublepenetrated">><<set $vaginastate to "doubleimminent">><</if>>
 							<<else>>
 								<<if $npcSub>>당신은<<else>><<He_nun>><</if>> 당신의 <<pussyPost>>에 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 눌러댄다; <span class="blue">하지만 삽입에는 실패하고,</span> 빗나가 대신 당신의 <<clit_gwa>> 다른 자지를 비벼댄다.
@@ -3279,7 +3208,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 		<<if $rng gte 101>>
 			<span class="purple"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에서 뽑아낸다.</span>
-			<<sex 30 _n>><<set $NPCList[_n].penis to "anusdoubleimminent">><<bruise anus>><<violence 1>><<set $anusstate to "doubleimminent">>
+			<<sex 30 _n>><<set $NPCList[_n].penis to "anusimminentdouble">><<bruise anus>><<violence 1>><<set $anusstate to "doubleimminent">>
 		<<elseif $rng gte 1>>
 			<<set $_alongside to either("도 함께 사용해서","도 상관없이","$_trPost 옆으로 밀어붙이며")>>
 			<<if playerHasButtPlug()>><<trClothes "butt_plug" $worn.butt_plug.name "name" "을" "sep">><<set $_trPost to _trPost>><<set $_andbuttplug to ", "+_trResult+$_alongside>><<else>><<set $_andbuttplug to "">><</if>>
@@ -3354,7 +3283,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<</if>>
 	<<set $rng to random(1, 100)>>
-	<<if $NPCList[_n].penis is "anusdoubleimminent">>
+	<<if $NPCList[_n].penis is "anusimminentdouble">>
 
 		<<set _dap to 0>>
 		<<set _otherNPCindex to "f">>
@@ -3369,7 +3298,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 		<<if $rng gte 101>>
 			<span class="blue"><<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 당신의 항문에 눌러대는 것을 그만둔다.</span>
-			<<set $NPCList[_n].penis to "anusdoubleentrance">><<set $anusstate to "doubleentrance">>
+			<<set $NPCList[_n].penis to "anusentrancedouble">><<set $anusstate to "doubleentrance">>
 		<<elseif $rng gte 1>>
 			<<if _dap is 2>>
 				<<if $noanal is 0>>
@@ -3451,7 +3380,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 	<</if>>
 	<<set $rng to random(1, 100)>>
-	<<if $NPCList[_n].penis is "anusdoubleentrance">>
+	<<if $NPCList[_n].penis is "anusentrancedouble">>
 		<<set _dap to 0>>
 		<<if $NPCList[$anustarget] is $NPCList[_n]>> /* State 1 is out of sync, state 2 is in sync */
 			<<set _dap to ($NPCList[$anusdoubletarget].penis isnot "anusdouble" ? 1 : 2)>>
@@ -3519,7 +3448,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<<elseif !$npcSub>>
 							<<if $anusWetness gte ($NPCList[_n].penissize * 15) + random(1, 40) or random(1, 2) is 2>>
 								<<He_nun>> 당신의 <<bottomPost>>에 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 눌러댄다. <<anus_lube_text>><span class="pink">그 끝이 당신의 안쪽으로 눌려서, 한 번만 더 찌르면 삽입이 될 것 같다.</span>
-								<<sex 20 _n>><<set $NPCList[_n].penis to "anusdoubleimminent">>
+								<<sex 20 _n>><<set $NPCList[_n].penis to "anusimminentdouble">>
 								<<if $anusstate isnot "doublepenetrated">><<set $anusstate to "doubleimminent">><</if>><<set $speechanusimminent to 1>>
 							<<else>>
 								<<if $npcSub>>당신은<<else>><<He_nun>><</if>> 당신의 <<bottomPost>>에 <<his_yi>> <<penisdesc_rul $NPCList[_n].penisdesc>> 눌러대지만, <span class="blue">삽입에는 실패하고,</span> 빗나가 대신 당신의 엉덩이살 사이에 비벼댄다.
@@ -3738,7 +3667,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 		<<else>>
 			<<if $penisuse is "feet">>
-				<<He_nun>> <<his_yi>> 발로 당신의 <<penis_rul>> 당신의 배에 밀어대며 당신의 귀두를 <<his_yi>> 발가락 사이로 비벼댄다.
+				<<He_nun>> <<his_yi>> 발로 당신의 <<penis_rul>> 당신의 배에 밀어대며 당신의 <<glans_rul>> <<his_yi>> 발가락 사이로 비벼댄다.
 				<<set $speechpenisfoot to 1>><<neutral 5 _n>><<violence 1 _n>>
 			<<elseif $vaginause is "feet">>
 				<<He_nun>> <<his_yi>> 발로 당신의 <<pussy_rul>> 누르며 희롱한다.
@@ -3779,7 +3708,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<</if>>
 				<<elseif $enemyarousal gte (($enemyarousalmax / 5) * 2)>>
 					<<if $worn.under_lower.type.includes("strap-on")>>
-						<<he_nun>> 당신의 페니스 밴드 자지로 범하면서, <<himPost>> 안의 섹스 장난감을 즐기고 있다.
+						<<he_nun>> 당신의 페니스 밴드 자지로 계속 범해지면서, <<himPost>> 안의 섹스 장난감을 즐기고 있다.
 					<<else>>
 						<<He_nun>> 당신을 섹스 장난감으로 사용하면서, 계속 당신의 <<penis_rul>> 강간하고 있다.
 					<</if>>
@@ -3817,7 +3746,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<span class="pink"><<He_nun>> 천천히 당신의 <<penis_rul>> <<his_yi>> 항문 안으로, 뿌리 끝까지 집어넣는다.</span>
 						<<sex 30 _n>><<set $NPCList[_n].penis to "otheranus">><<penilestat>><<bruise penis>><<violence 1>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechotheranuspenetrated to 1>>
 					<<elseif $player.virginity.penile is true>>
-						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
+						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내며</span> <<virginitylosttext $NPCList[_n].fullDescription>>
 						<<sex 100 _n>><<set $NPCList[_n].penis to "otheranus">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechpenisvirgin to 1>>
 					<</if>>
 					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "anal">>
@@ -3829,7 +3758,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<set $speechpenisbig to 1>><<set $enemyanger += 5>>
 				<</if>>
 			<<else>>
-				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 항문에 삽입하지 않고, 대신 귀두 끝을 희롱하기 시작한다.
+				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 항문에 삽입하지 않고, 대신 <<glansPost>> 끝을 희롱하기 시작한다.
 				<<sex 15 _n>><<set $speechotheranuswithhold to 1>>
 			<</if>>
 		<</if>>
@@ -3978,7 +3907,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<span class="blue"><<He_nun>> <<his_yi>> 클리토리스를 치우고 <<his_yi>> 보지를 당신의 <<penisPost>>에 게걸스럽게 눌러댄다.</span>
 			<<set $penisuse to "othervagina">><<set $NPCList[_n].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $speechpenisentrance to 1>>
 		<<else>>
-			<<if $npcSub>>당신은<<else>><<He_nun>><</if>> <<his_yi>> 보지를 당신의 귀두에 비벼댄다.
+			<<if $npcSub>>당신은<<else>><<He_nun>><</if>> <<his_yi>> 보지를 당신의 <<glansPost>>에 비벼댄다.
 			<<sex 5 _n>>
 		<</if>>
 	<</if>>
@@ -4042,7 +3971,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<span class="pink"><<He_nun>> 천천히 당신의 <<penis_rul>> <<his_yi>> 보지 안으로, 뿌리 끝까지 집어넣는다.</span>
 						<<sex 30 _n>><<set $NPCList[_n].vagina to "penis">><<penilestat>><<bruise penis>><<violence 1>><<raped>><<penisraped>><<set $penisstate to "penetrated">><<set $speechpenispenetrated to 1>>
 					<<elseif $player.virginity.penile is true>>
-						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 보지 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
+						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 보지 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내며 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 						<<sex 100 _n>><<set $NPCList[_n].vagina to "penis">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "penetrated">><<set $speechpenisvirgin to 1>>
 					<</if>>
 					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "vaginal">>
@@ -4203,7 +4132,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<elseif $NPCList[_n].vagina is "vagina">>
 		<<if $rng gte 1>>
 			<<if $enemyarousal gte $enemyarousalmax * 0.8>>
-				<<He_nun>> <<his_yi>> 엉덩이를 앞으로 밀치며,<<if $npcSub>> 본능적으로<</if>> 당신의 <<pussy_rul>> <<his_yi>> 보지에 난폭하게 쳐댄다.
+				<<He_nun>> <<his_yi>> 엉덩이를 앞으로 밀치며, <<if $npcSub>>본능적으로<</if>> 당신의 <<pussy_rul>> <<hersPost>>에 난폭하게 쳐댄다.
 				<<if $vaginaWetness gte 45>>
 					<span class="purple">당신의 애액이 서로 섞이고 있다.</span><<purity -1>>
 				<</if>>
@@ -4279,7 +4208,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<</if>>
 		<<else>>
 			<<if $penisuse is "feet">>
-				<<He_nun>> <<his_yi>> 발로 당신의 <<penis_rul>> 당신의 배에 밀어대며 당신의 귀두를 <<his_yi>> 발가락 사이로 비벼댄다.
+				<<He_nun>> <<his_yi>> 발로 당신의 <<penis_rul>> 당신의 배에 밀어대며 당신의 <<glans_rul>> <<his_yi>> 발가락 사이로 비벼댄다.
 				<<set $speechpenisfoot to 1>><<neutral 5 _n>><<violence 1>>
 			<<elseif $vaginause is "feet">>
 				<<He_nun>> <<his_yi>> 발로 당신의 <<pussy_rul>> 비벼댄다.
@@ -4358,7 +4287,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 						<span class="pink"><<He_nun>> 천천히 당신의 <<penis_rul>> <<his_yi>> 항문 안으로, 뿌리 끝까지 집어넣는다.</span>
 						<<sex 30 _n>><<set $NPCList[_n].vagina to "otheranus">><<penilestat>><<bruise penis>><<violence 1>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechotheranuspenetrated to 1>>
 					<<elseif $player.virginity.penile is true>>
-						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
+						<span class="pink"><<He_nun>> 천천히 당신의 동정 <<penis_rul>> <<his_yi>> 항문 안으로 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내며 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 						<<sex 100 _n>><<set $NPCList[_n].vagina to "otheranus">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "otheranus">><<set $speechpenisvirgin to 1>>
 					<</if>>
 					<<takeVirginity $NPCList[_n].fullDescription "penile">><<takeNPCVirginity _n "anal">>
@@ -4370,7 +4299,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<<set $speechpenisbig to 1>><<set $enemyanger += 5>>
 				<</if>>
 			<<else>>
-				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 항문에 삽입하지 않고, 대신 귀두 끝을 희롱하기 시작한다.
+				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 항문에 삽입하지 않고, 대신 <<glansPost>> 끝을 희롱하기 시작한다.
 				<<sex 15 _n>><<set $speechotheranuswithhold to 1>>
 			<</if>>
 		<</if>>
@@ -4587,11 +4516,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $NPCList[_n].vagina is "leftDildo">>
 		<<if $rng gte 1>>
 			<<if !$npcSub>>
-				<<He_nun>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
-				<<submission 2 _n>>
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					<<He_nun>> <<print either("리드미컬하게","","")>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
+				<<else>>
+					<<print either(
+						`<<He_nun>> <<his_yi>> 보지에 당신의 딜도를 찔러대며, <<his_yi>> 절정에 가까와짐에 따라 <<himself_rul>> 격렬하게 범한다.`,
+						`<<He_nun>> <<print either("강하게","절박하게","리드미컬하게")>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.`,
+						`<<He_nun>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 원을 그리듯이 <<print either("찔러댄다","비벼댄다")>>.`,
+					)>>
+					<<if $NPCList[$lefttarget].type is "plant">>꿀이<<else>>애액이<</if>> 섹스 장난감을 타고 뚝뚝 떨어져 내린다.
+				<</if>>
 			<<else>>
-				당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
+				<<else>>
+					당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다. <<if $NPCList[$lefttarget].type is "plant">>꿀이<<else>>애액이<</if>> 당신의 섹스 장난감을 타고 뚝뚝 떨어져 내린다.
+				<</if>>
 			<</if>>
+			<<submission 2 _n>>
 		<<else>>
 			<<He_nun>> 당신의 <<sextoy_rul $currentSexToyLeft.name>> <<his_yi>> 보지에서 치운다.
 			<<set $leftarm to 0>><<set $NPCList[_n].vagina to 0>><<set $leftactiondefault to "dildoOtherPussyFuck">>
@@ -4601,11 +4543,24 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<if $NPCList[_n].vagina is "rightDildo">>
 		<<if $rng gte 1>>
 			<<if !$npcSub>>
-				<<He_nun>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyRight.name>> 찔러댄다.
-				<<submission 2 _n>>
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					<<He_nun>> <<print either("리드미컬하게","","")>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
+				<<else>>
+					<<print either(
+						`<<He_nun>> <<his_yi>> 보지에 당신의 딜도를 찔러대며, <<his_yi>> 절정에 가까와짐에 따라 <<himself_rul>> 격렬하게 범한다.`,
+						`<<He_nun>> <<print either("강하게","절박하게","리드미컬하게")>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.`,
+						`<<He_nun>> <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 원을 그리듯이 <<print either("찔러댄다","비벼댄다")>>.`,
+					)>>
+					<<if $NPCList[$lefttarget].type is "plant">>꿀이<<else>>애액이<</if>> 당신의 섹스 장난감을 타고 뚝뚝 떨어져 내린다.
+				<</if>>
 			<<else>>
-				당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyRight.name>> 찔러댄다.
+				<<if $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
+					당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다.
+				<<else>>
+					당신은 <<his_yi>> 보지에 당신의 <<sextoy_rul $currentSexToyLeft.name>> 찔러댄다. <<if $NPCList[$lefttarget].type is "plant">>꿀이<<else>>애액이<</if>> <<his_yi>> 보지에서 뚝뚝 떨어져 내린다.
+				<</if>>
 			<</if>>
+			<<submission 2 _n>>
 		<<else>>
 			<<He_nun>> 당신의 <<sextoy_rul $currentSexToyRight.name>> <<his_yi>> 보지에서 치운다.
 			<<set $rightarm to 0>><<set $NPCList[_n].vagina to 0>><<set $rightactiondefault to "dildoOtherPussyFuck">>
@@ -4857,7 +4812,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<span class="pink"><<He_nun>> <<his_yi>> 혀를 당신의 <<pussyPost>> 음순 사이로 밀어넣는다.</span>
 					<<sex 30 _n>><<set $NPCList[_n].mouth to "vagina">><<vaginalstat>><<bruise vagina>><<violence 1>><<set $vaginastate to "othermouth">>
 				<<elseif $player.virginity.vaginal is true>>
-					<span class="pink"><<He_nun>> <<his_yi>> 혀를 당신의 처녀 보지에 밀어넣으며,</span><span class="red"> 처녀막을 찢고 영원히 당신의 순결을 빼앗아 버린다.</span>
+					<span class="pink"><<He_nun>> <<his_yi>> 혀를 당신의 처녀 보지에 밀어넣으며,</span><span class="red"> 처녀막을 찢고 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 					<<sex 100 _n>><<set $NPCList[_n].mouth to "vagina">><<takeVirginity $NPCList[_n].fullDescription "vaginal">><<bruise vagina>><<vaginalstat>><<violence 100>><<raped>><<vaginaraped>><<set $vaginastate to "othermouth">>
 				<</if>>
 			<<else>>
@@ -4927,7 +4882,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				눈을 당신의 얼굴에 고정하고, <<He_nun>> <<his_yi>> 혀를 당신의 <<penisPost>>에 감싸고 빨아댄다.
 				<<sex 30 _n>><<bruise penis>><<violence 1>>
 			<<elseif $enemyarousal lte (($enemyarousalmax / 5) * 3)>>
-				<<He_nun>> <<his_yi>> 입술을 당신의 <<penisPost>> 주위에 밀어넣고, <<his_yi>> 혀로 당신의 귀두 주위에 원을 그린다.
+				<<He_nun>> <<his_yi>> 입술을 당신의 <<penisPost>> 주위에 밀어넣고, <<his_yi>> 혀로 당신의 <<glansPost>> 주위에 원을 그린다.
 				<<sex 30 _n>><<bruise penis>><<violence 1>>
 			<<elseif $enemyarousal lte (($enemyarousalmax / 5) * 4)>>
 				<<He_nun>> 당신의 <<penis_ga>> <<himPost>> 안으로 완전히 사라질 때 까지, 당신을 <<his_yi>> 입 안에 더 깊게 집어넣는다. <<He_nun>> 천천히 당신을 밖으로 밀어내더니, 깊게 숨을 들이마신다.
@@ -4955,12 +4910,12 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 					<span class="pink"><<He_nun>> <<his_yi>> 입술을 당신의 <<penisPost>>에 눌러대며, 당신을 <<his_yi>> 입 안에 집어넣는다.</span>
 					<<sex 30 _n>><<set $NPCList[_n].mouth to "penis">><<penilestat>><<bruise penis>><<violence 1>><<set $penisstate to "othermouth">>
 				<<elseif $player.virginity.penile is true>>
-					<span class="pink"><<He_nun>> <<his_yi>> 입술을 당신의 동정 <<penisPost>>에 눌러대며, 당신을 <<his_yi>> 입 안에 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내어 영원히 당신의 순결을 빼앗아 버린다.</span>
+					<span class="pink"><<He_nun>> <<his_yi>> 입술을 당신의 동정 <<penisPost>>에 눌러대며, 당신을 <<his_yi>> 입 안에 집어넣었고,</span><span class="red"> 귀두와 포피 사이를 찢어내며 <<virginitylosttext $NPCList[_n].fullDescription>></span>
 					<<sex 100 _n>><<set $NPCList[_n].mouth to "penis">><<takeVirginity $NPCList[_n].fullDescription "penile">><<bruise penis>><<penilestat>><<violence 100>><<raped>><<penisraped>><<set $penisstate to "othermouth">>
 				<</if>>
 				<<takeNPCVirginity _n "oral">>
 			<<else>>
-				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 입에 집어넣지 않고, 대신 그 끝과 귀두를 핥기 시작한다.
+				당신이 바라는 대로, <<he_nun>> 당신의 <<penis_rul>> <<his_yi>> 입에 집어넣지 않고, 대신 그 끝과 <<glans_rul>> 핥기 시작한다.
 				<<sex 15 _n>>
 			<</if>>
 		<</if>>
@@ -5021,7 +4976,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<set $NPCList[_n].mouth to 0>><<set $mouthuse to 0>><<set $mouthstate to 0>>
 				<<set $NPCList[_n].location.head to 0>>
 			<<else>>
-				<<if $npcSub>>
+				<<if $robinDungeonKiss>>
+					<<undergroundRobinKiss $mouthactiondefault>>
+				<<elseif $npcSub>>
 					<<He_nun>> 소심하게 당신이 이끄는 대로, 당신이 당신의 혀로 <<his_yi>> 입을 탐색하도록 허락한다.
 				<<elseif $enemyanger lte 20>>
 					<<He_nun>> <<his_yi>> 혀로 당신의 입을 탐색한다.
@@ -5879,9 +5836,12 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
 			<<set $vaginadoubletarget to _n>>
 			<<if $vaginatarget is $vaginadoubletarget>>
-				<<set $_error to "[" + $NPCList[$vaginatarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$vaginatarget].penis + "] but player state remains ["+$vaginastate + "]">>
-				<<set $_source to "Occurred in man-combat -> penisinit: DVP. Please export and report.">>
-				<br><br><<error $_error $_source>><br><br>
+				<br><br>
+				<<error {
+					message	: `[${$NPCList[$vaginatarget].fullDescription}] penis has escaped. It is set to [${$NPCList[$vaginatarget].penis}] but player state remains [${$vaginastate}]`,
+					source	: "[0x0] Occurred in man-combat -> penisinit: DVP. Please export and report."
+				}>>
+				<br><br>
 				<<He_nun>> 당신의 <<pussy_rul>> <<his_yi>> <<penisdesc_ro $NPCList[$vaginatarget].penisdesc>> 희롱한다.
 				<<set $NPCList[$vaginatarget].penis to "vaginaentrance">>
 
@@ -5904,14 +5864,14 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<set $vaginastate to (["doublepenetration", "doubleimminent"].includes($vaginastate) ? $vaginastate : "doubleentrance")>>
 				/* NPC */
 				<<set $speechvaginaentrance to 1>>
-				<<set $NPCList[_n].penis to "vaginadoubleentrance">>
+				<<set $NPCList[_n].penis to "vaginaentrancedouble">>
 				<<set $NPCList[_n].location.genitals = "genitals">>
 				<<if $NPCList[$vaginatarget].penis is "vagina">>
 					<<set $NPCList[$vaginatarget].penis to "vaginadouble">>
 				<<elseif $NPCList[$vaginatarget].penis is "vaginaimminent">>
-					<<set $NPCList[$vaginatarget].penis to "vaginadoubleimminent">>
+					<<set $NPCList[$vaginatarget].penis to "vaginaimminentdouble">>
 				<<elseif $NPCList[$vaginatarget].penis is "vaginaentrance">>
-					<<set $NPCList[$vaginatarget].penis to "vaginadoubleentrance">>
+					<<set $NPCList[$vaginatarget].penis to "vaginaentrancedouble">>
 				<</if>>
 			<</if>>
 
@@ -5944,9 +5904,12 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			/* Essentially, NPC's penis has been set to 0 somehow, yet the player's states have not been reset. */
 			<<set $anusdoubletarget to _n>>
 			<<if $anustarget is $anusdoubletarget>>
-				<<set $_error to "[" + $NPCList[$anustarget].fullDescription + "] " + "penis has escaped. It is set to [" + $NPCList[$anustarget].penis + "] but player state remains ["+$anusstate + "]">>
-				<<set $_source to "Occurred in man-combat -> penisinit: DAP. Please export and report.">>
-				<br><br><<error $_error $_source>><br><br>
+				<br><br>
+				<<error {
+					message	: `[${$NPCList[$anustarget].fullDescription}] penis has escaped. It is set to [${$NPCList[$anustarget].penis}] but player state remains [${$anusstate}]`,
+					source	: "[0x0] Occurred in man-combat -> penisinit: DAP. Please export and report."
+				}>>
+				<br><br>
 				<<He_nun>> 당신의 <<bottom_ul>> <<his_yi>> <<penisdesc_ro $NPCList[$anustarget].penisdesc>> 희롱한다.
 				<<set $NPCList[$vaginatarget].penis to "anusentrance">>
 				<<if $anusstate is "entrance">>
@@ -5978,13 +5941,13 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<</if>>
 
 				/* NPC */
-				<<set $NPCList[_n].penis to "anusdoubleentrance">><<set $NPCList[_n].location.genitals = "genitals">><<set $speechanusentrance to 1>>
+				<<set $NPCList[_n].penis to "anusentrancedouble">><<set $NPCList[_n].location.genitals = "genitals">><<set $speechanusentrance to 1>>
 				<<if $NPCList[$anustarget].penis is "anus">>
 					<<set $NPCList[$anustarget].penis to "anusdouble">>
 				<<elseif $NPCList[$anustarget].penis is "anusimminent">>
-					<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
+					<<set $NPCList[$anustarget].penis to "anusimminentdouble">>
 				<<elseif $NPCList[$anustarget].penis is "anusentrance">>
-					<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
+					<<set $NPCList[$anustarget].penis to "anusentrancedouble">>
 				<</if>>
 			<</if>>
 		<</if>>
@@ -6138,7 +6101,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<elseif $enemyanger + $rng lte 40>>
 		<<He_nun>> <<his_yi>> 보지를 비벼댄다.
 		<<neutral 3 _n>><<set $speechvaginaflaunt to 1>>
-	 <<elseif $enemyanger + $rng lte 50 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals"
+	<<elseif $enemyanger + $rng lte 50 and $NPCList[_n].location.genitals is 0 and $NPCList[_n].location.head isnot "genitals"
 			and ($player.penisExist or playerHasStrapon()) and $penisuse is 0 and $analdisable is "f" and $walltype isnot "front">>
 		<<if $condomUse is false>>
 		<<elseif $condomUse is true and !$player.condom and $parasite.penis.name is undefined>>
@@ -6324,7 +6287,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<<trBreastsdesc $NPCList[_n].breastsdesc "이" "sep">><<set $_NPCBreastDesc to ($NPCList[_n].chest is "clothed" ? "옷 속의" : either("드러난", "노출된")) + " " + _trResult>><<set $_NPCBreastDesc_ga to $_NPCBreastDesc+_trPost>>
 	<</if>>
 <</if>>
-<<if ($NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed") and !$gloryhole>>
+<<if ($NPCList[_n].chest is 0 or $NPCList[_n].chest is "clothed") and !$gloryhole and $position isnot "wall">>
 	<<if $NPCList[_n].pronoun is "f" and ($NPCList[_n].location.genitals is "genitals" or $NPCList[_n].stance is "top")>>
 		<!-- Doggy -->
 		<<if $position is "doggy">>
@@ -6602,10 +6565,10 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 :: Man combat suffocated
 <<if $npc.includes("Sydney")>>
-	<<NPCStatusCheck "Sydney">>
+	<<run statusCheck("Sydney")>>
 <</if>>
 <<if $npc.includes("Kylar")>>
-	<<NPCStatusCheck "Kylar">>
+	<<run statusCheck("Kylar")>>
 <</if>>
 <<if $suffocationPhase lte 1>>
 	<span class='red'>당신은 질식했다.</span><br>
@@ -6629,7 +6592,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 	<<set $bodyaction to 0>>
 
 	<!-- Didn't use $NPCList[_n].righthand instead of .find() because once i've got a weird error
-		 with $NPCList[_n] being undefined here. Perhaps, temporary _n expired? -->
+	with $NPCList[_n] being undefined here. Perhaps, temporary _n expired? -->
 	<<set _npc = $NPCList.find(x => x.lefthand == "throat" || x.righthand == "throat")>>
 	<<if _npc isnot undefined>>
 		<<set _npc.righthand to 0>>

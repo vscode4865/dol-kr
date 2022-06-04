@@ -2,6 +2,46 @@
 <<widget "journal">>
 
 <h4>일지</h4>
+오늘은 $year년 <<month>> $monthday<<monthday>>이다.
+<br>
+게임이 시작된지 $days일이 지났다.
+<br>
+게임이 시작된 계절은 <<trSeason $startingseason "이다">>_trResult.
+<br>
+<<if $hardmodedays isnot undefined>>
+	당신은 하드모드에서 <span class="gold">$hardmodedays</span>일동안 생존했다.
+	<br>
+<</if>>
+<<schoolterm>>
+<br>
+지금은 <<trSeason $season "이다">>_trResult.
+<br><br>
+<<if $antiquemoney gt 0>>
+	당신은 £<<print $antiquemoney>> 어치의 골동품을 갖고 있다.
+	<br>
+<</if>>
+<<if $blackmoney gt 0>>
+	당신은 £<<print $blackmoney>> 어치의 장물을 갖고 있다.
+	<br>
+<</if>>
+<<set _plant_keys to Object.keys($plants)>>
+<<for _t to 0; _t lt _plant_keys.length; _t++>>
+	<<if $plants[_plant_keys[_t]].amount gte 1>><<set _plant_temp to 1>>
+		당신은 <<trPlants $plants[_plant_keys[_t]].plural "name" "을">>_trResult <span class="gold"><<print $plants[_plant_keys[_t]].amount>></span><<trPlants $plants[_plant_keys[_t]].plural "unit">>_trResult 갖고 있다. |
+	<</if>>
+<</for>>
+<<if _plant_temp is 1>>코누다투스 가에 가판대를 빌려서 새벽에 팔 수 있다.<</if>>
+<<if $phials_held gte 2>>
+	당신은 $phials_held 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다.
+<<elseif $phials_held gte 1>>
+	당신은 한 병의 미약을 가지고 있으며 엘크 가에서 팔 수 있다. <br>
+<</if>>
+<<if $lurkers_held gte 2>>
+	당신은 럴커를 $lurkers_held 마리 가지고 있다. <br>
+<<elseif $lurkers_held is 1>>
+	당신은 럴커를 한 마리 가지고 있다. <br>
+<</if>>
+<br>
 
 <<if $images is 1>>
 	<<if $season is "winter">>
@@ -78,7 +118,7 @@
 	잠긴 경찰서 컴퓨터에 대해서는 랜드리가 도와줄 수 있을지도 모른다.
 	<br>
 <<elseif $pub_hack_job is 1>>
-	랜드리는 도무스 가 고아원에 사는 어린 해커를 찾아오길 원한다.
+	랜드리는 도무스 가 고아원에 사는 해커를 찾아오길 원한다.
 	<br>
 <<elseif $pub_hack_job is 2>>
 	함께 일하자고 해커 꼬마를 설득하자.
@@ -118,8 +158,23 @@
 	<br>
 <</if>>
 
-<<if $robindebtevent gte 1 and $docksrobinintro isnot 1>>
-	로빈이 사라졌다. 메르 가의 부두로 끌려간 것 같다.
+<<if $robindebtevent gte 1 and $robinmissing is "docks" and $docksrobinintro isnot 1>>
+	로빈이 사라졌다. <<nnpc_He_nun "Robin">> 메르 가의 부두로 끌려간 것 같다.
+	<br>
+<</if>>
+
+<<if $robindebtevent gte 1 and $robinmissing is "landfill" and $mistrobinintro isnot 1 and $robinmistknown>>
+	로빈이 사라졌다. <<nnpc_He_nun "Robin">> 엘크 가의 쓰레기 매립지로 끌려간 것 같다.
+	<br>
+<</if>>
+
+<<if $robindebtevent gte 1 and $robinmissing is "pillory" and $robinPillory.known is 1>>
+	로빈이 사라졌다.
+	<<if $hour lte 14>>
+		<<nnpc_He_nun "Robin">> <<ampm 15 00>>에 공개처형장의 구속대에 묶일 예정이다.
+	<<else>>
+		<<nnpc_He_nun "Robin">> 현재 공개처형장에 있다. 당신은 <<nnpc_himPost "Robin">>에게 무슨 일이 생길 것인지 알지 못한다.
+	<</if>>
 	<br>
 <</if>>
 
@@ -143,7 +198,7 @@
 	<<if $halloween_whitney is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
 		휘트니는 <<ampm 19 00>>부터 도무스 가에서 트릭-오어-트릿을 할 것이다.
 	<</if>>
-	<<if $halloween_robin is 1 and $robinmissing isnot 1>>
+	<<if $halloween_robin is 1 and $robinmissing is 0>>
 		로빈은 <<ampm 16 00>>와 <<ampm 19 00>>사이에 트릭-오어-트릿을 하러 가고 싶어한다.
 	<</if>>
 	<<if $halloween_kylar is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
@@ -291,7 +346,7 @@
 <<if $farm_state gte 5 and $estate_fence is undefined>>
 	레미는 황무지의 사유지에서 알렉스의 농장을 침해하고 있다.
 	<br>
-<<elseif $estate_fence is "quest" and $skulduggery lt 800>>
+<<elseif $estate_fence is "quest" and currentSkillValue('skulduggery') lt 800>>
 	당신이 레미의 사유지에 숨어들어가도록 도와줄 누군가를 찾자. 암흑가와 연결고리가 있는 누군가, 혹은 황무지에 대해 아는 누군가를.
 	<br>
 <<elseif $estate_fence is "bird">>

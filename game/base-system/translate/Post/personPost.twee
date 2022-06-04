@@ -194,3 +194,53 @@
 		<<personPost _args[0] _args[1]>>
 	<</if>>
 <</silently>><<print _trResult>><</widget>>
+
+<<widget "fullGroupPost">><<silently>>
+	<<if _args[0] is "cap">>
+		<<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<<else>>
+		<<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<</if>>
+	<<set $_person to []>>
+	<<for _fg to 0; _fg lt $enemyno; _fg++>>
+		<<personselect _fg>><<personPost>>
+		<<set $_person.push(_trResult)>>
+		<<if _fg is 0>>
+			<<set $_trResult to $_person[_fg]>>
+		<<elseif _fg is $enemyno-1>>
+			<<getPostNum $_trResult>>
+			<<set $_trResult += (_postNum is 0 ?"과 ":"와 ") + $_person[_fg]>>
+		<<else>>
+			<<set $_trResult += ", " + $_person[_fg]>>
+		<</if>>
+	<</for>>
+	<<set _trResult to $_trResult>>
+	<<if def $_post>>
+		<<getPostNum _trResult>>
+		<<trPost _postNum $_post $_sep>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "enumeratedGroupPost">><<silently>>
+	<<set $_menCount to $NPCList.countWith(npc => npc.pronoun is "m")>>
+	<<set $_womenCount to $NPCList.countWith(npc => npc.pronoun is "f")>>
+	<<silently>>
+		<<trNumber $_menCount>><<set $_men to _trResult + " 명의 " + ($_menCount is 1 ? "남자" : "남자들")>>
+		<<trNumber $_womenCount>><<set $_women to _trResult + " 명의 " + ($_womenCount is 1 ? "여자" : "여자들")>>
+	<</silently>>
+
+	<<set [$_first, $_second, $_firstCount, $_secondCount] to ($_menCount gte $_womenCount ? [$_men, $_women, $_menCount, $_womenCount] : [$_women, $_men, $_womenCount, $_menCount])>>
+
+	<<set _trResult to $_first>>
+	<<set $_and to ($_firstCount is 1 ?"와 ":"과 ")>>
+	<<set _postNum to ($_firstCount is 1 ?1:2)>>
+	<<if $_secondCount gt 0>>
+		<<set _trResult += $_and + $_second>>
+		<<set _postNum to ($_secondCount is 1 ?1:2)>>
+	<</if>>
+	<<if def _args[0]>>
+		<<trPost _postNum _args[0] _args[1]>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "EnumeratedGroupPost">><<enumeratedGroupPost _args[0] _args[1]>><</widget>>
