@@ -935,7 +935,13 @@
 
     ```
     <<fatherPost>>
-        <<father>>의 대체 위젯.
+        <<father>>의 대체 위젯. <<FatherPost>> 로도 사용 가능.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<mummyPost>>
+        <<mummy>>의 대체 위젯. <<MummyPost>> 로도 사용 가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 

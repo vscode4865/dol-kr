@@ -22,14 +22,45 @@
 <<if _args[0] gte 0 and _args[1]>>
 	<<set _temp1 to _args[1]>>
 	<<set _temp0 to _args[0]>>
-	<<set $NPCList[_temp0] to clone($per_npc[_temp1])>>
-	<<if $enemyno lt 6>><<set $enemyno += 1>><</if>><<set $enemynomax to $enemyno>>
-	<<if $NPCList[_temp0].monster is "monster">>
-		<<set $monster to 1>>
+	<<if $per_npc[_temp1] isnot undefined>>
+		<<set $NPCList[_temp0] to clone($per_npc[_temp1])>>
+		<<if $enemyno lt 6>><<set $enemyno += 1>><</if>><<set $enemynomax to $enemyno>>
+		<<if $NPCList[_temp0].monster is "monster">>
+			<<set $monster to 1>>
+		<<else>>
+			<<set $monster to 0>>
+		<</if>>
+		<<run EventSystem.Push($passage, _args[0], $time)>>
 	<<else>>
-		<<set $monster to 0>>
+		<span class="red">[ERROR: NPC "<<print _temp1>>" is undefined in passage: "<<print $passage>>"! Please report this issue.]</span>
+
+		<<switch _temp1>>
+			<<case "black_dog">>
+				<<beastNEWinit 1 dog>>
+				<<saveNPC _temp0 "black_dog">>
+			<<case "relaxed_guard">>
+				<<generateRole _temp0 "relaxed" "guard">>
+				<<saveNPC _temp0 "relaxed_guard">>
+			<<case "anxious_guard">>
+				<<generateRole _temp0 "anxious" "guard">>
+				<<saveNPC _temp0 "anxious_guard">>
+			<<case "veteran_guard">>
+				<<generateRole _temp0 "veteran" "guard">>
+				<<saveNPC _temp0 "veteran_guard">>
+			<<case "methodical_guard">>
+				<<generateRole _temp0 "methodical" "guard">>
+				<<saveNPC _temp0 "methodical_guard">>
+			<<case "scarred_inmate">>
+				<<generateRole _temp0 "scarred" "inmate">>
+				<<saveNPC _temp0 "scarred_inmate">>
+			<<case "tattooed_inmate">>
+				<<generateRole _temp0 "tattooed" "inmate">>
+				<<saveNPC _temp0 "tattooed_inmate">>
+			<<default>>
+				<<generateNPC _temp0>>
+				<<saveNPC _temp0 _temp1>>
+		<</switch>>
 	<</if>>
-	<<run EventSystem.Push($passage, _args[0], $time)>>
 <</if>>
 <</widget>>
 
@@ -79,10 +110,10 @@
 
 		<!-- Set Genital Existence -->
 		<<if $per_npc[$_i].type isnot "human">>
-			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? 0 : "none")>>
+			<<set $per_npc[$_i].penis to ($per_npc[$_i].gender !== "f" ? 0 : "none")>>
 			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? 0 : "none")>>
 		<<else>>
-			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? "clothed" : "none")>>
+			<<set $per_npc[$_i].penis to ($per_npc[$_i].gender !== "f" ? "clothed" : "none")>>
 			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? "clothed" : "none")>>
 		<</if>>
 
@@ -92,7 +123,7 @@
 		<<set _b_mod_upper to Math.clamp($breast_mod + 12, 0, 12)>>
 
 		<!-- can't use breastsize, since that would either break the numberslider
-		or make one of the sizes always be randomized,
+		or make one of the sizes always be randomised,
 		but can use breastdesc not being changed from 0 as a substitute -->
 		<<if $per_npc[$_i].breastdesc is 0 or _args[0] is "breasts">>
 			<<if $per_npc[$_i].pronoun is "m">>
@@ -112,9 +143,9 @@
 		<!-- Set pp to defaults-->
 
 		/* New way to set upper and lower bounds.
-		* This method makes use of all other slider positions, but does nothing when slider is between -1 and 1, 
+		* This method makes use of all other slider positions, but does nothing when slider is between -1 and 1,
 		* for a total of 15 unique positions vs the current method's 9. (max would be 17)
-		* Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation. 
+		* Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation.
 		*/
 
 		/*

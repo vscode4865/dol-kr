@@ -1,4 +1,6 @@
-const IronMan = (() => {
+const IronMan = ((Save) => {
+	'use strict';
+
 	/**
 	 * Set to true to allow debug mode changes during gameplay.
 	 * By default this should always be false, if it is not false, please change it.
@@ -46,8 +48,8 @@ const IronMan = (() => {
 	/*  -------------------------------------
 		Integral IronMan mode core functions.
 		------------------------------------- */
-	
-	function freezeImportantVars() {
+
+	function ironmanLock() {
 		/* Immediately exit if on the starting passage. */
 		if (['Start', 'Clothes Testing', 'Renderer Test Page', 'Tips'].includes(V.passage)) return;
 		/* Immediately exit if the game is in debug mode or test mode. */
@@ -80,27 +82,23 @@ const IronMan = (() => {
 		}
 	}
 
-	function getSaveSignature() {
-		let res;
-		for (const va of [V.debug, V.autosavedisabled, V.virginity, V.player, V.enemyhealth, V.enemyarousal, V.enemytrust, V.enemystrength, V.passage, V.money]) {
-			res += JSON.stringify(va);
-		}
-		return md5(res);
+	function getSignature(save = null) {
+		const keys = ['debug', 'autosavedisabled', 'virginity', 'player', 'enemyhealth', 'enemyarousal', 'enemytrust', 'enemystrength', 'passage', 'money'];
+		const target = save == null ? V : save.state.delta[0].variables;
+		const subset = keys.map(key => target[key]);
+		const encodedSubset = JSON.stringify(subset);
+		const signature = md5(encodedSubset);
+		return signature;
 	}
 
 	/*  --------------------------------------
 		   Update code for the $ironman obj.
 		-------------------------------------- */
 
-	function update() {
-		const versions = V.objectVersion;
-		if (versions.ironMan == undefined) {
-			versions.ironMan = 0;
-		}
-		switch (versions.ironMan) {
-			case 0:
-				/* Do nothing until the first implementation. */
-				break;
+	function update(save, metadata) {
+		delete metadata.ironman_signature;
+		if (typeof metadata.signature !== 'string') {
+			metadata.signature = getSignature(save);
 		}
 	}
 
@@ -145,40 +143,141 @@ const IronMan = (() => {
 			}
 		});
 	}
+	
+	function getDatestamp() {
+		const now = new Date();
+		let MM = now.getMonth() + 1;
+		let DD = now.getDate();
+		let hh = now.getHours();
+		let mm = now.getMinutes();
+		let ss = now.getSeconds();
 
-	function uiExportButton() {
-		let export_name = "degrees-of-lewdity" + (V.saveName != '' ? '-' + V.saveName : '');
+		if (MM < 10) { MM = `0${MM}`; }
+		if (DD < 10) { DD = `0${DD}`; }
+		if (hh < 10) { hh = `0${hh}`; }
+		if (mm < 10) { mm = `0${mm}`; }
+		if (ss < 10) { ss = `0${ss}`; }
+
+		return `${now.getFullYear()}${MM}${DD}-${hh}${mm}${ss}`;
+	}
+
+	function exportSlot(slot = 8) {
 		updateExportDay();
-		Save.export(export_name);
+		const data = Save.slots.get(slot);
+		const saveId = data.metadata.saveId;
+		const saveName = data.metadata.saveName;
+		const exportName = `${data.id}-${saveName === '' ? saveId : saveName}-${getDatestamp()}.save`;
+		const saveObj = LZString.compressToBase64(JSON.stringify(data));
+		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
 	}
 
-	function uiDebugExport(slot) {
-		const save = Save.slots.get(slot);
-		if (!save)
-			return;
-		let compress = LZString.compressToBase64(JSON.stringify({ "id": save.id, "state": save.state }));
-		compress = window.btoa(compress)
-		new Wikifier(null, `<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>`)
-		$(function () {
-			var input = document.getElementById("saveDataInput");
-			updateExportDay();
-			input.value = compress;
-		})
+	/**
+	 * @deprecated
+	 */
+	function exportCurrent() {
+		updateExportDay();
+		Save.export();
 	}
 
-	function uiDebugExportButton(slot) {
-		const div = document.getElementById("saveSlot" + slot);
-		if (div) {
-			let click_value = parseInt(div.getAttribute("click-count"))
-			if (click_value && click_value % 3 == 0) {
-				let tmp = div.parentElement.parentElement.parentElement.getElementsByClassName("deleteButton")[0]
-				if (click_value % 6 == 0)
-					document.getElementById("exportDebugButton" + slot).remove()
-				else if (click_value % 6 == 3)
-					tmp.outerHTML = `<div id="exportDebugButton` + slot + `" class="exportDebugButton"><input type="button" class="saveMenuButton right" value="Debug" onclick="ironManDebugExport(` + slot + `)"/></div>`
-						+ tmp.outerHTML
-			}
-			div.setAttribute("click-count", click_value + 1)
+	/**
+	 * Export the slot's data and encode it into data which is difficult to decode without prior knowledge.
+	 * @param {number} slot The index of the save to export for debugging.
+	 * @returns String containing the encoded data.
+	 */
+	function exportDebug(slot) {
+		updateExportDay();
+		const data = Save.slots.get(slot);
+		const details = DoLSave.SaveDetails.get(slot);
+		if (data == null) {
+			/* Output error response, stating the save slot is invalid. */
+			const msg = `IronMan::exportDebug(slot: ${slot}): save file is empty.`;
+			console.debug(msg);
+			Errors.report(msg);
+			return undefined;
+		}
+		const datatoEncode = { data, details };
+		const encodedData = LZString.compressToBase64(JSON.stringify(datatoEncode));
+		const finalData = btoa(encodedData);
+		/* Navigate to the export-import page. */
+		T.presetData = finalData;
+		new Wikifier(null, '<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>');
+		return finalData;
+	}
+
+	function importDebug(data) {
+		const decodedData = LZString.decompressFromBase64(atob(data));
+		const saveObj = JSON.parse(decodedData);
+		return saveObj;
+	}
+
+	function importAndLoadDebug(data) {
+		const saveObj = importDebug(data);
+		if (typeof saveObj !== 'object') {
+			/* Output error response, stating the save slot is invalid. */
+			console.debug(msg);
+			Errors.report(msg);
+			return false;
+		}
+		const save = saveObj.data;
+		/* TODO: Change it around so we don't have to stringify and recompress. */
+		const encodedSave = LZString.compressToBase64(JSON.stringify(save));
+		const result = Save.deserialize(encodedSave);
+		return {
+			result,
+			...saveObj
+		};
+	}
+
+	function exportFile(saveData) {
+		const saveId = saveData.metadata.saveId;
+		const saveName = saveData.metadata.saveName;
+		const exportName = `${saveData.id}-${saveName === '' ? saveId : saveName}-${getDatestamp()}.save`;
+		const saveObj = LZString.compressToBase64(JSON.stringify(saveData));
+		saveAs(new Blob([saveObj], { type : 'text/plain;charset=UTF-8' }), exportName);
+	}
+
+	const clickCount = {
+		'slot': -1,
+		'count': 0
+	}
+
+	function uiExportIconHandler(slot) {
+		/* If the slot is different, reset the object. */
+		if (slot !== clickCount.slot) {
+			clickCount.slot = slot;
+			clickCount.count = 0;
+		}
+		/* Begin increment or activator. */
+		/* Takes 3 clicks to activate the exporter. */
+		if (clickCount.count >= 2) {
+			exportDebug(slot);
+			clickCount.slot = -1;
+			clickCount.count = 0;
+		} else {
+			/* Increment and return, as to not reset the counter. */
+			clickCount.count++;
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	function uiExportButton() {
+		const exportName = "degrees-of-lewdity" + (V.saveName != '' ? '-' + V.saveName : '');
+		updateExportDay();
+		Save.export(exportName);
+	}
+
+	function scheduledSaves() {
+		const date = new Date(V.month + ' ' + V.monthday + ', ' + V.year);
+
+		if (!V.ironmanautosaveschedule)
+			V.ironmanautosaveschedule = (date.getTime()).toString(8);
+		if (parseInt(V.ironmanautosaveschedule, 8) < date.getTime()){
+			//autosave
+			ironmanAutoSave();
+			//
+			V.ironmanautosaveschedule = (date.getTime() + (getRandomIntInclusive(432000, 777600) * 1000)).toString(8);
 		}
 	}
 
@@ -196,10 +295,10 @@ const IronMan = (() => {
 
 	/*  IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 		IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
-		
+
 		This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
 	$(document).on(':passageend', function() {
-		freezeImportantVars();
+		ironmanLock();
 		varsFrozen = true;
 	});
 
@@ -213,18 +312,24 @@ const IronMan = (() => {
 
 	/* Export the module object containing functions. */
 	return Object.seal({
-		freezeImportantVars: freezeImportantVars,
-		getSaveSignature: getSaveSignature,
+		lock: ironmanLock,
+		getSignature: getSignature,
 		/* Setter helpers that control the setter object, to defer variable assignments at the very beginning of the next passage. */
 		addSetter: addSetter,
 		clearSetters: clearSetters,
+		export: exportSlot,
+		exportDebug: exportDebug,
+		importDebug: importDebug,
+		importAndLoadDebug: importAndLoadDebug,
+		exportFile: exportFile,
+		/* exportDebug: exportCurrent, */
 		UI: {
 			checkBox: uiCheckBox,
 			exportButton: uiExportButton,
-			debugExport: uiDebugExport,
-			debugExportButton: uiDebugExportButton,
+			exportHandler: uiExportIconHandler
 		},
-		update: update
+		update: update,
+		scheduledSaves: scheduledSaves
 	});
-})();
+})(Save);
 window.IronMan = IronMan;

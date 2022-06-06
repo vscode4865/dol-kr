@@ -62,7 +62,13 @@ setup.trSextoyList = {
 		koname : "오나홀",
 		post : 2,
 		desc : "남성기 자위용 원통형 기구. 피부 비슷한 느낌이 나는 재료로 만들어졌다."
-	}
+	},
+	"aphrodisiac pills" : {
+		index : 10,
+		koname : "미약",
+		post : 0,
+		desc : "알약 3개가 1팩으로 포장된 미약. 설명서에는 향상된 경험을 하기 위해 성교 전에 '적절한 갯수'를 투약하라고 적혀있다."
+	},
 };
 
 setup.trSextoyCategoryList = {

@@ -1,7 +1,7 @@
 :: Robin's Lemonade
 
 <<location "beach">><<effects>>
-<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+<<set _robin to statusCheck("Robin")>>
 
 <<if $robinlemonadeintro isnot 1>><<set $robinlemonadeintro to 1>>
 	<<npc Robin>><<person1>>당신은 로빈이 <<his_yi>> 레모네이드 가판대 뒤편에 서 있는 걸 본다. <<He_nun>> 당신을 발견하자 손을 흔든다.
@@ -9,9 +9,14 @@
 
 	"어이," 당신이 가까이 오자 <<he_ga>> 말한다. <<He_nun>> 활짝 웃는다. "만나서 반가워. 내가 만든 레모네이드 한 잔 마셔 봐." <<He_nun>> 물과 레몬즙, 설탕을 섞어 잔에 따라 당신에게 건넨다. "공짜로 줄게." 아주 달다.
 	<br><br>
-
 	<<else>>
-	<<npc Robin>><<person1>>당신은 로빈이 <<his_yi>> 레모네이드 가판대 뒤편에 서 있는 걸 본다. <<He_nun>> 당신을 발견하자 손을 흔든다.
+	<<npc Robin>><<person1>>
+	<<if _robin.trauma gte 40>>
+		당신은 로빈이 <<his_yi>> 레모네이드 가판대 뒤편에 서 있는 걸 본다. <<He_nun>> 누군가가 <<himPost>> 옆을 지나갈 때마다 움찔한다.
+		<<He_nun>> 당신을 발견하자, 소심하게 손을 흔든다.
+	<<else>>
+		당신은 로빈이 <<his_yi>> 레모네이드 가판대 뒤편에 서 있는 걸 본다. <<He_nun>> 당신을 발견하자, 손을 흔든다.
+	<</if>>
 	<<if _robin.crossdressing is 2>>
 		<<if _robin.pronoun is "f">>
 			<<if _robin.breastsize gte 9>> /* massive, huge, gigantic, enormous */
@@ -22,7 +27,7 @@
 				but you can see the swell of <<his>> breasts when you look for it.
 			<<elseif _robin.breastsize gte 3>> /* small, pert, modest */
 				Robin's normally <<breastsizedesc _robin.breastsize>> breasts are nearly undetectable under <<his>> chest binding.
-			<<elseif _robin.breastsize gte 1>> /* budding, tiny */
+			<<elseif _robin.breastsize gte 0>> /* budding, tiny */
 				Robin's normally <<breastsizedesc _robin.breastsize>> breasts are completely undetectable under <<his>> chest binding.
 			<</if>>
 			<<He>> looks happy though.
@@ -34,7 +39,7 @@
 
 <</if>>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><<endevent>><</link>>
 <br>
@@ -43,37 +48,54 @@
 
 <<location "beach">><<effects>>
 <<npc Robin>><<person1>>
+<<set _robin to statusCheck("Robin")>>
+
 <<if $leftarm is "bound" or $rightarm is "bound">>
 	<<He_ga>> 당신의 팔을 본다. "엇, 그래서야 도와줄 수가 없겠네. 잠깐만 기다려 봐." <<He_ga>> 당신 뒤편으로 걸어와서, 능숙한 솜씨로 묶여 있던 당신의 팔을 풀어낸다.<<unbind>>
 	<br><br>
 <</if>>
 <<if $hour gte 17>>
-	"내 물건들을 집에 같이 들고 가 주면 좋을 것 같아." 로빈이 말한다. "이렇게 늦은 시간에는 사람들이 레모네이드를 잘 안 사 주거든."
+	<<if _robin.trauma gte 40>>
+		"Hey, do you think you can walk me home?" Robin says, shivering. "I don't think I can handle any more of this."
+	<<else>>
+		"내 물건들을 집에 같이 들고 가 주면 좋을 것 같아." 로빈이 말한다. "이렇게 늦은 시간에는 사람들이 레모네이드를 잘 안 사 주거든."
+	<</if>>
 	<br><br>
+
 	당신은 로빈과 함께 고아원으로 돌어간다.
 	<br><br>
+
 	<<if $arousal gte $arousalmax>>
 		당신의 몸이 마침내 당신을 배신하자, 당신은 거의 넘어질 뻔했다.
 		<<orgasm>>
 		로빈은 점잖게 시선을 돌리지만, 신경은 쓰일 수밖에 없을 것이다.<<npcincr Robin lust 1>>
 		<br>
 	<</if>>
-
 	<<endevent>>
 	<<link [[다음|Orphanage]]>><</link>>
 	<br>
 <<else>>
-	<<He_ga>> 미소짓는다.
+	<<He>> smiles<<if _robin.trauma gte 40>> weakly<</if>>.
 	<<if $rng gte 81 and $cow gte 6 and $livestock_intro isnot undefined>>
-		"필요한 건 다 있어. 그래도 계속 여기 있어도 괜찮아. 난 누구랑 함께 있는 걸 좋아하니까."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"필요한 건 다 있어. 그래도 계속 여기 있어도 괜찮아. 난 누구랑 함께 있는 걸 좋아하니까."
+		<</if>>
 		<br><br>
 		당신은 로빈이 가판대에서 일하는 동안 함께 있으면서, 손님이 없을 때는 <<him_gwa>> 대화를 나눴다.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
 		<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
+		<<if _robin.dom gte 60>>
 			<<generate2>><<person2>>
-			<<person_i>> 가판대에 다가온다. "어서오세요!" 로빈이 말한다. "상쾌한 레모네이드 한 잔에 1파운드입니다."
+			<<person_i>> 가판대에 다가온다.
+			"어서오세요!" 로빈이 말한다. "상쾌한 레모네이드 한 잔에 1파운드입니다."
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "O-one pound for lemonade if that's okay."
+			<<else>>
+				"어서오세요," 로빈이 말한다. "상쾌한 레모네이드 한 잔에 1파운드입니다."
+			<</if>>
 			<br><br>
 			"좋지, 하나 주렴." <<person_i>> 그렇게 말하고 당신을 발견한다. 그들의 얼굴에 음탕하고 비틀린 미소가 나타난다. "너 기억해, 농장에서 봤었지? 같이 가자, 내가 집에 데려다 줄 테니." 그들은 당신에게 손을 뻗는다.
 			<br><br>
@@ -84,7 +106,12 @@
 
 		<<else>>
 			<<generate2>><<person2>>
-			<<person_i>> 가판대에 다가온다. "어서오세요!" 로빈이 말한다. "상쾌한 레모네이드 한 잔에 1파운드입니다."
+			<<person_i>> 가판대에 다가온다.
+			<<if _robin.trauma gte 40>>
+				"Hi," Robin says, looking down. "O-one pound for lemonade if that's okay."
+			<<else>>
+				"어서오세요," 로빈이 말한다. "상쾌한 레모네이드 한 잔에 1파운드입니다."
+			<</if>>
 			<br><br>
 			"좋지, 하나 주렴." <<person_i>> 그렇게 말하고 당신을 발견한다. 그들의 얼굴에 음탕하고 비틀린 미소가 나타난다. "너 기억해, 농장에서 봤었지? 같이 가자, 내가 집에 데려다 줄 테니." 그들은 당신에게 손을 뻗는다.
 			<br><br>
@@ -96,7 +123,7 @@
 			<br><br>
 
 			<<endevent>>
-			<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[떠난다|Beach]]>><</link>>
 			<br>
@@ -104,7 +131,12 @@
 	<<elseif $rng gte 61>>
 		<<if $robinsignintro isnot 1>>
 			<<set $robinsignintro to 1>>
-			<<He_ga>> 가판대 뒤로 기어들어가, 표지판 하나를 든 채 다시 나타난다. 표지판에는 "로빈의 레모네이드 가게"라고 적혀 있고, 그 아래에 가게로 오는 방향이 그려져 있다. "이걸 들고 해변을 좀 돌아다녀 줄래? 손님이 더 오면 분명 큰 도움이 될 거야."
+			<<He_ga>> 가판대 뒤로 기어들어가, 표지판 하나를 든 채 다시 나타난다. 표지판에는 "로빈의 레모네이드 가게"라고 적혀 있고, 그 아래에 가게로 오는 방향이 그려져 있다.
+			<<if _robin.trauma gte 40>>
+				"Hey... can you hold this sign and walk around a bit? Just to help get some more customers."
+			<<else>>
+				"이걸 들고 해변을 좀 돌아다녀 줄래? 손님이 더 오면 분명 큰 도움이 될 거야."
+			<</if>>
 			<br><br>
 		<<else>>
 			"내 가판대를 다시 홍보해 줄래? 저번에 진짜로 도움 많이 됐거든."
@@ -122,25 +154,47 @@
 			<br>
 		<</if>>
 	<<elseif $rng gte 21>>
-		"물이 더 필요해. 엄청 빨리 떨어지고 있어. 무거운 걸 드는 일이라 부탁하고 싶지는 않지만, 혹시 물 좀 사다 줄 수 있을까? 싸게 사려면 하이 거리로 가야 해. 여기 주변에서는 너무 비싸게 팔거든." <<He_nun>> 당신에게 £2를 준다. "큰 병 하나 사는 데는 이거면 충분할 거야."
+		<<if _robin.trauma gte 40>>
+			"I'm out of water. I don't want to be alone but could you buy some more?" Robin says nervously. "There's some on High Street that's cheap, but there's some nearby and I don't want you to be away very long..."
+			<<He>> places <<his>> hand in yours, giving you £20. <<His>> hand lingers longer than necessary. "Please, hurry back."
+			<<set _extramoney to true>>
+		<<else>>
+			"물이 더 필요해. 엄청 빨리 떨어지고 있어. 무거운 걸 드는 일이라 부탁하고 싶지는 않지만, 혹시 물 좀 사다 줄 수 있을까? 싸게 사려면 하이 거리로 가야 해. 여기 주변에서는 너무 비싸게 팔거든." <<He_nun>> 당신에게 £2를 준다. "큰 병 하나 사는 데는 이거면 충분할 거야."
+		<</if>>
 		<br><br>
-		당신이 바닷가를 떠나자마자 큰 물병을 팔고 있는 가게가 보인다. 로빈의 말대로, 여기선 비싼 가격에 팔고 있다. 그렇지만 무거운 물병을 들고 하이 거리에서 여기까지 걸어오는 건 더 힘들지도 모른다.
+		<<if _robin.trauma gte 40>>
+			As you leave the beach you see a shop selling large bottles of water. Robin's money is just enough to cover four. You could get some from High Street, but you worry about leaving Robin alone for too long.
+		<<else>>
+			당신이 바닷가를 떠나자마자 큰 물병을 팔고 있는 가게가 보인다. 로빈의 말대로, 여기선 비싼 가격에 팔고 있다. 그렇지만 무거운 물병을 들고 하이 거리에서 여기까지 걸어오는 건 더 힘들지도 모른다.
+		<</if>>
 		<br><br>
 		<<link [[하이 거리로 간다|Robin's Lemonade High]]>><</link>>
 		<br>
 		<<if $money gte 2000>>
-			<<link [[당신 돈으로 물을 산다 (£20)|Robin's Lemonade Buy]]>><<set $money -= 2000>><</link>>
+			<<link [[당신 돈으로 물을 산다 (£20)|Robin's Lemonade Buy]]>><<set $phase to 0>><<set $money -= 2000>><</link>>
+			<br>
+		<</if>>
+		<<if _extramoney>>
+			<<link [[로빈의 돈으로 물을 산다|Robin's Lemonade Buy]]>><<set $phase to 1>><</link>>
 			<br>
 		<</if>>
 		<<set $skulduggerydifficulty to 200>>
 		<<link [[물을 훔친다|Robin's Lemonade Steal]]>><<crimeup 20>><</link>><<skulduggerydifficulty>><<crime>>
 		<br>
 		<<if $promiscuity gte 15>>
-			<<link [[물을 싸게 해달라고 꼬신다|Robin's Lemonade Seduction]]>><</link>><<promiscuous2>>
+			<<if _extramoney>>
+				<<link [[물을 싸게 해달라고 추파를 던진다|Robin's Lemonade Seduction]]>><<set $phase to 1>><</link>><<promiscuous2>>
+			<<else>>
+				<<link [[물을 싸게 해달라고 추파를 던진다|Robin's Lemonade Seduction]]>><<set $phase to 0>><</link>><<promiscuous2>>
+			<</if>>
 			<br>
 		<</if>>
 	<<else>>
-		"필요한 건 다 있어. 그래도 계속 여기 있어도 괜찮아. 난 누구랑 함께 있는 걸 좋아하니까."
+		<<if _robin.trauma gte 40>>
+			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
+		<<else>>
+			"필요한 건 다 있어. 그래도 계속 여기 있어도 괜찮아. 난 누구랑 함께 있는 걸 좋아하니까."
+		<</if>>
 		<br><br>
 		당신은 로빈이 가판대에서 일하는 동안 함께 있으면서, 손님이 없을 때는 <<him_gwa>> 대화를 나눴다.
 		<<npcincr Robin love 1>><<glove>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>>
@@ -148,7 +202,12 @@
 		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 		<<if $danger gte (9900 - $allure) and $robinbeachpolice isnot 1>>
 			<<set $robinbeachpolice to 1>>
-			<<endevent>><<generatePolice 1>><<generatePolice 2>><<person1>>경찰 제복을 입은 <<person_gwa>> <<person2>><<person_i>> 가판대로 걸어온다. "어서오세요!" 로빈이 말한다. "상쾌한 레모네이드 한 잔에-"
+			<<endevent>><<generatePolice 1>><<generatePolice 2>>경찰 제복을 입은 <<fullGroupPost "이">> 가판대로 걸어온다.
+			<<if _robin.trauma gte 40>>
+				Robin looks intimidated by them, "O-one pound fo-"
+			<<else>>
+				"어서오세요," 로빈이 말한다. "상쾌한 레모네이드 한 잔에-"
+			<</if>>
 			<br><br>
 			"조용," <<person1>><<person_i>> 말을 가로막는다. "우린 허가증이 있는지 확인하러 왔다."
 			<br><br>
@@ -156,7 +215,7 @@
 			<br><br>
 			"그래, 허가증. 없다고는 하지 않겠지?"
 			<br><br>
-			"이 꼬마가 갖고 있을 것 같진 않은데." <<person2>><<person_i>> 말한다. "징역 20년 감이네." 로빈의 얼굴이 새하얗게 질린다.
+			"<<nnpc_he_ga "Robin">> 갖고 있을 것 같진 않은데." <<person2>><<person_i>> 말한다. "징역 20년 감이네, 간단하군." 로빈의 얼굴이 새하얗게 질린다.
 			<br><br>
 			"맞아." <<person1>><<person_i>> 말한다. "아니면 벌금 £100를 내도 되고. 선택은 네 몫이다."
 			<br><br>
@@ -187,7 +246,7 @@
 			<</if>>
 			<br>
 			<<endevent>>
-			<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+			<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 			<br>
 			<<link [[떠난다|Beach]]>><</link>>
 			<br>
@@ -199,17 +258,40 @@
 
 <<location "beach">><<effects>>
 <<generate2>><<person2>>
+<<set _robin to statusCheck("Robin")>>
+
 당신은 해변에서 사람이 많이 모이는 쪽으로 걸어갔다가, 다시 로빈에게로 돌아간다. <<person1>><<He_ga>> <<person2>><<person_ul>> 응대하고 있다.
 <br><br>
-"1파운드 내시면 되겠습니다."
-<br><br>
-"고마워." <<person_i>> 말한다. "혹시 돈을 좀 더 벌어볼 생각은 없니? 조용한 곳을 아는데."
-<br><br>
-로빈은 혼란스러워 한다. "하지만 사람들이 많이 보게 하려면 시끌시끌한 자리에 가판대를 세워야 해요. 그래도 도와주려 하신 건 감사합니다."
-<br><br>
-"그런 뜻이 아니-" <<person_i>> 말한다. "아냐, 신경쓰지 마."
-<br><br>
-로빈은 <<person_i>> 떠나자 당신의 존재를 알아차린다. <<person1>> "가판대가 엄청 잘 되고 있어." <<he_ga>> 말한다. "네 덕분이야."
+<<if _robin.trauma gte 40>>
+	"One pound please, if that's ok."
+	<br><br>
+
+	"Here," the <<person>> says. "You interested in making a little extra? I love the shy ones."
+	<br><br>
+
+	Robin's eyes go wide. "No! No, I-I'm alright." <<person1>><<He>> takes a deep breath and tries to hand the <<person2>><<person>> <<his>> lemonade, but
+	<<person1>><<his>> shaking hands slip. Lemonade spills all over the table and on the <<person2>><<personsimple>>'s shoes.
+	<br><br>
+
+	"Hey! Watch it, brat!" the <<person2>><<person>> fumes. Robin flinches and holds <<person1>><<his>> hands over <<his>> face.
+	<br><br>
+
+	Robin notices you as the <<person2>><<person>> storms off. <<person1>><<He>> sniffles but tries to smile at you. "Thanks for helping."
+<<else>>
+	"1파운드 내시면 되겠습니다."
+	<br><br>
+
+	"고마워." <<person_i>> 말한다. "혹시 돈을 좀 더 벌어볼 생각은 없니? 조용한 곳을 아는데."
+	<br><br>
+
+	로빈은 혼란스러워 한다. "하지만 사람들이 많이 보게 하려면 시끌시끌한 자리에 가판대를 세워야 해요. 그래도 도와주려 하신 건 감사합니다."
+	<br><br>
+
+	"그런 뜻이 아니-" <<person_i>> 말한다. "아냐, 신경쓰지 마."
+	<br><br>
+
+	로빈은 <<person_i>> 떠나자 당신의 존재를 알아차린다. <<person1>> "가판대가 엄청 잘 되고 있어." <<he_ga>> 말한다. "네 덕분이야."
+<</if>>
 <br><br>
 <<if $arousal gte $arousalmax>>
 	당신은 대답하려고 하지만, 거기에 집중할 수가 없다.
@@ -218,21 +300,22 @@
 	<br><br>
 <</if>>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
 
 :: Robin's Lemonade Flirt
-
 <<location "beach">><<effects>>
+<<set _robin to statusCheck("Robin")>>
+<!-- I feel like this can be turned into a function -->
 <<set $seductiondifficulty to 4000>>
 <<seductioncheck>>
 <br><br>
 <<if $seductionskill lt 1000>><span class="gold">당신은 유혹하는 데 좀 더 자신감이 붙었다.</span><</if>><<seductionskilluse>>
 <br><br>
 <<promiscuity2>>
-<br><br>
+
 <<if $seductionrating gte $seductionrequired>>
 	당신은 좀 더 적극적으로 행동하기로 결심하며, 고객이 될 만한 사람들을 꼬시고 당신의 매력으로 무방비하게 만든다. 로빈에게로 돌아가자, 가판대 앞에 줄이 생겨 있다. <<He_ga>> 당신에게 미소짓는다.
 	<br><br>
@@ -240,7 +323,7 @@
 	<<glove>><<npcincr Robin love 1>><<ltrauma>><<lstress>><<trauma -3>><<stress -6>><<set $robinmoney += 5>>
 	<br><br>
 	<<endevent>>
-	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[떠난다|Beach]]>><</link>>
 	<br>
@@ -248,18 +331,39 @@
 	<<generate2>><<person2>>
 	당신은 매력을 발산하지만, 아무도 신경쓰지 않는다. 당신은 로빈에게 돌아간다. <<person1>><<He_ga>> <<person2>><<person_ul>> 응대하고 있다.
 	<br><br>
-	"1파운드 내시면 되겠습니다."
-	<br><br>
-	"고마워." <<person_i>> 말한다. "혹시 돈을 좀 더 벌어볼 생각은 없니? 조용한 곳을 아는데."
-	<br><br>
-	로빈은 혼란스러워 한다. "하지만 사람들이 많이 보게 하려면 시끌시끌한 자리에 가판대를 세워야 해요. 그래도 도와주려 하신 건 감사합니다."
-	<br><br>
-	"그런 뜻이 아니-" <<person_i>> 말한다. "아냐, 신경쓰지 마."
-	<br><br>
-	로빈은 <<person_i>> 떠나자 당신의 존재를 알아차린다. <<person1>> "가판대가 엄청 잘 되고 있어." <<he_ga>> 말한다. "네 덕분이야."
+		<<if _robin.trauma gte 40>>
+		"One pound please, if that's ok."
+		<br><br>
+
+		"Here," the <<person>> says. "You interested in making a little extra? I love the shy ones."
+		<br><br>
+
+		Robin's eyes go wide. "No! No, I-I'm alright." <<person1>><<He>> takes a deep breath and tries to hand the <<person2>><<person>> <<his>> lemonade, but
+		<<person1>><<his>> shaking hands slip. Lemonade spills all over the table and on the <<person2>><<personsimple>>'s shoes.
+		<br><br>
+
+		"Hey! Watch it, brat!" the <<person2>><<person>> fumes. Robin flinches and holds <<person1>><<his>> hands over <<his>> face.
+		<br><br>
+
+		Robin notices you as the <<person2>><<person>> storms off. <<person1>><<He>> sniffles but tries to smile at you. "Thanks for helping."
+	<<else>>
+		"1파운드 내시면 되겠습니다."
+		<br><br>
+
+		"고마워." <<person_i>> 말한다. "혹시 돈을 좀 더 벌어볼 생각은 없니? 조용한 곳을 아는데."
+		<br><br>
+
+		로빈은 혼란스러워 한다. "하지만 사람들이 많이 보게 하려면 시끌시끌한 자리에 가판대를 세워야 해요. 그래도 도와주려 하신 건 감사합니다."
+		<br><br>
+
+		"그런 뜻이 아니-" <<person_i>> 말한다. "아냐, 신경쓰지 마."
+		<br><br>
+
+		로빈은 <<person_i>> 떠나자 당신의 존재를 알아차린다. <<person1>> "가판대가 엄청 잘 되고 있어." <<he_ga>> 말한다. "네 덕분이야."
+	<</if>>
 	<br><br>
 	<<endevent>>
-	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[떠난다|Beach]]>><</link>>
 	<br>
@@ -268,17 +372,28 @@
 :: Robin's Lemonade High
 
 <<location "beach">><<effects>>
-당신은 하이 거리로 걸어가 물이 담긴 큰 병을 하나 산다. 당신이 해변으로 돌아오자, 로빈이 손을 흔든다. "고마워. 네가 도와주지 않았다면 가판대를 닫아야 했을지도 몰라." <<He_ga>> 당신을 끌어안는다.
-<br>
+<<set _robin to statusCheck("Robin")>>
+
+당신은 하이 거리로 걸어가 물이 담긴 큰 병을 하나 산다. 당신은 해변으로 돌아온다.
+<<if _robin.trauma gte 40>>
+	Robin waves you over. <<He>>'s shaking. "I was so worried that something happened to you!" <<He>> hugs you tightly. <<npcincr Robin trauma 1>><<grtrauma>>
+<<else>>
+	로빈이 손을 흔든다. "고마워. 네가 도와주지 않았다면 가판대를 닫아야 했을지도 몰라." <<He_ga>> 당신을 끌어안는다.
+<</if>>
+<br><br>
 <<if $arousal gte $arousalmax>>
 	로빈이 당신을 끌어안자 당신의 달아오른 몸이 한계에 도달한다.
 	<<orgasm>>
 	로빈은 깜짝 놀라 당신을 풀어주지만, 신경은 쓰일 수밖에 없을 것이다.<<npcincr Robin lust 1>>
-	<br>
+	<br><br>
 <</if>>
-<br>
+<<if _robin.trauma gte 40>>
+	You quietly put Robin's change back on <<his>> table.
+	<<set $robinmoney += 2>>
+	<br><br>
+<</if>>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -286,20 +401,35 @@
 :: Robin's Lemonade Buy
 
 <<location "beach">><<effects>>
+<<set _robin to statusCheck("Robin")>>
 
-당신은 물이 담긴 큰 병 네 개를 사서 로빈이 있는 곳으로 간신히 끌고 온다. 물병의 무게 때문에 자주 휴식을 취해야 해서 이동 자체는 느리지만, 거리는 그리 멀지 않다. 로빈은 당신을 발견하자마자 도와주러 달려온다. "어떻게-" <<he_nun>> 말을 멈춘다. "그 먼 거리까지 이걸 가져올 수 있었을 것 같지 않은데."
-<br><br>
+당신은 물이 담긴 큰 병 네 개를 사서 로빈이 있는 곳으로 간신히 끌고 온다. 물병의 무게 때문에 자주 휴식을 취해야 해서 이동 자체는 느리지만, 거리는 그리 멀지 않다. 로빈은 당신을 발견하자마자 도와주러 달려온다.
+<<if _robin.trauma gte 40>>
+	"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+	When you get back to <<his>> stand <<he>> hugs you tightly.
+	<<if $phase is 0>>
+		<br><br>
 
-"가까운 가게에서 싸게 팔고 있는 걸 찾았어." 당신이 말한다.
-<br><br>
+		You quietly leave the £20 <<he>> gave you on the stand.
+		<<set $robinmoney += 2>>
+	<<else>>
+		<<set $robinmoney -= 2>>
+	<</if>>
+<<else>>
+	"어떻게-" <<he_nun>> 말을 멈춘다. "그 먼 거리까지 이걸 가져올 수 있었을 것 같지 않은데."
+	<br><br>
 
-"너 거래하는 데 일가견이 있구나. 고마워." 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+	"가까운 가게에서 싸게 팔고 있는 걸 찾았어." 당신이 말한다.
+	<br><br>
+
+	"너 거래하는 데 일가견이 있구나. 고마워." 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+<</if>>
 <<npcincr Robin love 1>><<glove>>
 <br><br>
 
 <<endevent>>
 
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -308,17 +438,26 @@
 
 <<location "beach">><<effects>>
 <<endevent>><<generate1>><<person1>>
+<<set _robin to statusCheck("Robin")>>
 <<skulduggerycheck>>
+
 <<if $skulduggerysuccess is 1>>
 	당신은 가게에 들어가 쇼핑카트에 물이 담긴 큰 병 여러 개를 담는다. 당신은 물을 다 담고는 물건들을 구경하는 척 하며 기다린다. 수다쟁이 손님이 계산대 뒤편의 <<person_gwa>> 대화를 나누고 있어, 당신에게 기회가 생겼다. 당신은 카트를 밀어 가게에서 나온다.
 	<br><br>
 	<<endevent>><<npc Robin>><<person1>>
-	당신은 그대로 카트를 밀며 로빈에게 돌아온다. <<he_ga>> 당신을 보자 <<His_yi>> 두 눈이 땡그래진다. "이런 방법은 생각도 못 했어." <<he_ga>> 말한다. "너 되게 똑똑하다!" 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+	당신은 그대로 카트를 밀며 로빈에게 돌아온다. <<he_ga>> 당신을 보자 <<His_yi>> 두 눈이 땡그래진다.
+	<<if _robin.trauma gte 40>>
+		"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+		When you get back to <<his>> stand <<he>> hugs you tightly. You quietly leave the £20 <<he>> gave you on the counter.
+		<<set $robinmoney += 2>>
+	<<else>>
+		"이런 방법은 생각도 못 했어." <<he_ga>> 말한다. "너 되게 똑똑하다!" 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+	<</if>>
 	<<npcincr Robin love 1>><<glove>>
 	<br><br>
 	<<skulduggeryuse>>
 	<<endevent>>
-	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+	<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 	<br>
 	<<link [[떠난다|Beach]]>><</link>>
 	<br>
@@ -342,7 +481,7 @@
 <<if $seductionskill lt 1000>><span class="gold">당신은 유혹하는 데 좀 더 자신감이 붙었다.</span><</if>><<seductionskilluse>>
 <br><br>
 <<promiscuity2>>
-<br><br>
+
 <<if $seductionrating gte $seductionrequired>>
 	당신은 근처 가게의 계산대에 기대 선다. <<person_i>> 계산대 뒤에 서 있다. 당신은 <<him_ul>> 똑바로 보며 놀리는 듯한 미소를 짓는다. "아, 진짜 목마르다." 당신이 말한다. "커다란 물병 여러 개가 필요한데, 돈이 하나도 없네." 당신은 목소리를 낮춘다. "대가를 지불할 수 있는 다른 방법이 없으려나?"
 	<br><br>
@@ -360,6 +499,10 @@
 	<br>
 	<<if $money gte 2000>>
 		<<link [[당신 돈으로 물을 산다 (£20)|Robin's Lemonade Buy]]>><<set $money -= 2000>><</link>>
+		<br>
+	<</if>>
+	<<if $phase is 1>>
+		<<link [[로빈의 돈으로 물을 산다|Robin's Lemonade Buy]]>><<set $phase to 1>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -402,6 +545,8 @@
 :: Robin's Lemonade Steal Molestation Finish
 
 <<location "beach">><<effects>>
+<<set _robin to statusCheck("Robin")>>
+
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 	"물은 그냥 가져가." <<he_ga>> 말한다. "<<bitchPost>>에겐 아주 적당한 가격이지."
@@ -420,20 +565,30 @@
 <<clothesontowel>>
 <<endcombat>>
 <<npc Robin>><<person1>>
-<<tearful>> 로빈은 당신을 발견하자마자 도와주러 달려온다. "어떻게-" <<he_nun>> 말을 멈춘다. "그 먼 거리까지 이걸 가져올 수 있었을 것 같지 않은데."
+<<tearful>> 당신이 로빈에게 돌아가자, <<he_nun>> 당신을 발견하자마자 도와주러 달려온다.
+<<if _robin.trauma gte 40>>
+	"Thank you so much! I'm glad you weren't gone that long, I was starting to get worried." Robin looks like a load has been taken off <<his>> back.
+<<else>>
+	"어떻게-" <<he_nun>> 말을 멈춘다. "그 먼 거리까지 이걸 가져올 수 있었을 것 같지 않은데."
+<</if>>
 <br><br>
 <<if $pain gte 40>>
 	<<He_ga>> 당신의 뺨에 흐르는 눈물을 본다. "어디 아파?" <<he_ga>> 팔로 당신을 감싸안으며 묻는다. 당신은 <<his_yi>> 어깨에 얼굴을 파묻고 훌쩍거린다. 기분이 조금 나아졌다.
+	<<npcincr Robin dom 1>><<gdom>>
 	<<lpain>><<set $pain -= 20>>
 	<br><br>
 <</if>>
-"가까운 가게에서 싸게 팔고 있는 걸 찾았어." 당신이 말한다.
-<br><br>
-"너 거래하는 데 일가견이 있구나. 고마워." 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+<<if _robin.trauma gte 40>>
+	You quietly leave the £20 <<he>> gave you on the stand.
+<<else>>
+	"가까운 가게에서 싸게 팔고 있는 걸 찾았어." 당신이 말한다.
+	<br><br>
+	"너 거래하는 데 일가견이 있구나. 고마워." 당신은 <<he_ga>> 당신에게 준 £2를 가판대 위에 조용히 올려놓았다.
+<</if>>
 <<npcincr Robin love 1>><<glove>>
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -445,9 +600,10 @@
 당신은 로빈의 어깨에 팔을 둘러, <<him_i>> 살짝 진정할 수 있게 한다. 부패 경찰은 돈을 가져간다.
 <br><br>
 경찰들이 완전히 시야에서 사라지자, 로빈은 참았던 눈물을 터트리며 <<his_yi>> 고개를 당신의 어깨에 파묻는다. "이- 이제 어떻게 해야 할까?" <<he_ga>> 흐느낀다. 당신은 <<he_ga>> 진정할 때까지 <<him_ul>> 단단히 안아 준다. "고- 고마워."
+<<npcincr Robin trauma 3>><<grtrauma>>
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -460,8 +616,9 @@
 <br><br>
 경찰들이 완전히 시야에서 사라지자, 로빈은 참았던 눈물을 터트리며 <<his_yi>> 고개를 당신의 어깨에 파묻는다. "나- 나," <<he_ga>> 흐느낀다. "나 정말 무서웠어. 고마워." <<He_nun>> 가판대 아래로 돈을 돌려놓자 약간 진정한 듯이 보인다.
 <br><br>
+<<npcincr Robin trauma -3>><<lrtrauma>>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -469,12 +626,18 @@
 :: Robin's Lemonade Offer
 
 <<location "beach">><<effects>>
+<<set _robin to statusCheck("Robin")>>
+
 당신은 다정하게 로빈을 옆으로 밀어 놓고 앞으로 기댄다. "저랑 좀 놀다 오시는 건 어떠세요?" 당신은 속삭인다.
 그들은 미소짓는다. "물론." <<person1>><<person_i>> 말한다. "그거면 충분하겠군."
 <br><br>
 로빈은 혼란스러워 보인다. "그럼 이 분들이랑 어디 좀 갔다 올게." 당신이 말한다. "곧 돌아올 거야."
 <br><br>
-로빈이 당신을 안아준다. "그래, 있다가 보자."
+<<if _robin.dom gte 40>>
+	Robin hugs you tightly. "Be careful, I don't like the look of those guys."
+<<else>>
+	로빈이 당신을 안아준다. "그래, 있다가 보자."
+<</if>>
 <br><br>
 당신은 경찰들과 해변을 걸어간다. 근처 거리에 경찰차가 주차되어 있다. "여기 타라." <<person2>><<person_i>> 말한다. 당신은 뒷좌석으로 들어가고, <<he_ga>> 당신의 뒤에 가까이 따라온다. <<person1>><<person_un>> 그 반대편으로 탑승한다.
 <br><br>
@@ -496,9 +659,10 @@
 <br><br>
 <<endevent>><<npc Robin>><<person1>>
 로빈은 눈물을 터트리며 <<his_yi>> 고개를 당신의 어깨에 파묻는다. "나- 나," <<he_ga>> 흐느낀다. "나 정말 무서웠어. 고마워." <<He_nun>> 가판대 아래로 돈을 돌려놓자 약간 진정한 듯이 보인다.
+<<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -529,6 +693,8 @@
 :: Robin's Lemonade Offer Molestation Finish
 
 <<location "beach">><<effects>>
+<<set _robin to statusCheck("Robin")>>
+
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 	"창관보단 한참 싸네." <<person1>><<person_i>> 말한다. <<He_ga>> 차 문을 연다. "네 친구한테 돌아가."
@@ -545,16 +711,20 @@
 <br><br>
 <<if $pain gte 40>>
 	<<He_nun>> 당신의 눈물을 보고 껴안아 준다.
+	<<if _robin.dom gte 60>>
+		"If they hurt you..." <<he>> says.
+	<<else>>
+		"그 사람들이 널 다치게 한 게 아니었으면 좋겠어." <<he_ga>> 말한다.
+	<</if>>
 <<else>>
-	<<He_nun>> 당신을 껴안는다.
+	<<He>> hugs you. "I hope they didn't hurt you," <<he>> says.
 <</if>>
-"그 사람들이 널 다치게 한 게 아니었으면 좋겠어." <<he_ga>> 말한다.
 <br><br>
 "아- 아냐." 당신이 말한다. "다 괜찮아."
-<<npcincr Robin love 1>><<glove>>
+<<npcincr Robin love 1>><<glove>><<npcincr Robin trauma -3>><<lrtrauma>>
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>
@@ -562,10 +732,19 @@
 :: Robin's Lemonade Set
 
 <<location "beach">><<effects>>
-당신은 로빈이 <<his_yi>> 장비들을 바닷가로 가져가는 걸 돕는다. "도와줘서 고마워." <<he_ga>> 말한다. "나 혼자 옮기기는 힘들었을 거야." <<He_ga>> 레몬의 즙을 짜기 시작한다.
+<<set _robin to statusCheck("Robin")>>
+
+당신은 로빈이 <<his_yi>> 장비들을 해변으로 가져가는 걸 돕는다.
+"도와줘서 고마워." <<he_ga>> 말한다. "나 혼자 옮기기는 힘들었을 거야." <<He_ga>> 레몬의 즙을 짜기 시작한다.
+<<if _robin.trauma gte 40>>
+	"Thank you, I don't know what I'd do if you weren't here." <<He>> starts juicing lemons, flinching when other people draw near.
+<<else>>
+	"도와줘서 고마워." <<he_ga>> 말한다. "나 혼자 옮기기는 힘들었을 거야." <<He_ga>> 레몬의 즙을 짜기 시작한다.
+<</if>>
+
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><<endevent>><</link>>
 <br>
@@ -585,33 +764,62 @@
 당신은 고개를 끄덕이며, 떨어트린 <<his_yi>> 장비들을 주워 다시 로빈과 바닷가로 걸어간다. 나머지 여행하는 동안에는 아무 일도 일어나지 않았다.
 <br><br>
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><<endevent>><</link>>
 <br>
 
 :: Robin's Lemonade Cow
 <<effects>>
+<<set _robin to statusCheck("Robin")>>
 
-당신의 손이 <<person_yi>> 손을 잡기 직전, 누군가가 당신의 팔을 잡아끈다. 로빈이 <<person1>><<his_yi>> 뒤에 서서 당신을 밀어내고 있다. "나가주셨으면 하는데요." <<He_ga>> <<person2>><<personPost "에게">> <<his_yi>> 컵을 내밀며 말한다.
-<br><br>
-"조심해라, <<nnpc_gendery_ya "Robin">>." <<person_i>> 말한다. "네 친구에겐 엄청난 가치가 있어. 난 네가 저런 꼴이 되는 걸 보고 싶지는 않단다."
-<br><br>
-로빈은 찡그린다. "마지막으로 한 번만 더 나가라고 말씀드리죠. 나가지 않으면 경찰을 부르겠어요."
-<br><br>
-<<person_un>> 크게 웃으며 레모네이드를 모래에 부어 버린다. "장사는 계속 해라. 친구에게서 눈 돌리지 않는 게 좋겠다." <<He_nun>> 떠난다.
-<br><br><<person1>>
-당신은 로빈에게로 돌아서서, 머리를 기울이고, 걱정스러운 음메 소리를 낸다.
-<br><br>
-"이제 괜찮아." 로빈이 말한다. "자, 여기." <<He_ga>> 물과 레몬즙, 설탕을 섞어 잔에 따라 당신에게 건넨다.
-<br><br>
-"이걸 마시면 한결 괜찮아질 거야." <<His_yi>> 말이 옳았다.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+당신의 손이 <<persons_yi>> 손을 잡기 직전, 누군가가 당신의 팔을 잡아끈다. 로빈이 <<person1>><<his_yi>> 뒤에 서서 당신을 밀어내고 있다.
+<<if _robin.trauma gte 40>>
+	"Y-you're not taking <<phim>>!" <<he>> says, handing the <<person2>><<person>> <<his>> cup with a shaky hand.
+	<br><br>
+
+	"조심해라, <<nnpc_gendery_ya "Robin">>." <<person_i>> 말한다. "네 친구에겐 엄청난 가치가 있어. 난 네가 저런 꼴이 되는 걸 보고 싶지는 않단다."
+	<br><br>
+
+	Robin flinches, but holds <<person1>><<his>> ground. "Leave before I call the police."
+
+	<<person_un>> 크게 웃으며 레모네이드를 모래에 부어 버린다. "장사는 계속 해라. 친구에게서 눈 돌리지 않는 게 좋겠다." <<He_nun>> 떠난다.
+	<br><br><<person1>>
+
+	당신은 로빈에게로 돌아서서, 머리를 기울이고, 걱정스러운 음메 소리를 낸다.
+	<br><br>
+
+	"Everything's okay," Robin says, taking a deep breath. "Here." <<He>> squeezes together a mix of lemon juice, water, and sugar before handing it to you.
+	<br><br>
+
+	"이걸 마시면 한결 괜찮아질 거야." <<His_yi>> 말이 옳았다.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<<else>>
+	"나가주셨으면 하는데요." <<He_ga>> <<person2>><<personPost "에게">> <<his_yi>> 컵을 내밀며 말한다.
+	<br><br>
+
+	"조심해라, <<nnpc_gendery_ya "Robin">>." <<person_i>> 말한다. "네 친구에겐 엄청난 가치가 있어. 난 네가 저런 꼴이 되는 걸 보고 싶지는 않단다."
+	<br><br>
+
+	로빈은 찡그린다. "마지막으로 한 번만 더 나가라고 말씀드리죠. 나가지 않으면 경찰을 부르겠어요."
+	<br><br>
+
+	<<person_un>> 크게 웃으며 레모네이드를 모래에 부어 버린다. "장사는 계속 해라. 친구에게서 눈 돌리지 않는 게 좋겠다." <<He_nun>> 떠난다.
+	<br><br><<person1>>
+
+	당신은 로빈에게로 돌아서서, 머리를 기울이고, 걱정스러운 음메 소리를 낸다.
+	<br><br>
+
+	"이제 괜찮아." 로빈이 말한다. "자, 여기." <<He_ga>> 물과 레몬즙, 설탕을 섞어 잔에 따라 당신에게 건넨다.
+	<br><br>
+
+	"이걸 마시면 한결 괜찮아질 거야." <<His_yi>> 말이 옳았다.<<gdom>><<npcincr Robin dom 1>><<lstress>><<stress -6>>
+<</if>>
 <br><br>
 다른 손님들은 덜 소름끼치게 굴었다.
 <br><br>
 
 <<endevent>>
-<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<<link [[도와준다 (0:30)|Robin's Lemonade Help]]>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><</link>><<glove>><<lrtrauma>>
 <br>
 <<link [[떠난다|Beach]]>><</link>>
 <br>

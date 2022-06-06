@@ -2,7 +2,7 @@
 
 <<widget "robinroom">>
 	<<npc Robin>><<person1>>
-	<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+	<<set _robin to statusCheck("Robin")>>
 	<<if $robineventnote is 1>>
 		<<set $robineventnote to 0>>
 		<i>로빈이 베일리에게 돈을 내야 하는 이상, <<he_nun>> 다쳐서 이렇게 되기를 반복할 것입니다. 어쩌면 당신이 이 문제에 관해 베일리와 이야기해봐야 할 지도 모릅니다.</i>
@@ -13,14 +13,25 @@
 		당신은 문을 두드린다. "들어와," 당신은 로빈의 목소리를 듣는다. 당신은 바로 <<his_yi>> 방으로 들어간다. <<He_nun>> 아직 당신이 있다는 것을 알아채지 못했다. 당신은 <<his_yi>> 액정에 두 사람의 작은 사진이 붙어 있는 것을 본다. 
 		<br><br>
 
-		Robin turns to face you and <<if $robinconsole is 0>>gasps<<else>>drops <<his>> controller<</if>>. <<He>> quickly jumps up from <<his>> bed and runs to you, tackling you in a hug and nearly causing you to fall to the floor. Tears flow freely down <<his>> cheeks. 
+		Robin turns to face you and <<if $robinconsole is 0>>gasps<<else>>drops <<his>> controller<</if>>. <<He>> quickly jumps up from <<his>> bed and runs to you, tackling you in a hug and nearly causing you to fall to the floor. Tears flow freely down <<his>> cheeks.
 		<br>
-		"I-I thought I was never going to see you again! I was so scared," Robin says before pulling you to the bed. 
+		"I-I thought I was never going to see you again! I was so scared," Robin says before pulling you to the bed.
 		<br><br>
 
 		After a while, Robin calms down. "Everyone's been looking for you. Bailey wasn't any help," <<he>> rubs <<his>> eyes. "Can you tell me what happened? Y-you know, when you're ready to? I promise you'll feel better."
 		<br><br>
+	<<elseif $robinReunionScene is "dungeonRobin">>
+		<<unset $robinReunionScene>>
+		당신은 문을 두드린다. "들어와," 당신은 로빈의 목소리를 듣는다. 당신은 바로 <<his_yi>> 방으로 들어간다. <<He_nun>> 아직 당신이 있다는 것을 알아채지 못했다. 당신은 <<his_yi>> 액정에 두 사람의 작은 사진이 붙어 있는 것을 본다. 
+		<br><br>
 
+		Robin turns to face you and <<if $robinconsole is 0>>gasps<<else>>drops <<his>> controller<</if>>. <<He>> quickly jumps up from <<his>> bed and runs to you, tackling you in a hug and nearly causing you to fall to the floor. Tears flow freely down <<his>> cheeks.
+		<br>
+		"I-I thought I was never going to see you again! I was so scared," Robin says before pulling you to the bed.
+		<br><br>
+
+		After a while, Robin calms down. "I tried to tell everyone where you were, but nobody would believe me when I said what happened." <<He>> rubs <<his>> eyes. "I'm glad to have you back. I missed you."
+		<br><br>
 	<<elseif $robinReunionScene is "asylum">>
 		<<unset $robinReunionScene>>
 		You knock on the door. Robin opens it up.
@@ -28,7 +39,7 @@
 		<<if _robin.trauma gte 40>>
 			You can see that <<his>> eyes are red from crying. <<He>> quietly pulls you inside.
 		<<else>>
-			<<Hes>> surprised to see you. "Oh! Come in," <<he>> says, pulling you inside. 
+			<<Hes>> surprised to see you. "Oh! Come in," <<he>> says, pulling you inside.
 		<</if>>
 		<br><br>
 
@@ -88,6 +99,34 @@
 		"할로윈이 되면 다른 고아들 몇이랑 트릭 오어 트릿 하러 나갈까 해." <<he_ga>> 침대보 너머로 말을 이어간다. "너도 오고 싶으면 와도 되고. <span class="gold"><<ampm 16 00>> 에서 <<ampm 19 00>> 사이에 나갈 생각이야.</span> 우린 밖에 늦게까지 있으면 안 되니까."
 		<br><br>
 
+	<!-- If Robin just came back from a punishment -->
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].comforted is 0>>
+		<<set $NPCName[$NPCNameList.indexOf("Robin")].comforted to 1>>
+
+		You knock on the door. Robin throws it open and hugs you, though <<he>> looks upset.
+		<<switch $robinLastPunishment>>
+			<<case "dinner">>
+				"I'm having trouble eating lately," <<he>> gives a pained laugh.
+			<<case "docks">>
+				"Why did they beat me?" Robin mumbles to <<himself>>.
+			<<case "landfill">>
+				<<if $robinSeen.includes("robinRape")>>
+					"I'm sorry," <<he>> whispers under <<his>> breath.
+				<<else>>
+					"I thought I was going to die," <<he>> shakes <<his>> head.
+				<</if>>
+			<<case "pillory">>
+				"I'm not a criminal..." Robin kicks <<his>> feet as <<he>> stares at the ground.
+			<<case "underground">>
+				"So glad to be home. I was afraid I'd never see the sun again," <<he>> smiles at you. "Thank you, I don't know if I would've had the strength to do it alone."
+			<<case "mansion">>
+				"They took me to Danube Street and made me clean," <<he>> says. "The hosts were... grabby. And they put me in a maid dress."
+				<<if _robin.crossdressing gte 2 and _robin.pronoun is "m">>
+					<<Hes>> quiet for a few seconds. "I sort of wish they let me keep it," <<he>> admits, hiding <<his>> face.
+				<</if>>
+		<</switch>>
+		<br><br>
+
 	<<elseif _robin.trauma gte 10>>
 		당신은 문을 두드린다. 로빈이 문을 홱 열어젖혀 당신을 안아준다. "들어와." <<he_ga>> 말한다. 당신은 방에 들어가 침대에 앉는다. <<He_ga>> 당신의 옆에 앉는다.
 		<br><br>
@@ -95,7 +134,7 @@
 			<<set $robinthank to 1>>
 			당신은 입을 열려고 하지만, 로빈이 먼저 말을 꺼낸다. "고마워." <<he_ga>> 말한다. "모든 게 다." <<He_nun>> <<his_yi>> 머리를 당신의 어깨에 기댄다.
 			<br><br>
-			
+
 		<</if>>
 	<<else>>
 		<<if $robinconsoleintro isnot 1>>
@@ -123,9 +162,11 @@
 		<<elseif $rng gte 85 and _robin.lovestage gte 3 and _robin.crossdress gte 1 and !$robinDaily.cdevent and _robin.cdquest lte 0 and _robin.trauma lte 20>>
 			You go to Robin's room. There's a note on the door. "Please don't enter!"
 			<br><br>
-			
+
 			<<set _uniqueoptions to true>>
 			<<link [[Enter|Robin Caught CD]]>><</link>>
+			<br>
+			<<link [[Knock|Robin Caught CD Knock]]>><</link>>
 			<br>
 			<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 			<br>
@@ -178,7 +219,7 @@
 <</widget>>
 
 <<widget "robinoptions">>
-	<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+	<<set _robin to statusCheck("Robin")>>
 	<<if $schoolday is 1 and $hour is 8>>
 		<<if _robin.trauma gte 80>>
 			로빈은 벽에 걸린 시계를 바라본다. "곧 학교 갈 시간이야." <<he_ga>> 말한다. "그런데.. 가고 싶지 않아."
@@ -189,7 +230,17 @@
 				당신은 <<him_ul>> 껴안는다. "모든 게 괜찮을 거야." 당신이 말한다.
 			<</if>>
 			<br><br>
-			<<link [[학교로 걸어간다 (0:40)|Robin Walk School]]>><<pass 40>><</link>>
+
+			<<if $robinromance and $robinDaily.traumarequest is 0 and $rng gte 51>>
+				<<set $robinDaily.traumarequest to 1>>
+				<<set _robinrequest to 1>>
+				"D-do you think you could walk with me?" <<he>> asks, rubbing <<his>> arm.
+				<br><br>
+
+				<<link [[학교로 걸어간다 (0:40)|Robin Walk School]]>><<pass 40>><<npcincr Robin trauma -2>><<npcincr Robin love 1>><</link>><<glove>><<lrtrauma>>
+			<<else>>
+				<<link [[학교로 걸어간다 (0:40)|Robin Walk School]]>><<pass 40>><</link>>
+			<</if>>
 			<br>
 		<<else>>
 			Robin looks at the clock on the wall.
@@ -202,22 +253,41 @@
 			<<link [[학교로 걸어간다 (0:20)|Robin Walk School]]>><<pass 20>><</link>>
 			<br>
 		<</if>>
-		<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
-		<br>
-	<<elseif $hour gte 21 or $hour lte 5>>
-		로빈은 벽에 걸린 시계를 바라본다. "잘 시간을 넘겼네." <<he_ga>> 말한다. <<He_ga>> 당신을 안아준다. "잘 자."
-		<br><br>
-		<<if $robinromance is 1>>
-			<<link [[함께 자자고 한다|Robin Room Bed]]>><</link>>
-			<br>
+		<<if _robinrequest is 1>>
+			<<link [[떠난다|Orphanage]]>><<npcincr Robin trauma 1>><<npcincr Robin love -1>><<set $fromRobinRoom to true>><<endevent>><</link>><<grtrauma>><<llove>>
+		<<else>>
+			<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 		<</if>>
-		<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
+	<<elseif $hour gte 21 or $hour lte 5>>
+		로빈은 벽에 걸린 시계를 바라본다.
+		<<if _robin.trauma lte 30>>
+			"잘 시간을 넘겼네." <<he_ga>> 말한다. <<He_ga>> 당신을 안아준다. "잘 자."
+		<<elseif _robin.trauma lte 60>>
+			"I-I should probably go to sleep," <<he>> says. <<He>> hugs you before reluctantly letting go. "Goodnight."
+		<<elseif $robinDaily.traumarequest is 1>>
+			Robin hugs you for a long time before letting go. "G-goodnight... stay safe."
+		<<else>>
+			"D-do you think you can stay with me?" <<He>> lightly holds your arm, <<his>> eyes are pleading.
+			<<set $robinDaily.traumarequest to 1>><<set _robinrequest to 1>>
+		<</if>>
+		<br><br>
+		<<if _robinrequest is 1>>
+			<<link [[로빈과 함께 있는다|Robin Room Bed Intro]]>><<npcincr Robin trauma -3>><<npcincr Robin love 1>><</link>><<glove>><<lrtrauma>>
+		<<elseif $robinromance or _robin.trauma gt 30>>
+			<<link [[함께 있어달라고 부탁한다|Robin Room Bed Intro]]>><</link>>
+		<</if>>
 		<br>
-	<<elseif $weekday is 7 and $hour gte 9 and $hour lte 16 or $weekday is 1 and $hour gte 9 and $hour lte 15>>
+		<<if _robinrequest is 1>>
+			<<link [[떠난다|Orphanage]]>><<npcincr Robin trauma 1>><<npcincr Robin love -1>><<set $fromRobinRoom to true>><<endevent>><</link>><<grtrauma>><<llove>>
+		<<else>>
+			<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
+		<</if>>
+		<br>
+	<<elseif $weekday is 7 and $hour gte 9 and $hour lte 16 or $weekday is 1 and $hour gte 9 and $hour lte 15 and _robin.trauma lt 80>>
 		<<if _robin.cdquest is 3 and !$robinDaily.cdevent and _robin.trauma lte 20>>
 			<<set $robinDaily.cdevent to 1>>
 			<<if $season is "winter">>
-				로빈은 벽에 걸린 시계를 바라보고는 한숨을 쉰다. "핫초코 가판대를 세우러 가 봐야겠어." 
+				로빈은 벽에 걸린 시계를 바라보고는 한숨을 쉰다. "핫초코 가판대를 세우러 가 봐야겠어."
 				<<He_ga>> 천천히 일어난다. "옷 갈아입어야겠다, 원한다면 공원으로 날 보러 와."
 				<br><br>
 				<<if _robin.lovestage gte 5>>
@@ -231,7 +301,7 @@
 				<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 				<br>
 			<<else>>
-				로빈은 벽에 걸린 시계를 바라보고는 한숨을 쉰다. "레모네이드 가판대를 세우러 가 봐야겠어." 
+				로빈은 벽에 걸린 시계를 바라보고는 한숨을 쉰다. "레모네이드 가판대를 세우러 가 봐야겠어."
 				<<He_ga>> 천천히 일어난다. "옷 갈아입어야겠다, 원한다면 바닷가로 날 보러 와."
 				<br><br>
 				<<if _robin.lovestage gte 5>>
@@ -247,7 +317,11 @@
 			<</if>>
 		<<else>>
 			<<if $season is "winter">>
-				"핫초코 가판대를 세우러 가 봐야겠어." <<he_ga>> 말한다. "원한다면 공원으로 날 보러 와."
+				<<if _robin.trauma gte 40>>
+					Robin sighs. "I should go set up my hot chocolate stand," <<he>> says. "Come see me in the park if you like."
+				<<else>>
+					"핫초코 가판대를 세우러 가 봐야겠어." <<he_ga>> 말한다. "원한다면 공원으로 날 보러 와."
+				<</if>>
 				<br><br>
 				<<if $tutorial is 0 and $debug is 0>>
 					<<link [[도와준다 (0:30)|Robin Chocolate Set Tutorial]]>><<pass 30>><<npcincr Robin love 1>><<set $tutorial to 1>><</link>><<glove>>
@@ -258,7 +332,11 @@
 				<<link [[떠난다|Orphanage]]>><<set $fromRobinRoom to true>><<endevent>><</link>>
 				<br>
 			<<else>>
-				"레모네이드 가판대를 세우러 가 봐야겠어." <<he_ga>> 말한다. "원한다면 바닷가로 날 보러 와."
+				<<if _robin.trauma gte 40>>
+					Robin sighs. "I should go set up my lemonade stand," <<he>> says. "Come see me on the beach if you like."
+				<<else>>
+					"레모네이드 가판대를 세우러 가 봐야겠어." <<he_ga>> 말한다. "원한다면 바닷가로 날 보러 와."
+				<</if>>
 				<br><br>
 				<<if $tutorial is 0 and $debug is 0>>
 					<<link [[도와준다 (0:30)|Robin's Lemonade Set Tutorial]]>><<pass 30>><<npcincr Robin love 1>><<set $tutorial to 1>><</link>><<glove>>
@@ -329,10 +407,6 @@
 			<<link [[로빈에게 당신의 수감 사실을 알린다 (0:30)|Robin Dungeon Talk]]>><<set $robinroomentered to 1>><<pass 30>><<stress -12>><<trauma -12>><<npcincr Robin dom 5>><</link>>
 			<br>
 		<</if>>
-		<<if _robin.trauma lt 80 and _robin.trauma gte 10>>
-			<<link [[대화한다 (0:30)|Robin Trauma Talk]]>><<set $robinroomentered to 1>><<pass 30>><<stress 3>><<npcincr Robin trauma -1>><<npcincr Robin love 1>><<npcincr Robin dom -1>><</link>><<glove>><<ldom>><<gstress>>
-			<br>
-		<</if>>
 		<<if $robinnote is 1 and $robinromance isnot 1>>
 			<<link [[키스한다|Robin Romance]]>><<set $robinroomentered to 1>><<set $robinromance to 1>><</link>>
 			<br>
@@ -348,6 +422,10 @@
 			<</if>>
 		<</if>>
 
+		<<if _robin.trauma lt 80 and _robin.trauma gte 10>>
+			<<link [[대화한다 (0:30)|Robin Trauma Talk]]>><<set $robinroomentered to 1>><<pass 30>><<stress 3>><<npcincr Robin trauma -1>><<npcincr Robin love 1>><<npcincr Robin dom -1>><</link>><<glove>><<lrtrauma>><<ldom>><<gstress>>
+			<br>
+		<</if>>
 		<<if _robin.trauma lt 80 and ($robinwalk lt 1 or ($halloween_robin is 1 and $halloween_robin_costume is "ghost") or (_robin.love lt 20 and $money gte 1500)) and $passage isnot "Robin Walk">>
 			<<link [[함께 다른 곳으로 간다|Robin Walk]]>><<set $robinroomentered to 1>><<set $robinhugging to 0>><</link>>
 			<br>
@@ -398,7 +476,7 @@
 			<<link [[밀크셰이크를 나눠 먹는다 (0:20)|Robin Share Milkshake]]>> <<set $milkshake -= 1>><<stress -10>> <</link>><<lstress>><<gglove>>
 			<br>
 		<</if>>
-		<<if window.checkSextoysGift("Robin") == 1>>
+		<<if checkSextoysGift("Robin") and checkIfNPCHasCategorySextoy("Robin","strap-on").length <= 5>>
 			<<link [[Gift Robin a strap-on|Robin Gift Strap-on]]>><</link>>
 			<br>
 		<</if>>
@@ -448,21 +526,21 @@
 		<br>
 	<</if>>
 	<<if $robinblame isnot 1 and $trauma gte ($traumamax / 7) * 2>>
-		<<link [[로빈을 탓한다|Robin Blame]]>><<set $robinroomentered to 1>><<set $phase to 1>><<set $robinblame to 1>><<trauma -6>><<stress -6>><<npcincr Robin love -1>><<npcincr Robin dom -1>><</link>><<ltrauma>><<lstress>><<llove>><<ldom>>
+		<<link [[로빈을 탓한다|Robin Blame]]>><<set $robinroomentered to 1>><<set $phase to 1>><<set $robinblame to 1>><<trauma -6>><<stress -6>><<npcincr Robin trauma 2>><<npcincr Robin love -1>><<npcincr Robin dom -1>><</link>><<ltrauma>><<lstress>><<grtrauma>><<llove>><<ldom>>
 		<br>
 	<</if>>
 	<<if $robinpersecute isnot 1 and $trauma gte ($traumamax / 7) * 3>>
-		<<link [[로빈을 괴롭힌다|Robin Persecute]]>><<set $robinroomentered to 1>><<set $phase to 3>><<set $robinpersecute to 1>><<trauma -12>><<stress -12>><<npcincr Robin love -1>><<npcincr Robin dom -1>><</link>><<lltrauma>><<llstress>><<llove>><<ldom>>
+		<<link [[로빈을 괴롭힌다|Robin Persecute]]>><<set $robinroomentered to 1>><<set $phase to 3>><<set $robinpersecute to 1>><<trauma -12>><<stress -12>><<npcincr Robin trauma 4>><<npcincr Robin love -1>><<npcincr Robin dom -1>><</link>><<lltrauma>><<llstress>><<ggrtrauma>><<llove>><<ldom>>
 		<br>
 	<</if>>
-	<<if $robinmoney gt 0>>
+	<<if $robinmoney gt 0 and !$robinromance>>
 		<<link [[돈을 요청한다|Robin Money]]>><<set $robinroomentered to 1>><</link>>
 		<br>
 	<</if>>
 	<br>
 <</widget>>
 
-<!-- obsolete macro: use `getRobinLocation()` instead
+<!-- obsolete macro: use `getRobinLocation()` or <<run statusCheck("Robin")>> instead
 <<widget "robin_location">>
 <<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
 	<<if $robinmissing is 1>>
@@ -501,7 +579,7 @@
 	"내가 돈을 더 벌 수 있었으면 좋겠어. 너를 더 도와줄 수 있도록 말이야.",
 	"어떻게 그렇게 돈을 많이 버는 거야? 네게 더 도움이 되고 싶어.",
 	"언젠가는, 내가 너 대신 돈을 내 주고 말겠어!",
-	"이제는 돈 쓸 곳이 많이 없어. 내가 여기서 필요한 건 모두 가지고 있는걸.<<set _hand to 1>>",
+	"이제는 돈 쓸 곳이 많이 없어. 내가 여기서 필요한 건 모두 가지고 있는 걸.<<set _hand to 1>>",
 	"정말로 고마워. 너 같은 친구가 있다니 정말 행운이야.",
 	"항상 비상 상황을 위해 £20는 가지고 있거든. 그걸로 충분하면 좋겠다.",
 	"도망치려고 생각해본 적 있어? 나는 엄청 자주 생각했거든.",
@@ -517,8 +595,94 @@
 
 <<widget "robinbrothelappear">>
 	<<unset $robinBrothel>>
-	<<run getRobinLocation()>>
-	<<if $robinromance is 1 and (_robin_location is "orphanage" or _robin_location is "sleep") and $fameprostitution gte 600 and $NPCName[$NPCNameList.indexOf("Robin")].dom gte 50 and !$robinBrothelWeekly>>
+	<<set _robin to statusCheck("Robin")>>
+	<<if $robinromance is 1 and (_robin_location is "orphanage" or _robin_location is "sleep") and $fame.prostitution gte 600 and _robin.dom gte 50 and !$robinBrothelWeekly>>
 		<<set $robinBrothel to true>>
 	<</if>>
+<</widget>>
+
+<<widget "robinTraumaMultiplierDecay">>
+	<<if $robinTraumaMultiplier gte 0.6>>
+		<<set $robinTraumaMultiplier -= 0.1>>
+	<</if>>
+<</widget>>
+
+<<widget "robinPunishment">>
+	<<set _event to _args[0]>>
+	<<switch _event>>
+		<<case "docks">>
+			<<npcincr Robin trauma 30>>
+			<<set $robin_injured to 1>>
+			<<set $robindebtevent to 7>>
+		<<case "dinner">>
+			<<set $robindebtevent to 1>>
+		<<case "landfill">>
+			<<set $robindebtevent to 7>>
+		<<case "pillory">>
+			<<set $robindebtevent to 30>> <!-- Robin stays imprisoned for a month because UFarm might take a while -->
+			<<set $robinPillory to {}>>
+			<<set $robinPillory.locks to 3>>
+			<<set $robinPillory.danger to 0>>
+			<<set $robinPillory.distractions to []>>
+			<<set $robinPillory.known to false>>
+		<<case "mansion">>
+			<<npcincr Robin trauma 40>>
+			<<set $robindebtevent to 1>>
+	<</switch>>
+	<<set $robinPunishments.pushUnique(_event)>>
+	<<set $robinLastPunishment to _event>>
+	<<set $robinmissing to _event>>
+	<<set $NPCName[$NPCNameList.indexOf("Robin")].comforted to 0>>
+	<<robinTraumaMultiplierDecay>>
+<</widget>>
+
+<<widget "robinPilloryHour">>
+	<<if $robinPillory.lockpicked is 1>>
+		<<set $robinPillory.lockpicked to 0>>
+	<</if>>
+	<<if $hour gte 15 and $hour lte 22>>
+		<<if $daystate is "night">>
+			<<set $robinPillory.danger += 3>>
+		<<elseif $daystate is "dusk">>
+			<<set $robinPillory.danger += 2>>
+		<<else>>
+			<<set $robinPillory.danger += 1>>
+		<</if>>
+	<<elseif $hour gte 23>>
+		<<robinPilloryFailure>>
+	<</if>>
+	<<if $robinPillory.danger lte 3>>
+		<<npcincr Robin trauma 1>>
+	<<elseif $robinPillory.danger lte 7>>
+		<<npcincr Robin trauma 2>>
+	<<elseif $robinPillory.danger lte 11>>
+		<<npcincr Robin trauma 3>>
+	<<else>>
+		<<npcincr Robin trauma 4>>
+	<</if>>
+<</widget>>
+
+<<widget "robinPilloryFailure">>
+	<<set $robinmissing to 0>>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma lte 80>>
+		<<set $NPCName[$NPCNameList.indexOf("Robin")].trauma to 80>>
+	<</if>>
+	<<NPCVirginityTakenByOther "Robin" "anal" "pillory">>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].penis isnot "none">>
+		<<NPCVirginityTakenByOther "Robin" "penile" "pillory">>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].vagina isnot "none">>
+		<<NPCVirginityTakenByOther "Robin" "vaginal" "pillory">>
+	<</if>>
+<</widget>>
+
+/* <<widget "robinStatusCheck">> [OBSOLETE; use statusCheck("Robin"). Uncomment and add to statusCheck() if robinStatusCheck is ever given more functionality.]
+	<<run getRobinLocation()>>
+<</widget>> */
+
+<<widget "robinRentUnsafeMessage">>
+	<<set $rentsale to 0>>
+	<i>You've proven to Bailey that <<nnpc_he "Bailey">> can't simply expect you to pay <<nnpc_him "Bailey">> on time.
+	<span class="red">Robin will no longer be safe from Bailey, unless you can hold Bailey off.</span></i>
+	<br><br>
 <</widget>>
