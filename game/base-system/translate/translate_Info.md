@@ -481,7 +481,24 @@
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
 
+     ```
+    <<npcGenitalsPost>>
+        <<npcGenitalsPost [num] ["simple"] post "sep">>
+
+        <<npcGenitals>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        선택사항
+        - num: 원본 매크로에 사용되는 인수값.
+		- simple: 원본 매크로에 사용되는 인수값. npcSimple~ 계열로 동작한다.
+        - post: 조사
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<npcGenitalsPost 1 "이">>                 //<<npcGenitalsPost 1>>이
+        <<npcGenitalsPost "이">>                   //<<npcGenitalsPost>>이
     ```
+
+   ```
     <<body_size_textPost>>
         <<body_size_textPost post "sep">>
         
@@ -741,6 +758,17 @@
     <<bHimselfPost>>
         <<bHimself>>의 대체 위젯. <<bhimselfPost>> 도 사용할 수 있음. <<himselfPost>>의 짐승 버전.
         + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<bHersPost>>
+        <<bHers>>의 대체 위젯. <<bhersPost>> 도 사용할 수 있음.
+		영어에서 남성의 소유대명사가 his로 같기 때문에 hers 를 소유대명사로 사용
+        + <<bHePost>>와 용도 및 방식 같음. 생략
+
+        e.g.
+        <<bHersPost "을">>               //  그녀의 것을
+
     ```
 
     ```
@@ -1273,6 +1301,20 @@
         <<bottomandButtPlugPost "을">>               // <<bottomPost "과">> 항문 마개를
     ```
 
+   ```
+    <<pound_textPost>>
+        <<pound_textPost post "sep">>
+
+       <<pound_text>>의 대체 위젯. 조사를 붙일 수 있다. 
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<pound_textPost "을">>               // <<pound_text>>을
+    ```
+
 * personPost
     ```
     <<personPost>>
@@ -1330,6 +1372,18 @@
         + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
+
+    ```
+    <<fullGroupPost>>
+        <<fullGroup>>의 대체 위젯.
+        + <<fullGroup>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<enumeratedGroupPost>>
+        <<enumeratedGroup>>의 대체 위젯.
+        + <<personPost>>와 용도 및 방식 같음. 생략
+    ```
 * prisonPost
 	교도소 관련 Post 시리즈. 위젯 원본은 overworld-town/loc-prison/widgets.twee 에 있으므로 해당 파일이 변경되면 확인할 것
     ```
@@ -2204,7 +2258,7 @@
 		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
 		<<clit_(조사)>>, <<penis_(조사)>>, <<penisSimple_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<testicle_(조사)>>, <<hand_(조사)>>, 
-		<<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
+		<<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>, <<npcGenitals_(조사)>>, 
 		```
 	- clothesPost 계열
 		```
@@ -2215,7 +2269,7 @@
 	- HePost 계열
 		```
 		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, 
-		<<bHe_(조사)>>, <<bhe_(조사)>>, <<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>,
+		<<bHe_(조사)>>, <<bhe_(조사)>>, <<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<bHers_(조사)>>, <<bhers_(조사)>>, 
 		<<pShe_(조사)>>, <<pshe_(조사)>>, <<pher_(조사)>>, <<pHer_(조사)>>, <<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
 		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
 		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>,
@@ -2225,17 +2279,19 @@
 		```
 	- otherPost 계열
 		```
-		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<father_(조사)>>, <<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
+		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<father_(조사)>>, <<Father_(조사)>>, <<mummy_(조사)>>, <<Mummy_(조사)>>, 
+		<<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<whore_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
 		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>,
-		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>,
+		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>, <<pound_text_(조사)>>
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- personPost 계열
 		```
-		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<combatPerson_(조사)>>,<<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
+		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<combatPerson_(조사)>>,<<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>,
+		<<fullGroup_(조사)>>,<<enumeratedGroup_(조사)>>,
 		<<persons_yi>>, <<combatpersons_yi>>, <<combatPersons_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- putpost 계열
