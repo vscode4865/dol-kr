@@ -1696,8 +1696,28 @@
    ```
     trColourJS
         trColourJS(colour, post, sep)
-        <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. 리팩토링될 수 있음.
+        <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. TODO: 리팩토링될 수 있음.
     ```
+
+* trHairtype
+    ```
+    <<trFurniture>>
+        <<trFurniture *furniture type post sep>>
+        
+        가구를 번역한다.
+
+        필수사항
+        - furniture: 가구의 이름
+
+        선택사항
+		- type : 번역될 내용이 종류. "name"은 이름, "desc" 는 설명. 생략된 경우 "name"
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trFurniture "chair" "name" "을">>             // "나무 의자를"
+    ```
+
 * trHairtype
     ```
     <<trHairtype>>
