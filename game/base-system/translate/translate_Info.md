@@ -1169,7 +1169,7 @@
         손에 쥐고 있는 도구를 번역힌다. 조사를 붙일 수 있다.
 		
 		필수사항
-		- *toolname: 도구 이름. 펜 등의 낙서도구, 아이섀도우, 마스카라, 섹스 장난감 (NPC사용) 등.
+		- *toolname: 도구 이름. 펜 등의 낙서도구, 아이섀도우, 마스카라, 염색약 등의 화장품, 섹스 장난감 (NPC사용) 등.
         
         선택사항
             - post: 번역결과의 뒤에 조사를 붙인다.
@@ -1388,15 +1388,16 @@
 	교도소 관련 Post 시리즈. 위젯 원본은 overworld-town/loc-prison/widgets.twee 에 있으므로 해당 파일이 변경되면 확인할 것
     ```
 	<<trPrisonPerson>>
-		<<trPrisonPerson *id *role post 'sep'>>
+		<<trPrisonPerson *id *role cap post 'sep'>>
 
         <<*_guardPost>> <<*_inmatePost>>의 기초 위젯. 조사를 붙일 수 있다.
 
 		필수사항
-		- id: NPC 객체번호. <<*_guardPost>> <<*_inmatePost>> 의 원래 옵션.
+		- id: NPC 객체번호. <<*_guard>> <<*_inmate>> 의 원래 옵션.
 		- role: NPC 의 역할. "relaxed guard" 등.
 
 		선택사항
+		- cap: 대문자 표시 여부.  <<*_guard>> <<*_inmate>> 의 원래 옵션.
 		- post: 번역 결과의 뒤에 조사를 붙인다.
 		- sep: 조사를 분리하여 저장한다.
 
@@ -1410,7 +1411,7 @@
        <<relaxed_guard>>의 대체 위젯.
 
 		필수사항
-		- id: NPC 객체번호. <<*_guardPost>> <<*_inmatePost>> 의 원래 옵션.
+		- id: NPC 객체번호. <<*_guard>> <<*_inmate>> 의 원래 옵션.
 		- role: NPC 의 역할. "relaxed guard" 등.
 
 		선택사항
@@ -1699,7 +1700,7 @@
         <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. TODO: 리팩토링될 수 있음.
     ```
 
-* trHairtype
+* trFurniture
     ```
     <<trFurniture>>
         <<trFurniture *furniture type post sep>>
