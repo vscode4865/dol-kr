@@ -674,7 +674,7 @@
         <<npcClothesText>>의 대체 위젯. 조사를 붙일 수 있다.
 
         필수사항
-		- NpcObject: npc 객체. 보통 $NPCList[_n] 같은 식으로 들어간다.
+		- NpcObject: 원본 매크로의 인수값인 npc 객체. 보통 $NPCList[_n] 같은 식으로 들어간다.
 		- part: 옷의 부위. "both", "upper", "lower" 중 하나.
 
         선택사항
