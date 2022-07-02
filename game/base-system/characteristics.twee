@@ -72,7 +72,7 @@
 <<else>>
 	당신의 눈은 <<trColour $eyecolour>>_trResult이다.
 <</if>>
-피부는 <<skincolourtext>> <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 엉덩이는 <<bottomPost "이다">>. <<if $penisexist is 1>>당신에게는 <<penisPost "이">> 있다.<</if>>
+당신의 피부는 <<skincolourtext>> 당신의 <<if $breastsize gte 1>>가슴은 <<breastsPost "이다">>.<</if>> 당신의 엉덩이는 <<bottomPost "이다">>. <<if $player.penisExist>>당신에게는 <<penisPost "이">> 있다.<</if>>
 
 <!--Hair Details-->
 <<set _hairTextConfig = { currentValue : $hairlength, states : [
@@ -101,18 +101,18 @@
 		당신은 당신이 임신 후기라는 사실을 안다.
 	<</if>>
 	<<if _pregnancy.potentialFathers.length is 1>>
-		당신은 아이 아빠가 <<NPCname_irago _pregnancy.potentialFathers[0]>> 확신한다.
+		당신은 아이 아빠가 <<NPCdesc_rago _pregnancy.potentialFathers[0]>> 확신한다.
 	<<elseif _pregnancy.potentialFathers.length is 2>>
-		당신은 아이 아빠가 <<NPCname_ina _pregnancy.potentialFathers[0]>> <<NPCname_irago _pregnancy.potentialFathers[1]>> 거의 확신한다.
+		당신은 아이 아빠가 <<NPCdesc_na _pregnancy.potentialFathers[0]>> <<NPCdesc_rago _pregnancy.potentialFathers[1]>> 거의 확신한다.
 	<<elseif _pregnancy.potentialFathers.length is 3>>
-		당신은 아이 아빠가 <<NPCname_ina _pregnancy.potentialFathers[0]>>, <<NPCname_ina _pregnancy.potentialFathers[1]>> <<NPCname_irago _pregnancy.potentialFathers[2]>> 거의 확신한다.
+		당신은 아이 아빠가 <<NPCdesc_na _pregnancy.potentialFathers[0]>>, <<NPCdesc_na _pregnancy.potentialFathers[1]>> <<NPCdesc_rago _pregnancy.potentialFathers[2]>> 거의 확신한다.
 	<<else>>
 		당신은 아이 아빠가 누군지 확신하지 못한다.
 	<</if>>
 	<br><br>
 <</if>>
 <!--Semen Details-->
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<set _semenCapacityTextConfig = { currentValue : $semen_volume, preText: '당신은 ', states : [
 			{ requiredValue: 0,   	color: '',		 description: '',					postText: ' 정액을 생산하지 않는다.' },
 			{ requiredValue: 1, 	color: 'red',	 description: '아주 적은',			postText: ' 양의 정액을 ' },
@@ -191,13 +191,13 @@
 		{ requiredValue: 90,	color: 'red',	description: '흠뻑 젖어있다.',		postText: ' 여기에 들어가지 못할 자지는 없다.' }
 ]>>
 <!--Vagina Wetness-->
-<<if $vaginaexist is 1>>
+<<if $player.vaginaExist>>
 	<<set _vaginaWetnessTextConfig = { currentValue : $vaginaWetness, preText: '당신의 보지는 ', states: _holeWetnessStates}>>
 	<<characteristic-text _vaginaWetnessTextConfig>>
 	<br>
 <</if>>
 <!--Penis Wetness-->
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<set _penisWetnessTextConfig = { currentValue : $penisWetness, preText: '당신의 자지는 ', states: [
 		{ requiredValue: 0,		color: 'green',	description: '말라있다.',				postText: ($penissize >= 2) ? " 어디에 넣기는 힘들 것이다." : ''},
 		{ requiredValue: 15,	color: 'teal',	description: '살짝 매끈하다.',	postText: ''},
@@ -471,6 +471,9 @@
 				<<set _swimmingConfig.modifier to Math.floor(_swimmingConfig.modifier * 0.5)>>
 				<<set _dancingConfig.modifier to Math.floor(_dancingConfig.modifier * 0.5)>>
 			<</if>>
+			<<if $backgroundTraits.includes("plantlover")>>
+				<<set _tendingConfig.modifier to Math.floor(_tendingConfig.modifier * (1 + ($trauma / ($traumamax * 2))))>>
+			<</if>>
 		<</silently>>
 
 		<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
@@ -515,10 +518,10 @@
 		<<set _analConfig = 		{ name : "항문", 		displayType : "grade",	currentValue : $analskill,		modifier: 100,	states : _basicSkillGrades}>>
 		<<set _thighsConfig = 		{ name : "넓적다리", 		displayType : "grade",	currentValue : $thighskill,		modifier: 100,	states : _basicSkillGrades}>>
 		<<set _feetConfig = 		{ name : "발", 			displayType : "grade",	currentValue : $feetskill,		modifier: 100,	states : _basicSkillGrades}>>
-		<<if $penisexist is 1>>
+		<<if $player.penisExist>>
 			<<set _penileConfig = 	{ name : "자지", 		displayType : "grade",	currentValue : $penileskill,	modifier: 100,	states : _basicSkillGrades}>>
 		<</if>>
-		<<if $vaginaexist is 1>>
+		<<if $player.vaginaExist>>
 			<<set _vaginalConfig = 	{ name : "보지", 		displayType : "grade",	currentValue : $vaginalskill,	modifier: 100,	states : _basicSkillGrades}>>
 		<</if>>
 	<</silently>>
@@ -541,7 +544,7 @@
 					<<characteristic-box _buttocksConfig>>
 					<<connector-box 37 50 20>>
 				</div>
-				<<if $vaginaexist is 1>>
+				<<if $player.vaginaExist>>
 					<div class="sex-diagram-box">
 						<<characteristic-box _vaginalConfig>>
 						<<connector-box 0 50 3>>
@@ -566,7 +569,7 @@
 					<<connector-box 74 50 15>>
 					<<characteristic-box _handsConfig>>
 				</div>
-				<<if $penisexist is 1>>
+				<<if $player.penisExist>>
 					<div class="sex-diagram-box">
 						<<connector-box 36 65 2>>
 						<<characteristic-box _penileConfig>>
@@ -595,10 +598,10 @@
 		<div id="sex-skills" class="characteristic-box-list">
 			<<characteristic-box _seductionConfig>>
 			<<characteristic-box _oralConfig>>
-			<<if $vaginaexist is 1>>
+			<<if $player.vaginaExist>>
 				<<characteristic-box _vaginalConfig>>
 			<</if>>
-			<<if $penisexist is 1>>
+			<<if $player.penisExist>>
 				<<characteristic-box _penileConfig>>
 			<</if>>
 			<<characteristic-box _analConfig>>

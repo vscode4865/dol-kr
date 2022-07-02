@@ -115,6 +115,9 @@
 	<<elseif $danceevent is "leighton">>
 		<<link "무시한다">><<set $leightondancerefused to 1>><<script>>state.display(state.active.title, null)<</script>><</link>>
 		<br>
+	<<elseif $danceevent is "robin">>
+		<<link "무시한다">><<set $danceaction to "robinignore">><<npcincr Robin love -5>><<npcincr Robin dom -20>><<script>>state.display(state.active.title, null)<</script>><</link>> | <span class="red">- - Robin's Love</span> | <span class="lblue">- - - Robin's Confidence</span>
+		<br>
 	<<elseif $danceevent is "corruptionDance">>
 		<<if $promiscuity gte 75 and $submissive gte 1900>>
 			<<link "순순히 굴복한다">>
@@ -265,8 +268,10 @@
 				<</if>>
 			<</if>>
 			<br><br>
-			<<set $rng to random(1, 100)>>
-			<<if $dancelocation is 0>>
+			<<set $rng to random(1, 100)>><<rngWraith 2 "night">>
+			<<if $wraith and ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
+				<<danceWraith>>
+			<<elseif $dancelocation is 0>>
 				<<if $audiencearousal gte 100>>
 					<<if $rng gte 91>>
 						<<dancerape>>
@@ -338,6 +343,8 @@
 						<<danceprivate>>
 					<<elseif $rng gte 21 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
+					<<elseif $rng gte 11 and $robinBrothel>>
+						<<dancebrothelrobin>>
 					<</if>>
 				<<elseif $audiencearousal gte 81>>
 					<<if $rng gte 101 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
@@ -352,6 +359,8 @@
 						<<danceprivate>>
 					<<elseif $rng gte 41 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
+					<<elseif $rng gte 31 and $robinBrothel>>
+						<<dancebrothelrobin>>
 					<</if>>
 				<<elseif $audiencearousal gte 41>>
 					<<if $rng gte 102 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
@@ -364,6 +373,8 @@
 						<<danceprivate>>
 					<<elseif $rng gte 61 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
+					<<elseif $rng gte 51 and $robinBrothel>>
+						<<dancebrothelrobin>>
 					<</if>>
 				<<else>>
 					<<if $rng gte 103 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
@@ -439,7 +450,7 @@
 <</widget>>
 
 <<widget "dancestrip">>
-	<<if $worn.under_lower.name isnot "naked" and (($worn.over_lower.skirt is 1 and $worn.lower.skirt is 1) or ($worn.over_lower.skirt is 1 and $worn.lower.type.includes("naked")) or ($worn.lower.skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<if $worn.under_lower.name isnot "naked" and ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
 		당신이 스핀하자, 치마가 펄럭인다. 품위가 결여된 청중이 기회를 노리다 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 잡고 달라든다.
 		<<set $danceevent to "skirtstrip">><<molested>>
 	<<elseif $worn.over_lower.name isnot "naked">>
@@ -544,7 +555,21 @@
 	<br><br>
 <</widget>>
 
+<<widget "dancebrothelrobin">>
+	<<set $danceevent to "robin">>
+	당신은 익숙한 목소리가 당신의 이름을 부르는 것을 듣는다. 춤을 멈추지 않은 채로, 당신은 목소리의 주인공을 찾아 군중을 살핀다. <span class="pink">그건 로빈이었다.</span> <<nnpc_He_nun "Robin">> 걱정스러운 눈으로 <<nnpc_himPost "Robin">>에게 오라고 손짓하고 있다.
+	<<set $robinBrothelWeekly to true>><<unset $robinBrothel>>
+	<br><br>
+<</widget>>
+
 <<widget "danceCorruption">>
 	<<set $danceevent to "corruptionDance">>
 	<span class="lewd">당신 귓속의 슬라임이 군중을 위해 춤을 멈추지 말라고 명령한다.</span> 당신이 그것에 응하면 보상을 받을 것이고, 아니면 당신을 위협하는 결과를 초래할 것이다.
+<</widget>>
+
+<<widget "danceWraith">>
+	<<set $danceevent to 0>><<set $audiencearousal -= 5>><<set $audienceexcitement -= 5>>
+	You feel a hand on your body. Then another. Then a third, and a fourth. You look around frantically, <span class="red">and see countless pale limbs emerging from below, grabbing at you wherever they can.</span> You try to scream, but one covers your mouth.
+	<br><br>
+	You blink, and they all vanish. You get strange glances. <<stress 12>><<trauma 4>><<ggstress>><<gtrauma>>
 <</widget>>

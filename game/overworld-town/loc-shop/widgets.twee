@@ -106,13 +106,13 @@ Forth argument - item index*/
 	<<else>>
 		<<integrity $clothes_choice_integrity>>
 	<</if>>
-	<<reveal $clothes_choice_reveal>> <<print '<<trSearchClothes _temp_choice.name>>_trResult'>>.
+	<<reveal $clothes_choice_reveal>> <<trSearchClothes _temp_choice.name "name">><<print _trResult>>.
 	<<if _temp_choice.gender is "m">>
 		<span class="lblue">남성용.</span>
 	<<elseif _temp_choice.gender is "f">>
 		<span class="pink">여성용.</span>
 	<</if>>
-	<<print '<<trSearchClothes _temp_choice.name "desc">>_trResult'>> 가격 <<printmoney `getClothingCost(_temp_choice)`>>.
+	<<trSearchClothes _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
 	<br>
 	<<warmth _temp_choice.warmth>>
 	<br><br>
@@ -168,7 +168,7 @@ Forth argument - item index*/
 			<div id="shopFullImage" @class="($shopDefaults.invertImagesHidden is true? '' : ' hidden')"><<shopFullImage $clothingShopSlot $clothes_choice>></div>
 			<br>
 		<</if>>
-		<<set _cost to clone(getClothingCost(_temp_choice))>>
+		<<set _cost to clone(getClothingCost(_temp_choice,$clothingShopSlot))>>
 		<<unset _cursedPrevent>>
 		<<set _outfitPrimaryShop to _temp_choice.outfitPrimary>>
 		<<set _preventSlots to []>>
@@ -270,7 +270,7 @@ Forth argument - item index*/
 		<</if>>
 		<<if _cursedPrevent is true>>
 		<<elseif $tryOn.tryingOn>>
-			<<link [[입어본다|$passage]]>><<shopbuy $clothingShopSlot "try" null $clothes_choice>><<set $randomLock to true>><</link>>
+			<<link [[착용해 본다|$passage]]>><<shopbuy $clothingShopSlot "try" null $clothes_choice>><<set $randomLock to true>><</link>>
 			<br>
 			<<if $tryOn.tryingOn[[$clothingShopSlot]] isnot null>>
 			<<link [[돌려준다|$passage]]>><<shopbuy $clothingShopSlot "return" null $clothes_choice>><<unset $randomLock>><</link>>
@@ -299,6 +299,7 @@ Forth argument - item index*/
 	<<set _listCount to 0>><<set _trueListCount to 0>>
 	<<for _i to 0; _i lt setup.clothes[$clothingShopSlot].length; _i++>>
 		<<set _item to clone(setup.clothes[$clothingShopSlot][_i])>>
+		<<set _itemData = setup.clothes[$clothingShopSlot][clothesIndex($clothingShopSlot,_item)]>>
 		<<if !_item.shop.includes(_shopLocation) or _item.outfitSecondary isnot undefined>>
 			<<continue>>
 		<</if>>
@@ -350,19 +351,19 @@ Forth argument - item index*/
 		<<if _listCount - $shopListStartCount <= 0>>
 			<<continue>>
 		<</if>>
-		<<clothingicon _item>>
+		<<clothingicon _item $clothingShopSlot>>
 		<<if $specialClothes[_item.name.replace(/ /g,"")] is "locked">>
-			<span class="lblue"><<trSearchClothes _item.name>>_trResult</span>
+			<span class="lblue"><<trSearchClothes _itemData.name "name">>_trResult</span>
 		<<else>>
-			<<capture _item _i>>
-				<<trSearchClothes _item.name>><<link [[_trResult|$passage]]>>
+			<<capture _item _itemData _i>>
+				<<trSearchClothes _itemData.name "name">><<link [[_trResult|$passage]]>>
 					<<set $clothes_choice to _i>>
 					<<set $clothes_choice_reveal to clone(_item.reveal)>>
-					<<set $clothes_choice_integrity to (_item.integrity_max)>>
+					<<set $clothes_choice_integrity to (_itemData.integrity_max)>>
 				<</link>>
 			<</capture>>
 		<</if>>
-		| <span class="teal"><<printmoney `getClothingCost(_item)` true>></span> |
+		| <span class="teal"><<printmoney `getClothingCost(_item,$clothingShopSlot)` true>></span> |
 		<<if _item.gender is "m">>
 			<span class="blue">♂</span>
 		<<elseif _item.gender is "f">>
@@ -468,6 +469,12 @@ Forth argument - item index*/
 		으스스함 - <<if $transformdisable is "f">>특정 변신을 막는다. 변신 진행도는 자정에 진행되거나 쇠퇴한다. <<else>>이 물건엔 무언가 이상한 점이 있다.<</if>>
 	<<case "shade">>
 		셰이드 - 태양을 가리고 간접적으로 피부가 타는 것을 막아준다.
+	<<case "asylum">>
+		정신병원 - 지역 정신병원의 복장이다.
+	<<case "prison">>
+		교도소 - 지역 교도소의 복장이다.
+	<<case "sticky">>
+		달라붙음 - 당신의 살갗에 달라붙는다.
 	<<default>>
 		<<set $noTraitDescription = 1>>
 <</switch>>
@@ -476,7 +483,7 @@ Forth argument - item index*/
 <<widget "shoptraits">>
 특성:
 <br>
-<<for _trait range $clothingTraits>>
+<<for _trait range setup.clothingTraits>>
 	<<if _temp_choice.type.includes(_trait)>>
 		<div class="trait-description">
 			<<shopTraitDescription _trait>>
@@ -800,17 +807,22 @@ __커스텀 색상__
 /*Args: slots used in an array*/
 <<widget "shopBuyItemStatus">>
 <<if $args[0]>>
+	<<if $wardrobes.shopReturn is "wardrobe" or $wardrobes[$wardrobes.shopReturn] is undefined>>
+		<<set _returnWardrobe to $wardrobe>>
+	<<else>>
+		<<set _returnWardrobe to $wardrobes[$wardrobes.shopReturn]>>
+	<</if>>
 	<<set _undamagedCount to 0>>
 	<<set _damagedCount to 0>>
-	<<set _space to $wardrobe.space>>
+	<<set _space to _returnWardrobe.space>>
 	<<set _spaceLeft to clone(_space)>>
 	<<for _i to 0; _i lt $args[0].length; _i++>>
 		<<if _i is 0>>
-			<<for _j to 0; _j lt $wardrobe[$args[0][0]].length; _j++>>
-				<<if $wardrobe[$args[0][0]][_j].name is _temp_choice.name>>
+			<<for _j to 0; _j lt _returnWardrobe[$args[0][0]].length; _j++>>
+				<<if _returnWardrobe[$args[0][0]][_j].name is _temp_choice.name>>
 					<<set _undamagedCount++>>
-					<<if $wardrobe[$args[0][0]][_j].outfitPrimary isnot undefined>>
-						<<for _valueShop range $wardrobe[$args[0][0]][_j].outfitPrimary>>
+					<<if _returnWardrobe[$args[0][0]][_j].outfitPrimary isnot undefined>>
+						<<for _valueShop range _returnWardrobe[$args[0][0]][_j].outfitPrimary>>
 							<<if _valueShop is "broken">>
 								<<set _damagedCount++>>
 								<<set _undamagedCount-->>
@@ -823,10 +835,10 @@ __커스텀 색상__
 				<</if>>
 			<</for>>
 		<</if>>
-		<<if _space - $wardrobe[$args[0][_i]].length lt _spaceLeft>>
-			<<set _spaceLeft to _space - $wardrobe[$args[0][_i]].length>>
+		<<if _space - _returnWardrobe[$args[0][_i]].length lt _spaceLeft>>
+			<<set _spaceLeft to _space - _returnWardrobe[$args[0][_i]].length>>
 		<</if>>
-		<<trClothesType $args[0][_i]>>_trResult 옷장 공간 사용중: <<print $wardrobe[$args[0][_i]].length>> / _space.
+		옷장의 <<trClothesType $args[0][_i]>>_trResult 슬롯 사용량: <<print _returnWardrobe[$args[0][_i]].length>> / _space.
 		<br>
 	<</for>>
 	<<if _undamagedCount gt 0>>
@@ -942,7 +954,8 @@ __커스텀 색상__
 		"mummytop":"locked",
 		"mummyskirt":"locked",
 		"catsuit":"locked",
-		"holystole":"locked"
+		"holystole":"locked",
+		"minisnowman":"locked"
 	}>>
 <</if>>
 <<if $specialClothes.cowbell is undefined>>
@@ -956,6 +969,15 @@ __커스텀 색상__
 <</if>>
 <<if $specialClothes.holystole is undefined>>
 	<<set $specialClothes.holystole to "locked">>
+<</if>>
+<<if $specialClothes.minisnowman is undefined>>
+	<<set $specialClothes.minisnowman to "locked">>
+<</if>>
+<<if $specialClothes.cowbra is undefined>>
+	<<set $specialClothes.cowbra to "locked">>
+	<<set $specialClothes.cowpanties to "locked">>
+	<<set $specialClothes.cowsocks to "locked">>
+	<<set $specialClothes.cowsleeves to "locked">>
 <</if>>
 <</widget>>
 
@@ -981,6 +1003,7 @@ __커스텀 색상__
 	<<set $specialClothes["christmastrousers"] to "unlocked">>
 	<<set $specialClothes["christmashat"] to "unlocked">>
 	<<set $specialClothes["christmaslegwarmers"] to "unlocked">>
+	<<set $specialClothes["minisnowman"] to "unlocked">>
 <</if>>
 <<if $brothelshowdata.intro>>
 	<<set $specialClothes["bellydancer'stop"] to "unlocked">>
@@ -1006,6 +1029,10 @@ __커스텀 색상__
 <</if>>
 <<if $livestock_intro isnot undefined>>
 	<<set $specialClothes["cowbell"] to "unlocked">>
+	<<set $specialClothes["cowbra"] to "unlocked">>
+	<<set $specialClothes["cowpanties"] to "unlocked">>
+	<<set $specialClothes["cowsocks"] to "unlocked">>
+	<<set $specialClothes["cowsleeves"] to "unlocked">>
 <</if>>
 <<if $syndromebird is 1>>
 	<<set $specialClothes["featheredhairclip"] to "unlocked">>
@@ -1051,9 +1078,14 @@ __커스텀 색상__
 	<<set $specialClothes["darkpendant"] to "unlocked">>
 	<<set $specialClothes["stonependant"] to "unlocked">>
 	<<set $specialClothes["cowbell"] to "unlocked">>
+	<<set $specialClothes["cowbra"] to "unlocked">>
+	<<set $specialClothes["cowpanties"] to "unlocked">>
+	<<set $specialClothes["cowsocks"] to "unlocked">>
+	<<set $specialClothes["cowsleeves"] to "unlocked">>
 	<<set $specialClothes["featheredhairclip"] to "unlocked">>
 	<<set $specialClothes["catsuit"] to "unlocked">>
 	<<set $specialClothes["holystole"] to "unlocked">>
+	<<set $specialClothes["minisnowman"] to "unlocked">>
 <</if>>
 
 <</widget>>
@@ -1079,6 +1111,10 @@ __커스텀 색상__
 		"darkpendant":"베일리가 무서워하는 곳을 발견한다.",
 		"stonependant":"사원의 헐거운 돌멩이 아래를 찾아본다.",
 		"cowbell":"가축이 된다.",
+		"cowbra":"가축이 된다.",
+		"cowpanties":"가축이 된다.",
+		"cowsocks":"가축이 된다.",
+		"cowsleeves":"가축이 된다.",
 		"christmaslegwarmers":"12월 15일부터 판매한다.",
 		"witchshoes":"10월 21일부터 판매한다.",
 		"mummyfacewrap":"10월 21일부터 판매한다.",
@@ -1086,7 +1122,8 @@ __커스텀 색상__
 		"mummyskirt":"10월 21일부터 판매한다.",
 		"featheredhairclip":"새와 사랑에 빠진다.",
 		"catsuit":"수송품을 약탈한다.",
-		"holystole":"사원에 충분한 헌신을 한다."
+		"holystole":"사원에 충분한 헌신을 한다.",
+		"minisnowman":"12월 15일부터 판매한다."
 	}>>
 <</if>>
 <</widget>>

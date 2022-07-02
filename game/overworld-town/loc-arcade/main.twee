@@ -16,7 +16,7 @@
 
 :: Arcade
 <<set $outside to 0>><<set $location to "arcade">><<effects>>
-<<set $kylar_play to 0>>
+<<set $kylar.play to 0>>
 당신은 스타피쉬 가의 오락실에 있다.
 
 <<if $daystate is "day" or $daystate is "dusk">>
@@ -28,6 +28,9 @@
 <<if $stress gte $stressmax>>
 <<passoutarcade>>
 <<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "arcade">>
+	<</if>>
 	<<if $hour is 21>>
 	폐점 시간이다. 경비원이 손님들을 밖으로 내보낸다.<<if $exposed gte 1>> 얼마나 노출된 상태인지를 자각하고, 이런 옷차림을 하고 있는걸 경비원에게 들킨다는 생각을 하자 공포가 스멀스멀 기어오른다.<</if>>
 	<br><br>
@@ -46,6 +49,9 @@
 		<<elseif $exposed gte 1>>
 		자긍심을 지키기 위해 핀볼 기계 아래에 숨는다.
 		<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasmLocation "arcade">>
 		<</if>>
 		<<if $money gte 500 and ($daystate is "day" or $daystate is "dusk") and $exposed lte 0>>
 			<<link [[게임을 한다 (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
@@ -86,13 +92,14 @@
 <<if $leftarm is "bound" and $rightarm is "bound">>
 	양손이 등 뒤로 묶여있는 상태로 오락실에서 게임을 하려니 <<print either("여간 까다로운 일이 아닐 수 없다.","예상했던 것만큼 어렵다.","어렵다. 딱히 놀랍지도 않다.")>>
 	<<print either("당신은 거의 게임을 시작하자마자 패배한다.","몇 초만에 당신이 조종하고 있던 반백의 생존자는 좀비 밥이 되어버린다.","순식간에 당신이 조종하고 있던 용감한 병사가 외계인 밥이 되어버린다.","일 분도 채 안 되어서, 당신이 조종하고 있던 용감한 승무원들은 상어 밥이 되어버리고 만다.")>>
-	<<if $rng lte 34>>근처에 있던 꼬맹이 몇 명이 당신이 처발리는 모습을 본다. 그 중 한 명이 어깨 너머로  화면을 <<print either("우스꽝스러운 표정으로 쳐다보며","바보 같은 표정을 지은 채로 쳐다보며","멍청하게 바라보며")>>
+	<<if $rng lte 34>><<generatey1>><<person1>>근처에 있던 꼬맹이 몇 명이 당신이 처발리는 모습을 본다. 그 중 한 명이 어깨 너머로 화면을 <<print either("우스꽝스러운 표정으로 쳐다보며","바보 같은 표정을 지은 채로 쳐다보며","멍청하게 바라보며")>>
 		손을 등 뒤로 한 채로 조종간을 <<print either("잡아보려 애쓰며","향해 손을 파닥거리며","탁탁 치며")>> 당신을 따라한다.
 		<br>
-		친구들은 그 모습을 보며 웃는다.
+		<<His_yi>> 친구들은 그 모습을 보며 웃는다.
 		<br>
 		꼬마의 편을 들어보자면, 당신은 지금 <<print either("약간 바보같아 보일","꽤나 멍청해 보일","약간 '특수한' 사람처럼 보일","상당히 미친 사람처럼 보일")>> 가능성이 높다.
 		<<lcool>><<status -5>>
+		<<endevent>>
 	<</if>>
 	<br><br>
 	<<if $money gte 500 and $daystate isnot "night">>
@@ -880,14 +887,14 @@ You are playing Tenyclus. You find your emotions and responses much more intense
 			You smell something strange, but you choose to ignore it and continue playing. You feel as if the game is sucking you in, and just before you're about to reach a new high score, <span class = "red">a splash of water hits you in the face.</span>
 			<br><br>
 
-			You look around for the culprit, but notice you're standing in neck deep water on the beach. Your head feels fuzzy. <<set $hallucinogen += 20>><<set $drugged += 20>>
+			You look around for the culprit, but notice you're standing in neck deep water on the beach. Your head feels fuzzy. <<set $hallucinogen += 20>><<drugs 20>>
 			<br><br>
 			<<water>><<effects>>
 
 			<<link [[Next|Sea Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case 6>>
-			A strange smell covers the air, just like last time. You look down and a swerve of sweet pink mist emerges from the machine. <<set $hallucinogen += 180>><<set $drugged += 180>><<garousal>><<arousal 200>>
+			A strange smell covers the air, just like last time. You look down and a swerve of sweet pink mist emerges from the machine. <<set $hallucinogen += 180>><<drugs 180>><<garousal>><<arousal 200>>
 			<br><br>
 
 			It creeps up to your face, and you feel yourself heating up with arousal. While you're distracted, a mass of writhing tentacles reach out from the screen. They coil around your arms, trapping them.
@@ -924,8 +931,8 @@ You are playing Tenyclus. You find your emotions and responses much more intense
 	<<controlloss>>
 	<<molested>>
 	<<tentaclestart 8 15>>
-	<<leftarmtentacledisable>><<set $tentacles[0].shaft to "leftarm">><<set $leftarm to "grappled">><<set $leftarmstate to 0>>
-	<<rightarmtentacledisable>><<set $tentacles[1].shaft to "rightarm">><<set $rightarm to "grappled">><<set $rightarmstate to 0>>
+	<<leftarmtentacledisable>><<set $tentacles[0].shaft to "leftarm">><<set $leftarm to "tentgrappled">><<set $leftarmstate to 0>><<set $lefttarget to "tentacles">>
+	<<rightarmtentacledisable>><<set $tentacles[1].shaft to "rightarm">><<set $rightarm to "tentgrappled">><<set $rightarmstate to 0>><<set $righttarget to "tentacles">>
 <</if>>
 <<effects>>
 <<effectstentacles>>
@@ -973,7 +980,6 @@ They begin to remove your clothes, before grabbing you by the shoulder and pulli
 <</if>>
 <<effects>>
 <<effectsman>><<man>>
-<<if $enemyhealth gt 0>><<npcdamage>><</if>>
 <<stateman>>
 <br><br>
 <<actionsman>>

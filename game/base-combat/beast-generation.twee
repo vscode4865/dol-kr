@@ -4,25 +4,18 @@
 <!-- Example: <<generateBEAST 1 dog m>> would generate NPC 1 as male dog -->
 <!-- Example: <<generateBEAST 2 wolf f>> would generate NPC 2 as female wolf -->
 
-<!-- Checks if endevent was properly used after the last event -->
-/*<<if $enemyno gte 1>>
-<<set $endeventerror to $lastgenerated>>
-<</if>>
-<<set $lastgenerated to $passage>>*/
-
 <<set _n to $args[0]-1>>
+<!-- Checks if endevent was properly used after the last event -->
+<<checkEventNPC _n>>
 <<set _type to $args[1]>>
 <<set _gen to $args[2]>>
 <<set _beast_genitals to $args[3]>>
 <<set _beast_monster to $args[4]>>
 
 <!-- Check that Type is known -->
-<<switch _type>>
-	<<case "dog" "cat" "pig" "wolf" "dolphin" "lizard" "bear" "boar" "creature" "horse" "fox" "hawk">>
-	<!-- No action-->
-	<<default>>
+<<if !$BeastList.includes(_type)>>
 	<span class="red">에러: 알 수 없는 generateBEAST 타입</span>
-<</switch>>
+<</if>>
 
 <!-- Set gender and pronoun, random if unspecified -->
 <<if _gen is "m" or _gen is "f">>
@@ -55,8 +48,7 @@
 
 <<beastattribute _n _type>>
 
-
-
+<<run EventSystem.Push($passage, _n, $time)>>
 <</widget>>
 
 <<widget "beastattribute">>
@@ -91,15 +83,16 @@
 <!-- v2.7 $BeastList is 0-7: "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "creature" -->
 <!-- v2.13 "horse" added to $BeastList -->
 
-<<set _h to [200,150,200,300,200,250,200,500,200,500]>>
+<<set _h to [200,150,200,300,200,250,500,300,200,500,200,150]>>
 <<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk"]>>
-<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge"]>>
-<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock"]>>
+<<set _d to ["large","large","fat","enormous","bottlenose","scaly","brown","hairy","strange","huge","large","fierce"]>>
+<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock"]>>
 /% <<set _cla to [1,1,1,1,0,1,1,1]>> %/
-<<set _ps to [2,2,2,3,2,2,3,3,2,5]>>
+<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2]>>
 
 <<set _i to $BeastList.indexOf(_type)>>
-<<set $NPCList[_n].health to _h[_i]>>
+<<set $NPCList[_n].healthmax to _h[_i]>>
+<<set $NPCList[_n].health to $NPCList[_n].healthmax>>
 <<set $NPCList[_n].description to _d[_i]>>
 <<set $NPCList[_n].type to _t[_i]>>
 /% <<set $NPCList[_n].claws to _cla[_i]>> %/
@@ -121,9 +114,9 @@
 <</if>>
 
 <!-- Set hallucination creatures to always be monsters. Shadow types could be .monster = "shadow" -->
-<<if $NPCList[_n].type is "creature">>
+<<if $NPCList[_n].type is "creature" and !_tower_creature>>
 	<<set $NPCList[_n].monster to "monster">>
-<<elseif ($monsterchance gte $rng and $hallucinations gte 1) or ($monsterchance gte $rng and $monsterhallucinations is "f") or (_beast_monster is "monster") or ($bestialitydisable is "t")>>
+<<elseif ($monsterchance gte $rng and $hallucinations gte 1) or ($monsterchance gte $rng and $monsterhallucinations is "f") or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
 	<<set $NPCList[_n].monster to "monster">>
 	<<if $NPCList[_n].type is "horse">>
 		<<set $NPCList[_n].type to "centaur">>

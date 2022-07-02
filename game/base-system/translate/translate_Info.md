@@ -63,6 +63,15 @@
         <<trSearchClothes "sundress" "desc">>                           //  "뛰어 놀기에 좋다."
     ```
 
+    ```
+	trIntegrityKeyword()
+		옷의 해어진 상태를 번역합니다.
+		 
+		 이것은 window.integrityKeyword (base.js) 의 한글 대용 버전이며
+		 function integrityWord() (base.js) 에서 integrityKeyword 대신 사용됩니다.
+
+    ```
+
 
 * trClothesType
     ```
@@ -95,13 +104,22 @@
         <<trClothingTrait "holy">>               //  "신성함"
     ```
 
-* trIntegrityKeyword
+* trWardrobeName
     ```
-        옷의 해어진 상태를 번역합니다.
-		 
-		 이것은 window.integrityKeyword (base.js) 의 한글 대용 버전이며
-		 function integrityWord() (base.js) 에서 integrityKeyword 대신 사용됩니다.
+    <<trWardrobeName>>
+        <<trWardrobeName *wardrobename post sep>>
 
+        옷장 이름을 번역합니다.
+
+        필수사항
+        - *wardrobename: 옷장 이름
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trWardrobeName "Beach Changing Room wardrobe">>               //  "해변 탈의실 옷장"
     ```
 
 -----------------
@@ -115,7 +133,7 @@
 		생물체를 번역한다.
 		
 		필수사항
-		- *type: 생물체 타입 ("parasite", "swarm", "struggle",  "vore"  등. 모든 리스트는 trCreature.twee 참조. "all" 로 하면 모든 생물체에서 찾는다. 생략하면 "all")
+		- *type: 생물체 타입 ("parasite", "swarm", "struggle", "tentacle", "vore"  등. 모든 리스트는 trCreature.twee 참조. "all" 로 하면 모든 생물체에서 찾는다. 생략하면 "all")
 		- *name: 생물체 이름/종류명 (생략 불가)
 		
         선택사항
@@ -196,6 +214,35 @@
 		+ <<trParasite>>와 용도 및 방식 같음. 생략
     ```
 
+* trTentacle
+    ```
+    <<trTentacle>>
+        <<trTentacle *tentacledesc post "sep">>
+
+        촉수의 상세를 번역한다. <<trCreature "tentacle">>_trResult 와 동일.
+        # 주의: 바로 출력하기 때문에 _trResult를 사용하지 않음 (기존의 trTentacle 과 호환)
+
+        필수사항
+        - tentacledesc: 촉수의 상세
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        주의점
+		- tentacledesc 에 ~ tentacle 이 들어있으면 "촉수" 가 붙음
+		- tentacledesc 에 ~ tentacle 이 없으면 "촉수" 가 붙지 않음
+		- 단, ~ tentacle 이 없더라도 조사가 붙으면 "촉수" 가 붙음
+
+        e.g.
+        $tentacles[_i].fullDesc = "narrow tentacle"
+		$tentacles[_i].desc = "narrow"
+		<<trTentacle $tentacles[_i].fullDesc>>              //"가느다란 촉수"
+        <<trTentacle $tentacles[_i].fullDesc "을">>              //"가느다란 촉수를"
+		<<trTentacle $tentacles[_i].desc>>              //"가느다란"
+        <<trTentacle $tentacles[_i].desc "을">>              //"가느다란 촉수를"
+    ```
+
 
 -----------------
 # Post
@@ -215,8 +262,8 @@
             - sep: 조사를 분리하여 저장한다.
 
             e.g.
-            <<beasttypePost 1 "을">>                            //<<breasts 1>>을
-            <<beasttypePost "을">>                              //<<breasts>>을
+            <<beasttypePost 1 "을">>                            //<<beasttypePost 1>>을
+            <<beasttypePost "을">>                              //<<beasttypePost>>을
     ```
 
      ```
@@ -345,6 +392,11 @@
     ```
 
     ```
+    <<npcPenisSimplePost>>
+        + <<npcPenisPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<npcVaginaPost>>
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
@@ -353,7 +405,12 @@
     <<npcAnusPost>>
         + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
-	
+
+    ```
+    <<vulvaPost>>
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * clothesPost
     ```
@@ -781,6 +838,11 @@
     ```
 
     ```
+    <<monksPost>>
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<monks_and_nunsPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
@@ -791,7 +853,7 @@
     ```
 
     ```
-    <<priests>>
+    <<priestsPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -855,6 +917,31 @@
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
     
+    ```
+    <<plant_detailsPost>>
+        <<plant_detailsPost [arg] post "sep">>
+
+        <<plant_details>>의 대체 위젯. 조사를 붙일 수 있다.
+        
+        선택사항
+            - arg: 원본 매크로에 사용되는 인수값.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<plant_detailsPost "forest" "을">>               // <<plant_details "forest">>을
+    ```
+
+    ```
+    <<Plant_detailsPost>>
+        + <<plant_detailsPost>>와 동일. 생략
+    ```
+ 
+    ```
+    <<tower_creature_textPost>>
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * personPost
     ```
@@ -1056,39 +1143,6 @@
     ```
 
 -----------------
-# Tentacle
-
-* trTentacle
-    ```
-    <<trTentacle>>
-        <<trTentacle *tentacledesc post "sep">>
-
-        촉수의 상세를 번역한다.
-        # 바로 출력하기 때문에 _trResult를 사용하지 않음
-
-        필수사항
-        - tentacledesc: 촉수의 상세
-
-        선택사항
-        - post: 번역결과의 뒤에 조사를 붙인다.
-        - sep: 조사를 분리하여 저장한다.
-
-        주의점
-		- tentacledesc 에 ~ tentacle 이 들어있으면 "촉수" 가 붙음
-		- tentacledesc 에 ~ tentacle 이 없으면 "촉수" 가 붙지 않음
-		- 단, ~ tentacle 이 없더라도 조사가 붙으면 "촉수" 가 붙음
-
-        e.g.
-        $tentacles[_i].fullDesc = "narrow tentacle"
-		$tentacles[_i].desc = "narrow"
-		<<trTentacle $tentacles[_i].fullDesc>>              //"가느다란 촉수"
-        <<trTentacle $tentacles[_i].fullDesc "을">>              //"가느다란 촉수를"
-		<<trTentacle $tentacles[_i].desc>>              //"가느다란"
-        <<trTentacle $tentacles[_i].desc "을">>              //"가느다란 촉수를"
-    ```
-
-
------------------
 # Slime
 
 * slimeEvent.twee
@@ -1138,6 +1192,21 @@
 
         e.g.
         <<trBodypart 'left_arm' '을'>>             // '왼팔을'
+    ```
+	
+	
+    ```
+    <<trBodysize>>
+        <<trBodysize *bodySize>>
+
+        몸의 크기를 번역한다.
+
+        필수사항
+        - *bodySize: 몸의 크기
+
+
+        e.g.
+        <<trBodysize 'normal'>>             // '평범함'
     ```
 
 * trBodyWriting
@@ -1397,16 +1466,6 @@
         <<trPenisdesc "tiny penis" "을">>             //"조그마한 자지를"
     ```
 
-    ```
-    <<trPenissize>>
-        <<trPenissize *Penisdesc post "sep">>
-
-        <<Penissize>>의 대체 매크로. 남성기의 크기를 번역한다.
-
-        e.g.
-        <<trPenissize>>             //"조그마한"
-    ```
-
 
 * trPill
     ```
@@ -1494,6 +1553,25 @@
 		<<getPostNum>>                   //  _postNum = undefined
     ```
 
+* trRole
+    ```
+    <<trRole>>
+        <<trRole *role post "sep">>
+        
+        역할(role)을 번역한다.
+
+        필수사항
+        - *role: NPC의 역할
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trRole "guard" '이' >>_trResult             //  간수가
+    ```
+
+
 * trVirginity
     ```
     <<trVirginity>>
@@ -1543,6 +1621,23 @@
     ```
 
 * base-combat/struggle.twee
+    ```
+    <<struggle_name>>
+        <<struggle_name *arg post "sep">>
+
+        struggle 크리쳐의 fulldesc를 번역한다. 
+
+        필수사항
+        - *arg: 원본 struggle_name 의 인수
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<struggle_name "mouth" "을">>             // "윙윙거리는 럴커를"
+    ```
+
     ```
     <<struggle_bodypart>>
         + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
@@ -1648,7 +1743,8 @@
 	- bodyPost 계열
 		```
 		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
-		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>, <<npcPenis_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
+		<<clit_(조사)>>, <<penis_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<hand_(조사)>>, <<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>,
+		<<vulva_(조사)>>
 		```
 	- clothesPost 계열
 		```
@@ -1668,16 +1764,16 @@
 		```
 		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<father_(조사)>>, <<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
 		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
-		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
+		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
 		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
 		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>, <<beast_claws_text_(조사)>>,
-		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>
+		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>,
 		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- personPost 계열
 		```
-		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
-		<<persons_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<combatPerson_(조사)>>,<<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>
+		<<persons_yi>>, <<combatpersons_yi>>, <<combatPersons_yi>> 는 소유격이라 _yi 조사만 지원함
 		```
 	- putpost 계열
 		```

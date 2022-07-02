@@ -50,17 +50,15 @@
 			<<set $creamstat to $masturbation_fluid>>
 		<</if>>
 		<<if $masturbation_fluid gt 0>>
-			<span class="gold">당신은 
-				<<if $masturbation_milk gt 0>>
-					모유<<if $masturbation_semen gt 0 and $masturbation_vaginaFluid gt 0>>,<<elseif $masturbation_semen gt 0 or $masturbation_vaginaFluid gt 0>>와<<else>> <<print ($masturbation_fluid).toFixed(1)>> ml를 모았다.<</if>>
-				<</if>>
-				<<if $masturbation_semen gt 0>>
-					정액<<if $masturbation_vaginaFluid gt 0>>과 애액 <<print ($masturbation_fluid).toFixed(1)>> ml를 모았다.<</if>>
-				<</if>>
-				<<if $masturbation_vaginaFluid gt 0>>
-					애액<<print ($masturbation_fluid).toFixed(1)>> ml를 모았다.
-				<</if>>
-			</span>
+			<<set $_liquids to []>>
+			<<if $masturbation_milk gt 0>><<set $_liquids.push("모유")>><</if>>
+			<<if $masturbation_semen gt 0>><<set $_liquids.push("정액")>><</if>>
+			<<if $masturbation_vaginaFluid gt 0>><<set $_liquids.push("애액")>><</if>>
+			<<if $_liquids.length is 3>>
+				<span class="gold">당신은 <<print ($masturbation_fluid).toFixed(1)>> mL 의 모유, 정액, 그리고 애액을 얻었다.</span>
+			<<else>>
+				<span class="gold">당신은 <<print ($masturbation_fluid).toFixed(1)>> mL 의 <<getPostNum $_liquids[0]>><<trPost _postNum "과" "sep">><<print $_liquids.join(_trPost+" ")>><<getPostNum $_liquids[$_liquids.length-1]>><<trPost _postNum "을" "sep">>_trPost 얻었다.</span>
+			<</if>>
 		<<else>>
 			당신은 모유나 다른 체액을 짜내는 데 실패했다.
 		<</if>>
@@ -76,6 +74,7 @@
 	<<set $mouthactiondefault to 0>>
 	<<set $mouthaction to 0>>
 	<<set $mouth to 0>>
+	<<set $penisuse to 0>>
 	<<set $vaginaactiondefault to 0>>
 	<<set $vaginaaction to 0>>
 	<<set $vaginause to 0>>
@@ -92,7 +91,6 @@
 	<<unset $delayRight>>
 	<<unset $corruptionMasturbation>>
 	<<unset $corruptionMasturbationCount>>
-	<<unset $delayRight>>
 	<<unset $leftFingersSemen>>
 	<<unset $rightFingersSemen>>
 	<<set $masturbationorgasmsemen to 0>>
@@ -100,29 +98,63 @@
 		<<recordVaginalSperm "pc" "pc" "human">>
 		<<unset $semenInVagina>>
 	<</if>>
+	<<unset $ballsText>>
+	<<unset $fingersInVagina>>
+	<<unset $vaginaFingerLimit>>
+	<<unset $selfsuckDepth>>
+	<<unset $selfsuckLimit>>
+	<<unset $penisHeight>>
+	<<unset $canSelfSuckPenis>>
+	<<unset $canSelfSuckVagina>>
 <</widget>>
 
 <<widget "masturbationstart">>
 	<<if $leftarm isnot "bound">>
 		<<set $leftarm to 0>>
-		<<set $leftactiondefault to "mrest">>
 		<<set $leftaction to 0>>
 	<</if>>
+	<<set $leftactiondefault to "mrest">>
 	<<if $rightarm isnot "bound">>
 		<<set $rightarm to 0>>
-		<<set $rightactiondefault to "mrest">>
 		<<set $rightaction to 0>>
 	<</if>>
+	<<set $rightactiondefault to "mrest">>
 	<<set $mouth to 0>>
 	<<set $mouthactiondefault to "mrest">>
 	<<set $mouthaction to 0>>
+	<<switch $player.gender>>
+		<<case "f">>
+			<<set $vaginause to 0>>
+			<<set $penisuse to "none">>
+		<<case "m">>
+			<<set $penisuse to 0>>
+			<<set $vaginause to "none">>
+		<<case "h">>
+			<<set $vaginause to 0>>
+			<<set $penisuse to 0>>
+	<</switch>>
 	<<set $vaginaactiondefault to "mrest">>
 	<<set $vaginaaction to 0>>
-	<<set $vaginause to 0>>
 	<<set $anusactiondefault to "mrest">>
 	<<set $anusaction to 0>>
 	<<set $anususe to 0>>
 	<<set $masturbationorgasmsemen to 0>>
+
+	<<set $fingersInVagina to 0>>
+	<<set $vaginaFingerLimit to 3>>
+	<<if $player.virginity.vaginal is true and $sexStats.vagina.pregnancy.totalBirthEvents is 0>>
+		<<set $vaginaFingerLimit -= 1>>
+	<</if>>
+	
+	/* note: we're setting $ballssize here because the variable exists but isn't used anywhere else YET. when a true implementation is attempted, remove this. */
+	<<set $ballssize to $penissize>>
+	<<silently>>
+		<<ballsize>><<set $ballsText to _text_output + " ">>
+		<<testiclesPost>><<set $ballsText += _trResult>>
+	<</silently>>
+
+	<<selfsuckchecks>>
+
 	<<if !$worn.genitals.type.includes("chastity")>>
 		당신은 <<genitalsPost 1 "을">> 애무하고 있다.
 		<<if $purity gte 990>>
@@ -136,6 +168,15 @@
 	<br><br>
 <</widget>>
 
+<<widget "masturbationbowl">>
+	<<set $masturbation_fluid to ($masturbation_semen + $masturbation_milk + $masturbation_vaginaFluid)>>
+	<<if $masturbation_fluid gt $creamstat>>
+		<<set $creamstat to $masturbation_fluid>>
+	<</if>>
+	<<masturbationbowlimage>>
+	당신은 <<print ($masturbation_fluid).toFixed(1)>> mL 의 액체를 얻었다.
+<</widget>>
+
 <<widget "masturbationbowlimage">>
 	<<if $images is 1>>
 		<<set _masturbation_temp to Math.floor(($masturbation_fluid / 30))>>
@@ -147,5 +188,44 @@
 				<img id="maparrow" @src="'img/misc/icon/masturbationbowl' + _masturbation_temp + '.png'">
 			<</if>>
 		</div>
+	<</if>>
+<</widget>>
+
+/* these checks only determine if it could be possible. they do not check for current obstructions like clothing or hands. */
+<<widget "selfsuckchecks">>
+	<<if $worn.genitals.type.includes("chastity")>>
+		<<set $canSelfSuckVagina to false>>
+		<<set $canSelfSuckPenis to false>>
+	<<else>>
+		<<set $_danceSkillLimit to Math.clamp(Math.ceil((800 - $danceskill)/200), 0, 4)>>
+		<<set $_catFlexLimit to (6 - $cat)>>
+		<<if $player.penisExist>>
+			/* <<set setup.penisHeightLevels to ["base", "waist", "midriff", "chest"]>> */
+			/* the above comment is a reminder of how high the player's penis can reach. however, it's not useful in the code at the moment. */
+
+			/* lower number means harder to reach; the player has to get their head lower down to reach it. */
+			<<set $penisHeight to [0,0,0,1,1,2,3][$penissize + 2]>>
+			<<set $canSelfSuckPenis to ($penisHeight gte $_danceSkillLimit) or ($penisHeight gte $_catFlexLimit)>>
+			<<set $selfsuckLimit to $penisHeight - ($_danceSkillLimit lt $_catFlexLimit ? $_danceSkillLimit : $_catFlexLimit)>>
+			<<set $selfsuckDepth to 0>>
+		<</if>>
+		<<if $player.vaginaExist>>
+			<<set $canSelfSuckVagina to ((0 gte $_danceSkillLimit) or (0 gte $_catFlexLimit))>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "addVaginalWetness">>
+	<<if $args[0] and $args[0] gt 0 and $player.vaginaExist>>
+		<!-- Scale the wetness change based on arousal -->
+		<<set $_change to $args[0] * Math.pow(($arousal+6000)/10000, 2)>>
+
+		<!-- Make it harder to build up wetness the closer you are to max wetness. -->
+		<<set $_wetnessPercent to Math.clamp($vaginaArousalWetness / 100, 0, 1)>>
+		<<set $_change to Math.floor($_change * (1 - $_wetnessPercent))>>
+
+		<!-- In summery: Having high arousal causes larger wetness gains, while being near max wetness causes lower wetness gains -->
+		<<set $vaginaArousalWetness += $_change>>
+		<<set $vaginaArousalWetness to Math.clamp($vaginaArousalWetness, 0, 100)>>
 	<</if>>
 <</widget>>

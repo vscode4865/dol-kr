@@ -2,21 +2,25 @@
 
 <<widget "takeVirginity">>
 <<if $args[1]>>
-	<<if $args[1] is "vaginal" or $args[1] is "penile">>
-		<<switch $args[0]>>
-			<<case "Robin">><<earnFeat "Robin the Lover">>
-			<<case "Kylar">><<earnFeat "Kylar the Obsessed">>
-			<<case "Eden">><<earnFeat "Eden the Lonely">>
-			<<case "Whitney">><<earnFeat "Whitney the Tsundere">>
-			<<case "Avery">><<earnFeat "Avery the Moneybags">>
-			<<case "Leighton">><<earnFeat "Leighton the Shady">>
-			<<case "Alex">><<earnFeat "Alex the Robust">>
-			<<case "Great Hawk">><<earnFeat "Great Hawk the Terror">>
-			<<case "Wren">><<earnFeat "Wren the Sly">>
-			<<case "Black Wolf">><<earnFeat "Great Wolf the Alpha">>
-		<</switch>>
-	<</if>>
 	<<if $player.virginity[$args[1]] is true>>
+		<<if $wraith and $wraith.mimic is $args[0]>>
+			<<set $args[0] to "Ivory Wraith">>
+		<<elseif $args[1] is "vaginal" or $args[1] is "penile">>
+			<<switch $args[0]>>
+				<<case "Robin">><<earnFeat "Robin the Lover">>
+				<<case "Kylar">><<earnFeat "Kylar the Obsessed">>
+				<<case "Eden">><<earnFeat "Eden the Lonely">>
+				<<case "Whitney">><<earnFeat "Whitney the Tsundere">>
+				<<case "Avery">><<earnFeat "Avery the Moneybags">>
+				<<case "Leighton">><<earnFeat "Leighton the Shady">>
+				<<case "Alex">><<earnFeat "Alex the Robust">>
+				<<case "Great Hawk">><<earnFeat "Great Hawk the Terror">>
+				<<case "Wren">><<earnFeat "Wren the Sly">>
+				<<case "Black Wolf">><<earnFeat "Great Wolf the Alpha">>
+				<<case "Harper">><<earnFeat "Harper the Hypnotist">>
+				<<case "Morgan">><<earnFeat "Morgan the Lost">>
+			<</switch>>
+		<</if>>
 		<<if $args[0] isnot undefined and $args[0] isnot 0>>
 			<<set $player.virginity[$args[1]] to $args[0]>>
 		<<else>>
@@ -52,13 +56,15 @@
 	<<switch $args[1]>>
 		<<case "loveInterest">>
 			<span class="lewd">당신이 원하던 연애 대상과의 첫 키스로 행복해진다.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
-			<<earnFeat "First Kiss">>
+			<<if (!$wraith or $wraith and $wraith.mimic isnot $args[0])>><<earnFeat "First Kiss">><</if>>
 		<<case "romantic">>
 			<span class="lewd">로맨틱한 첫 키스로 당신은 행복해진다.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
 		<<case "rape">>
-			<span class="red">저들은 당신의 첫 키스를 빼앗었다. 당신은 끔찍해한다.</span><<stress 40>><<gggstress>>
+			<span class="red">저들은 당신의 첫 키스를 빼앗겼다. 당신은 끔찍해한다.</span><<stress 40>><<gggstress>>
 		<<case "tentacle">>
 			<span class="lewd">당신은 다른 사람들에게 자신의 첫 키스가 촉수였다고 말하면 어떻게 반응할지 궁금해한다. 그들이 당신을 믿는다면 말이지만.</span><<arousal 3000>>
+		<<case "addiction">>
+			<span class="lewd">당신의 첫 키스를 이런 식으로 줘 버렸다는 생각이 당신에게 거의 남지 않았기 때문에, 당신은 안도한다.</span><<arousal 1000>>
 		<<default>>
 			<span class="blue">당신은 상대에게 첫 키스를 주는 것에 갈등을 느낀다.</span><<stress 20>><<ggstress>>
 	<</switch>>
@@ -121,7 +127,7 @@
  * Argument 0 is the npc, argument 1 is their virginity.
 */
 <<widget "takeNPCVirginity">>
-<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true>>
+<<if $NPCNameList.indexOf($args[0]) >= 0 and $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] is true and (!$wraith or $wraith and $wraith.mimic isnot $args[0])>>
     <<set $NPCName[$NPCNameList.indexOf($args[0])].virginity[$args[1]] to "player">>
 	<<run $virginTaken[$args[1]].pushUnique($args[0])>>
 	<<if $args[0] is "Sydney" and ($args[1] is "vaginal" or $args[1] is "penile")>>
@@ -218,27 +224,14 @@
 
 
 <<widget "leg_position">>
-<<if $machine>>
-	<<if $machine.tattoo>>
-		<<if $machine.tattoo.use is "left_thigh" or $machine.tattoo.use is "right_thigh">>
-			<<set _leg_position to "up">>
-		<<else>>
-			<<leg_position_basic>>
-		<</if>>
+	<<set $_parts to [$anususe, $vaginause, $chestuse, $mouthuse]>>
+	<<if $machine and $machine.tattoo and ["left_thigh", "right_thigh"].contains($machine.tattoo.use)>>
+		<<set _leg_position to "up">>
+	<<elseif $_parts.contains("penis") or $_parts.contains(1)>>
+		<<set _leg_position to "up">>
 	<<else>>
-		<<leg_position_basic>>
+		<<set _leg_position to "down">>
 	<</if>>
-<<else>>
-	<<leg_position_basic>>
-<</if>>
-<</widget>>
-
-<<widget "leg_position_basic">>
-<<if $anususe is "penis" or $vaginause is "penis" or $anususe is 1 or $vaginause is 1>>
-	<<set _leg_position to "up">>
-<<else>>
-	<<set _leg_position to "down">>
-<</if>>
 <</widget>>
 
 /* Should ideally only be used if you're sure one npc is in this position */
@@ -247,7 +240,7 @@
 <<widget "selectNpcWithPartInPosition">>
 	<<if $args[0] and $args[1]>>
 		<<unset _npc>>
-		<<for _j = 0; _j lt $enemyno; _j++>>
+		<<for _j = 0; _j lt $enemynomax; _j++>>
 			<<if $NPCList[_j][$args[0]] is $args[1]>>
 				<<personselect _j>>
 				<<set _npc to $NPCList[_j]>>
@@ -260,7 +253,7 @@
 <<widget "selectNpcWithPartInPositionAnus">>
 	<<if $args[0]>>
 		<<unset _npc>>
-		<<for _j = 0; _j lt $enemyno; _j++>>
+		<<for _j = 0; _j lt $enemynomax; _j++>>
 			<<if $NPCList[_j].penis is $args[0] or $NPCList[_j].vagina is $args[0]>>
 				<<personselect _j>>
 				<<set _npc to $NPCList[_j]>>
@@ -272,7 +265,7 @@
 <<widget "cover_end">>
 <<if $leftarm is "vagina">>
 	<<set $vaginause to 0>>
-<<elseif $leftarm is "penis">>
+<<elseif $leftarm is "coverpenis">>
 	<<set $penisuse to 0>>
 <<elseif $leftarm is "anus">>
 	<<set $anususe to 0>>
@@ -281,7 +274,7 @@
 <</if>>
 <<if $rightarm is "vagina">>
 	<<set $vaginause to 0>>
-<<elseif $rightarm is "penis">>
+<<elseif $rightarm is "coverpenis">>
 	<<set $penisuse to 0>>
 <<elseif $rightarm is "anus">>
 	<<set $anususe to 0>>

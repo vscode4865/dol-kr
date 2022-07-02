@@ -121,6 +121,9 @@
 	활발한 <<girlPost "이">>
 <</if>>
 이쪽을 바라보고 있다.
+<<if $wraith and $wraith.state is "haunt" and $hallucinations gte 1 and random(1, 100) is 1>>
+	<span class="fading">창백한 형체가 당신 뒤에 서 있다.</span>
+<</if>>
 <br>
 <<link "다른 사람들이 당신을 어떻게 바라보는지 확인한다">><<replace #mirror>><<mirrorAppearance>><</replace>><<numberify "#passages > .passage">><<set $mirrorMenu to "appearance">><</link>>
 <br><br>
@@ -448,7 +451,7 @@ __화장__
 		정액에 적셔짐
 		<br>
 	<</if>>
-	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
+	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
 		보름달
 		<br>
 	<</if>>
@@ -782,7 +785,7 @@ __신체 낙서__<br>
 <<if $trauma gte (($traumamax / 5) * 3)>>
    <<set _bodyWritingOptions.General["무가치"] to "worthless">>
    <<set _bodyWritingOptions.General["안돼!"] to "oh_no">>
-   <<set _bodyWritingOptions.General["멍청한 암캐"] to "dumb_bitch">>
+   <<set _bodyWritingOptions.General["멍청한 " + ($player.gender isnot "m" ? "암캐" : "개새끼")] to "dumb_bitch">>
 <</if>>
 
 <<if $promiscuity gte 15>>
@@ -791,7 +794,7 @@ __신체 낙서__<br>
 <<if $promiscuity gte 35>>
    <<set _bodyWritingOptions.Promiscuity = {}>>
 	<<set _bodyWritingOptions.Promiscuity["걸레"] to "slut">>
-	<<set _bodyWritingOptions.Promiscuity["난잡함"] to "Promiscuous">>
+	<<set _bodyWritingOptions.Promiscuity["난잡함"] to "promiscuous">>
 	<<set _bodyWritingOptions.Promiscuity["음탕함"] to "wanton">>
 	<<set _bodyWritingOptions.Promiscuity["원나잇 모집"] to "dtf">>
 <</if>>
@@ -814,7 +817,7 @@ __신체 낙서__<br>
    <<set _bodyWritingOptions.Promiscuity["공중걸레"] to "public_slut">>
    <<if $analstat gte 100>>
 	  <<set _bodyWritingOptions.Promiscuity["항문 전용 걸레"] to "buttslut">>
-	  <<set _bodyWritingOptions.Promiscuity["항문 전용 창녀"] to "anal_whore">>
+	  <<set _bodyWritingOptions.Promiscuity["항문 전용 " + ($player.gender isnot "m" ? "창녀" : "남창")] to "anal_whore">>
    <</if>>
 <</if>>
 
@@ -823,7 +826,7 @@ __신체 낙서__<br>
 	<<if $trauma gte (($traumamax / 5) * 2)>>
 		<<set _bodyWritingOptions.Prostitution["돈을 주면 강간이 아니지"] to "its_not_rape_if_you_pay_me">>
 	<</if>>
-	<<set _bodyWritingOptions.Prostitution["£5어치 창녀"] to "five_pound_whore">>
+	<<set _bodyWritingOptions.Prostitution["£5어치 " + ($player.gender isnot "m" ? "창녀" : "남창")] to "five_pound_whore">>
 	<<set _bodyWritingOptions.Prostitution["한 발에 £10"] to "ten_pound_a_pop">>
 	<<set _bodyWritingOptions.Prostitution["걸레 구직중"] to "slut_for_hire">>
 <</if>>
@@ -832,9 +835,9 @@ __신체 낙서__<br>
 	<<set _bodyWritingOptions.Prostitution["£100"] to "one_hundred_pound">>
 	<<set _bodyWritingOptions.Prostitution["몸 판매중"] to "body_for_sale">>
 	<<if $trauma gte (($traumamax / 5) * 3)>>
-		<<set _bodyWritingOptions.Prostitution["멍청한 창녀"] to "stupid_whore">>
+		<<set _bodyWritingOptions.Prostitution["멍청한 " + ($player.gender isnot "m" ? "창녀" : "남창")] to "stupid_whore">>
 	<<else>>
-		<<set _bodyWritingOptions.Prostitution["창녀"] to "whore">>
+		<<set _bodyWritingOptions.Prostitution[($player.gender isnot "m" ? "창녀" : "남창")] to "whore">>
 	<</if>>
 	<<set _bodyWritingOptions.Prostitution["매춘부"] to "prostitute">>
 <</if>>
@@ -883,14 +886,14 @@ __신체 낙서__<br>
 		<<if $promiscuity gte 75>>
 			<<set _bodyWritingOptions.Submission["섹스인형"] to "fuckdoll">>
 			<<set _bodyWritingOptions.Submission["육변기"] to "fucktoy">>
-			<<if $penisexist is 1>>
+			<<if $player.penisExist>>
 				<<set _bodyWritingOptions.Submission["걸어다니는 딜도"] to "walking_dildo">>
 			<</if>> 
 		<</if>>
 	<</if>>
 <</if>>
 /*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if $vaginaexist and $promiscuity gte 75 and $pregnancyTesting>>
+<<if $player.vaginaExist and $promiscuity gte 75 and $pregnancyTesting>>
 	<<set _bodyWritingOptions.Pregnancy to {}>>
 	<<set _bodyWritingOptions.Pregnancy["번식 엄마"] to "brood_mother">>
 	<<set _bodyWritingOptions.Pregnancy["나를 수정시켜줘"] to "inseminate_me">>
@@ -904,21 +907,21 @@ __신체 낙서__<br>
 		<<set _bodyWritingOptions["Love Interests"]["로빈의 보호자"] to "robins_protector">>
 		<<set _bodyWritingOptions["Love Interests"]["로빈과 나"] to "robin_and_i">>
 		<<set _bodyWritingOptions["Love Interests"]["고아 연인"] to "the_orphan_lover">>
-		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender.appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender_appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["로빈의 남자친구"] to "robins_boyfriend">>
 		<</if>>
-		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender.appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender_appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["로빈의 여자친구"] to "robins_girlfriend">>
 		<</if>>
 	<</if>>
 	<<if $whitneyromance is 1>>
 		<<set _bodyWritingOptions["Love Interests"]["휘트니의 애완동물"] to "whitneys_pet">>
 		<<set _bodyWritingOptions["Love Interests"]["휘트니의 소유물"] to "property_of_whitney">>
-		<<set _bodyWritingOptions["Love Interests"]["휘트니의 장난감"] to "whitneys_boyslut">>
-		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender.appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
+		<<set _bodyWritingOptions["Love Interests"]["휘트니의 장난감"] to "whitneys_toy">>
+		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender_appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["휘트니 전용 남자걸레"] to "whitneys_boyslut">>
 		<</if>>
-		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender.appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender_appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["휘트니 전용 걸레"] to "whitneys_slut">>
 		<</if>>
 	<</if>>
@@ -935,12 +938,12 @@ __신체 낙서__<br>
 		<<set _bodyWritingOptions["Love Interests"]["누군가가 너를 사냥하고 있다"] to "something_is_hunting_you">>
 	<</if>>
 	<<if $dateCount.Avery gte 3 and $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
-		<<set _bodyWritingOptions["Love Interests"]["에이버리의 어린 아내"] to "averys_trophy">>
+		<<set _bodyWritingOptions["Love Interests"]["에이버리의 어린 " + ($player.gender isnot "m" ? "아내" : "남편")] to "averys_trophy">>
 		<<set _bodyWritingOptions["Love Interests"]["사랑스러움"] to "endearing">>
-		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender.appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender_appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["업타운 보이"] to "uptown_boy">>
 		<</if>>
-		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender.appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender_appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["업타운 걸"] to "uptown_girl">>
 		<</if>>
 		<<set _bodyWritingOptions["Love Interests"]["에이버리의 전유물"] to "averys_monopoly">>
@@ -949,11 +952,11 @@ __신체 낙서__<br>
 		<<set _bodyWritingOptions["Love Interests"]["알렉스의 파트너"] to "alexs_partner">>
 		<<set _bodyWritingOptions["Love Interests"]["일출부터 일몰까지"] to "sunrise_to_sunset">>
 		<<set _bodyWritingOptions["Love Interests"]["건초 포장꾼"] to "hay_baler">>
-		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender.appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
+		<<if ($player.gender is "m" or $player.gender is "h" or $player.gender_appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
 			<<set _bodyWritingOptions["Love Interests"]["카우보이"] to "cowboy">>
 		<</if>>
-		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender.appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
-			<<set _bodyWritingOptions["Love Interests"]["카우걸"] to "Cowgirl">>
+		<<if ($player.gender is "f" or $player.gender is "h" or $player.gender_appearance is "f" or $backgroundTraits.includes("crossdresser"))>>
+			<<set _bodyWritingOptions["Love Interests"]["카우걸"] to "cowgirl">>
 		<</if>>
 	<</if>>
 	<<if $sydneyromance is 1>>
@@ -967,7 +970,7 @@ __신체 낙서__<br>
 		<</if>>
 	<</if>>
 	<<if $syndromewolves is 1 and $deviancy gte 35>>
-		<<set _bodyWritingOptions["Love Interests"]["검은 늑대의 암캐"] to "black_wolfs_bitch">>
+		<<set _bodyWritingOptions["Love Interests"]["검은 늑대의 " + ($player.gender isnot "m" ? "암캐" : "수캐")] to "black_wolfs_bitch">>
 		<<set _bodyWritingOptions["Love Interests"]["우두머리를 위하여"] to "all_for_my_alpha">>
 		<<if $wolfpackleader is 1>>
 			<<set _bodyWritingOptions["Love Interests"]["무리의 우두머리"] to "leader_of_the_pack">>
@@ -1051,8 +1054,8 @@ __머리 모양__
 <<trHairtype $hairtype>>당신의 옆머리는 "_trResult" 스타일이고, 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해있다.
 
 <br>
-<<set _hairTypeByName to {"왼쪽으로 땋은 머리": "braid left", "오른쪽으로 땋은 머리": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "양쪽으로 땋은 머리": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl"}>>
-<<set _fringeTypeByName to {"얇게 휘날리는": "thin flaps", "넓게 휘날리는": "wide flaps", "히메": "hime", "루즈": "loose", "지저분한": "messy", "너무 자란": "overgrown", "링렛": "ringlets", "커튼헤어": "split", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "뒤로 넘긴": "back", "가르마": "parted", "납작한": "flat", "고수머리": "quiff", "스트레이트 컬": "straight curl", "링렛 컬": "ringlet curl"}>>
+<<set _hairTypeByName to {"왼쪽으로 땋은 머리": "braid left", "오른쪽으로 땋은 머리": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "양쪽으로 땋은 머리": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl", "니트": "neat"}>>
+<<set _fringeTypeByName to {"얇게 휘날리는": "thin flaps", "넓게 휘날리는": "wide flaps", "히메": "hime", "루즈": "loose", "지저분한": "messy", "너무 자란": "overgrown", "링렛": "ringlets", "커튼헤어": "split", "스트레이트": "straight", "왼쪽으로 쏠린 머리": "swept left", "뒤로 넘긴": "back", "가르마": "parted", "납작한": "flat", "고수머리": "quiff", "스트레이트 컬": "straight curl", "링렛 컬": "ringlet curl", "커튼": "curtain"}>>
 
 <<linkradiogroup "$hairtype" _hairTypeByName>>
 
@@ -1065,9 +1068,10 @@ __머리 모양__
 <br><br>
 <<trHairtype $fringetype>>앞머리는 "_trResult" 스타일이다.
 
-<<if $fringetype is "default">>
-	앞머리 스타일을 자연스럽게 바꾼다면 옆머리가 지저분한 머리로 설정된다.
-<</if>>
+/*<<if $fringetype is "default">>
+ *	앞머리 스타일을 자연스럽게 바꾼다면 옆머리가 지저분한 머리로 설정된다.
+ *<</if>>
+*/
 <br>
 
 <<linkradiogroup "$fringetype" _fringeTypeByName>>

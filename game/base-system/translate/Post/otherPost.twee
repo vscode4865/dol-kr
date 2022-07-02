@@ -29,137 +29,105 @@
 
 
 <<widget "someonesPost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set $rng to random(1, $enemyno)>>
-        <<if $rng is 1>>
-            <<his1Post $args[0] $args[1]>>
-        <<elseif $rng is 2>>
-            <<his2Post $args[0] $args[1]>>
-        <<elseif $rng is 3>>
-            <<his3Post $args[0] $args[1]>>
-        <<elseif $rng is 4>>
-            <<his4Post $args[0] $args[1]>>
-        <<elseif $rng is 5>>
-            <<his5Post $args[0] $args[1]>>
-        <<elseif $rng is 6>>
-            <<his6Post $args[0] $args[1]>>
-        <</if>>
-    <<else>>
-        <<hisPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] is "two">>
+		<<set _trResult to "그들">><<trPost 2 $args[1] $args[2]>>
+	<<elseif $args[0] isnot undefined and typeof $args[0] eq 'number'>>
+		<<set $_target to $args[0]>>
+		<<hisselectPost $_target $args[1] $args[2]>>
+	<<else>>
+		<<hisPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "someonePost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set _trResult to "누군가">><<trPost 1 $args[0] $args[1]>>
-    <<else>>
-        <<himPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] is "two">>
+		<<set _trResult to "그들">><<trPost 2 $args[1] $args[2]>>
+	<<elseif $args[0] isnot undefined and typeof $args[0] eq 'number'>>
+		<<set $_target to $args[0]>>
+		<<personselect $_target>><<himPost $args[1] $args[2]>>
+	<<else>>
+		<<himPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "theirPost">><<silently>>
-    <<if $enemyno gte 2 and $enemytype is "man">>
-        <<set _trResult to "그들">><<trPost 2 $args[0] $args[1]>>
-    <<else>>
-        <<hisPost $args[0] $args[1]>>
-    <</if>>
+	<<if $args[0] isnot undefined>>
+		<<if typeof $args[0] eq 'number'>>
+			<<hisselectPost $args[0] $args[1] $args[2]>>
+		<<elseif $enemyno gte 2 and $enemytype is "man">>
+			<<set _trResult to "그들">><<trPost 2 $args[0] $args[1]>>
+		<<else>>
+			<<hisPost $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<hisPost $args[0] $args[1] $args[2]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "spousePost">><<silently>>
-<<if random(1,100) lte $homochance>>
-    <<if $pronoun is "m">>
-		<<set _trResult to "남편">><<trPost 0 $args[0] $args[1]>>
-    <<else>>
-        <<set _trResult to "아내">><<trPost 1 $args[0] $args[1]>>
-    <</if>>
-<</if>>
+	<<if random(1,100) lte $homochance>>
+		<<if $pronoun is "m">>
+			<<set _trResult to "남편">><<trPost 0 $args[0] $args[1]>>
+		<<else>>
+			<<set _trResult to "아내">><<trPost 1 $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<if $pronoun is "m">>
+			<<set _trResult to "아내">><<trPost 1 $args[0] $args[1]>>
+		<<else>>
+			<<set _trResult to "남편">><<trPost 0 $args[0] $args[1]>>
+		<</if>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "fatherPost">><<silently>>
-	<<if $pronoun is "m">>
-		<<set _trResult to "아버지">>
-	<<else>>
-		<<set _trResult to "어머니">>
-	<</if>>
+	<<set _trResult to ($pronoun is "m" ? "아버지" : "어머니")>>
 	<<trPost 1 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "girlPost">><<silently>>
-    <<if $player.gender_appearance is "f">>
-        <<set _trResult to "소녀">>
-    <<elseif $player.gender_appearance is "m">>
-        <<set _trResult to "소년">>
+    <<if  $player.gender_appearance is "m">>
+        <<set _trResult to "소년">><<trPost 0 $args[0] $args[1]>>
     <<else>>
-        <<set _trResult to "소녀">>
-    <</if>>
-    <<set _trResult to _trResult>>
-
-    <<if $args[0] isnot undefined>>
-        <<if $player.gender_appearance is "m">>
-            <<trPost 0 $args[0] $args[1]>>
-        <<else>>
-            <<trPost 1 $args[0] $args[1]>>
-        <</if>>
+        <<set _trResult to "소녀">><<trPost 1 $args[0] $args[1]>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "girlsPost">><<silently>>
-    <<if $player.gender_appearance is "f">>
-        <<set _trResult to "소녀들">>
-    <<elseif $player.gender_appearance is "m">>
+    <<if $player.gender_appearance is "m">>
         <<set _trResult to "소년들">>
     <<else>>
         <<set _trResult to "소녀들">>
     <</if>>
-    <<set _trResult to _trResult>>
-
-    <<if $args[0] isnot undefined>>
-        <<trPost 2 $args[0] $args[1]>>
-    <</if>>
+	 <<trPost 2 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "girlfriendPost">><<silently>>
-    <<if $player.gender_appearance is "f">>
-        <<set _trResult to "여자친구">>
-    <<elseif $player.gender_appearance is "m">>
+    <<if  $player.gender_appearance is "m">>
         <<set _trResult to "남자친구">>
     <<else>>
         <<set _trResult to "여자친구">>
     <</if>>
-    <<set _trResult to _trResult>>
-
-    <<if $args[0] isnot undefined>>
-        <<trPost 1 $args[0] $args[1]>>
-    <</if>>
+	<<trPost 1 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "wifePost">><<silently>>
-    <<if $player.gender_appearance is "f">>
-        <<set _trResult to "아내">>
-    <<elseif $player.gender_appearance is "m">>
-        <<set _trResult to "남편">>
+    <<if  $player.gender_appearance is "m">>
+        <<set _trResult to "남편">><<trPost 0 $args[0] $args[1]>>
     <<else>>
-        <<set _trResult to "아내">>
-    <</if>>
-    <<set _trResult to _trResult>>
-
-    <<if $args[0] isnot undefined>>
-        <<if $player.gender_appearance is "m">>
-            <<trPost 0 $args[0] $args[1]>>
-        <<else>>
-            <<trPost 1 $args[0] $args[1]>>
-        <</if>>
+        <<set _trResult to "아내">><<trPost 1 $args[0] $args[1]>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
+<<widget "WifePost">><<wifePost $args[0] $args[1]>><</widget>>
 
 <<widget "victimgirlPost">><<silently>>
     <<if $malevictimchance is 0>>
@@ -201,18 +169,12 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "lassPost">><<silently>>
-    <<if $player.gender_appearance is "f">>
-        <<set _trResult to "아가씨">>
-    <<elseif $player.gender_appearance is "m">>
-        <<set _trResult to "청년">>
+    <<if  $player.gender_appearance is "m">>
+        <<set _trResult to "청년">><<trPost 0 $args[0] $args[1]>>
     <<else>>
-        <<set _trResult to "아가씨">>
+        <<set _trResult to "아가씨">><<trPost 1 $args[0] $args[1]>>
     <</if>>
     <<set _trResult to _trResult>>
-
-    <<if $args[0] isnot undefined>>
-        <<trPost 1 $args[0] $args[1]>>
-    <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "genderPost">><<silently>>
@@ -250,16 +212,12 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "slutPost">><<silently>>
-<<if $player.gender_appearance is "m">>
-	<<set _trResult to "변태">>
-<<else>>
-	<<set _trResult to "걸레">>
-<</if>>
-<<trPost 1 $args[0] $args[1]>>
+	<<set _trResult to ($player.gender_appearance is "m" ? "변태" : "걸레")>>
+	<<trPost 1 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "semenPost">><<silently>>
-    <<if $penisexist is 1>>
+    <<if $player.penisExist>>
         <<set _trResult to "정액">>
     <<else>>
         <<set _trResult to "애액">>
@@ -268,7 +226,7 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "prostatePost">><<silently>>
-    <<if $vaginaexist is 1>>
+    <<if $player.vaginaExist>>
         <<set _trResult to "자궁">>
     <<else>>
         <<set _trResult to "전립선">>
@@ -288,11 +246,7 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "walletPost">><<silently>>
-    <<if $pronoun is "m">>
-        <<set _trResult to "지갑">>
-    <<else>>
-        <<set _trResult to "핸드백">>
-    <</if>>
+    <<set _trResult to ($pronoun is "m" ? "지갑" : "핸드백")>>
     <<trPost 0 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
@@ -301,18 +255,14 @@
 <<if $pronoun is "m">>
 	<<set _trResult to "선생님">><<trPost 0 $args[0] $args[1]>>
 <<else>>
-	<<set _trResult to "마님">><<trPost 1 $args[0] $args[1]>>
+	<<set _trResult to "마님">><<trPost 0 $args[0] $args[1]>>
 <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
 <<widget "monkPost">><<silently>>
-<<if $pronoun is "m">>
-	<<set _trResult to "수도자">>
-<<else>>
-	<<set _trResult to "수녀">>
-<</if>>
-<<trPost 1 $args[0] $args[1]>>
+	<<set _trResult to ($pronoun is "m" ? "수도자" : "수녀")>>
+	<<trPost 1 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "monksPost">><<silently>><<monkPost>><<set _trResult += "들">><<trPost 2 $args[0] $args[1]>><</silently>><</widget>>
@@ -331,51 +281,50 @@
 
 
 <<widget "priestPost">><<silently>>
-<<if $pronoun is "m">>
-	<<set _trResult to "신부">>
-<<else>>
-	<<set _trResult to "여신부">>
-<</if>>
+	<<set _trResult to ($pronoun is "m" ? "사제" : "여사제")>>
+	<<trPost 1 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
-<<widget "priests">><<silently>><<priestPost>><<set _trResult += "들">><<trPost 2 $args[0] $args[1]>><</silently>><</widget>>
+<<widget "priestsPost">><<silently>><<priestPost>><<set _trResult += "들">><<trPost 2 $args[0] $args[1]>><</silently>><</widget>>
 
 
 <<widget "farm_text_manyPost">><<silently>>
+<<set $_bgender to $farm_work[$args[0]].gender_plural>>
+<<set $_bperson to ($farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
 <<if $args[0] is "horse">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $_bperson>>
 		<<set _trResult to "켄타우로스들">>
 	<<else>>
 		<<set _trResult to "말들">>
 	<</if>>
 <<elseif $args[0] is "pig">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender_plural is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "돼지 소년들">>
-		<<elseif $farm_work[$args[0]].gender_plural is "f">>
+		<<elseif $_bgender is "f">>
 			<<set _trResult to "돼지 소녀들">>
 		<<else>>
-			<<set _trResult to "돼지 소녀들과 돼지 소년들">>
+			<<set _trResult to "돼지 소년 소녀들">>
 		<</if>>
 	<<else>>
 		<<set _trResult to "돼지들">>
 	<</if>>
 <<elseif $args[0] is "dog">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender_plural is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "개 소년들">>
-		<<elseif $farm_work[$args[0]].gender_plural is "f">>
+		<<elseif $_bgender is "f">>
 			<<set _trResult to "개 소녀들">>
 		<<else>>
-			<<set _trResult to "개 소녀들과 개 소년들">>
+			<<set _trResult to "개 소년 소녀들">>
 		<</if>>
 	<<else>>
 		<<set _trResult to "개들">>
 	<</if>>
 <<else>>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender_plural is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "황소 소년들">>
-		<<elseif $farm_work[$args[0]].gender_plural is "f">>
+		<<elseif $_bgender is "f">>
 			<<set _trResult to "젖소 소녀들">>
 		<<else>>
 			<<set _trResult to "젖소 소녀들과 황소 소년들">>
@@ -389,15 +338,17 @@
 
 
 <<widget "farm_textPost">><<silently>>
+<<set $_bgender to $farm_work[$args[0]].gender>>
+<<set $_bperson to ($farm_work[$args[0]].monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
 <<if $args[0] is "horse">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
+	<<if $_bperson>>
 		<<set _trResult to "켄타우로스">><<trPost 1 $args[1] $args[2]>>
 	<<else>>
 		<<set _trResult to "말">><<trPost 2 $args[1] $args[2]>>
 	<</if>>
 <<elseif $args[0] is "pig">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "돼지 소년">><<trPost 0 $args[1] $args[2]>>
 		<<else>>
 			<<set _trResult to "돼지 소녀">><<trPost 1 $args[1] $args[2]>>
@@ -406,8 +357,8 @@
 		<<set _trResult to "돼지">><<trPost 1 $args[1] $args[2]>>
 	<</if>>
 <<elseif $args[0] is "dog">>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "개 소년">><<trPost 0 $args[1] $args[2]>>
 		<<else>>
 			<<set _trResult to "개 소녀">><<trPost 1 $args[1] $args[2]>>
@@ -416,29 +367,22 @@
 		<<set _trResult to "개">><<trPost 1 $args[1] $args[2]>>
 	<</if>>
 <<else>>
-	<<if $farm_work[$args[0]].monster_roll is true and (($hallucinations gte 1 or $monsterhallucinations is "f") or $bestialitydisable is "t")>>
-		<<if $farm_work[$args[0]].gender is "m">>
+	<<if $_bperson>>
+		<<if $_bgender is "m">>
 			<<set _trResult to "황소 소년">><<trPost 0 $args[1] $args[2]>>
 		<<else>>
 			<<set _trResult to "젖소 소녀">><<trPost 1 $args[1] $args[2]>>
 		<</if>>
 	<<else>>
-		<<if $farm_work[$args[0]].gender is "m">>
-			<<set _trResult to "황소">><<trPost 1 $args[1] $args[2]>>
-		<<else>>
-			<<set _trResult to "젖소">><<trPost 1 $args[1] $args[2]>>
-		<</if>>
+			<<set _trResult to ($_bgender is "m" ? "황소" : "젖소")>><<trPost 1 $args[1] $args[2]>>
 	<</if>>
 <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "MasterPost">><<silently>>
 <<if $pronoun is "m">>
-	<<set _trResult to "주인님">>
-<<else>>
-	<<set _trResult to "여주인님">>
-<</if>>
-<<trPost 0 $args[0] $args[1]>>
+	<<set _trResult to ($pronoun is "m" ? "주인님" : "여주인님")>>
+	<<trPost 0 $args[0] $args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "masterPost">><<MasterPost $args[0] $args[1]>><</widget>>
@@ -576,15 +520,14 @@
 
 /* base-combat/struggle.twee <<widget "struggle_appendage">>*/
 <<widget "struggle_appendagePost">><<silently>>
-<<if $struggle[$args[0]].creature is "insect">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<elseif $struggle[$args[0]].creature is "wasp">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<elseif $struggle[$args[0]].creature is "bee">>
-	<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
-<<else>>
-	<<set _trResult to "부속 기관">><<trPost 0 $args[1] $args[2]>>
-<</if>>
+	<<switch $struggle[$args[0]].creature>>
+		<<case "wasp" "bee">>
+			<<set _trResult to "독침">><<trPost 0 $args[1] $args[2]>>
+		<<case "squid">>
+			<<set _trResult to "촉수">><<trPost 1 $args[1] $args[2]>>
+		<<default>>
+			<<set _trResult to "부속 기관">><<trPost 0 $args[1] $args[2]>>
+	<</switch>>
 <</silently>><<print _trResult>><</widget>>
 
 /* base-system/nicknames.twee */
@@ -984,3 +927,54 @@
 		<</if>>
 <</switch>>
 <</silently>><<print _trResult>><</widget>>
+
+<<widget "plant_detailsPost">><<silently>>
+<<if $args[0] is undefined or $args[0].substring(0,1).search("[가-힣]") gte 0>>
+	<<unset $_arg>><<set $_post to $args[0]>><<set $_sep to $args[1]>>
+<<else>>
+	<<set $_arg to $args[0]>><<set $_post to $args[1]>><<set $_sep to $args[2]>>
+<</if>>
+<<if ($location is "moor" and $_arg isnot "forest") or $_arg is "moor">>
+	<<switch $season>>
+		<<case "spring">>
+			<<set _trResult to "노란 버드나무 이파리들">>
+		<<case "summer">>
+			<<set _trResult to "작은 보라색 꽃들">>
+		<<case "autumn">>
+			<<set _trResult to "커다란 호박색 꽃들">>
+		<<case "winter">>
+			<<set _trResult to "지푸라기 색의 갈대들">>
+	<</switch>>
+<<else>>
+	<<switch $season>>
+		<<case "spring">>
+			<<set _trResult to "분홍색 꽃들">>
+		<<case "summer">>
+			<<set _trResult to "이파리와 꽃들">>
+		<<case "autumn">>
+			<<set _trResult to "주황색과 빨강색의 이파리들">>
+		<<case "winter">>
+			<<set _trResult to "작은 빨간 산딸기들">>
+	<</switch>>
+<</if>>
+<<trPost 2 $_post $_sep>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "Plant_detailsPost">><<plant_detailsPost $args[0]>><</widget>>
+
+<<widget "tower_creature_textPost">><<silently>>
+	<<if $NPCList[0].monster is "monster">>
+		<<set _trResult to "뿔이 난 ">>
+		<<if $NPCList[0].gender is "m">>
+			<<set _trResult += "소년">><<trPost 0 $args[0] $args[1]>>
+		<<else>>
+			<<set _trResult += "소녀">><<trPost 1 $args[0] $args[1]>>
+		<</if>>
+	<<else>>
+		<<set _trResult to either("생물체","괴물","짐승")>>
+		<<if $args[0] isnot undefined>>
+			<<getPostNum _trResult>>
+			<<trPost _postNum $args[0] $args[1]>>
+		<</if>>
+	<</if>>
+<</silently>>	<<print _trResult>><</widget>>

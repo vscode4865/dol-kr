@@ -9,9 +9,10 @@
 				<<if _pregnancy[_i] is null>>
 					<<switch $args[0]>>
 						<<case "slimes" "eels" "worms" "snakes" "spiders" "slugs" "maggots">>
-							<<set _creatureType to $args[0][0].toUpperCase() + $args[0].substring(1, $args[0].length - 1)>>
+							<<set _creatureType to toTitleCase($args[0])>>
+							<<set _creatureType to _creatureType.substring(0,_creatureType.length - 1)>>
 						<<default>>
-							<<set _creatureType to $args[0][0].toUpperCase() + $args[0].substring(1)>>
+							<<set _creatureType to toTitleCase($args[0])>>
 					<</switch>>
 					<<if $args[2]>>
 						<<set _egg to {
@@ -35,8 +36,11 @@
 								"speed": random(60,360)
 							}
 						}>>
-						<<if _creatureType is "Tentacle">>
+						<<if _creatureType is "Tentacle" or _creatureType is "Vine">>
 							<<set _egg.stats.speed to clone(_egg.stats.speed * 0.9)>>
+						<</if>>
+						<<if _creatureType is "Pale Tentacle" or _creatureType is "Pale Slime">>
+							<<set _egg.stats.speed to clone(_egg.stats.speed * 0.6)>>
 						<</if>>
 						<<if _creatureType is "Lurker">>
 							<<run _egg.stats.growth += 14>>
@@ -98,10 +102,6 @@
 	<</for>>
 	<<set _pregnancy.fertile to false>>
 	<<set _pregnancy.fertilised to true>>
-	<<if _pregnancy.motherStatus is 0 and _pregnancy.givenBirth gt 2>>
-		<<set _pregnancy.motherStatus to 1>>
-		<<set _pregnancy.maxCount to 2>>
-	<</if>>
 <</if>>
 <</widget>>
 
@@ -254,6 +254,10 @@
 				<<set _pregnancy[$args[0]] to null>>
 				<<set _pregnancy.count -= 1>>
 				<<set _pregnancy.givenBirth += 1>>
+				<<if _pregnancy.motherStatus is 0 and _pregnancy.givenBirth gte 3>>
+					<<set _pregnancy.motherStatus to 1>>
+					<<set _pregnancy.maxCount to 2>>
+				<</if>>
 			<<default>>
 				<<if $args[1] isnot null>>
 					<<set $container[$args[0]].creatures[$args[1]] to null>>
@@ -264,7 +268,7 @@
 <</widget>>
 
 <<widget "menstruationCycle">>
-<<if $sexStats.vagina.menstruation.running is true and $vaginaexist is 1>>
+<<if $sexStats.vagina.menstruation.running is true and $player.vaginaExist>>
 	<<set _menstruation to $sexStats.vagina.menstruation>>
 	<<set _pills to $sexStats.pills>>
 	<<if $sexStats.vagina.menstruation.currentState is "normal">>
@@ -367,7 +371,7 @@
 			<<set _pregnancy.ultrasoundDone-->>
 		<</if>>
 		<<switch _pregnancy.type>>
-			<<case "npc">><<set _multiplier to (1/(1/9*$humanPregnancyMonths))>>
+			<<case "human">><<set _multiplier to (1/(1/9*$humanPregnancyMonths))>>
 			<<case "wolf">><<set _multiplier to (1/(1/12*$wolfPregnancyWeeks))>>
 			<<default>><<set _multiplier to 1>>
 		<</switch>>
@@ -763,48 +767,48 @@
 <<widget "birthChildElement">>
 <<capture $args>>
 	<<if _pregnancy[$args[0]].type isnot "human">>
-		Type: <<print _pregnancy[$args[0]].type[0].toUpperCase() + _pregnancy[$args[0]].type.substring(1)>> |
+		종류: <<trCreature "all" _pregnancy[$args[0]].type>><<print _trResult>> |
 	<</if>>
-	Gender:
+	성별:
 	<<switch _pregnancy[$args[0]].gender>>
-		<<case "m">>Male
-		<<case "f">>Female
-		<<case "h">>Hermaphrodite
+		<<case "m">>남성
+		<<case "f">>여성
+		<<case "h">>후타나리
 	<</switch>>
 	<br>
-	Mother: 
+	어머니: 
 	<<if _pregnancy[$args[0]].motherKnown>>
-		<<print _pregnancy[$args[0]].mother>>
+		<<trNPCdesc _pregnancy[$args[0]].mother>><<print _trResult>>
 	<<else>>
 		????
 	<</if>>
-	| Father: 
+	| 아버지: 
 	<<if _pregnancy[$args[0]].fatherKnown>>
-		<<print _pregnancy[$args[0]].father>>
+		<<trNPCdesc _pregnancy[$args[0]].father>><<print _trResult>>
 	<<else>>
 		????
 	<</if>>
 	<br>
-	Size: <<print _pregnancy[$args[0]].features.size>> | Hair Colour: <<print _pregnancy[$args[0]].features.hairColour>>
+	크기: <<trBodysize _pregnancy[$args[0]].features.size>><<print _trResult>> | 머리색: <<trColour _pregnancy[$args[0]].features.hairColour>><<print _trResult>>
 	<<if _pregnancy[$args[0]].features.skinColour isnot null>>
-		| Skin Colour: <<print _pregnancy[$args[0]].features.skinColour>>
+		| 피부색: <<trColour _pregnancy[$args[0]].features.skinColour>><<print _trResult>>
 	<</if>>
 	<br>
 	<<if _pregnancy[$args[0]].features.identical isnot null>>
-		Identical: <<print _pregnancy[$args[0]].features.identical>>
+		일란성 쌍둥이: <<print _pregnancy[$args[0]].features.identical>>
 		<br>
 	<</if>>
-	<label><<print '<<textbox "_pregnancy['+$args[0]+'].name" _pregnancy['+$args[0]+'].name>>'>></label>
+	<label><<trNPCname _pregnancy[$args[0]].name>><<print '<<textbox "_pregnancy['+$args[0]+'].name" _trResult>>'>></label>
 	<br>
-	<span class="no-numberify"><<link "Random Name">>
+	<span class="no-numberify"><<link "무작위 이름">>
 		<<getUsedChildrenNames>>
 		<<set _pregnancy[$args[0]].name to generateBabyName(undefined, _pregnancy[$args[0]].gender, _usedChildrenNames)>>
 		<<replace `"#child-" + $args[0]`>><<birthChildElement $args[0]>><</replace>>
 	<</link>></span>
 	<small class="right">
-		saveId: <<print $saveId>>
+		세이브 ID: <<print $saveId>>
 		<<if $saveName isnot "">>
-			| name: <<print $saveName>>
+			| 이름: <<print $saveName>>
 		<</if>>
 	</small>
 <</capture>>
@@ -865,44 +869,44 @@
 
 	<<switch _wakingEffect>>
 		<<case "bloated">>
-			<<set $_text_output to "You wake feeling a little bloated.">>
+			<<set $_text_output to "당신은 일어나며 배가 약간 더부룩한 느낌을 받는다.">>
 		<<case "lightHeaded">>
-			<<set $_text_output to "You wake feeling a little lightheaded for a moment.">>
+			<<set $_text_output to "당신은 일어나며 잠시동안 약간 몽롱한 느낌을 받는다.">>
 		<<case "dizzy">>
-			<<set $_text_output to "You wake feeling a little dizzy but it passes quickly.">>
+			<<set $_text_output to "당신은 일어나며 약간 어지러운 느낌을 받았으나 금방 괜찮아진다.">>
 		<<case "mildNausea">>
-			<<set $_text_output to "You wake feeling a little nauseous but it passes quickly.">>
+			<<set $_text_output to "당신은 일어나며 약간 메스꺼운 느낌을 받았으나 금방 괜찮아진다.">>
 		<<case "nausea">>
-			<<set $_text_output to "You wake feeling nauseous but it passes after some time.">>
+			<<set $_text_output to "당신은 일어나며 메스꺼운 느낌을 받았으나 시간이 지나자 괜찮아진다.">>
 		<<case "dryheaving">>
 			<<if $location is "wolf_cave">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the cave. You're forced to do a dry heave by it.">>
+				<<set $_text_output to "당신은 메스꺼운 느낌을 받으며 일어나, 재빨리 침대에서 동굴 가장자리로 뛰쳐나간다. 당신은 그곳에다 어쩔 수 없이 헛구역질을 한다.">>
 			<<elseif $location is "farm">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the barn. You're forced to do a dry heave by it.">>
+				<<set $_text_output to "당신은 메스꺼운 느낌을 받으며 일어나, 재빨리 침대에서 외양간 가장자리로 뛰쳐나간다. 당신은 그곳에다 어쩔 수 없이 헛구역질을 한다.">>
 			<<elseif $location is "tower">>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to the edge of the tower. You're forced to do a dry heave over it.">>
+				<<set $_text_output to "당신은 메스꺼운 느낌을 받으며 일어나, 재빨리 침대에서 탑 가장자리로 뛰쳐나간다. 당신은 그 위에서 어쩔 수 없이 헛구역질을 한다.">>
 			<<else>>
-				<<set $_text_output to "You wake up feeling nauseous, causing you to scramble out of bed to a nearby bin. You're forced to do a dry heave into it.">>
+				<<set $_text_output to "당신은 메스꺼운 느낌을 받으며 일어나, 재빨리 침대에서 근처 쓰레기통으로 뛰쳐나간다. 당신은 그 안에다 어쩔 수 없이 헛구역질을 한다.">>
 			<</if>>
 			<<if $awareness gte 200 and $sciencetrait gte 4 and _pregnancy.totalBirthEvents gt 1>>
-				<<set $_text_output += " Maybe you should get tested.">>
+				<<set $_text_output += " 어쩌면 임신테스트를 받아보는 것이 좋을 것 같다.">>
 			<</if>>
 		<<case "lightBabyKick">>
-			<<set $_text_output to "You wake up feeling a light kick coming from your baby.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 당신의 아기가 가볍게 발을 차는 것을 느끼며 일어난다.<<stress -10>><<lstress>>">>
 		<<case "babyKick">>
-			<<set $_text_output to "You wake up feeling a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+			<<set $_text_output to "당신은 당신의 아기가 발을 차는 것을 느끼며 일어난다.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
 		<<case "babyMovement">>
-			<<set $_text_output to "You wake up feeling your baby moving around.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 당신의 아기가 몸을 뒤집는 것을 느끼며 일어난다.<<stress -10>><<lstress>>">>
 		<<case "babyHiccup">>
-			<<set $_text_output to "You wake up feeling some baby hiccups.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 아기가 딸꾹질하는 것을 느끼며 일어난다.<<stress -10>><<lstress>>">>
 		<<case "earlyContractions">>
-			<<set $_text_output to "You wake up to a brief and sporadic contraction.<<stress 1>><<gstress>>">>
+			<<set $_text_output to "당신은 잠시동안 간헐적인 진통을 느끼며 일어난다.<<stress 1>><<gstress>>">>
 		<<case "bellySize">>
-			<<set $_text_output to "You wake and take a look at your growing belly.">>
+			<<set $_text_output to "당신은 일어나 당신의 커진 배를 쳐다본다.">>
 			<<if _pregnancy.potentialFathers.length is 1>>
-				<<set $_text_output += "  It's clear that "+ _pregnancy.potentialFathers[0] +" was who got you pregnant.">>
+				<<NPCdesc_ga _pregnancy.potentialFathers[0]>><<set $_text_output += "  아이 아빠는 "+ _trResult +" 확실하다.">>
 			<<else>>
-				<<set $_text_output += " You wonder who got you pregnant.">>
+				<<set $_text_output += " 당신은 누가 당신을 임신시켰는지 궁금해한다.">>
 			<</if>>
 			<<set _pregnancy.awareOf to true>>
 	<</switch>>
@@ -960,27 +964,27 @@
 	<</switch>>
 	<<switch _dailyEvent>>
 		<<case "cramping">>
-			<<set $_text_output to "You feel some cramping near your vagina.<<stress 3>><<gstress>>">>
+			<<set $_text_output to "당신은 당신의 질 근처에서 약간의 경련을 느낀다.<<stress 3>><<gstress>>">>
 		<<case "bloated">>
-			<<set $_text_output to "You feel a little bloated.<<stress 3>><<gstress>>">>
+			<<set $_text_output to "당신은 배가 약간 더부룩한 느낌을 받는다.<<stress 3>><<gstress>>">>
 		<<case "lightHeaded">>
-			<<set $_text_output to "You feel a little lightheaded for a moment.">>
+			<<set $_text_output to "당신은 잠시동안 약간 몽롱한 느낌을 받는다.">>
 		<<case "dizzy">>
-			<<set $_text_output to "You start feeling a little dizzy but it passes quickly.">>
+			<<set $_text_output to "당신은 약간 어지러운 느낌을 받았으나 금방 괜찮아진다.">>
 		<<case "mildNausea">>
-			<<set $_text_output to "You start feeling a little nauseous but it passes quickly.">>
+			<<set $_text_output to "당신은 약간 메스꺼운 느낌을 받았으나 금방 괜찮아진다.">>
 		<<case "nausea">>
-			<<set $_text_output to "You start feeling nauseous but it passes after some time.">>
+			<<set $_text_output to "당신은 메스꺼운 느낌을 받았으나 시간이 지나자 괜찮아진다.">>
 		<<case "lightBabyKick">>
-			<<set $_text_output to "You feel a light kick coming from your baby.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 당신의 아기가 가볍게 발을 차는 것을 느낀다.<<stress -10>><<lstress>>">>
 		<<case "babyKick">>
-			<<set $_text_output to "You feel a kick coming from your baby.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
+			<<set $_text_output to "당신은 당신의 아기가 발을 차는 것을 느낀다.<<stress -10>><<lstress>><<pain 1>><<gpain>>">>
 		<<case "babyMovement">>
-			<<set $_text_output to "You feel your baby moving around.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 당신의 아기가 몸을 뒤집는 것을 느낀다.<<stress -10>><<lstress>>">>
 		<<case "babyHiccup">>
-			<<set $_text_output to "You feel some baby hiccups.<<stress -10>><<lstress>>">>
+			<<set $_text_output to "당신은 아기가 딸꾹질하는 것을 느낀다.<<stress -10>><<lstress>>">>
 		<<case "earlyContractions">>
-			<<set $_text_output to "You feel a brief and sporadic contraction.<<stress 1>><<gstress>>">>	
+			<<set $_text_output to "당신은 잠시동안 간헐적인 진통을 느낀다.<<stress 1>><<gstress>>">>	
 	<</switch>>
 <</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>><<if $dailyEvent is undefined>><br><</if>>
@@ -1028,6 +1032,7 @@
 	<<case "compound">>
 	<<case "temple">>
 	<<case "cave">>
+	<<case "prison">>
 	<<case "edencabin">>
 		<<if $sexStats.vagina.pregnancy.potentialFathers.includes("Eden")>>
 			/*Eden thinks it's his child?*/
@@ -1039,7 +1044,7 @@
 	<<case "schoolLibrarian">>
 		/*Wake up while being put in an ambulance?*/
 	<<default>>
-		With your waters broken, your too stressed to continue.
+		당신의 양수가 터지며, 당신은 계속하기에는 너무 스트레스를 받았다.
 <</switch>>
 <br><br>
 /*Link for alternative pregnancy birth events*/
@@ -1047,31 +1052,31 @@
 	<<case "forest">>
 		<<if _pregnancy.type is "wolf">>
 			/*wolves help you if the pc is pregnanct with wolves?*/
-			<<link [[Next|Pregnancy Birth Hospital Wolf 3]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Wolf 3]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<</if>>
 	<<case "edencabin">>
 		<<if $sexStats.vagina.pregnancy.potentialFathers.includes("Eden")>>
 			/*Alternative place to give birth?*/
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<</if>>
 	<<case "remy" "remyAbduction">>
 		/*Alternative place to give birth?*/
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+		<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 	<<case "farmroad">>
 		<<if $location is "farm" and $sexStats.vagina.pregnancy.potentialFathers.includes("Alex")>>
 			/*Alternative place to give birth?*/
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<<else>>
-			<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<</if>>
 	<<case "hospital">>
-		<<link [[Next|Pregnancy Birth Hospital]]>><<set $stress -= 5000>><<endevent>><</link>>
+		<<link [[다음|Pregnancy Birth Hospital]]>><<set $stress -= 5000>><<endevent>><</link>>
 	<<default>>
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
+		<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 <</switch>>
 <</widget>>
 
@@ -1104,41 +1109,41 @@
 		<<set $_genders[_pregnancy[$_i].gender]++>>
 	<</for>>
 	<<if _pregnancy[0].features.identical is true>>
-		<<set $_text_output to "Dr Harper thinks they are all identical <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>> due to them all being the same gender and their facial features being similar.">>
+		<<set $_text_output to "의사 하퍼는 그들이 일란성 <<if _pregnancy.currentCount is 3>>세쌍둥이<<else>>쌍둥이<</if>>라서 전부 같은 성별이며 얼굴형이 비슷하다고 생각한다.">>
 	<<elseif ($_genders.m is _pregnancy.currentCount or $_genders.f is _pregnancy.currentCount or $_genders.h is _pregnancy.currentCount) and _pregnancy.currentCount gt 1>>
-		<<set $_text_output to "Despite all being the same gender Dr Harper thinks they are not identical due to having slightly different facial features.">>
+		<<set $_text_output to "그들이 모두 같은 성별임에도 불구하고 의사 하퍼는 그들이 약간 다른 얼굴형을 하고 있어 일란성 쌍둥이가 아니라고 생각한다.">>
 	<<else>>
-		<<set $_text_output to "You have">>
+		<<set $_text_output to "당신은">>
 		<<if $_genders.m gt 0>>
 			<<switch $_genders.m>>
-				<<case 1>><<set $_text_output += " a">>
-				<<default>><<set $_text_output += " " + $_genders.m>>
+				<<case 1>><<set $_text_output += " 1명의">>
+				<<default>><<set $_text_output += " " + $_genders.m + "명의">>
 			<</switch>>
-			<<set $_text_output += " baby boy">><<if $_genders.m gt 1>><<set $_text_output += "s">><</if>>
+			<<set $_text_output += " 남자아기">><<if $_genders.m gt 1>><<set $_text_output += "">><</if>>
 			<<if $_genders.f gt 0 and $_genders.h gt 0>>
 				<<set $_text_output += ",">>
 			<<elseif $_genders.f gt 0 or $_genders.h gt 0>>
-				<<set $_text_output += " and">>
+				<<set $_text_output += "와">>
 			<</if>>
 		<</if>>
 		<<if $_genders.f gt 0>>
 			<<switch $_genders.f>>
-				<<case 1>><<set $_text_output += " a">>
-				<<default>><<set $_text_output += " " + $_genders.f>>
+				<<case 1>><<set $_text_output += " 1명의">>
+				<<default>><<set $_text_output += " " + $_genders.f + "명의">>
 			<</switch>>
-			<<set $_text_output += " baby girl">>
-			<<if $_genders.f gt 1>><<set $_text_output += "s">><</if>>
-			<<if $_genders.h gt 0>><<set $_text_output += " and">><</if>>
+			<<set $_text_output += " 여자아기">>
+			<<if $_genders.f gt 1>><<set $_text_output += "">><</if>>
+			<<if $_genders.h gt 0>><<set $_text_output += "와">><</if>>
 		<</if>>
 		<<if $_genders.h gt 0>>
 			<<switch $_genders.h>>
-				<<case 1>><<set $_text_output += " a">>
-				<<default>><<set $_text_output += " " + $_genders.h>>
+				<<case 1>><<set $_text_output += " 1명의">>
+				<<default>><<set $_text_output += " " + $_genders.h + "명의">>
 			<</switch>>
-			<<set $_text_output += " baby hermaphrodite">>
-			<<if $_genders.h gt 1>><<set $_text_output += "s">><</if>>
+			<<set $_text_output += " 후타나리 아기">>
+			<<if $_genders.h gt 1>><<set $_text_output += "">><</if>>
 		<</if>>
-		<<set $_text_output += ".">>
+		<<set $_text_output += "를 낳았다.">>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
@@ -1299,7 +1304,7 @@
 	<<if $args[0] is "pc">>
 		<<pregnancyBabyBase $args[0] $args[1] $args[2]>>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-		<<if $vaginaexist isnot 1 or $_pregnancy[0] isnot null>>
+		<<if !$player.vaginaExist or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
 		<<if _pills.pregnancy.type is "fertility">>
@@ -1442,7 +1447,7 @@
 	<<pregnancyBabyBase $args[0] $args[1] $args[2]>>
 	<<if $args[0] is "pc">>
 		<<set $_pregnancy to $sexStats.vagina.pregnancy>>
-		<<if $vaginaexist isnot 1 or $_pregnancy[0] isnot null>>
+		<<if !$player.vaginaExist or $_pregnancy[0] isnot null>>
 			<<set _prevent to true>>
 		<</if>>
 	<<else>>

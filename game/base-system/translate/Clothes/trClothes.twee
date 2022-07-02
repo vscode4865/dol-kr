@@ -52,44 +52,55 @@
 
 
 <<widget "trClothes">><<silently>>
-	<<trClothes_init $args[0]>>
-	
-	<<if _trClothes[$args[0]] isnot undefined>>
-		<<set _trTemp to _trClothes[$args[0]].find(function(select){
-					if(select.name == $args[1] or select.variable == $args[1]){return true;
-					}})>>
+	<<set $_part to $args[0]>><<set $_name to $args[1]>>
+	<<if $args[2] is undefined or $args[2].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_mode to "name">><<set $_post to $args[2]>><<set $_sep to $args[3]>>
 	<<else>>
-		<<set _trResult to "partSelectionErr:"+$args[0]>>
+		<<set $_mode to $args[2]>><<set $_post to $args[3]>><<set $_sep to $args[4]>>
 	<</if>>
 
-	<<if _trTemp is undefined>>
-		<<set _trResult to "clothesSelectionErr:"+$args[1]>>
+	<<trClothes_init $_part>>
+
+	<<if _trClothes[$_part] isnot undefined>>
+		<<set _trTemp to _trClothes[$_part].find(function(select){
+					if(select.name == $_name or select.variable == $_name){return true;
+					}})>>
 	<<else>>
-		<<if $args[2] is undefined>>
+		<<set _trResult to "partSelectionErr:"+$_part>>
+	<</if>>
+	
+	<<if _trTemp is undefined>>
+		<<set _trResult to "clothesSelectionErr:"+$_name>>
+	<<else>>
+		<<switch $_mode>>
+			<<case "name">>
 				<<set _trResult to _trTemp.name_ko>>
-		<<else>>
-			<<switch $args[2]>>
-				<<case "name">>
-					<<set _trResult to _trTemp.name_ko>>
-					<<if $args[3] isnot undefined>>
-						<<trPost _trTemp.post $args[3] $args[4]>>
-					<</if>>
-				<<case "desc" "description">>
-					<<set _trResult to _trTemp.description>>
-				<<default>>
-					<<set _trResult to "ModeSelectionErr:"+$args[2]>>
-			<</switch>>
-		<</if>>
+				<<if $_post isnot undefined>>
+					<<trPost _trTemp.post $_post $_sep>>
+				<</if>>
+			<<case "desc" "description">>
+				<<set _trResult to _trTemp.description>>
+			<<default>>
+				<<set _trResult to "ModeSelectionErr:"+$_mode>>
+		<</switch>>
 	<</if>>
 <</silently>><</widget>>
 
 
 <<widget "trSearchClothes">><<silently>>
+	<<set $_name to $args[0]>>
+	<<if $args[1] is undefined or $args[1].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_mode to "name">><<set $_post to $args[1]>><<set $_sep to $args[2]>>
+	<<else>>
+		<<set $_mode to $args[1]>><<set $_post to $args[2]>><<set $_sep to $args[3]>>
+	<</if>>
+
 	<<trClothes_init>>
 	<<set _trClothesIndexTemp to Object.getOwnPropertyNames(_trClothes)>>
 	<<for _trIndexTemp, _trClothesTypeTemp range _trClothesIndexTemp>>
 		<<set _trTemp to _trClothes[_trClothesTypeTemp].find(function(select){
-					if(select.name == $args[0] /*or select.variable == $args[0]*/){return true;
+					if(select.name == $_name /*or select.variable == $_name*/){
+						return true;
 					}})>>
 		<<if _trTemp is undefined>>
 			<<continue>>
@@ -98,19 +109,19 @@
 		<</if>>
 	<</for>>
 	<<if _trTemp isnot undefined>>
-		<<if $args[1] is undefined or $args[1] is "name">>
+		<<if $_mode is "name">>
 			<<set _trResult to _trTemp.name_ko>>
-		<<elseif $args[1] is "desc" or $args[1] is "description">>
+		<<elseif $_mode is "desc" or $_mode is "description">>
 			<<set _trResult to _trTemp.description>>
 		<<else>>
-			<<set _trResult to "modeSelectionErr: "+$args[1]>>
+			<<set _trResult to "modeSelectionErr: "+$_mode>>
 		<</if>>
 
-		<<if $args[2] isnot undefined>>
-			<<trPost _trTemp.post $args[2] $args[3]>>
+		<<if $_post isnot undefined>>
+			<<trPost _trTemp.post $_post $_sep>>
 		<</if>>
 	<<else>>
-		<<set _trResult to "notfoundErr: "+$args[0]>>
+		<<set _trResult to "trSearchClothes:notfoundErr: "+$_name>>
 	<</if>>
 <</silently>><</widget>>
 
@@ -121,8 +132,8 @@
  * @param worn clothing article, State.variables.worn.XXXX
  * @return {string} condition key word ("tattered"|"torn|"frayed"|"full")
  */
-window.trIntegrityKeyword = function(worn) {
-	const i = worn.integrity/worn.integrity_max;
+window.trIntegrityKeyword = function(worn, slot) {
+	const i = worn.integrity/clothingData(slot,worn,'integrity_max');
 	if (i <= 0.2) {
 		return "너덜너덜한"
 	} else if (i <= 0.5) {

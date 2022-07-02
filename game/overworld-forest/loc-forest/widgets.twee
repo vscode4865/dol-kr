@@ -1,6 +1,8 @@
 :: Widgets Forest [widget]
 <<widget "forestmove">>
-<<if $forestmove is "quickly">>
+<<if $possessed>>
+	당신은 비틀거리며 숲을 지나간다. 당신은 당신이 어디로 가는지 알고 있다.
+<<elseif $forestmove is "quickly">>
 	당신은 거칠고 나무가 우거진 지형에서도 가능한 빠르게 움직인다. 발 아래서 잔가지와 떨어진 나뭇가지들이 부러진다.
 <<elseif $forestmove is "normally">>
 	당신은 나무 사이로 걸어 간다. 조용한 소리와 부드러운 향기가 이 여정을 즐겁게 만든다.
@@ -26,14 +28,18 @@
 <<widget "forestdeeper">>
 깊은 숲속으로 들어간다.
 <br>
-<<if $worn.feet.type.includes("heels")>>
+<<if $worn.feet.type.includes("heels") and !$possessed>>
 	<<link [[하이힐로 절뚝거리며 걷는다 (0:30)|Forest]]>><<set $forestmod to 3>><<set $forest += 5>><<pass 30>><<set $forestmove to "hobble">><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><</link>><<gharass>>
 <<else>>
 	<<if !$worn.feet.type.includes("shackle")>>
 		<<runicon>><<link [[빠르게 걷는다 (0:05)|Forest]]>><<set $forestmod to 3>><<set $forest += 5>><<pass 5>><<set $forestmove to "quickly">><<if $foresthunt gte 1>><<set $foresthunt += 0.5>><</if>><</link>><<gharass>>
 		<br>
 	<</if>>
-	<<walkicon>><<link [[평범하게 걷는다 (0:10)|Forest]]>><<set $forestmod to 1.5>><<set $forest += 5>><<set $forestmove to "normally">><<pass 10>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><</link>>
+	<<if $nextPassageCheck is "Forest Blood Deeper">>
+		<span class="nextLink"><<walkicon>><<link [[호수.|Forest Blood Deeper]]>><<set $forestmod to 1.5>><<set $forest += 5>><<set $forestmove to "normally">><</link>></span>
+	<<else>>
+		<<walkicon>><<link [[평범하게 걷는다 (0:10)|Forest]]>><<set $forestmod to 1.5>><<set $forest += 5>><<set $forestmove to "normally">><<pass 10>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><</link>>
+	<</if>>
 	<br>
 	<<sneakicon>><<link [[조심히 걷는다 (0:30)|Forest]]>><<set $forestmod to 1>><<set $forest += 5>><<pass 30>><<set $forestmove to "carefully">><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><</link>><<lharass>>
 <</if>>
@@ -56,14 +62,18 @@
 <<widget "forestlessdeep">>
 마을로 향한다.
 <br>
-<<if $worn.feet.type.includes("heels")>>
+<<if $worn.feet.type.includes("heels") and !$possessed>>
 	<<link [[하이힐로 절뚝거리며 걷는다 (0:30)|Forest]]>><<set $forestmod to 3>><<set $forest -= 5>><<pass 30>><<set $forestmove to "hobble">><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><</link>><<gharass>>
 <<else>>
 	<<if !$worn.feet.type.includes("shackle")>>
 		<<runicon>><<link [[빠르게 걷는다 (0:05)|Forest]]>><<set $forestmod to 3>><<set $forest -= 5>><<pass 5>><<set $forestmove to "quickly">><<if $foresthunt gte 1>><<set $foresthunt += 0.5>><</if>><</link>><<gharass>>
 		<br>
 	<</if>>
-	<<walkicon>><<link [[평범하게 걷는다 (0:10)|Forest]]>><<set $forestmod to 1.5>><<set $forest -= 5>><<set $forestmove to "normally">><<pass 10>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><</link>>
+	<<if $nextPassageCheck is "Forest Blood Less Deep">>
+		<span class="nextLink"><<walkicon>><<link [[호수.|Forest Blood Less Deep]]>><<set $forestmod to 1.5>><<set $forest -= 5>><<set $forestmove to "normally">><</link>></span>
+	<<else>>
+		<<walkicon>><<link [[평범하게 걷는다 (0:10)|Forest]]>><<set $forestmod to 1.5>><<set $forest -= 5>><<set $forestmove to "normally">><<pass 10>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><</link>>
+	<</if>>
 	<br>
 	<<sneakicon>><<link [[조심히 걷는다 (0:30)|Forest]]>><<set $forestmod to 1>><<set $forest -= 5>><<pass 30>><<set $forestmove to "carefully">><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><</link>><<lharass>>
 <</if>>
@@ -161,13 +171,16 @@
 		"찾았다." <<bhePost "이">> 짖는다. "나의 것."
 	<</if>>
 	<br><br>
+	<<if $monster is 1 or $bestialitydisable is "f">>
+		<<link [[다음|Forest Wolf]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		녀석은 나무들 사이로 당신을 쫓아온다. 당신은 녀석이 당신 뒤에 따라오는 소리가 들리지 않을 때까지 도망간다. 당신은 녀석을 따돌렸는지 녀석이 쫓아오는 게 지겨워졌는지 확신하지 못한다.
+		<<beastescape>><<gtiredness>><<tiredness 4>><<gathletics>><<athletics 2>><<physique 2>>
+		<br><br>
 
-	<<link [[다음|Forest Wolf]]>><<set $molestationstart to 1>><</link>>
-		<!-- It chases you through the woods. You run until you can no longer hear it behind you. You're not sure if you outran it or it grew bored. -->
-		<!-- <<beastescape>><<gtiredness>><<tiredness 4>><<gathletics>><<athletics 2>><<physique 2>> -->
-		<!-- <br><br> -->
-
-		<!-- <<link [[다음 (0:20)|Forest]]>><<pass 20>><<set $eventskip to 1>><</link>> -->
+		<<link [[다음 (0:20)|Forest]]>><<pass 20>><<set $eventskip to 1>><<endevent>><</link>>
+	<</if>>
 <</addinlineevent>>
 <<addinlineevent "forestoutskirts_safeperson">>
 	<<if $daystate is "night">>
@@ -216,134 +229,162 @@
 
 
 <<widget "eventforest">>
+<<if $foresthunt lte 0 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and ($wraith.hunt or $wraith.timer gte random(0, 40))>>
+	<<wHunt "forest">>
+<<else>>
+	<<cleareventpool>>
+	<<if $foresthunt lte 0>>
+		<<addinlineevent "forest_hunted" 0.5>>
+			오한이 척추를 타고 올라오며, 원초적인 본능이 경고한다. <span class="red">무언가 당신을 쫒는 중이다.</span>
+			<<npc "Black Wolf">>
+			<<set $rng2 to random(1, 2)>>
+			<<if $rng2 is 1 or ($bestialitydisable is "t" and $monster isnot 1)>>
+				<<set $edenforesthunt to 1>>
+				<<set $blackwolfhunt to 0>>
+			<<elseif $rng2 is 2>>
+				<<set $edenforesthunt to 0>>
+				<<set $blackwolfhunt to 1>>
+			<</if>>
+			<<set $foresthunt to 1>>
+			<<endevent>>
+			<br><br>
 
-<<cleareventpool>>
+			<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<</if>>
+	<<addevent "forestwolfspy" 0.25>>
+	<<addinlineevent "forest_wolf" 0.33>>
+		<<beastNEWinit 1 wolf>>
+		<!-- Modified for monster people -->
+			이빨을 드러낸 한 마리의 <<beasttype_i>> 나무 사이에서 모습을 드러낸다.
+			<<if $monster is 1>>
+				"먹잇감. 몸부림치지 마."
+			<</if>>
+			<br><br>
+		<<if $monster is 1 or $bestialitydisable is "f">>
+			<<link [[다음|Forest Wolf]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			녀석은 나무들 사이로 당신을 쫓아온다. 당신은 녀석이 당신 뒤에 따라오는 소리가 들리지 않을 때까지 도망간다. 당신은 녀석을 따돌렸는지 녀석이 쫓아오는 게 지겨워졌는지 확신하지 못한다.
+			<<beastescape>><<gtiredness>><<tiredness 4>><<gathletics>><<athletics 2>><<physique 2>>
+			<br><br>
 
-<<if $foresthunt lte 0>>
-	<<addinlineevent "forest_hunted" 0.5>>
-		오한이 척추를 타고 올라오며, 원초적인 본능이 경고한다. <span class="red">무언가 당신을 쫒는 중이다.</span>
-		<<set $rng2 to random(1, 2)>>
-		<<if $rng2 is 1>>
-			<<set $edenforesthunt to 1>>
-			<<set $blackwolfhunt to 0>>
-		<<elseif $rng2 is 2>>
-			<<set $edenforesthunt to 0>>
-			<<set $blackwolfhunt to 1>>
+			<<link [[다음 (0:20)|Forest]]>><<endevent>><<pass 20>><<set $eventskip to 1>><</link>>
 		<</if>>
-		<<set $foresthunt to 1>>
+	<</addinlineevent>>
+	<<addevent "forestbear" 0.15>>
+	<<addevent "forestrock" 0.25>>
+	<<addinlineevent "forest_clothingdamage">>
+		당신은 덤불 사이를 간신히 지나간다.
+		<<set $stripintegrity to 10>><<set $stripobject to "tree branch">><<stripobject>>
 		<br><br>
 
 		<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
 	<</addinlineevent>>
+	<<addevent "forestcutter" 0.15>>
+	<<runeventpool>>
 <</if>>
-<<addevent "forestwolfspy" 0.25>>
-<<addinlineevent "forest_wolf" 0.33>>
-	<<beastNEWinit 1 wolf>>
-	<!-- Modified for monster people -->
-	이빨을 드러낸 한 마리의 <<beasttype_i>> 나무 사이에서 모습을 드러낸다.
-	<<if $monster is 1>>
-		"먹잇감. 몸부림치지 마."
-	<</if>>
-	<br><br>
-	<<link [[다음|Forest Wolf]]>><<set $molestationstart to 1>><</link>>
-
-		<!-- It chases you through the woods. You run until you can no longer hear it behind you. You're not sure if you outran it or it grew bored. -->
-		<!-- <<beastescape>><<gtiredness>><<tiredness 4>><<gathletics>><<athletics 2>><<physique 2>> -->
-		<!-- <br><br> -->
-
-		<!-- <<link [[다음 (0:20)|Forest]]>><<pass 20>><<set $eventskip to 1>><</link>> -->
-<</addinlineevent>>
-<<addevent "forestbear" 0.15>>
-<<addevent "forestrock" 0.25>>
-<<addinlineevent "forest_clothingdamage">>
-	당신은 덤불 사이를 간신히 지나간다.
-	<<set $stripintegrity to 10>><<set $stripobject to "tree branch">><<stripobject>>
-	<br><br>
-
-	<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
-<</addinlineevent>>
-<<addevent "forestcutter" 0.15>>
-<<runeventpool>>
 
 <</widget>>
 
 
 <<widget "eventforestdeep">>
+<<if $foresthunt lte 0 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and ($wraith.hunt or $wraith.timer gte random(0, 20))>>
+	<<wHunt "forest">>
+<<else>>
+	<<cleareventpool>>
+	<<if $foresthunt lte 0>>
+		<<addinlineevent "deepforest_hunted">>
+			오한이 척추를 타고 올라오며, 원초적인 본능이 경고한다. <span class="red">무언가 당신을 쫒는 중이다.</span>
+			<<npc "Black Wolf">>
+			<<set $rng2 to random(1, 2)>>
+			<<if $rng2 is 1 or ($bestialitydisable is "t" and $monster isnot 1)>>
+				<<set $edenforesthunt to 1>>
+				<<set $blackwolfhunt to 0>>
+			<<elseif $rng2 is 2>>
+				<<set $edenforesthunt to 0>>
+				<<set $blackwolfhunt to 1>>
+			<</if>>
+			<<set $foresthunt to 1>>
+			<<endevent>>
+			<br><br>
 
-<<cleareventpool>>
-<<if $foresthunt lte 0>>
-	<<addinlineevent "deepforest_hunted">>
-		오한이 척추를 타고 올라오며, 원초적인 본능이 경고한다. <span class="red">무언가 당신을 쫒는 중이다.</span>
-		<<set $rng2 to random(1, 2)>>
-		<<if $rng2 is 1>>
-			<<set $edenforesthunt to 1>>
-			<<set $blackwolfhunt to 0>>
-		<<elseif $rng2 is 2>>
-			<<set $edenforesthunt to 0>>
-			<<set $blackwolfhunt to 1>>
+			<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<</if>>
+	<<addevent "forestwolfspy2">>
+	<<addinlineevent "deepforest_wolf2">>
+		<<beastNEWinit 2 wolf>>
+		한 쌍의 늑대가,
+		<<if ($monster isnot 1) or ($NPCList[0].pronoun is "m" and $NPCList[1].pronoun is "m") or ($NPCList[0].pronoun is "f" and $NPCList[1].pronoun is "f")>>
+			<<beastsplural>>
+		<<else>>
+			아니 늑대인간 수컷 한 마리와 암컷 한 마리가,
 		<</if>>
-		<<set $foresthunt to 1>>
+		나무 사이에서 튀어나온다. 이빨을 드러낸 채이다.
+		<<if $monster is 1>>
+			"찾았다." 그 증 하나가 짖는다. "포위됐다. 이제 넌 우리 거다."
+		<</if>>
+		<br><br>
+		<!-- Modified for monster people -->
+		<<if $monster is 1 or $bestialitydisable is "f">>
+			<<link [[다음|Forest Wolf2]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			그들은 나무들 사이로 당신을 쫓아온다. 당신은 그들이 당신 뒤에 따라오는 소리가 들리지 않을 때까지 도망간다. 당신은 그들을 따돌렸는지 녀석이 쫓아오는 게 지겨워졌는지 확신하지 못한다.
+			<<beastescape>><<gtiredness>><<tiredness 8>><<gathletics>><<athletics 4>><<physique 4>>
+			<br><br>
+
+			<<link [[다음 (0:40)|Forest]]>><<pass 40>><<set $eventskip to 1>><</link>>
+		<</if>>
+	<</addinlineevent>>
+	<<if $voredisable is "f" and $bestialitydisable is "f">>
+		<<addevent "forestsnake" 0.33>>
+	<</if>>
+	<<addevent "forestbear">>
+	<<if $tentacledisable is "f" and $voredisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+		<<addinlineevent "deepforest_slimecontrol">>
+			당신은 빽빽한 덤불 사이로 걸어간다. 공기는 꽃가루로 가득 차 있지만, 이상하게도 꽃은 보이지 않는다. 당신은 현기증을 느끼며, 나무에 기대 균형을 잡는다. 하얀 안개가 오래 지속된다.
+			<br><br>
+			<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+				<span class="lewd">당신은 머리속의 슬라임이 특정한 방향으로 계속 걸어가라고 명령하는 것을 느낀다.</span> 응한다면 보답을 할거라 약속하지만, 따르지 않는다면 어떤 일이 벌어질지 모른다며 협박한다.
+				<br><br>
+				<<link [[복종한다|Forest Pitcher Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<set $submissive += 1>><<set $slimeObey to true>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+				<br>
+				<<link [[반항한다|Forest Pitcher Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<set $submissive -= 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+				<br>
+			<<else>>
+				<<link [[마음이 진정될 때까지 기다린다 (0:30)|Forest Pitcher Wait]]>><<pass 30>><<arousal 1200>><<drugs 30>><</link>><<ggarousal>>
+				<br>
+				<<link [[계속 걷는다|Forest Pitcher Ignore]]>><</link>><<willpowerdifficulty 1 $willpowermax>>
+				<br>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+	<<if $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+		<<addinlineevent>>
+			무언가가 당신의 발목을 잡고, 당신은 발을 헛디디며 쓰러진다. 뒤를 돌아보니, 나무뿌리가 당신을 둥글게 휘감고 있다. 다른 몇 개의 뿌리는 덤불 사이로 꿈틀거린다.
+			<br><br>
+			<<link [[저항한다|Forest Tentacles]]>><<set $molestationstart to 1>><</link>>
+			<br>
+			<<if $deviancy gte 75>>
+				<<link [[당신을 휘감도록 허락한다|Forest Tentacles]]>><<set $molestationstart to 2>><</link>><<deviant5>>
+			<</if>>
+		<</addinlineevent>>
+	<</if>>
+	<<addevent "forestrock">>
+	<<if $bestialitydisable is "f" and $waspdisable is "f">>
+		<<addevent "forestwasps">>
+	<</if>>
+	<<addinlineevent "deepforest_clothingdamage">>
+		당신은 덤불 사이를 간신히 지나간다.
+		<<set $stripintegrity to 10>><<set $stripobject to "tree branch">><<stripobject>>
 		<br><br>
 
 		<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
 	<</addinlineevent>>
-<</if>>
-<<addevent "forestwolfspy2">>
-<<addinlineevent "deepforest_wolf2">>
-	<<beastNEWinit 2 wolf>>
-	한 쌍의 늑대
-	<<if ($monster isnot 1) or ($NPCList[0].pronoun is "m" and $NPCList[1].pronoun is "m") or ($NPCList[0].pronoun is "f" and $NPCList[1].pronoun is "f")>>
-		<<beastsplural>>
-	<<else>>
-		, 아니 늑대인간 수컷 한 마리와 암컷 한 마리
-	<</if>>
-	가 나무 사이에서 튀어나온다. 이빨을 드러낸 채이다.
-	<<if $monster is 1>>
-		"찾았다." 그 증 하나가 짖는다. "포위됐다. 이제 넌 우리 거다."
-	<</if>>
-	<br><br>
-	<!-- Modified for monster people -->
-	<<link [[다음|Forest Wolf2]]>><<set $molestationstart to 1>><</link>>
-
-		<!-- They chase you through the woods. You run until you can no longer hear them behind you. You're not sure if you outran them or they grew bored. -->
-		<!-- <<beastescape>><<gtiredness>><<tiredness 8>><<gathletics>><<athletics 4>><<physique 4>> -->
-		<!-- <br><br> -->
-
-		<!-- <<link [[다음 (0:40)|Forest]]>><<pass 40>><<set $eventskip to 1>><</link>> -->
-<</addinlineevent>>
-<<if $voredisable is "f" and $bestialitydisable is "f">>
-	<<addevent "forestsnake" 0.33>>
-<</if>>
-<<addevent "forestbear">>
-<<if $hallucinations gte 2 and $tentacledisable is "f" and $voredisable is "f">>
-	<<addinlineevent "deepforest_slimecontrol">>
-		당신은 빽빽한 덤불 사이로 걸어간다. 공기는 꽃가루로 가득 차 있지만, 이상하게도 꽃은 보이지 않는다. 당신은 현기증을 느끼며, 나무에 기대 균형을 잡는다. 하얀 안개가 오래 지속된다.
-		<br><br>
-		<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
-			<span class="lewd">당신은 머리속의 슬라임이 특정한 방향으로 계속 걸어가라고 명령하는 것을 느낀다.</span> 응한다면 보답을 할거라 약속하지만, 따르지 않는다면 어떤 일이 벌어질지 모른다며 협박한다.
-			<br><br>
-			<<link [[복종한다|Forest Pitcher Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<set $submissive += 1>><<set $slimeObey to true>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
-			<br>
-			<<link [[반항한다|Forest Pitcher Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<set $submissive -= 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
-			<br>
-		<<else>>
-			<<link [[마음이 진정될 때까지 기다린다 (0:30)|Forest Pitcher Wait]]>><<pass 30>><<arousal 1200>><<set $drugged += 30>><</link>><<ggarousal>>
-			<br>
-			<<link [[계속 걷는다|Forest Pitcher Ignore]]>><</link>><<willpowerdifficulty 1 $willpowermax>>
-			<br>
-		<</if>>
-	<</addinlineevent>>
-<</if>>
-<<if $hallucinations gte 2 and $tentacledisable is "f">>
-	<<addinlineevent>>
-		무언가가 당신의 발목을 잡고, 당신은 발을 헛디디며 쓰러진다. 뒤를 돌아보니, 나무뿌리가 당신을 둥글게 휘감고 있다. 다른 몇 개의 뿌리는 덤불 사이로 꿈틀거린다.
-		<br><br>
-		<<link [[저항한다|Forest Tentacles]]>><<set $molestationstart to 1>><</link>>
-		<br>
-		<<if $deviancy gte 75>>
-			<<link [[당신을 휘감도록 허락한다|Forest Tentacles]]>><<set $molestationstart to 2>><</link>><<deviant5>>
-		<</if>>
-	<</addinlineevent>>
+<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+	<<addevent "forestplantkiss">>
 <</if>>
 <<addevent "forestrock">>
 <<if $bestialitydisable is "f" and $waspdisable is "f">>
@@ -356,8 +397,8 @@
 
 	<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
 <</addinlineevent>>
-<<runeventpool>>
-
+	<<runeventpool>>
+<</if>>
 <</widget>>
 
 
@@ -422,7 +463,7 @@
 			저 앞에서 부드럽게 웅웅거리는 소리가 들린다. 커다란 벌집이 나무에 걸려 있다. 일벌들이 꽃가루를 찾아 벌집에 드나든다. 꿀에는 꽤 가치가 있을 것이다.
 			<br><br>
 
-			<<if $tending gte 800>>
+			<<if currentSkillValue('tending') gte 800>>
 				<<link [[벌집을 수확한다 (0:20)|Forest Honey Pick]]>><<pass 20>><</link>><<tendingdifficulty 800 1100>>
 				<br>
 			<<else>>
@@ -438,14 +479,14 @@
 
 <</widget>>
 
-
 <<widget "forestwolfspy">>
 
 양치류 아래 쪽의 어둠에서 한 쌍의 눈이 당신을 응시한다.
 <<gstress>><<stress 6>>
 <br><br>
+<<beastNEWinit 1 wolf>>
 <!-- Modified for monster people -->
-<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
+<<if ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and ($bestialitydisable is "f" or $monster is 1)>>
 	<span class="lewd">당신은 머리속의 슬라임이 네 발 모두 바닥에 붙이라는 명령하는 것을 느낀다. </span>응한다면 보답을 할 거라 약속하지만, 따르지 않는다면 어떤 일이 벌어질지 모른다며 협박한다.
 	<br><br>
 
@@ -459,15 +500,15 @@
 	<br>
 
 <<else>>
-	<<if $deviancy gte 15>>
+	<<if $deviancy gte 15 and ($bestialitydisable is "f" or $monster is 1)>>
 	<<link [[짝짓기 자세를 취한다|Forest Wolf Mate]]>><</link>><<deviant2>>
 	<br>
 	<</if>>
 	<<if $wolfgirl gte 6>>
-	<<link [[늑대처럼 울부짖는다|Forest Howl]]>><<stress -12>><<trauma -6>><<set $phase to 0>><</link>><<ltrauma>><<lstress>><<wolfgirl>>
+	<<link [[늑대처럼 울부짖는다|Forest Howl]]>><<endevent>><<stress -12>><<trauma -6>><<set $phase to 0>><</link>><<ltrauma>><<lstress>><<wolfgirl>>
 	<br>
 	<</if>>
-	<<link [[계속 걸어간다|Forest]]>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><<set $eventskip to 1>><</link>>
+	<<link [[계속 걸어간다|Forest]]>><<endevent>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><<set $eventskip to 1>><</link>>
 	<br>
 
 <</if>>
@@ -480,16 +521,16 @@
 나무 사이의 어둠에서 두 쌍의 눈이 당신을 응시한다.
 <<gstress>><<stress 6>>
 <br><br>
-
-<<if $deviancy gte 35>>
+<<beastNEWinit 2 wolf>>
+<<if $deviancy gte 35 and ($bestialitydisable is "f" or $monster is 1)>>
 <<link [[짝짓기 자세를 취한다|Forest Wolf Mate2]]>><</link>><<deviant3>>
 <br>
 <</if>>
 <<if $wolfgirl gte 6>>
-<<link [[늑대처럼 울부짖는다|Forest Howl]]>><<stress -12>><<trauma -6>><<set $phase to 1>><</link>><<ltrauma>><<lstress>><<wolfgirl>>
+<<link [[늑대처럼 울부짖는다|Forest Howl]]>><<endevent>><<stress -12>><<trauma -6>><<set $phase to 1>><</link>><<ltrauma>><<lstress>><<wolfgirl>>
 <br>
 <</if>>
-<<link [[계속 걸어간다|Forest]]>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><<set $eventskip to 1>><</link>>
+<<link [[계속 걸어간다|Forest]]>><<endevent>><<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>><<set $eventskip to 1>><</link>>
 <br>
 
 <</widget>>
@@ -542,20 +583,20 @@
 
 당신은 흙 속에서 얼마 되지 않은 곰의 발자국을 발견한다.
 <br><br>
-
+<<beastNEWinit 1 bear>>
 <<if $foresthunt gte 1>>
 당신은 당신을 사냥하는 무언가가 가까이 온 것을 느낀다.
 <br><br>
 <</if>>
 
-<<link [[우회로를 따라간다 (0:30)|Forest]]>><<pass 30>><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><<set $eventskip to 1>><</link>>
+<<link [[다른 길로 간다 (0:30)|Forest]]>><<endevent>><<pass 30>><<if $foresthunt gte 1>><<set $foresthunt += 2>><</if>><<set $eventskip to 1>><</link>>
 <br>
 <!-- Modified for Monster People -->
-<<if random(1, 5) is 5>>
+<<if random(1, 5) is 5 and ($bestialitydisable is "f" or $monster is 1)>>
 <<link [[무시한다|Forest Bear Molestation]]>><<set $molestationstart to 1>><</link>>
 <br>
 <<else>>
-<<link [[무시한다|Forest]]>><<set $eventskip to 1>><</link>>
+<<link [[무시한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
 <br>
 <</if>>
 <</widget>>
@@ -617,6 +658,37 @@
 <</widget>>
 
 
+<<widget "forestplantkiss">>
+<<generatePlant1>><<person1>>
+"Hi there!" You hear a voice beside you. A <<person "normal">> stands by a bush of tangled vines, waving at you cheerfully. <<He>> has <<plant_details>> scattered throughout <<his>> hair, and <<hes>> completely naked.
+<<arousal 600>><<garousal>>
+<br><br>
+
+"Cuties like you don't usually come this far into the forest," <<he>> says. "It's dangerous this deep.
+<<if $goooutsidecount + $semenoutsidecount gte 25>>
+	I'd ask if you made it through alright, but..." <<He>> eyes up the <<if $goooutsidecount gte 1 and $semenoutsidecount gte 1>>semen and slime<<elseif $goooutsidecount gte 1>>slime<<else>>semen<</if>> covering your body. "Yeah, you've had some fun."
+<<else>>
+	Hope you didn't run into any trouble. That'd be awful."
+<</if>>
+<br><br>
+
+The <<person "normal">> thinks for a moment, before smiling. "Hey, before you go, how about a kiss? Y'know, for good luck." <<He>> closes <<his>> eyes and leans forward, tapping <<his>> finger to <<his>> lips.
+<br><br>
+
+<<if $backgroundTraits.includes("plantlover") and $nectar_timer lte 14>>
+	<span class="pink">You know <<hes>> a <<personsimple>>. You can smell the nectar on <<his>> lips from here.</span> Your heart races, and you can barely think. You need <<his>> nectar. You need more of the sweet, intoxicating nectar.
+	<br><br>
+	<<link [["Kiss " + $NPCList[0].pronouns.him|Forest Plant Kiss]]>><</link>><<promiscuous1>><<kissvirginitywarning>>
+	<br>
+	<<link [[Refuse|Forest Plant Kiss Refuse]]>><<stress 12>><</link>><<ggstress>>
+<<else>>
+	<<link [["Kiss " + $NPCList[0].pronouns.him|Forest Plant Kiss]]>><</link>><<promiscuous1>><<kissvirginitywarning>>
+	<br>
+	<<link [[Refuse|Forest Plant Kiss Refuse]]>><</link>>
+<</if>>
+<</widget>>
+
+
 <<widget "forestdagger">>
 당신은 딱딱한 무언가를 밟는다. 무릎을 꿇고 숲에 잔해에서 그것을 잡아당긴다. 사용할 수 없을 만큼 낡은 고대 단검이 나왔다. 수집가들은 단검을 사기 위해 비용을 지불할 것이다.
 <br><br>
@@ -652,39 +724,63 @@
 <<if $blackwolfhunt is 1>>
 	<!-- Modified for monster people -->
 	<<npc "Black Wolf">>/*<<beastNNPCinit>>*/
-	<<if $syndromewolves is 1 and $wolfpacktrust gte 24>>
-	검은 늑대가 당신 쪽으로 달려온다! <<bHe_nun>> 흥분해서 위로 도약해 당신을 쓰러뜨린 다음 당신의 얼굴을 핥는다. 그리고 몇 걸음 떨어져 걷는다. <<bHe_nun>> 어깨너머로 돌아본다.
-	<<if $monster is 1>>
-		"다시 만나서 반갑다." <<bhe_ga>> 말한다. "여기 안전하지 않다. 춥다. 어둡다. 집에 돌아가자."
-	<</if>>
-	<br><br>
+	<<if $syndromewolves is 1 and $wolfpacktrust gte 24 and ($monster is 1 or $bestialitydisable is "f")>>
+		검은 늑대가 당신 쪽으로 달려온다! <<bHe_nun>> 흥분해서 위로 도약해 당신을 쓰러뜨린 다음 당신의 얼굴을 핥는다. 그리고 몇 걸음 떨어져 걷는다. <<bHe_nun>> 어깨너머로 돌아본다.
+		<<if $monster is 1>>
+			"다시 만나서 반갑다." <<bhe_ga>> 말한다. "여기 안전하지 않다. 춥다. 어둡다. 집에 돌아가자."
+		<</if>>
+		<br><br>
 
-	<<link [[늑대 동굴로 돌아간다 (0:30)|Wolf Cave Clearing]]>><<endevent>><<pass 30>><</link>>
-	<br>
-	<<link [[계속 걸어간다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-	<br>
+		<<link [[늑대 동굴로 돌아간다 (0:30)|Wolf Cave Clearing]]>><<endevent>><<pass 30>><</link>>
+		<br>
+		<<link [[계속 걸어간다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
 
-	<<elseif $syndromewolves is 1>>
-	검은 늑대가 당신 쪽으로 달려온다!
-	<<if $monster is 1>>
-		"Runaway, no good," <<bhe>> says.
-	<</if>>
-	<br><br>
+	<<elseif $syndromewolves is 1 and ($monster is 1 or $bestialitydisable is "f")>>
+		검은 늑대가 당신 쪽으로 달려온다!
+		<<if $monster is 1>>
+			"도망자, 좋지 않아," <<bhe_ga>> 말한다.
+		<</if>>
+		<br><br>
 
-	<<link [[다음|Forest Wolf Molestation]]>><<set $molestationstart to 1>><</link>>
+		<<link [[다음|Forest Wolf Molestation]]>><<set $molestationstart to 1>><</link>>
+	<<elseif $monster is 1 or $bestialitydisable is "f">>
+		근처에서 바스락거리는 소리가 들린다. 무성한 나뭇가지 아래서 빛나는 노란 눈 한 쌍이 당신을 노려보고 있다.
+		<<if $monster is 1>>
+			두꺼운 검은 털뭉치가 머리부터 발끝까지 벌거벗은 몸을 가린다. 원초적인 울음소리와 함께, <<bhe_ga>> 당신에게 달려든다!
+		<<else>>
+			무시무시한 검은 늑대가 당신에게 달려든다!
+		<</if>>
+		<br><br>
+
+		<<link [[다음|Forest Wolf Molestation]]>><<set $molestationstart to 1>><</link>>
 	<<else>>
-	근처에서 바스락거리는 소리가 들린다. 무성한 나뭇가지 아래서 빛나는 노란 눈 한 쌍이 당신을 노려보고 있다.
-	<<if $monster is 1>>
-		두꺼운 검은 털뭉치가 머리부터 발끝까지 벌거벗은 몸을 가린다. 원초적인 울음소리와 함께, <<bhe_ga>> 당신에게 달려든다!
+		당신은 근처에서 바스락거리는 소리를 듣는다. 빛나는 노란 눈 한 쌍이 나무 위에서 당신을 쳐다본다. 거대한 검은 늑대가 당신에게 달려든다! 당신은 공포에 차 도망쳤고, 어떻게 해서든 도망치는데 성공한다.<<beastescape>>
+		<br><br>
+		<<link [[다음|Forest]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $wraith and $wraith.hunt>>
+	<<set $wraith.hunt to 0>>
+	<<if $location is "forest">>
+		<<set $wraith.exit to "forest">>
+	<<elseif $location is "lake_ruin">>
+		<<set $wraith.exit to "lake_ruin">>
 	<<else>>
-		무시무시한 검은 늑대가 당신에게 달려든다!
+		<<set $wraith.exit to "lake">>
 	<</if>>
-	<br><br>
-
-	<<link [[다음|Forest Wolf Molestation]]>><<set $molestationstart to 1>><</link>>
-	<</if>>
+	<<wraithCaught>>
 <<else>>
-	<<if $edenfreedom gte 2 and $edendays gte 8>>
+	<<rngWraith 2 "night">>
+	<<if $wraith and _wraithEvent and ($wraith.state is "haunt" or $wraith.offspring is "dead") and $syndromeeden is 1>>
+		
+		<<set $wraith.mimic to "Eden">><<npc Eden>><<person1>>Something whizzes past and hits a tree in front of you. You shield your face with your arms and stagger backwards. Something presses against your back, and you hear a <<personsimple>>'s voice. "I've got you now. Don't resist."
+		<br><br>
+
+		<<link [[다음|Wraith Mimic Fight]]>><<set $wraith.exit to "forest">><<set $molestationstart to 1>><</link>>
+		<br>
+		
+	<<elseif $edenfreedom gte 2 and $edendays gte 8>>
 
 	<<npc Eden>><<person1>>팔이 뒤에서 당신의 목을 감싼다. 동시에 손이 당신의 뒷머리를 누른다. 당신은 <<personsimple_yi>> 목소리를 듣는다. "내내 너를 찾았어." 에덴이다. "이리 와, 어서 집에 가자."
 	<br><br>
@@ -841,8 +937,10 @@
 	<<set $danger to random(1, 10000)>>
 	<<if $danger gte (9900 - $allure)>>
 
-		<<if $rng gte 1>>
-		<<foresthunt>>
+		<<if $rng gte 71 and $forest gte 21 and $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+			<<link [[모든 것이 암흑 속으로 사라져간다...|Forest Plant Passout]]>><</link>>
+		<<else>>
+			<<foresthunt>>
 		<</if>>
 
 	<<else>>
@@ -899,14 +997,14 @@
 		<<link [[과학 프로젝트를 위해 가져간다|Forest Science Shroom]]>><<set $phase to 1>><</link>>
 		<br>
 	<</if>>
-	<<if $tending gte 300>>
+	<<if currentSkillValue('tending') gte 300>>
 		<<link [[팔 수 있을만한 버섯을 찾는다 (0:20)|Forest Mushrooms2 Pick]]>><<pass 20>><</link>><<tendingdifficulty 300 600>>
 		<br>
 	<<else>>
 		<span class="blue">팔 수 있을만한 버섯을 채집하려면 관리 스킬이 더 높아야 합니다.</span>
 		<br>
 	<</if>>
-	<<link [[하나 먹는다|Forest Mushrooms2]]>><<set $drunk += 60>><<arousal 3000>><<trauma -3>><<transform wolf 3>><</link>><<garousal>><<ltrauma>>
+	<<link [[하나 먹는다|Forest Mushrooms2]]>><<alcohol 60>><<arousal 3000>><<trauma -3>><<transform wolf 3>><</link>><<garousal>><<ltrauma>>
 	<br>
 <</if>>
 <br>
@@ -936,7 +1034,7 @@
 	<<if _forest_item is 1>>
 		당신은 공터 끝자락, 아주 오래된 나무의 둥치에서 난초를 발견했다.
 	<<else>>
-		<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
+		<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
 			<span class="red">붉은 줄무늬가 있는</span> 레몬이 작은 나무들에서 자라나 있다.
 		<<else>>
 			레몬이 작은 나무들에서 자라나 있다.
@@ -963,7 +1061,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <<if $forest lte 20>>
 	<<if _forest_item is 1>>
 		<<if !$plants_known.includes("lily")>>
-			<<if $science gte 300>>
+			<<if $sciencetrait gte 1>>
 				<<link [[씨앗을 찾는다 (0:30)|Forest Lily]]>><<pass 30>><<tending 6>><<set $plants_known.push("lily")>><</link>><<gtending>>
 				<br>
 			<<else>>
@@ -971,7 +1069,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 				<br>
 			<</if>>
 		<</if>>
-		<<if $tending gte 100>>
+		<<if currentSkillValue('tending') gte 100>>
 			<<link [[백합을 꺾는다 (0:20)|Forest Lily Pick]]>><<pass 20>><</link>><<tendingdifficulty 100 400>>
 			<br>
 		<<else>>
@@ -985,7 +1083,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <<elseif $forest lte 50>>
 	<<if _forest_item is 1>>
 		<<if !$plants_known.includes("red_rose")>>
-			<<if $science gte 400>>
+			<<if $sciencetrait gte 2>>
 				<<link [[씨앗을 찾는다 (0:30)|Forest Red Rose]]>><<pass 30>><<tending 6>><<set $plants_known.push("red_rose")>><<pain 6>><</link>><<gpain>><<gtending>>
 				<br>
 			<<else>>
@@ -993,7 +1091,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 				<br>
 			<</if>>
 		<</if>>
-		<<if $tending gte 200>>
+		<<if currentSkillValue('tending') gte 200>>
 			<<link [[붉은 장미를 꺾는다 (0:20)|Forest Red Rose Pick]]>><<pass 20>><</link>><<tendingdifficulty 200 500>>
 			<br>
 		<<else>>
@@ -1002,7 +1100,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 		<</if>>
 		<br>
 	<<else>>
-		<<if $tending gte 100>>
+		<<if currentSkillValue('tending') gte 100>>
 			<<link [[배를 딴다 (0:20)|Forest Pear Pick]]>><<pass 20>><</link>><<tendingdifficulty 100 400>>
 			<br>
 		<<else>>
@@ -1013,7 +1111,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <<else>>
 	<<if _forest_item is 1>>
 		<<if !$plants_known.includes("orchid")>>
-			<<if $science gte 500>>
+			<<if $sciencetrait gte 3>>
 				<<link [[씨앗을 찾는다 (0:30)|Forest Orchid]]>><<pass 30>><<tending 6>><<set $plants_known.push("orchid")>><</link>><<gtending>>
 				<br>
 			<<else>>
@@ -1021,7 +1119,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 				<br>
 			<</if>>
 		<</if>>
-		<<if $tending gte 300>>
+		<<if currentSkillValue('tending') gte 300>>
 			<<link [[난초를 꺾는다 (0:20)|Forest Orchid Pick]]>><<pass 20>><</link>><<tendingdifficulty 300 600>>
 			<br>
 		<<else>>
@@ -1029,8 +1127,8 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 			<br>
 		<</if>>
 	<<else>>
-		<<if $tending gte 200>>
-			<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lte 6>>
+		<<if currentSkillValue('tending') gte 200>>
+			<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
 				<<link [[레몬을 딴다 (0:20)|Forest Blood Lemon Pick]]>><<pass 20>><</link>><<tendingdifficulty 200 500>>
 				<br>
 			<<else>>
@@ -1050,6 +1148,5 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 <</widget>>
 
 <<widget "gwylanitem">>
-	
 	<<print either("트로피","야구공","야구 방망이","스노우 글로브","마법의 8번 당구공","탁구채","체스 세트","돼지저금통","머그컵","쿠키 상자","프라이팬","효자손","연필통","도시락 상자","용암 램프","손전등","뻐꾸기 시계","루빅스 큐브","지구본","물총","사전","손거울","싸구려 카메라","조개껍데기가 꽉찬 집락 비닐백","작은 발판사다리","어디 쓰이는지 모를 골동품")>> <<set _trResult to "하나">><<trPost 1 $args[0]>>_trResult
 <</widget>>

@@ -37,8 +37,9 @@
 		<<set $NPCList[_ii].type to 0>>
 		<<set $NPCList[_ii].stance to 0>>
 		<<set $NPCList[_ii].monster to 0>>
+		/*multiple orgasms code needs work
 		<<set $NPCList[_ii].maxOrgasms to 1>>
-		<<set $NPCList[_ii].orgasms to 0>>
+		<<set $NPCList[_ii].orgasms to 0>> */
 		<<set $NPCList[_ii].paid to 0>>
 		<<if _ii < 1>>
 			<<set $NPCList[_ii].breastsize to 3>>
@@ -47,6 +48,7 @@
 			<<set $NPCList[_ii].penisdesc to "penis">>
 			<<set $NPCList[_ii].penissize to 2>>
 			<<set $NPCList[_ii].health to 200>>
+			<<set $NPCList[_ii].healthmax to 200>>
 		<<else>>
 			<<set $NPCList[_ii].breastsize to 0>>
 			<<set $NPCList[_ii].breastsdesc to 0>>
@@ -56,8 +58,15 @@
 			<<set $NPCList[_ii].health to 0>>
 		<</if>>
 		<<set $enemyno -= 1>>
+		<<set $enemynomax -= 1>>
+		<<if $endeventerror is undefined>>
+			<<run EventSystem.Pop(_ii)>>
+		<</if>>
 		<<if $enemyno is 0>>
 			<<set $pronoun to 0>>
+			<<if $endeventerror is undefined>>
+				<<run EventSystem.Clear()>>
+			<</if>>
 		<</if>>
 		<<set $npc.splice(_leindex, 1)>>
 		<<set $npcnum.splice(_leindex, 1)>>
@@ -225,6 +234,16 @@ Zohar
 		<</if>>
 	<</if>>
 <</if>>
+
+<!-- Set Genital Existence -->
+<<if $NPCName[_i].type isnot "human">>
+	<<set $NPCName[_i].penis to  ($NPCName[_i].gender !== "f" ? 0 : "none")>>
+	<<set $NPCName[_i].vagina to ($NPCName[_i].gender !== "m" ? 0 : "none")>>
+<<else>>
+	<<set $NPCName[_i].penis to  ($NPCName[_i].gender !== "f" ? "clothed" : "none")>>
+	<<set $NPCName[_i].vagina to ($NPCName[_i].gender !== "m" ? "clothed" : "none")>>
+<</if>>
+
 <!-- Set breast defaults-->
 
 <<set _b_mod_lower to Math.clamp($breast_mod, 0, 12)>>
@@ -242,13 +261,32 @@ Zohar
 <</if>>
 <<if $NPCName[_i].breastsize gt 0>>
 	<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>
-	<<set $NPCName[_i].breastsdesc to _brdes[$NPCName[_i].breastsize]+" breasts">>
 	<<set $NPCName[_i].breastdesc to _brdes[$NPCName[_i].breastsize]+" breast">>
 <<else>>
-	<<set $NPCName[_i].breastsdesc to "nipples">>
 	<<set $NPCName[_i].breastdesc to "nipple">>
 <</if>>
+<<set $NPCName[_i].breastsdesc to $NPCName[_i].breastdesc + "s">>
+
 <!-- Set pp to defaults-->
+
+/* New way to set upper and lower bounds.
+ * This method makes use of all other slider positions, but does nothing when slider is between -1 and 1, 
+ * for a total of 15 unique positions vs the current method's 9. (max would be 17)
+ * Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation. 
+ */
+
+/*
+<<set _p_mod_upper to 8>><<set _p_mod_lower to 1>>
+<<if $penis_mod gt 0>>
+	<<set _p_mod_lower += $penis_mod - 1>>
+<<elseif $penis_mod lt 0>>
+	<<set _p_mod_upper += $penis_mod + 1>>
+<</if>>
+
+alternative way to write that:
+<<set _p_mod_lower to ($penis_mod > 0 ? $penis_mod : 1)>>
+<<set _p_mod_upper to ($penis_mod < 0 ? 9 + $penis_mod : 8)>>
+ */
 
 <<if $penis_mod is 8>>/*Clumsy way to get average penis size setting working for NNPCs.*/
 	<<set _p_mod_upper to 8>><<set _p_mod_lower to 8>>
@@ -276,13 +314,13 @@ Zohar
 		<<set $NPCName[_i].penisdesc to "none">>
 	<<else>>
 		<<switch random (_p_mod_lower, _p_mod_upper)>>
-		<<case 5 6 7>>
-			<<set $NPCName[_i].penisdesc to either("thick cock","hefty cock","big cock","large cock","veiny cock","meaty cock")>>
-			<<set $NPCName[_i].penissize to 3>>
 		<<case 8>>
 			<<set $NPCName[_i].penisdesc to either("massive cock","huge cock","humongous cock","immense cock","gigantic cock","enormous cock")>>
 			<<set $NPCName[_i].penissize to 4>>
-		<<case 2 3 4 5>>
+		<<case 5 6 7>>
+			<<set $NPCName[_i].penisdesc to either("thick cock","hefty cock","big cock","large cock","veiny cock","meaty cock")>>
+			<<set $NPCName[_i].penissize to 3>>
+		<<case 2 3 4>>
 			<<set $NPCName[_i].penisdesc to "penis">>
 			<<set $NPCName[_i].penissize to 2>>
 		<<default>>
@@ -305,6 +343,14 @@ Zohar
 	<</switch>>
 <</if>>
 
+<<switch $NPCName[_i].nam>>
+	<<case "Jordan">> <<set $NPCName[_i].title to ($NPCName[_i].pronoun is "m" ? "monk" : "nun")>>
+	<<case "Leighton">> <<set $NPCName[_i].title to ($NPCName[_i].pronoun is "m" ? "headmaster" : "headmistress")>>
+	<<case "Eden">> <<set $NPCName[_i].title to ($NPCName[_i].pronoun is "m" ? "hunter" : "huntress")>>
+	<<case "Avery">> <<set $NPCName[_i].title to ($NPCName[_i].pronoun is "m" ? "businessman" : "businesswoman")>>
+<</switch>>
+
+<<generatePronouns $NPCName[_i]>>
 <</for>>
 
 <</widget>>
@@ -332,9 +378,6 @@ Zohar
 	<!-- Special Cases NNPC Variables, Introductions, Adjustments -->
 	<<switch _nam>>
 	<<case Kylar>>
-		<<set $kylartimer to 0>>
-		<<set $kylarstreettimer to 0>>
-		<<set $kylarraped to 0>>
 		<<set $NPCName[$NPCNameList.indexOf("Kylar")].state to 0>>
 		<<set $NPCName[_i].virginity to clone(_allVirginitiesPresent)>>
 	<<case Robin>>
@@ -408,8 +451,6 @@ Zohar
 		<<set $NPCName[$NPCNameList.indexOf("Whitney")].dom to 10>>
 	<<case "Great Hawk">>
 		<<set $NPCName[$NPCNameList.indexOf("Great Hawk")].dom to 50>>
-		<<set $NPCName[_i].virginity.penile to false>>
-		<<set $NPCName[_i].virginity.vaginal to false>>
 	<<case "Black Wolf">>
 		<<set $NPCName[_i].virginity.penile to false>>
 		<<set $NPCName[_i].virginity.vaginal to false>>
@@ -459,14 +500,31 @@ Zohar
 /* Prepare the call for multiple Named NPCs at the same time.
 * We do this by changing all $NPCList[0] calls to $NPCList[x] in which x can be any temporary variable. In this case, we'll use _npcno.
 * We also give the option to set the Named NPC in any available row if so desired, by calling a second argument $args[1]. In case no $args[1] is passed, it will default to the first row.
+* We also now have the option to have the Named NPC be set into the first available slot instead, by setting the secent argument $args[1] to a negative number, such as -1. However this will bypass the check for npcs that have broken free from a previous passage.
 * Remember: available rows go from 0 to 5 ($NPCList[0] to $NPCList[5]). No more than that.
 */
-<<if $args[1]>>
+<<if $args[1] lt 0>>
+	<<for _controller to 0; _controller lte $NPCList.length; _controller++>>
+		<<if _controller gte 6>>
+			<!-- Since 6 is past our limit, we want to alert the user something went wrong. For simplicity, we'll set _npcno to 0 and overwrite $NPCList[0] -->
+			<span class="red"> Error: There are already 6 active NPCs. Clearing NPC 0 to make space for Named NPC.</span>
+			<<set _npcno to 0>>
+			<<clearsinglenpc 0>>
+			<<set _overwrite to true>>
+			<<break>> <!-- Always remember to break the for loop when the condition is met -->
+		<</if>>
+		<<if $NPCList[_controller].gender is undefined and $NPCList[_controller].description is undefined>>
+			<!-- These comparisons could be changed to a proper variable, for example $NPCList[x].active which would store if NPC x is active or not. To make things simple, we compare to .gender and .description since those two are always set to something other than 0 if the NPC in question is in fact active -->
+			<<set _npcno to clone(_controller)>>
+			<<break>> <!-- Always remember to break the for loop when the condition is met -->
+		<</if>>
+	<</for>>
+<<elseif $args[1]>>
 	<<set _npcno to $args[1] - 1>>
 <<else>>
 	<<set _npcno to 0>>
 <</if>>
-<<if _npcno is 0 and $enemyno gte 1>>
+<<if _npcno is 0 and $enemyno gte 1 and !_overwrite>>
 	<<set $endeventerror to $lastgenerated>>
 	<<endevent phaseless>>
 <</if>>
@@ -516,25 +574,29 @@ Zohar
 <<set $NPCList[_npcno].lefthand to 0>>
 <<set $NPCList[_npcno].righthand to 0>>
 <<set $NPCList[_npcno].mouth to 0>>
-<<set $NPCList[_npcno].anus to 0>>
+<<set $NPCList[_npcno].anus to 0>>/* is not actually used anywhere */
 <<set $NPCList[_npcno].chest to 0>>
+
+<<switch _nam>>
+<<case "Eden" "Black Wolf" "Great Hawk">>
+	<<set $NPCList[_npcno].health to 600>>
+	<<set $NPCList[_npcno].healthmax to 600>>
+<<case "Bailey">>
+	<<set $NPCList[_npcno].health to 400>>
+	<<set $NPCList[_npcno].healthmax to 400>>
+<<default>>
+	<<set $NPCList[_npcno].health to 200>>
+	<<set $NPCList[_npcno].healthmax to 200>>
+<</switch>>
 
 <<set $NPCList[_npcno].breastsize to $NPCName[_i].breastsize>>
 <<set $NPCList[_npcno].breastsdesc to $NPCName[_i].breastsdesc>>
 <<set $NPCList[_npcno].breastdesc to $NPCName[_i].breastdesc>>
-<<set $NPCList[_npcno].vagina to "clothed">>
+<<set $NPCList[_npcno].vagina to $NPCName[_i].vagina>>
 
-<<set $NPCList[_npcno].penis to "clothed">>
+<<set $NPCList[_npcno].penis to $NPCName[_i].penis>>
 <<set $NPCList[_npcno].penissize to $NPCName[_i].penissize>>
 <<set $NPCList[_npcno].penisdesc to $NPCName[_i].penisdesc>>
-
-<<if $NPCName[_i].gender is "m">>
-	<<set $NPCList[_npcno].vagina to "none">>
-<</if>>
-<<if $NPCName[_i].gender is "f">>
-	<<set $NPCList[_npcno].penis to "none">>
-<</if>>
-
 
 <<set $NPCList[0].chastity to clone($NPCName[_i].chastity)>>
 
@@ -571,39 +633,23 @@ Zohar
 	<<set $NPCList[0].lefthand to "none">>
 	<<set $NPCList[0].righthand to "none">>
 	<<set $NPCList[0].stance to "approach">>
-	<<set $NPCList[0].penis to 0>>
-	<<set $NPCList[0].vagina to 0>>
-	<<if $NPCName[_i].gender is "m">>
-		<<set $NPCList[0].vagina to "none">>
-	<</if>>
-	<<if $NPCName[_i].gender is "f">>
-		<<set $NPCList[0].penis to "none">>
-	<</if>>
 	<<if $blackWolfMonsterRoll isnot undefined and $blackwolfmonster is 1>>
 		<<if $blackWolfMonsterRoll is true>>
 			<<set $NPCList[0].monster to "monster">>
 			<<set $monster to 1>>
-			<<if $NPCList[0].pronoun is "f">>
-				<<set $NPCList[0].type to $NPCList[0].type + "girl">>
-			<<else>>
-				<<set $NPCList[0].type to $NPCList[0].type + "boy">>
-			<</if>>
+			<<set $NPCList[0].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
 		<<else>>
 			<<set $NPCList[0].monster to 0>>
 			<<set $NPCList[0].pronoun to "i">>
 		<</if>>
-	<<elseif $blackwolfmonster gte 1 or $bestialitydisable is "t">>
-		<<if ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or ($blackwolfmonster is 2) or ($bestialitydisable is "t")>>
+	<<elseif $blackwolfmonster gte 1>>
+		<<if ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or ($blackwolfmonster is 2)>>
 			<<set $blackWolfMonsterRoll to true>>
 			<<set $NPCList[0].monster to "monster">>
 			<<set $monster to 1>>
-			<<if $NPCList[0].pronoun is "f">>
-				<<set $NPCList[0].type to $NPCList[0].type + "girl">>
-			<<else>>
-				<<set $NPCList[0].type to $NPCList[0].type + "boy">>
-			<</if>>
+			<<set $NPCList[0].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
 		<<else>>
@@ -623,13 +669,6 @@ Zohar
 	<<set $NPCList[0].lefthand to "none">>
 	<<set $NPCList[0].righthand to "none">>
 	<<set $NPCList[0].stance to "approach">>
-	<<if $NPCName[_i].gender is "m">>
-		<<set $NPCList[0].penis to 0>>
-		<<set $NPCList[0].vagina to "none">>
-	<<else>>
-		<<set $NPCList[0].vagina to 0>>
-		<<set $NPCList[0].penis to "none">>
-	<</if>>
 	<<if $greatHawkMonsterRoll isnot undefined and $greathawkmonster is 1>>
 		<<if $greatHawkMonsterRoll is true>>
 			<<set $NPCList[0].monster to "monster">>
@@ -669,6 +708,8 @@ Zohar
 	<<set $monster to 0>>
 <</if>>
 
+<<run EventSystem.Push($passage, _npcno, $time)>>
+<<set $index to _npcno>>
 <</widget>>
 
 <<widget "npcrelationship">>
@@ -720,17 +761,19 @@ Zohar
 					<<set _rollover to -$NPCName[_i].corruption>>
 					<<set $NPCName[_i].purity += (_rollover + 4)>>
 					<<set $NPCName[_i].corruption = 0>>
+					<<set $purityRollover to 1>>
 				<<else>>
 					<<set $NPCName[_i].corruption = 1>>
 				<</if>>
-			<</if>>			
+			<</if>>
 		<<else>>
 			<<set $NPCName[_i].purity += _val>>
 			<<if $NPCName[_i].purity lte 0>>
 				<<if $corruptionEvent is 1>>
 					<<set _rollover to -$NPCName[_i].purity>>
-					<<set $NPCName[_i].corruption += (_rollover + 2)>>
+					<<set $NPCName[_i].corruption += (_rollover + 10)>>
 					<<set $NPCName[_i].purity = 0>>
+					<<set $corruptionRollover to 1>>
 				<<else>>
 					<<set $NPCName[_i].purity = 1>>		
 				<</if>>
@@ -844,7 +887,7 @@ Zohar
 		<</if>>
 	<<case Kylar>>
 		카일라는
-		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison">>
+		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison" and $location isnot "prison">>
 			<span class="red">수감되었다.</span>
 		<<elseif $NPCName[_i].love gte 90>>
 			<<if $NPCName[_i].rage gte 90>>
@@ -1045,5 +1088,16 @@ Zohar
 			<</for>>
 		<</if>>
 	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "NPCStatusCheck">>
+<!-- When NPCs are updated and made compatible with statusCheck-style widgets, add them to here. Make a new if statement, NOT an elseif -->
+<!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck "Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
+<<if $args[0].includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1>>
+	<<kylarStatusCheck>>
+<</if>>
+<<if $args[0].includes("Sydney") and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
+	<<sydneyStatusCheck>>
 <</if>>
 <</widget>>

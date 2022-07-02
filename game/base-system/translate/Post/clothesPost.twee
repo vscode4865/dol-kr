@@ -1,6 +1,6 @@
 :: widget clothesPost [widget nobr]
 <<widget "undertopPost">><<silently>>
-    <<if $worn.under_upper.name isnot "naked">>
+    <<if $worn.under_upper.exposed lte 0>>
         <<trClothes "under_upper" $worn.under_upper.name "name" $args[0] $args[1]>>
     <<else>>
         <<breastsPost $args[0] $args[1]>>
@@ -9,7 +9,7 @@
 
 <<widget "groinPost">><<silently>>
     <<genitalsPost $args[0] $args[1]>><<set _trTemp1 to _trResult>>
-    <<if !$worn.lower.type.includes("naked") and $worn.lower.skirt isnot 1>>
+    <<if !$worn.lower.type.includes("naked") and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
         <<trClothes "lower" $worn.lower.name>>
         <<set _trResult to _trResult + " 너머로 " + _trTemp1>>
     <<elseif !$worn.under_lower.type.includes("naked")>>
@@ -132,35 +132,36 @@
 
 <<widget "lewdnessPost">><<silently>>
 <<exposure>>
+<<genitalsPost $args[0] $args[1]>>
+<<set _genitals to _trResult>><<set _genitalsPost to _trPost>>
+<<undertopPost "과">><<set _undertop_and to _trResult>>
+<<undertopPost $args[0] $args[1]>>
+<<set _undertop to _trResult>><<set _undertopPost to _trPost>>
 <<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-	<<genitalsPost $args[0] $args[1]>>
-    <<set _trResult to "<span class=\"lewd\">노출된 " + _trResult + "</span>">>
+	<<set _trResult to '<span class="lewd">노출된 _genitals</span>'>><<set _trPost to _genitalsPost>>
 <<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
-   <<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>>
-   <<set _trResult to "<span class=\"lewd\">노출된 "+ _trResult + "</span>">>
+	<<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>><<set $_clothes to _trResult>>
+	<<set _trResult to '<span class="lewd">노출된 $_clothes</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<set _trResult to "<span class=\"lewd\">음탕함</span>">>
-   <<trPost 0 $args[0] $args[1]>>
+	<<set _trResult to '<span class="lewd">음탕함</span>'>><<trPost 0 $args[0] $args[1]>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
-   <<undertopPost $args[0] $args[1]>>
-   <<set _trResult to "<span class=\"lewd\">노출된 "+ _trResult + "</span>">>
+	<<set _trResult to '<span class="lewd">노출된 _undertop</span>'>><<set _trPost to _undertopPost>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>>
-   <<set _trResult to "<span class=\"lewd\">노출된 "+ _trResult + "</span>">>
+	<<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>><<set $_clothes to _trResult>>
+	<<set _trResult to '<span class="lewd">노출된 $_clothes</span>'>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
-   <<undertopPost "과">><<set _trTemp1 to _trResult>>
-   <<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>>
-   <<set _trResult to "<span class=\"lewd\">노출된 " + _trTemp1 + " "+ _trResult + "</span>">>
+	<<trClothes "under_lower" $worn.under_lower.name "name" $args[0] $args[1]>><<set $_clothes to _trResult>>
+	<<set _trResult to '<span class="lewd">노출된 _undertop_and $_clothes</span>'>>
 <<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
-   <<genitalsPost $args[0] $args[1]>>
-   <<set _trResult to "<span class=\"lewd\">노출된 " + _trResult + "</span>">>
+	<<set _trResult to '<span class="lewd">노출된 _genitals</span>'>><<set _trPost to _genitalsPost>>
 <<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
-    <<undertopPost "과">><<set _trTemp1 to _trResult>>
-    <<genitalsPost $args[0] $args[1]>>
-    <<set _trResult to "<span class=\"lewd\">노출된 " + _trTemp1 + " "+ _trResult + "</span>">>
+	<<if $player.penisExist and $player.vaginaExist>>
+		<<set _trResult to '<span class="lewd">노출된 _undertop, _genitals</span>'>><<set _trPost to _genitalsPost>>
+	<<else>>
+		<<set _trResult to '<span class="lewd">노출된 _undertop_and _genitals</span>'>><<set _trPost to _genitalsPost>>
+	<</if>>
 <<else>>
-   <<set _trResult to "<span class=\"lewd\">음탕함</span>">>
-   <<trPost 0 $args[0] $args[1]>>
+	<<set _trResult to '<span class="lewd">음탕함</span>'>><<trPost 0 $args[0] $args[1]>>
 <</if>>
 <</silently>><<print _trResult>><</widget>>
 
@@ -330,7 +331,7 @@
 
 <<widget "dressPost">><<silently>>
 <<if $worn.upper.set is $worn.lower.set>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		<<set _trResult to "드레스">><<trPost 1 $args[0] $args[1]>>
 	<<else>>
 		<<set _trResult to "옷">><<trPost 0 $args[0] $args[1]>>
@@ -342,13 +343,13 @@
 
 <<widget "skirtPost">><<silently>>
 <<if $worn.upper.set is $worn.lower.set>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		<<set _trResult to "드레스">><<trPost 1 $args[0] $args[1]>>
 	<<else>>
 		<<set _trResult to "옷">><<trPost 0 $args[0] $args[1]>>
 	<</if>>
 <<else>>
-	<<if $worn.lower.skirt is 1>>
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		<<set _trResult to "스커트">><<trPost 1 $args[0] $args[1]>>
 	<<else>>
 		<<set _trResult to "하의">><<trPost 1 $args[0] $args[1]>>
@@ -360,7 +361,7 @@
 <<if $worn.under_upper.set is $worn.under_lower.set>>
 	<<set _trResult to "속옷">><<trPost 0 $args[0] $args[1]>>
 <<else>>
-	<<if $worn.under_lower.skirt is 1>>
+	<<if setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].skirt is 1>>
 		<<set _trResult to "스커트">><<trPost 1 $args[0] $args[1]>>
 	<<else>>
 		<<if $worn.under_lower.gender is "f">>
@@ -380,7 +381,7 @@
 <<if $worn.under_upper.set is $worn.under_lower.set>>
 	<<set _trResult to "속옷">><<trPost 0 $args[0] $args[1]>>
 <<else>>
-	<<if $worn.under_upper.gender is "f" and $worn.under_upper.state_base is "midriff">>
+	<<if $worn.under_upper.gender is "f" and setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base is "midriff">>
 		<<set _trResult to "브라">><<trPost 1 $args[0] $args[1]>>
 	<<else>>
 		<<set _trResult to "상의">><<trPost 1 $args[0] $args[1]>>

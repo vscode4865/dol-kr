@@ -92,6 +92,7 @@
 			dancing:0,
 			swimming:0,
 			tending:0,
+			greenThumb:0,
 			seduction:0,
 			purity:0,
 			impurity:0,
@@ -109,6 +110,7 @@
 			dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
 			swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
 			tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
+			greenThumb:{cost:40, limit: 40, minCount: 1, count:_keys.count("Green Fingered"), exclusive:"", hidden:true},
 			seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
 			purity:{cost:20, limit: 100, minCount: 2, count:_purityFeats, exclusive:"impurity"},
 			impurity:{cost:20, limit: 100, minCount: 1, count:_keys.count("Demon"), exclusive:"purity"},
@@ -143,6 +145,7 @@
 			dancing:"춤 스킬 등급",
 			swimming:"수영 스킬 등급",
 			tending:"관리 스킬 등급",
+			greenThumb:"원예가 특성",
 			seduction:"유혹 스킬 등급",
 			purity:"일일 순결도 상승 보너스",
 			impurity:"일일 순결도 하락 보너스",
@@ -210,7 +213,7 @@
 	<<set $tending += _upgrades.tending / _details.tending.cost * 100>>
 <</if>>
 <<if _upgrades.swimming gt 0>>
-	<<set $swimmingskill to _upgrades.swimming / _details.swimming.cost * 100>>
+	<<set $swimmingskill += _upgrades.swimming / _details.swimming.cost * 100>>
 <</if>>
 <<if _upgrades.seduction gt 0>>
 	<<set $seductionskill to _upgrades.seduction / _details.seduction.cost * 100>>
@@ -221,7 +224,7 @@
 <<if _upgrades.impurity gt 0>>
 	<<set $featsPurityBoost to _upgrades.impurity / _details.impurity.cost * -1>>
 <</if>>
-<<if _upgrades.newLife gt 0>>
+<<if _upgrades.newLife gt 0 and $analpregdisable is "f">>
 	<<impregnate "tentacle" 400>>
 	<<fertilise>>
 	<<set _pregnancy to $sexStats.anus.pregnancy>>
@@ -237,6 +240,9 @@
 <</if>>
 <<if _upgrades.aNewBestFriend gt 0>>
 	<<parasite left_ear slime>>
+<</if>>
+<<if _upgrades.greenThumb gt 0>>
+	<<set $backgroundTraits.pushUnique("greenthumb")>>
 <</if>>
 <<if _upgrades.randomClothing gt 0>>
 	<<set _clothingItems to _upgrades.randomClothing * 3>>
@@ -432,7 +438,7 @@
 		<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
 			<<earnFeat "No More Control">>
 		<</if>>
-		<<if ($vaginaexist is 0 or $vaginalskill gte 1000) and ($penisexist is 0 or $penileskill gte 1000) and $oralskill gte 1000
+		<<if (!$player.vaginaExist or $vaginalskill gte 1000) and (!$player.penisExist or $penileskill gte 1000) and $oralskill gte 1000
 		and ($analskill gte 1000 or $analdisable is "t") and $handskill gte 1000 and $feetskill gte 1000 and $bottomskill gte 1000
 		and $thighskill gte 1000 and $chestskill gte 1000>>
 			<<earnFeat "Sex Specialist">>
@@ -471,17 +477,17 @@
 			<<earnFeat "Cattle">>
 		<</if>>
 		<<if $orgasmtrait gte 1 or $ejactrait gte 1 or $molesttrait gte 1 or $rapetrait gte 1 or $bestialitytrait gte 1
-		or $tentacletrait gte 1 or $voretrait gte 1 or $milkdranktrait gte 1>>
+		or $tentacletrait gte 1 or $voretrait gte 1 or $milkdranktrait gte 1 or $choketrait gte 1>>
 			<<earnFeat "A Special Trait">>
 		<</if>>
 		<<if $orgasmtrait gte 1 and $ejactrait gte 1 and $molesttrait gte 1 and $rapetrait gte 1 and $bestialitytrait gte 1
-		and $tentacletrait gte 1 and $voretrait gte 1 and $milkdranktrait gte 1>>
+		and $tentacletrait gte 1 and $voretrait gte 1 and $milkdranktrait gte 1 and $choketrait gte 1>>
 			<<earnFeat "A Special Trait Collector">>
 		<</if>>
 		<<if $sexStats.anus.pregnancy.motherStatus is 2>>
 			<<earnFeat "Broodmother Host">>
 		<</if>>
-		<<if $spraymax gte 6>>
+		<<if $spraymax gte 7>>
 			<<earnFeat "Max Those Shots">>
 		<</if>>
 		<<if ($semen_volume gte 2000 and $semen_amount gte $semen_volume)
@@ -555,7 +561,7 @@
 	<</if>>
 	<<if $goooutsidecount + $semenoutsidecount gte 100
 	and (setup.bodyliquid.combined("anus") gte 5 or $analdisable is "t")
-	and (setup.bodyliquid.combined("vagina") gte 5 or $vaginaexist is 0)
+	and (setup.bodyliquid.combined("vagina") gte 5 or !$player.vaginaExist)
 	and setup.bodyliquid.combined("mouth") gte 5>>
 		<<earnFeat "Fully Covered">>
 	<</if>>
@@ -1041,6 +1047,20 @@
 		"Sydney the Pure Hearted":{
 			title: "순결한 마음의 시드니",
 			desc: "시드니가 당신에게 순결을 바쳤다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Social"],
+		},
+		"Harper the Hypnotist":{
+			title: "최면술사 하퍼",
+			desc: "하퍼에게 순결을 바쳤다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Social"],
+		},
+		"Morgan the Lost":{
+			title: "잊혀진 모건",
+			desc: "모건에게 순결을 바쳤다.",
 			difficulty: 2,
 			series: "",
 			filter: ["All", "Social"],
@@ -1604,6 +1624,14 @@
 			hint: "Hint: 눈이 부시고 폐허에 있다.",
 			softLockable: true,
 		},
+		"Schism":{
+			title: "종파 분립",
+			desc: "물에 잠긴 역사를 목격했다.",
+			difficulty: 3,
+			series: "",
+			hint: "Hint: 물에 쓸려간 역사를 목격한다.",
+			filter: ["All", "Discoveries"],
+		},
 		"Catch the Wind":{
 			title: "바람 잡기",
 			desc: "비행하는 법을 배웠다.",
@@ -1692,6 +1720,60 @@
 			series: "",
 			filter: ["All", "Discoveries"],
 			hint: "Hint: 사회에 진 빚을 갚는다.",
+			softLockable: true,
+		},
+		"Institutionalised":{
+			title: "교화됨",
+			desc: "형량을 마치고 감옥에서 풀려났다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 당신의 형량을 마쳐라.",
+			softLockable: true,
+		},
+		"Breaker":{
+			title: "부수는 자",
+			desc: "교도소의 전기충격 목걸이를 무력화했다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 반항적으로 방해하라.",
+			softLockable: true,
+		},
+		"Time and Pressure":{
+			title: "시간과 압력",
+			desc: "교도소 벽을 파들어갔다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 어떤 벽도 충분히 두껍지 않다.",
+			softLockable: true,
+		},
+		"More than a Number":{
+			title: "단순한 숫자가 아니다",
+			desc: "교도소에서 다섯 명의 이름을 알게 됐다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 창살 뒤에서 친구를 사귀어라.",
+			softLockable: true,
+		},
+		"Friends in the Sky":{
+			title: "하늘의 친구들",
+			desc: "감시자들과 친구가 되었다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 잃어버렸던 것을 되찾는다.",
+			softLockable: true,
+		},
+		"Not Meant to be Caged":{
+			title: "갇혀있을 운명이 아니다",
+			desc: "교도소를 탈출하였다.",
+			difficulty: 3,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 당신의 형량을 짧게 줄여라.",
 			softLockable: true,
 		},
 		"Max Those Shots":{

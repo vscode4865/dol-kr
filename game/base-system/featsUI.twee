@@ -144,7 +144,9 @@
 /*Have to do this due to the `????` names*/
 <<set _listbox to '<<listbox "_upgradeNameID" autoselect>>'>>
 <<for $_i to 0; $_i lt _upgradeNames.length; $_i++>>
-	<<set _listbox += '<<option _visibleUpgradeNames[' + $_i + '] _visibleUpgradeIDs[' + $_i + ']>>'>>
+	<<if !$featsBoosts.upgradeDetails[_upgradeNames[$_i]].hidden>>
+		<<set _listbox += '<<option _visibleUpgradeNames[' + $_i + '] _visibleUpgradeIDs[' + $_i + ']>>'>>
+	<</if>>
 <</for>>
 <<set _listbox += '<</listbox>> |'>>
 <<print _listbox>>
@@ -155,6 +157,10 @@
 	<<if _upgradeNameID lt 0>>
 		<<set _upgradeNameID to _upgradeNames.length - 1>>
 	<</if>>
+	<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
+		<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID-->>
+		<</for>>
+	<</if>>
 	<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
 	<<updateFeatsPointsMenu>>
 <</link>> |
@@ -162,6 +168,14 @@
 	<<set _upgradeNameID++>>
 	<<if _upgradeNameID gte _upgradeNames.length>>
 		<<set _upgradeNameID to 0>>
+	<</if>>
+	<<if $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden>>
+		<<for _upgradeNameID; $featsBoosts.upgradeDetails[_upgradeNames[_upgradeNameID]].hidden; _upgradeNameID++>>
+			<<if (_upgradeNameID + 1) gte _upgradeNames.length>>
+				<<set _upgradeNameID to 0>>
+				<<break>>
+			<</if>>
+		<</for>>
 	<</if>>
 	<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
 	<<updateFeatsPointsMenu>>
@@ -241,7 +255,7 @@
 		<<if _details.exclusive is "" or $featsBoosts.upgrades[_details.exclusive] is 0>>
 			<<featsPointsMenuButtons _name _details.cost _details.limit>>
 		<<else>>
-			이 업그레이드를 사용하려면 $featsBoosts.name[_details.exclusive] 업그레이드를 제거해야 합니다.
+			이 업그레이드를 사용하려면 <<print "$featsBoosts.name['"+_details.exclusive+"']">> 업그레이드를 제거해야 합니다.
 		<</if>>
 
 		<<if _name is "tattoos">>
@@ -342,6 +356,24 @@
 		<<link "5 증가">><<print "<<updateFeatsPointsMenu _type " + (5 * _multi) +">>">><</link>>
 	<<else>>
 		5 증가
+	<</if>>
+	<<if _type is "tending">>
+		<br><br>
+		<span class="green">원예가</span> - 작물 수확량이 증가하고 비료를 사용하면 썩지 않습니다. 비료를 하나 가지고 시작합니다.
+		<br>
+		<span class="gold">업그레이드에 필요한 VrelCoin:</span> <<print "$featsBoosts.upgradeDetails.greenThumb.cost">><br>
+		<span class="gold">업그레이드:</span> <<print $featsBoosts.upgrades.greenThumb / $featsBoosts.upgradeDetails.greenThumb.cost>>/<<print $featsBoosts.upgradeDetails.greenThumb.limit / $featsBoosts.upgradeDetails.greenThumb.cost>>
+		<br>
+		<<if $feats.allSaves.points - $featsBoosts.pointsUsed gte $featsBoosts.upgradeDetails.greenThumb.cost and !$featsBoosts.upgrades.greenThumb>>
+			<<link "이 특성을 가지고 시작한다">><<print "<<updateFeatsPointsMenu greenThumb $featsBoosts.upgradeDetails.greenThumb.cost>>">><</link>> |
+		<<else>>
+			이 특성을 가지고 시작한다 |
+		<</if>>
+		<<if $featsBoosts.upgrades.greenThumb>>
+			<<link "이 특성을 제거한다">><<print "<<updateFeatsPointsMenu greenThumb " + (-1 * $featsBoosts.upgradeDetails.greenThumb.cost) + ">>">><</link>> |
+		<<else>>
+			이 특성을 제거한다 |
+		<</if>>
 	<</if>>
 <</capture>>
 <</widget>>

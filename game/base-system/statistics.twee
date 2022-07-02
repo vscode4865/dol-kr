@@ -3,11 +3,11 @@
 <h3>통계</h3>
 __순결__
 <br>
-<<if $vaginaexist is 1>>
+<<if $player.vaginaExist>>
 	<<trVirginity $player.virginity.vaginal>>보지 처녀: <<print ($player.virginity.vaginal is true ? "존재" : ($player.virginity.vaginal is false ? "뺏어간 이 불명" : _trResult + "에게 빼앗김"))>>
 	<br>
 <</if>>
-<<if $penisexist is 1>>
+<<if $player.penisExist>>
 	<<trVirginity $player.virginity.penile>>자지 동정: <<print ($player.virginity.penile is true ? "존재" : ($player.virginity.penile is false ? "뺏어간 이 불명" : _trResult + "에게 빼앗김"))>>
 	<br>
 <</if>>
@@ -24,7 +24,7 @@ __빼앗은 순결__
 <br>
 <<set _total to 0>>
 <<for _slot, _list range $virginTaken>>
-  <<set _total += _list.length>>
+	<<set _total += _list.length>>
 <</for>>
 총 갯수: _total
 <br>
@@ -59,7 +59,7 @@ __직업__
 <br>
 카페에서 판매한 빵: $bunstat개
 <br>
-가장 많이 생산한 "크림"의 양: $creamstat ml
+가장 많이 생산한 "크림"의 양: <<print parseFloat($creamstat.toFixed(1))>> mL
 <br>
 가로챈 밀수꾼들: $smuggler_stolen_stat명
 <br>
@@ -147,19 +147,25 @@ __섹스__
 <br>
 자위하는 데에 쓴 시간: $masturbationtimestat분
 <br>
-마신 모유량: $milk_drank_stat ml
+마신 모유량: $milk_drank_stat mL
 <br>
-모유 생산량: $milk_produced_stat ml
+모유 생산량: $milk_produced_stat mL
 <br>
-<<if $penisexist is 1>>정액 생산량: <<print Math.floor($semen_produced_stat)>> ml
-<br><</if>>
-<<if $vaginaexist is 1>>음란한 액체 생산량: $lube_produced_stat ml
-<br><</if>>
-강제로 짜내진 양: $fluid_forced_stat ml
+마신 꿀의 양: $nectar_drank_stat mL
+<br>
+<<if $player.penisExist>>
+	정액 생산량: <<print Math.floor($semen_produced_stat)>> mL
+	<br>
+<</if>>
+<<if $player.vaginaExist>>
+	애액 생산량: <<print Math.floor($lube_produced_stat)>> mL
+	<br>
+<</if>>
+강제로 짜내진 양: $fluid_forced_stat mL
 <br>
 <<if $knot_stat isnot undefined>>
-개와 혹으로 연결된 횟수: $knot_stat회
-<br>
+	개와 혹으로 연결된 횟수: $knot_stat회
+	<br>
 <</if>>
 <br>
 
@@ -195,8 +201,10 @@ __섹스__
 	<br>
 	사용한 후추 스프레이 갯수: $spraystat개
 	<br>
-	에덴과 사격연습한 횟수: $stat_shoot번
-	<br>
+	<<if $NPCName[$NPCNameList.indexOf("Eden")].init>>
+		에덴과 사격연습한 횟수: $stat_shoot번
+		<br>
+	<</if>>
 	망가뜨린 기계: $machine_stat대
 	<br>
 	잡은 럴커 수: $stat_lurkers_captured마리
@@ -253,7 +261,7 @@ __데이트__
 <<if $pregnancyTesting>>
 	__임신__
 	<br>
-	<<if $vaginaexist>>
+	<<if $player.vaginaExist>>
 		임신한 횟수: <<print $sexStats.vagina.pregnancy.totalBirthEvents>>회
 		<br>
 		총 아이들 수: <<print $pregnancyStats.playerChildren>>
@@ -265,7 +273,7 @@ __데이트__
 		사후임신약 먹은 횟수: <<print $pregnancyStats.afterMorningPills>>번
 		<br>
 	<</if>>
-	<<if $vaginaexist or $pregnancyStats.pregnancyTestsTaken gt 0>>
+	<<if $player.vaginaExist or $pregnancyStats.pregnancyTestsTaken gt 0>>
 		임신 테스트 횟수: <<print $pregnancyStats.pregnancyTestsTaken>>번
 	<</if>>
 	<br>
@@ -307,6 +315,10 @@ __기타__
 <br>
 공개굴욕형을 받은 횟수:	$stat_police.pillory번
 <br>
+교도소에서 지낸 날짜: $stat_police.prison일
+<br>
+최면에 걸린 횟수: $hypnotised번
+<br>
 
 <br><br>
 __게임 세이브 상세__
@@ -334,6 +346,9 @@ __게임 세이브 상세__
 	<</for>>
 	<br>
 <</if>>
+<<if $saveVersion>>
+	세이브가 로드된 버전: $saveVersion
+<</if>>
 <</widget>>
 
 <<widget "extraStatisticsWarning">>
@@ -348,7 +363,7 @@ __게임 세이브 상세__
 	<<link 네>>
 		<<overlayReplace "extraStatistics">>
 	<</link>>
-	&nbsp;&nbsp;&nbsp;<<checkbox "$skipStatisticsConfirmation" false true autocheck>> Don't Show Again
+	&nbsp;&nbsp;&nbsp;<<checkbox "$skipStatisticsConfirmation" false true autocheck>> 이 확인창을 다시 보여주지 마세요
 	<!-- ignore the nbsp's, they're just for formatting -->
 </div>
 <</widget>>
@@ -425,7 +440,7 @@ __게임 세이브 상세__
 		모유 생산량: <<print Math.trunc($milk_volume)>>
 		<br>
 	<</if>>
-	<<if $penisexist is 1>>
+	<<if $player.penisExist>>
 		정액량: <<print Math.trunc($semen_amount)>>
 		<br>
 		정액 생산량: <<print Math.trunc($semen_volume)>>
@@ -459,6 +474,10 @@ __게임 세이브 상세__
 		속옷 하의 내구도: <<print Math.trunc($worn.under_lower.integrity)>>
 		<br>
 	<</if>>
+	<<if $worn.genitals.name isnot "naked">>
+		<<trClothes "genitals" setup.clothes.genitals[clothesIndex('genitals',$worn.genitals)].name "name">>_trResult 내구도: <<print Math.trunc($worn.genitals.integrity)>>
+		<br>
+	<</if>>
 	<br>
 
 	__관계__
@@ -466,6 +485,8 @@ __게임 세이브 상세__
 	학교 평판: <<print Math.trunc($cool)>>
 	<br>
 	불량도: <<print Math.trunc($delinquency)>>
+	<br>
+	징계: <<print Math.trunc($detention)>>
 	<br>
 	범죄: <<print Math.trunc($crime)>>
 	<br>
@@ -495,32 +516,34 @@ __게임 세이브 상세__
 	<br>
 	사교 명성: <<print Math.trunc($famesocial)>>
 	<br>
+	모델 명성: <<print Math.trunc($famemodel)>>
+	<br>
 	<br>
 
 
 	__변신__
 	<br>
-	늑대 특성: <<print Math.trunc($wolfbuild)>>
+	늑대 특성: <<print Math.trunc($wolfbuild)>> (30+ 으로 완전 변신)
 	<br>
 	늑대 징후: <<print Math.trunc($wolfgirl)>>
 	<br>
-	고양이 특성: <<print Math.trunc($catbuild)>>
+	고양이 특성: <<print Math.trunc($catbuild)>> (50+ 으로 완전 변신)
 	<br>
 	고양이 징후: <<print Math.trunc($cat)>>
 	<br>
-	<<if $hallucinations gte 2 or $bestialitydisable is "t">>하피 특성<<else>>새 특성<</if>>: <<print Math.trunc($birdbuild)>>
+	<<if $hallucinations gte 2 or $bestialitydisable is "t">>하피 특성<<else>>새 특성<</if>>: <<print Math.trunc($birdbuild)>> (30+ 으로 완전 변신)
 	<br>
 	<<if $hallucinations gte 2 or $bestialitydisable is "t">>하피<<else>>새<</if>> 징후: <<print Math.trunc($harpy)>>
 	<br>
-	소 특성: <<print Math.trunc($cowbuild)>>
+	소 특성: <<print Math.trunc($cowbuild)>> (30+ 으로 완전 변신)
 	<br>
 	소 징후: <<print Math.trunc($cow)>>
 	<br>
-	천사 특성: <<print Math.trunc($angelbuild)>>
+	천사 특성: <<print Math.trunc($angelbuild)>> (50+ 으로 완전 변신)
 	<br>
 	천사 징후: <<print Math.trunc($angel)>>
 	<br>
-	악마 특성: <<print Math.trunc($demonbuild)>>
+	악마 특성: <<print Math.trunc($demonbuild)>> (30+ 으로 완전 변신)
 	<br>
 	악마 징후: <<print Math.trunc($demon)>>
 	<br>

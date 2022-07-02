@@ -26,6 +26,9 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 여러 책장에 대표적인 학술 서적들이 있다. 공학, 생물학, 사회 과학과 언어 학습에 대한 책들이 보인다. 모든 책이 수업을 따라가는 데에 도움이 된다.
 <br>
 옆에는 반납되었거나 아직 정리되지 않은 책들이 담긴 작은 바구니가 있다.
+<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+	당신은 이상한, 올리브색 책이 다른 책 사이에 놓여있는 것을 알아차린다.
+<</if>>
 <<if $english lt 200>>
 	만약 당신이 책벌레였다면 더 흥미롭다고 느낄만한 책이 있을지도 모르겠다.
 <</if>>
@@ -146,6 +149,9 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 		<br>
 	<</if>>
 <<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "library">>
+	<</if>>
 	<<if $exposed gte 1 and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	<<else>>
 		<<if $exposed lte 0>>
@@ -175,34 +181,38 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 		<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $weather is "rain" and $schoolstate is "lunch" and $luncheaten is 1>>
 			카일라가 책상에 앉아서, 뭔가를 끄적이고 있다.
 			<br>
-			<<link [[Approach Kylar|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
+			<<link [[카일라에게 다가간다|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
 			<br><br>
 		<</if>>
 		<<if $exposed gte 1>>
-			<<link [[과학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+			<<scienceicon>><<link [[과학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
 			<br>
-			<<link [[수학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+			<<mathicon>><<link [[수학 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
 			<br>
-			<<link [[영어 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+			<<englishicon>><<link [[영어 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
 			<br>
-			<<link [[역사 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+			<<historyicon>><<link [[역사 공부를 한다 (0:20)|Library Study Exposed]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
 			<br>
 		<<else>>
-			<<link [[과학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
+			<<scienceicon>><<link [[과학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 1>><</link>><<gscience>>
 			<br>
-			<<link [[수학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
+			<<mathicon>><<link [[수학 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 2>><</link>><<gmaths>>
 			<br>
-			<<link [[영어 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
+			<<englishicon>><<link [[영어 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 3>><</link>><<genglish>>
 			<br>
-			<<link [[역사 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
+			<<historyicon>><<link [[역사 공부를 한다 (0:20)|Library Study]]>><<pass 20>><<set $phase to 4>><</link>><<ghistory>>
 			<br>
 		<</if>>
 		/*indev - scarlet book possible to be taken. English 200+ required*/
 		<<if $english gte 300>>
-			<<link [[Take "Raul and Janet" from the basket (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to "School Library">><</link>>
+			<<scarleticon>><<link [[바구니에서 "라울과 자넷" 을 집어든다 (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to "School Library">><</link>>
 			<br>
 		<<elseif $english gte 200>>
-			<<link [[바구니에서 중간 크기의 진홍색 책을 집어든다 (0:01)|ScarletBook1]]>><<pass 1>><</link>>
+			<<scarleticon>><<link [[바구니에서 중간 크기의 진홍색 책을 집어든다 (0:01)|ScarletBook1]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if ($month is "november" and $monthday gte 24) or $month is "december">>
+			<<oliveicon>><<link [[바구니에서 올리브색 책을 집어든다 (0:01)|Olive Book 1]]>><<set $oliveExitPassage to "School Library">><<pass 1>><</link>>
 			<br>
 		<</if>>
 	<br>
@@ -212,7 +222,7 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 <</if>>
 
 :: Library Study
-<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<sydneySchedule>>
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<sydneySchedule>><<rngWraith 1>>
 
 <<if $phase is 1>><<scienceskill>>
 	당신은 과학 교과서를 가지고 책상에 앉아 읽어나간다.
@@ -228,17 +238,24 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 <<if $danger gte (9900 - $allure) and $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	<<if $rng gte 51>>
-	<<generatey1>><<generatey2>>할일을 하고 있자니, <<person1>><<personPost "과">> <<person2>><<personPost "이">> 괴롭히기 시작한다.
-	<br><br>
+		<<generatey1>><<generatey2>>할일을 하고 있자니, <<person1>><<personPost "과">> <<person2>><<personPost "이">> 괴롭히기 시작한다.
+		<br><br>
 
-	<<link [[무시한다|School Library Harass]]>><<set $phase to 0>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
-	<br>
-	<<link [[사서에게 도움을 구한다|School Library Harass]]>><<set $phase to 1>><<status -10>><</link>><<lcool>>
-	<br>
-	<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $sydneySeen.includes("library") and _sydney_location is "library">>
-		<<link [[Ask Sydney for help|School Library Harass]]>><<set $phase to 2>><</link>>
+		<<link [[무시한다|School Library Harass]]>><<set $phase to 0>><<trauma 2>><<stress 2>><</link>><<gtrauma>><<gstress>>
 		<br>
-	<</if>>
+		<<link [[사서에게 도움을 구한다|School Library Harass]]>><<set $phase to 1>><<status -10>><</link>><<lcool>>
+		<br>
+		<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $sydneySeen.includes("library") and _sydney_location is "library">>
+			<<link [[시드니에게 도움을 구한다|School Library Harass]]>><<set $phase to 2>><</link>>
+			<br>
+		<</if>>
+	<<elseif _wraithEvent>>
+		약간의 시간이 지난 후, 당신은 불안감을 느끼기 시작한다. 당신은 교과서를 책꽂이에 돌려놓으려고 움직인다. 
+		<br><br>
+		당신은 다른 쪽의 틈을 통해 창백한 얼굴을 언뜻 본다. <<stress 12>><<ggstress>><<trauma 4>><<gtrauma>>
+		<br><br>
+		<<link [[다음|School Library]]>><</link>>
+		<br>
 	<<else>>
 		<<if !$worn.over_lower.type.includes("naked")>>
 			<<set $worn.over_lower.integrity -= 10>>
@@ -261,8 +278,8 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 				<br><br>
 			<</if>>
 		<</if>>
-	<<link [[다음|School Library]]>><</link>>
-	<br>
+		<<link [[다음|School Library]]>><</link>>
+		<br>
 	<</if>>
 <<else>>
 	<<link [[다음|School Library]]>><</link>>
@@ -270,7 +287,7 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 <</if>>
 
 :: Library Study Exposed
-<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<rngWraith 1>>
 
 <<if $phase is 1>>
 	당신은 과학 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
@@ -305,6 +322,13 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 			<</if>>
 		<</if>>
 		<<link [[숨어있는다 (0:10)|Library Study Hide]]>><<stress 3>><<pass 10>><</link>><<gstress>>
+		<br>
+	<<elseif _wraithEvent>>
+		약간의 시간이 지난 후, 당신은 불안감을 느끼기 시작한다. 당신은 교과서를 책꽂이에 돌려놓으려고 움직인다.
+		<br><br>
+		당신은 다른 쪽의 틈을 통해 창백한 얼굴을 언뜻 본다. <<stress 12>><<ggstress>><<trauma 4>><<gtrauma>>
+		<br><br>
+		<<link [[다음|School Library]]>><</link>>
 		<br>
 	<<else>>
 		<<generate1>><<generate2>><<person1>><<personPost "과">> <<person2>><<personPost "이">> 창 밖의 길을 걷고 있다. 창문 안을 들여다보면 당신을 보고 말 것이다.
@@ -492,7 +516,7 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 
 	<<link [[다음|School Library]]>><<endevent>><</link>>
 <<elseif $phase is 2>>
-	<<sydneyStatusCheck>>
+	<<NPCStatusCheck "Sydney">>
 	You shout for Sydney. The <<person2>><<person>> sneers. "Oh no, not Sydney, <<nnpc_he "Sydney">>'s gonna write on us, whatever will we do?" The two begin to laugh.
 	<br>
 	However, they're cut off by the thwap of a ruler against skin. The <<person1>><<person>> cries out in pain. You turn to see Sydney's furious gaze, just in time for a second ruler to bounce off of the <<person2>><<persons>> head.
@@ -516,6 +540,7 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 			You feel Sydney's arms wrap around you. 
 		<</if>>
 		"I hope they didn't hurt you." You spend some time reassuring <<nnpc_him "Sydney">>, but <<nnpc_he "Sydney">> still seems hesitant to leave your side. After some time, <<nnpc_he "Sydney">> returns to the rental counter, looking back over <<nnpc_his "Sydney">> shoulder a few times.
+		<br><br>
 	<<else>>
 		"Are you alright?" Sydney puts a hand on your shoulder. You nod, but Sydney seems hesitant to leave your side. After a moment, <<nnpc_he "Sydney">> returns to the rental counter, looking back over <<nnpc_his "Sydney">> shoulder a few times.
 		<br><br>
@@ -698,16 +723,24 @@ A large desk sits near the back of the library, with a sign reading "Book Rental
 
 :: Book Rental
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<sydneySchedule>><<sydneyStatusCheck>>
+<<sydneySchedule>><<NPCStatusCheck "Sydney">>
 You
 <<switch $bookRent>>
 	<<case "return">>
 		return the<<if $book_rent_timer lt 0>><<set $recentReturnTimer to 14>> overdue<</if>>
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
-		<<else>>
-			$studyBooks.rented textbook.
-		<</if>>
+		<<switch $phase>>
+			<<case 6>>
+				<<if $per_npc.pinch isnot undefined>>
+					copy of "How <<if $per_npc.pinch.pronoun is "m">>Mr<<else>>Ms<</if>>. Pinch Groped Christmas"
+					<<clearNPC pinch>>
+				<<else>>
+					olive-coloured book.
+				<</if>>
+			<<case 5>>
+				copy of "Raul and Janet".
+			<<default>>
+				$studyBooks.rented textbook.
+		<</switch>>
 		<<set $studyBooks.rented to "none">>
 		<<if _sydney_location is "library">>
 			<<if $book_rent_timer lt 0>>
@@ -743,9 +776,19 @@ You
 			<br>
 		<</if>>
 	<<case "rent">>
-		rent a
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
+		rent
+		<<if $phase is 6>>
+			the strange, olive-coloured book.
+			<<switch _sydneyStatus>>
+				<<case "corrupt" "corruptLust">>
+					Sydney snickers. "I thought this book was for kids. Dunno what it's doing here. But hey, knock yourself out."
+				<<default>>
+					Sydney smiles. "Oh, I love this old book! <<nnpc_Brother "Jordan">> Jordan used to read it to me every year around Christmastime."
+			<</switch>>
+			<br><br>
+			<<He>> slides the book towards you, but stops, staring down at the cover with a frown. "That's weird..." <<He>> starts to thumb through the pages, before shaking <<his>> head and handing it to you. "Enjoy."
+		<<elseif $phase is 5>>
+			a copy of "Raul and Janet".
 			<<switch _sydneyStatus>>
 				<<case "pure">>
 					<<if $sydneyromance is 1>>
@@ -763,7 +806,7 @@ You
 					Sydney looks down at the book and frowns. "A story full of love and sin." <<if $temple_rank>><<He>> leans in and whispers. "Jordan's actually a big fan of this book, but don't tell <<nnpc_him "Jordan">> I told you! <<nnpc_He "Jordan">> says it's a good cautionary tale of the consequences of lust."<</if>> <<He>> hands the book back to you. "Enjoy."
 			<</switch>>			
 		<<else>>
-			$studyBooks.rented textbook.
+			a $studyBooks.rented textbook.
 			<<if $sydneyromance is 1>>
 				Sydney smiles at you. "Look at you, putting the extra work in! I'm proud of you."
 			<<else>>
@@ -777,6 +820,8 @@ You
 		renew your rented
 		<<if $studyBooks.rented is "Raul and Janet">>
 			copy of "Raul and Janet".
+		<<elseif $studyBooks.rented is "Pinch">>
+			olive-coloured book.
 		<<else>>
 			$studyBooks.rented textbook.
 		<</if>>
@@ -785,11 +830,13 @@ You
 		<br><br>
 		<<sydneyOptions>>
 	<<case "steal">>
-		steal a
-		<<if $phase is 5>>
-			copy of "Raul and Janet".
+		steal
+		<<if $phase is 6>>
+			an olive-coloured book.
+		<<elseif $phase is 5>>
+			a copy of "Raul and Janet".
 		<<else>>
-			$studyBooks.stolen textbook.
+			a $studyBooks.stolen textbook.
 		<</if>>
 		<<set $bookStolen to 1>>
 		<br><br>
@@ -804,9 +851,16 @@ You
 
 :: Book Rental Return Stolen
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<sydneySchedule>><<sydneyStatusCheck>>
+<<sydneySchedule>><<NPCStatusCheck "Sydney">>
 You return the stolen
-<<if $phase is 5>>
+<<if $phase is 6>>
+	<<if $per_npc.pinch isnot undefined>>
+		copy of "How <<if $per_npc.pinch.pronoun is "m">>Mr<<else>>Ms<</if>>. Pinch Groped Christmas"
+		<<clearNPC pinch>>
+	<<else>>
+		olive-coloured book.
+	<</if>>
+<<elseif $phase is 5>>
 	copy of "Raul and Janet".
 <<else>>
 	$studyBooks.stolen textbook.

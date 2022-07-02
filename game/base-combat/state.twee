@@ -5,13 +5,24 @@
 			<<set _looks to ($enemyno is 1? "looks" : "look")>>
 			<<set _doesntlook to ($enemyno is 1? "doesn't look" : "don't look")>>
 			<<set _is to ($enemyno is 1? "is" : "are")>>
-
-			<<if ["m", "f", "i", "n", "t"].includes($NPCList[0].pronoun)>>
-				<<set $pronoun to $NPCList[0].pronoun>>
+			<<if $enemyno is 1>>
+				<<if $enemynomax is 1>>
+					<<set _n to 0>>
+				<<else>>
+					<<for $_i to 0; $_i lt $enemynomax; $_i++>>
+						<<if $NPCList[$_i].active is "active" and $NPCList[$_i].stance isnot "defeated">>
+							<<set _n to $_i>>
+							<<break>>
+						<</if>>
+					<</for>>
+				<</if>>
+			<</if>>
+			<<if ["m", "f", "i", "n", "t"].includes($NPCList[_n].pronoun)>>
+				<<set $pronoun to $NPCList[_n].pronoun>>
 			<<elseif $debugdisable is "f">>
 				<span class="red">ERROR: Unexpected $$NPCList[0].pronoun: [$NPCList[0].pronoun]</span>
 			<</if>>
-			<<if $enemytype is "beast">>
+			<<if $enemytype is "beast" and $monster is 0>>
 				<<set $pronoun to "i">>
 			<</if>>
 			<<if $enemyno gt 1>>
@@ -99,38 +110,40 @@
 		<</if>>
 
 		<<if $panicviolence is 0 and $panicparalysis is 0 and $controlled is 0>>
-			<<if $panicattacks gte 1 and random(1, 100) is 100>>
+			<<if $panicattacks gte 1 and _panicchecked isnot true and random(1, 100) is 100>>
 				<<set $panicparalysis to 5>>
 			<</if>>
-			<<if $panicattacks gte 2 and random(1, 100) is 100>>
+			<<set _panicchecked to true>>
+			<<if $panicattacks gte 2 and _paniccheckedviolence isnot true and random(1, 100) is 100>>
 				<<set $panicviolence to 3>>
 				<<if $position is "stalk">>
 					<<set $feetuse to "run">>
 				<</if>>
 			<</if>>
+			<<set _paniccheckedviolence to true>>
 		<</if>>
 		<br><br>
 
-		<<if $arousal gte $arousalmax>>
+		<<if $arousal gte $arousalmax and $orgasmdown lte 0>>
 			<<orgasm>>
-		<</if>>
-		<<if !$prayerRoom>>
-			<<pass10sec>>
 		<</if>>
 		<<sexcheck>>
 	</div>
 <</widget>>
 
 <<widget "pass10sec">>
+<<if !$prayerRoom>>
 	<<set $seconds += 10>>
 	<<if $seconds gte 60>>
 		<<set $seconds to 0>>
 		<<pass 1>>
 	<</if>>
+<</if>>
 <</widget>>
 
 :: Widgets Combat State [widget]
 <<widget "combatstate">>
+<<if _statechecked isnot true>>
 	<<if $gamemode is "soft">>
 		<<set $pain to 0>>
 	<</if>>
@@ -140,22 +153,30 @@
 		<span class="pink">당신의 몸이 오르가즘의 파동에 경련을 일으켜 당신이 정상적으로 행동하지 못하게 한다.</span>
 		<br>
 		<<disable>>
-		<<if $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+		<<if $combatControls is "disabled" and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
 			<<actionsorgasm>>
 		<</if>>
 	<</if>>
 
 	<<if $pain gte 100 and $willpowerpain is 0>>
 		<<set $enemyarousal += 10>>
-		<span class="red">당신은 너무 고통스러워 정상적으로 행동 할 수 없다.</span>
-		<br>
-		<<disable>>
-		<<if $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
-			<<actionspain>>
+		<<if $possessed is true>>
+			<<if $orgasmdown lte 0>>
+				당신은 더 이상의 고통을 감내할 수 없으나, <span class="red">당신의 몸은 계속 싸우고 있다.</span>
+				<<trauma 12>><<ggtrauma>>
+				<br>
+			<</if>>
+		<<else>>
+			<span class="red">당신은 너무 고통스러워 정상적으로 행동 할 수 없다.</span>
+			<br>
+			<<disable>>
+			<<if $combatControls is "disabled" and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+				<<actionspain>>
+			<</if>>
 		<</if>>
 	<</if>>
 
-	<<if $panicviolence gte 1>>
+	<<if $panicviolence gte 1 and !$possessed>>
 		<<set $enemyarousal += 10>>
 		<<if $position is "stalk">>
 			<span class="red">당신은 공황상태에 빠졌다. 당신은 여기 외에 있을 어떤 곳이라도 필요로 하며 달린다.</span>
@@ -166,7 +187,7 @@
 		<<defiance 10>><<set $panicviolence to $panicviolence - 1>><<disable>>
 	<</if>>
 
-	<<if $panicparalysis gte 1>>
+	<<if $panicparalysis gte 1 and !$possessed>>
 		<<set $enemyarousal += 10>>
 		<<if $position is "stalk">>
 			<span class="red">당신은 공황상태에 빠졌다. 당신의 근육이 굳어 움직일 수 없다.</span>
@@ -177,12 +198,12 @@
 		<<set $panicparalysis -= 1>><<disable>>
 	<</if>>
 
-	<<if $dissociation gte 2>>
+	<<if $dissociation gte 2 and !$possessed>>
 		<<set $enemyarousal += 10>>
 		당신은 마치 꿈을 꾸는 것 처럼 자신과 연결되지 않은듯한 느낌이 든다.
 		<br>
 		<<disable>>
-		<<if $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+		<<if $combatControls is "disabled" and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
 			<<if $pain lt 100 or $willpowerpain is undefined>>
 				<<actionsdissociation>>
 			<</if>>
@@ -195,6 +216,25 @@
 		<br>
 		<<disable>>
 	<</if>>
+
+	<<if $possessed is true>>
+		당신의 몸은 당신의 것이 아니다. <<if $rng gte 96>><span class="fading">그랬던 적도 없다.</span><</if>>
+		<br>
+		<<disable>>
+		<<if $dissociation lte 1 and $orgasmdown lte 0 and $panicviolence lte 0 and $panicparalysis lte 0 and $trance lte 0>>
+			<<actionspossessed>>
+		<</if>>
+		/* Updates the control caption at the top of the screen to include any control gained through the rest of the passage */
+		<<run $(()=>{
+			Dynamic.render("control-caption")
+		})>>
+		/* Adds the condition for ending an encounter. */
+		<<if $control gte $controlmax>>
+			<<set _controlRegain to 1>>
+		<</if>>
+	<</if>>
+	<<set _statechecked to true>>
+<</if>>
 <</widget>>
 
 <<widget "carryblock">>

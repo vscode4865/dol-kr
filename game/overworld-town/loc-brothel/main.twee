@@ -24,7 +24,7 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 	<<npc Leighton>><<person1>>
 	"You look like one of my students," says an amused voice from your right. It's Leighton. 
 	<<if pregnancyBellyVisible()>>
-		"I was wondering how you got that baby bump," <<he>> continues, "I was never sure if it was from someone close to you or from you working at a place like this."
+		"I was wondering how you got that baby bump," <<he>> continues, "Should have known it was from you working at a place like this."
 	<</if>>
 	<<He>> sits alone on a sofa, with <<his>> arms outstretched and resting on the back.
 	<br><br>
@@ -46,6 +46,10 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 	<br><br>
 <</if>>
 
+<<if $arousal gte $arousalmax>>
+	<<orgasmLocation "brothel">>
+<</if>>
+
 <<if $brotheljob is 1 and $fameprostitution gte 30 and not $brothelshowdata.intro>>
 	<<generate1>><<person1>>The <<person>> guarding the door rests a hand on your shoulder. <span class="gold">"Boss wants to see you."</span><<endevent>>
 	<br><br>
@@ -53,7 +57,7 @@ You are in the brothel. Several stages dot the crowded room. The staff look flus
 
 <<if $brotheljob is 1>>
 
-<<link [[Work as a dancer|Brothel Dance]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 3>><<stress -4>><<tiredness 4>><<set $dancelocation to "brothel">><</link>><<lstress>><<gtiredness>>
+<<link [[Work as a dancer|Brothel Dance]]>><<set $dancestart to 1>><<stress -4>><<tiredness 4>><</link>><<lstress>><<gtiredness>>
 <br>
 	<<if $brothelshowdata.intro>>
 		<<link [[Go behind the stage|Brothel Stage]]>><</link>>
@@ -229,7 +233,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 "We take a 40% cut of anything you earn, and don't you dare think you can cheat us either. You'll have access to a dressing room, naturally. I think I've covered everything. So, interested?"
 <br><br>
 
-<<link [[Yes|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><</link>>
+<<link [[Yes|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 <br>
 <<link [[No|Brothel Intro2]]>><<set $phase to 2>><</link>>
 <br>
@@ -264,7 +268,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	<<He>> blinks, then laughs. "Don't be coy. You've seen what's going on downstairs, darling. I'm sure you can work out the rest on your own."
 	<br><br>
 
-<<link [[I'm interested|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><</link>>
+<<link [[I'm interested|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 <br>
 <<link [[I'm not interested|Brothel Intro2]]>><<set $phase to 2>><</link>>
 <br>
@@ -273,6 +277,15 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 
 :: Brothel Dance
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $dancestart is 1>>
+	<<unset $dancestart>>
+	<<danceinit>>
+	<<robinbrothelappear>>
+	<<set $dancing to 1>>
+	<<set $venuemod to 3>>
+	<<set $dancelocation to "brothel">>
+<</if>>
 
 <<danceeffects>>
 <<danceaudience>>
@@ -295,9 +308,9 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	<<if $corruptionDancing is 2>>
 		The slime wants you to have fun with more than an individual.
 	<<elseif $promiscuity gte 35>>
-		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<unset $corruptionDancing>><</link>><<promiscuous3>>
+		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<set $enemynomax to 1>><<unset $corruptionDancing>><</link>><<promiscuous3>>
 	<<elseif $promiscuity lte 34 and $uncomfortable.prostituting is false>>
-		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<unset $corruptionDancing>><<set $desperateaction to 1>><</link>><<promiscuous3>>
+		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<set $enemynomax to 1>><<unset $corruptionDancing>><<set $desperateaction to 1>><</link>><<promiscuous3>>
 		<br>
 	<</if>>
 <<elseif $danceevent is "rape">>
@@ -308,6 +321,12 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	<<elseif $promiscuity gte 35>>
 		<<link [[Private room|Leighton Private]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>><<promiscuous3>>
 		<br>
+	<</if>>
+<<elseif $danceevent is "robin">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<else>>
+		<<link [[Private room|Robin Brothel]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
 	<</if>>
 
 <<elseif $danceevent is 0>>
@@ -347,7 +366,7 @@ I'd like to offer you work looking after our guests. You saw how it works on the
 	Briar sprawls on the sofa, holding a glass of wine. <<He>> looks up as you enter. "Have you reconsidered my offer?"
 	<br><br>
 
-	<<link [[Yes|Briar's Office]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><</link>>
+	<<link [[Yes|Briar's Office]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 	<br>
 	<<if $id is 0>>
 		<<link [[Inquire about ID card|Briar's Office ID]]>><</link>>
@@ -722,7 +741,7 @@ After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks y
 
 :: Brothel Private Sex Finish
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
-<<if $stealstate is 3>><<set $brothel_thief += 1>><</if>>
+<<if $stealtarget isnot "">><<set $brothel_thief += 1>><</if>>
 <<if $consensual is 1>>
 
 	<<if $enemyarousal gte $enemyarousalmax>>
@@ -802,8 +821,7 @@ After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks y
 <</if>>
 <<effects>>
 <<effectsman>><<man>>
-<<audience>><!-- Added NPCDamage -->
-<<if $enemyhealth gt 0>><<npcdamage>><</if>>
+<<audience>>
 <<stateman>>
 <br><br>
 <<actionsman>>
@@ -812,7 +830,7 @@ After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks y
 	<<else>>
 		No one comes to your aid.
 		<<set $alarm to 0>>
-		<<if $drugged gte 1>>The drugs inhibit you, you couldn't cry very convincingly.<</if>>
+		<<if $drugged gte 1>>약에 취한 상태로는, 당신의 비명소리는 별로 설득력 있게 들리지 않는다.<</if>>
 		<br><br>
 		<<if $enemyarousal gte $enemyarousalmax>>
 			<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
@@ -1100,7 +1118,7 @@ The <<person>> recoils from the hole. You hear <<him>> shout at someone, then si
 <<He>> sits down. "Or you could play an uptight school <<girl>> lost in a bad part of town. Gangbang ensues. £1000 for that one. You'll need a school <<girl>> outfit, of course. I suspect you already have one." <<He>> smirks. "Would that be too close to home?"
 <br><br>
 
-<<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and ($vaginaexist is 1 or $analdisable is "f")>>
+<<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and ($player.vaginaExist or $analdisable is "f")>>
 	"There's the repaired sex machine as well," <<he>> says. "It'll have to be a private show. No loose tongues allowed. The audience will appreciate the novelty, but <span class="lewd">they'll want to see penetration.</span> £1500 if you go through with it."
 	<br><br>
 <</if>>
@@ -1109,7 +1127,7 @@ The <<person>> recoils from the hole. You hear <<him>> shout at someone, then si
 <<if $bestialitydisable is "f">>
 "Or," <<he>> says, "we could get a pig in from one of the local farms. Then you do nasty things with it for the audience's amusement. I don't know how many would be into it, but it would get tongues flapping. Which is what we want. You'll get £1500 for that."
 <br><br>
-<<else>>
+<<elseif $monsterchance gte 1 and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 "Or," <<he>> says, "we could get a pig person in from one of the local farms. Then you do nasty things with it for the audience's amusement. I don't know how many would be into it, but it would get tongues flapping. Which is what we want. You'll get £1500 for that."
 <br><br>
 <</if>>
@@ -1135,15 +1153,15 @@ You aren't promiscuous or deviant enough to take up any of the offers.
 	<<link [[Roleplay gangbang|Briar's Office Show 2]]>><<acceptbrothelshow "gangbang">><</link>><<promiscuous5>>
 	<br>
 <</if>>
-<<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and ($vaginaexist is 1 or $analdisable is "f")>>
+<<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and ($player.vaginaExist or $analdisable is "f")>>
 	<<link [[Sex machine|Briar's Office Show 2]]>><<acceptbrothelshow "machine">><</link>><<promiscuous5>>
 	<br>
 <</if>>
 <!-- Modified for Monster People -->
-<<if $deviancy gte 75>>
+<<if $deviancy gte 75 and ($bestialitydisable is "f" or $monsterchance gte 1 and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
 	<<link [[Pig|Briar's Office Show 2]]>><<acceptbrothelshow "pig">><</link>><<deviant5>>
 	<br>
-	<<if $farm_stage gte 7 and $farm.steed>>
+	<<if $farm_stage gte 7 and $farm.steed and ($bestialitydisable is "f" or $per_npc.saddled_steed.monster is "monster")>>
 		<<link [[Suggest a horse (pays £2000)|Briar's Office Show 2]]>><<acceptbrothelshow "horse">><</link>><<deviant5>>
 		<br>
 	<</if>>
@@ -1165,7 +1183,7 @@ You aren't promiscuous or deviant enough to take up any of the offers.
 <<elseif $brothelshowdata.type is "pig">>
 	You agree to fuck a pig on stage. "You're a dirty one," <<he>> says as <<he>> stands up. "This is going to draw them in.
 <<elseif $brothelshowdata.type is "swarm">>
-	You agree to be submerged in a terrarium filled with small creatures on stage. "You're a kinky one," <<he>> says as <<he>> stands up. "I like that, and I'm sure the audience will like it too".
+	You agree to be submerged in a terrarium filled with small creatures on stage. "You're a kinky one," <<he>> says as <<he>> stands up. "I like that, and I'm sure the audience will like it too.
 <<elseif $brothelshowdata.type is "machine">>
 	You agree to use the repaired sex machine. Briar claps <<his>> hands together. "Excellent.
 <<elseif $brothelshowdata.type is "horse">>
@@ -1205,10 +1223,15 @@ You see Briar talking to someone near the largest stage. You agreed to perform t
 
 	<<if $brothelshowdata.type is "horse">>
 		<<if $farm.steed>>
-			Your $farm.steed steed awaits you.
-			<br><br>
-			<<link [[Star in show|Brothel Show]]>><</link>>
-			<br>
+			<<if $bestialitydisable is "f" or $per_npc.saddled_steed.monster is "monster">>
+				Your $farm.steed steed awaits you.
+				<br><br>
+				<<link [[Star in show|Brothel Show]]>><</link>>
+				<br>
+			<<else>>
+				The weight of what you've signed yourself up for sinks in, and you start to feel nauseous. <span class="red">You've lost the nerve to perform.</span>
+				<br>
+			<</if>>
 		<<else>>
 			<span class="blue">You're booked to star in a show with a horse, but you haven't saddled one!</span>
 			<br>
@@ -1456,8 +1479,7 @@ Briar bows to the audience. "Thank you, thank you," <<he>> says. "And now my fri
 
 <<effectsman>><<man>>
 
-<<audience>><!-- Added NPCDamage -->
-<<if $enemyhealth gt 0>><<npcdamage>><</if>>
+<<audience>>
 
 <<stateman>>
 <br><br>
@@ -1839,7 +1861,7 @@ The police push you against the wall, pinning your arms. "They wanted to raid me
 <br><br>
 Armlocked, the police drag you deeper into the brothel. Briar strolls alongside. "Raids cost a lot," Briar goes on. "Not just money either. Reputation. I was still ready to protect you. I look out for mine. I was ready to take the hit."
 <br><br>
-"Until," Briar growls. "I heard you've been stealing from my customers. Hurting the reputation of my establishment. Driving away my custom."
+"Until," Briar growls. "I heard you've been stealing from my customers. Hurting the reputation of my establishment. Driving away my customers."
 <br><br>
 <<npc Briar>><<person1>>
 Briar throws open a secluded delivery door in the rear, well out of sight of customers. <<He>> leads the police out. An unmarked car awaits you.

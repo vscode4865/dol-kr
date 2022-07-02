@@ -285,7 +285,7 @@
 <<set $rng to random(1, 100)>>
 
 <<if $cool gte 80>>
-당신은 파트너를 찾아 함께 <<if $rng gte 75>>양의 눈을<<elseif $rng gte 50>>곤충을<<elseif $rng gte 25>>벌레를<<else>>개구리를<</if>> 해부한다.
+  당신은 파트너를 찾아 함께 <<if $rng gte 75>>양의 눈을<<elseif $rng gte 50>>곤충을<<elseif $rng gte 25>>벌레를<<else>>개구리를<</if>> 해부한다.
   <br><br>
 
   <<link [[해부에 집중한다|Science Dissection]]>><<scienceskill>><</link>><<gscience>>
@@ -609,13 +609,13 @@
 <<npc River>><<generates2>><<person2>>
 리버는 당신을 교실 앞으로 불러내 화이트보드에 적힌 수식을 풀도록 시킨다.
 
-  <<if $worn.lower.skirt is 1>>
+  <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
   화이트보드에 풀이를 적고 있으니, <<personPost "이">> 자를 가지고 당신의 치마를 들춘다!
     <<if $worn.under_lower.type.includes("naked")>>
 		<<if $panicattacks gte 1 and random(1, 2) is 2 and $controlled is 0>>
-			A cheer erupts from the class as they see you're not wearing underwear. You need to respond, to whack the ruler away, <span class="red">but your body freezes in mortified panic.</span> Thoughs dart half-formed as you wonder what horrible things the class have in store for you.
+			A cheer erupts from the class as they see you're not wearing underwear. You need to respond, to whack the ruler away, <span class="red">but your body freezes in mortified panic.</span> Thoughts dart half-formed as you wonder what horrible things the class have in store for you.
 			<br><br>
-			You hear them chatter, but you can't comprehend the words, only the clicks of phone cameras pointed at your <<bottom>> and <<if $player.penisExist is 1>>hardening<</if>> <<genitals>>.
+			You hear them chatter, but you can't comprehend the words, only the clicks of phone cameras pointed at your <<bottom>> and <<if $player.penisExist>>hardening<</if>> <<genitals>>.
 			<br><br>
 
 			River turns to the class, and opens <<person1>><<his>> mouth to chide but is interrupted. "But <<sir>>, <<pshes>> not wearing any underwear!"
@@ -821,7 +821,7 @@
 <<link [[자리를 옮긴다|Maths Event3]]>><<detention 2>><<set $phase to 1>><</link>><<gdelinquency>>
 <br>
 <<if $whitneymaths is "seat">>
-	<<link [[휘트니에게 말한다|Maths Event3 Whitney]]>><<npcincr Whitney dom 1>><</link>> | <span class="purple">+ 휘트니의 지배도</span>
+	<<link [[휘트니에게 말한다|Maths Event3 Whitney]]>><<npcincr Whitney dom 1>><</link>><<gdom "Whitney">>
 	<br>
 <</if>>
 
@@ -834,7 +834,7 @@
 <<link [[자리를 옮긴다|Maths Event3]]>><<detention 2>><<set $phase to 1>><</link>><<gdelinquency>>
 <br>
 <<if $whitneymaths is "seat">>
-	<<link [[휘트니에게 말한다|Maths Event3 Whitney]]>><<npcincr Whitney dom 1>><</link>> | <span class="purple">+ 휘트니의 지배도</span>
+	<<link [[휘트니에게 말한다|Maths Event3 Whitney]]>><<npcincr Whitney dom 1>><</link>><<gdom "Whitney">>
 	<br>
 <</if>>
 
@@ -1111,39 +1111,89 @@
   <br>
 
 <<elseif $rng gte 81>>
-  <<if $cool lt 40>>
-  <<set $worn.lower.integrity -= 30>>
-	<<if $worn.lower.integrity lte 0>>
-	문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 깔끔하게 몸에서 뜯겨 나간다! 경악에 차서 아래를 내려다보자, 옷의 잔해가 의자에 붙어있는 것이 보인다. 누군가 의자에 접착제를 발라놨다. 당신은 최대한 빨리 몸을 가려보지만, 잠시동안 <<undiesPost "이">> 완전히 노출되었다. 도렌은 수건을 들고 당신에게 달려오고, 당신의 얼굴은 굴욕감에 붉게 물들었다.
-	<<humiliation10>>
-	<br><br>
+	<<if $cool lt 40>>
+		<<set $worn.lower.integrity -= 30>>
+		<<if $worn.lower.integrity lte 0>>
+			문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 깔끔하게 몸에서 뜯겨 나간다!
+			경악에 차서 아래를 내려다보자, 옷의 잔해가 의자에 붙어있는 것이 보인다. 누군가 의자에 접착제를 발라놨다!
+			당신은 최대한 빨리 몸을 가려보지만, 잠시동안 <<undiesPost "이">> 완전히 노출되었다.
+			도렌은 수건을 들고 당신에게 달려오고, 당신의 얼굴은 굴욕감에 붉게 물들었다.
+
+			<<if $worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("hidden")>>
+				<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
+				<<if $player.gender isnot $player.gender_appearance and ($schoolrep.crossdress gte 3 or $schoolrep.herm gte 3)>>
+					<br><br>
+					The other students giggle at your plight. You overhear a few whispers while Doren is busy helping you,
+					and can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
+				<<elseif $player.gender isnot $player.gender_appearance>>
+					<br><br>
+					The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
+					You can make out something about <<print ($player.gender is "h" ? "your genitals" : "you crossdressing")>>. They saw.
+				<</if>>
+
+				<<schoolrep_naked>>
+				<<set $genderknown.pushUnique("Doren")>>
+				<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">><<set $genderknown.pushUnique("Kylar")>><</if>>
+			<<else>>
+				<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
+			<</if>>
+			<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
+				<br><br>
+				
+				Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
+			<</if>>
+		<<else>>
+			문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 찢어진다. 누군가 의자에 접착제를 발라놨다!
+			다행히도 <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 완전히 망가진 것은 아니다. 다만 상태가 더 안좋아졌을 뿐이다.
+		<</if>>
+		<br><br>
 	<<else>>
-	문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 찢어진다. 누군가 당신의 의자에 접착제를 발라놨다! 다행히도 <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 완전히 망가진 것은 아니다. 다만 상태가 더 안좋아졌을 뿐이다.
-	<br><br>
+		<<set $worn.lower.integrity -= 10>>
+		<<if $worn.lower.integrity lte 0>>
+			문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상 모서리에 걸려서
+			 깔끔하게 몸에서 뜯겨 나간다!
+			경악에 차서 아래를 내려다보자, 옷의 잔해가 책상 모서리에 걸려있다.
+			당신은 최대한 빨리 몸을 가려보지만, 잠시동안 <<undiesPost "이">> 완전히 노출되었다.
+			도렌은 수건을 들고 당신에게 달려오고, 당신의 얼굴은 굴욕감에 붉게 물들었다.
+			<<if $worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("hidden")>>
+				<<stress 12>><<trauma 12>><<ggstress>><<ggtrauma>>
+				<<if $player.gender isnot $player.gender_appearance and ($schoolrep.crossdress gte 3 or $schoolrep.herm gte 3)>>
+					<br><br>
+					The other students look almost satisfied by your plight. You overhear a few whispers while Doren is busy helping you,
+					and can make out something about <<print ($player.gender is "h"? "your genitals" : "you crossdressing")>>. They saw, and they know the rumours are true.
+				<<elseif $player.gender isnot $player.gender_appearance>>
+					<br><br>
+					The other students gasp, and the classroom fills with hushed whispers while Doren is busy helping you.
+					You can make out something about <<print ($player.gender is "h"? "your genitals" : "you crossdressing")>>. They saw.
+				<</if>>
+
+				<<schoolrep_naked>>
+				<<set $genderknown.pushUnique("Doren")>>
+				<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">><<set $genderknown.pushUnique("Kylar")>><</if>>
+			<<else>>
+				<<stress 6>><<trauma 6>><<gstress>><<gtrauma>>
+			<</if>>
+			<<if $kylarenglishstate is "active" or $kylarenglishstate is "watching">>
+				<br><br>
+				Kylar blushes and looks away, but <<nnpc_he "Kylar">> clearly saw.<<npcincr Kylar lust 1>><<glust>>
+			<</if>>
+		<<else>>
+			문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상 모서리에 걸려서 찢어진다.
+			다행히도 <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 완전히 망가진 것은 아니다. 다만 상태가 더 안좋아졌을 뿐이다.
+			<br><br>
+		<</if>>
 	<</if>>
-  <<else>>
-  <<set $worn.lower.integrity -= 10>>
-	<<if $worn.lower.integrity lte 0>>
-	문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상 모서리에 걸려서 깔끔하게 몸에서 뜯겨 나간다! 경악에 차서 아래를 내려다보자, 옷의 잔해가 모서리에 걸려있다. 당신은 최대한 빨리 몸을 가려보지만, 잠시동안 <<undiesPost "이">> 완전히 노출되었다. 도렌은 수건을 들고 당신에게 달려오고, 당신의 얼굴은 굴욕감에 붉게 물들었다.
-	<<gtrauma>><<gstress>>
-	<br><br>
-	<<humiliation10>>
-	<<else>>
-	문제 푼 것을 제출하려 일어나자, <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상 모서리에 걸려서 찢어진다. 다행히도 <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 완전히 망가진 것은 아니다. 다만 상태가 더 안좋아졌을 뿐이다.
-	<br><br>
-	<</if>>
-  <</if>>
-  <<integritycheck>>
-  <<towelup>>
-<<link [[다음|English Lesson]]>><</link>>
-<br>
+	<<integritycheck>>
+	<<link [[다음|English Lesson]]>><<towelup>><</link>>
+	<br>
+
 <<elseif $rng gte 71 and $kylarenglishstate is "active">>
 
 <<npc Kylar>><<person1>>도렌은 카일라를 교실 앞으로 불러 쓴 시를 낭송하게 한다. 당신을 향한 사랑의 시다. <<HePost "은">> 그 시를 모두에게 읽어줄 수 있어 매우 기쁜 눈치다.
 <<status -10>><<lcool>>
 <br><br>
 
-<<if $player.penisExist is 1 and $genderknown.includes("Kylar")>>
+<<if $player.penisExist and $genderknown.includes("Kylar")>>
 시의 일부분은 당신의 자지의 상당한 두께에 대해 대담하게 언급하고 있다. 당신의 얼굴이 달아오른다.<<status 1>><<gcool>>
 <br><br>
 <</if>>
@@ -1159,41 +1209,44 @@
 <br>
 
 <<elseif $rng gte 61>>
-  <<if $english gte 500>>
-  <<npc Doren>><<person1>>도렌이 당신의 책상으로 다가온다. "넌 이미 이 내용을 다 이해한 것 같으니, 다른 애들이 공부하는 동안 관리인의 별채에 이 쪽지를 좀 전달하고 오렴." <<HePost "은">> 연극 소품 목록이 적힌 쪽지를 건네준다. "그냥 문 아래에 밀어넣고 와."
-  <br><br>
-  <<endevent>>
+	<<if $english gte 500>>
+	<<npc Doren>><<person1>>도렌이 당신의 책상으로 다가온다. "넌 이미 이 내용을 다 이해한 것 같으니, 다른 애들이 공부하는 동안 관리인의 별채에 이 쪽지를 좀 전달하고 오렴." <<HePost "은">> 연극 소품 목록이 적힌 쪽지를 건네준다. "그냥 문 아래에 밀어넣고 와."
+	<br><br>
+	<<endevent>>
 
 	<<if $outbuildingvisited is 1>>
-	당신은 개가 공격해왔던 별채에 도착한다. 시간을 들여 조심한다면, 또 그런 일이 일어나는 걸 방지할 수 있다. 다만 그러면 수업 내용을 좀 놓치게 될 것이다.
-	<br><br>
-
-	<<link [[조심한다|English Outbuilding]]>><<set $phase to 0>><<detention 1>><</link>><<gdelinquency>>
-	<br>
-	<<link [[위험을 감수한다|English Outbuilding]]>><<set $phase to 1>><</link>>
-	<br>
-	<<else>><<set $outbuildingvisited to 1>>
-	<<beastNEWinit 1 dog>><<set $outbuildingBeast to $NPCList[0].type>>
-	당신은 학교 뒤쪽의 별채로 향해 지시대로 문 밑에 쪽지를 밀어넣는다. 뒤를 돌아보자, <<beasttypePost>> 한 마리가 이를 드러낸 채로 당신에게 달려든다.
-	<br><br>
-		<!-- Modified for Beast People -->
-		<!-- You manage to flee back to the classroom, though not unscathed.<<beastescape>>
+		당신은 개가 공격해왔던 별채에 도착한다. 시간을 들여 조심한다면, 또 그런 일이 일어나는 걸 방지할 수 있다. 다만 그러면 수업 내용을 좀 놓치게 될 것이다.
 		<br><br>
-		<<integritycheck>><<towelup>>
 
-		<<link [[Next|English Lesson]]>><</link>>
-		-->
-		<<link [[다음|English Outbuilding Molestation]]>><<set $molestationstart to 1>><</link>>
+		<<link [[조심한다|English Outbuilding]]>><<set $phase to 0>><<detention 1>><</link>><<gdelinquency>>
 		<br>
+		<<link [[위험을 감수한다|English Outbuilding]]>><<set $phase to 1>><</link>>
+		<br>
+	<<else>><<set $outbuildingvisited to 1>>
+		<<beastNEWinit 1 dog>><<set $outbuildingBeast to $NPCList[0].type>>
+		당신은 학교 뒤쪽의 별채로 향해 지시대로 문 밑에 쪽지를 밀어넣는다. 뒤를 돌아보자, <<beasttypePost>> 한 마리가 이를 드러낸 채로 당신에게 달려든다.
+		<br><br>
+		
+		<<if $monster is 1 or $bestialitydisable is "f">>
+			<<link [[다음|English Outbuilding Molestation]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			당신은 가까스로 교실로 도망칠 수 있었지만, 상처를 좀 입었다.<<beastescape>>
+			<br><br>
+			<<integritycheck>><<towelup>>
+
+			<<link [[다음|English Lesson]]>><<endevent>><</link>>
+		<</if>>
+		<!-- Modified for Beast People -->
 	<</if>>
 
-  <<else>>
-  도렌은 당신의 성취에 큰 관심을 보이며, 잠시라도 쉴 틈을 주지 않는다.
-  <<gstress>><<genglish>><<stress 2>><<englishskill>>
-  <br><br>
+	<<else>>
+		도렌은 당신의 성취에 큰 관심을 보이며, 잠시라도 쉴 틈을 주지 않는다.
+		<<gstress>><<genglish>><<stress 2>><<englishskill>>
+		<br><br>
 
-  <<link [[다음|English Lesson]]>><</link>>
-  <</if>>
+		<<link [[다음|English Lesson]]>><</link>>
+	<</if>>
 
 <<elseif $rng gte 41>>
   <<if $delinquency gte 400>>
@@ -1237,7 +1290,7 @@
   <</if>>
 <<elseif $rng gte 21>>
 도렌은 당신에게 화이트보드에 문법 문제를 풀어보라고 한다. 교실 앞쪽으로 걸어갈 때, 누군가 발을 내미는 바람에 당신은 걸려 넘어진다.
-  <<if $worn.lower.skirt is 1>>
+  <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 	<<if $worn.under_lower.name is "naked" or $worn.under_lower.anus_exposed is 1>>
 	넘어질 때 치마가 뒤집혀, 모든 학생들에게 당신의 맨 엉덩이가 노출된다. 당신은 빨갛게 된 얼굴로 어떻게든 자리에서 일어나고, 학생들은 휘파람을 불며 조롱한다.
 	<<stress 3>><<trauma 3>><<gstress>><<gtrauma>>
@@ -1487,7 +1540,7 @@
 	<<npc Robin>><<generatey2>><<person2>>
 	A paper airplane flies across the room, hitting Winter in the back.
 	<br><br>
-	"<<person1>>It was <<him>>," says a <<person2>><<person>>, pointing at Robin.
+	<<person1>>"It was <<him>>," says a <<person2>><<person>>, pointing at Robin.
 	<br><br>
 	<<if random(1, 2) is 2>>
 		Winter glares at Robin. "Out. Now."
@@ -1511,10 +1564,10 @@
 <<elseif $rng gte 76>>
 	<<generates1>><<person1>>보통은 조용한 <<personPost "이">> 교실 건너편에서 당신을 바라보는 것이 보인다.
 	<br><br>
-	<<if $exhibitionism gte 35 and $worn.lower.skirt is 1 and !$worn.under_lower.type.includes("naked")>>
+	<<if $exhibitionism gte 35 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and !$worn.under_lower.type.includes("naked")>>
 		<<link [[빠르게 옷 밑을 보여준다|History Flash]]>><</link>><<exhibitionist2>>
 		<br>
-	<<elseif $exhibitionism gte 55 and $worn.lower.skirt is 1>>
+	<<elseif $exhibitionism gte 55 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		<<link [[빠르게 옷 밑을 보여준다|History Flash]]>><</link>><<exhibitionist4>>
 		<br>
 	<<else>>
@@ -2061,7 +2114,7 @@
 		<<if $school gte 1600>>
 			<<set $rng to random(1, 100)>>
 			<<if $rng gte 81>>
-				<<npc Mason>><<person1>>메이슨은 당신을 가리킨다."나와봐. 다이빙 테크닉을 보고 싶으니까." 당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
+				당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
 				<br><br>
 				당신은 다시 수면 위로 올라온다. 메이슨이 당신을 향해 엄지를 들어보인 뒤, 다른 쪽으로 시선을 돌린다. 무언가 허전한 느낌이라 확인해보니, <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 벗겨졌다!<<endevent>>
 				<br><br>
@@ -2073,7 +2126,7 @@
 				<<link [[거부한다|Events Swimming Refuse]]>><</link>>
 				<br>
 			<<else>>
-				<<npc Mason>><<person1>>메이슨은 당신을 가리킨다."나와봐. 다이빙 테크닉을 보고 싶으니까." 당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
+				당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
 				<br><br>
 				당신은 다시 수면 위로 올라온다. 메이슨이 당신을 향해 엄지를 들어보인 뒤, 다른 쪽으로 시선을 돌린다. 무언가 허전한 느낌이라 확인해보니, <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 벗겨졌다! 벗겨진 옷은 다른 곳에 떠있어, 당신은 재빨리 그쪽으로 헤엄쳐 몸을 가린다. 주변을 둘러보지만, 누가 눈치챈 것 같지는 않다.
 				<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
@@ -2082,7 +2135,7 @@
 			<</if>>
 
 		<<else>>
-			<<npc Mason>><<person1>>메이슨은 당신을 가리킨다."나와봐. 다이빙 테크닉을 보고 싶으니까." 당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
+			당신은 서늘한 공기를 느끼며 밖으로 나와, 다이빙 플랫폼 가장자리로 걸어간다. 그러고는 <<swimmingtext>> 물 속으로 뛰어든다.
 			<br><br>
 			당신은 다시 수면 위로 올라온다. 메이슨이 당신을 향해 엄지를 들어보인 뒤, 다른 쪽으로 시선을 돌린다. 무언가 허전한 느낌이라 확인해보니, <<undiesPost "이">> 벗겨졌다! 벗겨진 옷은 다른 곳에 떠있어, 당신은 재빨리 그쪽으로 헤엄쳐 몸을 가린다. 주변을 둘러보지만, 누가 눈치챈 것 같지는 않다.
 			<<gstress>><<stress 2>><<gswimming>><<swimmingskilluse>>
@@ -2303,6 +2356,9 @@
 	<<case "Raul and Janet">>
 		<<link [[Return "Raul and Janet"|Book Rental]]>><<set $phase to 5>><<set $bookRent to "return">><</link>>
 		<br>
+	<<case "Pinch">>
+		<<link [[Return the olive-coloured book|Book Rental]]>><<set $phase to 6>><<set $bookRent to "return">><</link>>
+		<br>
 	<<default>>
 <</switch>>
 <<switch $studyBooks.stolen>>
@@ -2320,6 +2376,9 @@
 		<br>
 	<<case "Raul and Janet">>
 		<<link [[Return your stolen copy of "Raul and Janet"|Book Rental Return Stolen]]>><<set $phase to 5>><</link>>
+		<br>
+	<<case "Pinch">>
+		<<link [[Return the olive-coloured book|Book Rental Return Stolen]]>><<set $phase to 6>><</link>>
 		<br>
 	<<default>>
 <</switch>>
@@ -2345,6 +2404,10 @@
 			<</if>>
 			<<if $english gte 300 and $studyBooks.stolen isnot "Raul and Janet">>
 				<<link [[Rent "Raul and Janet" (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 5>><<set $studyBooks.rented to "Raul and Janet">><</link>>
+				<br>
+			<</if>>
+			<<if (($month is "november" and $monthday gte 24) or $month is "december") and $studyBooks.stolen isnot "Pinch">>
+				<<link [[Rent the olive-coloured book (£20)|Book Rental]]>><<set $money -= 2000>><<set $bookRent to "rent">><<set $phase to 6>><<set $studyBooks.rented to "Pinch">><</link>>
 				<br>
 			<</if>>
 		<<else>>
@@ -2384,6 +2447,10 @@
 				<<link [[Steal "Raul and Janet"|Book Rental]]>><<set $phase to 5>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Raul and Janet">><</link>><<crime>>
 				<br>
 			<</if>>
+			<<if (($month is "november" and $monthday gte 24) or $month is "december") and $studyBooks.stolen isnot "Pinch">>
+				<<link [[Steal the olive-coloured book|Book Rental]]>><<set $phase to 6>><<set $bookRent to "steal">><<set $studyBooks.stolen to "Pinch">><</link>><<crime>>
+				<br>
+			<</if>>
 		<<else>>
 			You can only carry one stolen book at a time.
 			<br>
@@ -2410,6 +2477,9 @@
 		<<case "Raul and Janet">>
 			<<link [[Read "Raul and Janet" (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to $passage>><</link>>
 			<br>
+		<<case "Pinch">>
+			<<link [[Read the olive-coloured book (0:01)|Olive Book 1]]>><<pass 1>><<set $oliveExitPassage to $passage>><</link>>
+			<br>
 		<<default>>
 	<</switch>>
 	<<switch $studyBooks.stolen>>
@@ -2427,6 +2497,9 @@
 			<br>*/
 		<<case "Raul and Janet">>
 			<<link [[Read "Raul and Janet" (0:01)|ScarletBook1]]>><<pass 1>><<set $scarletExitPassage to $passage>><</link>>
+			<br>
+		<<case "Pinch">>
+			<<link [[Read the olive-coloured book (0:01)|Olive Book 1]]>><<pass 1>><<set $oliveExitPassage to $passage>><</link>>
 			<br>
 		<<default>>
 	<</switch>>
@@ -2483,10 +2556,10 @@
 
 <<widget "destination_pool">>
 <<if $bus is "boys">>
-	<<link [[Next|School Boy Changing Room]]>><<endevent>><</link>>
+	<<link [[다음|School Boy Changing Room]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	<<link [[Next|School Girl Changing Room]]>><<endevent>><</link>>
+	<<link [[다음|School Girl Changing Room]]>><<endevent>><</link>>
 	<br>
 <</if>>
 <</widget>>
