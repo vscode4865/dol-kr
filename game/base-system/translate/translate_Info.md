@@ -891,6 +891,11 @@
     ```
 
     ```
+    <<nnpc_genderyPost>>
+        + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<nnpc_genitalsPost>>
         + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략
     ```
@@ -2165,6 +2170,24 @@
     ```
     <<struggle_bodypart>>
         + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
+    ```
+
+* base-system/text.twee
+    ```
+    <<npcHairColour>>
+		<<npcHairColour *npcID post "sep">>
+		
+		npc의 머리색을 번역한다.
+		
+		필수사항
+		- *npcID: 원본 npcHairColour의 인수
+		
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<npcHairColour "Sydney" "으로">>             // "백금색으로"
     ```
 
 * base-system/widget.twee
