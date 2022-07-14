@@ -20,7 +20,7 @@ const trPostsList = {
 	 "이던가" : ["이던가", "던가", "이던가"],
 	 "이든지" : ["이든지", "든지", "이든지"],
 	 "이던지" : ["이던지", "던지", "이던지"],
-	 "이던지" : ["이던지", "던지", "이던지"],
+	 "이야말로" : ["이야말로", "야말로", "이야말로"],
 	 "이구나" : ["이구나", "구나", "이구나"],
 	 "이다" : ["이다", "다", "이다"],
 	 "이지" : ["이지", "지", "이지"]
@@ -108,7 +108,7 @@ Template.add(['idunga', 'dunga'], function () { return ["이든가", "든가", "
 Template.add(['idonga', 'donga'], function () { return ["이던가", "던가", "이던가"][T.postNum]});
 Template.add(['idunji', 'dunji'], function () { return ["이든지", "든지", "이든지"][T.postNum]});
 Template.add(['idonji', 'donji'], function () { return ["이던지", "던지", "이던지"][T.postNum]});
-Template.add(['iyamalro', 'yamalro'], function () { return ["이던지", "던지", "이던지"][T.postNum]});
+Template.add(['iyamalro', 'yamalro'], function () { return ["이야말로", "야말로", "이야말로"][T.postNum]});
 Template.add(['iguna', 'guna'], function () { return ["이구나", "구나", "이구나"][T.postNum]});
 Template.add(['ida', 'da'], function () { return ["이다", "다", "이다"][T.postNum]});
 Template.add(['iji', 'ji'], function () { return ["이지", "지", "이지"][T.postNum]});
