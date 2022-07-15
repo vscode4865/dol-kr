@@ -82,7 +82,7 @@ function ParseEasyPostParam()
 }
 
 /* EasyPost : EasyPost 의 기본 몸체
-	사용법 : <<widget "EasyPost매크로명">><<set $_ret to EasyPost("실제매크로명"[, _trResult표시여부])>><<print $_ret>><</widget>>
+	사용법 : <<widget "EasyPost매크로명">><<print EasyPost("실제매크로명"[, _trResult표시여부])>><</widget>>
 */
 window.EasyPost = function(macro, isprint)
 {
