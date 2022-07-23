@@ -466,7 +466,7 @@ window.combatSkillCheck = combatSkillCheck;
 function hairdressersReset() {
 	jQuery(document).on('change', '.macro-listbox', function (e) {
 		new Wikifier(null, '<<replace #hairDressers>><<hairDressersOptions>><</replace>>');
-		new Wikifier(null, '<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>');
+		new Wikifier(null, '<<replace #currentCost>>낼 요금: £<<print _currentCost / 100>><</replace>>');
 	});
 	return "";
 }
@@ -476,7 +476,7 @@ DefineMacroS("hairdressersReset", hairdressersReset);
 function hairdressersResetAlt() {
 	jQuery(document).on('click', '.macro-cycle', function (e) {
 		new Wikifier(null, '<<replace #hairDressersSydney>><<hairDressersOptionsSydney>><</replace>>');
-		new Wikifier(null, '<<replace #currentCost>>To pay: £<<print _currentCost / 100>><</replace>>');
+		new Wikifier(null, '<<replace #currentCost>>낼 요금: £<<print _currentCost / 100>><</replace>>');
 	});
 	return "";
 }
