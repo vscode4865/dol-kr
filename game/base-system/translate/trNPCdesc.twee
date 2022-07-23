@@ -94,11 +94,19 @@
 	<<if _args[0] is undefined>>
 		<<set $_name to $NPCList[0].name>>
 	<<elseif typeof _args[0] is "string">>
-		<<set $_name to _args[0]>>
+		<<if _args[0].substring(0,1).search("[가-힣]") gte 0>>
+			<<set $_name to $NPCList[0].name>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+		<<else>>
+			<<set $_name to _args[0]>>
+		<</if>>
 	<<elseif typeof _args[0] is "number">>
 		<<set $_name to $NPCList[Number(_args[0])].name>>
 	<<else>>
 		<<set $_name to _args[0][0]>>
+	<</if>>
+	
+	<<if !$_post>>
+		<<set $_post to _args[1]>><<set $_sep to _args[2]>>
 	<</if>>
 	
 	<<if setup.trNPCnameList is undefined>>
@@ -124,7 +132,7 @@
 	<</if>>
 	
 	<<set _trResult to $_found.koname>>
-	<<if _args[1] isnot undefined>>
-		<<trPost $_found.post _args[1] _args[2]>>
+	<<if $_post isnot undefined>>
+		<<trPost $_found.post $_post $_sep>>
 	<</if>>
 <</silently>><</widget>>
