@@ -1,20 +1,27 @@
 Config.history.controls = false;
-
+Config.saves.slots = 9;
 Config.history.maxStates = 1;
 
 State.prng.init()
 
 window.versionUpdateCheck = true;
-window.saveUpdateCheck = true;
 window.onLoadUpdateCheck = false;
 
-Config.saves.onLoad = function (save) {
+Save.onLoad.add(function(save) {
 	window.onLoadUpdateCheck = true;
-}
+});
 
-Config.saves.onSave = function (save) {
+let pageLoading = false;
+
+Save.onLoad.add(function(save) {
+	pageLoading = true
+});
+
+
+Save.onSave.add(function(save) {
 	new Wikifier(null, '<<updateFeats>>');
-}
+	prepareSaveDetails();
+});
 
 /*LinkNumberify and images will enable or disable the feature completely*/
 /*debug will enable or disable the feature only for new games*/
@@ -22,7 +29,7 @@ window.StartConfig = {
 	"debug": false,
 	"enableImages": true,
 	"enableLinkNumberify": true,
-	"version": "0.3.6.2",
+	"version": "0.3.9.3",
 }
 
 /* convert version string to numeric value */
@@ -38,6 +45,16 @@ Config.saves.isAllowed = function () {
 	return true;
 };
 
+$(document).on(':passagestart', function(ev) {
+	if (ev.passage.title === 'Start2') {
+		jQuery.event.trigger({
+			type    : ':start2',
+			content : ev.content,
+			passage : ev.passage
+		});
+	}
+});
+
 importStyles("style.css")
 	.then(function () {
 		console.log("External Style Sheet Active")
@@ -50,183 +67,6 @@ console.log("Game Version:", StartConfig.version);
 
 l10nStrings.errorTitle = StartConfig.version + " Error";
 
-
-/**
- * Not a configuration, but we are overriding a basic part of sugarcube
- *
- * Provides a magic variable `$_` that creates a custom scope for the current
- * widget invocation
- *
- * NOTE: we basically steal sugarcube code as code reuse is more difficult
- * than it's worth in this instance. Be advised that updating sugarcube
- * may break this
- */
-const VIRTUAL_CURRENT = "_";
-const vStack = []
-const vContext = []
-const d = JSON.stringify.bind(JSON);
-let devOptions = {
-	trace: false,
-	invocationId: false
-}
-// setTimeout as Sugarcube may not have finished making it's State object yet,
-// and any lifecycle hooks (that might make this less hackish), are
-// non-obvious if they exist
-setTimeout(() => State.variables.devOptions = devOptions)
-// We declare some global debug utils that other code is free to use
-// Note that enabling trace will display all widget calls
-// Note that clog is currently non-configured and will always be invoked
-// TODO: add more granular debug log levels if needed
-function clog() {
-	console.log(`${State.passage}:${d(vContext)}`, ...arguments)
-}
-function trace() {
-	if (devOptions.trace) {
-		clog(...arguments)
-	}
-}
-function allMagical() {
-	return Object.keys(State.variables).filter(key => key.startsWith(VIRTUAL_CURRENT) && key != VIRTUAL_CURRENT)
-}
-let uniqueInvocation = 0;
-function widgetHandler(widgetName, contents) {
-	let argsCache;
-	trace('declaring fn', widgetName);
-	return function () {
-		DOL.Stack.push(widgetName);
-		const context = devOptions.invocationId
-			? `${State.passage}:${widgetName}:${uniqueInvocation++}`
-			: `${State.passage}:${widgetName}`;
-		trace('invoking', context);
-		vContext.push(context);
-		// Custom code
-		DOL.Perflog.logWidgetStart(widgetName);
-		const newFrame = {};
-		State.variables[VIRTUAL_CURRENT] = newFrame;
-		vStack.push(newFrame);
-		/**
-		 * place the previous invocation's magical objects on the stack
-		 * It's an error if the prior frame doesn't exist
-		 *  note: that would mean the $_var was defined in the body,
-		 *  as we clean our local magic variables
-		 */
-		const priorFrame = vStack[vStack.length - 2]
-		const magicals = allMagical();
-		if (magicals.length > 0) {
-			trace(`saving ${d(magicals)} to ${d(priorFrame)}`)
-		}
-		if (priorFrame !== undefined) {
-			magicals.forEach(key => {
-				priorFrame[key] = State.variables[key]
-				delete State.variables[key]
-			})
-		} else if (magicals.length > 0) {
-			console.warn(`Found variables: ${JSON.stringify(magicals)} declared in main`)
-		}
-		// End custom code
-
-		// Cache the existing value of the `$args` variable, if necessary.
-		if (State.variables.hasOwnProperty('args')) {
-			argsCache = State.variables.args;
-		}
-		State.variables.args = [...this.args];
-		State.variables.args.raw = this.args.raw;
-		State.variables.args.full = this.args.full;
-		this.addShadow('$args');
-
-		try {
-			// Set up the error trapping variables.
-			const resFrag = document.createDocumentFragment();
-			const errList = [];
-
-			// Wikify the widget contents. add nobr behavior -ng
-			new Wikifier(resFrag, contents.replace(/^\n+|\n+$/g, '').replace(/\n+/g, ' '));
-
-			// Carry over the output, unless there were errors.
-			Array.from(resFrag.querySelectorAll('.error')).forEach(errEl => {
-				errList.push(errEl.textContent);
-			});
-
-			if (errList.length === 0) {
-				this.output.appendChild(resFrag);
-			}
-			else {
-				console.error(`Error rendering widget ${widgetName}`, errList);
-				return this.error(`${V.args.length > 0 ? '($args=[' + V.args.full + ']): ' : ''}error${errList.length > 1 ? 's' : ''} within widget contents (${errList.join('; ')})`);
-			}
-		}
-		catch (ex) {
-			console.error(`Error executing widget ${widgetName} ${V.args.length > 0 ? 'with arguments "'+ V.args.full +'"' : ''}`, ex); return this.error(`cannot execute widget: ${ex.message}`);
-		}
-		finally {
-			// Custom code
-			DOL.Stack.pop();
-			vStack.pop();
-			vContext.pop();
-			State.variables[VIRTUAL_CURRENT] = priorFrame
-			const magicals = allMagical();
-			if (magicals.length > 0) {
-				trace(`cleaning up ${d(magicals)}`)
-				magicals.forEach(key => {
-					// don't pollute the global namespace
-					delete State.variables[key]
-				})
-			}
-			if (priorFrame !== undefined && Object.keys(priorFrame).length > 0) {
-				trace(`restoring ${d(priorFrame)}`)
-				// restore prior frame
-				Object.assign(State.variables, priorFrame)
-			}
-			DOL.Perflog.logWidgetEnd(widgetName);
-			// End custom code
-			if (typeof argsCache !== 'undefined') {
-				State.variables.args = argsCache;
-			}
-			else {
-				delete State.variables.args;
-			}
-		}
-	};
-}
-Macro.delete('widget');
-Macro.add('widget', {
-	tags: null,
-
-	handler() {
-		if (this.args.length === 0) {
-			return this.error('no widget name specified');
-		}
-
-		const widgetName = this.args[0];
-
-		if (Macro.has(widgetName)) {
-			if (!Macro.get(widgetName).isWidget) {
-				return this.error(`cannot clobber existing macro "${widgetName}"`);
-			}
-
-			// Delete the existing widget.
-			Macro.delete(widgetName);
-		}
-
-		try {
-			Macro.add(widgetName, {
-				isWidget: true,
-				handler: widgetHandler(widgetName, this.payload[0].contents)
-			});
-
-			// Custom debug view setup.
-			if (Config.debug) {
-				this.createDebugView(
-					this.name,
-					`${this.source + this.payload[0].contents}<</${this.name}>>`
-				);
-			}
-		}
-		catch (ex) {
-			return this.error(`cannot create widget macro "${widgetName}": ${ex.message}`);
-		}
-	}
-});
 // delete parser that adds unneeded line breaks -ng
 Wikifier.Parser.delete("lineBreak");
 
@@ -243,3 +83,131 @@ importScripts([
 .catch(function (err) {
 	console.log(err);
 });*/
+
+// Runs before a passage load, returning a string redirects to the new passage name.
+Config.navigation.override = function (dest) {
+	const isLoading = pageLoading; // if page is freshly loading (after a refresh etc), we hold its value in a temporary variable
+
+	pageLoading = false
+	switch (dest) {
+		case 'Pharmacy Select Custom Lenses':
+			return isLoading ? 'Pharmacy Ask Custom Lenses' : false;
+		case 'Forest Shop Outfit':
+		case 'Forest Shop Upper':
+		case 'Forest Shop Lower':
+		case 'Forest Shop Under Outfit':
+		case 'Forest Shop Under Upper':
+		case 'Forest Shop Under Lower':
+		case 'Forest Shop Head':
+		case 'Forest Shop Face':
+		case 'Forest Shop Neck':
+		case 'Forest Shop Legs':
+		case 'Forest Shop Feet':
+			return 'Forest Shop';
+
+		case 'Over Outfit Shop':
+		case 'Outfit Shop':
+		case 'Top Shop':
+		case 'Bottom Shop':
+		case 'Under Outfit Shop':
+		case 'Under Top Shop':
+		case 'Under Bottom Shop':
+		case 'Head Shop':
+		case 'Face Shop':
+		case 'Neck Shop':
+		case 'Hands Shop':
+		case 'Legs Shop':
+		case 'Shoe Shop':
+			return 'Clothing Shop';
+
+		case 'Penis Inspection Flaunt Crossdress':
+			return 'Penis Inspection Flaunt No Penis';
+
+		case 'Pussy Inspection2':
+			return 'Pussy Inspection 2';
+
+		case 'Pussy Inspection Penis':
+			return 'Pussy Inspection Flaunt No Pussy';
+
+		case 'Forest Plant Sex No Tentacles':
+			return 'Forest Plant Sex';
+
+		case 'Forest Plant Sex No Tentacles Finish':
+			return 'Forest Plant Sex Finish';
+
+		case 'Forest Plant Passout No Tentacles':
+			return 'Forest';
+
+		case 'Moor Plant Sex No Tentacles':
+			return 'Moor Plant Sex';
+
+		case 'Moor Plant Sex No Tentacles Finish':
+			return 'Moor Plant Sex Finish';
+
+		case 'Underground Plant Molestation No Tentacles':
+			return 'Underground Plant Molestation';
+
+		case 'Underground Plant Molestation No Tentacles Finish':
+			return 'Underground Plant Molestation Finish';
+
+		case 'Evens Swimming Endure':
+			return 'Events Swimming Swim Endure';
+
+		case 'Domus House Work':
+			return 'Domus Gutters Intro';
+
+		case 'Trash Boys':
+			return 'Trash Compare';
+
+		case 'Trash Boys Spy':
+			return 'Trash Compare Spy';
+
+		case 'Trash Boys Greet':
+			return 'Trash Compare Greet';
+
+		case 'Trash Boys Refuse':
+			return 'Trash Compare Refuse';
+
+		case 'Trash Boys Compare':
+			return 'Trash Compare Others';
+
+		case 'Trash Boys Back Out':
+			return 'Trash Compare Back Out';
+
+		case 'Trash Boys Show':
+			return 'Trash Compare Show';
+
+		case 'Trash Boys Offer Secret':
+			return 'Trash Compare Penis Secret';
+
+		case 'Trash Boys Wrap It Up':
+			return 'Trash Compare Wrap It Up';
+
+		case 'Trash Boys Crossdressing Refuse':
+			return 'Trash Compare Breast Refuse';
+
+		case 'Trash Boys Crossdressing Show All':
+			return 'Trash Compare Breast Show All';
+
+		case 'Trash Boys Forced Strip':
+			return 'Trash Compare Forced Strip';
+
+		case 'Trash Boys Combat Win':
+			return 'Trash Compare Combat Win';
+
+		case 'Trash Boys Combat Loss':
+			return 'Trash Compare Combat Loss';
+
+		case 'Lake Underwater Tentacles Finish Figure':
+			return 'Lake Underwater Tentacles Finish';
+
+		case 'Sextoys Inventory Home':
+		case 'Sextoys Inventory Brothel':
+		case 'Sextoys Inventory Cottage':
+		case 'Sextoys Inventory Cabin':
+			return 'Sextoys Inventory';
+
+		default:
+			return false;
+	}
+}

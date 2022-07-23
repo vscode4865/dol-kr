@@ -1,6 +1,17 @@
 :: Test
-<<location castle>><<effects>>
+<<location farm>><<effects>>
 <<endcombat>>
+<<link [[Test]]>><</link>>
+<br><br>
+
+<<link [[Go with Whitney|Adult Shop Whitney Spank Agree]]>><<npcincr Whitney dom 3>><<npcincr Whitney love 3>><<npcincr Sirris love -3>><</link>><<ggdom "Whitney">><<gglove "Whitney">><<llove "Sirris">>
+<br>
+<<link [[Refuse|Adult Shop Whitney Spank Refuse]]>><<npcincr Whitney dom -3>><<npcincr Whitney love 3>><</link>><<lldom "Whitney">><<lllove "Whitney">>
+<br>
+
+<<npc Kylar>><<npcincr Kylar dom 100>>
+<<print $NPCName[$NPCNameList.indexOf("Kylar")].dom>><br>
+
 
 
 :: Robin
@@ -82,7 +93,7 @@
 <<effects>>
 
 <<effectsman>><<man>>
-	
+
 
 <<stateman>>
 <br><br>
@@ -345,7 +356,7 @@ Possible text describing your attempt.
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<span id="next"><<link [[Next|Beast Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link "Next">><<script>>state.display(state.active.title, null)<</script>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beast Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Beast Rape Finish
@@ -435,7 +446,7 @@ Possible text describing your attempt.
 
 		<<combatTrainAdvance>>
 		<br><br>
-		[[Next|Beast Gang]]
+		<<link [[Next|Beast Gang]]>><</link>>
 	<<else>>
 		The <<beasttype>> recoils in pain and fear.
 		<<combatTrainAdvance>>
@@ -449,7 +460,7 @@ Possible text describing your attempt.
 
 		<<combatTrainAdvance>>
 		<br><br>
-		[[Next|Beast Gang]]
+		<<link [[Next|Beast Gang]]>><</link>>
 	<<else>>
 		Satisfied, the <<beasttype>> moves away from you.
 		<<combatTrainAdvance>>
@@ -493,7 +504,7 @@ Possible text describing your attempt.
 <<seductioncheck>>
 <br><br>
 <<if $seductionskill lt 1000>>
-	<span class="gold">You feel more confident in your powers of seduction.</span>
+	<span class="gold">당신은 유혹하는 데 좀 더 자신감이 붙었다.</span>
 	<br><br>
 <</if>>
 <<seductionskilluse>>
@@ -520,7 +531,7 @@ Text detailing your seduction attempt.
 The door is locked tight.
 <br><br>
 
-	<<if $skulduggery gte $lock>>
+	<<if currentSkillValue('skulduggery') gte $lock>>
 	<span class="green">The lock looks easy to pick.</span>
 	<br><br>
 
@@ -973,6 +984,8 @@ Number of active machines: <<print $machine.number>><br>
 	Phallic machine state: <<print $machine.vaginal.state>><br>
 	Phallic machine health: <<print $machine.vaginal.health>><br>
 	Phallic machine hack: <<print $machine.vaginal.hack>><br>
+	Phallic machine ammo: <<print $machine.vaginal.ammo>><br>
+	Phallic machine speed: <<print $machine.vaginal.speed>><br>
 <</if>>
 <br>
 <<if $machine.anal>>
@@ -980,6 +993,8 @@ Number of active machines: <<print $machine.number>><br>
 	Small phallic machine state: <<print $machine.anal.state>><br>
 	Small phallic machine health: <<print $machine.anal.health>><br>
 	Small phallic machine hack: <<print $machine.anal.hack>><br>
+	Small phallic machine ammo: <<print $machine.anal.ammo>><br>
+	Small phallic machine speed: <<print $machine.anal.speed>><br>
 <</if>>
 <br>
 <<if $machine.arm_chains>>
@@ -1005,8 +1020,17 @@ Number of active machines: <<print $machine.number>><br>
 	<<link [[Next|Machine End]]>><</link>>
 <<else>>
 	<<link [[Next|Machine]]>><</link>>
+	<<if $machine.vaginal or $machine.anal>>
+		<br>
+		<<if $machine.vaginal.speed is "high" or $machine.anal.speed is "high">>
+			<<link [[SLOW DOWN|Machine]]>><<machine_speed "normal">><</link>>
+		<<else>>
+			<<link [[SPEED UP|Machine]]>><<machine_speed "high">><</link>>
+		<</if>>
+	<</if>>
 <</if>>
 <br>
+
 <<link [[End|Machine End]]>><</link>>
 <br>
 
@@ -1217,3 +1241,83 @@ $farm_stage = 12: 9 fields clear. Remy threatens again.
 <br><br>
 <<link [[Escape!|Domus Street]]>><<endevent>><</link>>
 <br>
+
+:: Dance
+<<effects>>
+
+<<if $dancestart is 1>>
+	<<unset $dancestart>>
+	<<danceinit>>
+	<<set $dancing to 1>>
+	<<set $audience to 25>>
+	<<set $venuemod to 1>>
+	<<set $dancelocation to "party">>
+<</if>>
+
+<<danceeffects>>
+<<danceaudience>>
+<<danceactions>>
+
+<<if $corruptionDancing gt 0 and $danceevent is 0 and (($exhibitionism lte 74 and $exposed gte 2) or ($exhibitionism lte 34 and $exposed gte 1))>>
+	There's no way you could normally continue dancing while so exposed.
+<<elseif $danceevent is 0 and $exhibitionism lte 74 and $exposed gte 2>>
+	There's no way you can continue dancing while so exposed! Face reddening, you flee the scene.
+	<br><br>
+<<elseif $danceevent is 0 and $exhibitionism lte 34 and $exposed gte 1 and !$worn.under_lower.type.includes("dance")>>
+	There's no way you can continue dancing while so exposed! Face reddening, you flee the scene.
+	<br><br>
+<</if>>
+
+<<if $danceevent is "finish">>
+	<<unset $corruptionDancing>>
+	<<link [[Next|Brothel]]>><<clotheson>><<endevent>><</link>>
+<<elseif $danceevent is "private">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<elseif $promiscuity gte 35>>
+		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<set $enemynomax to 1>><<unset $corruptionDancing>><</link>><<promiscuous3>>
+	<<elseif $promiscuity lte 34 and $uncomfortable.prostituting is false>>
+		<<link [[Private room|Brothel Private]]>><<set $phase to 0>><<set $enemyno to 1>><<set $enemynomax to 1>><<unset $corruptionDancing>><<set $desperateaction to 1>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+<<elseif $danceevent is "rape">>
+	<<link [[Next|Brothel Dance Rape]]>><<set $molestationstart to 1>><<unset $corruptionDancing>><</link>>
+<<elseif $danceevent is "leighton">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<elseif $promiscuity gte 35>>
+		<<link [[Private room|Leighton Private]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+<<elseif $danceevent is "robin">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<else>>
+		<<link [[Private room|Robin Brothel]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<</if>>
+
+<<elseif $danceevent is 0>>
+	<<if $corruptionDancing isnot undefined>>
+		The slime in your ear is forcing you.
+	<<elseif $exposed gte 2 and $exhibitionism lte 74>>
+		<<link [[Flee|Brothel Dressing Room]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<<elseif $exposed gte 1 and $exhibitionism lte 34>>
+		<<link [[Flee|Brothel Dressing Room]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<<else>>
+		<<link [[Stop|Brothel]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<</if>>
+<</if>>
+/*More simple setup below */
+<<if $danceevent is "rape">>
+	<<link [[Next|Beach Party Dance Rape]]>><<set $molestationstart to 1>><</link>>
+<<elseif $danceevent is "finish">>
+	<<link [[Next|Beach Party]]>><<clotheson>><<endevent>><</link>>
+<<elseif $danceevent is 0>>
+	<<if $exposed gte 2 and $exhibitionism lte 74>>
+		<<link [[Flee|Changing Room]]>><<clotheson>><<endevent>><</link>>
+	<<elseif $exposed gte 1 and $exhibitionism lte 34>>
+		<<link [[Flee|Changing Room]]>><<clotheson>><<endevent>><</link>>
+	<<else>>
+		<<link [[Stop|Beach Party]]>><<clotheson>><<endevent>><</link>>
+	<</if>>
+<</if>>

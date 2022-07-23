@@ -1,18 +1,22 @@
 :: Feats [widget]
 
 <<widget "earnFeat">>
-<<if $args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
-	<<featsData>>
-	<<if $feats.currentSave[$args[0]] is undefined and ($feats.soft isnot true or _feats[$args[0]].softLockable isnot true)>>
-		<<set $feats.currentSave[$args[0]] to Date()>>
+<<if _args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
+	<<if $feats.currentSave[_args[0]] is undefined and ($feats.soft isnot true or _feats[_args[0]].softLockable isnot true)>>
+		<<set $feats.currentSave[_args[0]] to Date()>>
 
-		<<displayFeat $args[0]>>
+		<<displayFeat _args[0]>>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "updateFeats">>
-	<<featsData>>
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
 	<<if _passageCheck is "Start">>
 		<<set _recalledFeats to JSON.parse(localStorage.getItem("dolFeats"))>>
 	<</if>>
@@ -72,7 +76,7 @@
 <</widget>>
 
 <<widget "setupFeats">>
-<<if $featsBoosts is undefined or $args[0] is true>>
+<<if $featsBoosts is undefined or _args[0] is true>>
 	<<set _keys to Object.keys($feats.allSaves)>>
 
 	<<set _moneyFeats to _keys.count("Pocket Change") + _keys.count("Money Maker") + _keys.count("Tycoon") + _keys.count("Millionaire")>>
@@ -91,6 +95,7 @@
 			skulduggery:0,
 			dancing:0,
 			swimming:0,
+			athletics:0,
 			tending:0,
 			greenThumb:0,
 			seduction:0,
@@ -109,6 +114,7 @@
 			skulduggery:{cost:5, limit: 20, minCount: 1, count:_keys.count("Thief"), exclusive:""},
 			dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
 			swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
+			athletics:{cost:5, limit: 20, minCount: 1, count:_keys.count("Swift"), exclusive:""},
 			tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
 			greenThumb:{cost:40, limit: 40, minCount: 1, count:_keys.count("Green Fingered"), exclusive:"", hidden:true},
 			seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
@@ -127,16 +133,17 @@
 			skulduggery:"'도둑' 달성 못함",
 			dancing:"'한 곡 추시겠어요?' 달성 못함",
 			swimming:"'잠수부' 달성 못함",
+			athletics:"'재빠름' 달성 못함",
 			tending:"'초록 손가락' 달성 못함",
 			seduction:"'요부' 달성 못함",
 			purity:"'천사처럼 걷기'나 '추락하고, 추락하고, 추락하고...' 달성 못함",
 			impurity:"'악마같은 모습' 달성 못함",
-			newLife:"`?????` 달성 못함",
-			aNewBestFriend:"`?????` 달성 못함",
+			newLife:"'?????' 달성 못함 (" + _feats["Broodmother Host"].hint + ")",
+			aNewBestFriend:"'?????' 달성 못함 (" + _feats["Ear Slime Lover"].hint + ")",
 			tattoos:"'광고판'이나 '살아있는 캔버스' 달성 못함",
-			defaultMoves:"'?????' 달성 못함",
+			defaultMoves:"'?????' 달성 못함 (" + _feats["A New Life"].hint + ")",
 			randomClothing:"",
-			specialClothing:"'?????' 달성 못함",
+			specialClothing:"'?????' 달성 못함 (" + _feats["Curious Attire"].hint + ")",
 		},
 		name:{
 			money:"소지금",
@@ -144,6 +151,7 @@
 			skulduggery:"속임수 스킬 등급",
 			dancing:"춤 스킬 등급",
 			swimming:"수영 스킬 등급",
+			athletics:"운동 스킬 등급",
 			tending:"관리 스킬 등급",
 			greenThumb:"원예가 특성",
 			seduction:"유혹 스킬 등급",
@@ -214,6 +222,9 @@
 <</if>>
 <<if _upgrades.swimming gt 0>>
 	<<set $swimmingskill += _upgrades.swimming / _details.swimming.cost * 100>>
+<</if>>
+<<if _upgrades.athletics gt 0>>
+	<<set $athletics += _upgrades.athletics / _details.athletics.cost * 100>>
 <</if>>
 <<if _upgrades.seduction gt 0>>
 	<<set $seductionskill to _upgrades.seduction / _details.seduction.cost * 100>>
@@ -407,32 +418,37 @@
 <</widget>>
 
 <<widget "earnAllFeats">>
+<<specialClothesUpdate>>
 <<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
-	<<featsData>>
-	<<if $args[0] is true>>
+	<!-- Save a widget call by checking _feats outside the widget -->
+	<<if _feats is undefined>>
+		<<featsData>>
+	<</if>>
+	<<if _args[0] is true>>
 		/*Rarely occuring feats*/
-		<<if $player.gender is "m" and $days gte 50>>
-			<<earnFeat "Being a Boy">>
-		<</if>>
-		<<if $player.gender is "f" and $days gte 50>>
-			<<earnFeat "Being a Girl">>
-		<</if>>
-		<<if $player.gender is "h" and $days gte 50>>
-			<<earnFeat "Being a Hermaphrodite">>
-		<</if>>
-		<<if $days gte 150>>
-			<<earnFeat "Being an Orphan">>
-		<</if>>
-		<<if $days gte 50 and $passoutstat is 0>>
-			<<earnFeat "Stressful Challenge">>
-		<</if>>
-		<<if $days gte 150 and $passoutstat is 0>>
-			<<earnFeat "Long Stressful Challenge">>
+		<<if $days gte 50>>
+			<<if $player.gender is "m">>
+				<<earnFeat "Being a Boy">>
+			<<elseif $player.gender is "f">>
+				<<earnFeat "Being a Girl">>
+			<<elseif $player.gender is "h">>
+				<<earnFeat "Being a Hermaphrodite">>
+			<</if>>
+
+			<<if $days gte 150>>
+				<<earnFeat "Being an Orphan">>
+			<</if>>
+
+			<<if $passoutstat is 0>>
+				<<earnFeat "Stressful Challenge">>
+				<<if $days gte 150>>
+					<<earnFeat "Long Stressful Challenge">>
+				<</if>>
+			<</if>>
 		<</if>>
 		<<if $awareness gte 500>>
 			<<earnFeat "Most Aware">>
-		<</if>>
-		<<if $awareness lte -199>>
+		<<elseif $awareness lte -199>>
 			<<earnFeat "Most Innocent">>
 		<</if>>
 		<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
@@ -445,15 +461,14 @@
 		<</if>>
 		<<if $submissive gte 2000>>
 			<<earnFeat "Perfect Sub">>
-		<</if>>
-		<<if $submissive lte 0>>
+		<<elseif $submissive lte 0>>
 			<<earnFeat "Defying the Odds">>
 		<</if>>
 		<<if $museumAntiques.museumCount is $museumAntiques.maxCount>>
 			<<earnFeat "It Belongs in a Museum">>
 		<</if>>
 		<<if ($robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1) or ($robinromance gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1) or ($robinromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1) or ($kylarenglish gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1)>>
-			<<earnFeat "Love Triangles">>		
+			<<earnFeat "Love Triangles">>
 		<</if>>
 		<<if $robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1>>
 			<<earnFeat "Love Trapezoids">>
@@ -502,8 +517,7 @@
 		<</if>>
 		<<if $delinquency lte 0>>
 			<<earnFeat "Teachers Pet">>
-		<</if>>
-		<<if $delinquency gte 1000>>
+		<<elseif $delinquency gte 1000>>
 			<<earnFeat "Teachers Nightmare">>
 		<</if>>
 		<<if $feats.allSaves.points gte 150>>
@@ -545,7 +559,6 @@
 		<<if $sadism_level gte 4>>
 			<<earnFeat "Served Hot">>
 		<</if>>
-		<<specialClothesUpdate>>
 	<</if>>
 	<<if $money gte 100000>>
 		<<earnFeat "Pocket Change">>
@@ -560,8 +573,8 @@
 		<<earnFeat "Millionaire">>
 	<</if>>
 	<<if $goooutsidecount + $semenoutsidecount gte 100
-	and (setup.bodyliquid.combined("anus") gte 5 or $analdisable is "t")
-	and (setup.bodyliquid.combined("vagina") gte 5 or !$player.vaginaExist)
+	and ($analdisable is "t" or setup.bodyliquid.combined("anus") gte 5)
+	and (!$player.vaginaExist or setup.bodyliquid.combined("vagina") gte 5)
 	and setup.bodyliquid.combined("mouth") gte 5>>
 		<<earnFeat "Fully Covered">>
 	<</if>>
@@ -848,7 +861,7 @@
 			filter: ["All", "Stats"],
 		},
 		"Swift":{
-			title: "신속",
+			title: "재빠름",
 			desc: "바람과 같이.",
 			difficulty: 1,
 			series: "",
@@ -963,6 +976,13 @@
 		"Robin the Lover":{
 			title: "연인 로빈",
 			desc: "로빈에게 순결을 바쳤다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Social"],
+		},
+		"Robin's Song":{
+			title: "로빈의 노래",
+			desc: "로빈이 크로스드레싱 하는 것을 편안하게 느끼도록 도와줬다.",
 			difficulty: 2,
 			series: "",
 			filter: ["All", "Social"],
@@ -1134,7 +1154,7 @@
 			difficulty: 1,
 			series: "",
 			filter: ["All", "Social"],
-			
+
 		},
 		"A Crime Most Foul":{
 			title: "가장 나쁜 범죄",
@@ -1774,6 +1794,69 @@
 			series: "",
 			filter: ["All", "Discoveries"],
 			hint: "Hint: 당신의 형량을 짧게 줄여라.",
+			softLockable: true,
+		},
+		"Life of the Party":{
+			title: "파티의 스타 춤꾼",
+			desc: "파티에서 댄스로 깊은 인상을 주었다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 찰리의 친구들에게 깊은 인상을 주어라.",
+			softLockable: true,
+		},
+		"Belle of the Ball":{
+			title: "무도회의 미녀",
+			desc: "상류층 파티에서 댄스로 깊은 인상을 주었다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 상류층에게 깊은 인상을 주어라.",
+			softLockable: true,
+		},
+		"Breaking the Stone":{
+			title: "돌을 부숴라",
+			desc: "다뉴브 저택 아래의 의식을 저지했다.",
+			difficulty: 3,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 당신의 댄스 연줄로 의식에 접근해서 저지하라.",
+			softLockable: true,
+		},
+		"Pound Alpha":{
+			title: "보호소의 우두머리",
+			desc: "개 보호소에서 존중심을 최고까지 올렸다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 그 개들에게 누가 대장인지를 보여라.",
+			softLockable: true,
+		},
+		"Pound Runt":{
+			title: "보호소의 최약자",
+			desc: "개 보호소에서 존중심을 최저까지 낮췄다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 개들에게 항복하라.",
+			softLockable: true,
+		},
+		"Pounded Pound":{
+			title: "보호없는 보호소",
+			desc: "베일리에게 개 보호소에서 일어나는 일을 알렸다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 개 보호소의 비리를 찾아라.",
+			softLockable: true,
+		},
+		"Pound Liberator":{
+			title: "보호소의 해방자",
+			desc: "검은 개를 구했다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 개 보호소의 특별한 죄수를 풀어줘라.",
 			softLockable: true,
 		},
 		"Max Those Shots":{

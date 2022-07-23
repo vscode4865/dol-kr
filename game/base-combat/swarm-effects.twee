@@ -24,7 +24,7 @@
 	<div id="feetaction" @class="$combatControls + 'Control'">
 		<<feetActionInitSwarm>>
 	</div>
-	
+
 	<<if ($mouthuse is 0 and !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)))>>
 		<div id="mouthaction" @class="$combatControls + 'Control'">
 			<<mouthActionInit>>
@@ -127,7 +127,7 @@
 		<<set _leftaction["당신의 오른팔을 푼다"] to "leftfree">>
 	<<elseif _swarmamounts.active[2] gte 1 and $lefttarget isnot "self">>
 		<<silently>><<swarmName>><</silently>>
-		<<set _leftaction[_swarmname  + " 중 하나를 " + _swarmsteady] to "leftswarm">>
+		<<set _leftaction[_swarmname + " 중 하나를 " + _swarmsteady] to "leftswarm">>
 	<</if>>
 	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($lefttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
 		<<silently>><<genitalsPost "을" "sep">><<set $_genitals to _trResult>><</silently>>
@@ -164,6 +164,7 @@
 	<<if $vorecreature is 0>>
 		<<set _leftaction["쉰다"] to "swarmrest">>
 	<</if>>
+	<<leftclothesnew>>
 <<case "bound">>
 	<<if $gamemode is "soft" and $nowiggle isnot true>>
 		<<set _leftaction["흔들어 푼다"] to "leftwriggle">>
@@ -274,7 +275,7 @@
 		<<set _rightaction["당신의 왼팔을 푼다"] to "rightfree">>
 	<<elseif _swarmamounts.active[2] gte 1 and $righttarget isnot "self">>
 		<<silently>><<swarmName>><</silently>>
-		<<set _rightaction[_swarmname  + " 중 하나를 " + _swarmsteady] to "rightswarm">>
+		<<set _rightaction[_swarmname + " 중 하나를 " + _swarmsteady] to "rightswarm">>
 	<</if>>
 	<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0 and ($righttarget is "self" or $targetYourself is false or _targetnumber is 1)>>
 		<<silently>><<genitalsPost "을" "sep">><<set $_genitals to _trResult>><</silently>>
@@ -311,6 +312,8 @@
 	<<if $vorecreature is 0>>
 		<<set _rightaction["쉰다"] to "swarmrest">>
 	<</if>>
+	<<rightclothesnew>>
+
 <<case "bound">>
 	<<if $gamemode is "soft" and $nowiggle isnot true>>
 		<<set _rightaction["흔들어 푼다"] to "rightwriggle">>
@@ -415,10 +418,10 @@
 <<set _feetaction to {}>>
 <<if $swarm.amount.active[2] gte 1 and $feettarget isnot "self">>
 	<<silently>><<swarmName>><</silently>>
-	<<set _feetaction[_swarmname  + " 중 하나를 " + _swarmsteady] to "feetswarm">>
+	<<set _feetaction[_swarmname + " 중 하나를 " + _swarmsteady] to "feetswarm">>
 <</if>>
 <<if _feetOptions is "free">>
-	<<if $water is 1 and $vorecreature is 0 and $swimmingskill gt 700 and $consensual isnot 1 and ($feettarget is "self" or $targetYourself is false or _targetnumber is 1)>>
+	<<if $water is 1 and $vorecreature is 0 and currentSkillValue('swimmingskill') gt 700 and $consensual isnot 1 and ($feettarget is "self" or $targetYourself is false or _targetnumber is 1)>>
 		<<set _feetaction["안전한 곳까지 헤엄쳐 간다"] to "swim">>
 	<</if>>
 <</if>>
@@ -521,7 +524,6 @@
 			<<if $vorecreature is 0>>
 				<label>쉰다 <<radiobutton "$leftaction" "swarmrest">></label> |
 			<</if>>
-
 			<br><br>
 		<</if>>
 
@@ -583,7 +585,6 @@
 			<<if $vorecreature is 0>>
 				<label>쉰다 <<radiobutton "$rightaction" "swarmrest">></label> |
 			<</if>>
-
 			<br><br>
 		<</if>>
 
@@ -594,7 +595,7 @@
 				<label>그 <<swarmname>> 중 하나를 _swarmsteady <<radiobutton "$feetaction" "feetswarm" checked>></label> |
 			<</if>>
 
-			<<if $water is 1 and $vorecreature is 0 and $swimmingskill gt 700 and $consensual isnot 1>>
+			<<if $water is 1 and $vorecreature is 0 and currentSkillValue('swimmingskill') gt 700 and $consensual isnot 1>>
 				<label><span class="teal">안전한 곳까지 헤엄쳐 간다</span> <<radiobutton "$feetaction" "swim" checked>></label> |
 			<</if>>
 
@@ -618,6 +619,8 @@
 
 	<<set _swarmamounts to $swarm.amount>>
 
+	/* -------- Clothes -------- */
+	<<effectshandsclothes>>
 	/* -------- Left Arm -------- */
 	<<set $leftactiondefault to $leftaction>>
 	<<if $leftaction is "leftwriggle">><<set $leftaction to 0>>

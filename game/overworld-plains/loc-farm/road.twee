@@ -260,25 +260,18 @@
 	<<passoutfarmroad>>
 <<elseif $danger gte (9900 - $allure) and $eventskip is 0>>
 	<<if $rng gte 51>>
+		<<beastNEWinit 1 cow>><<person1>>
 		<!-- Modified for monster people -->
-		<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f") or ($bestialitydisable is "t")>>
-			<<if $malechance lt random(1, 100)>>
-				A naked girl with cow ears, horns and tail stops grazing and walks up to the fence around her field. She moos at you.
-				<br><br>
-				<<set $road_pet to "cowgirl">>
-			<<else>>
-				A naked boy with bull ears, horns and tail stops grazing and walks up to the fence around his field. He moos at you.
-				<br><br>
-				<<set $road_pet to "bullboy">>
-			<</if>>
-		<<else>>
-			A cow stops grazing and walks up to the fence around its field. It moos at you.
+		<<if $monster is 1>>
+			A naked <<print ($pronoun is "f" ? "girl" : "boy")>> with cow ears, horns and tail stops grazing and walks up to the fence around her field. <<bHe>> moos at you.
 			<br><br>
-			<<set $road_pet to "cow">>
+		<<else>>
+			A <<beasttype>> stops grazing and walks up to the fence around its field. It moos at you.
+			<br><br>
 		<</if>>
 		<<link [[Pet|Farm Road Pet]]>><<stress -6>><</link>><<lstress>>
 		<br>
-		<<link [[Ignore|Farm Road 6]]>><<unset $road_pet>><</link>>
+		<<link [[Ignore|Farm Road 6]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<else>>
 		<<hitchhike>>
@@ -439,18 +432,11 @@ Despite the awkward position, the journey is smooth. The <<person2>><<person>> w
 <</if>>
 
 <<person2>>
-<<if $pronoun is "f">>
-	<<if $NPCList[1].penis isnot "none">>
-		You rest your other hand on the <<person2>><<persons>> thigh. <<He>> lifts <<his>> skirt in anticipation, revealing <<his>> $NPCList[1].penisdesc. You don't disappoint, and take <<his>> shaft in your hand.
-	<<else>>
-		You rest your other hand on the <<person2>><<persons>> thigh. <<He>> lifts <<his>> skirt in anticipation, revealing <<his>> pussy. You don't disappoint, and press a finger against <<his>> clit.
-	<</if>>
+You rest your other hand on the <<person2>><<persons>> thigh. <<He>> <<npcUndressText $NPCList[1] "lower" "self">> in anticipation, revealing <<his>>
+<<if $NPCList[1].penis isnot "none">>
+	$NPCList[1].penisdesc. You don't disappoint, and take <<his>> shaft in your hand.
 <<else>>
-	<<if $NPCList[1].penis isnot "none">>
-		You rest your other hand on the <<person2>><<persons>> thigh. <<He>> unzips <<his>> fly in anticipation, revealing <<his>> $NPCList[1].penisdesc. You don't disappoint, and take <<his>> shaft in your hand.
-	<<else>>
-		You rest your other hand on the <<person2>><<persons>> thigh. <<He>> unzips <<his>> fly in anticipation, revealing <<his>> pussy. You don't disappoint, and press a finger against <<his>> clit.
-	<</if>>
+	pussy. You don't disappoint, and press a finger against <<his>> clit.
 <</if>>
 
 <<promiscuity3>>
@@ -471,7 +457,7 @@ The <<person1>><<persons>> control of the wheel becomes unsteady as <<he>> appro
 You bounce your <<bottom>> against the gear stick as you fondle the pair. You bounce a little too hard, and the stick shifts downward.
 <<promiscuity4>>
 
-The engine roars and the car speeds up. Frantic, both the <<person1>><<person>> and <<person2>><<person>> grope for the stick, but their rough fondling finds your <<genitals>> instead.<<ggarousal>><<arousal 2000>>
+The engine roars and the car speeds up. Frantic, both the <<fullGroup>> grope for the stick, but their rough fondling finds your <<genitals>> instead.<<ggarousal>><<arousal 2000>>
 <br><br>
 <<if $arousal gte $arousalmax>>
 	<<orgasm>> The pair withdraw their hands as you lean forward, gripping their thighs for support. Your movement shifts the gear stick again, and the car returns to a more reasonable pace.
@@ -1174,10 +1160,10 @@ You're jolted awake by a rumble. You're in a back of a van. You struggle to your
 You see the interior of a barn. The <<person>> isn't alone. Three others stand with <<him>>, examining you.
 <br><br>
 
-<<person2>>"You weren't lying," a <<person>> says. "Good stock. Would make a fine breeder."
+<<person2>>"You weren't lying," a <<person>> says. "Good stock.<<if $speechpregnancydisable is "f">> Would make a fine breeder.<</if>>"
 <br><br>
 
-<<person3>>"Breeder?" a <<person>> interjects. "I'm more interested in the produce. Gonna make a killing." <<He>> advances on you, a metal chain and collar in <<his>> hand.
+<<person3>><<if $speechpregnancydisable is "f">>"Breeder?"<<else>>"Personally,"<</if>> a <<person>> interjects. "I'm more interested in the produce. Gonna make a killing." <<He>> advances on you, a metal chain and collar in <<his>> hand.
 <br><br>
 
 <<link [[Protest|Street Van Protest]]>><<def 1>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
@@ -1248,17 +1234,11 @@ You decide not to run off the road in pursuit, and continue without your headwea
 :: Farm Road Pet
 <<effects>>
 
-<<if $road_pet is "cowgirl">>
-	You pet the cowgirl's head. She moos again and licks your fingers.
-<<elseif $road_pet is "bullboy">>
-	You pet the bullboy's head. He moos again and licks your fingers.
-<<else>>
-	You pet the cow's head. It moos again and licks your fingers.
-<</if>>
+You pet the <<beasttypes>> head. <<bHe>> moos again and licks your fingers.
 
 
 <br><br>
-<<unset $road_pet>>
+<<endevent>>
 <<destinationfarmroad>>
 
 
@@ -1316,7 +1296,7 @@ You saddle the <<beasttype>>.
 <<if $thighskill gte 200>>
 	<<saveNPC 0 "saddled_steed">>
 	<<set $farm.steed to clone($NPCList[0].hair)>>
-	You climb upon <<bhis>> back, and spurt <<bhim>> to a trot. The force surprises you, <span class="green">but you manage to hold on.</span> The wind blows your hair as you circle the yard.
+	You climb upon <<bhis>> back, and spur <<bhim>> to a trot. The force surprises you, <span class="green">but you manage to hold on.</span> The wind blows your hair as you circle the yard.
 	<br><br>
 
 	<<if $farm.stable gte 1>>
@@ -1520,7 +1500,7 @@ You dismount the <<beasttype>>, and kneel beneath <<bhim>>.
 		"D-don't stop," the <<beasttype>> says. "I'm almost there.""
 		<br><br>
 	<</if>>
-	<<link [[Keep going|Farm Ride Hand 2]]>><<farm_horses 1>><</link>><<skill_difficulty handskill "Hand Skill" 1 1000>><<grespect>>
+	<<link [[Keep going|Farm Ride Hand 2]]>><<farm_horses 1>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>><<grespect>>
 	<br>
 	<<link [[Stop|Farm Ride Hand Stop]]>><<farm_horses -3>><</link>><<llrespect>>
 	<br>
@@ -1668,7 +1648,7 @@ You dismount. If the <<beasttype>> is so stubborn, then so be it. <<bHe>> huffs 
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<span id="next"><<link [[Next|Farm Ride Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link "Next">><<script>>state.display(state.active.title, null)<</script>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Farm Ride Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Farm Ride Rape Finish
@@ -1835,7 +1815,7 @@ You spur your <<beasttype>> to a gallop. Hooves thunder behind as Remy's goons t
 
 	<<link [[Punch the closest rider|Farm Ride Punch]]>><</link>><<physiquedifficulty 1 16000>>
 	<br>
-	<<link [[Grab the lasso|Farm Ride Grab]]>><</link>><<skill_difficulty handskill "Hand Skill" 1 1000>>
+	<<link [[Grab the lasso|Farm Ride Grab]]>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>>
 	<br>
 	<<link [[Reassure your steed|Farm Ride Reassure]]>><</link>><<tendingdifficulty 1 1000>>
 	<br>
@@ -1855,7 +1835,7 @@ You rein in the <<beasttype>>, and turn to face the approaching riders. They don
 
 <<link [[Punch the closest rider|Farm Ride Punch]]>><</link>><<physiquedifficulty 1 16000>>
 <br>
-<<link [[Grab the lasso|Farm Ride Grab]]>><</link>><<skill_difficulty handskill "Hand Skill" 1 1000>>
+<<link [[Grab the lasso|Farm Ride Grab]]>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>>
 <br>
 <<link [[Reassure your steed|Farm Ride Reassure]]>><</link>><<tendingdifficulty 1 1000>>
 <br>
@@ -1867,7 +1847,7 @@ You rein in the <<beasttype>>, and turn to face the approaching riders. They don
 	You fist connects with the <<person3>><<person>>'s face, <span class="green">knocking <<him>> from the saddle.</span> <<His>> colleague laughs, and readies the lasso for another attempt.
 	<br><br>
 
-	<<link [[Grab the lasso|Farm Ride Grab 2]]>><</link>><<skill_difficulty handskill "Hand Skill" 1 1000>>
+	<<link [[Grab the lasso|Farm Ride Grab 2]]>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>>
 	<br>
 	<<link [[Reassure your steed|Farm Ride Reassure 2]]>><</link>><<tendingdifficulty 1 1000>>
 	<br>
@@ -1936,7 +1916,7 @@ You rein in the <<beasttype>>, and turn to face the approaching riders. They don
 
 	<<link [[Punch the closest rider|Farm Ride Punch 2]]>><</link>><<physiquedifficulty 1 16000>>
 	<br>
-	<<link [[Grab the lasso|Farm Ride Grab 2]]>><</link>><<skill_difficulty handskill "Hand Skill" 1 1000>>
+	<<link [[Grab the lasso|Farm Ride Grab 2]]>><</link>><<skill_difficulty "$handskill" "Hand Skill" 1 1000>>
 	<br>
 <<else>>
 	<<person1>>

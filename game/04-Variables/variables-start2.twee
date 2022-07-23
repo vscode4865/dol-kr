@@ -1,13 +1,13 @@
 :: Widgets variablesStart2 [widget]
 <<widget "variablesStart2">>
 /*Variables required at the start of passage 'Start2', please remove if not required"*/
-/*This widget should be used to initialize most or all variables that are required when you begin a new game. also check <<gameStartOnly>> for other initializations. */
+/*This widget should be used to initialise most or all variables that are required when you begin a new game. also check <<gameStartOnly>> for other initialisations. */
 
 <<if $hairselect is "random">>
 	<<set $hairselect to ["red","jetblack","black","brown","softbrown","lightbrown","burntorange","blond","softblond","platinumblond","ashyblond","strawberryblond","ginger"].random()>>
 <</if>>
 <<if $eyeselect is "random">>
-	<<set $eyeselect to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey"].random()>>
+	<<set $eyeselect to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].random()>>
 <</if>>
 
 <<switch $bodysize>>
@@ -34,8 +34,6 @@
 <<set $per_npc to {}>>
 <<set $perNPCFix to 4>>
 
-<<set $scroll_remember to true>>
-
 <<set $physique to ($physiquesize / 7) * 3>>
 <<set $beauty to ($beautymax / 7)>>
 
@@ -55,12 +53,33 @@
 	<<set $feats.locked to true>>
 <</if>>
 
-<<set $eyecolour to $eyeselect>>
+<<set $leftEyeColour to $eyeselect>>
+<<set $rightEyeColour to $eyeselect>>
 
 <<if $awareselect is "innocent">>
 <<elseif $awareselect is "knowledgeable">>
 	<<set $awareness += 200>>
 	<<set $awarelevel to 1>>
+<</if>>
+
+/*pharmacy contact lenses related */
+<<if ndef $left_before_nurse_returned>>
+	<<set $left_before_nurse_returned to 0>>
+<</if>>
+<<if ndef $lenses_ordered>>
+	<<set $lenses_ordered to []>>
+<</if>>
+<<if ndef $custom_lenses_already_ordered>>
+	<<set $custom_lenses_already_ordered to 0>>
+<</if>>
+<<if ndef $custom_eyecolours>>
+	<<set $custom_eyecolours to []>>
+<</if>>
+<<if ndef $makeup.owned>>
+	<<set $makeup.owned to []>>
+	<<if ndef $makeup.owned.custom_eyelenses>>
+		<<set $makeup.owned.custom_eyelenses to []>>
+	<</if>>
 <</if>>
 
 <<set $player.gender_appearance to $player.gender>>
@@ -97,8 +116,31 @@
 	<<set $player.vaginaExist to true>>
 <</if>>
 <<physicalAdjustmentsInit>>
-<<set $player.perceived_breastsize = $breastsize>>
-<<set $player.perceived_bottomsize = $bottomsize>>
+<<set $player.perceived_breastsize = $player.breastsize>>
+<<set $player.perceived_bottomsize = $player.bottomsize>>
+
+<<if $startingseason is "random">>
+	<<set $startingseason to ["autumn","winter","spring","summer"].random()>>
+<</if>>
+
+<<switch $startingseason>> /* The yeardays countdown begins on September 1st, autumn start is on Sep 4th */
+	<<case "winter">>
+		<<set $yeardays to 91>>
+		<<set $month to "december">>
+		<<set $season to "winter">>
+	<<case "spring">>
+		<<set $yeardays to 182>>
+		<<set $month to "march">>
+		<<set $season to "spring">>
+	<<case "summer">>
+		<<set $yeardays to 273>>
+		<<set $month to "june">>
+		<<set $season to "summer">>
+	<<default>>
+		<<set $yeardays to 3>>
+		<<set $month to "september">>
+		<<set $season to "autumn">>
+<</switch>>
 
 <<if $background is "nerd">>
 	<<set $science += 100>><<set $maths += 100>><<set $english += 100>><<set $history += 100>><<set $school += 400>><<set $cool to 0>>
@@ -106,7 +148,7 @@
 <<elseif $background is "athlete">>
 	<<set $physique += ($physiquesize / 4)>><<set $swimmingskill += 200>><<set $athletics += 200>>
 	<<set $science to 0>><<set $maths to 0>><<set $english to 0>><<set $history to 0>><<set $school to 0>>
-	<<set $sciencetrait to 0>><<set $mathstrait to 0>><<set $englishtrait to 0>><<set $historytrait to 0>>
+	<<set $sciencetrait to -1>><<set $mathstrait to -1>><<set $englishtrait to -1>><<set $historytrait to -1>>
 <<elseif $background is "delinquent">>
 	<<set $delinquency += 401>><<set $cool += 200>>
 <<elseif $background is "promiscuous">>
@@ -236,6 +278,16 @@
 	rng: random(0,1000)
 }>>
 
+<<set $adultShop to {
+	ban: 0,
+	banExtension: false,
+	spotted: false,
+	stolenClothes: 0,
+	totalStolenClothes: 0,
+	banCount: 0,
+	rng: random(0,1000)
+}>>
+
 <<set $customColors to {
 	presets:{},
 	action: "set",
@@ -254,10 +306,14 @@
 	numberPerTrain: [],
 }>>
 
-<<set $kylar to {}>>
-<<set $kylar.raped to 0>>
-<<set $kylar.riddle to 0>>
-<<set $kylar.timer to {halls:0,street:0,home:0,love:0}>>
+<<set $robinTattoo to []>>
+<<set $robinmissing to 0>>
+<<set $kylar to {
+	raped: 0,
+	riddle: 0,
+	timer: {halls:0,street:0,home:0,love:0},
+	fameStage: 0,
+}>>
 <<set $kylarSeen to []>>
 <<set $kylarDaily to {}>>
 <<set $museumAntiqueJournalHints to []>>
@@ -289,4 +345,11 @@
 <<pbhairinit>>
 <<resetLastOptions>>
 
+<<set $adultshopprogress to 0>>
+<<set $adultshopcontribution to 0>>
+
+<<run createInventoryObject()>>
+
+<<set $robinPunishments to []>>
+<<set $robinTraumaMultiplier to 1>>
 <</widget>>

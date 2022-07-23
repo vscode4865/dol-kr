@@ -4,9 +4,14 @@
 <!-- "FOR" loops work by counting backward from highest numbered combatant to lowest e.g. 5 to 0. -->
 <!-- In case of train combat, count stops after 1, e.g. 5 to 5. -->
 <!-- Lots of further opportunity to reduce code using <<for>><</for>> loops with NPC objects NG 2.8-->
-<<set _ppbigreaction to ["그것을 보고 당신의 몸에서 힘이 빠지는 것을 느낀다.","그것을 보고 당신은 몸서리친다.","그 크기를 보고 무의식중에 신음소리를 낸다.","그 거대한 두께에 헉 소리를 낸다.","그것을 보고 있자니 당신의 넓적다리에 힘이 풀리는 것을 느낀다."]>>
-<<set _ppsmallreaction to ["그것을 보고 당신은 비웃음을 꾹 참는다.","그것을 보고 당신은 실실 웃는다.","그것을 보고 당신은 나오려는 웃음을 꾹 참는다.","그것을 보고 당신은 킥킥 웃으려는 것을 꾹 참는다.","당신은 웃지 않으려 노력한다."]>>
-<<set _pprng to random(0, 4)>>
+/*
+* Switched all instances of skill checks, that simply repeat themselves with a different variable, for the JS function combatSkillCheck()
+* The function can be found at "game/03-JavaScript/ingame.js". It takes one required argument and three optional arguments.
+* Argument 0 is for the skill being used. For simplycity at writing, you only pass the important part of the skill, E.g. "hand", or "feet", or "oral".
+* Argument 1 (optional) is used for the target of that action. This is used to future-proof the possibility of using the target's specific arousal/trust/anger in calculation.
+* Argument 2 (optional) is the base difficulty used for the action. Most actions use 1000 base difficulty, which is the default if left blank, but some actions take different chances (like undressing).
+* Argument 3 (optional) is the extra multiplier for the arousal side. This is only used in undressing so far, but might as well add it as an option.
+*/
 
 /*ToDo: Pregnancy, remove to properly enable*/
 <<if $pregnancyTesting is undefined>>
@@ -71,6 +76,8 @@
 		당신은 <<putpost $walltype>>에 하반신을 무방비로 내놓고 고정되어 있다.
 	<<elseif $walltype is "horse_pillory">>
 		당신의 다리와 목은 차가운 철 고정쇠로 고정되어, 움직임을 막고 있다.
+	<<elseif $walltype is "front">>
+		당신은 벽에 끼어, 허리 위쪽을 무방비로 내놓고 고정되어 있다.
 	<<else>>
 		당신은 <<putpost $walltype>>에 하반신을 무방비로 내놓고 고정되어 있다.
 	<</if>>
@@ -89,6 +96,7 @@
 <<effectspenwhack>>
 <<effectsshacklewhack>>
 <<effectshandsfreeface>>
+<<effectsdildowhack>>
 
 <<if $bodyaction is "doggy">>
 	<<set $bodyaction to 0>>
@@ -112,9 +120,86 @@
 	<<setnewtarget>>
 <</if>>
 
+<<if $leftaction is "lefthandholdkeep" and $rightaction is "righthandholdkeep">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "lefthandholdkeep">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "righthandholdkeep">>
+	당신은 <<someones_yi $lefttarget>> 양손을 당신의 손으로 잡고 있다.
+	<<submission 4 $lefttarget>>
+<</if>>
+
+<<if $leftaction is "lefthandholdnew">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "lefthandholdnew">>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<set $NPCList[$lefttarget].righthand to "handhold">>
+		당신은 <<someones_yi $lefttarget>> 왼손을 당신의 손으로 잡는다.
+		<<set $leftarm to "handheld">><<set $leftactiondefault to "lefthandholdkeep">>
+		<<submission 1 $lefttarget>>
+		<<if $loveInterest.primary is $NPCList[$lefttarget].fullDescription or $loveInterest.secondary is $NPCList[$lefttarget].fullDescription>>
+			<<takeHandholdingVirginity $NPCList[$lefttarget].fullDescription "romantic">>
+		<<else>>
+			<<takeHandholdingVirginity $NPCList[$lefttarget].fullDescription>>
+		<</if>>
+	<<else>>
+		당신은 <<someones_yi $lefttarget>> 왼손으로 손을 뻗지만, <<he_nun>> 손을 치운다.
+	<</if>>
+<</if>>
+
+<<if $leftaction is "lefthandholdkeep">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "lefthandholdkeep">>
+	당신은 <<someones_yi $lefttarget>> 왼손을 당신의 손으로 잡고 있다.
+	<<submission 2 $lefttarget>>
+<</if>>
+
+<<if $leftaction is "lefthandholdstop">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	당신은 <<someones_yi $lefttarget>> 오른손을 놓아준다.
+	<<set $leftarm to 0>>
+	<<if $npcSub>>
+		<<set $NPCList[$lefttarget].righthand to "idle">>
+	<<else>>
+		<<set $NPCList[$lefttarget].righthand to 0>>
+	<</if>>
+<</if>>
+
+
+<<if $rightaction is "righthandholdnew">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "righthandholdnew">>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<set $NPCList[$righttarget].lefthand to "handhold">>
+		<<set $rightarm to "handheld">>
+		당신은 <<hisselect_yi $righttarget>> 오른손을 당신의 손으로 잡는다.
+		<<set $rightarm to "handheld">><<set $leftactiondefault to "righthandholdkeep">>
+		<<submission 1 $righttarget>>
+		<<if $loveInterest.primary is $NPCList[$righttarget].fullDescription or $loveInterest.secondary is $NPCList[$righttarget].fullDescription>>
+			<<takeHandholdingVirginity $NPCList[$righttarget].fullDescription "romantic">>
+		<<else>>
+			<<takeHandholdingVirginity $NPCList[$righttarget].fullDescription>>
+		<</if>>
+	<<else>>
+		당신은 <<someones_yi $righttarget>> 오른손으로 손을 뻗지만, <<he_nun>> 손을 치운다.
+	<</if>>
+<</if>>
+
+<<if $rightaction is "righthandholdkeep">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "righthandholdkeep">>
+	당신은 <<someones_yi $righttarget>> 오른손을 당신의 손으로 잡고 있다.
+	<<submission 2 $righttarget>>
+<</if>>
+
+<<if $rightaction is "righthandholdstop">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	당신은 <<someones_yi $righttarget>> 왼손을 놓아준다.
+	<<set $rightarm to 0>>
+	<<if $npcSub>>
+		<<set $NPCList[$righttarget].lefthand to "idle">>
+	<<else>>
+		<<set $NPCList[$righttarget].lefthand to 0>>
+	<</if>>
+<</if>>
+
 <<if $leftaction is "leftgrab">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftgrab">><<handskilluse>><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
 		<<submission 1 $lefttarget>><<handstat>>
 		<<if $NPCList[$lefttarget].penis is 0>>
 			<<set $leftactiondefault to "leftwork">><<set $NPCList[$lefttarget].penis to "leftarm">><<set $leftarm to "penis">>
@@ -129,7 +214,7 @@
 
 <<if $rightaction is "rightgrab">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightgrab">><<handskilluse>><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $righttarget)>>
 		<<submission 1 $righttarget>><<handstat>>
 		<<if $NPCList[$righttarget].penis is 0>>
 			<<set $NPCList[$righttarget].penis to "rightarm">><<set $rightarm to "penis">>
@@ -157,9 +242,9 @@
 
 <<if $leftaction is "leftwork">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftwork">><<handskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
 		<<submission 3 $lefttarget>><<actionsshaftrub $lefttarget>>
-	<<else>>
+	<<elseif $NPCList[$lefttarget].penis is "leftarm">>
 		<<set $leftactiondefault to "leftgrab">>
 		<<set $leftarm to 0>><<set $NPCList[$lefttarget].penis to 0>>
 		<span class="blue">당신은 <<hisselect_yi $lefttarget>> 육봉을 비비려 하지만, <<he_nun>> 당신의 손을 피한다.</span>
@@ -168,45 +253,38 @@
 
 <<if $rightaction is "rightwork">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightwork">><<handskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $righttarget)>>
 		<<submission 3 $righttarget>><<actionsshaftrub $righttarget>>
-	<<else>>
+	<<elseif $NPCList[$righttarget].penis is "rightarm">>
 		<<set $rightactiondefault to "rightgrab">>
 		<<set $rightarm to 0>><<set $NPCList[$righttarget].penis to 0>>
 		<span class="blue">당신은 <<hisselect_yi $righttarget>> 육봉을 비비려 하지만, <<he_nun>> 당신의 손을 피한다.</span>
 	<</if>>
 <</if>>
 
-<<if $leftaction is "leftstoppenis">>
+<<if $leftaction is "leftstoppenis" and $NPCList[$lefttarget].penis is "leftarm">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftstoppenis">><<submission 3 $lefttarget>><<set $leftarm to 0>>
 	<<set $NPCList[$lefttarget].penis to 0>>당신은 <<hisselect_yi $lefttarget>> 자지를 놓아준다.
 <</if>>
 
-<<if $rightaction is "rightstoppenis">>
+<<if $rightaction is "rightstoppenis" and $NPCList[$righttarget].penis is "rightarm">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightstoppenis">><<submission 3 $righttarget>><<set $rightarm to 0>>
 	<<set $NPCList[$righttarget].penis to 0>>당신은 <<hisselect_yi $righttarget>> 자지를 놓아준다.
 <</if>>
 
-<<if $leftaction is "leftstruggle" and $rightaction is "rightstruggle" and !$abomination>>
+<<if $leftaction is "leftstruggle" and $rightaction is "rightstruggle" and !$abomination and $lefttarget is $righttarget>>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftstruggle">><<set $rightactiondefault to "rightstruggle">>
 	당신은 온 힘을 다해 몸부림친다.
-	<<defiance 2 $lefttarget $righttarget>><<set $speechstruggle to 1>>
-	<<if $physique gte random(1, 32000)>>
+	<<defiance 2 $lefttarget>><<set $speechstruggle to 1>>
+	<<if currentSkillValue('physique') gte random(1, 32000) and !$robinRentEvent>>
 		<span class="teal">당신은 팔을 풀어내는 데 성공한다.</span>
-		<<defiance 5 $lefttarget $righttarget>>
+		<<defiance 5 $lefttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
 		<<if $NPCList[$lefttarget].lefthand is "arms">>
 			<<set $NPCList[$lefttarget].lefthand to 0>>
 		<</if>>
 		<<if $NPCList[$lefttarget].righthand is "arms">>
 			<<set $NPCList[$lefttarget].righthand to 0>>
-		<</if>>
-		/* Unecessary */
-		<<if $NPCList[$righttarget].lefthand is "arms">>
-			<<set $NPCList[$righttarget].lefthand to 0>>
-		<</if>>
-		<<if $NPCList[$righttarget].righthand is "arms">>
-			<<set $NPCList[$righttarget].righthand to 0>>
 		<</if>>
 	<<else>>
 		<span class="purple">당신의 팔은 여전히 붙잡혀 있다.</span>
@@ -217,7 +295,7 @@
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftstruggle">>
 	당신은 몸부림친다.
 	<<set $speechstruggle to 1>><<defiance 1 $lefttarget>>
-	<<if $physique gte random(1, 64000)>>
+	<<if currentSkillValue('physique') gte random(1, 64000) and !$robinRentEvent>>
 		<span class="teal">당신은 팔을 풀어내는 데 성공한다.</span>
 		<<defiance 5 $lefttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
@@ -236,7 +314,7 @@
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightstruggle">>
 	당신은 몸부림친다.
 	<<defiance 1 $righttarget>><<set $speechstruggle to 1>>
-	<<if $physique gte random(1, 64000)>>
+	<<if currentSkillValue('physique') gte random(1, 64000) and !$robinRentEvent>>
 		<span class="teal">당신은 팔을 풀어내는 데 성공한다.</span>
 		<<defiance 5 $righttarget>>
 		<<set $leftarm to 0>><<set $rightarm to 0>>
@@ -304,26 +382,26 @@
 
 <<if $leftaction is "leftchest" and $rightaction is "rightchest">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftchest">>
-	<<set $rightactiondefault to "rightchest">><<actionsstroke $lefttarget $righttarget>><<submission 2 $lefttarget $righttarget>>
+	<<set $rightactiondefault to "rightchest">><<actionsStroke $lefttarget $righttarget>><<submission 2 $lefttarget $righttarget>>
 <</if>>
 
 <<if $leftaction is "leftchest">>
-	<<set $leftaction to 0>><<set $leftactiondefault to "leftchest">><<actionsstroke $lefttarget>><<submission 1 $lefttarget>>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftchest">><<actionsStroke $lefttarget>><<submission 1 $lefttarget>>
 <</if>>
 
 <<if $rightaction is "rightchest">>
-	<<set $rightaction to 0>><<set $rightactiondefault to "rightchest">><<actionsstroke $righttarget>><<submission 1 $righttarget>>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightchest">><<actionsStroke $righttarget>><<submission 1 $righttarget>>
 <</if>>
 
-<<if $leftaction is "lefthit" and $rightaction is "righthit">>
+<<if $leftaction is "lefthit" and $rightaction is "righthit" and $lefttarget is $righttarget>>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "lefthit">>
-	<<set $rightactiondefault to "righthit">><<actionshit both>><<defiance 5 $lefttarget $righttarget>><<set $speechhit to 1>><<set $attackstat += 2>>
+	<<set $rightactiondefault to "righthit">><<actionshit both>><<defiance 5 $lefttarget>><<set $speechhit to 1>><<set $attackstat += 2>>
 <</if>>
 
 <<if $leftaction is "lefthit">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "lefthit">>
 	<<if $parasite.left_ear.name is "slime" and random(1, 3) is 3 or $parasite.right_ear.name is "slime" and random(1, 3) is 3>>
-		<<if $corruption_slime gte ($willpower / 10)>>
+		<<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
 			당신은 <<if $enemytype is "beast">><<beasttype_ul>><<else>><<personselect $lefttarget>><<person_ul>><</if>>
 			왼손으로 때리려 하지만, <span class="red">슬라임이 팔을 움직이지 못하게 한다.</span>
 			<<gwillpower>><<willpower 1>>
@@ -337,10 +415,10 @@
 <</if>>
 
 <<if $rightaction is "righthit">>
-	<<set $rightaction to 0>><<set $rightactiondefault to "righthit">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "righthit">><<personselect $righttarget>>
 	<<if $parasite.left_ear.name is "slime" and random(1, 3) is 3 or $parasite.right_ear.name is "slime" and random(1, 3) is 3>>
-		<<if $corruption_slime gte ($willpower / 10)>>
-			당신은 <<if $enemytype is "beast">><<beasttype_ul>><<else>><<personselect $righttarget>><<person_ul>><</if>>
+		<<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
+			당신은 <<if $enemytype is "beast">><<beasttype_ul>><<else>><<person_ul>><</if>>
 			오른손으로 때리려 하지만, <span class="red">슬라임이 팔을 움직이지 못하게 한다.</span>
 			<<gwillpower>><<willpower 1>>
 		<<else>>
@@ -628,9 +706,9 @@
 
 <<if $leftaction is "leftclit">>
 <<set $leftaction to 0>><<set $leftactiondefault to "leftclit">><<handskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
 		<<actionsclitstroke $lefttarget>><<submission 10 $lefttarget>><<set $speechhandjobvagina to 1>>
-	<<else>>
+	<<elseif $NPCList[$lefttarget].vagina is "leftarm">>
 		<<set $leftarm to 0>><<set $leftactiondefault to "leftplay">>
 		<<set $NPCList[$lefttarget].vagina to 0>><<personselect $lefttarget>>
 		<span class="blue">당신은 <<hisselect_yi $lefttarget>> 클리토리스를 쓰다듬으려 하지만, <<he_nun>>
@@ -640,22 +718,23 @@
 
 <<if $rightaction is "rightclit">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightclit">><<handskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $righttarget)>>
 		<<actionsclitstroke $righttarget>><<submission 10 $righttarget>><<set $speechhandjobvagina to 1>>
-	<<else>><<set $rightarm to 0>><<set $rightactiondefault to "rightplay">>
+	<<elseif $NPCList[$righttarget].vagina is "rightarm">>
+		<<set $rightarm to 0>><<set $rightactiondefault to "rightplay">>
 		<<set $NPCList[$righttarget].vagina to 0>><<personselect $righttarget>>
 		<span class="blue">당신은 <<hisselect_yi $righttarget>> 클리토리스를 쓰다듬으려 하지만, <<he_nun>>
 		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
 	<</if>>
 <</if>>
 
-<<if $leftaction is "leftothervaginastop">>
+<<if $leftaction is "leftothervaginastop" and $NPCList[$lefttarget].vagina is "leftarm">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftothervaginastop">>
 	<<set $NPCList[$lefttarget].vagina to 0>><<set $leftarm to 0>>
 	<span class="blue">당신은 <<hisselect_yi $lefttarget>> 보지에서 왼손을 치운다.</span>
  <</if>>
 
-<<if $rightaction is "rightothervaginastop">>
+<<if $rightaction is "rightothervaginastop" and $NPCList[$righttarget].vagina is "rightarm">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightothervaginastop">>
 	<<set $NPCList[$righttarget].vagina to 0>><<set $rightarm to 0>>
 	<span class="blue">당신은 <<hisselect_yi $righttarget>> 보지에서 오른손을 치운다.</span>
@@ -663,7 +742,7 @@
 
 <<if $leftaction is "leftplay">>
 	<<set $leftaction to 0>><<handskilluse>><<set $leftactiondefault to "leftplay">><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
 		<<submission 1 $lefttarget>><<handstat>>
 		<<if $NPCList[$lefttarget].vagina is 0>>
 			<<set $leftactiondefault to "leftclit">><<set $NPCList[$lefttarget].vagina to "leftarm">><<set $leftarm to "othervagina">><<personselect $lefttarget>>
@@ -678,7 +757,7 @@
 
 <<if $rightaction is "rightplay">>
 	<<set $rightaction to 0>><<handskilluse>><<set $rightactiondefault to "rightplay">><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("hand", $righttarget)>>
 		<<submission 1 $righttarget>><<handstat>>
 		<<if $NPCList[$righttarget].vagina is 0>>
 			<<set $rightactiondefault to "rightclit">><<set $NPCList[$righttarget].vagina to "rightarm">><<set $rightarm to "othervagina">><<personselect $righttarget>>
@@ -698,13 +777,13 @@
 		<<brat 2>>
 	<<else>>
 		<<for _j = 0; _j lt $enemynomax; _j++>>
-			<<if $NPCList[_j].lefthand is "underclothes" or $NPCList[_j].righthand is "underclothes" or (_j is 0 and $NPCList[_j].mouth is "underclothes")>>
+			<<if $NPCList[_j].lefthand is "underlowerclothes" or $NPCList[_j].righthand is "underlowerclothes" or (_j is 0 and $NPCList[_j].mouth is "underlowerclothes")>>
 				당신은 <<worn_under_lower_name_ul>> 뺏어오려고 몸부림친다.
-				<<brat 2>><<set $understruggle to 1>>
+				<<brat 2>><<set $underlowerstruggle to 1>>
 				<<break>>
 			<</if>>
 		<</for>>
-		<<if $understruggle is 0>>
+		<<if $underlowerstruggle is 0>>
 			<<if $worn.under_lower.state is "ankles">>
 				<<set $worn.under_lower.state to "knees">>
 				당신은 <<worn_under_lower_name_ul>> 무릎까지 당겨올린다.
@@ -730,7 +809,7 @@
 	<<if $worn.under_lower.name is "naked">>
 		당신은 누더기가 된 옷의 남은 조각을 꽉 잡는다.
 	<<else>>
-		<<if $NPCList[0].lefthand isnot "underclothes" and $NPCList[0].righthand isnot "underclothes" and $NPCList[1].lefthand isnot "underclothes" and $NPCList[1].righthand isnot "underclothes" and $NPCList[2].lefthand isnot "underclothes" and $NPCList[2].righthand isnot "underclothes" and $NPCList[3].lefthand isnot "underclothes" and $NPCList[3].righthand isnot "underclothes" and $NPCList[4].lefthand isnot "underclothes" and $NPCList[4].righthand isnot "underclothes" and $NPCList[5].lefthand isnot "underclothes" and $NPCList[5].righthand isnot "underclothes" and $NPCList[0].mouth isnot "underclothes">>
+		<<if !$NPCList.some(npc => npc.lefthand !== "underlowerclothes" || npc.righthand !== "underlowerclothes" || npc.mouth !== "underlowerclothes")>>
 			<<if $worn.under_lower.state is "ankles">>
 				<<set $worn.under_lower.state to "knees">>
 				당신은 <<worn_under_lower_name_ul>> 무릎까지 당겨올린다.
@@ -759,7 +838,7 @@
 	<<if $worn.under_lower.name is "naked">>
 		당신은 누더기가 된 옷의 남은 조각을 꽉 잡는다.
 	<<else>>
-		<<if $NPCList[0].lefthand isnot "underclothes" and $NPCList[0].righthand isnot "underclothes" and $NPCList[1].lefthand isnot "underclothes" and $NPCList[1].righthand isnot "underclothes" and $NPCList[2].lefthand isnot "underclothes" and $NPCList[2].righthand isnot "underclothes" and $NPCList[3].lefthand isnot "underclothes" and $NPCList[3].righthand isnot "underclothes" and $NPCList[4].lefthand isnot "underclothes" and $NPCList[4].righthand isnot "underclothes" and $NPCList[5].lefthand isnot "underclothes" and $NPCList[5].righthand isnot "underclothes" and $NPCList[0].mouth isnot "underclothes">>
+		<<if !$NPCList.some(npc => npc.lefthand !== "underlowerclothes" || npc.righthand !== "underlowerclothes" || npc.mouth !== "underlowerclothes")>>
 			<<if $worn.under_lower.state is "ankles">>
 				<<set $worn.under_lower.state to "knees">>
 				당신은 <<worn_under_lower_name_ul>> 무릎까지 당겨올린다.
@@ -829,7 +908,7 @@
 		당신은 누더기가 된 옷의 남은 조각을 꽉 잡는다.
 		<<brat 2>>
 	<<else>>
-		<<if $understruggle is 0>>
+		<<if $underlowerstruggle is 0>>
 			<<for _j = 0; _j lt $enemynomax; _j++>>
 				<<if $NPCList[_j].lefthand is "lowerclothes" or $NPCList[_j].righthand is "lowerclothes" or (_j is 0 and $NPCList[_j].mouth is "lowerclothes")>>
 					<<if $_strength is 2>>
@@ -885,7 +964,7 @@
 		당신은 누더기가 된 옷의 남은 조각을 꽉 잡는다.
 		<<brat 2>>
 	<<else>>
-		<<if $understruggle is 0>>
+		<<if $underlowerstruggle is 0>>
 			<<for _j = 0; _j lt $enemynomax; _j++>>
 				<<if $NPCList[_j].lefthand is "overlowerclothes" or $NPCList[_j].righthand is "overlowerclothes" or (_j is 0 and $NPCList[_j].mouth is "overlowerclothes")>>
 					<<if $_strength is 2>>
@@ -1110,7 +1189,7 @@
 	<<if $neckuse is "hand">>
 		당신은 당신의 목을 잡고 있는 <<his_yi>> 손에 손톱을 박고 밀어낸다.
 		<<defiance 2 _npcId>><<set $speechstruggle to 1>>
-		<<if $physique gte random(1, 60000/_handsCount)>>
+		<<if currentSkillValue('physique') gte random(1, 60000/_handsCount)>>
 			<span class="teal">당신은 <<his_yi>> 손을 당신의 목에서 뜯어낸다.</span>
 			<<defiance 5 _npcId>>
 			<<unset $neckuse>>
@@ -1129,7 +1208,7 @@
 			<<if $NPCList[_npcId].righthand == "throat">>
 				<<set $NPCList[_npcId].righthand = 0>>
 			<</if>>
-		<<elseif $physique gte random(1, 40000/_handsCount)>>
+		<<elseif currentSkillValue('physique') gte random(1, 40000/_handsCount)>>
 			<<His_yi>> 손은 움직이지 않았지만, <span class="blue">당신은 잠시 <<his_yi>> 손아귀 힘이 약해진 틈을 타 약간의 공기를 들이마신다</span>.
 			<<oxygen 200>>
 		<<else>>
@@ -1138,94 +1217,101 @@
 	<</if>>
 <</if>>
 
-<<if $rightaction is "rightUndressOther" and $leftaction is "leftUndressOther" and $lefttarget is $righttarget>>
-	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 2 $lefttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 5) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$lefttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 양손으로 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 양손으로 벗겨, <<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>><<trClothes "genitals" NPCList[$lefttarget].chastity.penis "name">>_trResult 안에 있는<<else>>완전히 발기한<</if>> <<his_yi>> <<penisdesc_rul $NPCList[$lefttarget].penisdesc>> 노출시킨다.</span>
-			<</if>>
-			<<switch $NPCList[$lefttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $rightaction is "rightUndressOther" and $leftaction is "leftUndressOther" and $lefttarget is $righttarget and $undressLeftTarget is $undressRightTarget and $undressLeftTarget isnot "rest">>
+	<<set $rightaction to 0>><<set $leftaction to 0>><<set $rightactiondefault to "rightUndressOther">><<set $leftactiondefault to "leftUndressOther">>
+	<<handskilluse>><<combatpromiscuity2>><<brat 2 $righttarget>>
+	<<set $_npc to $NPCList[$righttarget]>><<set $_clothesTarget to $undressRightTarget>>
+	<<personselect $righttarget>>
+	<<if combatSkillCheck("hand", $lefttarget, 700, $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">당신은 <<handtext>> 양손으로 <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">당신은 <<handtext>> 양손으로 <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$lefttarget].penis to 0>>
-		<<elseif $NPCList[$lefttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 양손으로 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 양손으로 벗겨,<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.vagina "name">>_trResult 뒤에 있는<</if>> <<his_yi>> 보지를 노출시킨다.</span>
-			<</if>>
-			<<set $NPCList[$lefttarget].vagina to 0>>
-		<</if>>
+				당신은 <<him_ul>> 벗기려 했으나, 허공만을 잡을 뿐이다. <span class="red">잘못된 옷 타겟: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 양손으로 벗기려 했으나, but <<personselect $lefttarget>><<he_nun>> $NPCList[$lefttarget].pronouns.his 옷을 꽉 잡고 있다.
+		당신은 <<npcUndressText $_npc $_clothesTarget "but">>, <<he_nun>> 옷을 꽉 잡는다.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor(($handskill / 100) * 1.5)>>
 	<</if>>
+	<<unset $undressLeftTarget>><<unset $undressRightTarget>>
 <</if>>
 
-<<if $rightaction is "rightUndressOther">>
-	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $lefttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$lefttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 벗겨, <<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>><<trClothes "genitals" NPCList[$lefttarget].chastity.penis "name">>_trResult 안에 있는<<else>>완전히 발기한<</if>> <<his_yi>> <<penisdesc_rul $NPCList[$lefttarget].penisdesc>> 노출시킨다.</span>
-			<</if>>
-			<<switch $NPCList[$lefttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $rightaction is "rightUndressOther" and $undressRightTarget isnot "rest">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $righttarget>>
+	<<set $_npc to $NPCList[$righttarget]>><<set $_clothesTarget to $undressRightTarget>>
+	<<personselect $righttarget>>
+	<<if combatSkillCheck("hand", $righttarget, 1000, $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">당신은 <<handtext>> <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">당신은 <<handtext>> <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$lefttarget].penis to 0>>
-		<<elseif $NPCList[$lefttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$lefttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 벗겨,<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.vagina "name">>_trResult 뒤에 있는<</if>> <<his_yi>> 보지를 노출시킨다.</span>
-			<</if>>
-			<<set $NPCList[$lefttarget].vagina to 0>>
-		<</if>>
+				당신은 <<him_ul>> 벗기려 했으나, 허공만을 잡을 뿐이다. <span class="red">잘못된 옷 타겟: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		당신은 <<handtext>> $NPCList[$lefttarget].pronouns.his 옷을 벗기려 했으나, <<personselect $lefttarget>><<he_nun>> $NPCList[$lefttarget].pronouns.his 옷을 꽉 잡고 있다.
+		당신은 <<npcUndressText $_npc $_clothesTarget "but">>, <<he_nun>> 옷을 꽉 잡는다.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
 	<</if>>
+	<<unset $undressRightTarget>>
 <</if>>
 
-<<if $leftaction is "leftUndressOther">>
-	<<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $righttarget>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $handskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $NPCList[$righttarget].penis is "clothed">>
-			<<if $npcSub and $NPCList[$righttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$righttarget].pronouns.his 옷을 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$righttarget].pronouns.his 옷을 벗겨, <<if $NPCList[$righttarget].chastity.penis.includes("chastity")>><<trClothes "genitals" NPCList[$righttarget].chastity.penis "name">>_trResult 안에 있는<<else>>완전히 발기한<</if>> <<his_yi>> <<penisdesc_rul $NPCList[$righttarget].penisdesc>> 노출시킨다.</span>
-			<</if>>
-			<<switch $NPCList[$righttarget].penissize>>
-			<<case 4>>
-				<span class="red"> _ppbigreaction[_pprng]</span>
-			<<case 1>>
-				<span class="green"> _ppsmallreaction[_pprng]</span>
+<<if $leftaction is "leftUndressOther" and $undressLeftTarget isnot "rest">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftUndressOther">><<handskilluse>><<combatpromiscuity2>><<brat 1 $lefttarget>>
+	<<set $_npc to $NPCList[$lefttarget]>><<set $_clothesTarget to $undressLeftTarget>>
+	<<personselect $lefttarget>>
+	<<if combatSkillCheck("hand", $lefttarget, 1000, $_npc.clothes[$_clothesTarget].integrity)>>
+		<!-- Using a switch to make it easier to add more NPC clothes types later -->
+		<<switch $_clothesTarget>>
+			<<case "upper">>
+				<span class="lblue">당신은 <<handtext>> <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<set $_npc.chest to 0>>
+			<<case "lower">>
+				<span class="lblue">당신은 <<handtext>> <<npcUndressText $_npc $_clothesTarget "and">>, <<npcRevealText $_npc $_clothesTarget>>.</span>
+				<<if $_npc.fullDescription is "Sydney">>
+					<<sydneyExpose>>
+				<</if>>
+				<<if $_npc.penis is "clothed">>
+					<<npcGenitalReaction $_npc>>
+					<<set $_npc.penis to 0>>
+				<</if>>
+				<<if $_npc.vagina is "clothed">>
+					<<set $_npc.vagina to 0>>
+				<</if>>
 			<<default>>
-			<</switch>>
-			<<set $NPCList[$righttarget].penis to 0>>
-		<<elseif $NPCList[$righttarget].vagina is "clothed">>
-			<<if $npcSub and $NPCList[$righttarget].fullDescription is "Sydney">>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$righttarget].pronouns.his 옷을 벗긴다.</span> <<sydneyExpose>>
-			<<else>>
-				<span class="lblue">당신은 <<handtext>> $NPCList[$righttarget].pronouns.his 옷을 벗겨,<<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> <<trClothes "genitals" $NPCList[$righttarget].chastity.vagina "name">>_trResult 뒤에 있는<</if>> <<his_yi>> 보지를 노출시킨다.</span>
-			<</if>>
-			<<set $NPCList[$righttarget].vagina to 0>>
-		<</if>>
+				당신은 <<him_ul>> 벗기려 했으나, 허공만을 잡을 뿐이다. <span class="red">잘못된 옷 타겟: $_clothesTarget. Please report this bug.</span>
+		<</switch>>
 	<<else>>
-		당신은 <<handtext>> $NPCList[$righttarget].pronouns.his 옷을 벗기려 했으나, <<personselect $righttarget>><<he_nun>> $NPCList[$righttarget].pronouns.his 옷을 꽉 잡고 있다.
+		당신은 <<npcUndressText $_npc $_clothesTarget "but">>, <<he_nun>> 옷을 꽉 잡는다.
+		<<set $_npc.clothes[$_clothesTarget].integrity -= Math.floor($handskill / 100)>>
 	<</if>>
+	<<unset $undressLeftTarget>>
 <</if>>
 
 <<if $leftaction is "peniscondom" or $rightaction is "peniscondom">>
@@ -1248,6 +1334,700 @@
 	<</if>>
 <</if>>
 
+<<if $leftaction is "leftmasturbatepussy">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftmasturbatepussy">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 손가락을 당신의 노출된 <<pussyPost>> 위에 대고 움직이면서 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 손가락을 당신의 노출된 <<pussyPost>> 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 3>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $rightaction is "rightmasturbatepussy">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightmasturbatepussy">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 손가락을 당신의 노출된 <<pussyPost>> 위에 대고 움직이면서 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 손가락을 당신의 노출된 <<pussyPost>> 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 손가락을 당신의 <<pussyPost>> 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 3>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "leftmasturbatepenis">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "leftmasturbatepenis">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 당신의 노출된 <<penis_rul>> 어루만지며 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 당신의 노출된 <<penis_rul>> 어루만진다.
+		<</if>>
+		<<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<else>>
+		당신은 당신의 <<penis_rul>> 어루만지며, 옷 아래의 그 모양을 느낀다.
+		<<arousal 5>>
+	<</if>>
+	<<submission 3>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $rightaction is "rightmasturbatepenis">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "rightmasturbatepenis">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 당신의 노출된 <<penis_rul>> 어루만지며 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 당신의 노출된 <<penis_rul>> 어루만진다.
+		<</if>>
+		<<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 당신의 <<penis_rul>> 어루만지며, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<else>>
+		당신은 당신의 <<penis_rul>> 어루만지며, 옷 아래의 그 모양을 느낀다.
+		<<arousal 5>>
+	<</if>>
+	<<submission 3>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<effectsremovebuttplug>>
+<<effectsPickupSexToy>>
+<<effectsDropSexToy>>
+
+<<if $leftaction is "lubeanus" or $rightaction is "lubeanus">>
+	<<if $leftaction is "lubeanus">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	<</if>>
+	<<if $rightaction is "lubeanus">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	<</if>>
+	<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	당신은 윤활액 통을 당신의 항문 위에 짠다.
+	<<set $player.bodyliquid.bottom.goo += 1>>
+	<<useLube>>
+	<<submission 3>>
+<</if>>
+
+<<if $leftaction is "lubepussy" or $rightaction is "lubepussy">>
+	<<if $leftaction is "lubepussy">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	<</if>>
+	<<if $rightaction is "lubepussy">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	<</if>>
+	당신은 윤활액 통을 당신의 보지 위에 짠다.
+	<<set $player.bodyliquid.vaginaoutside.goo += 1>>
+	<<useLube>>
+	<<submission 3>>
+<</if>>
+
+<<if $leftaction is "lubepenis" or $rightaction is "lubepenis">>
+	<<if $leftaction is "lubepenis">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	<</if>>
+	<<if $rightaction is "lubepenis">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rest">>
+	<</if>>
+	<<set $leftaction to 0>><<set $leftactiondefault to "rest">>
+	당신은 윤활액 통을 당신의 자지 위에 짠다.
+	<<set $player.bodyliquid.penis.goo += 1>>
+	<<useLube>>
+	<<submission 3>>
+<</if>>
+
+/* Combat sex toys */
+
+<<if $leftaction is "dildoSelfPussyEntrance">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoSelfPussyEntrance">><<set $leftarm to "dildoSelfPussyEntrance">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+	<<silently>><<sextoyPost $selectedItemLeft.name "name" "을">><</silently>><<set $_dildo to _trResult>>
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 노출된 <<pussyPost>> 위에 대고 움직이면서 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 노출된 <<pussyPost>> 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $rightaction is "dildoSelfPussyEntrance">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoSelfPussyEntrance">><<set $rightarm to "dildoSelfPussyEntrance">><<combatpromiscuity3>>
+	<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+	<<silently>><<sextoyPost $selectedItemRight.name "name" "을">><</silently>><<set $_dildo to _trResult>>
+	<<if $_genitals_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 노출된 <<pussyPost>> 위에 대고 움직이면서 기대감에 차 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 노출된 <<pussyPost>> 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 $_dildo 당신의 <<pussyPost>> 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "dildoSelfPussy">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoSelfPussy">><<set $leftarm to "dildoSelfPussy">>
+	<<silently>><<sextoyPost $currentSexToyLeft.name "name" "으로">><</silently>><<set $_dildo to _trResult>>
+	<<if $player.virginity.vaginal is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 $_dildo 당신의 <<pussyPost>> 입구를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 $_dildo 당신의 <<pussyPost>> 입구를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 <<pussy_rul>> 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 <<pussy_rul>> 찔러댄다.
+		<</if>>
+	<</if>>
+	<<addVaginalWetness 2>><<arousal 50>><<submission 10>><<set $speechmasturbate to 1>>
+<</if>>
+<<if $rightaction is "dildoSelfPussy">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoSelfPussy">><<set $rightarm to "dildoSelfPussy">>
+	<<silently>><<sextoyPost $currentSexToyRight.name "name" "으로">><</silently>><<set $_dildo to _trResult>>
+	<<if $player.virginity.vaginal is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 $_dildo 당신의 <<pussyPost>> 입구를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 $_dildo 당신의 <<pussyPost>> 입구를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 <<pussy_rul>> 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 <<pussy_rul>> 찔러댄다.
+		<</if>>
+	<</if>>
+	<<addVaginalWetness 2>><<arousal 50>><<submission 10>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "dildoSelfAnusEntrance">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoSelfAnusEntrance">><<set $leftarm to "dildoSelfAnusEntrance">><<combatpromiscuity3>>
+	<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+	<<silently>><<sextoyPost $currentSexToyLeft.name "name" "을">><</silently>><<set $_dildo to _trResult>>
+	<<if $_anus_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 노출된 항문 위에 대고 움직이면서 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 노출된 항문 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $rightaction is "dildoSelfAnusEntrance">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoSelfAnusEntrance">><<set $rightarm to "dildoSelfAnusEntrance">><<combatpromiscuity3>>
+	<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+	<<silently>><<sextoyPost $currentSexToyRight.name "name" "을">><</silently>><<set $_dildo to _trResult>>
+	<<if $_anus_exposed>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 노출된 항문 위에 대고 움직이면서 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 노출된 항문 위에 대고 움직인다.
+		<</if>>
+		<<addVaginalWetness 2>><<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직이면서, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<addVaginalWetness 1>><<arousal 20>>
+	<<else>>
+		당신은 $_dildo 당신의 항문 위에 대고 움직<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>이면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<addVaginalWetness 0>><<arousal 5>>
+	<</if>>
+	<<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "dildoSelfAnus">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoSelfAnus">><<set $leftarm to "dildoSelfAnus">>
+	<<silently>><<sextoyPost $currentSexToyLeft.name "name" "으로">><</silently>><<set $_dildo to _trResult>>
+	<<if $player.virginity.anal is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 $_dildo 당신의 항문 입구를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 $_dildo 당신의 항문 입구를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 항문을 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 항문을 찔러댄다.
+		<</if>>
+	<</if>>
+	<<arousal 50>><<submission 10>><<set $speechmasturbate to 1>>
+<</if>>
+<<if $rightaction is "dildoSelfAnus">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoSelfAnus">><<set $rightarm to "dildoSelfAnus">>
+	<<silently>><<sextoyPost $currentSexToyRight.name "name" "으로">><</silently>><<set $_dildo to _trResult>>
+	<<if $player.virginity.anal is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 $_dildo 당신의 항문 입구를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 $_dildo 당신의 항문 입구를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 $_dildo 당신의 항문을 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 $_dildo 당신의 항문을 찔러댄다.
+		<</if>>
+	<</if>>
+	<<arousal 50>><<submission 10>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "strokerSelfPenisEntrance">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "strokerSelfPenisEntrance">><<set $leftarm to "strokerSelfPenisEntrance">><<combatpromiscuity3>>
+	<<set _genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+	<<silently>><<sextoyPost $selectedItemLeft.name "name" "을">><</silently>><<set _stroker to _trResult>>
+	<<if _genitals_exposed>>
+		당신은 _stroker 당신의 노출된 <<penisPost>> 위에 대고 움직인다.
+		<<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<else>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<arousal 5>>
+	<</if>>
+	<<submission 2>><<set $speechmasturbate to 1>>
+<</if>>
+<<if $leftaction is "strokerSelfPenis">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "strokerSelfPenis">><<set $leftarm to "strokerSelfPenis">>
+	<<set $penisuse to "strokerSelfPenis">><<set $penisstate to "strokerSelfPenis">><<set $penisactiondefault to "strokerSelfPenis">>
+	<<silently>><<sextoyPost $currentSexToyLeft.name "name" "에">><</silently>><<set _stroker to _trResult>>
+	<<if $player.virginity.penile is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 _stroker 당신의 <<penisPost>> 귀두를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 _stroker 당신의 <<penisPost>> 귀두를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 _stroker 당신의 <<penis_rul>> 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 _stroker 당신의 <<penis_rul>> 찔러댄다.
+		<</if>>
+	<</if>>
+	<<arousal 50>><<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $rightaction is "strokerSelfPenisEntrance">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "strokerSelfPenisEntrance">><<set $rightarm to "strokerSelfPenisEntrance">><<combatpromiscuity3>>
+	<<set _genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+	<<set _stroker to $selectedItemRight.name>>
+	<<if _genitals_exposed>>
+		당신은 _stroker 당신의 노출된 <<penisPost>> 위에 대고 움직인다.
+		<<arousal 40>><<submission 2>>
+	<<elseif $worn.lower.vagina_exposed is 0 and $worn.lower.skirt lt 1>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_under_lower_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<elseif $worn.genitals.vagina_exposed is 0>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이며, <<worn_genitals_name>> 아래의 그 모양을 느낀다.
+		<<arousal 20>>
+	<<else>>
+		당신은 _stroker 당신의 <<penisPost>> 위에 대고 움직이<<if !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>면서, 옷 아래의 그 모양을 느낀다<<else>>인다<</if>>.
+		<<arousal 5>>
+	<</if>>
+	<<submission 2>><<set $speechmasturbate to 1>>
+<</if>>
+<<if $rightaction is "strokerSelfPenis">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "strokerSelfPenis">><<set $rightarm to "strokerSelfPenis">>
+	<<set $penisuse to "strokerSelfPenis">><<set $penisstate to "strokerSelfPenis">><<set $penisactiondefault to "strokerSelfPenis">>
+	<<set _stroker to $currentSexToyRight.name>>
+	<<if $player.virginity.penile is true>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 부드럽게 _stroker 당신의 <<penisPost>> 귀두를 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 부드럽게 _stroker 당신의 <<penisPost>> 귀두를 찔러댄다.
+		<</if>>
+	<<else>>
+		<<if $arousal gt ($arousalmax/5)*4>>
+			당신은 _stroker 당신의 <<penis_rul>> 찔러대며 쾌감에 몸을 떤다.
+		<<else>>
+			당신은 _stroker 당신의 <<penis_rul>> 찔러댄다.
+		<</if>>
+	<</if>>
+	<<arousal 50>><<submission 5>><<set $speechmasturbate to 1>>
+<</if>>
+
+<<if $leftaction is "strokerDrop">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "strokerDrop">>
+	<<set $penisuse to 0>><<set $penisstate to 0>><<set $leftarm to 0>>
+	<span class="blue">당신은 당신의 <<handtool_ul $currentSexToyLeft.name>> 당신의 자지에서 치운다.</span>
+	<<set $currentSexToyLeft to 0>>
+ <</if>>
+
+<<if $rightaction is "strokerDrop">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "strokerDrop">>
+	<<set $penisuse to 0>><<set $penisstate to 0>><<set $rightarm to 0>>
+	<span class="blue">당신은 당신의 <<handtool_ul $currentSexToyRight.name>> 당신의 자지에서 치운다.</span>
+	<<set $currentSexToyRight to 0>>
+<</if>>
+
+/* NPC pussy */
+
+<<if $leftaction is "dildoOtherPussyFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoOtherPussyFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 10 $lefttarget>><<set $speechdildovagina to 1>><<set $leftarm to "dildoOtherPussyFuck">><<set $NPCList[0].vagina to "leftDildo">>
+
+		당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<their_yi $lefttarget>> 보지를 찌른다.
+
+	<<elseif $NPCList[$lefttarget].vagina is "leftDildo">>
+		<<set $leftarm to 0>><<set $leftactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$lefttarget].vagina to 0>><<personselect $lefttarget>>
+		<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 보지를 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+<<if $rightaction is "dildoOtherPussyFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoOtherPussyFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 10 $righttarget>><<set $speechdildovagina to 1>><<set $rightarm to "dildoOtherPussyFuck">><<set $NPCList[0].vagina to "rightDildo">>
+
+		당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<their_yi $righttarget>> 보지를 찌른다.
+
+	<<elseif $NPCList[$righttarget].vagina is "rightDildo">>
+		<<set $rightarm to 0>><<set $rightactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$righttarget].vagina to 0>><<personselect $righttarget>>
+		<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 보지를 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "othervaginadildostop" and $NPCList[$lefttarget].vagina is "leftdildo">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "othervaginadildostop">>
+	<<set $NPCList[$lefttarget].vagina to 0>><<set $leftarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 보지에서 치운다.</span>
+ <</if>>
+
+<<if $rightaction is "othervaginadildostop" and $NPCList[$righttarget].vagina is "rightdildo">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "othervaginadildostop">>
+	<<set $NPCList[$righttarget].vagina to 0>><<set $rightarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyRight>> <<hisselect_yi $righttarget>> 보지에서 치운다.</span>
+<</if>>
+
+<<if $leftaction is "dildoOtherPussyTease">>
+	<<set $leftaction to 0>><<handskilluse>><<set $leftactiondefault to "dildoOtherPussyTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 1 $lefttarget>><<sextoystat>>
+		<<if $NPCList[$lefttarget].vagina is 0>>
+			<<set $leftactiondefault to "dildoOtherPussyFuck">><<set $leftarm to "dildoOtherPussyTease">><<personselect $lefttarget>>
+			<span class="lblue">당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>><<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.vagina "을">>_trResult 통해<</if>> <<hisselect_yi $lefttarget>> 보지를 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 보지를 희롱하려고 하지만, 보지 입구는 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 보지를 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+<<if $rightaction is "dildoOtherPussyTease">>
+	<<set $rightaction to 0>><<handskilluse>><<set $rightactiondefault to "dildoOtherPussyTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 1 $righttarget>><<sextoystat>>
+		<<if $NPCList[$righttarget].vagina is 0>>
+			<<set $rightactiondefault to "dildoOtherPussyFuck">><<set $rightarm to "dildoOtherPussyTease">><<personselect $righttarget>>
+			<span class="lblue">당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>><<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$righttarget].chastity.vagina "을">>_trResult 통해<</if>> <<hisselect_yi $righttarget>> 보지를 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 보지를 희롱하려고 하지만, 보지 입구는 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 왼손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 보지를 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+/* NPC Anus */
+
+<<if $leftaction is "dildoOtherAnusFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoOtherAnusFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 10 $lefttarget>><<set $speechdildoanus to 1>><<set $leftarm to "dildoOtherAnusFuck">>
+		<<if $NPCList[$lefttarget].vagina isnot "none">>
+			<<set $NPCList[$lefttarget].vagina to "leftDildoAnus">>
+		<</if>>
+		<<if $NPCList[$lefttarget].penis isnot "none">>
+			<<set $NPCList[$lefttarget].penis to "leftDildoAnus">>
+		<</if>>
+		당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<their_yi $lefttarget>> 항문을 찌른다.
+
+	<<elseif $NPCList[$lefttarget].vagina is "leftDildoAnus">>
+		<<set $leftarm to 0>><<set $leftactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$lefttarget].vagina to 0>><<personselect $lefttarget>>
+		<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문을 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+
+	<<elseif $NPCList[$lefttarget].penis is "leftDildoAnus">>
+		<<set $leftarm to 0>><<set $leftactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$lefttarget].penis to 0>><<personselect $lefttarget>>
+		<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문을 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+<<if $rightaction is "dildoOtherAnusFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoOtherAnusFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 10 $righttarget>><<set $speechdildoanus to 1>><<set $rightarm to "dildoOtherAnusFuck">>
+		<<if $NPCList[$righttarget].vagina isnot "none">>
+			<<set $NPCList[$righttarget].vagina to "rightDildoAnus">>
+		<</if>>
+		<<if $NPCList[$righttarget].penis isnot "none">>
+			<<set $NPCList[$righttarget].penis to "rightDildoAnus">>
+		<</if>>
+
+		당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<their_yi $righttarget>> 항문을 찌른다.
+
+	<<elseif $NPCList[$righttarget].vagina is "rightDildoAnus">>
+		<<set $rightarm to 0>><<set $rightactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$righttarget].vagina to 0>><<personselect $righttarget>>
+		<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 항문을 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+
+	<<elseif $NPCList[$righttarget].penis is "leftDildoAnus">>
+		<<set $rightarm to 0>><<set $rightactiondefault to "dildoOtherPussyTease">>
+		<<set $NPCList[$righttarget].penis to 0>><<personselect $righttarget>>
+		<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 항문을 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+<<if $leftaction is "dildoAnusDrop" and $NPCList[$lefttarget].vagina is "leftdildoAnus">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoAnusDrop">>
+	<<set $NPCList[$lefttarget].vagina to 0>><<set $leftarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문에서 치운다.</span>
+ <</if>>
+
+<<if $rightaction is "dildoAnusDrop" and $NPCList[$righttarget].vagina is "rightdildoAnus">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoAnusDrop">>
+	<<set $NPCList[$righttarget].vagina to 0>><<set $rightarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyRight>> <<hisselect_yi $righttarget>> 항문에서 치운다.</span>
+<</if>>
+
+<<if $leftaction is "dildoAnusDrop" and $NPCList[$lefttarget].penis is "leftdildoAnus">>
+	<<set $leftaction to 0>><<set $leftactiondefault to "dildoAnusDrop">>
+	<<set $NPCList[$lefttarget].penis to 0>><<set $leftarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문에서 치운다.</span>
+ <</if>>
+
+<<if $rightaction is "dildoAnusDrop" and $NPCList[$righttarget].penis is "rightdildoAnus">>
+	<<set $rightaction to 0>><<set $rightactiondefault to "dildoAnusDrop">>
+	<<set $NPCList[$righttarget].penis to 0>><<set $rightarm to 0>>
+	<span class="blue">당신은 <<sextoy_rul $currentSexToyRight>> <<hisselect_yi $righttarget>> 항문에서 치운다.</span>
+<</if>>
+
+<<if $leftaction is "dildoOtherAnusTease">>
+	<<set $leftaction to 0>><<handskilluse>><<set $leftactiondefault to "dildoOtherAnusTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 1 $lefttarget>><<sextoystat>>
+		<<if $NPCList[$lefttarget].vagina is 0>>
+			<<set $leftactiondefault to "dildoOtherAnusFuck">><<set $NPCList[$lefttarget].vagina to "leftDildoAnus">><<set $leftarm to "dildoOtherAnusFuck">><<personselect $lefttarget>>
+			<span class="lblue">당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>><<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.vagina "을">>_trResult 통해<</if>> <<hisselect_yi $lefttarget>> 항문을 희롱한다.</span>
+		<<elseif $NPCList[$lefttarget].penis is 0>>
+			<<set $leftactiondefault to "dildoOtherAnusFuck">><<set $NPCList[$lefttarget].penis to "leftDildoAnus">><<set $leftarm to "dildoOtherAnusFuck">><<personselect $lefttarget>>
+			<span class="lblue">당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>><<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.penis "을">>_trResult 통해<</if>> <<hisselect_yi $lefttarget>> 항문을 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문을 희롱하려고 하지만, 항문 입구는 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> 항문을 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+<<if $rightaction is "dildoOtherAnusTease">>
+	<<set $rightaction to 0>><<handskilluse>><<set $rightactiondefault to "dildoOtherAnusTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 1 $righttarget>><<sextoystat>>
+		<<if $NPCList[$righttarget].vagina is 0>>
+			<<set $rightactiondefault to "dildoOtherAnusFuck">><<set $NPCList[$righttarget].vagina to "rightDildoAnus">><<set $rightarm to "dildoOtherAnusFuck">><<personselect $righttarget>>
+			<span class="lblue">당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>><<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$righttarget].chastity.vagina "을">>_trResult 통해<</if>> <<hisselect_yi $righttarget>> 항문을 희롱한다.</span>
+		<<elseif $NPCList[$righttarget].penis is 0>>
+			<<set $rightactiondefault to "dildoOtherAnusFuck">><<set $NPCList[$righttarget].penis to "rightDildoAnus">><<set $rightarm to "dildoOtherAnusFuck">><<personselect $righttarget>>
+			<span class="lblue">당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>><<if $NPCList[$righttarget].chastity.penis.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$righttarget].chastity.penis "을">>_trResult 통해<</if>> <<hisselect_yi $righttarget>> 항문을 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 항문을 희롱하려고 하지만, 항문 입구는 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 왼손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> 항문을 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+/* NPC Penis stroker */
+
+<<if $leftaction is "strokerOtherPenisTease">>
+	<<set $leftaction to 0>><<handskilluse>><<set $leftactiondefault to "strokerOtherPenisTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 1 $lefttarget>><<sextoystat>>
+		<<if $NPCList[$lefttarget].penis is 0>>
+			<<set $leftactiondefault to "strokerOtherPenisTease">><<set $NPCList[$lefttarget].penis to "leftStroker">><<set $leftarm to "strokerOtherPenisFuck">><<personselect $lefttarget>>
+			<span class="lblue">당신은 <<handtext>> 왼손의 <<sextoy_ro $currentSexToyLeft.name>><<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$lefttarget].chastity.penis "을">>_trResult 통해<</if>> <<hisselect_yi $lefttarget>> <<npcPenis_rul $lefttarget>> 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> <<npcPenis_rul $lefttarget>> 희롱하려고 하지만, <<npcPenis_nun $lefttarget>> 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 왼손의 <<sextoy_ro $currentSexToyLeft.name>> <<hisselect_yi $lefttarget>> <<npcPenis_rul $lefttarget>> 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+<<if $rightaction is "strokerOtherPenisTease">>
+	<<set $rightaction to 0>><<handskilluse>><<set $rightactiondefault to "strokerOtherPenisTease">><<combatpromiscuity3>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 1 $righttarget>><<sextoystat>>
+		<<if $NPCList[$righttarget].penis is 0>>
+			<<set $rightactiondefault to "strokerOtherPenisTease">><<set $NPCList[$righttarget].penis to "rightstroker">><<set $rightarm to "strokerOtherPenisFuck">><<personselect $righttarget>>
+			<span class="lblue">당신은 <<handtext>> 오른손의 <<sextoy_ro $currentSexToyRight.name>><<if $NPCList[$righttarget].chastity.penis.includes("chastity")>> <<his_yi>> <<trClothes "genitals" $NPCList[$righttarget].chastity.penis "을">>_trResult 통해<</if>> <<hisselect_yi $righttarget>> <<npcPenis_rul $righttarget>> 희롱한다.</span>
+		<<else>>
+			<span class="blue">당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> <<npcPenis_rul $righttarget>> 희롱하려고 하지만, <<npcPenis_nun $righttarget>> 이미 사용중이다.</span>
+		<</if>>
+	<<else>>
+		당신은 오른손의 <<sextoy_ro $currentSexToyRight.name>> <<hisselect_yi $righttarget>> <<npcPenis_rul $righttarget>> 희롱하려고 하지만, <<he_nun>> 그것을 피한다.
+	<</if>>
+<</if>>
+
+
+<<if $leftaction is "strokerOtherPenisFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $leftaction to 0>><<set $leftactiondefault to "strokerOtherPenisFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $lefttarget)>>
+		<<submission 10 $lefttarget>><<set $speechstroker to 1>><<set $leftarm to "strokerOtherPenisFuck">><<set $NPCList[$lefttarget].penis to "leftStroker">>
+
+		당신은 <<handtext>> 왼손의 <<sextoyPost $currentSexToyLeft.name>>에 <<their_yi $lefttarget>> <<npcPenis_rul $lefttarget>> 찌른다.
+
+	<<elseif $NPCList[$lefttarget].penis is "leftStroker">>
+		<<set $leftarm to 0>><<set $leftactiondefault to "strokerOtherPenisTease">>
+		<<set $NPCList[$lefttarget].penis to 0>><<personselect $lefttarget>>
+		<span class="blue">당신은 왼손의 <<sextoyPost $currentSexToyLeft.name>>에 <<hisselect_yi $lefttarget>> <<npcPenis_rul $lefttarget>> 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+<<if $rightaction is "strokerOtherPenisFuck">>
+	/* Note: deliberately does not take virginities */
+	<<set $rightaction to 0>><<set $rightactiondefault to "strokerOtherPenisFuck">><<handskilluse>>
+	<<if combatSkillCheck("hand", $righttarget)>>
+		<<submission 10 $righttarget>><<set $speechstroker to 1>><<set $rightarm to "strokerOtherPenisFuck">><<set $NPCList[$righttarget].penis to "rightstroker">>
+
+		당신은 <<handtext>> 오른손의 <<sextoyPost $currentSexToyRight.name>>에 <<their_yi $righttarget>> <<npcPenis_rul $righttarget>> 찌른다.
+
+	<<elseif $NPCList[$righttarget].penis is "rightstroker">>
+		<<set $rightarm to 0>><<set $rightactiondefault to "strokerOtherPenisTease">>
+		<<set $NPCList[$righttarget].penis to 0>><<personselect $righttarget>>
+		<span class="blue">당신은 오른손의 <<sextoyPost $currentSexToyRight.name>>에 <<hisselect_yi $righttarget>> <<npcPenis_rul $righttarget>> 찌르려 하지만, <<he_nun>>
+		<<if $enemytype isnot "beast">>당신의 손을 찰싹 쳐서 밀어낸다<<else>>몸을 움직여 피하고 으르렁거린다<</if>>.</span>
+	<</if>>
+<</if>>
+
+
 /*Stalked actions */
 <<if !$stalk_end>>
 	<<if $leftaction is "clench" and $rightaction is "clench">>
@@ -1267,7 +2047,7 @@
 
 	<<if $leftaction is "fold" and $rightaction is "fold">>
 		<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "fold">><<set $rightactiondefault to "fold">>
-		<<if $breastsize gte 3>>
+		<<if $player.breastsize gte 3>>
 			당신은 당신의 <<breastsPost>> 아래에서 양팔로 몸을 끌어안는다.
 		<<else>>
 			당신은 당신의 앞에서 양팔로 몸을 끌어안는다.
@@ -1277,7 +2057,7 @@
 
 	<<if $leftaction is "fold">>
 		<<set $leftaction to 0>><<set $leftactiondefault to "fold">>
-		<<if $breastsize gte 3>>
+		<<if $player.breastsize gte 3>>
 			당신은 당신의 <<breastsPost>> 아래에서 왼팔로 몸을 끌어안는다.
 		<<else>>
 			당신은 당신의 앞에서 왼팔로 몸을 끌어안는다.
@@ -1287,7 +2067,7 @@
 
 	<<if $rightaction is "fold">>
 		<<set $rightaction to 0>><<set $rightactiondefault to "fold">>
-		<<if $breastsize gte 3>>
+		<<if $player.breastsize gte 3>>
 			당신은 당신의 <<breastsPost>> 아래에서 오른팔로 몸을 끌어안는다.
 		<<else>>
 			당신은 당신의 앞에서 오른팔로 몸을 끌어안는다.
@@ -1336,7 +2116,7 @@
 
 <<if $feetaction is "grab">>
 	<<set $feetaction to 0>><<set $feetactiondefault to "grab">><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $feetskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("feet", $feettarget)>>
 		<<submission 2 $feettarget>>
 		<<if $NPCList[$feettarget].penis is 0>>
 			<<set $feetactiondefault to "grabrub">><<set $NPCList[$feettarget].penis to "feet">><<set $feetuse to "penis">><<feetstat>><<feetskilluse>>
@@ -1357,7 +2137,7 @@
 <<if $feetaction is "kick">>
 	<<set $feetaction to 0>><<set $feetactiondefault to "kick">>
 	<<if $parasite.left_ear.name is "slime" and random(1, 3) is 3 or $parasite.right_ear.name is "slime" and random(1, 3) is 3>>
-		<<if $corruption_slime gte ($willpower / 10)>>
+		<<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
 			당신은 <<if $enemytype is "beast">><<beasttype_ul>> 발로 차려 하지만,<<else>><<personselect $feettarget>><<person_ul>> 발로 차려 하지만,<</if>>
 			<span class="red">슬라임이 다리를 움직이지 못하게 한다.</span>
 			<<gwillpower>><<willpower 1>>
@@ -1386,9 +2166,9 @@
 
 <<if $feetaction is "grabrub">>
 	<<feetskilluse>><<set $feetactiondefault to "grabrub">><<set $feetaction to 0>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $feetskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("feet", $feettarget)>>
 		<<actionsgrabrub $feettarget>><<submission 2 $feettarget>>
-	<<else>>
+	<<elseif $NPCList[$feettarget].penis is "feet">>
 		<<set $feetactiondefault to "grab">><<personselect $feettarget>>
 		<span class="blue">당신은 <<hisselect_yi $feettarget>> 자지를 발 사이로 비비려 하지만, <<he_nun>> 당신의 발을 피한다.</span>
 		<<set $feetuse to 0>><<set $NPCList[$feettarget].penis to 0>><<set $NPCList[$feettarget].location.genitals to 0>>
@@ -1399,7 +2179,7 @@
 
 <<if $feetaction is "vaginagrab">>
 	<<feetskilluse>><<set $feetaction to 0>><<set $feetactiondefault to "vaginagrab">><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $feetskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("feet", $feettarget)>>
 		<<submission 2 $feettarget>>
 		<<if $NPCList[$feettarget].vagina is 0>>
 			<<set $feetactiondefault to "vaginagrabrub">><<set $feetuse to "othervagina">><<set $NPCList[$feettarget].vagina to "feet">><<feetstat>><span class="lblue">당신은 <<feettext>> 당신의 발로 <<hisselect_yi $feettarget>> 보지를<<if $NPCList[$feettarget].chastity.vagina.includes("chastity")>> <<hisselect_yi $feettarget>> <<trClothes "genitals" $NPCList[$feettarget].chastity.vagina "name" "을">>_trResult 통해<</if>> 누른다.</span>
@@ -1415,9 +2195,9 @@
 
 <<if $feetaction is "vaginagrabrub">>
 	<<set $feetaction to 0>><<feetskilluse>><<set $feetactiondefault to "vaginagrabrub">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $feetskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("feet", $feettarget)>>
 		<<actionsfeetpussy $feettarget>><<submission 2 $feettarget>>
-	<<else>>
+	<<elseif $NPCList[$feettarget].vagina is "feet">>
 		<<set $feetactiondefault to "vaginagrab">><<personselect $feettarget>>
 		<span class="blue">당신은 <<hisselect_yi $feettarget>> 보지를 발로 잡고 있으려 하지만, <<he_nun>> 당신의 발을 피한다.</span>
 		<<set $feetuse to 0>><<set $NPCList[$feettarget].vagina to 0>>
@@ -1491,7 +2271,7 @@
 			<<else>>
 				<<set _stalk_feet to true>>
 			<</if>>
-			<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+			<<if currentSkillValue('athletics') gte random(1, $NPCList[0].skills.athletics)>>
 				<<set _stalk_athletics to true>>
 			<<else>>
 				<<set _stalk_athletics to false>>
@@ -1517,7 +2297,7 @@
 					<<else>>
 						<<set _stalk_feet to true>>
 					<</if>>
-					<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+					<<if currentSkillValue('athletics') gte random(1, $NPCList[0].skills.athletics)>>
 						<<set _stalk_athletics to true>>
 					<<else>>
 						<<set _stalk_athletics to false>>
@@ -1542,7 +2322,7 @@
 				<<else>>
 					<<set _stalk_feet to true>>
 				<</if>>
-				<<if $athletics gte random(1, $NPCList[0].skills.athletics)>>
+				<<if currentSkillValue('athletics') gte random(1, $NPCList[0].skills.athletics)>>
 					<<set _stalk_athletics to true>>
 				<<else>>
 					<<set _stalk_athletics to false>>
@@ -1604,7 +2384,7 @@
 		<<set $feetaction to 0>><<set $feetactiondefault to "hide">>
 		<<set _difficulty to $NPCList[0].skills.security>>
 		<<set _difficulty += ($semencount + $goocount) * 20>>
-		<<if $skulduggery gte random(1, _difficulty)>>
+		<<if currentSkillValue('skulduggery') gte random(1, _difficulty)>>
 			<<set _hide_success to true>>
 		<</if>>
 		<<if _hide_success and $NPCList[0].state is "pursuit">>
@@ -1629,8 +2409,28 @@
 				당신은 좁은 골목길로 뛰어들어, 쓰레기통 뒤에 몸을 숨긴다. 당신은 모퉁이를 훔쳐본다. 당신은 아무도 보지 못한다.
 			<</switch>>
 			<span class="red">그리고 당신은 누군가의 기척을 느낀다.</span>
+
+			/* Prevents stalking mouth actions from appearing once the encounter starts */
 			<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
-			<<events_stalk>>
+
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
+				<<if !$stalk_assess>>
+					<span class="pink">그자는 <<namedNPC_da $npc[$npcrow.indexOf(0)]>>.</span>
+				<</if>>
+				<br><br>
+				<<events_stalk_nnpc $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_attack "Wraith">>
+				<<if !$stalk_assess>>
+					<span class="red"><<if $wraith.seen gte 3>>친숙한 <</if>>창백한 형체 하나가 <<wraithEyes>> 눈을 반짝이며, 당신을 내려다본다.</span>
+				<</if>>
+				<br><br>
+				<<events_stalk_nnpc "Wraith">>
+			<<else>>
+				<br><br>
+				<<events_stalk>>
+			<</if>>
 		<<else>>
 			<<switch $location>>
 			<<case alley>>
@@ -1648,42 +2448,98 @@
 
 	<<if $feetaction is "confront">>
 		<<famescrap 1>>
-		당신은 몸을 돌려, 그
+		당신은 몸을 돌려,
 		<<person1>>
-		<<if $enemyno gte 2>>
+		<<if $npcrow.includes(0)>>
+			<<if $stalk_assess>>
+				<<if $enemyno gte 3>>
+					<<namedNPC_wa $NPCList[0].fullDescription>> <<his_yi>> 동반자들을 마주한다.
+				<<elseif $enemyno is 2>>
+					<<namedNPC_wa $NPCList[0].fullDescription>> <<his_yi>> 동반자를 마주한다.
+				<<else>>
+					<<namedNPC_rul $NPCList[0].fullDescription>> 마주한다.
+				<</if>>
+			<<else>>
+				<<if $enemyno gte 3>>
+					<<personsimple_gwa>> <<his_yi>> 동반자들을 마주한다.
+				<<elseif $enemyno is 2>>
+					<<personsimple_gwa>> <<his_yi>> 동반자를 마주한다.
+				<<else>>
+					<<personsimple_ul>> 마주한다.
+				<</if>>
+				<span class="pink">그자는 <<namedNPC_da $NPCList[0].fullDescription>>.</span>
+			<</if>>
+		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+			<<if $stalk_assess>>
+				창백한 형체를 마주한다.
+			<<else>>
+				<<if $wraith.seen gte 3>> 친숙한<</if>> 창백한 형체를 마주한다.
+			<</if>>
+		<<elseif $enemyno gte 3>>
 			<<person_gwa>> <<his_yi>> 동반자들을 마주한다.
+		<<elseif $enemyno is 2>>
+			<<person_gwa>> <<his_yi>> 동반자를 마주한다.
 		<<else>>
 			<<person_ul>> 마주한다.
 		<</if>>
-		<<actionsconfront>>
+		<<set $stalk_assess to true>>
+		<<if $npcrow.includes(0)>>
+			<<actionsconfrontNNPC>>
+		<<else>>
+			<<actionsconfront>>
+		<</if>>
 		<br><br>
-		<<if $NPCList[0].bold * 2 gte random(1, 1000)>>
-			<span class="red"><<He_nun>> 당신을 향해 다가온다.</span>
-			<<if $NPCList[0].traits.includes("relaxed")>>
-				"협조하는 게 최선이야," <<he_ga>> 말한다. "그게 너에게 더 편할 거라고."
-			<<elseif $NPCList[0].traits.includes("sociable")>>
-				"나 같은 <<if $pronoun is "m">>신사<<else>>숙녀<</if>>에게 말을 걸 수는 없어," <<he_ga>> 말한다. "나는 네가 어떻게 보상해야 하는 지 알고 있지."
-			<<elseif $NPCList[0].traits.includes("brooding")>>
-				"이게 세상이 돌아가는 방식이야," <<he_ga>> 말한다. "금방 끝나."
+		<<if $combatgoal is "confront">>
+			<span class="purple"><<He_nun>> 당신 앞에 와 멈춰선다.</span>
+			<br><br>
+			<<set $stalk_end to "confront">>
+		<<elseif $NPCList[0].bold * 2 gte random(1, 1000)>>
+			<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+				당신은 눈을 깜박인다. 당신이 눈을 떴을 때, <span class="red">창백한 형체는 당신 얼굴 몇 센치 앞에 있다.</span>
 			<<else>>
-				"너는 정말 섹시한 녀석이야," <<he_ga>> 말한다. "조만간 누군가가 네 위로 뛰어오를걸. 나도 그 혜택을 받을 수 있겠지."
+				<span class="red"><<He_nun>> 당신을 향해 다가온다.</span>
+			<</if>>
+
+			/* Prevents stalking mouth actions from appearing once the encounter starts */
+			<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
+
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_attack "Wraith">>
+			<<else>>
+				<<if $NPCList[0].traits.includes("relaxed")>>
+					"협조하는 게 최선이야," <<he_ga>> 말한다. "그게 너에게 더 편할 거라고."
+				<<elseif $NPCList[0].traits.includes("sociable")>>
+					"나 같은 <<if $pronoun is "m">>신사<<else>>숙녀<</if>>에게 말을 걸 수는 없어," <<he_ga>> 말한다. "나는 네가 어떻게 보상해야 하는 지 알고 있지."
+				<<elseif $NPCList[0].traits.includes("brooding")>>
+					"이게 세상이 돌아가는 방식이야," <<he_ga>> 말한다. "금방 끝나."
+				<<else>>
+					"너는 정말 섹시한 녀석이야," <<he_ga>> 말한다. "조만간 누군가가 네 위로 뛰어오를걸. 나도 그 혜택을 받을 수 있겠지."
+				<</if>>
 			<</if>>
 			<br><br>
 			<<stalk_attack>>
 		<<else>>
-			<span class="green"><<He_nun>> <<his_yi>> 양손을 들어올린다.</span>
-			<<if $NPCList[0].traits.includes("relaxed")>>
-				"침착하라고," <<he_ga>> 말하며, 당신에게서 떨어진다. "나는 너를 겁줄 생각이 없었어."
-			<<elseif $NPCList[0].traits.includes("sociable")>>
-				"빌어먹을 <<girlPost>>," <<he_ga>> 말한다. "내가 그렇게 못생겼나?" <<He_nun>> 당신에게서 멀리 떨어진다.
-			<<elseif $NPCList[0].traits.includes("brooding")>>
-				그 <<person_un>> 웃는다. "이 거리가 네게 그렇게 위험한가?" <<he_ga>> 묻는다. "네게 가까이 가지 않을게."
+			<<if $npcrow.includes(0)>>
+				<<stalk_nnpc_text_threat $NPCList[0].fullDescription>>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<stalk_nnpc_text_threat "Wraith">>
 			<<else>>
-				"나는 그저 바라봤을 뿐이야!" <<he_ga>> 말한다. "아무것도 하려 하지 않았어, 정말로." <<He_nun>> 당신에게서 멀리 떨어진다.
-			<</if>>
-			<br><br>
+				<span class="green"><<He_nun>> <<his_yi>> 양손을 들어올린다.</span>
+				<<if $NPCList[0].traits.includes("relaxed")>>
+					"침착하라고," <<he_ga>> 말하며, 당신에게서 떨어진다. "나는 너를 겁줄 생각이 없었어."
+				<<elseif $NPCList[0].traits.includes("sociable")>>
+					"제기랄 <<girlPost>> 같으니라고," <<he_ga>> 말한다. "내가 그렇게 못생겼어?" <<He_nun>> 당신에게서 멀리 떨어진다.
+				<<elseif $NPCList[0].traits.includes("brooding")>>
+					그 <<person_un>> 웃는다. "이 거리가 네게 그렇게 위험한가?" <<he_ga>> 묻는다. "네게 가까이 가지 않을게."
+				<<else>>
+					"나는 그저 바라봤을 뿐이야!" <<he_ga>> 말한다. "아무것도 하려 하지 않았어, 정말로." <<He_nun>> 당신에게서 멀리 떨어진다.
+				<</if>>
+				<br><br>
 
-			<<He_nun>> 앞으로 걸어간다. 당신은 약간 바보같다고 느낀다.
+				<<He_nun>> 앞으로 걸어간다. 당신은 약간 바보같다고 느낀다.
+			<</if>>
 			<br><br>
 			<<set $stalk_end to "passed">>
 			<<set $NPCList[_n].distance to 1>>
@@ -1709,8 +2565,20 @@
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
 <</if>>
 
-<<if $mouthaction is "kiss">>
-	<<set $mouthaction to 0>><<actionskiss $mouthtarget>><<submission 3 $mouthtarget>><<set $mouthactiondefault to "kiss">>
+<<if $mouthaction is "kissskin">>
+	<<set $mouthaction to 0>><<actionskiss $mouthtarget>><<submission 3 $mouthtarget>><<set $mouthactiondefault to "kissskin">>
+<</if>>
+
+<<if $mouthaction is "kisslips">>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "kisslips">><<personselect $mouthtarget>>
+	<<if combatSkillCheck("oral", $mouthtarget)>>
+		당신은 당신의 입술을 <<hersPost>> 가까이로 움직인다.
+		<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">>
+		<<set $NPCList[$mouthtarget].mouth to "kissentrance">>
+		<<set $NPCList[$mouthtarget].location.head = "head">>
+	<<else>>
+		당신은 당신의 입술을 <<hersPost>> 가까이로 가까이로 움직이지만, <<he_nun>> 그것을 피한다.
+	<</if>>
 <</if>>
 
 <<if $mouthaction is "plead">>
@@ -1781,7 +2649,7 @@
 	<<if $penisbitten is 1>>
 		<<He_nun>> 당신의 머리를 후려쳐 <<his_yi>> 자지에서 떼어낸다.
 		<<violence 5>>
-	<<elseif (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<elseif combatSkillCheck("oral", $mouthtarget)>>
 		<<set $mouthsubmit to 1>><<oralskilluse>>
 		<<if $NPCList[$mouthtarget].penis is 0>>
 			<<set $NPCList[$mouthtarget].penis to "mouthentrance">><<set $mouthactiondefault to "lick">><<set $mouthuse to "penis">><<set $mouthstate to "entrance">>
@@ -1797,7 +2665,7 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "swallow">>
+<<if $mouthaction is "swallow" and $NPCList[$mouthtarget].penis.toString().includes("mouth")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "swallow">><<combatpromiscuity5>>
 	<<set $NPCList[$mouthtarget].penis to "mouth">>
 	<span class="pink">당신은 <<hisselect_yi $mouthtarget>> <<penisdesc_rul $NPCList[$mouthtarget].penisdesc>> 입에 넣는다.</span>
@@ -1829,7 +2697,7 @@
 	<<if $penisbitten is 1>>
 		<<He_nun>> 당신의 머리를 후려쳐 <<his_yi>> 보지에서 떼어낸다.
 		<<violence 5>>
-	<<elseif (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<elseif combatSkillCheck("oral", $mouthtarget)>>
 		<<oralskilluse>>
 		<<if $NPCList[$mouthtarget].vagina is 0>>
 			<span class="lblue">당신은 <<oraltext>> 당신의 입을 <<hisselect_yi $mouthtarget>> <<npcVagina_ro $mouthtarget>> 옮겼<<if !$npcSub>>고 <<he_nun>> 기대감에 차서 기다린<</if>>다.</span>
@@ -1845,7 +2713,7 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "breastpull">>
+<<if $mouthaction is "breastpull" and $NPCList[$mouthtarget].chest.toString().includes("mouth")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "breastpull">><<personselect $mouthtarget>>
 	당신은 얼굴을 누르는 가슴에서 머리를 떼어내려고 한다.
 	<<oralskilluse>><<brat 1 $mouthtarget>>
@@ -1860,7 +2728,7 @@
 		<</if>>
 		<<gwillpower>><<willpower 1>>
 	<<else>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("oral", $mouthtarget)>>
 			<<set $mouthstate to 0>><<set $mouthuse to 0>>
 			<<set $NPCList[$mouthtarget].chest to 0>>
 			<<set $NPCList[$mouthtarget].location.head to 0>>
@@ -1890,7 +2758,7 @@
 	<<if $breastbitten is 1>>
 		<<He_nun>> 당신의 머리를 후려쳐 <<his_yi>> 가슴에서 떼어낸다.
 		<<violence 5>>
-	<<elseif (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<elseif combatSkillCheck("oral", $mouthtarget)>>
 		<<if $NPCList[$mouthtarget].chest is 0>>
 			<<set $mouthactiondefault to "breastlick">>
 			<span class="lblue">당신은 <<oraltext>> 당신의 입을 <<hisselect_yi $mouthtarget>> <<breastsdesc_ro $NPCList[$mouthtarget].breastsdesc>> 움직인다.</span>
@@ -1910,11 +2778,11 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "breastbite">>
+<<if $mouthaction is "breastbite" and $NPCList[$mouthtarget].chest is "mouth">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "breastbite">><<personselect $mouthtarget>>
 	당신은 젖꼭지를 깨물었고, <<he_nun>> <<if $enemytype is "man">>으악하고 비명을 지르며<<elseif $enemytype is "beast">>으르렁대며<<else>>소리지르며<</if>> 고통에 차서 몸을 웅크린다.
 	<<defiance 20 $mouthtarget>><<attackstat>><<set $mouthuse to 0>><<set $breastbitten to 1>><<set $mouthstate to 0>>
-	<<if $wolfgirl gte 2 or $cat gte 2>>
+	<<if $transformationParts.traits.fangs isnot "disabled">>
 		<<defiance 40 $mouthtarget>>
 		당신은 송곳니를 혀로 핥아 깨끗이 한다.
 	<</if>>
@@ -1931,12 +2799,12 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "breastlick">>
+<<if $mouthaction is "breastlick" and $NPCList[$mouthtarget].chest is "mouthentrance">>
 	<<set $mouthactiondefault to "breastlick">><<set $mouthaction to 0>><<submission 3 $mouthtarget>>
 	당신은 <<hisselect_yi $mouthtarget>> <<breastsdesc_rul $NPCList[$mouthtarget].breastsdesc>> 핥는다.
 <</if>>
 
-<<if $mouthaction is "breastclosed">>
+<<if $mouthaction is "breastclosed" and $NPCList[$mouthtarget].chest.toString().includes("mouth")>>
 	<<set $mouthactiondefault to "breastclosed">><<set $mouthaction to 0>><<brat 3 $mouthtarget>>
 	당신은 입을 다물고 버틴다.
 	<<if $NPCList[$mouthtarget].type is "plant" and $NPCList[$mouthtarget].pronoun is "f" and $breastfeedingdisable is "f">>
@@ -1946,7 +2814,7 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "breastsuck">>
+<<if $mouthaction is "breastsuck" and $NPCList[$mouthtarget].chest.toString().includes("mouth")>>
 	<<set $mouthactiondefault to "breastsuck">><<set $mouthaction to 0>><<submission 3 $mouthtarget>>
 	<<set $mouthstate to "nipple">>
 	<<set $NPCList[$mouthtarget].chest to "mouth">>
@@ -1971,13 +2839,13 @@
 	<<elseif $drugged gt 0>>
 		당신은 비명지르며 도움을 요청하려 했으나, <span class="pink">미약 효과 때문에 음란한 신음소리처럼 들린다.</span>
 		<<neutral 1>><<set $speechmoan to 1>>
-	<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $corruption_slime gte ($willpower / 10)>>
+	<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $corruption_slime gte (currentSkillValue('willpower')/ 10)>>
 		당신은 비명지르며 도움을 요청하러 입을 벌리지만, <span class="red">목소리가 목구멍에서 나오지 않는다.</span> 당신은 슬라임이 당신이 목소리를 막았다는 것을 느낀다.
 		<<gwillpower>><<willpower 1>>
 	<<else>>
 		당신은 도와달라고 비명을 지른다.
 		<<if $loveInterest>>
-			<<if ($loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden") and $location is "forest" and !($npc.includes("Eden"))>>
+			<<if ($loveInterest.primary is "Eden" or $loveInterest.secondary is "Eden") and $location is "forest" and !($npc.includes("Eden")) and (!$undergroundbrothel or !$undergroundbrothel.active)>>
 				<<if $rng lte 50>>
 					"에덴! 저들을 쫓아내줘!"
 				<<else>>
@@ -1986,10 +2854,10 @@
 			<</if>>
 		<</if>>
 		<<brat 10>><<set $alarm to 1>><<set $mouthactiondefault to "scream">><<set $speechscream to 1>>
-		<<if $NPCList[0].lefthand is 0 and $mouthuse is 0 and $position isnot "wall">>
+		<<if $NPCList[0].lefthand is 0 and $mouthuse is 0 and $position isnot "wall" and !$robinRentEvent>>
 			<<set $NPCList[0].lefthand to "mouth">><<He_nun>> <<his_yi>> 손으로 당신의 입을 막아 조용히 시킨다.
 			<<set $enemytrust -= 40>><<set $mouthuse to "lefthand">>
-		<<elseif $NPCList[0].righthand is 0 and $mouthuse is 0 and $position isnot "wall">>
+		<<elseif $NPCList[0].righthand is 0 and $mouthuse is 0 and $position isnot "wall" and !$robinRentEvent>>
 			<<set $NPCList[0].righthand to "mouth">><<He_nun>> <<his_yi>> 손으로 당신의 입을 막아 조용히 시킨다.
 			<<set $enemytrust -= 40>><<set $mouthuse to "righthand">>
 		<</if>>
@@ -2016,15 +2884,23 @@
 			<<set $speechapologiseno to 1>>
 		<</if>>
 	<<else>>
-		당신은 <<himPost>>에게 나쁘게 대해서 미안하다고 말한다.
-		<<set $mouthactiondefault to "plead">>
-		<<if $apologised is 0>>
-			<<His_yi>> 얼굴이 부드러워진다.
-			<<set $apologised to 1>><<set $speechapologise to 1>>
-			<<set $enemyanger -= 50 * (1 + $englishtrait)>>
-		<<else>>
-			<<He_nun>> 당신을 무시한다.
+		<<if $robinmist>>
+			당신은 소리친다. "너를 위해 그곳에 있지 못해서 미안해!"
 			<<set $speechapologiseno to 1>>
+		<<elseif $robinRentEvent is 1 and $combatPhase is "Robin">>
+			당신은 <<himPost>>에게 돈을 지불하지 못해서 미안하다고 말한다.
+			<<set $speechapologiseno to 1>>
+		<<else>>
+			당신은 <<himPost>>에게 나쁘게 대해서 미안하다고 말한다.
+			<<set $mouthactiondefault to "plead">>
+			<<if $apologised is 0>>
+				<<His_yi>> 얼굴이 부드러워진다.
+				<<set $apologised to 1>><<set $speechapologise to 1>>
+				<<set $enemyanger -= 50 * (1 + $englishtrait)>>
+			<<else>>
+				<<He_nun>> 당신을 무시한다.
+				<<set $speechapologiseno to 1>>
+			<</if>>
 		<</if>>
 	<</if>>
 <</if>>
@@ -2069,7 +2945,7 @@
 		당신은 당신의 입을 침범하는 자지를 필사적으로 빤다.
 		<<willpower 1>>
 	<<else>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("oral", $mouthtarget)>>
 			<<set $pullaway to 1>>
 			<<if $NPCList[$mouthtarget].penis is "mouth">>
 				<<set $NPCList[$mouthtarget].penis to "mouthimminent">><<set $mouthstate to "imminent">><span class="green"><<He_nun>> 당신을 제지하지 않는다.</span>
@@ -2095,8 +2971,8 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "pullawayvagina">>
-	<<set $mouthaction to 0>><<set $mouthactiondefault to "pullawayvagina">><<personselect $mouthtarget>>
+<<if $mouthaction is "pullawayvagina" and ($NPCList[$mouthtarget].vagina is "mouth" or $NPCList[$mouthtarget].vagina is "facesit")>>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "pullawayvagina">><<personselect $mouthtarget>><<set $mouthstate to 0>>
 	<<if $consensual is 1>>
 		당신은 보지로부터 머리를 떼어놓으려고 한다.
 		<<oralskilluse>><<brat 1 $mouthtarget>>
@@ -2111,7 +2987,7 @@
 		<span class="red">하지만, 당신은 달콤한 꿀에서 당신을 떼어놓을 수가 없다.</span> 당신은 필사적으로 당신의 입을 누르고 있는 보지를 핥는다.
 		<<willpower 1>>
 	<<else>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("oral", $mouthtarget)>>
 			<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $pullaway to 1>>
 			<<set $NPCList[$mouthtarget].vagina to 0>><span class="green"><<He_nun>> 당신을 제지하지 않는다.</span>
 			<<set $NPCList[$mouthtarget].location.genitals to 0>>
@@ -2125,48 +3001,53 @@
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "bite">>
+<<if $mouthaction is "bite" and $NPCList[$mouthtarget].penis is "mouth">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "bite">><<personselect $mouthtarget>>
-	당신은 자지를 깨물었고, <<he_nun>> <<if $enemytype is "man">>으악하고 비명을 지르며<<elseif $enemytype is "beast">>으르렁대며<<else>>소리지르며<</if>> 고통에 차서 몸을 웅크린다.
-	<<defiance 20 $mouthtarget>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
-	<<if $wolfgirl gte 2 or $cat gte 2>>
-		<<defiance 20 $mouthtarget>><<defiance 20 $mouthtarget>>
-		당신은 송곳니를 혀로 핥아 깨끗이 한다.
+	당신은 <<his_yi>> <<npcPenisSimple_ul $mouthtarget>> 깨문다,
+	<<if npcHasStrapon($mouthtarget)>>
+		그러나 그것은 전혀 효과가 없었다.
+	<<else>>
+		<<he_nun>> <<if $enemytype is "man">>으악하고 비명을 지르며<<elseif $enemytype is "beast">>으르렁대며<<else>>소리지르며<</if>> 고통에 차서 몸을 웅크린다.
+		<<set $NPCList[$mouthtarget].penis to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
+		<<defiance 20 $mouthtarget>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>>
+		<<if $transformationParts.traits.fangs isnot "disabled">>
+			<<defiance 20 $mouthtarget>><<defiance 20 $mouthtarget>>
+			당신은 송곳니를 혀로 핥아 깨끗이 한다.
+		<</if>>
 	<</if>>
-	<<set $NPCList[$mouthtarget].penis to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
 <</if>>
 
-<<if $mouthaction is "bitepussy">>
-	<<set $mouthaction to 0>><<set $mouthactiondefault to "bitepussy">>
+<<if $mouthaction is "bitepussy" and ($NPCList[$mouthtarget].vagina is "mouth" or $NPCList[$mouthtarget].vagina is "facesit")>>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "bitepussy">><<personselect $mouthtarget>>
 	당신은 <<hisselect_yi $mouthtarget>> 음순을 깨물었고, <<he_nun>> <<if $enemytype is "man">>으악하고 비명을 지르며<<elseif $enemytype is "beast">>으르렁대며<<else>>소리지르며<</if>> 고통에 차서 몸을 웅크린다.
-	<<defiance 20>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>><<set $speechhit to 1>>
-	<<if $wolfgirl gte 2 or $cat gte 2>>
+	<<set $NPCList[$mouthtarget].vagina to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
+	<<defiance 20 $mouthtarget>><<attackstat>><<control 15>><<set $mouthuse to 0>><<set $penisbitten to 1>><<set $mouthstate to 0>><<set $speechhit to 1>>
+	<<if $transformationParts.traits.fangs isnot "disabled">>
 		<<defiance 40 $mouthtarget>>
 		당신은 송곳니를 혀로 핥아 깨끗이 한다.
 	<</if>>
-	<<set $NPCList[$mouthtarget].vagina to 0>><<set $NPCList[$mouthtarget].location.genitals to 0>>
 <</if>>
 
-<<if $mouthaction is "vaginalick">>
+<<if $mouthaction is "vaginalick" and ($NPCList[$mouthtarget].vagina is "mouth" or $NPCList[$mouthtarget].vagina is "facesit")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "vaginalick">><<actionspussylick $mouthtarget>><<submission 10 $mouthtarget>><<oralskilluse>>
 <</if>>
 
-<<if $mouthaction is "pullawaykiss">>
+<<if $mouthaction is "pullawaykiss" and $NPCList[$mouthtarget].mouth.toString().includes("kiss")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "pullawaykiss">><<personselect $mouthtarget>>
-	당신은 상대방의 입술에서 머리를 떼어내려고 한다.
+	당신은 <<his_yi>> 입술에서 당신의 머리를 떼어내려고 한다.
 	<<oralskilluse>><<brat 1 $mouthtarget>>
 	<<set _nectarDifficulty to Math.clamp($drugged, 0, 500) + Math.clamp($nectar_addiction, 0, 500)>>
 	<<willpowerdifficulty _nectarDifficulty $willpowermax "silent">>
 	<<if $NPCList[$mouthtarget].type is "plant" and $mouthstate isnot "kissentrance" and !$willpowerSuccess>>
 		<span class="red">하지만, 당신은 달콤한 꿀에서 당신을 떼어놓을 수가 없다.</span>
 		<<if $mouthstate is "kissimminent">>
-			당신은 마주 키스해주고, 당신의 혀로 그 입술을 연다.
+			당신은 <<himPost>>에게 마주 키스해주고, 당신의 혀로 <<his_yi>> 입술을 연다.
 		<<elseif $mouthstate is "kiss">>
-			당신은 마주 키스해주고, 그 혀를 당신의 혀로 애무한다.
+			당신은 <<himPost>>에게 마주 키스해주고, <<his_yi>> 혀를 당신의 혀로 애무한다.
 		<</if>>
 		<<willpower 1>>
 	<<else>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $oralskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("oral", $mouthtarget)>>
 			<<set $mouthuse to 0>><<set $mouthstate to 0>>
 			<<set $NPCList[$mouthtarget].mouth to 0>><span class="green"><<He_nun>> 당신을 제지하지 않는다.</span>
 			<<set $NPCList[$mouthtarget].location.head to 0>>
@@ -2201,12 +3082,12 @@
 <<if $mouthaction is "handbite">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "handbite">><<personselect $mouthtarget>>
 	<<actionshandbite $mouthtarget>>
-	<<if $wolfgirl gte 2 or $cat gte 2>>
+	<<if $transformationParts.traits.fangs isnot "disabled">>
 		<<defiance 6 $mouthtarget>>
 	<<else>>
 		<<defiance 2 $mouthtarget>>
 	<</if>>
-	<<if random(1, 5) gte 3 and ($wolfgirl gte 2 or $cat gte 2) or random(1, 5) gte 5>>
+	<<if random(1, 5) gte 3 and ($transformationParts.traits.fangs isnot "disabled") or random(1, 5) gte 5>>
 		<<set $mouthuse to 0>>
 		<<if $NPCList[$mouthtarget].lefthand is "mouth">>
 			<<set $NPCList[$mouthtarget].lefthand to 0>>
@@ -2220,11 +3101,11 @@
 		<</if>>
 	<<else>>
 		<<control -5>>
-		<span class="purple">손은 아직 입을 막고 있다.</span> 
+		<span class="purple">그것은 당신의 입 위에 아직 있다.</span>
 	<</if>>
 <</if>>
 
-<<if $mouthaction is "headbutt">>
+<<if $mouthaction is "headbutt" and $NPCList[$mouthtarget].mouth.toString().includes("kiss")>>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "headbutt">><<personselect $mouthtarget>>
 	<<if $mouthstate is "kiss">>
 		당신은 키스를 그만두고, <<himPost>>에게 박치기로 앙갚음한다.
@@ -2262,9 +3143,9 @@
 	<<set $NPCList[$mouthtarget].location.head to 0>>
 <</if>>
 
-<<if $mouthaction is "grasp">>
+<<if $mouthaction is "grasp" and $NPCList[$mouthtarget].penis is "mouthentrance">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "grasp">><<chestskilluse>><<combatpromiscuity3>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $chestskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("chest", $mouthtarget)>>
 		<<set $chestactiondefault to "rub">><<set $chestuse to "penis">><<cheststat>><<set $mouthstate to 0>><<set $mouthuse to 0>><<set $mouthactiondefault to "peniskiss">>
 		<<set $NPCList[$mouthtarget].penis to "chest">><<personselect $mouthtarget>><<set $chesttarget to $mouthtarget>>
 		<<if $breastcup is "none">>
@@ -2274,7 +3155,7 @@
 			<span class="lblue">당신은 <<chesttext>> <<hisselect_yi $mouthtarget>> <<penisdesc_rul $NPCList[$mouthtarget].penisdesc>> <<breastsPost>> 사이로 잡는다.</span>
 		<</if>>
 	<<else>>
-		<<if $breastsize is 0>>
+		<<if $player.breastsize is 0>>
 			당신은 <<breasts_rul>> 가능한 압박해 모아서 <<hisselect_yi $mouthtarget>> 자지를 그 사이로 잡으려 하지만, 실패한다.
 		<<else>>
 			당신은 <<hisselect_yi $mouthtarget>> 자지를 <<breastsPost>> 사이로 잡으려 하지만, 실패한다.
@@ -2289,13 +3170,13 @@
 	<<else>>
 		<<set $mouthactiondefault to "rest">><<brat 10>>
 		당신은 <<himPost>>에게 그만 하고 싶다고 말한다.
-		<<if !$loveDrunk and $NPCList[0].type isnot "plant" and ((1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole)>>
+		<<if !$loveDrunk and $NPCList[0].type isnot "plant" and combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $finish to 1>>
 			<<if $trueconsensual isnot 1 and $gamemode is "soft">>
 				<<set $enemyhealth to -100>>
 			<</if>>
 			<<if $enemytype is "man" or $monster is 1>>
-				<<He_nun>> 불만스러워 <<if $enemyno gte 2>>보이지만<<else>>보이지만<</if>>, <span class="green">당신의 말에 <<if $enemyno gte 2>>수긍한다<<else>>수긍한다<</if>>.</span>
+				<<if $enemyno gte 2>>그들은<<else>><<He_nun>> <</if>> 실망스러워 보였지만, <span class="green"><<if $enemyno gte 2>>수긍한다<<else>>수긍한다<</if>>.</span>
 			<<else>>
 				녀석은 말을 할 수는 없지만, <span class="green">당신 말의 어조에서 이해하고 수긍한다.</span>
 			<</if>>
@@ -2308,7 +3189,7 @@
 				<<case "plant">>
 					<span class="red"><<He_nun>> <<his_yi>> 머리를 행복하게 좌우로 흔든다.</span>
 				<<case "beast">>
-					교배하려는 열망에 차서, <span class="red"><<bhe_nun>> 당신의 부탁을 무시한다.</span>
+					<<if $pregnancyspeechdisable is "f">>교배<<else>>범<</if>>하려는 열망에 차서, <span class="red"><<bhe_nun>> 당신의 부탁을 무시한다.</span>
 				<<default>>
 					<span class="red"><<if $enemyno gte 2>>그들은 당신의 부탁을 거절한다!<<else>><<He_nun>> 당신의 부탁을 거절한다!<</if>></span>
 			<</switch>>
@@ -2328,7 +3209,7 @@
 		<<else>>
 			당신은 <<himPost>>에게 당신의 보지에 아무 것도 넣고 싶지 않다고 부탁한다.
 		<</if>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $novaginal to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
 			<<if $vaginastate is "penetrated">>
 				<<set $vaginastate to "entrance">>
@@ -2360,7 +3241,7 @@
 		<<else>>
 			당신은 <<himPost>>에게 항문에 아무 것도 넣고 싶지 않다고 부탁한다.
 		<</if>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $noanal to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
 			<<if $anusstate is "penetrated">>
 				<<set $anusstate to "entrance">>
@@ -2392,7 +3273,7 @@
 		<<else>>
 			당신은 <<himPost>>에게 자지를 안에 넣고 싶지 않다고 부탁한다.
 		<</if>>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $nopenile to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
 			<<if $penisstate is "penetrated">>
 				<<set $penisstate to "entrance">>
@@ -2438,7 +3319,7 @@
 
 		<<if $combatgoal is "strip">>
 			<span class="pink">"싫어," 녀석은 웃는다. "옷이 없는게 더 보기 좋다고."</span>
-		<<elseif (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<elseif combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $noupper to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
 			<<for _j = 0; _j lt $enemynomax; _j++>>
 				<<if $NPCList[_j].lefthand is "overupperclothes">>
@@ -2474,6 +3355,41 @@
 	<</if>>
 <</if>>
 
+<<if $mouthaction is "ask" and $askAction is "nomask">>
+	<<set $mouthaction to 0>><<set _sound to 1>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
+		<<trClothes "face" $worn.face.name "을">><<wheeze "<<himPost>>에게 당신의 "+ _trResult + " 벗기지 말라고 ">>
+	<<else>>
+		<<set $mouthactiondefault to "rest">><<brat 5 demanding>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>><<unset $askAction>>
+		<<set $noupperasked to 1>>
+		당신은 <<himPost>>에게 당신의 <<worn_face_name_ul>> 벗기지 말라고 말한다.
+
+		<<if $combatgoal is "strip">>
+			<span class="pink">"싫어," 녀석은 웃는다. "옷이 없는게 더 보기 좋다고."</span>
+		<<elseif combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
+			<<set $noupper to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
+			<<for _j = 0; _j lt $enemynomax; _j++>>
+				<<if $NPCList[_j].lefthand is "mask">>
+					<<personselect _j>>
+					<<set $NPCList[_j].lefthand to 0>><<person_un>> 당신의 <<worn_face_name_ul>> 놓아준다.
+				<</if>>
+				<<if $NPCList[_j].righthand is "mask">>
+					<<personselect _j>>
+					<<set $NPCList[_j].righthand to 0>><<person_un>> 당신의 <<worn_face_name_ul>> 놓아준다.
+				<</if>>
+			<</for>>
+		<<else>>
+			<<set $consensual to 0>>
+			<<if $NPCList[$mouthtarget].type is "plant">>
+				<<He_nun>> 조롱한다. <span class="red">"농담해? 그게 가장 재미있는 부분인데!"</span>
+			<<else>>
+				녀석은 잠시 멈칫했다가 반응을 보인다, <span class="red">"멍청한 <<slutPost>> 같으니라고, 네가 내게 뭘 하라 마라 할 수 있을 것 같아?"</span>
+			<</if>>
+			<<molested>><<controlloss>>
+		<</if>>
+	<</if>>
+<</if>>
+
 <<if $mouthaction is "ask" and $askAction is "nochoke">>
 	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
 	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
@@ -2481,7 +3397,7 @@
 	<<else>>
 		<<set $mouthactiondefault to "rest">><<brat 5>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
 		당신은 <<himPost>>에게 <<his_yi>> 손이 목을 조르는 것을 원하지 않는다고 말한다.
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<set $nochoke to 1>><span class="green">녀석은 수긍하여 고개를 끄덕인다.</span>
 			<<if $neckuse is "hand">>
 				<<unset $neckuse>>
@@ -2534,7 +3450,7 @@
 		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
 		<<set $condomAsk to true>>
 		당신은 <<himPost>>에게 콘돔을 사용하기 원한다고 말한다.
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<if $consensual is 0>>
 				<<set $condomUse to true>>
 				녀석은 잠시 멈칫했다가 반응을 보인다,
@@ -2644,7 +3560,7 @@
 		<<set $mouthactiondefault to "rest">><<sub 2>><<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
 		<<set $condomAsk to true>>
 		당신은 <<himPost>>에게 콘돔을 사용하지 말기를 원한다고 말한다.
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+		<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole>>
 			<<if $consensual is 0>>
 				녀석은 잠시 멈칫했다가 반응을 보인다,
 				<<set _response to [
@@ -2738,6 +3654,81 @@
 	<</if>>
 <</if>>
 
+<<if $mouthaction is "pay">>
+	<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
+	<<if $money gte $rentmoney>>
+		<<set $speechpay to 1>>
+		<<if $submissive gte 1150>>
+			"머-멈춰요!" 당신은 소리친다. "제가 지불할테니... 그-그냥 로빈을 보내주세요."
+		<<elseif $submissive lte 850>>
+			"내가 낼게요," 당신은 꽉 다문 이빨 사이로 말한다. "그러니 <<nnpc_himPost "Robin">>에게서 당신 손을 떼어놓아요."
+		<<else>>
+			"<<nnpc_him_ul "Robin">> 보내줘요!" 당신은 소리친다. "여기 돈이 있어요. 제가 지불할게요."
+		<</if>>
+	<<else>>
+		<<set $speechpay to -1>>
+		<<if $submissive gte 1150>>
+			"머-멈춰요!" 당신은 소리친다. "저는 그만큼 돈이 없어요, 하-하지만... 그냥 <<nnpc_him_ul "Robin">> 보내주세요, 제발요!"
+		<<elseif $submissive lte 850>>
+			"돈은 그만큼 없어요," 당신은 꽉 다문 이빨 사이로 말한다. "그러니 <<nnpc_himPost "Robin">>에게서 당신 손을 떼어놓아요."
+		<<else>>
+			"<<nnpc_him_ul "Robin">> 보내줘요!" 당신은 소리친다. "돈은 그만큼 없어요. 제가 지불할 수는 없어요."
+		<</if>>
+	<</if>>
+	<<control -10>><<lcontrol>>
+<</if>>
+
+<<if $mouthaction is "ask" and $askAction is "wearStrapon">>
+	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
+		<<wheeze "<<himPost>>에게 <<his_yi>> 페니스 밴드를 착용하라고 ">><<meek 1>>
+	<<else>>
+		<<brat 5>>
+		<<set $mouthactiondefault to "rest">>
+		당신은 <<himPost>>에게 <<his_yi>> 페니스 밴드를 착용하라고 부탁한다.
+		<<if ($npc[$npcrow.indexOf(_n)] is "Eden" and $NPCName[$NPCNameList.indexOf("Eden")].love lte 100)
+		or ($npc[$npcrow.indexOf(_n)] is "Whitney" and $NPCName[$NPCNameList.indexOf("Whitney")].love lte 10)>>
+			<<print either("나는 내가 하고 싶은 것을 할 거야, <<bitch_ya>>.","입닥쳐 <<slut_a>>, 여기서는 내가 결정해.")>>
+			<<violence 5>><<brat 2>>
+		<<else>>
+			<<personselect $mouthtarget>>
+			<<He_nun>> 끄덕이고 <<his_yi>> 페니스 밴드를 착용하기 위해 움직인다.
+			<<npcstrapon $mouthtarget>>
+			<<set $NPCList[$mouthtarget].penis to "strap-on">>
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $mouthaction is "ask" and $askAction is "removeStrapon">>
+	<<set $mouthaction to 0>><<unset $askAction>><<set _sound to 1>>
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and $asphyxiaLvl gte 2>>
+		<<wheeze "<<himPost>>에게 <<his_yi>> 페니스 밴드를 벗으라고">><<brat 1>>
+	<<else>>
+		<<brat 5>><<set $mouthactiondefault to "rest">>
+		당신은 <<personselect $mouthtarget>><<combatpersonPost>>에게 <<his_yi>> 페니스 밴드를 벗으라고 부탁한다.
+		<<if !$gloryhole and $gamemode isnot "soft">><<seductionskillusecombat>><</if>>
+		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $seductionskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100) or $gamemode is "soft" or $gloryhole>>
+			<<He_nun>> 끄덕이고 <<his_yi>> <<penisdesc_rul $NPCList[$mouthtarget].penisdesc>> 벗는다.
+
+			/* Remove their strap-on. If they have a penis, give them back their penis. */
+			<<set $_npcname to $npc[$npcrow.indexOf($mouthtarget)]>>
+			<<set $_npctarget to $NPCName[$NPCNameList.indexOf($_npcname)]>>
+			<<if ["Robin","Kylar","Alex","Avery","Whitney","Eden","Sydney"].includes($_npcname) and $_npctarget.penis isnot "none">>
+				<<set $NPCList[$mouthtarget].penisdesc to $_npctarget.penisdesc>><<set $NPCList[$mouthtarget].penis to 0>>
+			<<else>>
+				<<set $NPCList[$mouthtarget].penis to "none">><<set $NPCList[$mouthtarget].vagina to 0>>
+			<</if>>
+			<<set $NPCList[$mouthtarget].strapon.state to "removed">>
+		<<else>>
+			<<if $consensual is 1>>
+				<<set $consensual to 0>>
+				<<molested>><<controlloss>>
+			<</if>>
+			녀석은 잠시 멈칫했다가 반응을 보인다, <span class="red">"멍청한 <<slutPost>> 같으니라고, 네가 내게 뭘 하라 마라 할 수 있을 것 같아?"</span>
+		<</if>>
+	<</if>>
+<</if>>
+
 /*Stalked actions */
 <<if !$stalk_end>>
 	<<if $mouthaction is "up">>
@@ -2779,20 +3770,50 @@
 	<<if $mouthaction is "turn">>
 		<<set $mouthaction to 0>><<set $mouthactiondefault to "turn">>
 		당신은 당신의 어깨 너머로 흘낏 뒤를 본다.
-		당신은 한 <<person1>><<person_i>> 당신을 따라오고 있는 것을 본다.
-		<<He_nun>> 
-		<<if $NPCList[0].skills.athletics gte 800>>
-			<span class="pink">활기찬 발걸음으로</span>
-		<<elseif $NPCList[0].skills.athletics gte 600>>
-			<span class="purple">의욕적인 걸음걸이로</span>
-		<<elseif $NPCList[0].skills.athletics gte 400>>
-			<span class="blue">조용한 걸음걸이로</span>
-		<<elseif $NPCList[0].skills.athletics gte 200>>
-			<span class="lblue">느긋한 걸음걸이로</span>
+		<<if $stalk_assess>>
+			<<if $npcrow.includes(0)>>
+				<<namedNPC_ga $NPCList[0].fullDescription>> 계속 당신을 따라오고 있다.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+					창백한 형체가 계속 당신을 쫓아오고 있다.
+				<<else>>
+					창백한 형체가 계속 떠 있다.
+				<</if>>
+			<<else>>
+				<<person1>><<person_i>> 계속 당신을 따라오고 있다.
+			<</if>>
 		<<else>>
-			<span class="teal">나태하게 발을 끌며</span>
+			<<if $npcrow.includes(0)>>
+				당신은 한 <<person1>><<personsimple_i>> 당신을 따라오고 있는 것을 본다. <span class="pink">그자는 <<namedNPC_da $NPCList[0].fullDescription>>.</span>
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+					한<<if $wraith.seen gte 3>> 친숙한<</if>> 창백한 형체가 당신 뒤에 도사리고 있으며, <span class="red">그 으스스한 <<wraithEyes>> 눈빛은 당신에게 고정되어 있다.</span>
+				<<else>>
+					한<<if $wraith.seen gte 3>> 친숙한<</if>> 창백한 형체가 당신의 존재를 알아채지 못한 듯이, 당신 뒤에 떠 있다
+				<</if>>
+			<<else>>
+				당신은 한 <<person1>><<person_i>> 당신을 따라오고 있는 것을 본다.
+			<</if>>
 		<</if>>
-		걸어오고 있으며
+		<<if $npcrow.includes(0)>>
+			<<nnpc_He_nun $NPCList[0].fullDescription>>
+		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+			그것은
+		<<else>>
+			<<He_nun>> 
+		<</if>>
+		<<if $NPCList[0].skills.athletics gte 800>>
+			<span class="pink">활기찬 모습으로</span>
+		<<elseif $NPCList[0].skills.athletics gte 600>>
+			<span class="purple">의욕적인 모습으로</span>
+		<<elseif $NPCList[0].skills.athletics gte 400>>
+			<span class="blue">조용한 모습으로</span>
+		<<elseif $NPCList[0].skills.athletics gte 200>>
+			<span class="lblue">느긋한 모습으로</span>
+		<<else>>
+			<span class="teal">느리게 이리저리 움직이며</span>
+		<</if>>
+		다가오고 있으며
 		<<if $NPCList[0].skills.security gte 800>>
 			<span class="pink"><<his_yi>> 눈에 교활한 번득임을 보이고 있다.</span>
 		<<elseif $NPCList[0].skills.security gte 600>>
@@ -2803,6 +3824,17 @@
 			<span class="lblue">주의가 산만해 보인다.</span>
 		<<else>>
 			<span class="teal">백일몽에 빠져 있는 것 처럼 보인다.</span>
+		<</if>>
+		<<if $enemyno is 2>>
+			<<person2>><<personPost>> 하나가 <<person1>><<him_ul>> 따라오고 있다.
+		<<elseif $enemyno gte 3>>
+			<<switch $enemyno>>
+				<<case 6>>다섯
+				<<case 5>>네
+				<<case 4>>세
+				<<case 3>>두
+			<</switch>>
+			명의 사람이 <<him_ul>> 따라오고 있다.
 		<</if>>
 		<<set $stalk_assess to true>>
 	<</if>>
@@ -2824,9 +3856,9 @@
 
 <<set $rng to random(1, 100)>>
 
-<<if $vaginaaction is "penisthighs">>
+<<if $vaginaaction is "penisthighs" and $NPCList[$vaginatarget].penis is "vaginaentrance">>
 	<<set $vaginaaction to 0>><<meek 1 $vaginatarget>><<thighskilluse>><<set $vaginaactiondefault to "penisthighs">><<combatpromiscuity4>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("thigh", $vaginatarget)>>
 		<<set $thighactiondefault to "rub">>
 		<<personselect $vaginatarget>>
 		<span class="lblue">당신은 <<thightext>> <<hisselect_yi $vaginatarget>> <<penisdesc_rul $NPCList[$vaginatarget].penisdesc>> 넓적다리 사이로 잡는다.</span>
@@ -2856,7 +3888,7 @@
 
 <<set $rng to random(1, 100)>>
 
-<<if $vaginaaction is "penisanus">>
+<<if $vaginaaction is "penisanus" and $NPCList[$vaginatarget].penis is "vaginaentrance">>
 	<<if $anusstate isnot 0 and $anusstate is "entrance" or $anusstate is "imminent">>
 		<<if $analdoubledisable is "f">>
 			<<set $vaginaaction to "penisanusdouble">>
@@ -2869,9 +3901,9 @@
 		<<violence 2>><<hitstat>><<bruise bottom>>
 	<<else>>
 		<<set $vaginaaction to 0>><<meek 5 $vaginatarget>><<analskilluse>><<set $vaginaactiondefault to "penisanus">>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("anal", $vaginatarget)>>
 			<<personselect $vaginatarget>>
-			<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> 자지를 당신의 엉덩이 쪽으로 향한다.</span>
+			<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> <<npcPenisSimple_ul $vaginatarget>>  당신의 엉덩이 쪽으로 향한다.</span>
 			<<if $NPCList[$vaginatarget].type is "plant" and $NPCList[$vaginatarget].penissize gte 4>>
 				<span class="red">무언가 당신을 두렵게 한다.</span>
 			<</if>>
@@ -2886,7 +3918,7 @@
 <<set $rng to random(1, 100)>>
 <<if $vaginaaction is "penisanusdvp">>
 	<<if $anusstate isnot 0 and $anusstate is "entrance" or $anusstate is "imminent">>
-		<<if $analdoubledisable is "f" and  random(0,2) isnot 0 and $awareness gte 300>>
+		<<if $analdoubledisable is "f" and random(0,2) isnot 0 and $awareness gte 300>>
 			<<set $vaginaaction to "penisanusdouble">>
 		<<else>>
 			당신은 <<bottom_ul>> 살짝 흔들었으나, 엉덩이를 한 대 맞았을 뿐이다.
@@ -2897,18 +3929,18 @@
 		<<violence 2>><<hitstat>><<bruise bottom>>
 	<<else>>
 		<<set $vaginaaction to 0>><<meek 5>><<analskilluse>><<set $vaginaactiondefault to "penisanusdvp">>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<set _npcA to ($NPCList[$vaginatarget].penis is "vaginaentrancedouble" ? $vaginatarget : $vaginadoubletarget)>>
+		<<set _npcB to ($NPCList[$vaginatarget].penis is "vaginaentrancedouble" ? $vaginadoubletarget : $vaginatarget)>>
 
-			<<set _npcA to ($NPCList[$vaginatarget].penis is "vaginadoubleentrance" ? $vaginatarget : $vaginadoubletarget)>>
-			<<set _npcB to ($NPCList[$vaginatarget].penis is "vaginadoubleentrance" ? $vaginadoubletarget : $vaginatarget)>>
+		<<if combatSkillCheck("anal", _npcA)>>
 
 			<<if $NPCList[_npcB].penis is "vaginadouble">>
 				<<set $NPCList[_npcB].penis to "vagina">>
 				<<set $vaginastate to "penetrated">>
-			<<elseif $NPCList[_npcB].penis is "vaginadoubleimminent">>
+			<<elseif $NPCList[_npcB].penis is "vaginaimminentdouble">>
 				<<set $NPCList[_npcB].penis to "vaginaimminent">>
 				<<set $vaginastate to "imminent">>
-			<<elseif $NPCList[_npcB].penis is "vaginadoubleentrance">>
+			<<elseif $NPCList[_npcB].penis is "vaginaentrancedouble">>
 				<<set $NPCList[_npcB].penis to "vaginaentrance">>
 				<<set $vaginastate to "entrance">>
 			<</if>>
@@ -2929,21 +3961,21 @@
 <<set $rng to random(1, 100)>>
 <<if $vaginaaction is "penisanusdouble">>
 	<<set $vaginaaction to 0>><<meek 5 $vaginatarget>><<analskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("anal", $vaginatarget)>>
 		<<personselect $vaginatarget>><<set $vaginaactiondefault to "rest">>
 		<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> 자지를 다른 남근과 함께 당신의 엉덩이 쪽으로 향한다.</span>
 		<<submission 2 $vaginatarget>>
 		<<set $anususe to "penisdouble">><<set $anusstate to "doubleentrance">><<set $vaginause to 0>><<set $vaginastate to 0>>
-		<<set $NPCList[$vaginatarget].penis to "anusdoubleentrance">>
+		<<set $NPCList[$vaginatarget].penis to "anusentrancedouble">>
 		<<set $anusdoubletarget to $vaginatarget>>
 		<<if $NPCList[$anustarget].penis is "anus">>
 			<<set $NPCList[$anustarget].penis to "anusdouble">>
 			<<set $anusstate to "doublepenetrated">>
 		<<elseif $NPCList[$anustarget].penis is "anusimminent">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
+			<<set $NPCList[$anustarget].penis to "anusimminentdouble">>
 			<<set $anusstate to "doubleimminent">>
 		<<elseif $NPCList[$anustarget].penis is "anusentrance">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
+			<<set $NPCList[$anustarget].penis to "anusentrancedouble">>
 			<<set $anusstate to "doubleentrance">>
 		<<elseif $NPCList[$anustarget].penis is "cheeks">>
 			<<set $NPCList[$anustarget].penis to "anusentrance">>
@@ -3022,7 +4054,7 @@
 	<</if>>
 <</if>>
 
-<<if $vaginaaction is "escape">>
+<<if $vaginaaction is "escape" and $NPCList[$vaginatarget].penis is "vaginaimminent">>
 	<<set $vaginaaction to 0>><<set $vaginaactiondefault to "escape">><<actionsvaginaescape $vaginatarget>><<set $vaginause to "penis">><<set $vaginastate to "entrance">>
 	<<set $NPCList[$vaginatarget].penis to "vaginaentrance">><<set $NPCList[$vaginatarget].speechvaginaescape to 1>>
 	<<if $NPCList[$vaginatarget].penissize gte 5>>
@@ -3049,18 +4081,18 @@
 	<<set _npcA to $vaginatarget>>
 	<<set _npcB to $vaginadoubletarget>>
 
-	<<if $NPCList[_npcA].penis is "vaginadoubleimminent">>
-		<<set $NPCList[_npcA].penis to "vaginadoubleentrance">><<set $NPCList[_npcA].speechvaginaescape to 1>>
+	<<if $NPCList[_npcA].penis is "vaginaimminentdouble">>
+		<<set $NPCList[_npcA].penis to "vaginaentrancedouble">><<set $NPCList[_npcA].speechvaginaescape to 1>>
 
-	<<elseif $NPCList[_npcA].penis is "vaginadoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
+	<<elseif $NPCList[_npcA].penis is "vaginaentrancedouble" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
 		<<set _otherNPCindex to _npcB>><<set $NPCList[_npcA].location.genitals to 0>><<set $NPCList[_npcA].speechvaginaescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcA].penis to 0>>
 		<span class="green"> <<print "당신은 " + ($npc_named isnot 1 ? "<<NPCdesc_yi " : "<<namedNPC_yi ") + $NPCList[_npcA].fullDescription + "'>> <<penisdesc_robuter '" + $NPCList[_npcA].penisdesc + "'>> " + _actiontext + ".">></span>
 	<</if>>
-	<<if $NPCList[_npcB].penis is "vaginadoubleimminent">>
-		<<set $NPCList[_npcB].penis to "vaginadoubleentrance">><<set $NPCList[_npcB].speechvaginaescape to 1>>
-		
-	<<elseif $NPCList[_npcB].penis is "vaginadoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular vaginal */
+	<<if $NPCList[_npcB].penis is "vaginaimminentdouble">>
+		<<set $NPCList[_npcB].penis to "vaginaentrancedouble">><<set $NPCList[_npcB].speechvaginaescape to 1>>
+
+	<<elseif $NPCList[_npcB].penis is "vaginaentrancedouble" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular vaginal */
 		<<set _otherNPCindex to _npcA>><<set $NPCList[_npcB].location.genitals to 0>><<set $NPCList[_npcB].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcB].penis to 0>>
 		<span class="green"> <<print "당신은 " + ($npc_named isnot 1 ? "<<NPCdesc_yi " : "<<namedNPC_yi ") +  $NPCList[_npcB].fullDescription + "'>> <<penisdesc_robuter '" + $NPCList[_npcB].penisdesc + "'>> " + _actiontext + ".">></span>
@@ -3072,19 +4104,19 @@
 			<<case "vaginadouble">>
 				<<set $NPCList[_otherNPCindex].penis to "vagina">>
 				<<set $vaginastate to "penetrated">>
-			<<case "vaginadoubleentrance">>
+			<<case "vaginaentrancedouble">>
 				<<set $NPCList[_otherNPCindex].penis to "vaginaentrance">>
 				<<set $vaginastate to "entrance">>
-			<<case "vaginadoubleimminent">>
+			<<case "vaginaimminentdouble">>
 				<<set $NPCList[_otherNPCindex].penis to "vaginaimminent">>
 				<<set $vaginastate to "imminent">>
 		<</switch>>
 	<</if>>
 <</if>>
 
-<<if $vaginaaction is "thighbay">>
+<<if $vaginaaction is "thighbay" and $NPCList[$vaginatarget].mouth is "vaginaentrance">>
 	<<set $vaginaaction to 0>><<meek 1 $vaginatarget>><<thighskilluse>><<set $vaginaactiondefault to "thighbay">><<combatpromiscuity1>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("thigh", $vaginatarget)>>
 		<<set $thighactiondefault to "othermouthrub">>
 		<<personselect $vaginatarget>>
 		<span class="lblue">당신은 <<thightext>> 넓적다리를 <<hisselect_yi $vaginatarget>> 입에 누른다.</span>
@@ -3136,9 +4168,9 @@
 	<<set $anusaction to 0>><<set $anusactiondefault to "rest">>
 <</if>>
 
-<<if $anusaction is "penischeeks">>
+<<if $anusaction is "penischeeks" and $NPCList[$anustarget].penis is "anusentrance">>
 	<<set $anusaction to 0>><<meek 1 $anustarget>><<bottomskilluse>><<set $anusactiondefault to "penischeeks">><<combatpromiscuity4>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $bottomskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
 		<<set $cheekactiondefault to "rub">>
 		<<personselect $anustarget>>
 		<<set $NPCList[$anustarget].penis to "cheeks">><<bottomstat>><<submission 2 $anustarget>><<set $bottomuse to "penis">><<set $anususe to "penis">><<set $anusstate to "cheeks">>
@@ -3162,9 +4194,9 @@
 	<<elseif $vaginastate isnot 0 and $vaginastate.includes("double")>>
 		당신은 넓적다리를 벌렸으나, 엉덩이를 한 대 맞았을 뿐이다. "가만히 있어, <<bitch_ya>>."
 		<<violence 2>><<hitstat>><<bruise bottom>>
-	<<else>>
+	<<elseif $NPCList[$anustarget].penis is "anusentrance">>
 		<<set $anusaction to 0>><<meek 10 $anustarget>><<analskilluse>><<set $anusactiondefault to "penispussy">>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $vaginalskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<if combatSkillCheck("vaginal", $anustarget)>>
 			<<personselect $anustarget>>
 			<<submission 2 $anustarget>><<set $vaginause to "penis">><<set $NPCList[$anustarget].penis to "vaginaentrance">><<set $anususe to 0>><<set $vaginastate to "entrance">><<set $anusstate to 0>><<set $vaginatarget to $anustarget>><<set $anustarget to 0>>
 			<span class="lblue">당신은 넓적다리를 벌려, 보지가 잘 보이도록 한다. <<combatperson_un>> 이에 혹해 <<his_yi>> 자지를 당신의 엉덩이에서 치운다.</span>
@@ -3188,21 +4220,12 @@
 		<<violence 2>><<hitstat>><<bruise bottom>>
 	<<else>>
 		<<set $anusaction to 0>><<meek 10 $anustarget>><<analskilluse>><<set $anusactiondefault to "penispussy">>
-		<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $vaginalskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+		<<set _npcA to ($NPCList[$anustarget].penis is "anusentrancedouble" ? $anustarget : $anusdoubletarget)>>
+		<<set _npcB to ($NPCList[$anustarget].penis is "anusentrancedouble" ? $anusdoubletarget : $anustarget)>>
 
-			<<set _npcA to ($NPCList[$anustarget].penis is "anusdoubleentrance" ? $anustarget : $anusdoubletarget)>>
-			<<set _npcB to ($NPCList[$anustarget].penis is "anusdoubleentrance" ? $anusdoubletarget : $anustarget)>>
-
-			<<if $NPCList[_npcB].penis is "anusdouble">>
-				<<set $NPCList[_npcB].penis to "anus">>
-				<<set $anusstate to "penetrated">>
-			<<elseif $NPCList[_npcB].penis is "anusdoubleimminent">>
-				<<set $NPCList[_npcB].penis to "anusimminent">>
-				<<set $anusstate to "imminent">>
-			<<elseif $NPCList[_npcB].penis is "anusdoubleentrance">>
-				<<set $NPCList[_npcB].penis to "anusentrance">>
-				<<set $anusstate to "entrance">>
-			<</if>>
+		<<if combatSkillCheck("vaginal", _npcA)>>
+			<<set $NPCList[_npcB].penis to $NPCList[_npcB].penis.replace("double", "")>>
+			<<set $anusstate to $anusstate.replace("double", "")>>
 			<<personselect _npcA>>
 
 			<<submission 2 _npcA>><<set $vaginause to "penis">><<set $NPCList[_npcA].penis to "vaginaentrance">><<set $anususe to "penis">><<set $vaginastate to "entrance">><<set $vaginatarget to _npcA>>
@@ -3216,34 +4239,16 @@
 <<set $rng to random(1, 100)>>
 <<if $anusaction is "penispussydouble">>
 	<<set $anusaction to 0>><<meek 10>><<analskilluse>><<set $anusactiondefault to "penispussydouble">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $vaginalskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<for _j = 0; _j lt $enemyno; _j++>>
-			<<if $NPCList[_j].penis is "anusentrance">>
-				<<personselect _j>>
-				<<submission 2>><<set $vaginause to "penisdouble">><<set $NPCList[_j].penis to "vaginadoubleentrance">><<set $anususe to 0>><<set $vaginastate to "doubleentrance">><<set $anusstate to 0>>
-				<span class="lblue">당신은 넓적다리를 벌려, 보지가 잘 보이도록 하고, <<combatperson_un>> 이에 혹해 <<his_yi>> 자지를 당신의 엉덩이에서 치워 당신의 보지 앞의 남근에 동참한다.</span>
-				
-				<<set $vaginatarget to _n>>
-				<<set $vaginadoubletarget to "f">>
-				<<for _k = 0; _k lt $enemyno; _k++>>
-					<<if $NPCList[_k].penis is "vagina">>
-						<<set $NPCList[_k].penis to "vaginadouble">>
-						<<set $vaginadoubletarget to _k>>
-						<<break>>
-					<<elseif $NPCList[_k].penis is "vaginaimminent">>
-						<<set $NPCList[_k].penis to "vaginadoubleimminent">>
-						<<set $vaginadoubletarget to _k>>
-						<<break>>
-					<<elseif $NPCList[_k].penis is "vaginaentrance">>
-						<<set $NPCList[_k].penis to "vaginadoubleentrance">>
-						<<set $vaginadoubletarget to _k>>
-						<<break>>
-					<</if>>
-				<</for>>
-				
-				<<break>>
-			<</if>>
-		<</for>>
+	<<if combatSkillCheck("vaginal", $anustarget)>>
+		<<selectNpcWithPartInPosition "penis" "anusentrance">>
+		<<personselect _j>>
+		<<submission 2 _j>><<set $vaginause to "penisdouble">><<set $NPCList[_j].penis to "vaginaentrancedouble">><<set $anususe to 0>><<set $vaginastate to "double" + $vaginastate>><<set $anusstate to 0>>
+		<span class="lblue">당신은 넓적다리를 벌려, 보지가 잘 보이도록 하고, <<combatperson_un>> 이에 혹해 <<his_yi>> 자지를 당신의 엉덩이에서 치워 당신의 보지 앞의 남근에 동참한다.</span>
+
+		<<set $vaginadoubletarget to _j>>
+		<<unset _npc>>
+		<<set _npc to $NPCList[$NPCList.findIndex(x => x.penis.includes("vagina"))]>>
+		<<set _npc.penis to _npc.penis + "double">>
 	<<else>>
 		당신은 넓적다리를 벌렸으나, 관심을 끄는 데 실패한다.
 	<</if>>
@@ -3258,15 +4263,31 @@
 <<set $rng to random(1, 100)>>
 <<effectsanuspenisdoublefuck>>
 
-<<if $anusaction is "bottombay">>
+<<if $anusaction is "bottombay" and $NPCList[$anustarget].mouth is "anusentrance">>
 	<<set $anusaction to 0>><<meek 1 $anustarget>><<bottomskilluse>><<set $anusactiondefault to "bottombay">><<combatpromiscuity1>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $bottomskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
 		<<set $cheekactiondefault to "othermouthrub">>
 		<<personselect $anustarget>>
 		<span class="lblue">당신은 <<bottomtext>> 당신의 <<bottom_ul>> <<hisselect_yi $anustarget>> 입에 눌러댄다.</span>
 		<<set $NPCList[$anustarget].mouth to "bottom">><<set $anususe to 0>><<bottomstat>><<neutral 5 $anustarget>><<set $anusstate to 0>><<set $bottomuse to "mouth">>
 	<<else>>
 		당신은 <<bottom_uro>> 눌러대는 것으로 당신의 항문을 위협하는 입을 접근시키지 않으려 하지만, <<theowner_nun>> 다른 생각이 있는 것 같다.
+	<</if>>
+<</if>>
+
+<<if $anusaction is "bottomhandbay">>
+	<<set $anusaction to 0>><<meek 1 $anustarget>><<bottomskilluse>><<set $anusactiondefault to "bottomhandbay">><<combatpromiscuity1>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
+		<<set $cheekactiondefault to "handrub">>
+		<<personselect $anustarget>>
+		<span class="lblue">당신은 <<bottomtext>> 꽉 조인 <<bottomPost>>살로 <<hisselect_yi $anustarget>> 손에 문지른다.</span>
+		<<if $NPCList[$anustarget].lefthand is "anusentrance">>
+			<<set $NPCList[$anustarget].lefthand to "bottom">><<set $anususe to 0>><<bottomstat>><<neutral 5 $anustarget>><<set $anusstate to 0>><<set $bottomuse to "hand">>
+		<<else>>
+			<<set $NPCList[$anustarget].righthand to "bottom">><<set $anususe to 0>><<bottomstat>><<neutral 5 $anustarget>><<set $anusstate to 0>><<set $bottomuse to "hand">>
+		<</if>>
+	<<else>>
+		당신은 꽉 조인 <<bottomPost>>살로 당신의 항문을 위협하는 손가락을 접근시키지 않으려 하지만, <<theowner_nun>> 다른 생각이 있는 것 같다.
 	<</if>>
 <</if>>
 
@@ -3280,6 +4301,14 @@
 
 <<if $anusaction is "othermouthcooperate">>
 	<<set $anusaction to 0>><<set $anusactiondefault to "othermouthcooperate">><<actionsothermouthanusthrust $anustarget>><<submission 20 $anustarget>><<analskilluse>>
+<</if>>
+
+<<if $anusaction is "handtease">>
+	<<set $anusaction to 0>><<set $anusactiondefault to "handtease">><<actionshandanustease $anustarget>><<sex 5 $anustarget>><<analskilluse>>
+<</if>>
+
+<<if $anusaction is "handcooperate">>
+	<<set $anusaction to 0>><<set $anusactiondefault to "handcooperate">><<actionshandanusthrust $anustarget>><<submission 20 $anustarget>><<analskilluse>>
 <</if>>
 
 <<if $anusaction is "othermouthescape">>
@@ -3319,6 +4348,10 @@
 	<<set $anusaction to 0>><<set $anusactiondefault to "take">><<actionsanustake $anustarget>>
 <</if>>
 
+<<if $anusaction is "handtake">>
+	<<set $anusaction to 0>><<set $anusactiondefault to "handtake">><<actionshandanustake $anustarget>>
+<</if>>
+
 <<if $anusaction is "doubletake">>
 	<<set $anusaction to 0>><<set $anusactiondefault to "doubletake">><<actionsanusdoubletake>>
 <</if>>
@@ -3331,10 +4364,10 @@
 
 <<if $anusaction is "penisdoubletease">>
 	<<set $anusactiondefault to "penisdoubletease">><<set $cheekaction to 0>>
-	<<if $NPCList[$anustarget].penis is "anusdoubleentrance" and $NPCList[$anusdoubletarget].penis isnot "anusdoubleentrance">>
+	<<if $NPCList[$anustarget].penis is "anusentrancedouble" and $NPCList[$anusdoubletarget].penis isnot "anusentrancedouble">>
 		당신은 <<if !($npc.includes($NPCList[$anustarget].fullDescription))>><<NPCdesc_yi $NPCList[$anustarget].fullDescription>><<else>><<namedNPC_yi $NPCList[$anustarget].fullDescription>><</if>> 자지 끝을 희롱하며
 		당신의 장 벽으로 <<if !($npc.includes($NPCList[$anusdoubletarget].fullDescription))>><<NPCdesc_yi $NPCList[$anusdoubletarget].fullDescription>><<else>><<namedNPC_yi $NPCList[$anusdoubletarget].fullDescription>><</if>> <<penisdesc_rul $NPCList[$anusdoubletarget].penisdesc>> 비벼대고 있다.
-	<<elseif $NPCList[$anustarget].penis isnot "anusdoubleentrance" and $NPCList[$anusdoubletarget].penis is "anusdoubleentrance">>
+	<<elseif $NPCList[$anustarget].penis isnot "anusentrancedouble" and $NPCList[$anusdoubletarget].penis is "anusentrancedouble">>
 		당신은 <<if !($npc.includes($NPCList[$anusdoubletarget].fullDescription))>><<NPCdesc_yi $NPCList[$anusdoubletarget].fullDescription>><<else>><<namedNPC_yi $NPCList[$anusdoubletarget].fullDescription>><</if>> 자지 끝을 희롱하며
 		당신의 장 벽으로 <<if !($npc.includes($NPCList[$anustarget].fullDescription))>><<NPCdesc_yi $NPCList[$anustarget].fullDescription>><<else>><<namedNPC_yi $NPCList[$anustarget].fullDescription>><</if>> <<penisdesc_rul $NPCList[$anustarget].penisdesc>> 비벼대고 있다.
 	<<else>>
@@ -3351,18 +4384,18 @@
 	<<set _npcA to $anustarget>>
 	<<set _npcB to $anusdoubletarget>>
 
-	<<if $NPCList[_npcA].penis is "anusdoubleimminent">>
-		<<set $NPCList[$anustarget].penis to "anusdoubleentrance">><<set $NPCList[$anustarget].speechanusescape to 1>>
-		
-	<<elseif $NPCList[_npcA].penis is "anusdoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
+	<<if $NPCList[_npcA].penis is "anusimminentdouble">>
+		<<set $NPCList[$anustarget].penis to "anusentrancedouble">><<set $NPCList[$anustarget].speechanusescape to 1>>
+
+	<<elseif $NPCList[_npcA].penis is "anusentrancedouble" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
 		<<set _otherNPCindex to _npcB>><<set $NPCList[_npcA].location.genitals to 0>><<set $NPCList[_npcA].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcA].penis to 0>>
 		<span class="green"> <<print "당신은 " + ($npc_named isnot 1 ? "<<NPCdesc_yi " : "<<namedNPC_yi ") + $NPCList[_npcA].fullDescription + "'>> <<penisdesc_robuter '" + $NPCList[_npcA].penisdesc + "'>> " + _actiontext + ".">></span>
 	<</if>>
-	<<if $NPCList[_npcB].penis is "anusdoubleimminent">>
-		<<set $NPCList[_npcB].penis to "anusdoubleentrance">><<set $NPCList[_npcB].speechanusescape to 1>>
-		
-	<<elseif $NPCList[_npcB].penis is "anusdoubleentrance" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
+	<<if $NPCList[_npcB].penis is "anusimminentdouble">>
+		<<set $NPCList[_npcB].penis to "anusentrancedouble">><<set $NPCList[_npcB].speechanusescape to 1>>
+
+	<<elseif $NPCList[_npcB].penis is "anusentrancedouble" and random(0,3) is 0>> /* Chance to drop one of them and switch to regular anal */
 		<<set _otherNPCindex to _npcA>><<set $NPCList[_npcB].location.genitals to 0>><<set $NPCList[_npcB].speechanusescape to 1>><<set $enemyanger += 15>>
 		<<set $NPCList[_npcB].penis to 0>>
 		<span class="green"> <<print "당신은 " + ($npc_named isnot 1 ? "<<NPCdesc_yi " : "<<namedNPC_yi ") +  $NPCList[_npcB].fullDescription + "'>> <<penisdesc_robuter '" + $NPCList[_npcB].penisdesc + "'>> " + _actiontext + ".">></span>
@@ -3374,10 +4407,10 @@
 		<<case "anusdouble">>
 			<<set $NPCList[_otherNPCindex].penis to "anus">>
 			<<set $anusstate to "penetrated">>
-		<<case "anusdoubleentrance">>
+		<<case "anusentrancedouble">>
 			<<set $NPCList[_otherNPCindex].penis to "anusentrance">>
 			<<set $anusstate to "entrance">>
-		<<case "anusdoubleimminent">>
+		<<case "anusimminentdouble">>
 			<<set $NPCList[_otherNPCindex].penis to "anusimminent">>
 			<<set $anusstate to "imminent">>
 		<</switch>>
@@ -3404,16 +4437,17 @@
 		<<set $anusaction to 0>>
 	<</if>>
 	<<bottomskilluse>><<set $cheekactiondefault to "rub">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $bottomskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
 		<<actionscheekrub $anustarget>><<set $cheekactiondefault to "rub">><<submission 3 $anustarget>><<bottomstat>>
-	<<else>><<set $cheekactiondefault to "cheeks">>
+	<<elseif $NPCList[$anustarget].penis is "cheeks">>
+		<<set $cheekactiondefault to "cheeks">>
 		<<personselect $anustarget>>
 		<<set $NPCList[$anustarget].penis to "anusentrance">><<set $bottomuse to 0>><<set $anusstate to "entrance">>
 		<span class="blue">당신은 엉덩이골 사이로 <<hisselect_yi $anustarget>> 자지를 비비려 하지만, <<he_nun>> 관심이 없는 듯 하다.</span>
 	<</if>>
 <</if>>
 
-<<if $cheekaction is "stop" or $anusaction is "otherAnusStop">>
+<<if $cheekaction is "stop" or $anusaction is "otherAnusStop" and $NPCList[$anustarget].penis is "cheeks">>
 	<<if $cheekaction is "stop">>
 		<<set $cheekaction to 0>>
 	<</if>>
@@ -3426,12 +4460,69 @@
 	<span class="blue">당신은 <<hisselect_yi $anustarget>> 자지를 엉덩이골 사이로 잡고 있는 것을 그만둔다. <<He_nun>> <<his_yi>> <<penisdesc_rul $NPCList[$anustarget].penisdesc>> 당신의 항문으로 향한다.</span>
 <</if>>
 
-<<if $cheekaction is "othermouthrub" or $anusaction is "otherMouthAnusRub">>
-	<<set $cheekaction to 0>><<set $cheekactiondefault to "othermouthrub">><<bottomskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $bottomskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<set $cheekactiondefault to "othermouthrub">><<bottomstat>><<sex 5 $anustarget>>
+<<if $cheekaction is "handrub" or $anusaction is "bottomhandbay">>
+	<<set $cheekaction to 0>><<set $cheekactiondefault to "handrub">><<bottomskilluse>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
+		<<set $cheekactiondefault to "handrub">><<bottomstat>><<sex 5 $anustarget>>
 		<<actionsmouthbottomrub $anustarget>>
 	<<else>>
+		<<if $anususe is 0>>
+			<<set $anususe to "hand">><<set $anusstate to "handentrance">><<set $anusactiondefault to "bottomhandbay">><<set $bottomuse to 0>>
+			<<if $NPCList[$anustarget].lefthand is "anusentrance" or $NPCList[$anustarget].lefthand is "anus">>
+				<<personselect $anustarget>><<set $NPCList[$anustarget].lefthand to "anusentrance">>
+			<<else>>
+				<<personselect $anustarget>><<set $NPCList[$anustarget].righthand to "anusentrance">>
+			<</if>>
+			<span class="blue">당신은 당신의 <<bottom_ul>> <<hisselect_yi $anustarget>> 손에 눌러대려 하지만, 대신 <<he_nun>> <<his_yi>> 손가락을 당신의 엉덩이살 사이로 밀어넣는다.</span>
+		<<else>>
+			<<if $NPCList[$anustarget].penis is "hand">>
+				<<set $NPCList[$anustarget].penis to 0>>
+			<</if>>
+			<<if $NPCList[$anustarget].vagina is "hand">>
+				<<set $NPCList[$anustarget].vagina to 0>>
+			<</if>>
+			<span class="lblue">당신은 당신의 <<bottomPost>>살을 <<hisselect_yi $anustarget>> 손에 꽉 조이려 하지만, <<he_nun>> <<his_yi>> 손을 당신에게서 치운다.</span>
+			<<if $NPCList[$anustarget].lefthand is "anus" or $NPCList[$anustarget].lefthand is "anusentrance">>
+				<<set $NPCList[$anustarget].lefthand to 0>><<set $bottomuse to 0>><<set $NPCList[$anustarget].location.lefthand to 0>>
+			<<else>>
+				<<set $NPCList[$anustarget].righthand to 0>><<set $bottomuse to 0>><<set $NPCList[$anustarget].location.righthand to 0>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</if>>
+
+<<if $cheekaction is "handstop" or $anusaction is "handAnusStop">>
+	<<set $cheekaction to 0>><<set $cheekactiondefault to "stop">><<set $bottomuse to 0>>
+	<<if $anususe is 0>>
+		<<if $NPCList[$anustarget].lefthand is "anus" or $NPCList[$anustarget].lefthand is "anusentrance">>
+			<<personselect $anustarget>><<set $NPCList[$anustarget].lefthand to "anusentrance">><<set $anusstate to "handentrance">><<set $anususe to "hand">>
+		<<else>>
+			<<personselect $anustarget>><<set $NPCList[$anustarget].righthand to "anusentrance">><<set $anusstate to "handentrance">><<set $anususe to "hand">>
+		<</if>>
+		<span class="blue">당신은 당신의 <<bottomPost>>살을 꽉 조이는 것을 그만두고, <<hisselect_yi $anustarget>> 손이 당신의 엉덩이골에 닿도록 둔다.</span>
+	<<else>>
+		<<personselect $anustarget>>
+		<<if $NPCList[$anustarget].penis is "hand">>
+			<<set $NPCList[$anustarget].penis to 0>>
+		<</if>>
+		<<if $NPCList[$anustarget].vagina is "hand">>
+			<<set $NPCList[$anustarget].vagina to 0>>
+		<</if>>
+		<<if $NPCList[$anustarget].lefthand is "anus" or $NPCList[$anustarget].lefthand is "anusentrance">>
+			<<set $NPCList[$anustarget].lefthand to 0>><<set $NPCList[$anustarget].location.lefthand to 0>>
+		<<else>>
+			<<set $NPCList[$anustarget].righthand to 0>><<set $NPCList[$anustarget].location.righthand to 0>>
+		<</if>>
+		<span class="blue">당신은 당신의 <<bottomPost>>살을 꽉 조이는 것을 그만두고, <<hisselect_yi $anustarget>> 손이 당신의 엉덩이골에 닿도록 둔다.</span>
+	<</if>>
+<</if>>
+
+<<if $cheekaction is "othermouthrub" or $anusaction is "otherMouthAnusRub">>
+	<<set $cheekaction to 0>><<set $cheekactiondefault to "othermouthrub">><<bottomskilluse>>
+	<<if combatSkillCheck("bottom", $anustarget)>>
+		<<set $cheekactiondefault to "othermouthrub">><<bottomstat>><<sex 5 $anustarget>>
+		<<actionsmouthbottomrub $anustarget>>
+	<<elseif $NPCList[$anustarget].mouth is "bottom">>
 		<<if $anususe is 0>>
 			<<set $anususe to "othermouth">><<set $anusstate to "othermouthentrance">><<set $anusactiondefault to "bottombay">><<set $bottomuse to 0>>
 			<<personselect $anustarget>><<set $NPCList[$anustarget].mouth to "anusentrance">>
@@ -3449,7 +4540,7 @@
 	<</if>>
 <</if>>
 
-<<if $cheekaction is "othermouthstop" or $anusaction is "otherMouthAnusStop">>
+<<if ($cheekaction is "othermouthstop" or $anusaction is "otherMouthAnusStop") and $NPCList[$anustarget].mouth is "bottom">>
 	<<set $cheekaction to 0>><<set $cheekactiondefault to "stop">><<set $bottomuse to 0>>
 	<<if $anususe is 0>>
 		<<personselect $anustarget>><<set $NPCList[$anustarget].mouth to "anusentrance">><<set $anusstate to "othermouthentrance">><<set $anususe to "othermouth">>
@@ -3467,6 +4558,8 @@
 	<</if>>
 <</if>>
 
+<<effectsinsertions>>
+
 /***
 *    ███████ ██   ██ ███████  █████  ██   ██
 *      ███   ██   ██   ███   ██      ██   ██
@@ -3481,9 +4574,9 @@
 
 <<if $thighaction is "rub">>
 	<<set $thighaction to 0>><<thighskilluse>><<set $thighactiondefault to "rub">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>><<set $thighactiondefault to "rub">>
-		<<actionsthighrub $thightarget>><<thighstat>><<sex 5 $thightarget>>
-	<<else>>
+	<<if combatSkillCheck("thigh", $thightarget)>>
+		<<set $thighactiondefault to "rub">><<actionsthighrub $thightarget>><<thighstat>><<sex 5 $thightarget>>
+	<<elseif $NPCList[$thightarget].penis is "thighs">>
 		<<set $thighactiondefault to "thighs">><<set $thighuse to 0>>
 		<<if $vaginause is 0>><<set $vaginause to "penis">>
 			<<personselect $thightarget>>
@@ -3497,7 +4590,7 @@
 	<</if>>
 <</if>>
 
-<<if $thighaction is "stop">>
+<<if $thighaction is "stop" and $NPCList[$thightarget].penis is "thighs">>
 	<<set $thighaction to 0>><<set $thighactiondefault to "stop">>
 	당신은 <<hisselect_yi $thightarget>> 자지를 넓적다리 사이로 잡고 있는 것을 그만둔다.
 	<<set $thighuse to 0>>
@@ -3512,10 +4605,10 @@
 
 <<if $thighaction is "othermouthrub">>
 	<<set $thighaction to 0>><<set $thighactiondefault to "othermouthrub">><<thighskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("thigh", $thightarget)>>
 		<<set $thighactiondefault to "othermouthrub">><<thighstat>><<sex 5 $thightarget>>
 		<<actionsmouththighrub $thightarget>>
-	<<else>>
+	<<elseif $NPCList[$thightarget].mouth is "thigh">>
 		<<if $penisuse is 0 and (!$player.vaginaExist or $vaginause isnot 0 or random(0,100) gte 50)>>
 			<<set $penisuse to "othermouth">><<set $penisstate to "othermouthentrance">><<set $penisactiondefault to "thighbay">><<set $thighuse to 0>>
 			<<personselect $thightarget>>
@@ -3540,7 +4633,7 @@
 	<</if>>
 <</if>>
 
-<<if $thighaction is "othermouthstop">>
+<<if $thighaction is "othermouthstop" and $NPCList[$thightarget].mouth is "thigh">>
 	<<set $thighaction to 0>><<set $thighactiondefault to "stop">><<set $thighuse to 0>>
 	<<if $penisuse is 0 and (!$player.vaginaExist or $vaginause isnot 0 or random(0,100) gte 50)>>
 		<<personselect $thightarget>><<set $NPCList[$thightarget].mouth to "penisentrance">><<set $penisstate to "othermouthentrance">><<set $penisuse to "othermouth">>
@@ -3591,9 +4684,9 @@
 	<<set $penisaction to 0>><<set $penisactiondefault to "rest">>
 <</if>>
 
-<<if $penisaction is "bay">>
+<<if $penisaction is "bay" and $NPCList[$penistarget].vagina is "penisentrance">>
 	<<set $penisaction to 0>><<meek 1 $penistarget>><<penileskilluse>><<set $penisactiondefault to "bay">><<combatpromiscuity4>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $penileskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("penile", $penistarget)>>
 		<<set $penisactiondefault to "rub">>
 		<<personselect $penistarget>>
 		<span class="lblue">당신은 <<peniletext>> 당신의 <<penis_rul>> <<hisselect_yi $penistarget>> 클리토리스에 눌러댄다.</span>
@@ -3603,36 +4696,11 @@
 	<</if>>
 <</if>>
 
-<<set $rng to random(1, 100)>>
-<<if $penisaction is "penisanusdouble">>
-	<<set $penisaction to 0>><<meek 5 $penistarget>><<analskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<personselect $penistarget>><<set $penisactiondefault to "rest">>
-		<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> 자지를 다른 남근과 함께 당신의 엉덩이 쪽으로 향한다.</span>
-		<<submission 2 $penistarget>><<set $anususe to "penisdouble">><<set $NPCList[$penistarget].penis to "anusdoubleentrance">><<set $penisuse to 0>><<set $anusstate to "doubleentrance">><<set $penisstate to 0>>
-		<<set $anusdoubletarget to $penistarget>>
-		<<if $NPCList[$anustarget].penis is "anus">>
-			<<set $NPCList[$anustarget].penis to "anusdouble">>
-		<<elseif $NPCList[$anustarget].penis is "anusimminent">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleimminent">>
-		<<elseif $NPCList[$anustarget].penis is "anusentrance">>
-			<<set $NPCList[$anustarget].penis to "anusdoubleentrance">>
-		<<elseif $NPCList[$anustarget].penis is "cheeks">>
-			<<set $NPCList[$anustarget].penis to "anusentrance">>
-			<<set $bottomuse to 0>> /* Issues with ass cheeks likely stem from this culprit right here */
-		<</if>>
-		<<set $NPCList[$anustarget].location.genitals to "genitals">>
-	<<else>>
-		당신은 <<bottom_ul>> 살짝 흔들었으나, 엉덩이를 한 대 맞았을 뿐이다.
-		<<violence 2>><<hitstat>><<bruise bottom>><<set $penisactiondefault to "penisanusdouble">>
-	<</if>>
-<</if>>
-
 <<if $penisaction is "clitrub">><<set $penisaction to 0>><<set $penisactiondefault to "rub">><<penileskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $penileskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("penile", $penistarget)>>
 		<<set $penisactiondefault to "rub">><<sex 5 $penistarget>>
 		<<actionsclitrub $penistarget>>
-	<<else>>
+	<<elseif $NPCList[$penistarget].vagina is "frot">>
 		<<set $penisactiondefault to "bay">>
 		<<set $penisuse to "othervagina">><<set $penisstate to "entrance">>
 		<<personselect $penistarget>>
@@ -3641,7 +4709,7 @@
 	<</if>>
 <</if>>
 
-<<if $penisaction is "stop">>
+<<if $penisaction is "stop" and $NPCList[$penistarget].vagina is "frot">>
 	<<set $penisaction to 0>><<set $penisactiondefault to "stop">>
 	<<personselect $penistarget>>
 	<<set $NPCList[$penistarget].vagina to "penisentrance">><<set $penisstate to "entrance">><<set $penisuse to "othervagina">>
@@ -3668,7 +4736,7 @@
 	<<set $penisaction to 0>><<set $penisactiondefault to "take">><<actionspussytake $penistarget>>
 <</if>>
 
-<<if $penisaction is "escape">>
+<<if $penisaction is "escape" and $NPCList[$penistarget].vagina is "penisimminent">>
 	<<set $penisaction to 0>><<set $penisactiondefault to "escape">><<actionspenisescape $penistarget>><<brat 10 $penistarget>><<set $penisuse to "othervagina">><<set $penisstate to "entrance">>
 	<<personselect $penistarget>>
 	<<set $NPCList[$penistarget].vagina to "penisentrance">><<set $NPCList[$penistarget].speechpenisescape to 1>>
@@ -3708,9 +4776,9 @@
 	<<set $penisaction to 0>><<set $penisactiondefault to "otherpenisrub">><<actionsotherpenispenisrub $penistarget>><<sex 10 $penistarget>><<penileskilluse>>
 <</if>>
 
-<<if $penisaction is "thighbay">>
+<<if $penisaction is "thighbay" and $NPCList[$penistarget].mouth is "penisentrance">>
 	<<set $penisaction to 0>><<meek 1 $penistarget>><<thighskilluse>><<set $penisactiondefault to "thighbay">><<combatpromiscuity1>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("thigh", $penistarget)>>
 		<<set $thighactiondefault to "othermouthrub">>
 		<<personselect $penistarget>>
 		<span class="lblue">당신은 <<thightext>> 넓적다리를 <<hisselect_yi $penistarget>> 입에 누른다.</span>
@@ -3742,7 +4810,7 @@
 
 <<if $penisaction is "otheranusbay">>
 	<<set $penisaction to 0>><<meek 1 $penistarget>><<penileskilluse>><<set $penisactiondefault to "otheranusbay">><<combatpromiscuity4>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $penileskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("penile", $penistarget)>>
 		<<set $penisactiondefault to "otheranusrub">><<personselect $penistarget>>
 		<<if $NPCList[$penistarget].vagina is "otheranusentrance">>
 			<span class="lblue">당신은 <<peniletext>> <<penis_rul>> <<hisselect_yi $penistarget>> 항문에서 치우고, <<his_yi>> 엉덩이골 사이에 비빈다.</span>
@@ -3759,7 +4827,7 @@
 
 <<if $penisaction is "otheranusrub">>
 	<<set $penisaction to 0>><<set $penisactiondefault to "otheranusrub">><<penileskilluse>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $penileskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("penile", $penistarget)>>
 		<<set $penisactiondefault to "otheranusrub">><<sex 5 $penistarget>>
 		<<actionsotheranusrub $penistarget>>
 	<<else>>
@@ -3768,11 +4836,11 @@
 		<<personselect $penistarget>>
 		<<if $NPCList[$penistarget].vagina is "otheranusfrot">>
 			<<set $NPCList[$penistarget].vagina to "otheranusentrance">>
-			<span class="blue">당신은 당신의 <<penis_rul>> <<hisselect_yi $penistarget>> 엉덩이골 사이에 비볐지만, <<he_nun>> 메인 요리를 원하며 <<his_yi>> 항문을 자지 끝으로 옮긴다.</span>
+			<span class="blue">당신은 당신의 <<penisSimple_ul>> <<hisselect_yi $penistarget>> 엉덩이골 사이에 비볐지만, <<he_nun>> 메인 요리를 원하며 <<his_yi>> 항문을 당신의 자지 끝으로 옮긴다.</span>
 		<</if>>
 		<<if $NPCList[$penistarget].penis is "otheranusfrot">>
 			<<set $NPCList[$penistarget].penis to "otheranusentrance">>
-			<span class="blue">당신은 당신의 <<penis_rul>> <<hisselect_yi $penistarget>> 엉덩이골 사이에 비볐지만, <<he_nun>> 메인 요리를 원하며 <<his_yi>> 항문을 자지 끝으로 옮긴다.</span>
+			<span class="blue">당신은 당신의 <<penisSimple_ul>> <<hisselect_yi $penistarget>> 엉덩이골 사이에 비볐지만, <<he_nun>> 메인 요리를 원하며 <<his_yi>> 항문을 당신의 자지 끝으로 옮긴다.</span>
 		<</if>>
 	<</if>>
 <</if>>
@@ -3817,9 +4885,9 @@
 	<</if>>
 <</if>>
 
-<<if $penisaction is "penisthighs">>
+<<if $penisaction is "penisthighs"and $NPCList[$penistarget].penis is "penisentrance">>
 	<<set $penisaction to 0>><<meek 1 $penistarget>><<thighskilluse>><<set $penisactiondefault to "penisthighs">><<combatpromiscuity4>>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $thighskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("thigh", $penistarget)>>
 		<<set $thighactiondefault to "rub">>
 		<<personselect $penistarget>>
 		<span class="lblue">당신은 <<thightext>> <<hisselect_yi $penistarget>> <<penisdesc_rul $NPCList[$penistarget].penisdesc>> 넓적다리 사이로 잡는다.</span>
@@ -3830,9 +4898,9 @@
 	<</if>>
 <</if>>
 
-<<if $penisaction is "penisanus">>
+<<if $penisaction is "penisanus" and ["penisentrance", "penisimminent"].includes($NPCList[$penistarget].penis)>>
 	<<set $penisaction to 0>><<meek 5 $penistarget>><<analskilluse>><<set $penisactiondefault to "penisanus">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $analskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
+	<<if combatSkillCheck("anal", $penistarget)>>
 		<<personselect $penistarget>><<set $anustarget to $penistarget>>
 		<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> <<npcPenis_rul $penistarget>> 당신의 엉덩이 쪽으로 향한다.</span>
 		<<if $NPCList[$penistarget].type is "plant" and $NPCList[$penistarget].penissize gte 4>>
@@ -3843,6 +4911,98 @@
 		당신은 <<bottom_ul>> 살짝 흔들었으나, 엉덩이를 한 대 맞았을 뿐이다.
 		<<violence 2 $penistarget>><<hitstat>><<bruise bottom>>
 	<</if>>
+<</if>>
+
+<<set $rng to random(1, 100)>>
+<<if $penisaction is "penisanusdouble">>
+	<<set $penisaction to 0>><<meek 5 $penistarget>><<analskilluse>>
+	<<if combatSkillCheck("anal", $penistarget)>>
+		<<personselect $penistarget>><<set $penisactiondefault to "rest">>
+		<span class="blue">당신은 <<bottom_ul>> 살짝 흔들었고, <<combatperson_un>> 그 도발에 응해 <<his_yi>> 자지를 다른 남근과 함께 당신의 엉덩이 쪽으로 향한다.</span>
+		<<submission 2 $penistarget>><<set $anususe to "penisdouble">><<set $NPCList[$penistarget].penis to "anusentrancedouble">><<set $penisuse to 0>><<set $anusstate to "doubleentrance">><<set $penisstate to 0>>
+		<<set $anusdoubletarget to $penistarget>>
+		<<if $NPCList[$anustarget].penis is "anus">>
+			<<set $NPCList[$anustarget].penis to "anusdouble">>
+		<<elseif $NPCList[$anustarget].penis is "anusimminent">>
+			<<set $NPCList[$anustarget].penis to "anusimminentdouble">>
+		<<elseif $NPCList[$anustarget].penis is "anusentrance">>
+			<<set $NPCList[$anustarget].penis to "anusentrancedouble">>
+		<<elseif $NPCList[$anustarget].penis is "cheeks">>
+			<<set $NPCList[$anustarget].penis to "anusentrance">>
+			<<set $bottomuse to 0>> /* Issues with ass cheeks likely stem from this culprit right here */
+		<</if>>
+		<<set $NPCList[$anustarget].location.genitals to "genitals">>
+	<<else>>
+		당신은 <<bottom_ul>> 살짝 흔들었으나, 엉덩이를 한 대 맞았을 뿐이다.
+		<<violence 2>><<hitstat>><<bruise bottom>><<set $penisactiondefault to "penisanusdouble">>
+	<</if>>
+<</if>>
+
+<<if $penisaction is "penispussy">>
+	<!-- Check the player is not attempting to straddle and offer pussy at the same time. If so, switch to double or fail correctly -->
+	<<if $vaginastate isnot 0 and !$vaginastate.includes("double") and ($vaginastate is "entrance" or $vaginastate is "imminent" or $vaginastate is "penetrated")>>
+		<!-- Note that this action requires "penispussydouble" to come after "penispussy", else it will not work as expected -->
+		<<if random(0,2) isnot 0 and $vaginaldoubledisable is "f">>
+			<<set $penisaction to "penispussydouble">>
+		<<else>>
+			당신은 넓적다리를 벌렸으나, 관심을 끄는 데 실패한다.
+		<</if>>
+	<<elseif $vaginastate isnot 0 and $vaginastate.includes("double")>>
+		당신은 넓적다리를 벌렸으나, 엉덩이를 한 대 맞았을 뿐이다. "가만히 있어, <<bitch_ya>>."
+		<<violence 2>><<hitstat>><<bruise bottom>>
+	<<elseif ["penisentrance", "penisimminent"].includes($NPCList[$penistarget].penis)>>
+		<<set $penisaction to 0>><<meek 10 $penistarget>><<penileskill>><<set $penisactiondefault to "penispussy">>
+		<<if combatSkillCheck("vaginal", $penistarget)>>
+			<<personselect $penistarget>>
+			<<submission 2 $penistarget>><<set $vaginause to "penis">><<set $NPCList[$penistarget].penis to "vaginaentrance">><<set $penisuse to 0>>
+			<<set $vaginastate to "entrance">><<set $penisstate to 0>><<set $vaginatarget to $penistarget>><<set $penistarget to 0>>
+			<span class="lblue">당신은 넓적다리를 벌려, 보지가 잘 보이도록 한다. <<combatperson_un>> 이에 혹해 <<his_yi>> 자지를 당신의 <<penisPost>>에서 치운다.</span>
+		<<else>>
+			당신은 넓적다리를 벌렸으나, 관심을 끄는 데 실패한다.
+		<</if>>
+	<</if>>
+<</if>>
+
+<<set $rng to random(1, 100)>>
+<<if $penisaction is "penispussydouble">>
+	<<set $penisaction to 0>><<meek 10>><<penileskilluse>><<set $penisactiondefault to "penispussydouble">>
+	<<if combatSkillCheck("vaginal", $penistarget)>>
+		<<for _j = 0; _j lt $enemyno; _j++>>
+			<<if $NPCList[_j].penis is "penisentrance" or $NPCList[_j].penis is "penisimminent">>
+				<<personselect _j>>
+				<<submission 2>><<set $vaginause to "penisdouble">><<set $NPCList[_j].penis to "vaginaentrancedouble">><<set $penisuse to 0>><<set $vaginastate to "doubleentrance">><<set $penisstate to 0>>
+				<span class="lblue">당신은 넓적다리를 벌려, 보지가 잘 보이도록 한다. <<combatperson_un>> 이에 혹해 <<his_yi>> 자지를 당신의 <<penisPost>>에서 치우고 당신의 보지 앞에 있는 자지에 동참한다.</span>
+
+				<<set $vaginatarget to _n>>
+				<<set $vaginadoubletarget to "f">>
+				<<for _k = 0; _k lt $enemyno; _k++>>
+					<<if $NPCList[_k].penis is "vagina">>
+						<<set $NPCList[_k].penis to "vaginadouble">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<<elseif $NPCList[_k].penis is "vaginaimminent">>
+						<<set $NPCList[_k].penis to "vaginaimminentdouble">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<<elseif $NPCList[_k].penis is "vaginaentrance">>
+						<<set $NPCList[_k].penis to "vaginaentrancedouble">>
+						<<set $vaginadoubletarget to _k>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<break>>
+			<</if>>
+		<</for>>
+	<<else>>
+		당신은 넓적다리를 벌렸으나, 관심을 끄는 데 실패한다.
+	<</if>>
+<</if>>
+
+<<if $penisaction is "strokerCooperate">>
+	<<set $penisaction to 0>><<set $penisactiondefault to "strokerCooperate">><<actionsStrokerCooperate $penistarget>><<submission 20 $penistarget>>
+<</if>>
+<<if $penisaction is "strokerRest">>
+	<<set $penisaction to 0>><<set $penisactiondefault to "strokerRest">><<actionsStrokerRest $penistarget>><<neutral 5>>
 <</if>>
 
 /***
@@ -3859,14 +5019,14 @@
 
 <<if $chestaction is "rub">>
 	<<set $chestaction to 0>><<set $chestactiondefault to "rub">>
-	<<if (1000 - ($rng * 10) - ($enemytrust * 10) - $chestskill + $enemyanger) lte (($enemyarousalmax / ($enemyarousal + 1)) * 100)>>
-		<<if $breastsize is 0>>
+	<<if combatSkillCheck("chest", $chesttarget)>>
+		<<if $player.breastsize is 0>>
 			당신은 <<chesttext>> <<breasts_rul>> <<hisselect_yi $chesttarget>> 자지에 비빈다.
 		<<else>>
 			당신은 <<chesttext>> <<hisselect_yi $chesttarget>> 자지를 <<breastsPost>> 사이로 비빈다.
 		<</if>>
 		<<submission 3 $chesttarget>><<chestskilluse>><<cheststat>>
-	<<else>>
+	<<elseif $NPCList[$chesttarget].penis is "chest">>
 		<<set $chestuse to 0>><<personselect $chesttarget>>
 		<<if $mouthuse is 0>>
 			<<set $mouthactiondefault to "grasp">><<set $mouthstate to "entrance">><<set $mouthuse to "penis">>
@@ -3879,7 +5039,7 @@
 	<</if>>
 <</if>>
 
-<<if $chestaction is "stop">>
+<<if $chestaction is "stop" and $NPCList[$chesttarget].penis is "chest">>
 	<<set $chestuse to 0>><<set $chestaction to 0>><<personselect $chesttarget>><<personselect $chesttarget>>
 	<<if $mouthuse is 0>>
 		<<set $mouthactiondefault to "grasp">><<set $mouthstate to "entrance">><<set $mouthuse to "penis">>
@@ -3903,9 +5063,20 @@
 </div>
 <</widget>>
 
+<<widget "useLube">>
+	<<set $_lube to $player.inventory.sextoys["lube"][0]>>
+	<<set $_lube.uses -= 1>>
+	<<run console.log("using lube? " + V.player.inventory.sextoys["lube"][0].name + " " + V.player.inventory.sextoys["lube"][0].uses)>>
+	<<if $_lube.uses lte 0>>
+		<<run V.player.inventory.sextoys["lube"].splice(0,1)>>
+		<<run console.log("used up all the lube")>>
+		당신은 통에 남은 마지막 윤활액을 짜낸다.
+	<</if>>
+<</widget>>
+
 <<widget "wheeze">>
-	<<set _action to $args[0] or "무언가 말">>
-	<<switch $args[1]>>
+	<<set _action to _args[0] or "say something">>
+	<<switch _args[1]>>
 		<<case 1>>
 			당신은 _action하려 했으나, <span class="purple">이미 목이 졸려 있었기 때문에 쌕쌕거리는 소리만 나온다.</span>
 		<<case 2>>
@@ -3914,4 +5085,74 @@
 			당신은 _action하려 했으나, <span class="red">당신의 목을 조르고 있는 손 때문에 숨막히는 쌕쌕소리만 나온다.</span><<gwillpower>><<willpower 1>>
 			<<set $speechwheeze to 1>>
 	<</switch>>
+<</widget>>
+
+<<widget "effectsinsertions">>
+	/* Check anal toy insertions */
+	<<set _insertions to []>>
+	<<for _i = 0; _i < $NPCList.length; _i++>>
+		<<if $NPCList[_i].lefthand is "anusdildo">>
+			<<personselect _i>>
+			<<if $npc_named is 1>>
+				<<trNamedNPC $NPCList[_i].fullDescription "name">><<set _npcDescription to _trResult>>
+			<<else>>
+				<<trNPCdesc $NPCList[_i].fullDescription>><<set _npcDescription to _trResult>>
+			<</if>>
+			<<silently>><<handtoolPost $NPCList[_i].lefttool "으로">><</silently>><<set _insertions.push(_npcDescription + "의 " + _trResult)>>
+		<</if>>
+		<<if $NPCList[_i].righthand is "anusdildo">>
+			<<personselect _i>>
+			<<if $npc_named is 1>>
+				<<trNamedNPC $NPCList[_i].fullDescription "name">><<set _npcDescription to _trResult>>
+			<<else>>
+				<<trNPCdesc $NPCList[_i].fullDescription>><<set _npcDescription to _trResult>>
+			<</if>>
+			<<silently>><<handtoolPost $NPCList[_i].righttool "으로">><</silently>><<set _insertions.push(_npcDescription + "의 " + $NPCList[_i].righttool)>>
+		<</if>>
+	<</for>>
+	<<if _insertions isnot undefined>>
+		<<if _insertions.length gte 2>>
+			당신의 항문은<<if playerHasButtPlug()>> 당신의 <<worn_butt_plug_name>>을 비벼대는<</if>> 섹스 장난감들로 범해지고 있다.
+		<<elseif _insertions.length is 1>>
+			당신의 항문은<<if playerHasButtPlug()>> 당신의 <<worn_butt_plug_name>>을 비벼대는<</if>> _insertions[0] 범해지고 있다.
+		<</if>>
+	<</if>>
+	/* Check vaginal toy insertions */
+	<<if $player.vaginaExist>>
+		<<set _insertions to []>>
+		<<for _i = 0; _i < $NPCList.length; _i++>>
+			<<if $NPCList[_i].lefthand is "vaginadildo">>
+				<<personselect _i>>
+				<<if $npc_named is 1>>
+					<<trNamedNPC $NPCList[_i].fullDescription "name">><<set _npcDescription to _trResult>>
+				<<else>>
+					<<trNPCdesc $NPCList[_i].fullDescription>><<set _npcDescription to _trResult>>
+				<</if>>
+				<<silently>><<handtoolPost $NPCList[_i].lefttool "으로">><</silently>><<set _insertions.push(_npcDescription + "의 " + _trResult)>>
+			<</if>>
+			<<if $NPCList[_i].righthand is "vaginadildo">>
+				<<silently>><<handtoolPost $NPCList[_i].righttool "으로">><</silently>><<set _insertions.push(_npcDescription + "의 " + $NPCList[_i].righttool)>>
+			<</if>>
+		<</for>>
+		<<if _insertions isnot undefined>>
+			<<if _insertions.length gte 2>>
+				당신의 <<pussy_nun>> 섹스 장난감들로 범해지고 있다.
+			<<elseif _insertions.length is 1>>
+				당신의 <<pussy_nun>> _insertions[0] 범해지고 있다.
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $player.penisExist>>
+		/* Dildo rubbing on penis */
+		<<for _i = 0; _i < $NPCList.length; _i++>>
+			<<if $NPCList[_i].lefthand is "penisdildo">>
+				당신의 <<penis_nun>> <<handtoolPost $NPCList[_i].lefttool "으로">> 비벼지고 있다.
+				<<break>>
+			<</if>>
+			<<if $NPCList[_i].righthand is "penisdildo">>
+				당신의 <<penis_nun>> <<handtoolPost $NPCList[_i].righttool "으로">> 비벼지고 있다.
+				<<break>>
+			<</if>>
+		<</for>>
+	<</if>>
 <</widget>>

@@ -56,7 +56,7 @@
 <br><br>
 
 <!-- Set event probability based on hallway business, sex fame, oral skill, and price -->
-<<set _prob to (_busy + $famesex/50 + $oralskill/25 - 2*($school_gloryhole_price/100))>>
+<<set _prob to (_busy + $fame.sex/50 + $oralskill/25 - 2*($school_gloryhole_price/100))>>
 <<if _busy is 0>><<set _prob to 0>><</if>>
 <<set _prob to Math.clamp(_prob, 0, 100)>>
 <<set _rnd to random(0, 100)>>
@@ -183,7 +183,7 @@
 
 :: School Gloryhole Janitor Catch
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<generateRole 0 0 "janitor">><<person1>>
+<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
 
 <<personPost "이">> 당신을 노려본다. "내 화장실에서 네가 일으킨 난리를 좀 봐라, <<girl_a>>! 이 정액을 다 치우는데 얼마나 오래 걸리는지 알기나 해?"
 <br><br>
@@ -191,13 +191,13 @@
 <<if $delinquency gte 600>>
 	<span class="red"><<HePost "은">> 당신의 귀를 잡아서 근처에 있는 관리인실로 끌고 간다.</span> "선생님들께 네가 얼마나 수업 시간에 골칫거리인지 들었다. 몸을 팔고 학교를 난장판으로 만드는 걸 좋아하는 것 같으니, 어디 나도 한 번 해보자."
 	<br><br>
-	<<HePost "은">> 당신에게 달려들어...
+	<<HePost "이">> 당신에게 달려든다.
 	<br><br>
 	<<link [[다음|Janitor Closet Rape]]>><<set $molestationstart to 1>><</link>>
-<<elseif $famesex gte 1000>>
+<<elseif $fame.sex gte 1000>>
 	<span class="red"><<HePost "은">> 당신의 머리카락을 붙잡고는 근처에 있는 관리인실로 끌고 간다.</span> "내 친구들한테서 네 사진들을 봤다. 걸레처럼 굴면서 학교를 난장판으로 만드는 걸 좋아하는 것 같으니, 그 엉덩이로 값을 치뤄줘야겠어."
 	<br><br>
-	<<HePost "은">> 당신에게 달려들어...
+	<<HePost "이">> 당신에게 달려든다.
 	<br><br>
 	<<link [[다음|Janitor Closet Rape]]>><<set $molestationstart to 1>><</link>>
 <<else>>
@@ -205,7 +205,7 @@
 	<<case 1>>
 		<span class="red"><<HePost "은">> 당신의 팔을 붙잡아 근처에 있는 관리인실로 끌고 간다.</span> "몸을 팔고 학교를 난장판으로 만드는 걸 좋아하는 것 같으니, 어디 나도 한 번 해보자."
 		<br><br>
-		<<HePost "은">> 당신에게 달려들어...
+		<<HePost "이">> 당신에게 달려든다.
 		<br><br>
 		<<link [[다음|Janitor Closet Rape]]>><<set $molestationstart to 1>><</link>>
 	<<default>>
@@ -228,6 +228,9 @@
 	<<neutral 1>>
 	<<molested>>
 	<<maninit>>
+	<<if $pillory_tenant.special.name isnot "Whitney" and $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte random(10, 25)>>
+		<<enable_rescue>>
+	<</if>>
 <</if>>
 <<effects>>
 <<effectsman>><<man>>
@@ -237,6 +240,8 @@
 <<if $enemyhealth lte 0>>
 	<span id="next"><<link [[다음|Janitor Closet Rape Finish]]>><</link>></span><<nexttext>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음|Janitor Closet Rape Finish]]>><</link>></span><<nexttext>>
+<<elseif $rescue is 1 and $alarm is 1>>
 	<span id="next"><<link [[다음|Janitor Closet Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Janitor Closet Rape]]>><</link>></span><<nexttext>>
@@ -250,8 +255,8 @@
 	"누구한테 가서 징징짤 생각하지마." <<person1>><<personPost "이">> 말한다.
 	<<if $delinquency gte 600>>
 		"너 같은 <span class="red">비행청소년</span>의 말을 믿을 사람은 없으니까."
-	<<elseif $famesex gte 1500>>
-		"너 같은 <span class="red">창녀</span>의 말을 믿을 사람은 없으니까."
+	<<elseif $fame.sex gte 1500>>
+		"너 같은 <span class="red"><<whorePost>></span>의 말을 믿을 사람은 없으니까."
 	<<else>>
 		"네 말을 믿을 사람은 없으니까."
 	<</if>>
@@ -260,10 +265,24 @@
 	<<clotheson>>
 	<<endcombat>>
 	<<link [[다음|Hallways]]>><</link>>
-<<else>>
+<<elseif $enemyhealth lte 0>>
 	<<person1>><<HePost "은">> 고통에 몸을 움찔거리다가, <span class="green">대걸레 양동이와 빗자루가 쌓인 곳으로 넘어진다.</span> <<tearful>> 당신은 기회를 놓치지 않고, 문을 쾅 닫고는 도망친다.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
 	<<link [[다음|Hallways]]>><</link>>
+<<else>>
+	<<set $rescued += 1>>
+	The door flies open. The <<persons>> eyes widen in panic. "Shit! I-I can explain!" <<His>> shock subsides, however, when <<he>> sees Whitney stood in the doorway, flanked by <<nnpc_his "Whitney">> friends. "That's a relief. Just some brats."
+	<br><br>
+
+	Whitney responds with a swing at <<his>> face, knocking <<him>> into a shelf. <<nnpc_He "Whitney">> grabs you before the janitor can recover. You're dragged through the halls until <<nnpc_he "Whitney">> finally comes to a stop, panting.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Whitney>><<person1>>
+
+	<<link [[다음|Whitney Rescue 2]]>><<set $whitneyRescueExit to "hallways">><</link>>
+	<br>
 <</if>>

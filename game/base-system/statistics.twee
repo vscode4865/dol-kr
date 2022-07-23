@@ -22,23 +22,31 @@ __순결__
 <br><br>
 __빼앗은 순결__
 <br>
+<!-- For the total virginities taken, iterate over every virginity type and sum up the number of entries belonging to each. -->
 <<set _total to 0>>
-<<for _slot, _list range $virginTaken>>
-	<<set _total += _list.length>>
-<</for>>
+<<run Object.values($virginTaken).forEach(type => _total += type.length)>>
 총 갯수: _total
 <br>
-보지 순결: $virginTaken.vaginal.length<<print ($virginTaken.vaginal.length gte 1 ? ", 포함된 자: " + $virginTaken.vaginal.join(', ') : "")>>
+
+<!-- For each individual virginity type, the number is named and unnamed combined, but the list of names has unnamed npcs filtered out. -->
+<<set _vaginalNamed to $virginTaken.vaginal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+<<set _penileNamed to $virginTaken.penile.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+<<set _analNamed to $virginTaken.anal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+<<set _oralNamed to $virginTaken.oral.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+<<set _handholdingNamed to $virginTaken.handholding.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+<<set _kissNamed to $virginTaken.kiss.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+
+보지 순결: $virginTaken.vaginal.length<<trNPCVirginity _vaginalNamed>><<print (_vaginalNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br>
-자지 동정: $virginTaken.penile.length<<print ($virginTaken.penile.length gte 1 ? ", 포함된 자: " + $virginTaken.penile.join(', ') : "")>>
+자지 동정: $virginTaken.penile.length<<trNPCVirginity _penileNamed>><<print (_penileNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br>
-항문 처녀: $virginTaken.anal.length<<print ($virginTaken.anal.length gte 1 ? ", 포함된 자: " + $virginTaken.anal.join(', ') : "")>>
+항문 처녀: $virginTaken.anal.length<<trNPCVirginity _analNamed>><<print (_analNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br>
-입 처녀: $virginTaken.oral.length<<print ($virginTaken.oral.length gte 1 ? ", 포함된 자: " + $virginTaken.oral.join(', ') : "")>>
+입 처녀: $virginTaken.oral.length<<trNPCVirginity _oralNamed>><<print (_oralNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br>
-손 순결: $virginTaken.handholding.length<<print ($virginTaken.handholding.length gte 1 ? ", 포함된 자: " + $virginTaken.handholding.join(', ') : "")>>
+손 순결: $virginTaken.handholding.length<<trNPCVirginity _handholdingNamed>><<print (_handholdingNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br>
-첫 키스: $virginTaken.kiss.length<<print ($virginTaken.kiss.length gte 1 ? ", 포함된 자: " + $virginTaken.kiss.join(', ') : "")>>
+첫 키스: $virginTaken.kiss.length<<trNPCVirginity _kissNamed>><<print (_kissNamed.length gte 1 ? ", 포함된 자: " + _trResult : "")>>
 <br><br>
 
 __직업__
@@ -167,6 +175,18 @@ __섹스__
 	개와 혹으로 연결된 횟수: $knot_stat회
 	<br>
 <</if>>
+<<if $sextoystat isnot undefined>>
+	다른 이에게 섹스 장난감을 사용한 횟수: $sextoystat회
+<</if>>
+<br>
+<<if $analdoubledisable is "f" and $analdoublestat isnot undefined>>
+	항문에 동시삽입한 횟수: $analdoublestat회
+	<br>
+<</if>>
+<<if $vaginaldoubledisable is "f" and $vaginaldoublestat isnot undefined>>
+	보지에 동시삽입한 횟수: $vaginaldoublestat회
+	<br>
+<</if>>
 <br>
 
 <<if $gamemode isnot "soft">>
@@ -270,7 +290,7 @@ __데이트__
 		<br>
 		총 늑대 아이들 수: <<print $pregnancyStats.wolfChildren>>마리
 		<br>
-		사후임신약 먹은 횟수: <<print $pregnancyStats.afterMorningPills>>번
+		사후임신약 먹은 횟수: <<print $pregnancyStats.aftermorningpills>>회
 		<br>
 	<</if>>
 	<<if $player.vaginaExist or $pregnancyStats.pregnancyTestsTaken gt 0>>
@@ -319,6 +339,9 @@ __기타__
 <br>
 최면에 걸린 횟수: $hypnotised번
 <br>
+<<if $wraith and $wraith.possessCount>>
+	유령에게 지배당한 횟수: $wraith.possessCount번
+<</if>>
 
 <br><br>
 __게임 세이브 상세__
@@ -336,7 +359,7 @@ __게임 세이브 상세__
 	<br>
 	<<for _i to 0; _i lt $saveVersions.length; _i++>>
 		<<if _i gt 0>>
-			<<if V.saveVersions[_i].split(".")[2] is V.saveVersions[_i - 1].split(".")[2]>>
+			<<if $saveVersions[_i].split(".")[2] is $saveVersions[_i - 1].split(".")[2]>>
 				--
 			<<else>>
 				<br>
@@ -360,7 +383,7 @@ __게임 세이브 상세__
 <div id="spoilerWarning">
 	정말로 확인하시겠습니까? 스포일러가 포함되어 있을 수도 있어요!
 	<br>
-	<<link 네>>
+	<<link "네">>
 		<<overlayReplace "extraStatistics">>
 	<</link>>
 	&nbsp;&nbsp;&nbsp;<<checkbox "$skipStatisticsConfirmation" false true autocheck>> 이 확인창을 다시 보여주지 마세요
@@ -498,27 +521,34 @@ __게임 세이브 상세__
 		부두 평판: <<print Math.trunc($dockstatus)>>
 		<br>
 	<</if>>
-	섹스 명성: <<print Math.trunc($famesex)>>
+	섹스 명성: <<print Math.trunc($fame.sex)>>
 	<br>
-	매춘 명성: <<print Math.trunc($fameprostitution)>>
+	매춘 명성: <<print Math.trunc($fame.prostitution)>>
 	<br>
-	강간 명성: <<print Math.trunc($famerape)>>
+	강간 명성: <<print Math.trunc($fame.rape)>>
 	<br>
-	수간 명성: <<print Math.trunc($famebestiality)>>
+	수간 명성: <<print Math.trunc($fame.bestiality)>>
 	<br>
-	노출 명성: <<print Math.trunc($fameexhibitionism)>>
+	노출 명성: <<print Math.trunc($fame.exhibitionism)>>
 	<br>
-	전투 명성: <<print Math.trunc($famescrap)>>
+	<<if $pregnancyTesting>> <!-- ToDo: pregnancy, remove to properly enable -->
+		임신 명성: <<print Math.trunc($fame.pregnancy)>>
+		<br>
+	<</if>>
+	전투 명성: <<print Math.trunc($fame.scrap)>>
 	<br>
-	친절 명성: <<print Math.trunc($famegood)>>
+	친절 명성: <<print Math.trunc($fame.good)>>
 	<br>
-	비즈니스 명성: <<print Math.trunc($famebusiness)>>
+	비즈니스 명성: <<print Math.trunc($fame.business)>>
 	<br>
-	사교 명성: <<print Math.trunc($famesocial)>>
+	<<if $dev is 1>>
+		포주 명성: <<print Math.trunc($fame.pimp)>>
+		<br>
+	<</if>>
+	사교 명성: <<print Math.trunc($fame.social)>>
 	<br>
-	모델 명성: <<print Math.trunc($famemodel)>>
-	<br>
-	<br>
+	모델 명성: <<print Math.trunc($fame.model)>>
+	<br><br>
 
 
 	__변신__
@@ -548,11 +578,24 @@ __게임 세이브 상세__
 	악마 징후: <<print Math.trunc($demon)>>
 	<br>
 	타천사 징후:
-	<<if $fallenangel is undefined>>
-		0
-	<<else>>
-		<<print Math.trunc($fallenangel)>>
-	<</if>>
+	<<print ($fallenangel is undefined ? 0 : Math.trunc($fallenangel))>>
 	<br>
+	<br>
+	
+	
+	__항문 임신__
+	<br>
+	<<set _pregnancy to $sexStats.anus.pregnancy>>
+	<<for _i to 0; _i lt _pregnancy.maxCount; _i++>>
+	<<if _pregnancy[_i] isnot null>>
+	<<if _pregnancy[_i].fertilised>>
+	항문 슬롯 <<=_i+1>>에는 <<putpost _pregnancy[_i].stats.gender>> <<trCreature "all" _pregnancy[_i].creature "이">> 임신되어 있고, <<=_pregnancy[_i].daysLeft + 1>>일 후에 출산될 것이다.<br>
+	<<else>>
+	항문 슬롯 <<=_i+1>>에는 <<putpost _pregnancy[_i].stats.gender>> <<trCreature "all" _pregnancy[_i].creature "의">> 알이 있으며 수정이 가능하다.<br>
+	<</if>>
+	<<else>>
+	항문 슬롯 <<=_i+1>>에는 현재 아무것도 없다.<br>
+	<</if>>
+	<</for>>
 </div>
 <</widget>>

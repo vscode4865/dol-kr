@@ -1,6 +1,7 @@
 :: custom home cliff [nobr]
 <<customlocation "cliff">>
 <<init_customHome>>
+<<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>>
 당신은 복도에 있다.<br>
 <br>
 집에서 따스한 온기가 느껴진다.
@@ -8,8 +9,8 @@
 <<link [[표지판|notice board]]>><</link>><br><br>
 <<link [[뒷뜰 (0:01)|custom home cliff garden]]>><<pass 1>><</link>>
 <br><br>
-<<link [[욕실 (0:01)|custom home cliff bathroom]]>><<pass 1>><</link>><br>
-<<link [[방 (0:01)|custom home cliff bedroom]]>><<pass 1>><</link>><br>
+<<bathroomicon>><<link [[욕실 (0:01)|custom home cliff bathroom]]>><<pass 1>><</link>><br>
+<<bedroomicon>><<link [[방 (0:01)|custom home cliff bedroom]]>><<pass 1>><</link>><br>
 <<link [[거실 (0:01)|custom home cliff living room]]>><<pass 1>><</link>><br>
 <br>
 <<link [[집에서 나간다 (0:01)|Cliff Street]]>><<set $outside to 1>><<pass 1>><<customlocation>><</link>><br>
@@ -32,7 +33,7 @@
 
 
 :: custom home cliff garden [nobr]
-<<effects>>
+<<set $outside to 1>><<set $location to "home">><<home_effects>><<effects>>
 <<plot_effects>>
 <<if $custom.home.cliff.flowers_intro is 1>>
 	<<set $custom.home.cliff.flowers_intro to 0>>
@@ -50,7 +51,7 @@
 <<set $outside to 0>><<set $location to "home">><<effects>>
 당신은 욕실에 있다.
 <br><br>
-<<if $stress gte 10000>>
+<<if $stress gte $stressmax>>
 	<<custompassout "cliff">>
 <<else>>
 	<<link [[목욕한다 (0:30)|custom home cliff bath]]>><<strip>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
@@ -64,9 +65,9 @@
 
 	복도는 집 전체와 연결되어 있다.
 	<br>
-	<<link [[방 (0:01)|custom home cliff bedroom]]>><<pass 1>><</link>>
+	<<bedroomicon>><<link [[방 (0:01)|custom home cliff bedroom]]>><<pass 1>><</link>>
 	<br>
-	<<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
+	<<main_hall_icon>><<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
 	<br>
 	<<link [[집에서 나간다 (0:01)|Cliff Street]]>><<set $outside to 1>><<pass 1>><<customlocation>><</link>>
 	<br>
@@ -75,48 +76,74 @@
 
 :: custom home cliff bedroom [nobr]
 <<bedclotheson "bed">>
-<<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>>
+<<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>>/* 아직 wraith 에 대응하지 않음 <<getTarget true>> */
 <<if $unbind is 1>>
 	<<unset $unbind>>
-	당신은 구속구를 책상에다가 대고 문댄다. 노력이 좀 필요하긴 했으나, 결국에는 부서지며 팔이 자유로와졌다.
+	<<if $possessed>>
+		당신은 구속구를 내려다본다. 당신이 잡아당기자, 그것은 당신을 묶어두지 못하고, 부서진다. <<unbind>>
+		<br><br>
+	<<else>>
+		당신은 구속구를 책상에다가 대고 문댄다. 노력이 좀 필요하긴 했으나, 결국에는 부서지며 팔이 자유로와졌다.
+		<br><br>
+	<</if>>
+<</if>>
+<<if $study is 1>>
+	<<unset $study>>
+	<<if $phase is 1>><<scienceskill>>
+		당신은 당신의 침대에 앉아 과학 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 2>><<mathsskill>>
+		당신은 당신의 침대에 앉아 수학 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 3>><<englishskill>>
+		당신은 당신의 침대에 앉아 영어 교과서를 펴고 한번 주욱 읽는다.
+	<<elseif $phase is 4>><<historyskill>>
+		당신은 당신의 침대에 앉아 역사 교과서를 펴고 한번 주욱 읽는다.
+	<</if>>
+	<<endevent>>
 	<br><br>
 <</if>>
-<<if $stress gte 10000>>
+/* 아직 wraith 에 대응하지 않음 
+<<if $nextPassageCheck is "Bedroom">>
+	<span class="nextLink"><<link [[달을 봐라.|Bedroom]]>><</link>></span>
+	<br>
+<</if>>
+*/
+<<if $stress gte $stressmax and !$possessed>>
 	<<custompassout "cliff">>
 <<else>>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
-		<<link [[구속구를 푼다 (0:10)|$passage]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+		<<link [[구속구를 푼다 (0:10)|custom home cliff bedroom]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
 		<br><br>
 	<</if>>
 	<<projectoptions>>
-
+	<<homeStudyOptions>>
+	<br>
 	부드러운 침대가 반기고 있다.
 	<br>
 	<<if $slimeEvent is undefined>>
-		<<link [[다 벗고 침대에 들어간다|custom home cliff bed]]>><<undress "bed">><</link>>
+		<<bedicon>><<link [[다 벗고 침대에 들어간다|custom home cliff bed]]>><<undress "bed">><</link>>
 		<br>
 		<<customlistsleepoutfits>>
 	<<else>>
 		<span class="red">머릿속의 슬라임이 잠을 자라고 허락해주기 전에 <<trSlimeEvent>> 명령을 내린다.</span>
 	<</if>>
 	<br><br>
+	<<roomoptions>>
+	<br>
 	옷은 한쪽 구석에 놓여있다.
 	<br>
-	[[옷장|custom home cliff wardrobe]]
+	<<wardrobeicon>>[[옷장|custom home cliff wardrobe]]
 	<br>
-	[[거울|custom home cliff mirror]]
-	<br>
-	<<link [[약 컬렉션|customPillCollection]]>><</link>>
+	<<homemirroricon>>[[거울|custom home cliff mirror]]
 	<br><br>
 
 	복도는 집 전체와 연결되어 있다.
 	<br>
-	<<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
+	<<main_hall_icon>><<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
 	<br>
-	<<link [[집에서 나간다 (0:01)|Cliff Street]]>><<set $outside to 1>><<pass 1>><<customlocation>><</link>>
+	<<ind>><<link [[집에서 나간다 (0:01)|Cliff Street]]>><<set $outside to 1>><<pass 1>><<customlocation>><</link>>
 	<br><br>
 
-	<<link [[???|custom pervertpoint]]>><<set $settingsExitPassage to passage()>><</link>>
+	<<ind>><<link [[???|custom pervertpoint]]>><<set $settingsExitPassage to passage()>><</link>>
 	<br><br>
 	<<link [[설정|Settings]]>><<set $settingsExitPassage to $passage>><</link>>
 	<br>
@@ -135,7 +162,7 @@
 미완성
 <br><br>
 
-<<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
+<<main_hall_icon>><<link [[복도 (0:01)|custom home cliff]]>><<pass 1>><</link>>
 
 
 

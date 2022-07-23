@@ -26,6 +26,11 @@
 	<span class="gold">최근에 상점에서 훔친 옷을 옷장에 넣었다.</span>
 	<br>
 <</if>>
+<<if $adultShop isnot undefined and $adultShop.stolenClothes gt 0>>
+	<<set $adultShop.stolenClothes to 0>>
+	<span class="gold">최근에 성인용품점에서 훔친 옷을 옷장에 넣었다.</span>
+	<br>
+<</if>>
 <<if $wear is "strip">>
 	입고 있던 옷을 벗는다.
 	<br><br>
@@ -35,10 +40,10 @@
 <<if $randomWear>>
 	<<randomWear>>
 <</if>>
-<<set _equip to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"]>>
+<<set _equip to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "over_head", "head", "face", "neck", "hands", "legs", "feet","genitals"]>>
 <<set _slimePrevent to ["upper", "lower", "under_upper", "under_lower"]>>
 <<set _towelCheck to ["upper", "lower"]>>
-<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
+<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false, "genitals":false}>>
 <<for _ie to 0; _ie lt _equip.length;_ie++>>
 	<<unset _outfitPieceIds>>
 	<<if _equipSkip[_equip[_ie]] is true>>
@@ -72,6 +77,8 @@
 		<<set _wearId to $wear_legs>>
 	<<case "feet">>
 		<<set _wearId to $wear_feet>>
+	<<case "genitals">>
+		<<set _wearId to $wear_genitals>>
 	<</switch>>
 	<<if _wearId is undefined>>
 		<<continue>>
@@ -142,7 +149,7 @@
 	<</if>>
 	/*Prevent equip when the ear slime doesn't allow it*/
 	<<if _wearId gte 0 and _slimePrevent.includes(_equip[_ie]) and $corruption_slime gte 80 and $wardrobeOption is "wear">>
-		<<if $willpower lt 800 and _item.reveal lt 500 and !_item.type.includesAny("school", "event")>>
+		<<if currentSkillValue('willpower') lt 800 and _item.reveal lt 500 and !_item.type.includesAny("school", "event")>>
 			<span class="red">귓속의 슬라임이 허가하지 않아 <<trClothes _equip[_ie] _item.name "name" "을">>_trResult 입지 못했다.</span>
 			<br>
 			<<continue>>
@@ -301,6 +308,7 @@
 <<set $wear_hands to "none">>
 <<set $wear_legs to "none">>
 <<set $wear_feet to "none">>
+<<set $wear_genitals to "none">>
 <<set $wear_outfit to "none">>
 <<exposure>>
 <</widget>>
@@ -342,7 +350,7 @@
 	<</link>>
 </div> |
 <div class="wardrobe-action">
-	<<link 설정>><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
+	<<link "설정">><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
 </div> |
 <div id="randomClothingConfigure" class="hidden">
 	<<if $randomEquipConfigure is undefined>>
@@ -438,9 +446,9 @@ __옷__
 
 <<widget "wardrobeLinks">>
 <<set _wardrobeLinks=[
-	{ id: 'over_head', label: '머리 위', disabled: !$debug },
-	{ id: 'over_upper', label: '상의 위', disabled: !$debug },
-	{ id: 'over_lower', label: '하의 위', disabled: !$debug },
+	{ id: 'over_head', label: '외투 머리', disabled: !$debug },
+	{ id: 'over_upper', label: '외투 상의', disabled: !$debug },
+	{ id: 'over_lower', label: '외투 하의', disabled: !$debug },
 	{ id: 'head', label: '머리' },
 	{ id: 'face', label: '얼굴' },
 	{ id: 'neck', label: '목' },
@@ -519,28 +527,46 @@ __옷__
 	</label>
 	<br>
 <</if>>
+<<if $savedHairStyles>>
+	<div>
+		<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+		머리모양:
+		<<listbox '_hairStyle' autoselect>>
+			<<option "설정 않음" undefined>>
+			<<optionsfrom _savedHairStylesKeys>>
+		<</listbox>>
+		<mouse class="tooltip linkBlue">(?)<span>'설정 않음'으로 하면 현재 머리모양을 바꾸지 않습니다.</span></mouse>
+	</div>
+<<else>>
+	<div>
+		머리모양: 저장된 설정이 없습니다 (거울을 확인하세요)
+	</div>
+<</if>>
+<br>
 <div class="wardrobe-action">
 	<<link "새로운 세트에 현재 입은 옷 추가">>
 		<<script>>
 			V.outfit_name = document.getElementById("outfitName").value.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"");
 		<</script>>
-		<<set $outfit.push(
-			{index: $outfit.length,
-			name: $outfit_name,
-			over_upper: clone($worn.over_upper.name),
-			over_lower: clone($worn.over_lower.name),
-			upper: clone($worn.upper.name),
-			lower: clone($worn.lower.name),
-			under_upper: clone($worn.under_upper.name),
-			under_lower: clone($worn.under_lower.name),
-			over_head: clone($worn.over_head.name),
-			head: clone($worn.head.name),
-			face: clone($worn.face.name),
-			neck: clone($worn.neck.name),
-			hands: clone($worn.hands.name),
-			legs: clone($worn.legs.name),
-			feet: clone($worn.feet.name),
-			type: ["normal"]
+		<<set $outfit.push({
+				index: $outfit.length,
+				name: $outfit_name,
+				over_upper: clone($worn.over_upper.name),
+				over_lower: clone($worn.over_lower.name),
+				upper: clone($worn.upper.name),
+				lower: clone($worn.lower.name),
+				under_upper: clone($worn.under_upper.name),
+				under_lower: clone($worn.under_lower.name),
+				over_head: clone($worn.over_head.name),
+				head: clone($worn.head.name),
+				face: clone($worn.face.name),
+				neck: clone($worn.neck.name),
+				hands: clone($worn.hands.name),
+				legs: clone($worn.legs.name),
+				feet: clone($worn.feet.name),
+				genitals: clone($worn.genitals.name),
+				type: ["normal"],
+				colors: false
 			},
 		)>>
 
@@ -566,13 +592,16 @@ __옷__
 		<<if _saveLocation>>
 			<<set $outfit.last().location to $wardrobe_location>>
 		<</if>>
+		<<if _hairStyle>>
+			<<set $outfit.last().hairStyle to _hairStyle>>
+		<</if>>
 		<<updatewardrobe "outfits">>
 	<</link>>
 </div>
 <</widget>>
 
 <<widget "wardrobeintegrity">>
-<<set _war_int to $args[0]>>
+<<set _war_int to _args[0]>>
 <<if _selectedWardrobe[_war_int][_i].integrity gt ((clothingData(_war_int,_selectedWardrobe[_war_int][_i],'integrity_max') / 10) * 9)>>
 <<elseif _selectedWardrobe[_war_int][_i].integrity gt ((clothingData(_war_int,_selectedWardrobe[_war_int][_i],'integrity_max') / 10) * 5)>>
 (해어짐)
@@ -585,7 +614,7 @@ __옷__
 
 <<widget "wardrobeList">>
 <<wardrobeClothingOptions>>
-<<set _wardrobe_list to $args[0]>>
+<<set _wardrobe_list to _args[0]>>
 <<set _errorPrevent to false>>
 <<switch _wardrobe_list>>
 	<<case "over_head">><<set _wear to "wear_over_head">>
@@ -601,14 +630,15 @@ __옷__
 	<<case "hands">><<set _wear to "wear_hands">>
 	<<case "legs">><<set _wear to "wear_legs">>
 	<<case "feet">><<set _wear to "wear_feet">>
+	<<case "genitals">><<set _wear to "wear_genitals">>
 	<<default>><<set _errorPrevent to true>>
 <</switch>>
 <<set _outfitTypes to ["upper","lower","under_upper","under_lower"]>>
 <<set _loweroutfitCheck to ["lower","under_lower"]>>
 <<if _errorPrevent isnot true>>
 	__<<print "<<trClothesType _wardrobe_list>>_trResult">>__ <i>_selectedWardrobe[_wardrobe_list].length / _selectedWardrobe.space</i>
-	<<if _wardrobe_list is "upper">>(한벌옷은 하의 슬롯의 공간까지 차지합니다)<</if>>
-	<<if _wardrobe_list is "under_upper">>(한벌옷은 속옷 하의 슬롯의 공간까지 차지합니다)<</if>>
+	<<if _wardrobe_list is "upper">>(원피스는 하의 슬롯의 공간까지 차지합니다)<</if>>
+	<<if _wardrobe_list is "under_upper">>(원피스는 속옷 하의 슬롯의 공간까지 차지합니다)<</if>>
 	<br>
 	정렬:
 	/*Undefined error for unknown reason*/
@@ -648,7 +678,7 @@ __옷__
 				<</if>>
 			<</for>>
 			<<if _broken is 0>>
-					<span class="gold">(한벌옷)</span>
+					<span class="gold">(원피스)</span>
 			<<elseif _broken lt _keys.length>>
 					<span class="red">(일부 파손)</span>
 			<<else>>
@@ -659,7 +689,7 @@ __옷__
 			<<if _wornItem.outfitSecondary[1] is "broken">>
 				<span class="red">(망가짐)</span>
 			<<else>>
-				<span class="gold">(한벌옷)</span>
+				<span class="gold">(원피스)</span>
 			<</if>>
 		<</if>>
 		<<if _wornItem.integrity gt ((clothingData(_wardrobe_list,_wornItem,'integrity_max') / 10) * 9)>>
@@ -677,7 +707,7 @@ __옷__
 			<<reveal _wornItem.reveal>> <<trClothes _wardrobe_list _wornItem.name>>_trResult.
 
 			<<if _wornItem.gender is "m">><span class="lblue">남성용 ♂.</span><<elseif _wornItem.gender is "f">><span class="pink">여성용 ♀.</span><</if>>
-			<<trClothes _wardrobe_list _wornItemData.description "desc">>_trResult
+			<<trClothes _wardrobe_list _wornItemData.name "desc">>_trResult
 			<br>
 			<<warmth _wornItem.warmth>>
 			<br><br>
@@ -758,7 +788,7 @@ __옷__
 				<</if>>
 			<</for>>
 			<<if _broken is 0>>
-				<span class="gold">(한벌옷)</span>
+				<span class="gold">(원피스)</span>
 			<<elseif _broken lt _keys.length>>
 				<span class="red">(일부 파손)</span>
 			<<else>>
@@ -781,14 +811,14 @@ __옷__
 <</widget>>
 
 <<widget "wearlink_norefresh">>
-	<<capture $args[1] $args[2]>>
-		<<link $args[0]>>
-			<<if $args[2]>>
-				<<set V[$args[2]] = $args[1]>>
+	<<capture _args[1] _args[2]>>
+		<<link _args[0]>>
+			<<if _args[2]>>
+				<<set V[_args[2]] = _args[1]>>
 			<<else>>
-				<<set V[_wear] = $args[1]>>
+				<<set V[_wear] = _args[1]>>
 			<</if>>
-			<<updatewardrobe undefined $args[2]>>
+			<<updatewardrobe undefined _args[2]>>
 		<</link>>
 	<</capture>>
 <</widget>>
@@ -806,14 +836,14 @@ __옷__
 	<<updateallure>>
 	<<updatewarmthscale>>
 	<<updatewarmthdescription>>
-	<<if $args[0] == "outfits">>
+	<<if _args[0] == "outfits">>
 		<<replace "#listoutfits">><<listoutfits>><</replace>>
 	<</if>>
 	<<replace '#clotheson'>><<clotheson>><</replace>>
 	<<if $('#wardrobeList')[0]>><<replace '#wardrobeList'>><<wardrobeContents>><</replace>><</if>>
 	<<if $('#oldWardrobeListDisplay')[0]>>
-		<<if $args[1]>>
-			<<set $_slot to $args[1].slice(5)>>
+		<<if _args[1]>>
+			<<set $_slot to _args[1].slice(5)>>
 			<<switch $_slot>>
 				<<case "upper">>
 					<<replace '#clothingBox-upper'>>
@@ -897,8 +927,8 @@ __옷__
 <</widget>>
 
 <<widget "oldWardrobeList">>
-<<set _wardrobe_list to $args[0]>>
-<<set _showType to $args[1]>>
+<<set _wardrobe_list to _args[0]>>
+<<set _showType to _args[1]>>
 <<switch _wardrobe_list>>
 	<<case "over_head">><<set _wear to "wear_over_head">>
 	<<case "head">><<set _wear to "wear_head">>
@@ -913,10 +943,11 @@ __옷__
 	<<case "hands">><<set _wear to "wear_hands">>
 	<<case "legs">><<set _wear to "wear_legs">>
 	<<case "feet">><<set _wear to "wear_feet">>
+	<<case "feet">><<set _wear to "wear_genitals">>
 <</switch>>
 
 <div class="clothingBox">
-__<<trClothesType _wardrobe_list>><<print _trResult + (_showType is "outfits" ? " 한벌옷" : "")>>__ <i>_selectedWardrobe[_wardrobe_list].length / _selectedWardrobe.space</i>
+__<<trClothesType _wardrobe_list>><<print _trResult + (_showType is "outfits" ? " 원피스" : "")>>__ <i>_selectedWardrobe[_wardrobe_list].length / _selectedWardrobe.space</i>
 <br><br>
 <div>
 <ul>
@@ -952,10 +983,10 @@ __<<trClothesType _wardrobe_list>><<print _trResult + (_showType is "outfits" ? 
 <</widget>>
 
 <<widget "wardrobeListReorder">>
-<<if $args[0] and $args[1]>>
-	<<set _slot to $args[0]>>
-	<<set _orderType to $args[1]>>
-	<<set _descending to $args[2]>>
+<<if _args[0] and _args[1]>>
+	<<set _slot to _args[0]>>
+	<<set _orderType to _args[1]>>
+	<<set _descending to _args[2]>>
 
 	<<set _wardrobeItems to clone(_selectedWardrobe[_slot])>>
 	<<set _newWardrobeItems to []>>
@@ -1227,7 +1258,7 @@ $warmth 따뜻함 | $chill 추움
 <<elseif $multipleWardrobes is "isolated" and !$wardrobes[$wardrobe_location].isolated>>
 	<<set $wardrobe_location to "wardrobe">>
 <</if>>
-<<if $debug and $multipleWardrobes and !$args[0]>>
+<<if $debug and $multipleWardrobes and !_args[0]>>
 	<div class="no-numberify">디버그:
 		<<for _label, _value range $wardrobes>>
 			<<if _value.unlocked is undefined>>
@@ -1250,7 +1281,7 @@ $warmth 따뜻함 | $chill 추움
 			<<link [[옷장을 닫는다|Bedroom]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
 		<<case "Changing Room">>
 			<<if $exposed lte 1>>
-				<<link[[나간다|Beach]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
+				<<link [[나간다|Beach]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
 				<br><br>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
@@ -1258,7 +1289,7 @@ $warmth 따뜻함 | $chill 추움
 			<</if>>
 		<<case "Sydney Beach Changing Room">>
 			<<if $exposed lte 1>>
-				<<link[[나간다|Sydney Beach Swimsuit]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
+				<<link [[나간다|Sydney Beach Swimsuit]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
 				<br><br>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
@@ -1266,7 +1297,7 @@ $warmth 따뜻함 | $chill 추움
 			<</if>>
 		<<case "Sydney Beach Changing Room Leave">>
 			<<if $exposed lte 1>>
-				<<link[[나간다|Sydney Beach Leave]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
+				<<link [[나간다|Sydney Beach Leave]]>><<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><</link>>
 				<br><br>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
@@ -1438,7 +1469,7 @@ $warmth 따뜻함 | $chill 추움
 	<</switch>>
 <</widget>>
 
-:: Wardrobe
+:: Wardrobe [exitCheckBypass]
 <<effects>>
 <<set $wardrobe_location to "wardrobe">>
 <<wardrobeSelection>>
@@ -1449,7 +1480,7 @@ $warmth 따뜻함 | $chill 추움
 <br><br>
 <<wardrobe>>
 
-:: Changing Room
+:: Changing Room [exitCheckBypass]
 <<effects>><<location "changingroom">>
 <<set $wardrobe_location to "changingRoom">>
 <<wardrobeSelection>>
@@ -1459,7 +1490,7 @@ $warmth 따뜻함 | $chill 추움
 <div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
-:: Eden Wardrobe
+:: Eden Wardrobe [exitCheckBypass]
 <<effects>>
 당신은 입던 옷이 들어있는 찬장을 들여다본다. 사생활을 위한 낡은 탈의용 가림막이 있다.
 <br><br>
@@ -1469,7 +1500,7 @@ $warmth 따뜻함 | $chill 추움
 <div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
-:: Asylum Wardrobe
+:: Asylum Wardrobe [exitCheckBypass]
 
 <<effects>>
 당신은 입던 옷이 들어있는 찬장을 들여다본다.
@@ -1481,7 +1512,7 @@ $warmth 따뜻함 | $chill 추움
 
 <<wardrobe>>
 
-:: Farm Wardrobe
+:: Farm Wardrobe [exitCheckBypass]
 <<effects>>
 당신은 소박한 옷장을 들여다본다.
 <br><br>
@@ -1493,7 +1524,7 @@ $warmth 따뜻함 | $chill 추움
 <<wardrobe>>
 
 
-:: Strip Club Wardrobe
+:: Strip Club Wardrobe [exitCheckBypass]
 <<effects>>
 <<set $wardrobe_location to "stripClub">>
 <<wardrobeSelection>>
@@ -1502,7 +1533,7 @@ $warmth 따뜻함 | $chill 추움
 
 <<wardrobe>>
 
-:: Brothel Wardrobe
+:: Brothel Wardrobe [exitCheckBypass]
 <<effects>>
 <<set $wardrobe_location to "brothel">>
 <<wardrobeSelection>>
@@ -1512,7 +1543,7 @@ $warmth 따뜻함 | $chill 추움
 <<wardrobe>>
 
 
-:: School Boy Wardrobe
+:: School Boy Wardrobe [exitCheckBypass]
 
 <<effects>><<set $outside to 0>><<set $location to "pool">>
 <<set $wardrobe_location to "schoolBoys">>
@@ -1524,7 +1555,7 @@ $warmth 따뜻함 | $chill 추움
 
 <<wardrobe>>
 
-:: School Girl Wardrobe
+:: School Girl Wardrobe [exitCheckBypass]
 
 <<effects>><<set $outside to 0>><<set $location to "pool">>
 <<set $wardrobe_location to "schoolGirls">>

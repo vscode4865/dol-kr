@@ -28,17 +28,48 @@ DefineMacro("addfemininityfromfactor", addfemininityfromfactor);
 
 function addfemininityofclothingarticle(slot, clothing_article, no_overwear_check) {
 	if (setup.clothes[slot][clothesIndex(slot,clothing_article)].femininity) {
-		Wikifier.wikifyEval("<<trClothes "+slot+" \""+setup.clothes[slot][clothesIndex(slot,clothing_article)].name+"\" 'name'>>"); addfemininityfromfactor(setup.clothes[slot][clothesIndex(slot,clothing_article)].femininity, T.trResult, no_overwear_check);
+		Wikifier.wikifyEval("<<trClothes \""+slot+"\" \""+setup.clothes[slot][clothesIndex(slot,clothing_article)].name+"\" 'name'>>"); addfemininityfromfactor(setup.clothes[slot][clothesIndex(slot,clothing_article)].femininity, T.trResult, no_overwear_check);
 	}
 }
 DefineMacro("addfemininityofclothingarticle", addfemininityofclothingarticle);
+
+const hairStyleCap = {
+	hairtype:{
+		"flat ponytail":300,
+		"messy":200,
+		"pigtails":300,
+		"ponytail":300,
+		"short":100,
+	},
+	fringetype:{
+		"default":100,
+		"thin flaps":300,
+		"wide flaps":300,
+		"hime":300,
+		"loose":300,
+		"messy":200,
+		"overgrown":200,
+		"ringlets":300,
+		"split":300,
+		"straight":300,
+		"swept left":200,
+		"back":100,
+		"parted":100,
+		"flat":100,
+		"quiff":100,
+		"straight curl":200,
+		"ringlet curl":300,
+		"curtain":200,
+		"trident":200,
+	}
+}
 
 /** Calculate the player's gender appearance */
 function genderappearancecheck() {
 	/* Calculate bulge size */
 	T.penis_compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
 	if (V.worn.genitals.type.includes("cage")) {
-		T.bulge_size = Math.clamp(V.penissize, 0, Infinity);
+		T.bulge_size = Math.clamp(V.player.penissize, 0, Infinity);
 	} else {
 		if (!V.player.penisExist) {
 			T.erection_state = 0;
@@ -51,7 +82,7 @@ function genderappearancecheck() {
 		} else {
 			T.erection_state = 2;
 		}
-		T.bulge_size = Math.clamp(V.penissize * T.erection_state, 0, Infinity);
+		T.bulge_size = Math.clamp(V.player.penissize * T.erection_state, 0, Infinity);
 	}
 	/* Determine how visible the player's bottom is */
 	if ((setup.clothes.lower[clothesIndex('lower',V.worn.lower)].skirt === 1 && V.worn.lower.skirt_down === 1 && V.worn.lower.state === "waist") ||
@@ -74,14 +105,24 @@ function genderappearancecheck() {
 	addfemininityofclothingarticle('feet',V.worn.feet);
 	/* Hair length */
 	if ((V.worn.over_head.hood !== 1 && V.worn.head.hood !== 1) || V.hoodDown == 1) {
-		addfemininityfromfactor(Math.trunc((V.hairlength - 200) / 2), "머리 길이");
+		let lengthCap;
+		/* Set Hair Style cap */
+		if(hairStyleCap.hairtype[V.hairtype] && hairStyleCap.fringetype[V.fringetype]){
+			lengthCap = Math.max(hairStyleCap.hairtype[V.hairtype],hairStyleCap.fringetype[V.fringetype]);
+		}
+		let femininityfactor = Math.trunc((V.hairlength - 200) / 2);
+		if(lengthCap && femininityfactor >= lengthCap){
+			addfemininityfromfactor(lengthCap, "머리카락 길이 (머리 스타일 때문에 더 자라지 않음)");
+		} else {
+			addfemininityfromfactor(femininityfactor, "머리카락 길이");
+		}
 	}
 	/* Makeup */
 	addfemininityfromfactor(V.makeup.lipstick == 0 ? 0 : 50, "립스틱");
 	addfemininityfromfactor(V.makeup.eyeshadow == 0 ? 0 : 50, "아이섀도우");
 	addfemininityfromfactor(V.makeup.mascara == 0 ? 0 : 50, "마스카라");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
+	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "체형");
 	addfemininityfromfactor(Math.trunc((-1 * (V.physique + V.physiquesize / 2) / V.physiquesize) * 100), "탄탄한 근육");
@@ -107,7 +148,7 @@ function genderappearancecheck() {
 		addfemininityfromfactor(-Math.clamp((T.bulge_size - 3) * 100, 0, Infinity), "옷 너머로 발기한 것이 보임", "noow");
 	} else if (V.worn.genitals.exposed && V.NudeGenderDC == 1) {
 		if (V.player.penisExist) {
-			addfemininityfromfactor((-V.penissize-2.5) * 150, "노출된 자지", "noow");
+			addfemininityfromfactor((-V.player.penissize-2.5) * 150, "노출된 자지", "noow");
 		}
 		if (V.player.vaginaExist) {
 			addfemininityfromfactor(450, "노출된 보지", "noow");
@@ -116,7 +157,7 @@ function genderappearancecheck() {
 		addfemininityfromfactor(V.player.vaginaExist * 100000 - V.player.penisExist * 100000, "노출된 성기", "noow");
 	}
 	/* plain breasts factor */
-	addfemininityfromfactor((V.breastsize - 0.5) * 100, "노출된 가슴", "noow");
+	addfemininityfromfactor((V.player.breastsize - 0.5) * 100, "노출된 가슴", "noow");
 	/* Lower clothing, bulge, and genitals */
 	addfemininityofclothingarticle('over_lower',V.worn.over_lower);
 	if (!T.over_lower_protected) {
@@ -132,7 +173,7 @@ function genderappearancecheck() {
 				/* Bare genitals are visible */
 				if (V.NudeGenderDC == 1) {
 					if (V.player.penisExist) {
-						addfemininityfromfactor((-V.penissize-2.5) * 150, "자지가 보임");
+						addfemininityfromfactor((-V.player.penissize-2.5) * 150, "자지가 보임");
 					}
 					if (V.player.vaginaExist) {
 						addfemininityfromfactor(450, "보지가 보임");
@@ -173,17 +214,17 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.breastsize - 0.5) * 100, "노출된 가슴");
+			addfemininityfromfactor((V.player.breastsize - 0.5) * 100, "노출된 가슴");
 		} else if (!V.worn.under_upper.type.includes("chest_bind")) {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp(
-				(V.breastsize - 2) * 100, 0, Infinity
+				(V.player.breastsize - 2) * 100, 0, Infinity
 			), "속옷 너머로 가슴 크기 확인 가능");
 		}
 	} else if (!V.worn.under_upper.type.includes("chest_bind")) {
 		/* Breast fully covered */
 		addfemininityfromfactor(Math.clamp(
-			(V.breastsize - 4) * 100, 0, Infinity
+			(V.player.breastsize - 4) * 100, 0, Infinity
 		), "옷 너머로 가슴 크기 확인 가능");
 	}
 	/* Pregnant Belly */
@@ -224,12 +265,7 @@ function genderappearancecheck() {
 	} else if (T.apparent_femininity < 0) {
 		T.gender_appearance = "m";
 	} else if (V.player.gender == "h") { // if herm pc and perfect 0 apparent_femininity
-		if (["m", "f"].includes(V.player.gender_body)) // use natural features as a tie breaker if not androgynous
-			T.gender_appearance = V.player.gender_body;
-		else if (["m", "f"].includes(V.player.gender_posture)) // use gender posture as a tie breaker if not acting naturally
-			T.gender_appearance = V.player.gender_posture;
-		else
-			T.gender_appearance = "f"; // you've done it. you've broken me. default to "f".
+		T.gender_appearance = genderAppearanceHermTiebreak();
 	} else {
 		T.gender_appearance = V.player.gender;
 	}
@@ -238,19 +274,29 @@ function genderappearancecheck() {
 	} else if (T.apparent_femininity_noow < 0) {
 		T.gender_appearance_noow = "m";
 	} else if (V.player.gender == "h") {
-		if (["m", "f"].includes(V.player.gender_body))
-			T.gender_appearance_noow = V.player.gender_body;
-		else if (["m", "f"].includes(V.player.gender_posture))
-			T.gender_appearance_noow = V.player.gender_posture;
-		else
-			T.gender_appearance_noow = "f";
+		T.gender_appearance_noow = genderAppearanceHermTiebreak();
 	} else {
 		T.gender_appearance_noow = V.player.gender;
 	}
 }
 
+function genderAppearanceHermTiebreak() {
+	// Reminder: this is only if the player has an *exactly* 0 femininity score. This should be nearly impossible to reach, but we still need to handle it.
+
+	// The general principle here is that these factors are things that indicate which gender is the player's preference for this character.
+	// We rely on as many manually-chosen details as possible to break the tie in a way that favours the player's preference.
+
+	if (["m", "f"].includes(V.player.gender_body)) {
+		return V.player.gender_body; // break the tie with natural features, if player has masculine or feminine features.
+	} else if (["m", "f"].includes(V.player.gender_posture)) {
+		return V.player.gender_posture; // break the tie with gender posture, if gender posture is "m" or "f"
+	} else {
+		return "f"; // you've done it. you've broken me. default to "f".
+	}
+}
+
 function apparentbreastsizecheck(){
-	T.tempbreast = V.breastsize;
+	T.tempbreast = V.player.breastsize;
 	if ( clothingData('upper',V.worn.upper,'bustresize') != undefined ){ T.tempbreast += clothingData('upper',V.worn.upper,'bustresize') };
 	if ( clothingData('under_upper',V.worn.under_upper,'bustresize') != undefined ){ T.tempbreast += clothingData('under_upper',V.worn.under_upper,'bustresize') };
 	if ( clothingData('over_upper',V.worn.over_upper,'bustresize') != undefined){ T.tempbreast += clothingData('over_upper',V.worn.over_upper,'bustresize')  };
@@ -258,14 +304,14 @@ function apparentbreastsizecheck(){
 }
 
 function apparentbottomsizecheck(){
-	T.tempbutt = V.bottomsize;
+	T.tempbutt = V.player.bottomsize;
 	if ( V.worn.lower.rearresize != undefined ){ T.tempbutt += V.worn.lower.rearresize };
 	if ( V.worn.under_lower.rearresize != undefined ){ T.tempbutt += V.worn.under_lower.rearresize };
 	if ( V.worn.lower.rearresize != undefined ){ T.tempbutt += V.worn.over_lower.rearresize };
 	V.player.perceived_bottomsize = Math.clamp( V.bottomsizemin, T.tempbutt, V.bottomsizemax );
 }
 
-function exposedcheck() { 
+function exposedcheck() {
 	if ( !V.combat || V.args[0] === true ){
 		genderappearancecheck();
 		V.player.gender_appearance = T.gender_appearance;
@@ -327,3 +373,72 @@ function updatehistorycontrols(){
 	}
 }
 DefineMacro("updatehistorycontrols", updatehistorycontrols);
+
+
+/** Jimmy: A potential improvement is to not wikify the hints that are appended to the ends of the links,
+ *         I chose to keep this format for now to keep <<promiscuous>>, <<exhibitionist>> and <<deviant>> centralised.
+ * 		   If someone wants to change those widgets, this won't need updating. */
+Macro.add('reqSkill', {
+	tags: ['reqE', 'reqElse'],
+	reqs: [0, 1, 15, 35, 55, 75, 95],
+	handler() {
+		/* The function below (some) will immediately end and not iterate further if TRUE is returned, it will continue to iterate if FALSE is returned. */
+		this.payload.some(section => {
+			if (section.args.length === 0) {
+				/* If <<reqSkill>> has no arguments, report an error.
+				   However, if <<reqElse>> had none, print out the section as normal, no need to add skill hints to the links. */
+				if (section.name === 'reqSkill') {
+					Errors.inlineReport(`Missing arguments for <<${section.name}>>`, `${this.source}`).appendTo(this.output);
+				} else {
+					new Wikifier(this.output, section.contents);
+				}
+				return true;
+			}
+			/* Output variable to store what will be appended to EVERY link in the section. */
+			let output = "";
+			const cancel = section.args.some(arg => {
+				/* Splits up the arguments so that everything but the last character goes into type, and the last character goes into tier.
+				   If arg is "deviancy5", type would be "deviancy" and tier would be 5. */
+				const type = arg.slice(0, -1);
+				const tier = Number.parseInt(arg.slice(-1));
+				/* Check if parseInt returned an actual number, and not NaN. */
+				if (!Number.isInteger(tier)) {
+					Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Tier`, `${this.source}`).appendTo(this.output);
+					return true;
+				}
+				switch (type) {
+					case 'promiscuity':
+					case 'p':
+						if (V.promiscuity < this.self.reqs[tier]) return true;
+						output += `<<promiscuous${tier}>>`;
+						return false;
+					case 'exhibitionism':
+					case 'e':
+						if (V.exhibitionism < this.self.reqs[tier]) return true;
+						output += `<<exhibitionist${tier}>>`;
+						return false;
+					case 'deviancy':
+					case 'd':
+						if (V.deviancy < this.self.reqs[tier]) return true;
+						output += `<<deviant${tier}>>`;
+						return false;
+					default:
+						Errors.inlineReport(`Invalid argument (${arg}) for <<${section.name}>> | Type`, `${this.source}`).appendTo(this.output);
+						return true;
+				}
+			});
+			/* If cancel signals true, exit but continue next payloads. */
+			if (cancel) return false;
+			/* Final render, and insertion of elements.
+			   Renders the section defined within the block that was successful.*/
+			new Wikifier(this.output, section.contents);
+			/* Renders the HTML elements that are inserted after every link. */
+			const wikiOutput = new Wikifier(null, output);
+			/* Scan through macro outfit for valid links to append hints to. */
+			jQuery(this.output).children().filter('a.link-internal, a.link-external')
+				.after(wikiOutput.output);
+			/* Successful render, no need to process anymore segments. */
+			return true;
+		});
+	}
+});

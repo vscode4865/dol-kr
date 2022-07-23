@@ -1,8 +1,8 @@
 :: Wolf Cave
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>><<getTarget true>>
 
-<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 20)>>
-<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 20)>><<set $bus to "wolfcave">>
+<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 22)>>
+<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 22)>><<set $bus to "wolfcave">>
 당신은 늑대굴에 있다. 천장이 낮게 매달려 있고, 뒤쪽에서 바람이 불어오고 있다.
 <<if $exposed gte 1>>
 	<<wolf_cave_plural_un>> 신경쓰지 않는 것 같지만, 노출하는 것은 역시 부끄럽게 느껴진다.
@@ -92,8 +92,8 @@
 :: Wolf Cave Clearing
 <<set $outside to 1>><<set $location to "wolf_cave">><<effects>><<getTarget true>>
 
-<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 20)>>
-<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 20)>><<set $bus to "wolfcaveclearing">>
+<<set $wolfpackharmony = Math.clamp($wolfpackharmony, 0, 22)>>
+<<set $wolfpackferocity = Math.clamp($wolfpackferocity, 0, 22)>><<set $bus to "wolfcaveclearing">>
 당신은 늑대굴 밖에 있는 공터에 있다. 개울이 옆에서 흐르고 있다.
 <<if $exposed gte 1>>
 	<<wolf_cave_plural_un>> 신경쓰지 않는 것 같지만, 노출하는 것은 역시 부끄럽게 느껴진다.
@@ -114,6 +114,10 @@
 		무리는 휴식을 취하고 있다.
 	<</if>>
 	<<wolfcavestate>>
+<</if>>
+<<if $pound and $pound.progress is 5>>
+	<span class="blue">A dark shape lurks in the trees.</span>
+	<br>
 <</if>>
 <br><br>
 <<if $foresthunt gte 1>>
@@ -137,6 +141,13 @@
 <<else>>
 	<<link [[논다 (1:00)|Wolf Cave Play]]>><<stress -12>><<pass 1 hour>><</link>><<lstress>>
 	<br>
+	<<if $pound and $pound.progress is 5>>
+		<<link [[Approach the dark shape|Wolf Cave Dog Intro]]>><<set $pound.progress to 6>><<stress 6>><<trauma -6>><<control 25>><</link>><<gstress>><<ggcontrol>><<ltrauma>>
+		<br>
+	<<elseif $pound and $pound.progress is 6 and $daystate is "day" and $wolf_cave_dog is undefined>>
+		<<link [[Approach the black dog|Wolf Cave Dog]]>><</link>>
+		<br>
+	<</if>>
 	<<if $nextPassageCheck is "Wolf Cave Wash">>
 		<span class="nextLink"><<link [[물.|Wolf Cave Wash]]>><</link>></span>
 	<<else>>
@@ -190,6 +201,89 @@
 	<</if>>
 	<br>
 <</if>>
+
+:: Wolf Cave Dog Intro
+<<effects>>
+
+<<loadNPC 0 "black_dog">>
+The dark shape slinks away before you arrive. You turn to leave, and come face-to-face with a pair of yellow eyes. The creature jumps on you, knocking you on your back, and covers your face in licks. <span class="green">It's the black <<beasttype>> you rescued from the pound.</span>
+<br><br>
+
+<<if $monster is 1>>
+	"Sorry," <<bhe>> says, climbing off you. <<bHe>> adopts <<bhis>> usual gruff demeanor, but there's a light in <<bhis>> eyes that wasn't present before. <<bHe>> looks healthier. "Happy to see you."
+<<else>>
+	<<bHe>> climbs off you, and resumes <<bhis>> usual gruff demeanor as if remembering <<bhimself>>, but there's a light in <<bhis>> eyes that wasn't present before. <<bHe>> looks healthier. <<bHe>> gives you a playful bark.
+<</if>>
+<br><br>
+
+<<link [[다음|Wolf Cave Clearing]]>><<endevent>><</link>>
+<br>
+
+:: Wolf Cave Dog
+<<effects>>
+<<loadNPC 0 "black_dog">>
+The black dog lurks on the outskirts of the clearing. The <<wolf_cave_plural>> tolerate <<bhim>>, but keep their distance.
+<br><br>
+
+<<bHe>> lies beneath a large fern, and watches you approach.
+<br><br>
+
+<<link [[Relax (0:30)|Wolf Cave Dog Relax]]>><<set $wolf_cave_dog to 1>><<trauma -6>><<stress -6>><</link>><<ltrauma>><<lstress>>
+<br>
+<<link [[Encourage to play with the pups|Wolf Cave Dog Play]]>><<set $wolf_cave_dog to 1>><</link>>
+<br><br>
+
+
+<<link [[Leave|Wolf Cave Clearing]]>><<endevent>><</link>>
+<br>
+
+:: Wolf Cave Dog Relax
+<<effects>>
+You sit beside the <<beasttype>>, and chat.
+<<if $monster is 1>>
+	<<if $rng gte 81>>
+		"This my <<if $NPCName[$NPCNameList.indexOf("Black Wolf")].pronoun is "f">>half-sister's<<else>>half-brother's<</if>> pack," <<bhe>> says. "Not welcome here. Not welcome anywhere. I have nowhere else."
+	<<elseif $rng gte 61>>
+		"Stay away from big human caves," <<bhe>> says. "Danger."
+	<<elseif $rng gte 41>>
+		"Stay away from lake," <<bhe>> says. "More danger than forest. More danger than town."
+	<<elseif $rng gte 21>>
+		"Pups frightened of me," <<bhe>> says. "Must look strange."
+	<<else>>
+		"Didn't hate master," <<bhe>> says. "But demanded too much."
+	<</if>>
+<<else>>
+	You lean against the <<beasttype>>, and stare at the canopy above as you rise and fall with <<bhis>> breathing. It's almost enough to send you to sleep.
+<</if>>
+<br><br>
+
+<<link [[다음|Wolf Cave Clearing]]>><<endevent>><</link>>
+<br>
+
+:: Wolf Cave Dog Play
+<<effects>>
+
+The <<beasttype>> huffs, and prowls from <<bhis>> hiding place, towards the playing pups.
+<<if $wolfstate is "cave">>
+	The black wolf watches from atop the cave, interested but unconcerned.
+<<elseif $wolfstate isnot "hunt">>
+	The grown <<wolf_cave_plural>> watch, wary.
+<<else>>
+	They're alone, but back away in fright when the large figure emerges from a bush in front of them.
+<</if>>
+<br><br>
+<<if $rng gte 51>>
+	<<bHe>> growls, and runs at the closest. They scramble to escape. You watch as <<bhe>> chases them around the clearing, sniffing out their hiding places with ease. <<bHe>>'s only playing, but you're not sure the pups know that.<<gferocity>>
+<<else>>
+	<<bHe>> lies down for a while, until a more adventurous pup summons the courage to approach, and learns that there's nothing to fear.
+	<br><br>
+	You watch as the <<beasttype>> plays with the pups. They have more energy than <<bhe>> however, and <<bhe>> soon returns to the trees to rest.<<gharmony>>
+<</if>>
+<br><br>
+
+<<link [[다음|Wolf Cave Clearing]]>><<endevent>><</link>>
+<br>
+
 
 :: Wolf Cave Plots
 <<effects>>
@@ -256,33 +350,33 @@
 <</if>>
 <br><br>
 <<if $sleeptrouble is 1 and $controlled is 0>>
-	<<link [[10시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 10>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
+	<<link [[10시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
 	<br>
-	<<link [[9시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 9>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
+	<<link [[9시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
 	<br>
 <</if>>
-<<link [[8시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 8>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
+<<link [[8시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
 <br>
-<<link [[7시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 7>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
+<<link [[7시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 7>><<incrementautosave>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
 <br>
-<<link [[6시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 6>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
+<<link [[6시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 6>><<incrementautosave>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
 <br>
-<<link [[5시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 5>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
+<<link [[5시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 5>><<incrementautosave>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
 <br>
-<<link [[4시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 4>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
+<<link [[4시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 4>><<incrementautosave>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
 <br>
-<<link [[3시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 3>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
+<<link [[3시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 3>><<incrementautosave>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
 <br>
-<<link [[2시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 2>><<set $saveDetails.auto.count++>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
+<<link [[2시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 2>><<incrementautosave>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
 <br>
-<<link [[1시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 1>><<set $saveDetails.auto.count++>><</link>> &#8194;(<<timeAfterXHours 1>>)<<ltiredness>>
+<<link [[1시간 잔다|Wolf Cave Sleep]]>><<set $sleephour to 1>><<incrementautosave>><</link>> &#8194;(<<timeAfterXHours 1>>)<<ltiredness>>
 <br>
-<<link [[그냥 잔다|Wolf Cave Sleep]]>><<set $sleephour to -1>><<set $saveDetails.auto.count++>><</link>> (??:??)<<ltiredness>>
+<<link [[그냥 잔다|Wolf Cave Sleep]]>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
 <br><br>
-<<link [[침대에서 일어난다|Wolf Cave]]>><<set $wolfbed to 0>><</link>>
+<<link [[침대에서 나온다|Wolf Cave]]>><<set $wolfbed to 0>><<loadTempHairStyle>><</link>>
 <br><br>
 
-:: Wolf Cave Settings
+:: Wolf Cave Settings [exitCheckBypass]
 <<set $settingsExitPassage to "Wolf Cave">>
 <<settings>>
 
@@ -295,13 +389,9 @@
 <br>
 
 :: Wolf Cave Sleep
-<<if !_preventUpdate and !$autosavedisabled>>
-	<<run Save.autosave.save(null, {"saveId":$saveId, "saveName":$saveName})>>
-	<<run setSaveDetail("autosave",{"saveId":$saveId,"saveName":$saveName})>>
-<</if>>
+<<set _autosavehere to true>>
 <<sleep>><<effects>>
 <<if $wraith and $wraith.nightmare is 2 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
-	<<set $schoolwake to 0>>
 	<<sleepeffects>>
 	당신은 아름다운 형체가, 하얀 망토를 입고, 붉은 달 아래 서 있는 꿈을 꾼다. 그것은 어서 오라는 몸짓으로 팔을 당신에게 벌리고 있다. 당신이 가까이 가자 당신은 그것의 눈빛이 당신의 정신에 구멍을 뚫는 것을 느낄 수 있다.
 	<br><br>
@@ -309,7 +399,7 @@
 	<br><br>
 	당신은 천천히 눈을 뜨고, 느릿느릿 일어<<if $wolfbed is 1>>나, 당신을 에워싸고 있는 <<wolf_cave_pluralPost>> 에게서 몸을 빼낸다<<else>>난다<</if>>. 당신의 귀가 울린다.
 	<br><br>
-	<<set $possessed to true>><<set $wraith.exit to "wolf_cave">><<set $controlSaved to $control>><<set $control to 0>>
+	<<wraithPossess "wolf_cave">>
 	<span class="nextLink"><<link [[걸어라.|Wolf Cave]]>><</link>></span>
 	<br>
 <<else>>
@@ -335,8 +425,7 @@
 		<</if>>
 	<</if>>
 	<<sleepeffects>>
-	<<if $schoolwake is 1>>
-		<<set $schoolwake to 0>>
+	<<if _sleepinterrupt>>
 		<<beastNEWinit 1 wolf>>
 		당신은 당신을 자극하는 무언가에 의해 깨어난다.
 		<br><br>

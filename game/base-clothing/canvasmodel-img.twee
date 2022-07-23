@@ -9,9 +9,16 @@ Render full player image.
 	<<modelprepare-player-body>>
 	<<modelprepare-player-clothes>>
 	<<if $sidebarAnimations isnot false>>
-		<<animatemodel $args[0]>>
+		<<animatemodel _args[0]>>
 	<<else>>
-		<<rendermodel $args[0]>>
+		<<rendermodel _args[0]>>
+	<</if>>
+	<<if playerHasStrapon()>>
+		<<set _modeloptions.crotch_visible to false>>
+		<<set _modeloptions.crotch_exposed to false>>
+		<<if $worn.lower.exposed lte 1 and $lowerwetstage lte 0>>
+			<<set _modeloptions.worn_under_lower to 0>>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -65,9 +72,11 @@ if ($skinColor.tanningEnabled is true){
 <</if>>
 
 <<if $possessed>>
-	<<set _modeloptions.eyes_colour = ($wraith and $wraith.state is "haunt" and !$schism ? "red possessed" : "blue possessed")>>
+	<<set _modeloptions.left_eye = ($wraith and $wraith.state is "haunt" and !$schism ? "red possessed" : "blue possessed")>>
+	<<set _modeloptions.right_eye = ($wraith and $wraith.state is "haunt" and !$schism ? "red possessed" : "blue possessed")>>
 <<else>>
-	<<set _modeloptions.eyes_colour = ($makeup.eyelenses != 0 ? $makeup.eyelenses : $eyecolour)>>
+	<<set _modeloptions.left_eye = ($makeup.eyelenses.left != 0) ? $makeup.eyelenses.left : $leftEyeColour>>
+	<<set _modeloptions.right_eye = ($makeup.eyelenses.right != 0) ? $makeup.eyelenses.right : $rightEyeColour>>
 <</if>>
 <<set _modeloptions.hair_colour = $haircolour>>
 <<set _modeloptions.brows_colour = ($makeup.browscolour != 0 ? $makeup.browscolour : $naturalhaircolour)>>
@@ -101,12 +110,12 @@ if ($skinColor.tanningEnabled is true){
 <</if>>
 
 <<if $wraithSkin>>
-    <<set _modeloptions.mannequin to true>>
-    <<set _modeloptions.skin_type to 'custom'>>
-    <<set _modeloptions.filters.body to {blend:'#ffffff',blendMode:'multiply',desaturate:true}>>
-    <<set _modeloptions.filters.breasts to _modeloptions.filters.body>>
-    <<set _modeloptions.filters.penis to _modeloptions.filters.body>>
-    <<set _modeloptions.show_tanlines to false>>
+	<<set _modeloptions.mannequin to true>>
+	<<set _modeloptions.skin_type to 'custom'>>
+	<<set _modeloptions.filters.body to {blend:'#ffffff',blendMode:'multiply',desaturate:true}>>
+	<<set _modeloptions.filters.breasts to _modeloptions.filters.body>>
+	<<set _modeloptions.filters.penis to _modeloptions.filters.body>>
+	<<set _modeloptions.show_tanlines to false>>
 <</if>>
 
 <!--
@@ -252,8 +261,8 @@ if ($skinColor.tanningEnabled is true){
 	<<set _modeloptions.trauma to $trauma gte ($traumamax * 0.9)>>
 <</if>>
 <<set _modeloptions.blink to $blinkingdisable is "f">>
-<<set _modeloptions.eyes_bloodshot to $pain gte 100 and $willpowerpain is 0>>
-<<set _modeloptions.eyes_half to $halfcloseddisable isnot "t" and ($arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1) and $trauma lt ($traumamax * 0.9) and $pain lt 60 and $eyelidTEST is true or $possessed>>
+<<set _modeloptions.eyes_bloodshot to $pain gte 100 and $willpowerpain is 0 or $tiredness >= $tirednessmax>>
+<<set _modeloptions.eyes_half to $halfcloseddisable isnot "t" and ($arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1) and $trauma lt ($traumamax * 0.9) and $pain lt 60 and $eyelidTEST is true or ($possessed or $tiredness >= $tirednessmax * 0.75)>>
 
 <!-- Brows -->
 <<if $trauma gte $traumamax or $possessed>>
@@ -276,6 +285,8 @@ if ($skinColor.tanningEnabled is true){
 <<elseif $exposed is 2 and $uncomfortable.nude is true and $dontHide is false or $pain gte 20>>
 	<<set _modeloptions.mouth = "frown">>
 <<elseif $pain gte 1 or ($exposed is 1 and $uncomfortable.underwear is true) or ($combat is 1 and $consensual isnot 1)>>
+	<<set _modeloptions.mouth = "neutral">>
+<<elseif $stress >= ($stressmax / 5) * 3 or !($control >= ($controlmax / 5) * 1)>> <!-- $stress == You are strained. or $control == You are scared.-->
 	<<set _modeloptions.mouth = "neutral">>
 <<else>>
 	<<set _modeloptions.mouth = "smile">>
@@ -352,7 +363,7 @@ $worn.under_upper.type.includes("naked") and $worn.under_lower.type.includes("na
 	<<set _modeloptions.pbhair_balls = $pblevelballs>>
 <</if>>
 <<if $player.penisExist>>
-	<<set _modeloptions.penis_size to Math.clamp($penissize, -2, 4)>>
+	<<set _modeloptions.penis_size to Math.clamp($player.penissize, -2, 4)>>
 	<<set _modeloptions.penis to ($player.virginity.penile === true ? "virgin" : "default") >>
 	<<set _modeloptions.balls to $player.ballsExist>>
 	<<set _modeloptions.penis_parasite to $parasite.penis.name>>
@@ -433,7 +444,7 @@ Set model options & filters for player clothes
 <</if>>
 
 <<set _modeloptions.hood_down to $hoodDown>>
-<<if ((($worn.over_head.hood is 1 and $worn.over_head.mask_img isnot 1) or ($worn.head.hood is 1 and $worn.head.mask_img isnot 1))) and $hoodDown is 0>> 
+<<if ((($worn.over_head.hood is 1 and $worn.over_head.mask_img isnot 1) or ($worn.head.hood is 1 and $worn.head.mask_img isnot 1))) and $hoodDown is 0>>
 	<<set _modeloptions.hair_sides_length to "short">>
 	<<set _modeloptions.hair_fringe_length to "short">>
 <</if>>
@@ -522,6 +533,10 @@ Set model options & filters for player clothes
 		<<else>>
 			<<set _modeloptions.worn_under_lower to 1>>
 		<</if>>
+	<</if>>
+	<<if playerHasStrapon()>>
+		<<set _modeloptions.worn_under_lower to $worn.under_lower.index>>
+		<<set _modeloptions.worn_under_lower_colour to ($worn.under_lower.colourCustom ? $worn.under_lower.colourCustom : $worn.under_lower.colour)>>
 	<</if>>
 
 	<<if $sidebarRenderer is 'both'>>

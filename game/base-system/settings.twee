@@ -6,17 +6,18 @@
 <<set $player.gender_body to "a">>
 <<set $player.ballsExist to false>>
 <<set $player.freckles to false>>
+<<set $player.breastsize to 0>>
+<<set $player.penissize to 1>>
 <<set $devlevel to 12>>
 <<set $bodysize to 2>>
-<<set $breastsize to 0>>
 <<set $breastsensitivity to 1>>
-<<set $penissize to 1>>
 <<set $genitalsensitivity to 1>>
 <<set $eyeselect to "purple">>
 <<set $hairselect to "red">>
 <<set $hairlength to 200>>
 <<set $awareselect to "innocent">>
 <<set $background to "waif">>
+<<set $startingseason to "autumn">>
 <<if StartConfig.enableImages is true>>
 	<<set $images to 1>>
 	<<set $silhouettedisable to "f">>
@@ -52,8 +53,15 @@
 <<set $analpregdisable to "f">>
 <<set $asphyxiaLvl to 3>>
 <<set $NudeGenderDC to 1>>
+<<set $npcVirginityChance to 50>>
+<<set $npcVirginityChanceAdult to 10>>
 <<set $footdisable to "f">>
+<<set $toywhipdisable to "f">>
+<<set $toydildodisable to "f">>
+<<set $toymultiplepenetration to "f">>
+<<set $pregnancyspeechdisable to "f">>
 <<set $tipdisable to "f">>
+<<set $statdisable to "f">>
 <<set $bodywritingImages to true>>
 <<if $debug is 1>>
 	<<set $debugdisable to "f">>
@@ -62,6 +70,7 @@
 <</if>>
 <<set $cheatdisable to "t">>
 <<set $watersportsdisable to "f">>
+<<set $facesitdisable to "f">>
 <<set $timestyle to "military">>
 <<set $saveName to "">>
 <<set $zoom to 100>>
@@ -83,6 +92,7 @@
 <<set $clothesPriceUnderwear to 1>>
 <<set $clothesPriceSchool to 1>>
 <<set $clothesPriceLewd to 1>>
+<<set $furniturePriceFactor to 1>>
 <<set $baseVaginalPregnancyChance to 80>>
 <<set $baseNpcPregnancyChance to 8>>
 <<set $humanPregnancyMonths to 3>>
@@ -95,6 +105,7 @@
 <<set $condomautochance to 50>>
 <<set $multipleWardrobes to "isolated">>
 <<set $targetYourself to false>>
+<<set $tending_yield_factor to 5>>
 
 <<set $notifyUpdate = true>>
 
@@ -102,8 +113,8 @@
 <<init_customSetting>><</widget>>
 
 <<widget "displaySettings">>
-<<if $args[0]>>
-	<<set $currentSettings to $args[0]>>
+<<if _args[0]>>
+	<<set $currentSettings to _args[0]>>
 <</if>>
 <<if $passage isnot "Start" and ["characterSettings", "featSettings"].includes($currentSettings)>>
 	<<set $currentSettings to "gameSettings">>
@@ -129,8 +140,8 @@
 <</widget>>
 
 <<widget "displaySubsection">>
-<<if $args[0]>>
-	<<set $currentSubsection to $args[0]>>
+<<if _args[0]>>
+	<<set $currentSubsection to _args[0]>>
 <</if>>
 <<switch $currentSubsection>>
 	<<case "humanSettings">><<replace #subsectionDiv>><<humanSettings>><</replace>>
@@ -274,7 +285,9 @@
 	<<if $settingsExitPassage is "Start2">>
 		<<setSkinColorBase>>
 	<</if>>
-	<<set $cheatdisable to $cheatdisabletoggle>>
+	<<if !$ironmanmode>>
+		<<set $cheatdisable to $cheatdisabletoggle>>
+	<</if>>
 	<<if $cheatdisable is "f" or $rentmod lt 1>>
 		<<set $feats.locked to true>>
 	<</if>>
@@ -322,7 +335,7 @@
 		monsters:{"환각을 볼 때만":"monstersDefault", "몬스터 아님":"monstersNone", "항상 몬스터":"monstersAll"},
 		kink:{"합리적으로 방탕하게":"kinkDefault", "변태 아님":"kinkVanilla", "수간충 아님":"kinkNoBeasts", "전부 허용":"kinkEverything"},
 		game:{
-			"일반 ":"gameNormal","소프트 (도전과제 금지)":"gameSoft","하드":"gameHard","마조히스트":"gameMasochist","소프트 + 치트 (도전과제 금지)":"gameSoftCheats","일반 + 치트 (도전과제 금지)":"gameNormalCheats","하드 + 치트 (도전과제 금지)":"gameHardCheats","마조히스트 + 치트 (도전과제 금지)":"gameMasochistCheats"
+			"일반 ":"gameNormal","소프트 (도전과제 금지)":"gameSoft","하드":"gameHard","하드 (철인모드)":"gameHardIronman","마조히스트":"gameMasochist","소프트 + 치트 (도전과제 금지)":"gameSoftCheats","일반 + 치트 (도전과제 금지)":"gameNormalCheats","하드 + 치트 (도전과제 금지)":"gameHardCheats","마조히스트 + 치트 (도전과제 금지)":"gameMasochistCheats"
 		},
 		images:{"기본":"imagesdefault","고화질":"imagesHigh","저화질":"imagesLow","퍼포먼스 중시":"imagesPerformance","이미지 없음":"imagesDisable"},
 		settings:{"PC, 팁 있음":"settingPCTip","PC, 팁 없음":"settingPCNoTip","모바일, 팁 있음":"settingMobileTips","모바일, 팁 없음":"settingMobileNoTips"}
@@ -334,47 +347,61 @@
 <<quickStartOptions>>
 <i>성비와 변태 설정은 설정 후 게임 설정 탭에서 미세조정이 가능합니다.</i>
 <br><br>
+
+<span class="gold">무작위화:</span>
+<<link "전체">><<presets "randomize" `randomizeSettings()`>><</link>> |
+<<if $passage is "Start">>
+	<<link "플레이어 캐릭터 모습">><<presets "randomize" `randomizeSettings('characterAppearance')`>><</link>>
+	<mouse class="tooltip linkBlue">(?)<span>플레이어 캐릭터의 모습을 무작위로 선택하며, 머리카락, 눈, 피부색, 성별과 몸 부위의 크기를 포함합니다. 이 설정은 게임 시작 전에만 가능합니다. 플레이어가 일반적으로 선택할 수 없는 수치가 선택될 수 있으나, 그래도 그 수치는 유효합니다.</span></mouse> |
+	<<link "플레이어 캐릭터 특성">><<presets "randomize" `randomizeSettings('characterTrait')`>><</link>>
+	<mouse class="tooltip linkBlue">(?)<span>플레이어 캐릭터의 특성을 무작위로 선택하며, 배경, 성지식과 일반적인 감도를 포함합니다. 이 설정은 게임 시작 전에만 가능합니다.</span></mouse> |
+<</if>>
+<<link "게임 플레이">><<presets "randomize" `randomizeSettings('gameplay')`>><</link>>
+<mouse class="tooltip linkBlue">(?)<span>일반적인 게임 플레이 설정을 무작위로 선택하며, 매력에 따른 이벤트 비율, 옷 가격과 베일리에게 줄 방값을 포함합니다.</span></mouse> |
+<<link "조우 상대">><<presets "randomize" `randomizeSettings('encounter')`>><</link>>
+<mouse class="tooltip linkBlue">(?)<span>일반 NPC들과 관련된 설정을 무작위로 선택합니다.</span></mouse>
+<br><br>
 /*
 <span class="gold">Complete Contributor Preset:</span> <<listbox "_completePreset" autoselect>><<optionsfrom _quickStartOptions.complete>><</listbox>> |
-<<link Set>><<presets _completePreset>><</link>>
+<<link "사용">><<presets _completePreset>><</link>>
 <br><br>
 */
 
 /*
 <span class="gold">Player Preset:</span> <<listbox "_playerPreset" autoselect>><<optionsfrom _quickStartOptions.player>><</listbox>> |
-<<link Set>><<presets _playerPreset>><</link>>
+<<link "사용">><<presets _playerPreset>><</link>>
 <br><br>
 */
 
 <span class="gold">일반 NPC 성비 프리셋:</span> <<listbox "_genericNpcPreset" autoselect>><<optionsfrom _quickStartOptions.genericNpc>><</listbox>> |
-<<link 사용>><<presets _genericNpcPreset>><</link>>
+<<link "사용">><<presets _genericNpcPreset>><</link>>
 <br><br>
 <span class="gold">네임드 NPC 성비 프리셋:</span> <<listbox "_namedNpcPreset" autoselect>><<optionsfrom _quickStartOptions.namedNpc>><</listbox>> |
-<<link 사용>><<presets _namedNpcPreset>><</link>>
+<<link "사용">><<presets _namedNpcPreset>><</link>>
 <br><br>
 
 <span class="gold">짐승 성비 프리셋:</span> <<listbox "_beastPreset" autoselect>><<optionsfrom _quickStartOptions.beasts>><</listbox>> |
-<<link 사용>><<presets _beastPreset>><</link>>
+<<link "사용">><<presets _beastPreset>><</link>>
 <br><br>
 <span class="gold">짐승을 몬스터로 등장 프리셋:</span> <<listbox "_monstersPreset" autoselect>><<optionsfrom _quickStartOptions.monsters>><</listbox>> |
-<<link 사용>><<presets _monstersPreset>><</link>>
+<<link "사용">><<presets _monstersPreset>><</link>>
 <br><br>
 
 <span class="gold">변태 프리셋:</span> <<listbox "_kinkPreset" autoselect>><<optionsfrom _quickStartOptions.kink>><</listbox>> |
-<<link 사용>><<presets _kinkPreset>><</link>>
+<<link "사용">><<presets _kinkPreset>><</link>>
 <br><br>
 <<if $passage is "Start">>
 	<span class="gold">난이도 프리셋:</span> <<listbox "_gamePreset" autoselect>><<optionsfrom _quickStartOptions.game>><</listbox>> |
-	<<link 사용>><<presets _gamePreset>><</link>>
+	<<link "사용">><<presets _gamePreset>><</link>>
 	<br><br>
 <</if>>
 <<if StartConfig.enableImages is true>>
 	<span class="gold">이미지 프리셋:</span> <<listbox "_imagesPreset" autoselect>><<optionsfrom _quickStartOptions.images>><</listbox>> |
-	<<link 사용>><<presets _imagesPreset>><</link>>
+	<<link "사용">><<presets _imagesPreset>><</link>>
 	<br><br>
 <</if>>
 <span class="gold">기타설정 프리셋:</span> <<listbox "_settingsPreset" autoselect>><<optionsfrom _quickStartOptions.settings>><</listbox>> |
-<<link 사용>><<presets _settingsPreset>><</link>>
+<<link "사용">><<presets _settingsPreset>><</link>>
 <br><br>
 <</widget>>
 
@@ -431,26 +458,26 @@
 
 	<span class="gold">자지 크기</span> - 적용 가능할 경우
 	<br>
-	<label>조그마함 <<radiobutton "$penissize" 0 autocheck>></label> |
-	<label>작음 <<radiobutton "$penissize" 1 autocheck>></label> |
-	<label>평범함 <<radiobutton "$penissize" 2 autocheck>></label>
+	<label>조그마함 <<radiobutton "$player.penissize" 0 autocheck>></label> |
+	<label>작음 <<radiobutton "$player.penissize" 1 autocheck>></label> |
+	<label>평범함 <<radiobutton "$player.penissize" 2 autocheck>></label>
 	<br><br>
 
 	<span class="gold">가슴 크기</span>
 	<br>
-	<label>평평함 <<radiobutton "$breastsize" 0 autocheck>></label> |
-	<label>약간 솟아오름 <<radiobutton "$breastsize" 1 autocheck>></label> |
-	<label>조그마함 <<radiobutton "$breastsize" 2 autocheck>></label> |
-	<label>작음 <<radiobutton "$breastsize" 3 autocheck>></label> |
-	<label>앙증맞음 <<radiobutton "$breastsize" 4 autocheck>></label>
+	<label>평평함 <<radiobutton "$player.breastsize" 0 autocheck>></label> |
+	<label>약간 솟아오름 <<radiobutton "$player.breastsize" 1 autocheck>></label> |
+	<label>조그마함 <<radiobutton "$player.breastsize" 2 autocheck>></label> |
+	<label>작음 <<radiobutton "$player.breastsize" 3 autocheck>></label> |
+	<label>앙증맞음 <<radiobutton "$player.breastsize" 4 autocheck>></label>
 	<br><br>
 
 	<span class="gold">엉덩이 크기</span>
 	<br>
-	<label>호리호리함 <<radiobutton "$bottomsize" 0 autocheck>></label> |
-	<label>날씬함 <<radiobutton "$bottomsize" 1 autocheck>></label> |
-	<label>평범함 <<radiobutton "$bottomsize" 2 autocheck>></label> |
-	<label>푹신함 <<radiobutton "$bottomsize" 3 autocheck>></label>
+	<label>호리호리함 <<radiobutton "$player.bottomsize" 0 autocheck>></label> |
+	<label>날씬함 <<radiobutton "$player.bottomsize" 1 autocheck>></label> |
+	<label>평범함 <<radiobutton "$player.bottomsize" 2 autocheck>></label> |
+	<label>푹신함 <<radiobutton "$player.bottomsize" 3 autocheck>></label>
 	<br><br>
 
 	<span class="gold">고환</span> - 후타나리인 경우에만 적용
@@ -481,9 +508,11 @@
 	<label><span class="tangerine">호박색</span> <<radiobutton "$eyeselect" "amber" autocheck>></label> |
 	<label><span class="brown">적갈색</span> <<radiobutton "$eyeselect" "hazel" autocheck>></label> |
 	<label><span class="green">초록</span> <<radiobutton "$eyeselect" "green" autocheck>></label> |
+	<label><span class="lime-green">라임 초록</span> <<radiobutton "$eyeselect" "lime green" autocheck>></label> |
 	<label><span class="red">빨강</span> <<radiobutton "$eyeselect" "red" autocheck>></label> |
 	<label><span class="pink">분홍</span> <<radiobutton "$eyeselect" "pink" autocheck>></label> |
 	<label><span class="grey">회색</span> <<radiobutton "$eyeselect" "grey" autocheck>></label> |
+	<label><span class="light-grey">옅은 회색</span> <<radiobutton "$eyeselect" "light grey" autocheck>></label> |
 	<label><span>무작위</span> <<radiobutton "$eyeselect" "random" autocheck>></label>
 	<br><br>
 
@@ -501,7 +530,7 @@
 	<label><span class="platinum">백금색</span> <<radiobutton "$hairselect" "platinumblond" autocheck>></label> |
 	<label><span class="ashy">애쉬 블론드</span> <<radiobutton "$hairselect" "ashyblond" autocheck>></label> |
 	<label><span class="strawberry">스트로베리 블론드</span> <<radiobutton "$hairselect" "strawberryblond" autocheck>></label> |
-	<label><span class="tangerine">진저</span> <<radiobutton "$hairselect" "ginger" autocheck>></label> |
+	<label><span class="tangerine">생강색</span> <<radiobutton "$hairselect" "ginger" autocheck>></label> |
 	<label><span>무작위</span> <<radiobutton "$hairselect" "random" autocheck>></label>
 	<br><br>
 
@@ -560,6 +589,20 @@
 	<label>지식 있음 <<radiobutton "$awareselect" "knowledgeable" autocheck>></label>
 	<br><br>
 
+	<span class="gold">시작 계절</span> <mouse class="tooltip linkBlue">(?)<span>게임이 선택한 계절의 네번째 날부터 시작됩니다.</span></mouse>
+	<br>
+
+	<label><mouse class="tooltip tangerine">가을 <<radiobutton "$startingseason" "autumn" autocheck>><span class="green"><i>초보자들에게 추천.</i></span></mouse></label> |
+	
+	<label><span class="teal">겨울</span> <<radiobutton "$startingseason" "winter" autocheck>></label> |
+	
+	<label><span class="lime-green">봄</span> <<radiobutton "$startingseason" "spring" autocheck>></label> |
+	
+	<label><span class="red">여름</span> <<radiobutton "$startingseason" "summer" autocheck>></label> |
+	
+	<label>무작위 <<radiobutton "$startingseason" "random" autocheck>></label>
+	<br><br>
+
 	<span class="gold">배경</span>
 	<br>
 	<label><span class="green">고아</span> <<radiobutton "$background" "waif" autocheck>> - 특별한 장점이나 단점은 없습니다. <i>초심자에게 권장합니다.</i></label>
@@ -584,7 +627,7 @@
 	/*<br>
 	<label>원예가 <<radiobutton "$background" "greenthumb" autocheck>> - 작물 수확량이 증가하고 비료를 사용하면 썩지 않습니다. 비료를 하나 가지고 시작합니다.</label>*/
 	<br>
-	<label><mouse class="tooltip lewd">식물 애호가 <<radiobutton "$background" "plantlover" autocheck>> - 식물들은 당신에게는 전부입니다.<span class="green">당신은 꿀에 중독되어 있습니다. 당신은 미약과 술에 더 영향을 많이 받습니다. 식물사람들과 식물 기반 촉수를 만나기 위해 더 이상 환각이 필요하지 않습니다. 당신은 관리 기술에 추가 보너스를 받지만, 당신의 트라우마가 증가합니다.</span></mouse>
+	<label><mouse class="tooltip"><span class="lewd">식물 애호가</span> <<radiobutton "$background" "plantlover" autocheck>> - 식물들은 당신에게는 전부입니다.<span class="green">당신은 꿀에 중독되어 있습니다. 당신은 미약과 술에 더 영향을 많이 받습니다. 식물사람들과 식물 기반 촉수를 만나기 위해 더 이상 환각이 필요하지 않습니다. 당신은 관리 기술에 추가 보너스를 받지만, 당신의 트라우마가 증가합니다.</span></mouse>
 	</label>
 	<br>
 
@@ -634,29 +677,48 @@
 	<span class="gold">게임 모드</span>
 	<br>
 	<label><mouse class="tooltip green">일반 모드<span>이 위험한 세상에서 살아남으세요.</span></mouse>
-	<<radiobutton "$gamemode" "normal" autocheck>></label>
+	<<if ($ironmanmode is true and $gamemode is "hard") and $passage != "Start">>
+		<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+	<<else>>
+		<<radiobutton "$gamemode" "normal" autocheck>>
+	<</if>>
+	</label>
 	<br>
 	<label><mouse class = "tooltip blue">소프트 모드<span>가벼운 마음으로 야한 모험을 즐기고자 하는 이들을 위한 모드. 그래도 어두운 면이 없지는 않습니다.<span class="red">실험적인 기능으로, 게임 진행이 불가능할 정도의 버그가 존재할 수 있습니다. 미래에 수정되거나 빠질 예정입니다. 소프트 모드로 설정한다면 노말 모드로 설정하기 전까지는 도전과제를 달성할 수 없습니다. 그리고, 영구적으로 일부 도전과제는 달성할 수 없게 됩니다.</span></span></mouse>
-	<<radiobutton "$gamemode" "soft" autocheck>></label>
+	<<if ($ironmanmode is true and ["hard","normal"].includes($gamemode) is true) and $passage != "Start">>
+		<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+	<<else>>
+		<<radiobutton "$gamemode" "soft" autocheck>>
+	<</if>>
+	</label>
 	<br>
 	<<if $intro is 1 or $gamemode is "hard">>
 		<label><mouse class = "tooltip purple">하드 모드<span>야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕) 트라우마와 통제력 관리가 매우 어려워집니다. 게임 시작에만 선택 가능하고, 정신병원에 감금되면 노말 모드로 바뀝니다.<span class="red">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</span></span></mouse>
-		<<radiobutton "$gamemode" "hard" autocheck>>
+		<<if $ironmanmode is true and $passage != "Start">>
+			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
+		<<else>>
+			<<radiobutton "$gamemode" "hard" autocheck>>
+		<</if>>
 		</label>
 		<br>
 	<</if>>
 	<br>
-
+	<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">철인 모드<span>세이브 노가다와 다른 시도들을 막기 위한 조치<br><br>당신은 게임을 저장할 수 있지만, 저장 후 시작 화면으로 돌아갑니다. 당신은 그 세이브를 로드할 수 있지만, 세이브는 자동으로 삭제됩니다.<br><br>또한 다른 세이브가 잘못되었을 경우를 위해 추가적으로 게임 내 매 4-8 일마다 자동 저장됩니다.</span></mouse><span class="italic" style="color: #d4d4d4; font-size: 15px;"> (게임 시작 후 비활성화 할 수 없습니다)</span>
+	<<run IronMan.UI.checkBox(`init`)>>
+	<br>
+	<br>
 	<span class="gold">매력에 의해 이벤트가 트리거되는 비율</span> - 기본값: 1.0
 	<br>
 	<span class="red">이 설정을 1 미만으로 변경하면, 다시 1 이상으로 변경할 때까지 업적을 얻을 수 없습니다. 또한, 일부 업적의 획득이 영구적으로 막힐 수 있습니다.</span>
 	<br>
-	<<numberslider "$alluremod" $alluremod 0.2 2 0.1>>
+	<div id="sliderAllureMode">
+		<<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>>
+	</div>
 	<br><br>
 
 	<span class="gold">여러 개의 옷장</span> <mouse class="tooltip linkBlue">(?)<span class="red">이것은 실험적인 기능이며, 미래에 바뀌거나 삭제될 수 있습니다. 게임 플레이 도중에 설정을 바꿀 수는 있으나, 게임 중에 끄면 옷을 사용하지 못하거나 켜면 당신을 수건 외에는 입을 게 없는 상황에 처하게 할 수 있기 때문에 추천하지 않습니다.</span></mouse>
 	<br>
-	
+
 	<br>
 	<label><<radiobutton "$multipleWardrobes" false autocheck>> 하나의 공유된 옷장만 사용한다</label>
 	<br>
@@ -676,7 +738,7 @@
 	<<button "짐승형 NPC 설정 및 토글">>
 		<<displaySubsection "beastSettings">>
 	<</button>>
-	<<button "가격 설정">>
+	<<button "비용과 이익 설정">>
 		<<displaySubsection "priceSettings">>
 	<</button>>
 	/*ToDo: Pregnancy, remove check to properly enable*/
@@ -725,6 +787,18 @@
 			<<numberslider "$homochance" $homochance 0 100 1>>
 			<br><br>
 
+			<span class="gold">학생들이 동정/처녀인 비율</span>
+			<mouse class="tooltip linkBlue">(?)<span>네임드 NPC들에게 영향을 주지 않습니다. 각각의 동정/처녀성은 별도로 만들어지며, 많은 조합이 가능하다는 것을 뜻합니다.</span></mouse>
+			<br>
+			<<numberslider "$npcVirginityChance" $npcVirginityChance 0 100 1>>
+			<br><br>
+
+			<span class="gold">일반인들이 동정/처녀인 비율</span>
+			<mouse class="tooltip linkBlue">(?)<span>네임드 NPC들에게 영향을 주지 않습니다. 각각의 동정/처녀성은 별도로 만들어지며, 많은 조합이 가능하다는 것을 뜻합니다.</span></mouse>
+			<br>
+			<<numberslider "$npcVirginityChanceAdult" $npcVirginityChanceAdult 0 100 1>>
+			<br><br>
+
 			<span class="gold">여성의 평균 가슴 크기</span> <mouse class="tooltip linkBlue">(?)<span>숫자가 커질 수록 이 세상의 평균 가슴 크기가 커짐을 뜻합니다. 12로 설정하면 모든 여성이 거대한 가슴을 갖습니다. -12로 설정하면 모든 여성이 평평한 가슴을 갖습니다. 기본값은 0으로, 넓은 범위의 크기로 나타납니다.</span></mouse>
 			<br>
 			<<numberslider "$breast_mod" $breast_mod -12 12 1>>
@@ -744,7 +818,7 @@
 			<br>
 			<<numberslider "$blackchance" $blackchance 0 100 1>>
 			<br><br>
-			
+
 			<<if $pregnancyTesting>>
 				/*ToDo: Pregnancy, remove check to properly enable*/
 				<span class="gold">NPC들이 콘돔을 가지고 있을 가능성</span>
@@ -866,10 +940,26 @@
 				</div>
 			</div>
 			<div class="numberslider-group">
+				<span class="gold">가구 가격</span>
+				<div class="small-description">가구의 가격을 조정합니다.</div>
+				<div class="ironman-slider" id="slider-furniture-price-factor">
+					<<numberslider "$furniturePriceFactor" $furniturePriceFactor 0.6 5 0.2 $ironmanmode>>
+				</div>
+			</div>
+			<div class="numberslider-group">
 				<span class="gold">베일리에게 줄 방값</span>
 				<div class="small-description">베일리가 매 주 요구하는 금액을 조정합니다. 100% 가 기본입니다.</div>
 				<span class="red">이 설정을 100% 이하로 설정 시 그 세이브에서는 도전과제를 달성할 수 없습니다.</span>
-				<<numberslider "$rentmod" $rentmod 0.1 3 0.1>>
+				<div class="ironman-slider" id="sliderRentMode">
+					<<numberslider "$rentmod" $rentmod 0.1 3 0.1 $ironmanmode>>
+				</div>
+			</div>
+			<div class="numberslider-group">
+				<span class="gold">작물 수확량</span>
+				<div class="small-description">수확되는 작물의 양을 조절합니다. 500%가 기본값입니다. 100%는 (예전의) 하드 모드입니다.</div>
+				<div class="ironman-slider" id="sliderTendingYieldFactor">
+					<<numberslider "$tending_yield_factor" $tending_yield_factor 1 10 1 $ironmanmode>>
+				</div>
 			</div>
 
 			<!-- Make it show % instead of fractions and add some colour -->
@@ -910,10 +1000,10 @@
 				<div class="small-description">정확한 순간에 정액을 받아들였을 경우 당신이 임신할 확률이며, <span id="maxRequired"><<print 100 - $baseVaginalPregnancyChance>></span> 번이면 확실하게 임신합니다. 어떤 이벤트에서는 한번 이상의 정액을 받아들이기도 합니다.</div>
 				<<numberslider "$baseVaginalPregnancyChance" $baseVaginalPregnancyChance 0 96 4>>
 			</div>
-			<<run $(() => { $('.basevaginalpregnancychance-container input').on('input change', e => { 
+			<<run $(() => { $('.basevaginalpregnancychance-container input').on('input change', e => {
 				let valSpan = $(e.currentTarget).siblings().first();
 				let value = valSpan.text();
-				
+
 				valSpan.text((i, value) => (100 - value) + " 분의 1");
 				$('#maxRequired').text(100 - $baseVaginalPregnancyChance);
 			}).trigger('change') })>>
@@ -922,10 +1012,10 @@
 				<div class="small-description">정확한 순간에 정액을 받아들였을 경우 NPC가 임신할 확률이며, <span id="npcMaxRequired"><<print 20 - $baseNpcPregnancyChance>></span> 번이면 확실하게 임신합니다.</div>
 				<<numberslider "$baseNpcPregnancyChance" $baseNpcPregnancyChance 0 16 4>>
 			</div>
-			<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => { 
+			<<run $(() => { $('.basenpcpregnancychance-container input').on('input change', e => {
 				let valSpan = $(e.currentTarget).siblings().first();
 				let value = valSpan.text();
-				
+
 				valSpan.text((i, value) => (20 - value) + " 분의 1");
 				$('#npcMaxRequired').text(20 - $baseNpcPregnancyChance);
 			}).trigger('change') })>>
@@ -1006,21 +1096,48 @@
 	<<checkbox "$footdisable" "t" "f" autocheck>> 발 활성화
 	<mouse class="tooltip linkBlue">(?)<span>플레이어의 발기술을 없애지 않습니다.</span></mouse>
 	</div></label>
+
+	<label><div class="settingsToggle">
+	<<checkbox "$facesitdisable" "t" "f" autocheck>> 얼굴앉기 활성화
+	<mouse class="tooltip linkBlue">(?)<span>커닐링구스를 막지 않습니다.</span></mouse>
+	</div></label>
 	
+	<label><div class="settingsToggle">
+	<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> 임신 언급 활성화.
+	<mouse class="tooltip linkBlue">(?)<span>플레이어의 임신, 혹은 다른 존재를 임신시키는 것에 대한 언급을 활성화합니다. 특히 다른 임신 관련 설정이 활성화되어 있는 경우, 비활성화하는 것이 임신에 대한 모든 언급을 막지는 않습니다.</span></mouse>
+	</div></label>
+
+	<div class="settingsToggle" role="group" aria-labelledby="settingsToysHead">
+	<span id="settingsSexToysHead">섹스 장난감들:</span>
+	<label>
+		<<checkbox "$toydildodisable" "t" "f" autocheck>> 딜도
+	</label>
+	<label>
+		<<checkbox "$toywhipdisable" "t" "f" autocheck>> 채찍
+	</label>
+	<label>
+		<<checkbox "$toymultiplepenetration" "t" "f" autocheck>> 동시삽입
+	</label>
+	/*<label>
+		<<checkbox "$toyvirginitydisable" "t" "f" autocheck>> 순결을 뺏을 수 있음
+	</label>*/
+	<mouse class="tooltip linkBlue">(?)<span>"딜도"는 딜도나, 항문 구슬같은, 그런 삽입 가능한 장난감들입니다. 페니스 밴드를 비활성화하지 않습니다.<br>"채찍"은 말채찍이나 채찍 등을 포함합니다. 스팽킹 장면에서 채찍을 없애지는 않습니다.<br>"동시삽입"은 장난감과 다른 종류의 삽입을 가능하게 합니다. 예를 들어, 자지와 딜도가 동시에 보지에 삽입 가능합니다.</span></mouse>
+	</div>
+
 	<div class="settingsToggle" style="display: inline-flex;">
-	&nbsp;질식 강도 설정
+	<span style="white-space: nowrap;">&nbsp;질식 강도 설정</span>
 	<<numberslider "$asphyxiaLvl" $asphyxiaLvl 0 4 1>>
 	<<run settingsAsphyxiation()>>
 	</div>
 
 	<div class="settingsToggle" style="display: inline-flex;">
-	&nbsp;신체낙서
+	<span style="white-space: nowrap;">&nbsp;신체낙서</span>
 	<<numberslider "$bodywritingLvl" $bodywritingLvl 0 3 1>>
 	<<run settingsBodywriting()>>
 	</div>
-		
+
 	<div class="settingsToggle">
-	&nbsp;나체&nbsp;성별&nbsp;파악
+	<span style="white-space: nowrap;">&nbsp;나체 성별 파악</span>
 	<<numberslider "$NudeGenderDC" $NudeGenderDC 0 2 1>>
 	<<run settingsNudeGenderAppearance()>>
 	</div>
@@ -1117,7 +1234,7 @@
 			<</if>>
 			<label>초기 선탠: <<numberslider "$range" 0 0 100 1>></label>
 			<br>
-			<<link 테스트>>
+			<<link "테스트">>
 				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
 					<<replace #skinColorDiv>><<SkinColorImgTest $range $naturalSkinColor>><</replace>>
 				<</if>>
@@ -1196,6 +1313,12 @@
 	<label>정확한 확률 표시 <<radiobutton "$checkstyle" "percentage" autocheck>></label> |
 	<label>일반적인 표현으로만 표시 <<radiobutton "$checkstyle" "words" autocheck>></label> |
 	<label>스킬 이름만 표시 <<radiobutton "$checkstyle" "skillname" autocheck>></label> |
+	<br>
+
+	<label><div class="settingsToggleBig">
+	<<checkbox "$statdisable" "f" "t" autocheck>> 능력치 표시 않음
+	<mouse class = "tooltip blue">(?)<span>능력치가 바뀔 때나, 어떤 이벤트를 성공하기 위해 무슨 스킬이 필요한지에 대한 표시를하지 않습니다. 당신의 직감으로 살아남으세요.<span class="red">초심자에게는 권장하지 않습니다. 이것은 실험적인 기능으로, 미래에 수정되거나 빠질 수 있습니다.</span></span></mouse>
+	</div></label>
 	<br><br>
 
 	<span class="gold">인게임 힌트와 팁</span>
@@ -1235,19 +1358,25 @@
 	<input type="button" value="확대 설정" onclick="zoom(undefined, true)"/>
 	<br><br>
 
-	
+
 	<span class="gold">이력 깊이</span><br>
 	<div class="description">이력에서 N-1 단계(passage)까지 뒤로 갈 수 있습니다. 변경은 설정창을 나간 후 적용됩니다.<br>
 	<span class="red"><b>주의:</b> 속도저하를 일으킬 수 있습니다. 그리고, 5 이상의 숫자는 당신의 로컬 스토리지 용량을 넘어 <br>
 	<b>세이브 문제를 일으킬 수 있습니다</b>. 사용시 일어날 수 있는 불상사는 자신의 책임입니다.</span>
 	</div>
-	<<numberslider "$maxStates" $maxStates 1 20 1>>
+	<<numberslider "$maxStates" $maxStates 1 20 1 $ironmanmode>>
 	<br><br>
-	
+
 
 	<span class="gold">치트 메뉴</span>
 	<label><div class="settingsToggleBig">
-	<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> 치트 활성화
+	<<if $ironmanmode is true>>
+		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled>'>>
+		<span style="color: #7e7e7e;">치트 활성화</span>
+	<<else>>
+		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>>
+		치트 활성화
+	<</if>>
 	<div class="description">버튼은 사이드바에 표시됩니다. <span class="red">설정에서 치트를 활성화하는 경우 세이브에서 도전과제를 달성할 수 없게 됩니다.</span></div>
 	</div></label>
 	<br><br>
@@ -1322,9 +1451,9 @@
 	<<set _hairColorNPCData to ["red","black","brown","lightbrown","blond","platinumblond","strawberryblond","ginger", "mousy"]>>
 	<<set _hairColorNPCText to ["red","black","brown","lightbrown","gold","platinum","strawberry","tangerine", "mousy"]>>
 
-	<<set _eyeColorNPC to ["Purple","Dark Blue","Light Blue","Amber","Hazel","Green","Red","Pink","Grey"]>>
-	<<set _eyeColorNPCData to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey"]>>
-	<<set _eyeColorNPCText to ["purple","blue","lblue","tangerine","brown","green","red","pink","grey"]>>
+	<<set _eyeColorNPC to ["Purple","Dark Blue","Light Blue","Amber","Hazel","Green","Lime Green","Red","Pink","Grey","Light Grey"]>>
+	<<set _eyeColorNPCData to ["purple","dark blue","light blue","amber","hazel","green", "lime green","red","pink","grey", "light grey"]>>
+	<<set _eyeColorNPCText to ["purple","blue","lblue","tangerine","brown","green","lime-green","red","pink","grey", "light-grey"]>>
 <</if>>
 
 <<if _npcList is undefined>>
@@ -1347,12 +1476,12 @@
 
 			T.keys = {};
 			T.keyNames = [];
-			T.allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "tower_creature", "wraith", "pinch"];
+			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "wraith", "pinch"];
 			Object.keys(V.per_npc).forEach(k => {
-				for (let j of T.allowed_npcs){
+				for (const j of allowed_npcs){
 					if (k.includes(j)){
 						T.keyNames.push(k);
-						T.keys[k.toUpperFirst().replaceAll('_', ' ')] = k;
+						T.keys[k.toUpperFirst().replace(/_/g, ' ')] = k;
 						break
 					}
 				}
@@ -1385,7 +1514,11 @@
 	<<else>>
 		파일에서 불러오기: <input id="saveImport" type="file" value="파일에서 불러오기" onchange="importSettings(this.files, 'file')">
 		<br><br>
-		<input type="button" value="파일로 저장" onclick="exportSettings(null,'file')">
+		<<if $ironmanmode is true>>
+			<input type="button" value="파일로 저장" disabled>
+		<<else>>
+			<input type="button" value="파일로 저장" onclick="exportSettings(null,'file')">
+		<</if>>
 	<</if>>
 
 	<h4>설정 텍스트 불러오기/내보내기</h4>
@@ -1421,7 +1554,7 @@
 	<<listbox "_npcId" autoselect>>
 		<<optionsfrom _npcList>>
 	<</listbox>>
-	| <<link 이전>>
+	| <<link "이전">>
 		<<if _npcId is 0>>
 			<<set _npcId to $NPCNameList.length - 1>>
 		<<else>>
@@ -1429,7 +1562,7 @@
 		<</if>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>> |
-	<<link 다음>>
+	<<link "다음">>
 		<<set _npcId++>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>>
@@ -1442,6 +1575,7 @@
 	<<if $NPCName[_npcId].pregnancy[0] is null>>
 		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
 		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
+		<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> 둘 다</label><</if>>
 		<<run settingsNamedNpcGenderUpdate()>>
 	<<else>>
 		임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
@@ -1524,67 +1658,74 @@
 			<</if>>
 	<</switch>>
 	<<set _index to _keyNames.indexOf(_pNPCId)>>
-	| <<link 이전>>
+	| <<link "이전">>
 		<<set _index to (_index is 0 ? _keyNames.length - 1 : --_index)>>
 		<<set _pNPCId to _keyNames[_index]>>
 		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
 	<</link>> |
-	<<link 다음>>
+	<<link "다음">>
 		<<set _index++>>
 		<<set _pNPCId to _keyNames[_index]>>
 		<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
-	<<if $per_npc[_pNPCId].name_known>>
-		<span class="gold"><<print _pNPCId.replaceAll('_', ' ')>> <<trNPCname $per_npc[_pNPCId].name>>_trResult</span>
-	<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
-		<span class="wraith">상아 유령</span>
-	<<elseif _pNPCId is "tower_creature">>
-		<span class="gold">밤의 괴물</span>
+	<<if $per_npc[_pNPCId] eq null>>
+		<<error {
+			message	: `The given ID for pNPCs failed to match any available pNPC: ${_pNPCId}.`,
+			source	: _pNPCId
+		}>>
 	<<else>>
-		<span class="gold"><<print _pNPCId.toUpperFirst().replaceAll('_', ' ')>></span>
+		<<if $per_npc[_pNPCId].name_known>>
+			<span class="gold"><<trNPCname $per_npc[_pNPCId].name>>_trResult the <<print _pNPCId.replace(/_/g, ' ')>></span>
+		<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
+			<span class="wraith">상아 유령</span>
+		<<elseif _pNPCId is "tower_creature">>
+			<span class="gold">밤의 괴물</span>
+		<<else>>
+			<span class="gold"><<print _pNPCId.toUpperFirst().replace(/_/g, ' ')>></span>
+		<</if>>
+		<<if $per_npc[_pNPCId].name_known and $debug is 1>>
+			| <<link "이름 변경">>
+				<<if $per_npc[_pNPCId].pronoun is "f">>
+					<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
+				<<else>>
+					<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
+				<</if>>
+				<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
+			<</link>>
+		<</if>>
+		<br>
+		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
+		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+		<br>
+		<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
+		<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
+		<<run settingsPersistentNpcGenderUpdate()>>
+		<br><br>
+		자지 크기 - 가능할 경우:
+		<br>
+		<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+		<<for _j to 1; _j lt _penisNames.length; _j++>>
+			<label>
+				<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
+				<<print _penisNames[_j]>>
+			</label>
+			<<if _j isnot _penisNames.length -1>>|<</if>>
+		<</for>>
+		<br><br>
+		<div class="settingsToggle" style="display: inline-flex;">
+			가슴 크기:
+			<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
+			<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
+		</div>
 	<</if>>
-	<<if $per_npc[_pNPCId].name_known and $debug is 1>>
-		| <<link 이름 변경>>
-			<<if $per_npc[_pNPCId].pronoun is "f">>
-				<<set $per_npc[_pNPCId].name to $NPC_names_f.random()>>
-			<<else>>
-				<<set $per_npc[_pNPCId].name to $NPC_names_m.random()>>
-			<</if>>
-			<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>
-		<</link>>
-	<</if>>
-	<br>
-	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
-	<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
-	<br>
-	<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
-	<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
-	<<run settingsPersistentNpcGenderUpdate()>>
-	<br><br>
-	자지 크기 - 가능할 경우:
-	<br>
-	<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
-	<<for _j to 1; _j lt _penisNames.length; _j++>>
-		<label>
-			<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
-			<<print _penisNames[_j]>>
-		</label>
-		<<if _j isnot _penisNames.length -1>>|<</if>>
-	<</for>>
-	<br><br>
-	<div class="settingsToggle" style="display: inline-flex;">
-		가슴 크기:
-		<<numberslider "$per_npc[_pNPCId].breastsize" $per_npc[_pNPCId].breastsize 0 12 1>>
-		<<run settingsNamedNpcBreastSize(Util.slugify('$per_npc[_pNPCId].breastsize'), true)>>
-	</div>
 	<div style="clear:both;">
 		/*Keep at end of toggles*/
 	</div>
 <</widget>>
 
 
-:: Settings
+:: Settings [exitCheckBypass]
 <<settings>>
 
 :: Attitudes

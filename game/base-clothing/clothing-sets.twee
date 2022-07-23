@@ -1,7 +1,7 @@
 :: Widgets Outfits [widget]
 <<widget "listoutfits">>
 
-<label><<radiobutton "$delete_outfit" "none" checked>> 입기</label> | <label><<radiobutton "$delete_outfit" 1>> 제거</label> | <label><<radiobutton "$delete_outfit" 2>> 덮어쓰기</label> | <label class="no-numberify"><<link 편집>><<overlayReplace "outfitEditor">><</link>></label>
+<label><<radiobutton "$delete_outfit" "none" checked>> 입기</label> | <label><<radiobutton "$delete_outfit" 1>> 제거</label> | <label><<radiobutton "$delete_outfit" 2>> 덮어쓰기</label> | <label class="no-numberify"><<link "편집">><<overlayReplace "outfitEditor">><</link>></label>
 <br>
 
 <<for _i to 0; _i lt $outfit.length; _i++>>
@@ -20,7 +20,7 @@
 <</widget>>
 
 <<widget "listoutfitsPassage">>
-<<set $wardrobe_location to $args[0]>>
+<<set $wardrobe_location to _args[0]>>
 <<wardrobeSelection true>>
 <<for _i to 0; _i lt $outfit.length; _i++>>
 	<<if $outfit[_i].location and $outfit[_i].location isnot $wardrobe_location>>
@@ -34,15 +34,19 @@
 <</widget>>
 
 <<widget "listsleepoutfits">>
-<<switch $args[0]>>
+<<switch _args[0]>>
 	<<case "Farm Bed">>
-		<<set _passage to $args[0]>>
+		<<set _passage to _args[0]>>
 		<<set $wardrobe_location to "alexFarm">>
 		<<set $storeLocation to "Farm Bed">>
 	<<case "prison bed">>
 		<<set _passage to 'Prison Bed'>>
 		<<set $wardrobe_location to "prison">>
 		<<set $storeLocation to "prison bed">>
+	<<case "Robin Bed">>
+		<<set _passage to "Robin Room Bed">>
+		<<set $wardrobe_location to "wardrobe">>
+		<<set $storeLocation to "bed">>
 	<<default>>
 		<<set _passage to "Bed">>
 		<<set $wardrobe_location to "wardrobe">>
@@ -52,7 +56,15 @@
 <<if $alwaysSleepNaked isnot true>>
 	<<for _i to 0; _i lt $outfit.length; _i++>>
 		<<if $outfit[_i].type.includes("sleep")>>
-			<<bedicon>><<print '<<link [[$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]") + " 입고 침대에 들어간다"|"'+_passage+'"]]>><<set $wear_outfit to ' + _i + '>><</link>>'>>
+			<<if _passage is "Bed">>
+				<<furnitureicon _bed.iconFile>>
+			<<else>>
+				<<bedicon>>
+			<</if>>
+			<<capture _i>>
+				<<set _outfitname to $outfit[_i].name + ($outfit[_i].colors is false? "" : " [C]")>>
+				<<link [[_outfitname+" 입고 침대에 들어간다"|_passage]]>><<set $wear_outfit to _i>><<saveTempHairStyle>><</link>>
+			<</capture>>
 			<br>
 		<</if>>
 	<</for>>
@@ -68,14 +80,14 @@
 <</widget>>
 
 <<widget "listswimoutfits">>
-<<set $wardrobe_location to $args[0]>>
+<<set $wardrobe_location to _args[0]>>
 <<wardrobeSelection true>>
 <<for _i to 0; _i lt $outfit.length; _i++>>
 	<<if $outfit[_i].location and $outfit[_i].location isnot $wardrobe_location>>
 		<<continue>>
 	<</if>>
 	<<if $outfit[_i].type.includes("swim")>>
-		<<print '<<link [[$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]") + " 입기"|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to ' + _i + '>><<set $storeLocation to "'+$args[0]+'">><</link>>'>>
+		<<print '<<link [[$outfit[_i].name+($outfit[_i].colors is false? "" : " [C]") + " 입기"|$passage]]>><<set $eventskip to 1>><<set $wear_outfit to ' + _i + '>><<set $storeLocation to "'+_args[0]+'">><</link>>'>>
 		<br>
 	<</if>>
 <</for>>
@@ -95,6 +107,19 @@
 <<if $delete_outfit is 1 and $wear_outfit isnot "none">>
 <<set $outfit.deleteAt($wear_outfit)>>
 <<set $wear_outfit to "none">>
+<</if>>
+<</widget>>
+
+<<widget "saveTempHairStyle">>
+	<<set $tempSavedHairStyles to {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}>>
+<</widget>>
+
+<<widget "loadTempHairStyle">>
+<<if $tempSavedHairStyles>>
+	<<set $hairtype to $tempSavedHairStyles['hairtype']>>
+	<<set $fringetype to $tempSavedHairStyles['fringetype']>>
+	<<set $hairposition to $tempSavedHairStyles['hairposition']>>
+	<<unset $tempSavedHairStyles>>
 <</if>>
 <</widget>>
 
@@ -198,7 +223,7 @@
 						<</if>>
 						/*Check for slime corruption*/
 						<<if _corruptionEquipSkip.includes(_equip[_i])>>
-							<<if $corruption_slime gte 80 and $willpower lt 800 and _selectedWardrobe[_equip[_i]][_j].reveal lt 500 and !_selectedWardrobe[_equip[_i]][_j].type.includesAny("school", "event")>>
+							<<if $corruption_slime gte 80 and currentSkillValue('willpower') lt 800 and _selectedWardrobe[_equip[_i]][_j].reveal lt 500 and !_selectedWardrobe[_equip[_i]][_j].type.includesAny("school", "event")>>
 								<<set _notEquipped[_equip[_i]] to {"name": $outfit[$wear_outfit][_equip[_i]], "reason": "corruption_slime_deny"}>>
 								<<break>>
 							<</if>>
@@ -332,9 +357,15 @@
 			<</if>>
 		<</if>>
 	<</for>>
+	<<if $outfit[$wear_outfit].hairStyle>>
+		/*Update Hairstyle*/
+		<<set $hairtype to $savedHairStyles[$outfit[$wear_outfit].hairStyle].hairtype>>
+		<<set $fringetype to $savedHairStyles[$outfit[$wear_outfit].hairStyle].fringetype>>
+		<<set $hairposition to $savedHairStyles[$outfit[$wear_outfit].hairStyle].hairposition>>
+	<</if>>
 <</if>>
 
-<<if $wear_outfit isnot "none">>
+<<if $wear_outfit isnot "none" and _notEquipped>>
 	<<set _keys to Object.keys(_notEquipped)>>
 	<<if _keys.length gt 0>>
 		<<set _resultStrings to {}>>
@@ -463,7 +494,7 @@
 <div id="outfitEditorHelp" class="hidden">
 	여기에서 변경하는 복장의 모든 설정들은 바로 변경되지만, 당신이 경로(passage)를 변경해야 변경점이 저장됩니다 (옷장에서 나오거나 이 화면 아래의 '옷장 갱신'을 누르면 됩니다).
 	<br><br>
-	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 지정된 색상이 있는 옷을 지정된 색상이 없는 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
+	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 색상 지정이 가능한 옷을 색상 지정이 불가능한 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
 	<br><br>
 	위치는 그 복장이 특별하며 그 옷장에서만 보인다는 것을 의미합니다. '접근 불가'라는 표시가 있다면, 이것은 여러 개의 옷장 설정이 되어있거나 게임이 더 진행된 후에 사용이 가능하다는 것을 의미합니다. 대부분의 경우 '고아원' 옷장은 여러 개의 옷장 설정이 '격리된 장소에서는 사용' 이나 하나의 옷장만 사용하는 경우 공유됩니다.
 	<br><br>
@@ -604,7 +635,7 @@
 <</if>>
 페이지 <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
 <<if _outfitEditorPages.page lt _outfitEditorPages.maxPages and _outfitEditorPages.maxPages gt 1>>
-	<<link 다음>>
+	<<link "다음">>
 		<<set _outfitEditorPages.page++>>
 		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
 	<</link>>
@@ -614,11 +645,11 @@
 <</widget>>
 
 <<widget "outfitEditorItem">>
-<<capture $args[0]>>
-	<<set _subState[$args[0]] to "">>
+<<capture _args[0]>>
+	<<set _subState[_args[0]] to "">>
 	<div class="name">
-		<<set $_name to "$outfit["+$args[0]+"].name">>
-		<label>이름: <<textbox $_name $outfit[$args[0]].name>></label>
+		<<set $_name to "$outfit["+_args[0]+"].name">>
+		<label>이름: <<textbox $_name $outfit[_args[0]].name>></label>
 		<!--Runs too many times for some reason, needs to be improved-->
 		<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
 			let index = e.target.name.replace(/\D/g,'');
@@ -626,7 +657,7 @@
 		}).trigger('input change') })>>
 	</div>
 	<div>
-		<<set $_type to "$outfit["+$args[0]+"].type[0]">>
+		<<set $_type to "$outfit["+_args[0]+"].type[0]">>
 		<label>
 			종류:
 			<<listbox $_type autoselect>>
@@ -638,7 +669,7 @@
 		</label>
 	</div>
 	<div>
-		<<set $_location to "$outfit["+$args[0]+"].location">>
+		<<set $_location to "$outfit["+_args[0]+"].location">>
 		<<set $_locations to {}>>
 		<<for $_label, $_value range $wardrobes>>
 			<<if $_value.unlocked>>
@@ -660,41 +691,41 @@
 	</div>
 	<div>
 		구성:
-		<<link 보기>>
-			<<set _subId to "#outfitItemSub-" + $args[0]>>
-			<<if _subState[$args[0]] is "itemEdit">>
-				<<set _subState[$args[0]] to "">>
+		<<link "보기">>
+			<<set _subId to "#outfitItemSub-" + _args[0]>>
+			<<if _subState[_args[0]] is "itemEdit">>
+				<<set _subState[_args[0]] to "">>
 				<<replace _subId>><</replace>>
 			<<else>>
-				<<set _subState[$args[0]] to "itemEdit">>
-				<<replace _subId>><<outfitEditorItemClothes $args[0]>><</replace>>
+				<<set _subState[_args[0]] to "itemEdit">>
+				<<replace _subId>><<outfitEditorItemClothes _args[0]>><</replace>>
 			<</if>>
 		<</link>>
 	</div>
 	<div>
-		색상 지정: <<print $outfit[$args[0]].colors ? "사용" : "사용않음">> |
-		<<if $outfit[$args[0]].colors>>
-			<<link 사용않음>>
-				<<set $outfit[$args[0]].colors to false>>
-				<<set _id to "#outfitItem-" + $args[0]>>
-				<<replace `_id`>><<outfitEditorItem $args[0]>><</replace>>
+		색상 지정: <<print $outfit[_args[0]].colors ? "사용" : "사용않음">> |
+		<<if $outfit[_args[0]].colors>>
+			<<link "사용않음">>
+				<<set $outfit[_args[0]].colors to false>>
+				<<set _id to "#outfitItem-" + _args[0]>>
+				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
 			<</link>> |
-			<<link 편집>>
-				<<set _subId to "#outfitItemSub-" + $args[0]>>
-				<<if _subState[$args[0]] is "colourView">>
-					<<set _subState[$args[0]] to "">>
+			<<link "편집">>
+				<<set _subId to "#outfitItemSub-" + _args[0]>>
+				<<if _subState[_args[0]] is "colourView">>
+					<<set _subState[_args[0]] to "">>
 					<<replace _subId>><</replace>>
 				<<else>>
-					<<set _subState[$args[0]] to "colourView">>
-					<<replace _subId>><<outfitEditorItemColour $args[0]>><</replace>>
+					<<set _subState[_args[0]] to "colourView">>
+					<<replace _subId>><<outfitEditorItemColour _args[0]>><</replace>>
 				<</if>>
 			<</link>>
 		<<else>>
-			<<link 사용>>
-				<<set $outfit[$args[0]].colors to {}>>
-				<<set _outfitIndex to $args[0]>>
+			<<link "사용">>
+				<<set $outfit[_args[0]].colors to {}>>
+				<<set _outfitIndex to _args[0]>>
 				<<for _label, _value range setup.clothes>>
-					<<set _item to setup.clothes[_label].filter((item) => item.name === V.outfit[T.outfitIndex][T.label])[0]>>
+					<<set _item to setup.clothes[_label].filter((item) => item.name === $outfit[_outfitIndex][_label])[0]>>
 					<<set _colors to [0,0]>>
 					<<if _item>>
 						<<if _item.colour_options.length gt 0>>
@@ -704,21 +735,36 @@
 							<<set _colors[1] to _item.accessory_colour_options[0]>>
 						<</if>>
 					<</if>>
-					<<set $outfit[$args[0]].colors[_label] to clone(_colors)>>
+					<<set $outfit[_args[0]].colors[_label] to clone(_colors)>>
 				<</for>>
-				<<set _id to "#outfitItem-" + $args[0]>>
-				<<replace `_id`>><<outfitEditorItem $args[0]>><</replace>>
+				<<set _id to "#outfitItem-" + _args[0]>>
+				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
 			<</link>>
 		<</if>>
 	</div>
-	<div @id="'outfitItemSub-' + $args[0]"></div>
+	<<if $savedHairStyles>>
+		<div>
+			<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+			머리모양:
+			<<set $_hairStyle to "$outfit["+_args[0]+"].hairStyle">>
+			<<listbox $_hairStyle autoselect>>
+				<<option "설정 않음" undefined>>
+				<<optionsfrom _savedHairStylesKeys>>
+			<</listbox>>
+		</div>
+	<<else>>
+		<div>
+			머리모양: 저장된 설정이 없습니다 (거울을 확인하세요)
+		</div>
+	<</if>>
+	<div @id="'outfitItemSub-' + _args[0]"></div>
 <</capture>>
 <</widget>>
 
 <<widget "outfitEditorItemClothes">>
-<<capture $args[0]>>
+<<capture _args[0]>>
 	<<for $_label, $_value range setup.clothes>>
-		<<set $_itemName to $outfit[$args[0]][$_label]>>
+		<<set $_itemName to $outfit[_args[0]][$_label]>>
 		<<if $_itemName and !["over_upper","over_lower","over_head"].includes($_label)>>
 			<label class="outfitEditorItemClothes">
 				<<set $_options to {}>>
@@ -726,14 +772,14 @@
 					<<trClothes $_label $_value2.name "name">><<set $_options[_trResult] to $_value2.name>>
 				<</for>>
 				<<trClothesType $_label>><<print _trResult>> -
-				<<set $_var to "$outfit[" + $args[0] + "]['" + $_label + "']">>
+				<<set $_var to "$outfit[" + _args[0] + "]['" + $_label + "']">>
 				<<listbox `$_var` autoselect>>
 					<<optionsfrom $_options>>
 				<</listbox>>
 				<!--Runs too many times for some reason, needs to be improved-->
 				<<run $(() => { $('.outfitEditorItemClothes select').on('input change', e => {
 					let outfitIndex = e.target.name.replace(/\D/g,'');
-					if(V.outfit[outfitIndex].colors === false) return;
+					if(!V.outfit[outfitIndex].colors) return;
 
 					let target = e.target.name.match(/[a-zA-Z]+/g);
 					let slot = target[2] + (target[3] !== undefined ? '_' + target[3] : '');
@@ -759,22 +805,22 @@
 <</widget>>
 
 <<widget "outfitEditorItemColour">>
-<<capture $args[0]>>
+<<capture _args[0]>>
 	<<for $_label, $_value range setup.clothes>>
 		<<set _colourLabel to $_label>>
-		<<set _colourOutfit to $args[0]>>
-		<<set $_item to setup.clothes[$_label].filter((item) => item.name === V.outfit[T.colourOutfit][T.colourLabel])[0]>>
+		<<set _colourOutfit to _args[0]>>
+		<<set $_item to setup.clothes[$_label].filter((item) => item.name === $outfit[_colourOutfit][_colourLabel])[0]>>
 		<<if $_item>>
 			<<if $_item.colour_options.length gt 0 or $_item.accessory_colour_options.length gt 0>>
 				<<trClothesType $_label>><<print _trResult>> - <<trClothes $_label $_item.name "name">><<print _trResult>>:
 				<<if $_item.colour_options.length gt 0>>
-					<<set $_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][0]">>
+					<<set $_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][0]">>
 					<<set _trTempColours to $_item.colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_colour_options` autoselect>>
 						<<optionsfrom _trListboxItems>>
 					<</listbox>>
 				<</if>>
 				<<if $_item.accessory_colour_options.length gt 0>>
-					<<set $_accessory_colour_options to "$outfit["+$args[0]+"].colors['"+$_label+"'][1]">>
+					<<set $_accessory_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][1]">>
 					<<set _trTempColours to $_item.accessory_colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_accessory_colour_options` autoselect>>
 						<<optionsfrom _trListboxItems>>
 					<</listbox>>

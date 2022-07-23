@@ -6,10 +6,10 @@
 		<<if $swimmingattended is 1>>
 			당신은 수영장에 들어간다.
 		<br><br>
-			The lesson has just ended. A few stragglers are still on their way to the changing rooms. Mason is gathering up towels that have been left behind.
+			수업이 막 끝났다. 몇몇 뒤처진 학생들이 탈의실로 돌아가고 있다. 메이슨은 뒤에 남아있는 수건들을 정리하고 있다.
 		<br><br>
 			<<if random(1,1000) is 1>>
-				Outside, someone is farting in the general direction of their enemies. They must be French.
+				바깥에선 누군가가 대충 적이 있을 법한 방향으로 방귀를 뀌고 있다. 분명 프랑스인일 것이다.
 				<br><br>
 		<</if>>
 			<<if $exposed lte 0>>
@@ -53,8 +53,14 @@
 		<<else>>
 			당신은 수영장에 들어간다.
 
-			메이슨과 다른 학생들은 이미 물 안에 들어가있다. "지금이라도 합류해서 다행이구나!" <<HePost "이">> 손짓을 하며 말한다.
-			<<gdelinquency>><<detention 1>>
+			메이슨과 다른 학생들은 이미 물 안에 들어가있다.
+			<<if $swimmingExcused>>
+				<<unset $swimmingExcused>>
+				"거기 있구나," <<he_ga>> 말하며, 손짓한다. "걱정 마라, 늦는다는 말을 들었다. 이리 들어와!"
+			<<else>>
+				"지금이라도 합류해서 다행이구나!" <<HePost "이">> 손짓을 하며 말한다.
+				<<gdelinquency>><<detention 1>>
+		<</if>>
 			<br><br>
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				메이슨은 그 즉시 당신의 묶인 <<if $rightarm is "bound" or $leftarm is "bound">>팔<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">>과 <</if>><<if $feetuse is "bound">>다리를<<else>>을<</if>> 본다. "잠깐! 그런 상태로 수영하는 건 안전하지 않단다."
@@ -123,8 +129,15 @@
 
 		<<else>>
 			당신은 수영장에 들어간다.
-			메이슨과 다른 학생들은 이미 물 안에 들어가있다. "지금이라도 합류해서 다행이구나!" <<HePost "이">> 손짓을 하며 말한다.
-			<<gdelinquency>><<detention 1>>
+
+			메이슨과 다른 학생들은 이미 물 안에 들어가있다.
+			<<if $swimmingExcused>>
+				<<unset $swimmingExcused>>
+				"거기 있구나," <<he_ga>> 말하며, 손짓한다. "걱정 마라, 늦는다는 말을 들었다. 이리 들어와!"
+			<<else>>
+				"지금이라도 합류해서 다행이구나!" <<HePost "이">> 손짓을 하며 말한다.
+				<<gdelinquency>><<detention 1>>
+		<</if>>
 			<br><br>
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				메이슨은 그 즉시 당신의 묶인 <<if $rightarm is "bound" or $leftarm is "bound">>팔<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">>과 <</if>><<if $feetuse is "bound">>다리를<<else>>을<</if>> 본다. "잠깐! 그런 상태로 수영하는 건 안전하지 않단다."
@@ -141,7 +154,12 @@
 	<<else>>
 		당신은 수영장에 들어간다.
 		<<npc Mason>><<person1>>
-		메이슨은 당신의 복장을 본다. "그렇게 옷을 입은 상태에서는 수영할 수 없단다! 가서 갈아입고 오렴."
+		<<if $swimmingExcused>>
+			"늦는다는 말은 들었지만, 옷을 갈아입기는 해야지.
+		<<else>>
+			"그렇게 옷을 입은 상태에서는 수영할 수 없단다!
+		<</if>>
+		가서 갈아입고 오렴."
 		<br><br>
 
 		<<if $exhibitionism gte 75 and $swimall isnot 1>>
@@ -635,6 +653,7 @@
 	당신은 메이슨의 지시에 따라 노력하는 데에 집중한다. 따라가기가 어렵기는 해도, 성과가 있는 것 같다.
 	<<physique 3>><<swimmingskilluse>>
 <</if>>
+<br><br>
 
 <<advancelesson>>
 <<stress _lesson_progress>>
@@ -711,6 +730,7 @@
 
 당신은 수업은 최소한으로만 들으며, 그 대신 배영을 연습하기로 한다.
 <<swimmingskilluse>>
+<br><br>
 반 친구들은 당신이 완전한 알몸 상태에서 배영을 하며, 당신의 <<if pregnancyBellyVisible()>>임신한 배<<if $player.penisExist and $player.vaginaExist>>,<<else>>와<</if>><</if>> <<genitalsPost "을">> 모두가 볼 수 있게 내놓은 모습에 말문이 막힌 모습이다.
 <<exhibitionism5>>
 
@@ -718,9 +738,9 @@
 <<if $player.penisExist>>
 	<<if $player.vaginaExist>>
 		소년소녀들 몇몇은 당신의 특별한 성기를 경외감에 차서 쳐다본다.
-	<<elseif $penissize lte 0>>
+	<<elseif $player.penissize lte 0>>
 		몇몇 여학생들은 키득거리고, 히죽거리며 웃는 여학생도 있다. <<incgpenisinsecurity>>
-	<<elseif $penissize is 4>>
+	<<elseif $player.penissize is 4>>
 		몇몇 여학생들은 키득거리고, 일부 남학생들은 당신을 노려본다.
 		<<if random(1,5) gte 4>>
 			몇몇 남학생들은 다른 이들보다 더 오랫동안 당신을 쳐다본다.

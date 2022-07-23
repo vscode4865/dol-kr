@@ -10,7 +10,7 @@
 			T.npcConfig = {
 				"Robin" : {
 					important : true,
-					dom :  { name : "신뢰", activeIcon : "img/ui/confidence.png", color: "blue" }
+					dom : { name : "자신감", activeIcon : "img/ui/confidence.png", color: "blue" }
 				},
 				"Whitney" : {
 					important : true,
@@ -35,7 +35,7 @@
 				},
 				"Sydney" : {
 					important : true,
-					love : { maxValue: 150 },			
+					love : { maxValue: 150 },
 					purity : { requirements : State.variables.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
 					corruption : { requirements : State.variables.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
 				},
@@ -98,7 +98,7 @@
 			<<set _policeCrimeConfig = { currentValue : $crimehistory, states : [
 				{ requiredValue: 0,		color: 'green',		description: '경찰은 당신을 신경쓰지 않는다.'},
 				{ requiredValue: 1000,	color: 'teal',		description: '경찰에겐 당신에 대한 기록이 있다.'},
-				{ requiredValue: 2000,  color: 'lblue',		description: '경찰은 당신을 요주의 인물로 생각한다.'},
+				{ requiredValue: 2000,	color: 'lblue',		description: '경찰은 당신을 요주의 인물로 생각한다.'},
 				{ requiredValue: 3000,	color: 'blue',		description: '경찰은 당신을 골칫거리로 여긴다.'},
 				{ requiredValue: 5000,	color: 'purple',	description: '경찰은 당신을 범죄자로 여긴다.'},
 				{ requiredValue: 10000,	color: 'pink',		description: '경찰은 당신 전용 수갑을 갖고 있다.'},
@@ -316,10 +316,10 @@
 				{ requiredValue: 5,		color: 'lblue',		description: '신뢰한다'},
 				{ requiredValue: 20,	color: 'green',		description: '존중한다'}
 			]}>>
-			<<set _farmHorseBoxConfig = 	{ name: "말",		description : '<<relation-text _farmHorseRepConfig>>'}>>
-			<<set _farmPigBoxConfig = 		{ name: "돼지",		description : '<<relation-text _farmPigRepConfig>>'}>>
-			<<set _farmCattleBoxConfig = 	{ name: "소",		description : '<<relation-text _farmCattleRepConfig>>'}>>
-			<<set _farmDogBoxConfig = 		{ name: "개",		description : '<<relation-text _farmDogRepConfig>>'}>>
+			<<set _farmHorseBoxConfig =		{ name: "말",	description : '<<relation-text _farmHorseRepConfig>>'}>>
+			<<set _farmPigBoxConfig =		{ name: "돼지",		description : '<<relation-text _farmPigRepConfig>>'}>>
+			<<set _farmCattleBoxConfig =	{ name: "소",	description : '<<relation-text _farmCattleRepConfig>>'}>>
+			<<set _farmDogBoxConfig =		{ name: "개",		description : '<<relation-text _farmDogRepConfig>>'}>>
 
 			<<if $farm_stage gte 5>>
 				/* Farm Sabotage */
@@ -369,29 +369,32 @@
 				{ requiredValue: 1000,	color: 'green',		description: ' 명성이 자자한 _config.flavorText'}
 			]>>
 
-			<<set _sexFameConfig =				{ currentValue: $famesex,			preText: '섹스:',		flavorText: '걸레',				states: _fameStates }>>
-			<<set _prostitutionFameConfig =		{ currentValue: $fameprostitution,	preText: '매춘:',		flavorText: '창녀',				states: _fameStates }>>
-			<<set _rapeFameConfig =				{ currentValue: $famerape,			preText: '강간:',		flavorText: '육변기',			states: _fameStates }>>
+			<<set _sexFameConfig =				{ currentValue: $fame.sex,				preText: '섹스:',			flavorText: '걸레',				states: _fameStates }>>
+			<<set _prostitutionFameConfig =		{ currentValue: $fame.prostitution,		preText: '매춘:',	flavorText: '창녀',			states: _fameStates }>>
+			<<set _rapeFameConfig =				{ currentValue: $fame.rape,				preText: '강간:',			flavorText: '육변기',			states: _fameStates }>>
 			<<if $bestialitydisable is "f">>
-				<<set _bestialityFameConfig =	{ currentValue: $famebestiality,	preText: '수간:',		flavorText: '암컷',				states: _fameStates }>>
+				<<set $_pre to "수간:">>
+				<<set $_flavor to "암컷">>
 			<<else>>
-				<<set _bestialityFameConfig =	{ currentValue: $famebestiality,	preText: '이종간:',		flavorText: '이상성욕자',		states: _fameStates }>>
+				<<set $_pre to "이종간:">>
+				<<set $_flavor to "이상성욕자">>
 			<</if>>
-			<<set _exhibitionismFameConfig =	{ currentValue: $fameexhibitionism,	preText: '노출증:',		flavorText: '과시자',			states: _fameStates }>>
-			<<if $famepregnancy gte 600>>
+			<<set _bestialityFameConfig =		{ currentValue: $fame.bestiality,		preText: $_pre,				flavorText: $_flavor,			states: _fameStates }>>
+			<<set _exhibitionismFameConfig =	{ currentValue: $fame.exhibitionism,	preText: '노출증:',	flavorText: '과시자',			states: _fameStates }>>
+			<<if $fame.pregnancy gte 600>>
 				<<set $_name to "번식 엄마">>
-			<<elseif $famepregnancy gte 200>>
+			<<elseif $fame.pregnancy gte 200>>
 				<<set $_name to "번식자">>
 			<<else>>
 				<<set $_name to "엄마">>
 			<</if>>
-			<<set _pregnancyFameConfig = 		{ currentValue: $famepregnancy,		preText: '임신:',		flavorText: $_name,				states: _fameStates }>>
-			<<set _combatFameConfig =			{ currentValue: $famescrap,			preText: '전투:',		flavorText: '싸움꾼',			states: _inverseFameStates }>>
-			<<set _kindnessFameConfig =			{ currentValue: $famegood,			preText: '친절:',		flavorText: '박애주의자',		states: _inverseFameStates }>>
-			<<set _businessFameConfig =			{ currentValue: $famebusiness,		preText: '사업:',		flavorText: '사업가',			states: _inverseFameStates }>>
-			<<set _socialFameConfig =			{ currentValue: $famesocial,		preText: '사교:',		flavorText: '달변가',			states: _inverseFameStates }>>
-			<<set _modelFameConfig =			{ currentValue: $famemodel,		preText: '모델:',		flavorText: '모델',	states: _inverseFameStates }>>
-			<<set _overallFameConfig =			{ currentValue: $fame,				preText: '전체:',		flavorText: '', states: [
+			<<set _pregnancyFameConfig =		{ currentValue: $fame.pregnancy,		preText: '임신:',		flavorText: $_name,				states: _fameStates }>>
+			<<set _combatFameConfig =			{ currentValue: $fame.scrap,			preText: '전투:',			flavorText: '싸움꾼',			states: _inverseFameStates }>>
+			<<set _kindnessFameConfig =			{ currentValue: $fame.good,				preText: '친절:',		flavorText: '박애주의자',		states: _inverseFameStates }>>
+			<<set _businessFameConfig =			{ currentValue: $fame.business,			preText: '사업:',		flavorText: '사업가',		states: _inverseFameStates }>>
+			<<set _socialFameConfig =			{ currentValue: $fame.social,			preText: '사교:',		flavorText: '달변가',		states: _inverseFameStates }>>
+			<<set _modelFameConfig =			{ currentValue: $fame.model,			preText: '모델:',		flavorText: '모델',			states: _inverseFameStates }>>
+			<<set _overallFameConfig =			{ currentValue: fameTotal(),			preText: '전체:',		flavorText: '',					states: [
 				{ requiredValue: 0,		color: 'green',		description: ' 아무도 모름'},
 				{ requiredValue: 100,	color: 'teal',		description: ' 잘 알려지지 않음'},
 				{ requiredValue: 500,	color: 'lblue',		description: ' 약간 알려짐'},
@@ -406,7 +409,7 @@
 			<<set _rapeFameBoxConfig =			{ description : '<<relation-text _rapeFameConfig>>' }>>
 			<<set _bestialityFameBoxConfig =	{ description : '<<relation-text _bestialityFameConfig>>' }>>
 			<<set _exhibitionismFameBoxConfig =	{ description : '<<relation-text _exhibitionismFameConfig>>' }>>
-			<<set _pregnancyFameBoxConfig = 	{ description : '<<relation-text _pregnancyFameConfig>>' }>>
+			<<set _pregnancyFameBoxConfig =		{ description : '<<relation-text _pregnancyFameConfig>>' }>>
 			<<set _combatFameBoxConfig =		{ description : '<<relation-text _combatFameConfig>>' }>>
 			<<set _kindnessFameBoxConfig =		{ description : '<<relation-text _kindnessFameConfig>>' }>>
 			<<set _businessFameBoxConfig =		{ description : '<<relation-text _businessFameConfig>>' }>>
@@ -420,7 +423,7 @@
 		<<relation-box-simple _rapeFameBoxConfig>>
 		<<relation-box-simple _bestialityFameBoxConfig>>
 		<<relation-box-simple _exhibitionismFameBoxConfig>>
-		<<if $famemodel gte 1>>
+		<<if $fame.model gte 1>>
 			<<relation-box-simple _modelFameBoxConfig>>
 		<</if>>
 		/*ToDo: Pregnancy, remove check to properly enable*/
@@ -443,13 +446,13 @@
 		<div id="other-relation-blocks">
 				늑대 무리 화합: <img id="statbar" src="img/ui/wolfharmony.png">
 				<div class="meter">
-					<<set $percent=Math.floor(($wolfpackharmony/20)*100)>>
+					<<set $percent=Math.floor((Math.min(20, $wolfpackharmony)/20)*100)>>
 					<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
 				</div>
 
 				늑대 무리 흉폭성: <img id="statbar" src="img/ui/wolfferocity.png">
 				<div class="meter">
-					<<set $percent=Math.floor(($wolfpackferocity/20)*100)>>
+					<<set $percent=Math.floor((Math.min(20, $wolfpackferocity)/20)*100)>>
 					<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
 				</div>
 		</div>
@@ -458,7 +461,7 @@
 
 	<<if $dockwork gte 2>>
 		<div id="other-relation-blocks">
-				부두: 
+				부두:
 				<<set $dockstatus = Math.clamp($dockstatus, 0, 100)>>
 				<<if $dockstatus gte 100>>
 					<span class="green">다른 일꾼들은 당신을 존중한다.</span>

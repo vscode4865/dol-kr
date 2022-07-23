@@ -119,16 +119,16 @@
 <div @id="'feat-' + _featsCount" class="feat">
 	<div class="featImage">
 		<span class="dot"></span>
-		<<switch _feats[$args[0]].difficulty>>
+		<<switch _feats[_args[0]].difficulty>>
 			<<case 1>><img src="img/ui/CopperCoin.gif" class="featCoin">
 			<<case 2>><img src="img/ui/SilverCoin.gif" class="featCoin">
 			<<case 3>><img src="img/ui/GoldCoin.gif" class="featCoin">
 		<</switch>>
 	</div>
 	<div class="featText">
-		<span class="title"><<print _feats[$args[0]].title>></span>
+		<span class="title"><<print _feats[_args[0]].title>></span>
 		<br>
-		<span class="text" style="font-size:75%"><<print _feats[$args[0]].desc>></span>
+		<span class="text" style="font-size:75%"><<print _feats[_args[0]].desc>></span>
 	</div>
 	<div @id="'closeFeat-' + _featsCount" class="closeFeat" @onclick="'closeFeats('+ _featsCount +')'"></div>
 </div>
@@ -152,7 +152,7 @@
 <<print _listbox>>
 
 <<set _upgradeName to _upgradeNames[_upgradeNameID]>>
-<<link 이전>>
+<<link "이전">>
 	<<set _upgradeNameID-->>
 	<<if _upgradeNameID lt 0>>
 		<<set _upgradeNameID to _upgradeNames.length - 1>>
@@ -164,7 +164,7 @@
 	<<set _upgradeName to _upgradeNames[_upgradeNameID]>>
 	<<updateFeatsPointsMenu>>
 <</link>> |
-<<link 다음>>
+<<link "다음">>
 	<<set _upgradeNameID++>>
 	<<if _upgradeNameID gte _upgradeNames.length>>
 		<<set _upgradeNameID to 0>>
@@ -197,7 +197,7 @@
 				<li>
 				<<switch _upgradeNames[$_i]>>
 					<<case "randomClothing">>
-						<<print $featsBoosts.clothingGender>> <<print $featsBoosts.name[_upgradeNames[$_i]]>>: <<print $featsBoosts.upgrades[_upgradeNames[$_i]]>>
+						<<print ($featsBoosts.clothingGender eq "Either"?"남성용 혹은 여성용":($featsBoosts.clothingGender eq "Male"?"남성용":"여성용"))>> <<print $featsBoosts.name[_upgradeNames[$_i]]>>: <<print $featsBoosts.upgrades[_upgradeNames[$_i]]>>
 					<<default>>
 						<<print $featsBoosts.name[_upgradeNames[$_i]]>>: <<print $featsBoosts.upgrades[_upgradeNames[$_i]]>>
 				<</switch>>
@@ -209,7 +209,7 @@
 <</widget>>
 
 <<widget "featsMenu">>
-<<set _name to $args[0]>>
+<<set _name to _args[0]>>
 <<capture _name>>
 	<<set _details to $featsBoosts.upgradeDetails[_name]>>
 	<<set _count to _details.count>>
@@ -302,9 +302,9 @@
 				<span class="listMargin">
 					<span class="gold">어떤 문신을 할 것인가:</span>
 					<<featsTattooOptions>>
-					<<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].tattoo"` autoselect>>
+					<<trListboxItemsFromArray "_featsTattooOptions">><<listbox `"$featsBoosts.tattoos["+_tattooNumber+"].tattoo"` autoselect>>
 						<<option "무작위" "Random">>
-						<<optionsfrom _featsTattooOptions>>
+						<<optionsfrom _trListboxItems>>
 					<</listbox>>
 				</span>
 				<br>
@@ -325,9 +325,9 @@
 <</widget>>
 
 <<widget "featsPointsMenuButtons">>
-<<set _type to $args[0]>>
-<<set _multi to $args[1]>>
-<<set _max to $args[2]>>
+<<set _type to _args[0]>>
+<<set _multi to _args[1]>>
+<<set _max to _args[2]>>
 <<capture _type _multi _max>>
 	<<if _multi is undefined>>
 		<<set _multi to 1>>
@@ -341,13 +341,13 @@
 		5 감소 |
 	<</if>>
 	<<if $featsBoosts.upgrades[_type] gte 1 * _multi>>
-	<<link 감소>><<print "<<updateFeatsPointsMenu _type " + (-1 * _multi) +">>">><</link>> |
+	<<link "감소">><<print "<<updateFeatsPointsMenu _type " + (-1 * _multi) +">>">><</link>> |
 	<<else>>
 		감소 |
 	<</if>>
 	<<if $featsBoosts.upgrades[_type] / _multi lt _max / _multi
 	and $feats.allSaves.points - $featsBoosts.pointsUsed gte 1 * _multi>>
-		<<link 증가>><<print "<<updateFeatsPointsMenu _type " + (1 * _multi) +">>">><</link>> |
+		<<link "증가">><<print "<<updateFeatsPointsMenu _type " + (1 * _multi) +">>">><</link>> |
 	<<else>>
 		증가 |
 	<</if>>
@@ -379,9 +379,9 @@
 <</widget>>
 
 <<widget "updateFeatsPointsMenu">>
-<<if $feats.allSaves.points - $featsBoosts.pointsUsed gte $args[1] or $args[1] lt 0>>
-	<<set $featsBoosts.upgrades[$args[0]] += $args[1]>>
-	<<set $featsBoosts.pointsUsed += $args[1]>>
+<<if $feats.allSaves.points - $featsBoosts.pointsUsed gte _args[1] or _args[1] lt 0>>
+	<<set $featsBoosts.upgrades[_args[0]] += _args[1]>>
+	<<set $featsBoosts.pointsUsed += _args[1]>>
 <</if>>
 <<replace #featsPointsMenu>>
 	<<featsPointsMenu>>
@@ -396,7 +396,7 @@
 		<<if _value.featSkip is true or _value.special is "pregnancy">>
 			<<continue>>
 		<</if>>
-		<<trBodyWriting _value.writing>><<run _featsTattooOptions.push(_trResult)>>
+		<<run _featsTattooOptions.push(_value.writing)>>
 	<</for>>
 <</if>>
 <</widget>>

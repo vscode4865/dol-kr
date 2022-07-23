@@ -19,6 +19,10 @@
 	<br>
 	<<wardrobeicon>><<link [[옷장|Eden Wardrobe]]>><<endevent>><</link>>
 	<br>
+	<<if playerHasSexToys()>>
+		<<sextoysicon>><<link [[섹스 장난감들|Sextoys Inventory]]>><<set $sextoyInvReturnLink to $passage>><</link>>
+		<br>
+	<</if>>
 	<<if $nextPassageCheck is "Eden Mirror">>
 		<span class="nextLink"><<mirroricon>><<link [[거울|Eden Mirror]]>><<endevent>><</link>></span>
 	<<else>>
@@ -220,7 +224,7 @@
 	<<elseif $edenfurniture is 3 and $edenloveseat lt 7>>
 		<<link [[안락의자를 만든다 (3:00)|Eden Loveseat Work]]>><<pass 2 hours>><<pass 1 hour>><</link>>
 		<br>
-	<</if>>	
+	<</if>>
 	<<if $hour is 17 and $edenjoin is 1>>
 		<<link [[에덴에게 같이 목욕할 건지 묻는다|Eden Bath Join]]>><<npcincr Eden love 1>><<pass 30>><</link>><<glove>>
 		<br>
@@ -373,7 +377,7 @@
 		<span class="green">샘은 깨끗하고 맑다.</span>
 		<br>
 
-		<<if !$edenspringintro and (($hour gte 9 and $hour lte 10) or ($hour is 15) or ($hour is 16))>> 
+		<<if !$edenspringintro and (($hour gte 9 and $hour lte 10) or ($hour is 15) or ($hour is 16))>>
 			<<link [[샘에서 휴식을 취한다 (0:30)|Eden Spring Intro]]>><</link>><<lstress>>
 		<<else>>
 			<<link [[샘에서 휴식을 취한다 (0:30)|Clearing Spring]]>><<unset $edenpush>><<endevent>><<pass 30>><<stress -6>><</link>><<lstress>>
@@ -542,9 +546,90 @@
 					<<set _edenPreyEvent to true>>
 				<</if>>
 		<</switch>>
-		
+
 		<<if _edenPreyEvent>>
 			<<set $edenPreyWeekly to true>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "edenCagedSave">>
+	<<npc Eden>><<person1>>
+	당신이 다시 떠올려내기 전에, 당신은 누군가 당신의 어깨에 손을 얹은 것을 느낀다. 당신은 뒤로 돌려져, 분노로 가득한 눈동자를 한 에덴과 마주한다.
+	<br><br>
+
+	"뻔뻔하기도 하지," <<he_ga>> 으르렁거린다. "날 버리고, 좆같은 애새끼처럼 굴다가, 너의 위험에서 벗어나기 위해 여전히 나에게 의지하는구나."
+	<br><br>
+
+	<<He_nun>> 당신의 손목을 단단히 잡고 숲 속으로 나아가기 시작한다. "이리 와. 벌 받을 시간이 지났어."
+	<br><br>
+
+	<<link [[저항한다|Forest Eden Rage]]>><<set $phase to 0>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+	<br>
+	<<link [[항복한다 (0:30)|Forest Eden Rage]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+	<br>
+<</widget>>
+
+<<widget "edenCagedCoopSave">>
+	<<npc Eden>><<person1>>
+
+	<<if $forest_shop_intro isnot 1 and $gwylan_rescue isnot 1>>
+		칙칙한 갈색머리의 <<nnpc_gendery_ga "Gwylan">>
+	<<else>>
+		그윌란이
+	<</if>>
+	나무줄기를 헤치고 뛰어 나와 당신 곁으로 다가온다. "이봐! 너 괜찮-"
+	<br><br>
+
+	<<if $gwylan_eden_coop gte 4>>
+		누군가가 <<nnpc_him_yi "Gwylan">> 팔을 잡고 <<nnpc_him_ul "Gwylan">> 옆으로 끌어내려서, <<nnpc_He_nun "Gwylan">> 말을 멈췄다. <span class="red">에덴이다.</span> <<He_nun>> 당신을 만난 것이 기쁘지 않아 보인다.
+		<br>
+		"뻔뻔하기도 하지," 에덴이 으르렁거린다. "날 버리고, 좆같은 애새끼처럼 굴다가, 너의 위험에서 벗어나기 위해 여전히 나에게 의지하는구나."
+		<br><br>
+
+		그윌란은 초조하게 침을 꿀꺽 삼키고 에덴의 어깨에 한 손을 얹는다. "이-이봐, 진정해. 그냥-"
+		<br><br>
+
+		에덴은 몸을 돌려 그윌란의 턱을 주먹으로 때린다. <<nnpc_He_nun "Gwylan">> 고통 속에서 비명을 지르며, 비틀거리며 뒤로 물러나, 흙 위에 쓰러진다.<<trauma 12>><<ggtrauma>>
+		<br>
+		"내 몸에 손대지 마," 에덴이 침을 뱉는다. "나는 네 도움 같은 건 필요 없어. 그리고 그건 <<pshePost>>도 마찬가지고." <<He_nun>> 눈을 부릅뜨고 당신을 돌아본다. "<<pShePost>>에게 필요한 것은 <<pher_yi>> 분수를 배우는 것뿐이야."
+		<br><br>
+
+		<<He_nun>> 당신의 손목을 잡고, 그윌란을 남겨둔 채, 당신을 숲으로 끌고 가기 시작한다.
+	<<elseif $gwylan_eden_coop gte 1>>
+		에덴이 분노로 가득 찬 눈으로 <<nnpc_him_ul "Gwylan">> 밀쳐내서, <<nnpc_He_nun "Gwylan">> 중간에 말을 멈추었다. <<nnpc_he_nun "Gwylan">> 흙바닥에 쓰러지면서 비명을 지른다.
+		<br>
+		"뻔뻔하기도 하지," 에덴이 으르렁거린다. "날 버리고, 좆같은 애새끼처럼 굴다가, 너의 위험에서 벗어나기 위해 여전히 나에게 의지하는구나."
+		<br><br>
+
+		그윌란은 입을 벌리고, 이쪽을 바라보고 있다. 에덴은 <<nnpc_him_ul "Gwylan">> 노려본다. "가. 이건 나와 <<pherPost>> 사이의 문제야."
+		<br>
+		그윌란은 <<nnpc_his_yi "Gwylan">> 얼굴에 걱정과 두려움이 뒤섞인 표정을 띄우고, 두 사람 사이를 흘끗 바라보다가, 일어서서 허둥지둥 달아난다.<<trauma 6>><<gtrauma>>
+		<br><br>
+
+		에덴이 당신을 돌아본다. "나는 널 다시 찾을 거라고 했잖아," <<he_nun>> 침을 뱉는다. "그리고 아무도 날 방해하지 않지." <<He_nun>> 당신을 숲으로 끌고 가기 시작한다.
+	<<else>>
+		한 손이 <<nnpc_him_yi "Gwylan">> 팔을 잡고 <<nnpc_him_ul "Gwylan">> 근처 관목에 내던져서, <<nnpc_He_nun "Gwylan">> 말을 멈춘다.
+		<br><br>
+
+		<span class="red">에덴이다.</span> "나는 널 다시 찾을 거라고 했잖아," <<he_ga>> 으르렁거린다. "그리고 아무도 날 방해하지 않지."
+		<br><br>
+
+		<<He_nun>> 당신을 숲으로 끌고 가기 시작하고
+		<<if $forest_shop_intro isnot 1 and $gwylan_rescue isnot 1>>
+			<<nnpc_gendery_nun "Gwylan">>
+		<<else>>
+			가게 주인은
+		<</if>>
+		남겨진 곳에서 신음을 내뱉는다.
+	<</if>>
+	<<set $gwylan_aborted to 1>>
+	<br><br>
+
+	<<link [[싸운다|Eden Caged Caught Resist]]>><<set $fightstart to 1>><<def 1>><</link>>
+	<br>
+	<<link [[밀쳐내려 시도한다|Eden Caged Caught Pull]]>><<def 1>><<npcincr Eden dom -1>><</link>><<physiquedifficulty 2000 18000>><<ldom>>
+	<br>
+	<<link [[항복한다 (0:30)|Eden Caged Caught]]>><<set $phase to 1>><<pass 30>><<sub 1>><<npcincr Eden dom 1>><</link>><<gdom>>
+	<br>
 <</widget>>

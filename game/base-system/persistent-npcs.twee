@@ -2,43 +2,74 @@
 /*For saving generic NPC data so they can be loaded later*/
 <<widget "saveNPC">>
 /*First argument is the NPClist index of the NPC to be saved. Second argument is the string you want to save it under.*/
-<<if $args[0] gte 0 and $args[1]>>
-	<<set _temp1 to $args[1]>>
-	<<set _temp0 to $args[0]>>
+<<if _args[0] gte 0 and _args[1]>>
+	<<set _temp1 to _args[1]>>
+	<<set _temp0 to _args[0]>>
 	<<set $per_npc[_temp1] to clone($NPCList[_temp0])>>
 	/*Clears name from name pool */
-	<<if $NPCList[$args[0]].pronoun is "f">>
-		<<set $NPC_names_f.delete($NPCList[$args[0]].name)>>
+	<<if $NPCList[_args[0]].pronoun is "f">>
+		<<set $NPC_names_f.delete($NPCList[_args[0]].name)>>
 	<<else>>
-		<<set $NPC_names_m.delete($NPCList[$args[0]].name)>>
+		<<set $NPC_names_m.delete($NPCList[_args[0]].name)>>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "loadNPC">>
 <!-- Checks if endevent was properly used after the last event -->
-<<checkEventNPC $args[0]>>
+<<checkEventNPC _args[0]>>
 /*First argument is the NPClist you want the NPC to fill. Second argument is the string you want to load, as saved with saveNPC.*/
-<<if $args[0] gte 0 and $args[1]>>
-	<<set _temp1 to $args[1]>>
-	<<set _temp0 to $args[0]>>
-	<<set $NPCList[_temp0] to clone($per_npc[_temp1])>>
-	<<if $enemyno lt 6>><<set $enemyno += 1>><</if>>
-	<<if $NPCList[_temp0].monster is "monster">>
-		<<set $monster to 1>>
+<<if _args[0] gte 0 and _args[1]>>
+	<<set _temp1 to _args[1]>>
+	<<set _temp0 to _args[0]>>
+	<<if $per_npc[_temp1] isnot undefined>>
+		<<set $NPCList[_temp0] to clone($per_npc[_temp1])>>
+		<<if $enemyno lt 6>><<set $enemyno += 1>><</if>><<set $enemynomax to $enemyno>>
+		<<if $NPCList[_temp0].monster is "monster">>
+			<<set $monster to 1>>
+		<<else>>
+			<<set $monster to 0>>
+		<</if>>
+		<<run EventSystem.Push($passage, _args[0], $time)>>
 	<<else>>
-		<<set $monster to 0>>
+		<span class="red">[ERROR: NPC "<<print _temp1>>" is undefined in passage: "<<print $passage>>"! Please report this issue.]</span>
+
+		<<switch _temp1>>
+			<<case "black_dog">>
+				<<beastNEWinit 1 dog>>
+				<<saveNPC _temp0 "black_dog">>
+			<<case "relaxed_guard">>
+				<<generateRole _temp0 "relaxed" "guard">>
+				<<saveNPC _temp0 "relaxed_guard">>
+			<<case "anxious_guard">>
+				<<generateRole _temp0 "anxious" "guard">>
+				<<saveNPC _temp0 "anxious_guard">>
+			<<case "veteran_guard">>
+				<<generateRole _temp0 "veteran" "guard">>
+				<<saveNPC _temp0 "veteran_guard">>
+			<<case "methodical_guard">>
+				<<generateRole _temp0 "methodical" "guard">>
+				<<saveNPC _temp0 "methodical_guard">>
+			<<case "scarred_inmate">>
+				<<generateRole _temp0 "scarred" "inmate">>
+				<<saveNPC _temp0 "scarred_inmate">>
+			<<case "tattooed_inmate">>
+				<<generateRole _temp0 "tattooed" "inmate">>
+				<<saveNPC _temp0 "tattooed_inmate">>
+			<<default>>
+				<<generateNPC _temp0>>
+				<<saveNPC _temp0 _temp1>>
+		<</switch>>
 	<</if>>
-	<<run EventSystem.Push($passage, $args[0], $time)>>
 <</if>>
 <</widget>>
 
 <<widget "clearNPC">>
 /*Clears persistent NPC data for a single NPC. Argument is the string the NPC was saved under.*/
-<<if $args[0]>>
-	<<set _temp0 to $args[0]>>
+<<if _args[0]>>
+	<<set _temp0 to _args[0]>>
 	/*Adds name back into name pool */
-	<<if $per_npc[_temp0].name>>
+	<<if $per_npc[_temp0] and $per_npc[_temp0].name>>
 		<<if $per_npc[_temp0].pronoun is "f">>
 			<<set $NPC_names_f.pushUnique($per_npc[_temp0].name)>>
 		<<else>>
@@ -53,7 +84,7 @@
 <<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
 	<<for $_i, $_value range $per_npc>>
 		<!-- Set Pronoun -->
-		<<if $per_npc[$_i].pronoun is "none" or $args[0] is "genders">>
+		<<if $per_npc[$_i].pronoun is "none" or _args[0] is "genders">>
 			<<if $malechance lt random(1, 100)>>
 				<<set $per_npc[$_i].pronoun to "f">><<set $test to $per_npc[$_i].pronoun>>
 			<<else>>
@@ -61,7 +92,7 @@
 			<</if>>
 		<</if>>
 		<!-- Set Gender -->
-		<<if $per_npc[$_i].gender is "none" or $args[0] is "genders">>
+		<<if $per_npc[$_i].gender is "none" or _args[0] is "genders">>
 			<<if $per_npc[$_i].pronoun is "m">>
 				<<if random(0, 99) gte $cbchance>>
 					<<set $per_npc[$_i].gender to "m">>
@@ -79,10 +110,10 @@
 
 		<!-- Set Genital Existence -->
 		<<if $per_npc[$_i].type isnot "human">>
-			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? 0 : "none")>>
+			<<set $per_npc[$_i].penis to ($per_npc[$_i].gender !== "f" ? 0 : "none")>>
 			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? 0 : "none")>>
 		<<else>>
-			<<set $per_npc[$_i].penis to  ($per_npc[$_i].gender !== "f" ? "clothed" : "none")>>
+			<<set $per_npc[$_i].penis to ($per_npc[$_i].gender !== "f" ? "clothed" : "none")>>
 			<<set $per_npc[$_i].vagina to ($per_npc[$_i].gender !== "m" ? "clothed" : "none")>>
 		<</if>>
 
@@ -92,9 +123,9 @@
 		<<set _b_mod_upper to Math.clamp($breast_mod + 12, 0, 12)>>
 
 		<!-- can't use breastsize, since that would either break the numberslider
-		or make one of the sizes always be randomized,
+		or make one of the sizes always be randomised,
 		but can use breastdesc not being changed from 0 as a substitute -->
-		<<if $per_npc[$_i].breastdesc is 0 or $args[0] is "breasts">>
+		<<if $per_npc[$_i].breastdesc is 0 or _args[0] is "breasts">>
 			<<if $per_npc[$_i].pronoun is "m">>
 				<<set $per_npc[$_i].breastsize to 0>>
 			<<else>>
@@ -112,9 +143,9 @@
 		<!-- Set pp to defaults-->
 
 		/* New way to set upper and lower bounds.
-		* This method makes use of all other slider positions, but does nothing when slider is between -1 and 1, 
+		* This method makes use of all other slider positions, but does nothing when slider is between -1 and 1,
 		* for a total of 15 unique positions vs the current method's 9. (max would be 17)
-		* Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation. 
+		* Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation.
 		*/
 
 		/*
@@ -150,7 +181,7 @@
 			<<set _p_mod_upper to 1>><<set _p_mod_lower to 1>>
 		<</if>>
 
-		<<if $per_npc[$_i].penissize is 0 or $args[0] is "penis">>
+		<<if $per_npc[$_i].penissize is 0 or _args[0] is "penis">>
 			<<if $per_npc[$_i].gender is "f">>
 				<<set $per_npc[$_i].penissize to 0>>
 				<<set $per_npc[$_i].penisdesc to "none">>
@@ -191,12 +222,12 @@
 
 <<widget "updateNPCsFirst">>/*Adds new variables to saved NPCs.*/
 <<for _per_keys range Object.keys($per_npc)>>
-	<<set $per_npc[_per_keys][$args[0]] to $args[1]>>
+	<<set $per_npc[_per_keys][_args[0]] to _args[1]>>
 <</for>>
 <</widget>>
 
 <<widget "updateNPCsSecond">>
 <<for _per_keys range Object.keys($per_npc)>>
-	<<set $per_npc[_per_keys][$args[0]][$args[1]] to $args[2]>>
+	<<set $per_npc[_per_keys][_args[0]][_args[1]] to _args[2]>>
 <</for>>
 <</widget>>

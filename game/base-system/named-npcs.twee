@@ -4,8 +4,8 @@
 * The way we want to do this is: if an argument is passed (the argument being the Named NPC's name) we clearnpc the specific NPC in question.
 * If no argument is passed, we clear all the Named NPCs.
 */
-<<if $args[0]>>
-	<<set _passargs to $args[0]>>
+<<if _args[0]>>
+	<<set _passargs to _args[0]>>
 	<<set _leindex to $npc.indexOf(_passargs)>>
 	<<set $NPCName[$NPCNameList.indexOf(_passargs)].trust += ($enemytrust / 100)>>
 	<<for _temp to 0; _temp lt $NPCList.length; _temp++>>
@@ -208,10 +208,16 @@ Zohar
 */
 
 <<widget "initnpcgender">>
-<<for _i to 0; _i lt $NPCName.length; _i++>>
+	<<for _i to 0; _i lt $NPCName.length; _i++>>
+		<<initnpcgendersingle _i _args[0]>>
+	<</for>>
+<</widget>>
+
+<<widget "initnpcgendersingle">>
+<<set _i to _args[0]>>
 
 <!-- Set Pronoun -->
-<<if $NPCName[_i].pronoun is "none" or $args[0] is "genders">>
+<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
 	<<if $malechance lt random(1, 100)>>
 		<<set $NPCName[_i].pronoun to "f">><<set $test to $NPCName[_i].pronoun>>
 	<<else>>
@@ -219,7 +225,7 @@ Zohar
 	<</if>>
 <</if>>
 <!-- Set Gender -->
-<<if $NPCName[_i].gender is "none" or $args[0] is "genders">>
+<<if !$NPCName[_i].gender or $NPCName[_i].gender is "none" or _args[1] is "genders">>
 	<<if $NPCName[_i].pronoun is "m">>
 		<<if random(0, 99) gte $cbchance>>
 			<<set $NPCName[_i].gender to "m">>
@@ -237,10 +243,10 @@ Zohar
 
 <!-- Set Genital Existence -->
 <<if $NPCName[_i].type isnot "human">>
-	<<set $NPCName[_i].penis to  ($NPCName[_i].gender !== "f" ? 0 : "none")>>
+	<<set $NPCName[_i].penis to ($NPCName[_i].gender !== "f" ? 0 : "none")>>
 	<<set $NPCName[_i].vagina to ($NPCName[_i].gender !== "m" ? 0 : "none")>>
 <<else>>
-	<<set $NPCName[_i].penis to  ($NPCName[_i].gender !== "f" ? "clothed" : "none")>>
+	<<set $NPCName[_i].penis to ($NPCName[_i].gender !== "f" ? "clothed" : "none")>>
 	<<set $NPCName[_i].vagina to ($NPCName[_i].gender !== "m" ? "clothed" : "none")>>
 <</if>>
 
@@ -250,9 +256,9 @@ Zohar
 <<set _b_mod_upper to Math.clamp($breast_mod + 12, 0, 12)>>
 
 <!-- can't use breastsize, since that would either break the numberslider
- or make one of the sizes always be randomized,
+ or make one of the sizes always be randomised,
  but can use breastdesc not being changed from 0 as a substitute -->
-<<if $NPCName[_i].breastdesc is 0 or $args[0] is "breasts">>
+<<if $NPCName[_i].breastdesc is 0 or _args[1] is "breasts">>
 	<<if $NPCName[_i].pronoun is "m">>
 		<<set $NPCName[_i].breastsize to 0>>
 	<<else>>
@@ -270,9 +276,9 @@ Zohar
 <!-- Set pp to defaults-->
 
 /* New way to set upper and lower bounds.
- * This method makes use of all other slider positions, but does nothing when slider is between -1 and 1, 
+ * This method makes use of all other slider positions, but does nothing when slider is between -1 and 1,
  * for a total of 15 unique positions vs the current method's 9. (max would be 17)
- * Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation. 
+ * Changing the penis_mod slider to range from -7 to 7 would work to make every slider position unique here, but potentially affects unnamed npc generation.
  */
 
 /*
@@ -308,7 +314,7 @@ alternative way to write that:
 	<<set _p_mod_upper to 1>><<set _p_mod_lower to 1>>
 <</if>>
 
-<<if $NPCName[_i].penissize is 0 or $args[0] is "penis">>
+<<if $NPCName[_i].penissize is 0 or _args[1] is "penis">>
 	<<if $NPCName[_i].gender is "f">>
 		<<set $NPCName[_i].penissize to 0>>
 		<<set $NPCName[_i].penisdesc to "none">>
@@ -351,12 +357,11 @@ alternative way to write that:
 <</switch>>
 
 <<generatePronouns $NPCName[_i]>>
-<</for>>
 
 <</widget>>
 
 <<widget "initnpc">>
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<if $NPCName[_i].init is 0>> <!-- This prevents double-init from wiping variables -->
 	<<set $NPCName[_i].init to 1>>
@@ -370,18 +375,22 @@ alternative way to write that:
 	<<set $NPCName[_i].state to "active">>
 	<<set $NPCName[_i].purity to 0>>
 	<<set $NPCName[_i].corruption to 0>>
-	<<set $NPCName[_i].virginity to {anal:true, oral:false, penile:false, vaginal:false, handholding:false, temple: false, kiss:false}>>
-	<<set _allVirginitiesPresent to {anal:true, oral:true, penile:true, vaginal:true, handholding:true, temple: false, kiss:true}>>
+	<<set $NPCName[_i].virginity to setup.NPCVirginityTypes>>
 	<<set $NPCName[_i].chastity to {penis:"", vagina:"", anus:""}>>
-	<<generatePronouns $NPCList[_i]>>
+	<<generatePronouns $NPCName[_i]>>
+	<<initNNPCClothes _nam>>
+	<<initNNPCstrapon $NPCName[_i]>>
 
 	<!-- Special Cases NNPC Variables, Introductions, Adjustments -->
 	<<switch _nam>>
 	<<case Kylar>>
 		<<set $NPCName[$NPCNameList.indexOf("Kylar")].state to 0>>
-		<<set $NPCName[_i].virginity to clone(_allVirginitiesPresent)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypesVirgin)>>
 	<<case Robin>>
-		<<set $NPCName[_i].virginity to clone(_allVirginitiesPresent)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypesVirgin)>>
+		<<set $robinDaily to {}>>
+		<<set $robinSeen to []>>
+		<<set $NPCName[_i].cdquest to 0>>
 	<<case River>>
 		<<if $NPCName[_i].pronoun is "m">>
 			//리버는 지역 학교에서 수학을 가르친다. 그의 짧은 갈색 머리카락 사이에 드문드문 회색 머리카락이 보이고, 날카로운 파란 눈으로 주변을 세심히 살핀다. 학생들은 그의 수업 중에는 얌전히 있으려 한다.//
@@ -424,7 +433,7 @@ alternative way to write that:
 		<<else>>
 			//시리스는 지역 학교에서 과학을 가르친다. 그녀는 차분하고 참을성이 많아, 가끔 교실이 어수선해질 때가 있다.//
 		<</if>>
-		<<set $NPCName[_i].virginity to clone($NPCVirginityTypes)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypes)>>
 	<<case Eden>>
 		<<if $NPCName[_i].pronoun is "m">>
 			<<set $NPCName[_i].title to "hunter">>
@@ -470,17 +479,18 @@ alternative way to write that:
 		<<set $NPCName[_i].virginity.kiss to false>>
 		<<set $NPCName[_i].virginity.handholding to false>>
 	<<case Alex>>
-		<<set $NPCName[_i].virginity to clone($NPCVirginityTypes)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypes)>>
+		<<set $alexDaily to {}>>
 	<<case Darryl>>
-		<<set $NPCName[_i].virginity to clone($NPCVirginityTypes)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypes)>>
 	<<case Briar>>
-		<<set $NPCName[_i].virginity to clone($NPCVirginityTypes)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypes)>>
 	<<case Wren>>
-		<<set $NPCName[_i].virginity to clone($NPCVirginityTypes)>>
+		<<set $NPCName[_i].virginity to clone(setup.NPCVirginityTypes)>>
 	<<case Sydney>>
 		<<set $NPCName[_i].purity to 100>>
 		<<set $NPCName[_i].virginity to {anal:true, oral:true, penile:true, vaginal:true, temple:true, handholding:true, kiss:true}>>
-		<<set $NPCName[_i].chastity to {penis:"chastity belt", vagina:"chastity belt", anus:"anal shield"}>>	
+		<<set $NPCName[_i].chastity to {penis:"chastity belt", vagina:"chastity belt", anus:"anal shield"}>>
 		<<set $sydneySeen to []>>
 		<<set $sydneyFirstSeen to "">>
 		<<set $sydney to {}>>
@@ -496,14 +506,245 @@ alternative way to write that:
 
 <</widget>>
 
+<<widget "initNNPCClothes">>
+<<set _nam to _args[0]>>
+<<set _i to $NPCNameList.indexOf(_nam)>>
+<<set $_generation to (_args[1] ? _args[1] : "none")>>
+<<if !$NPCName[_i].outfits or $_generation is "reset" or $_generation is "update">>
+	<<if $_generation isnot "update">>
+		<<set $NPCName[_i].outfits to ["naked", "maleDefault", "femaleDefault"]>>
+	<</if>>
+	<<switch _nam>>
+		<<case Kylar>>
+			<<set $NPCName[_i].outfits.pushUnique(
+				"maleSchool", "femaleSchool",
+				"maleSchoolSwim", "femaleSchoolSwim",
+				"maleTown1", "femaleTown1", "maleWarm1", "femaleWarm1", "coldHoodie"
+			)>>
+		<<case Robin>>
+			<<set $NPCName[_i].outfits.pushUnique(
+				"maleSchool", "femaleSchool", "maleSchoolLong", "femaleSchoolLong",
+				"maleSchoolSwimShirt", "femaleSchoolSwim",
+				"maleTown1", "femaleTown1", "maleWarm1", "femaleWarm1", "coldPuffer", "pyjamas"
+			)>>
+		<<case Whitney>>
+			<<set $NPCName[_i].outfits.pushUnique(
+				"Whitney", "maleSchoolBlazer", "femaleSchoolBlazer",
+				"maleSchoolSwim", "femaleSchoolSwim", "coldHoodie"
+			)>>
+		<<case Sydney>>
+			<<set $NPCName[_i].outfits.pushUnique(
+				"maleSchoolLong", "femaleSchoolLong",
+				"maleSchoolSwimShirt", "femaleSchoolSwim",
+				"neutralRobe", "coldTrench"
+			)>>
+		<<case Alex>><<set $NPCName[_i].outfits.pushUnique("wildsFlannel", "AlexJorts", "AlexSkirt", "coldCoat")>>
+		<<case Avery>><<set $NPCName[_i].outfits.pushUnique("business", "maleFormal1", "femaleFormal1", "pyjamas")>>
+		<<case Eden>><<set $NPCName[_i].outfits.pushUnique("Eden")>>
+		<<case Morgan>><<set $NPCName[_i].outfits.pushUnique("Morgan")>>
+		<<case Briar>><<set $NPCName[_i].outfits.pushUnique("maleBriar", "femaleBriar")>>
+		<<case Darryl>><<set $NPCName[_i].outfits.pushUnique("maleFormal1", "femaleFormal1")>>
+		<<case Remy>><<set $NPCName[_i].outfits.pushUnique("ridingFormal")>>
+		<<case Landry>><<set $NPCName[_i].outfits.pushUnique("maleLandry", "femaleLandry")>>
+		<<case Charlie>><<set $NPCName[_i].outfits.pushUnique("dance")>>
+		<<case Harper>><<set $NPCName[_i].outfits.pushUnique("doctor")>>
+		<<case Jordan>><<set $NPCName[_i].outfits.pushUnique("maleRobe", "femaleRobe")>>
+		<<case Sirris>><<set $NPCName[_i].outfits.pushUnique("teacher", "townTurtleneck", "townCollar")>>
+		<<case Doren>><<set $NPCName[_i].outfits.pushUnique("teacher", "townTrack", "townCollar")>>
+		<<case River>><<set $NPCName[_i].outfits.pushUnique("teacher", "neutralRobe", "townCollar")>>
+		<<case Winter>><<set $NPCName[_i].outfits.pushUnique("teacher")>>
+		<<case Mason>><<set $NPCName[_i].outfits.pushUnique("teacher", "maleSchoolSwim", "neutralSwim", "townTrack")>>
+		<<case Leighton>><<set $NPCName[_i].outfits.pushUnique("teacher", "maleFormal1", "femaleFormal1")>>
+		<<case "Black Wolf" "Great Hawk">><<set $NPCName[_i].outfits to ["naked"]>>
+	<<default>>
+		<!-- Maybe should be left as a default case for futureproofing?
+		Assigns area-appropriate clothes without saving them to the NPC.
+		If this does not run, named NPC will only have default and naked clothes.
+		<<set $NPCName[_i].outfits to undefined>> -->
+	<</switch>>
+<</if>>
+<<getNNPCClothes _nam>>
+<</widget>>
+
+<<widget "getNNPCClothes">>
+<<set _nam to _args[0]>>
+<<set _i to $NPCNameList.indexOf(_nam)>>
+<<if !$NPCName[_i].outfits>>
+	<<generateNPCClothes $NPCName[_i]>>
+	<<run console.log('Named NPC [', $NPCName[_i], '] generated with area-appropriate clothes due to a lack of outfits.')>>
+<<else>>
+	<<switch _nam>>
+		<<case Alex>>
+			<<if $location is "alex_cottage" and ($hour gte 21 or $hour lte 5)>>
+				<<if $NPCName[_i].pronoun is "m">>
+					<<npcClothesName $NPCName[_i] "maleAlexSleep">>
+				<<else>>
+					<<npcClothesName $NPCName[_i] "femaleAlexSleep">>
+				<</if>>
+			<<else>>
+				<<generateNPCClothes $NPCName[_i]>>
+			<</if>>
+		<<case Avery>>
+			<<if $hour gte 18>>
+				<<npcClothesType $NPCName[_i] "formal">>
+			<<else>>
+				<<npcClothesType $NPCName[_i] "business">>
+			<</if>>
+		<<case Robin>>
+			<<run getRobinCrossdressingStatus($NPCName[_i].crossdress)>>
+			<<set $NPCName[_i].crossdressing to _robin_cd>>
+			<<run statusCheck("Robin")>>
+			<<switch _robin_location>>
+				<<case "sleep">>
+					<<npcClothesType $NPCName[_i] "sleep">>
+				<<case "school">>
+					<<npcClothesType $NPCName[_i] "school">>
+				<<case "park">>
+					<<npcClothesType $NPCName[_i] "cold">>
+				<<case "halloween">>
+					<<if $halloween_robin_costume>>
+						<<npcClothesType $NPCName[_i] "halloween">>
+					<<else>>
+						<<generateNPCClothes $NPCName[_i]>>
+					<</if>>
+				<<default>>
+					<<generateNPCClothes $NPCName[_i]>>
+			<</switch>>
+		<<case Sydney>>
+			<<sydneySchedule>>
+			<<switch _sydney_location>>
+				<<case "temple">>
+					<<npcClothesType $NPCName[_i] "temple">>
+				<<case "school" "class" "lunch" "library">>
+					<<npcClothesType $NPCName[_i] "school">>
+				<<default>>
+					<<generateNPCClothes $NPCName[_i]>>
+			<</switch>>
+		<<case Eden Morgan Briar Landry Remy>>
+			<<npcClothesType $NPCName[_i] _nam>>
+		<<case Darryl>>
+			<<npcClothesType $NPCName[_i] "formal">>
+		<<case Charlie>>
+			<<npcClothesType $NPCName[_i] "dance_studio">>
+		<<case Harper>>
+			<<npcClothesType $NPCName[_i] "hospital">>
+		<<case Jordan>>
+			<<npcClothesType $NPCName[_i] "temple">>
+		<<case Mason>>
+			<<npcClothesType $NPCName[_i] "beach">>
+		<<case "Black Wolf" "Great Hawk">>
+			<<npcClothesType $NPCName[_i] "naked">>
+	<<default>>
+		<<generateNPCClothes $NPCName[_i]>>
+	<</switch>>
+<</if>>
+<<if $NPCName[_i].penis isnot "none">>
+	<<set $NPCName[_i].penis to ($NPCName[_i].clothes.lower.name is "naked" ? 0 : "clothed")>>
+<</if>>
+<<if $NPCName[_i].vagina isnot "none">>
+	<<set $NPCName[_i].vagina to ($NPCName[_i].clothes.lower.name is "naked" ? 0 : "clothed")>>
+<</if>>
+<<set $NPCName[_i].chest to ($NPCName[_i].clothes.upper.name is "naked" ? 0 : "clothed")>>
+<</widget>>
+
+<!-- addNNPCOutfit and removeNNPCOutfit should only ever be used on named NPCs! -->
+<<widget "addNNPCOutfit">>
+<<set _nam to _args[0]>>
+<<set _i to $NPCNameList.indexOf(_nam)>>
+<<set $_newNPCOutfit to _args[1]>>
+<<if _args[0] and _args[1]>>
+	<<if !setup.npcClothesSets.some(set => set.name.includes($_newNPCOutfit))>>
+		<<error {
+			message	: `NPC (${_nam}) was given invalid outfit (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
+	<<elseif _i lt 0>>
+		<<error {
+			message	: `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. check for typos!). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
+	<<else>>
+		<<if !$NPCName[_i].outfits>>
+			<<set $NPCName[_i].outfits to ["naked", "maleDefault", "femaleDefault"]>>
+		<</if>>
+		<<set $NPCName[_i].outfits.pushUnique($_newNPCOutfit)>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<<widget "removeNNPCOutfit">>
+<<set _nam to _args[0]>>
+<<set _i to $NPCNameList.indexOf(_nam)>>
+<<set $_newNPCOutfit to _args[1]>>
+<<if _args[0] and _args[1]>>
+	<<if _i lt 0>>
+		<<error {
+			message	: `NPC (${_nam}) ${"is"} invalid (Must be a named NPC. Check for typos!). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
+	<<elseif !$NPCName[_i].outfits>>
+		<<error {
+			message	: `NPC (${_nam}) attempted to remove outfit (Outfit name: ${$_newNPCOutfit}) while having no outfits. Why don't you remove that pesky skin of yours? Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
+	<<elseif !$NPCName[_i].outfits.some(x => x.includes($_newNPCOutfit))>>
+		<<error {
+			message	: `NPC (${_nam}) had non-existant outfit removed (Outfit name: ${$_newNPCOutfit}). Please inform PurityGuy.`,
+			source	: Utils.GetStack()
+		}>>
+	<<else>>
+		<<set $NPCName[_i].outfits.delete($_newNPCOutfit)>>
+		<<if $NPCName[_i].outfits.length is 0>>
+			<<set $NPCName[_i].outfits to undefined>>
+		<</if>>
+	<</if>>
+<</if>>
+<</widget>>
+
+<!-- generates the strapon that the NNPC will use if the scene or rng calls for it. doesn't guarantee they will have it 100% of the time. -->
+<<widget "initNNPCstrapon">>
+	<<set $_npcName to _args[0]>>
+	<<set $_name to $_npcName.nam>>
+	<<switch $_name>>
+		<<case "Whitney">>
+			<<set $_npcName.strapons to [{"state": "worn", "color": "dark red", "size": 3, "description":"large dark red strap-on cock"}]>>
+		<<default>>
+			<<set $_npcName.strapons to []>>
+	<</switch>>
+<</widget>>
+
+<!-- give an NNPC a *new* strapon -->
+<!-- <<giveNNPCnewstrapon _npcNameSelect _straponSize _straponColour _straponShape _modifierOptions>> -->
+<<widget "giveNNPCnewstrapon">>
+	<<set $_name to _args[0]>>
+	<<set $_npcName to $NPCName.find(npc => npc.nam === $_name)>>
+	<<set $_index to $NPCName.findIndex(npc => npc.nam === $_name)>>
+	<<if _newStrapon is undefined>>
+		<<run throw new Error("giveNNPCnewstrapon was run when _newStrapon was undefined! Call generateNewStrapon first!")>>
+	<<else>>
+		<<set $_strapon to clone(_newStrapon)>>
+		<!-- unset _newStrapon so that we can't accidentally dupe strapons. That's right, we're forcing you to generate multiple if you want identical ones. -->
+		<<unset _newStrapon>>
+	<</if>>
+
+	<!-- if the nnpc's name is in the following list, they will refuse to accept a new strapon -->
+	<<if !["Whitney"].includes($_name)>>
+		<<if $_npcName.strapons is undefined or $_npcName.strapons.length is 0>>
+			<<set $NPCName[$_index].strapons to [$_strapon]>>
+		<<else>>
+			<<set $NPCName[$_index].strapons.push($_strapon)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
 <<widget "npc">>
 /* Prepare the call for multiple Named NPCs at the same time.
 * We do this by changing all $NPCList[0] calls to $NPCList[x] in which x can be any temporary variable. In this case, we'll use _npcno.
-* We also give the option to set the Named NPC in any available row if so desired, by calling a second argument $args[1]. In case no $args[1] is passed, it will default to the first row.
-* We also now have the option to have the Named NPC be set into the first available slot instead, by setting the secent argument $args[1] to a negative number, such as -1. However this will bypass the check for npcs that have broken free from a previous passage.
+* We also give the option to set the Named NPC in any available row if so desired, by calling a second argument _args[1]. In case no _args[1] is passed, it will default to the first row.
+* We also now have the option to have the Named NPC be set into the first available slot instead, by setting the secent argument _args[1] to a negative number, such as -1. However this will bypass the check for npcs that have broken free from a previous passage.
 * Remember: available rows go from 0 to 5 ($NPCList[0] to $NPCList[5]). No more than that.
 */
-<<if $args[1] lt 0>>
+<<if _args[1] lt 0>>
 	<<for _controller to 0; _controller lte $NPCList.length; _controller++>>
 		<<if _controller gte 6>>
 			<!-- Since 6 is past our limit, we want to alert the user something went wrong. For simplicity, we'll set _npcno to 0 and overwrite $NPCList[0] -->
@@ -519,8 +760,8 @@ alternative way to write that:
 			<<break>> <!-- Always remember to break the for loop when the condition is met -->
 		<</if>>
 	<</for>>
-<<elseif $args[1]>>
-	<<set _npcno to $args[1] - 1>>
+<<elseif _args[1]>>
+	<<set _npcno to _args[1] - 1>>
 <<else>>
 	<<set _npcno to 0>>
 <</if>>
@@ -531,13 +772,25 @@ alternative way to write that:
 
 <<set $lastgenerated to $passage>>
 
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 
 <!-- Initialise NPC on first time called, introducing them to PC -->
 <<if $NPCName[_i].init isnot 1>>
 	<<initnpc _nam>>
 <</if>>
+
+<!-- Determine what outfit the NPC should be wearing -->
+<<if !$NPCName[_i].outfits>>
+	<<initNNPCClothes _nam>>
+<<else>>
+	<<getNNPCClothes _nam>>
+<</if>>
+
+<<if !$NPCName[_i].strapons>>
+	<<initNNPCstrapon $NPCName[_i]>>
+<</if>>
+<<set $NPCList[_npcno].virginity to $NPCName[_i].virginity>>
 
 <!-- Set global variables -->
 /* Both $npc and $npcnum will keep defined NPCs in the order they were defined.
@@ -594,15 +847,29 @@ alternative way to write that:
 <<set $NPCList[_npcno].breastdesc to $NPCName[_i].breastdesc>>
 <<set $NPCList[_npcno].vagina to $NPCName[_i].vagina>>
 
+<<if $breastfeedingdisable is "f" and _nam is "Morgan" and $NPCName[_i].pronoun is "f" and $NPCName[_i].breastsize gt 0>>
+	<<set $NPCList[_npcno].lactation to 1>>
+<</if>>
+
 <<set $NPCList[_npcno].penis to $NPCName[_i].penis>>
 <<set $NPCList[_npcno].penissize to $NPCName[_i].penissize>>
 <<set $NPCList[_npcno].penisdesc to $NPCName[_i].penisdesc>>
 
-<<set $NPCList[0].chastity to clone($NPCName[_i].chastity)>>
+<<set $NPCList[_npcno].chastity to clone($NPCName[_i].chastity)>>
+<<set $NPCList[_npcno].clothes to clone($NPCName[_i].clothes)>>
+<<set $NPCList[_npcno].chest to clone($NPCName[_i].chest)>>
 
-<<set $NPCList[0].insecurity to $NPCName[_i].insecurity>>
+<<if $NPCList[_npcno].penis is "none" and $NPCName[_i].strapons and $NPCName[_i].strapons.length gt 0 and random(0,99) lt $straponchance>>
+	<<set $NPCList[_npcno].penis to $NPCList[_npcno].vagina>>
+	<<set $NPCList[_npcno].vagina to "none">>
+	<<set $NPCList[_npcno].gender to "m">>
+	<<set $_strapon to clone($NPCName[_i].strapons.random())>>
+	<<setNPCStrapon $NPCList[_npcno] $_strapon>>
+<</if>>
+
+<<set $NPCList[_npcno].insecurity to $NPCName[_i].insecurity>>
 <<set $npcdescription to $NPCName[_i].title>>
-<<set $NPCList[0].description to $NPCName[_i].title>>
+<<set $NPCList[_npcno].description to $NPCName[_i].title>>
 
 <<set $NPCList[_npcno].insecurity to $NPCName[_i].insecurity>>
 <<set $NPCList[_npcno].description to $NPCName[_i].title>>
@@ -618,7 +885,7 @@ alternative way to write that:
 <<set $NPCList[_npcno].condom to false>>
 
 <<set $NPCList[_npcno].pregnancyAvoidance to $NPCName[_i].pregnancyAvoidance>>
-/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
+<!-- ToDo: Pregnancy, remove $pregnancyTesting to properly enable -->
 <<if $NPCList[_npcno].pregnancyAvoidance gt random(0,100) and $pregnancyTesting>>
 	<<set $condomUse to true>>
 <</if>>
@@ -626,77 +893,99 @@ alternative way to write that:
 	<<set $npcCondoms to "normal">>
 <</if>>
 
+<!-- Whitney and Avery should wear strap-ons based on strap-on chance -->
+<<if $NPCList[_npcno].penis is "none" and (_nam is "Whitney" or _nam is "Avery") and !_strapIgnore and random(0,99) lt $straponchance>>
+	<<npcstrapon _npcno>>
+<</if>>
+
+<<if _nam is "Sydney" and $sydney_toy isnot undefined>>
+	<<giveNPCsextoy _npcno $sydney_toy>>
+<</if>>
+
+<!-- Following sections adjusted for the changes converting from $claws to .claws -->
+
 <!-- Adjust for Beast type NNPCs: Black Wolf -->
-<!-- We don't change anything here, since beasts can only attack one at a time. But in case this changes, it would be better to change the zeroes (0) to _npcno -->
-<<if $NPCList[0].type is "wolf">>
+<!-- Changed all instances of zeroes (0) to _npcno in the event multi-beast is properly implemented -->
+<<if $NPCList[_npcno].type is "wolf">>
 	<<set $beastname to "blackwolf">>
-	<<set $NPCList[0].lefthand to "none">>
-	<<set $NPCList[0].righthand to "none">>
-	<<set $NPCList[0].stance to "approach">>
+	<<set $NPCList[_npcno].lefthand to "none">>
+	<<set $NPCList[_npcno].righthand to "none">>
+	<<set $NPCList[_npcno].stance to "approach">>
 	<<if $blackWolfMonsterRoll isnot undefined and $blackwolfmonster is 1>>
 		<<if $blackWolfMonsterRoll is true>>
-			<<set $NPCList[0].monster to "monster">>
+			<<set $NPCList[_npcno].monster to "monster">>
 			<<set $monster to 1>>
-			<<set $NPCList[0].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
+			<<set $NPCList[_npcno].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
+			<<run delete $NPCList[_npcno].claws>>
 		<<else>>
-			<<set $NPCList[0].monster to 0>>
-			<<set $NPCList[0].pronoun to "i">>
+			<<set $NPCList[_npcno].monster to 0>>
+			<<set $NPCList[_npcno].pronoun to "i">>
+			<<set $NPCList[_npcno].claws to "claws">>
 		<</if>>
 	<<elseif $blackwolfmonster gte 1>>
 		<<if ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or ($blackwolfmonster is 2)>>
 			<<set $blackWolfMonsterRoll to true>>
-			<<set $NPCList[0].monster to "monster">>
+			<<set $NPCList[_npcno].monster to "monster">>
 			<<set $monster to 1>>
-			<<set $NPCList[0].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
+			<<set $NPCList[_npcno].type to ($NPCList[0].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
+			<<run delete $NPCList[_npcno].claws>>
 		<<else>>
 			<<set $blackWolfMonsterRoll to false>>
-			<<set $NPCList[0].monster to 0>>
-			<<set $NPCList[0].pronoun to "i">>
+			<<set $NPCList[_npcno].monster to 0>>
+			<<set $NPCList[_npcno].pronoun to "i">>
+			<<set $NPCList[_npcno].claws to "claws">>
 		<</if>>
 	<<else>>
 		<<set $blackWolfMonsterRoll to false>>
-		<<set $NPCList[0].monster to 0>>
-		<<set $NPCList[0].pronoun to "i">>
+		<<set $NPCList[_npcno].monster to 0>>
+		<<set $NPCList[_npcno].pronoun to "i">>
+		<<set $NPCList[_npcno].claws to "claws">>
 	<</if>>
 <</if>>
-/*Great hawk*/
-<<if $NPCList[0].type is "hawk">>
+
+<!-- Adjust for Beast type NNPCs: Great Hawk -->
+<<if $NPCList[_npcno].type is "hawk">>
 	<<set $beastname to "greathawk">>
-	<<set $NPCList[0].lefthand to "none">>
-	<<set $NPCList[0].righthand to "none">>
-	<<set $NPCList[0].stance to "approach">>
+	<<set $NPCList[_npcno].lefthand to "none">>
+	<<set $NPCList[_npcno].righthand to "none">>
+	<<set $NPCList[_npcno].stance to "approach">>
 	<<if $greatHawkMonsterRoll isnot undefined and $greathawkmonster is 1>>
 		<<if $greatHawkMonsterRoll is true>>
-			<<set $NPCList[0].monster to "monster">>
+			<<set $NPCList[_npcno].monster to "monster">>
 			<<set $monster to 1>>
-			<<set $NPCList[0].type to "harpy">>
+			<<set $NPCList[_npcno].type to "harpy">>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
+			<<run delete $NPCList[_npcno].claws>>
 		<<else>>
-			<<set $NPCList[0].monster to 0>>
-			<<set $NPCList[0].pronoun to "i">>
+			<<set $NPCList[_npcno].monster to 0>>
+			<<set $NPCList[_npcno].pronoun to "i">>
+			<<set $NPCList[_npcno].claws to "talons">>
 		<</if>>
 	<<elseif $greathawkmonster gte 1 or $bestialitydisable is "t">>
 		<<if ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or ($greathawkmonster is 2) or ($bestialitydisable is "t")>>
 			<<set $greatHawkMonsterRoll to true>>
-			<<set $NPCList[0].monster to "monster">>
+			<<set $NPCList[_npcno].monster to "monster">>
 			<<set $monster to 1>>
-			<<set $NPCList[0].type to "harpy">>
+			<<set $NPCList[_npcno].type to "harpy">>
 			<<set $NPCList[_npcno].lefthand to 0>>
 			<<set $NPCList[_npcno].righthand to 0>>
+			<<run delete $NPCList[_npcno].claws>>
 		<<else>>
 			<<set $greatHawkMonsterRoll to false>>
-			<<set $NPCList[0].monster to 0>>
-			<<set $NPCList[0].pronoun to "i">>
+			<<set $NPCList[_npcno].monster to 0>>
+			<<set $NPCList[_npcno].pronoun to "i">>
+			<<set $NPCList[_npcno].claws to "talons">>
 		<</if>>
 	<<else>>
 		<<set $greatHawkMonsterRoll to false>>
-		<<set $NPCList[0].monster to 0>>
-		<<set $NPCList[0].pronoun to "i">>
+		<<set $NPCList[_npcno].monster to 0>>
+		<<set $NPCList[_npcno].pronoun to "i">>
+		<<set $NPCList[_npcno].claws to "talons">>
 	<</if>>
 <</if>>
 
@@ -714,7 +1003,7 @@ alternative way to write that:
 
 <<widget "npcrelationship">>
 <!-- Robin, Avery, Kylar are unique and are treated differently -->
-<<set _nam to $args[0]>>
+<<set _nam to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_nam)>>
 <<if $NPCName[_i].init is 1>>
 	<<set $npctextlove to $NPCName[_i].love>>
@@ -729,9 +1018,9 @@ alternative way to write that:
 <<widget "npcincr">>
 	<!-- Arguments passed are NNPC name, variable type, and value (+/-)-->
 
-	<<set _nam to $args[0]>>
-	<<set _var to $args[1]>>
-	<<set _val to $args[2]>>
+	<<set _nam to _args[0]>>
+	<<set _var to _args[1]>>
+	<<set _val to _args[2]>>
 
 	<<set _i to $NPCNameList.indexOf(_nam)>>
 
@@ -752,7 +1041,17 @@ alternative way to write that:
 	<<case init>>
 		<<set $NPCName[_i].init to _val>>
 	<<case trauma>>
-		<<set $NPCName[_i].trauma += _val>>
+		<<if _nam is "Robin" and _val lt 0>>
+			<<set $NPCName[_i].trauma += Math.round(_val * ($robinTraumaMultiplier || 1))>>
+			<<if $NPCName[_i].trauma lt 0>>
+				<<set $NPCName[_i].trauma = 0>>
+			<</if>>
+		<<else>>
+			<<set $NPCName[_i].trauma += _val>>
+			<<if $NPCName[_i].trauma gt 100>>
+				<<set $NPCName[_i].trauma = 100>>
+			<</if>>
+		<</if>>
 	<<case purity>>
 		<<if $NPCName[_i].corruption gt 0>>
 			<<set $NPCName[_i].corruption -= _val>>
@@ -775,7 +1074,7 @@ alternative way to write that:
 					<<set $NPCName[_i].purity = 0>>
 					<<set $corruptionRollover to 1>>
 				<<else>>
-					<<set $NPCName[_i].purity = 1>>		
+					<<set $NPCName[_i].purity = 1>>
 				<</if>>
 			<</if>>
 			<<if $NPCName[_i].purity gte 100 and ($NPCName[_i].virginity.vaginal isnot true or $NPCName[_i].virginity.penile isnot true)>>
@@ -798,9 +1097,9 @@ alternative way to write that:
 <!-- Sets selected NNPC variables using NNPC name-->
 <!-- Arguements passed are NNPC name, variable type, value -->
 
-<<set _nam to $args[0]>>
-<<set _var to $args[1]>>
-<<set _val to $args[2]>>
+<<set _nam to _args[0]>>
+<<set _var to _args[1]>>
+<<set _val to _args[2]>>
 
 <<set _i to $NPCNameList.indexOf(_nam)>>
 
@@ -824,7 +1123,7 @@ alternative way to write that:
 	<<case purity>>
 		<<set $NPCName[_i].purity to _val>>
 	<<case corruption>>
-		<<set $NPCName[_i].corruption to _val>>		
+		<<set $NPCName[_i].corruption to _val>>
 	<<default>>
 		<span class="red">NPCSET error - Unknown value _var</span>
 		<br><br>
@@ -833,26 +1132,36 @@ alternative way to write that:
 <</widget>>
 
 <<widget "relationshiptext">>
-<<set _npc to $args[0]>>
+<<set _npc to _args[0]>>
 <<set _i to $NPCNameList.indexOf(_npc)>>
 <!-- Special cases for Robin, Avery, Kylar -->
 <<switch _npc>>
 	<<case Robin>>
 		로빈은
 		<<if $robinromance is 1>>
-		<span class="lewd">당신을 사랑한다.</span>
+			<<if $NPCName[_i].trauma gte 80>>
+				<<if $NPCName[_i].lust gte 50>>
+					<span class="red">당신이 필요해서 어쩔 줄 모른다.</span>
+				<<else>>
+					<span class="red">당신 없이는 아무것도 아니다.</span>
+				<</if>>
+			<<elseif $NPCName[_i].dom gte 40>>
+				<span class="lewd">당신을 귀여워한다.</span>
+			<<else>>
+				<span class="lewd">당신을 사랑한다.</span>
+			<</if>>
 		<<elseif $NPCName[_i].trauma gte 80>>
-		<span class="red">정신적인 충격을 받았다.</span>
+			<span class="red">정신적인 충격을 받았다.</span>
 		<<elseif $NPCName[_i].trauma gte 40>>
-		<span class="red">고통받고 있다.</span>
+			<span class="red">고통받고 있다.</span>
 		<<elseif $NPCName[_i].trauma gte 10>>
-		<span class="purple">불안해하고 있다.</span>
+			<span class="purple">불안해하고 있다.</span>
 		<<elseif $NPCName[_i].dom gte 80>>
-		<span class="teal">당신을 보호하려 한다.</span>
+			<span class="teal">당신을 보호하려 한다.</span>
 		<<elseif $NPCName[_i].dom gte 20>>
-		<span class="teal">당신을 절친이라 생각한다.</span>
+			<span class="teal">당신을 <<nnpc_his_yi "Robin">> 절친이라 생각한다.</span>
 		<<else>>
-		<span class="teal">당신을 우러러보고 있다.</span>
+			<span class="teal">당신을 우러러보고 있다.</span>
 		<</if>>
 	<<case Avery>>
 		에이버리는
@@ -862,72 +1171,72 @@ alternative way to write that:
 			<span class="red">당신을 거의 포기했다.</span>
 		<<elseif $NPCName[_i].love gte 60>>
 			<<if $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 격노하고 있다.</span>
+				<span class="pink">당신에게 격노하고 있다.</span>
 			<<elseif $NPCName[_i].rage gte 20>>
-			<span class="blue">당신을 더욱 단단한 목줄에 매고 싶어한다.</span>
+				<span class="blue">당신을 더욱 단단한 목줄에 매고 싶어한다.</span>
 			<<else>>
-			<span class="green">당신을 소중하게 여긴다.</span>
+				<span class="green">당신을 소중하게 여긴다.</span>
 			<</if>>
 		<<elseif $NPCName[_i].love gte 20>>
 			<<if $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 격분해 있다.</span>
+				<span class="pink">당신에게 격분해 있다.</span>
 			<<elseif $NPCName[_i].rage gte 20>>
-			<span class="purple">당신을 자신의 소유물로 보고 있다.</span>
+				<span class="purple">당신을 자신의 소유물로 보고 있다.</span>
 			<<else>>
-			<span class="teal">당신을 귀엽다고 생각한다.</span>
+				<span class="teal">당신을 귀엽다고 생각한다.</span>
 			<</if>>
 		<<else>>
 			<<if $NPCName[_i].rage gte 60>>
-			<span class="pink">당신이 무례하다고 생각한다.</span>
+				<span class="pink">당신이 무례하다고 생각한다.</span>
 			<<elseif $NPCName[_i].rage gte 20>>
-			<span class="blue">당신을 버릇없는 애새끼라 생각한다.</span>
+				<span class="blue">당신을 버릇없는 애새끼라 생각한다.</span>
 			<<else>>
-			당신에 대한 확고한 의견이 없다.
+				당신에 대한 확고한 의견이 없다.
 			<</if>>
 		<</if>>
 	<<case Kylar>>
 		카일라는
 		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison" and $location isnot "prison">>
-			<span class="red">수감되었다.</span>
+				<span class="red">수감되었다.</span>
 		<<elseif $NPCName[_i].love gte 90>>
 			<<if $NPCName[_i].rage gte 90>>
-			<span class="red">히스테릭하다.</span>
+				<span class="red">히스테릭하다.</span>
 			<<elseif $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 사로잡혀 있다.</span>
+				<span class="pink">당신에게 사로잡혀 있다.</span>
 			<<elseif $NPCName[_i].rage gte 30>>
-			<span class="blue">당신에게 사로잡혀 있다.</span>
+				<span class="blue">당신에게 사로잡혀 있다.</span>
 			<<else>>
-			<span class="green">당신에게 사로잡혀 있다.</span>
+				<span class="green">당신에게 사로잡혀 있다.</span>
 			<</if>>
 		<<elseif $NPCName[_i].love gte 60>>
 			<<if $NPCName[_i].rage gte 90>>
-			<span class="red">히스테릭하다.</span>
+				<span class="red">히스테릭하다.</span>
 			<<elseif $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 반해있다.</span>
+				<span class="pink">당신에게 반해있다.</span>
 			<<elseif $NPCName[_i].rage gte 30>>
-			<span class="purple">당신에게 반해있다.</span>
+				<span class="purple">당신에게 반해있다.</span>
 			<<else>>
-			<span class="teal">당신에게 반해있다.</span>
+				<span class="teal">당신에게 반해있다.</span>
 			<</if>>
 		<<elseif $NPCName[_i].love gte 30>>
 			<<if $NPCName[_i].rage gte 90>>
-			<span class="red">히스테릭하다.</span>
+				<span class="red">히스테릭하다.</span>
 			<<elseif $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 푹 빠져있다.</span>
+				<span class="pink">당신에게 푹 빠져있다.</span>
 			<<elseif $NPCName[_i].rage gte 30>>
-			<span class="purple">당신에게 푹 빠져있다.</span>
+				<span class="purple">당신에게 푹 빠져있다.</span>
 			<<else>>
-			<span class="lblue">당신에게 푹 빠져있다.</span>
+				<span class="lblue">당신에게 푹 빠져있다.</span>
 			<</if>>
 		<<else>>
 			<<if $NPCName[_i].rage gte 90>>
-			<span class="red">히스테릭하다.</span>
+				<span class="red">히스테릭하다.</span>
 			<<elseif $NPCName[_i].rage gte 60>>
-			<span class="pink">당신에게 집착하고 있다.</span>
+				<span class="pink">당신에게 집착하고 있다.</span>
 			<<elseif $NPCName[_i].rage gte 30>>
-			<span class="purple">당신에게 집착하고 있다.</span>
+				<span class="purple">당신에게 집착하고 있다.</span>
 			<<else>>
-			<span class="blue">당신에게 집착하고 있다.</span>
+				<span class="blue">당신에게 집착하고 있다.</span>
 			<</if>>
 		<</if>>
 	<<case Whitney>>
@@ -936,27 +1245,27 @@ alternative way to write that:
 			<span class="red">이제 학교에 없다.</span>
 		<<elseif $npctextlove gte $npclovehigh>>
 			<<if $npctextdom gte $npcdomhigh>>
-			당신이 <span class="green">사랑스럽다</span>고 생각한다.
+				당신이 <span class="green">사랑스럽다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			당신이 <span class="green">격려해 준다</span>고 생각한다.
+				당신이 <span class="green">격려해 준다</span>고 생각한다.
 			<<else>>
-			당신이 <span class="green">마음에 든다</span>고 생각한다.
+				당신이 <span class="green">마음에 든다</span>고 생각한다.
 			<</if>>
 		<<elseif $npctextlove lte $npclovelow>>
 			<<if $npctextdom gte $npcdomhigh>>
-			당신이 <span class="red">한심하다</span>고 생각한다.
+				당신이 <span class="red">한심하다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			당신이 <span class="red">짜증난다</span>고 생각한다.
+				당신이 <span class="red">짜증난다</span>고 생각한다.
 			<<else>>
-			당신이 <span class="red">끔찍하다</span>고 생각한다.
+				당신이 <span class="red">끔찍하다</span>고 생각한다.
 			<</if>>
 		<<else>>
 			<<if $npctextdom gte $npcdomhigh>>
-			당신이 <span class="pink">귀엽다</span>고 생각한다.
+				당신이 <span class="pink">귀엽다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			<span class="teal">당신을 우러러보고 있다.</span>
+				<span class="teal">당신을 우러러보고 있다.</span>
 			<<else>>
-			당신에 대한 확고한 의견이 없다.
+				당신에 대한 확고한 의견이 없다.
 			<</if>>
 		<</if>>
 	<<case Sydney>>
@@ -964,28 +1273,28 @@ alternative way to write that:
 		<<if $sydneyromance is 1>>
 			<<if $NPCName[_i].purity gt 80>>
 				<<if $NPCName[_i].lust gte 60>>
-				<span class="lewd">당신 말고는 생각할 수 없다.</span>
+					<span class="lewd">당신 말고는 생각할 수 없다.</span>
 				<<else>>
-				<span class="lewd">말로 표현할 수 없을 만큼 당신을 사랑한다.</span>
+					<span class="lewd">말로 표현할 수 없을 만큼 당신을 사랑한다.</span>
 				<</if>>
 			<<elseif $NPCName[_i].purity gte 40>>
 				<<if $NPCName[_i].lust gte 30>>
-				<span class="lewd">당신이 만져주기를 열망한다.</span>
+					<span class="lewd">당신이 만져주기를 열망한다.</span>
 				<<else>>
-				<span class="lewd">당신에게 얽매여 있다고 느낀다.</span>
+					<span class="lewd">당신에게 얽매여 있다고 느낀다.</span>
 				<</if>>
 			<<elseif $NPCName[_i].corruption gte 40>>
 				<<if $NPCName[_i].lust gte 20>>
-				<span class="lewd">당신에게 <<if $NPCName[_i].virginity.vaginal is true and $NPCName[_i].virginity.penile is true>>처녀를 바치기를<<else>>동정을 바치기를<</if>> 바란다.</span>
+					<span class="lewd">당신에게 <<if $NPCName[_i].virginity.vaginal is true and $NPCName[_i].virginity.penile is true>>처녀를 바치기를<<else>>동정을 바치기를<</if>> 바란다.</span>
 				<<else>>
-				<span class="lewd">말로 표현할 수 없을 만큼 당신을 사랑한다.</span>
-				<</if>>				
+					<span class="lewd">말로 표현할 수 없을 만큼 당신을 사랑한다.</span>
+				<</if>>
 			<<elseif $NPCName[_i].corruption gte 10>>
 				<<if $NPCName[_i].lust gte 10>>
-				<span class="lewd">당신이 만져주기를 갈망한다.</span>
+					<span class="lewd">당신이 만져주기를 갈망한다.</span>
 				<<else>>
-				<span class="lewd">당신에게 속해 있다.</span>
-				<</if>>	
+					<span class="lewd">당신에게 속해 있다.</span>
+				<</if>>
 			<<else>>
 				<span class="lewd">당신을 사랑한다.</span>
 			<</if>>
@@ -1011,7 +1320,7 @@ alternative way to write that:
 					<span class="teal">당신을 우러러보고 있다.</span>
 				<<else>>
 					<span class="teal">당신과 같이 있는 것을 즐긴다.</span>
-				<</if>>			
+				<</if>>
 			<<elseif $NPCName[_i].corruption gte 10>>
 				<span class="pink">당신을 더 잘 알기를 원한다.</span>
 			<<else>>
@@ -1023,7 +1332,7 @@ alternative way to write that:
 					<span class="pink">당신이 정도를 벗어났다고 생각한다.</span>
 				<<else>>
 					<span class="lblue">당신을 믿음직하다고 여긴다.</span>
-				<</if>>			
+				<</if>>
 			<<else>>
 				<span class="lblue">당신에게 흥미를 느낀다.</span>
 			<</if>>
@@ -1038,31 +1347,81 @@ alternative way to write that:
 				당신에 대한 확고한 의견이 없다.
 			<</if>>
 		<</if>>
+	<<case Alex>>
+		알렉스는
+		<<if $alex_countdown is undefined and $farm_stage gte 7>>
+			<<if $NPCName[_i].lust gte 60>>
+				<span class="lewd">해가 <<if $daystate is "night">>뜰<<else>>질<</if>> 때까지 당신을 타고 싶어하고 있다.</span>
+			<<elseif $NPCName[_i].dom gte 30>>
+				<span class="lewd">주도권을 쥐고 있다.</span>
+			<<elseif $NPCName[_i].dom lte -30>>
+				<span class="lewd">당신에게 의존하고 있다.</span>
+			<<else>>
+				<span class="lewd">당신이 <<nnpc_his_yi "Alex">> 파트너라고 생각하고 있다.</span>
+			<</if>>
+		<<elseif $farm_stage gte 6>>
+			<<if $NPCName[_i].dom gte 30>>
+				<span class="pink">주도권을 쥐고 있다.</span>
+			<<elseif $NPCName[_i].dom lte -30>>
+				<span class="teal">당신에게 의존하고 있다.</span>
+			<<else>>
+				<span class="blue">말 할 수 없을 정도로 감사하고 있다.</span>
+			<</if>>
+		<<elseif $farm_stage gte 5>>
+			<<if $NPCName[_i].dom gte 10>>
+				<span class="blue">당신을 존중하고 있다.</span>
+			<<elseif $NPCName[_i].dom lte -10>>
+				<span class="blue">당신을 존경하고 있다.</span>
+			<<else>>
+				<span class="blue">당신에게 고마워하고 있다.</span>
+			<</if>>
+		<<elseif $farm_stage gte 4>>
+			<<if $NPCName[_i].dom gte 10>>
+				<span class="green">당신이 책임있는 사람이라고 생각하고 있다.</span>
+			<<elseif $NPCName[_i].dom lte -10>>
+				<span class="green">당신이 유능하다고 생각하고 있다.</span>
+			<<else>>
+				<span class="green">당신이 근처에 있는 것을 좋아하고 있다.</span>
+			<</if>>
+		<<elseif $NPCName[_i].love gte 10>>
+			<span class="green">도움을 받을 수 있어 기뻐하고 있다.</span>
+		<<elseif $NPCName[_i].love lte -10>>
+			<<if $NPCName[_i].lust gte 10>>
+				<span class="purple">당신이 변태라고 생각하고 있다.</span>
+			<<elseif $NPCName[_i].dom gte 10>>
+				<span class="red">새 농장 일꾼을 원하고 있다.</span>
+			<<else>>
+				<span class="red">당신이 방해라고 생각하고 있다.</span>
+			<</if>>
+		<<else>>
+			당신에 대한 확고한 의견이 없다.
+		<</if>>
+
 <!-- Default cases for all other NNPCs -->
 	<<default>>
 		<<if $npctextlove gte $npclovehigh>>
 			<<if $npctextdom gte $npcdomhigh>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신을 <span class="green">사랑스럽다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신을 <span class="green">사랑스럽다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="green">격려해 준다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="green">격려해 준다</span>고 생각한다.
 			<<else>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="green">마음에 든다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="green">마음에 든다</span>고 생각한다.
 			<</if>>
 		<<elseif $npctextlove lte $npclovelow>>
 			<<if $npctextdom gte $npcdomhigh>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="red">한심하다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="red">한심하다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="red">짜증난다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="red">짜증난다</span>고 생각한다.
 			<<else>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="red">끔찍하다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="red">끔찍하다</span>고 생각한다.
 			<</if>>
 		<<else>>
 			<<if $npctextdom gte $npcdomhigh>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신이 <span class="pink">귀엽다</span>고 생각한다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신이 <span class="pink">귀엽다</span>고 생각한다.
 			<<elseif $npctextdom lte $npcdomlow>>
-			<<trNamedNPC $npctextname '은'>>_trResult <span class="teal">당신을 우러러보고 있다.</span>
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult <span class="teal">당신을 우러러보고 있다.</span>
 			<<else>>
-			<<trNamedNPC $npctextname '은'>>_trResult 당신에 대한 확고한 의견이 없다.
+			<<trNamedNPC $npctextname 'name' '은'>>_trResult 당신에 대한 확고한 의견이 없다.
 			<</if>>
 		<</if>>
 <</switch>>
@@ -1070,9 +1429,9 @@ alternative way to write that:
 
 <<widget "push_nnpc_genderknown">>
 <!-- Can be used in any situation to let all active named NPCs known the player's gender -->
-<!-- Use $args[0] to ignore clothing -->
+<!-- Use _args[0] to ignore clothing -->
 <!-- Won't ignore the chastity belt's "hidden" property (for now) -->
-<<if $args[0]>>
+<<if _args[0]>>
 	<<if !$worn.genitals.type.includes("hidden")>>
 		<<if $npc.length gt 0>>
 			<<for _i to 0; _i lt $npc.length; _i++>>
@@ -1091,13 +1450,25 @@ alternative way to write that:
 <</if>>
 <</widget>>
 
-<<widget "NPCStatusCheck">>
+/* <<widget "NPCStatusCheck">>	[OBSOLETE; use statusCheck(name)]
 <!-- When NPCs are updated and made compatible with statusCheck-style widgets, add them to here. Make a new if statement, NOT an elseif -->
-<!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck "Kylar Sydney">> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> -->
-<<if $args[0].includes("Kylar") and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1>>
-	<<kylarStatusCheck>>
+<!-- Usage: call a SINGLE argument with every relevant NPC. <<NPCStatusCheck("Kylar Sydney")>> will call <<kylarStatusCheck>> and <<sydneyStatusCheck>> --> [DOES NOT WORK WITH statusCheck(name)]
+<<if _args[0].includes("Robin")>>
+	<<set _robin to $NPCName[$NPCNameList.indexOf("Robin")]>>
+	<<if _robin.init is 1>>
+		<<robinStatusCheck>>
+	<</if>>
 <</if>>
-<<if $args[0].includes("Sydney") and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
-	<<sydneyStatusCheck>>
+<<if _args[0].includes("Kylar")>>
+	<<set _kylar to $NPCName[$NPCNameList.indexOf("Kylar")]>>
+	<<if _kylar.init is 1>>
+		<<kylarStatusCheck>>
+	<</if>>
 <</if>>
-<</widget>>
+<<if _args[0].includes("Sydney")>>
+	<<set _sydney to $NPCName[$NPCNameList.indexOf("Sydney")]>>
+	<<if _sydney.init is 1>>
+		<<sydneyStatusCheck>>
+	<</if>>
+<</if>>
+<</widget>> */

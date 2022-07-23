@@ -4,30 +4,30 @@
 <<widget "generateCombatActionTentacle">>
 <<switch $combatControls>>
 	<<case "radio">>
-		<<generateCombatActionTentacleRadio $args[0] $args[1] $args[3]>>
+		<<generateCombatActionTentacleRadio _args[0] _args[1] _args[3]>>
 	<<case "lists" "limitedLists">>
-		<<generateCombatActionTentacleList $args[0] $args[1] $args[2] $args[4]>>
+		<<generateCombatActionTentacleList _args[0] _args[1] _args[2] _args[4]>>
 <</switch>>
 <</widget>>
 
 /*Generated each set of actions in the form of a set of radio buttons*/
 <<widget "generateCombatActionTentacleRadio">>
-<<for _labelC, _valueC range $args[0]>>
+<<for _labelC, _valueC range _args[0]>>
 	<label>
-		<<print '<<radiobutton "$'+$args[1]+'" "'+_valueC+'" ' + (_valueC is $args[2] ? "checked" : "") + '>>'>>
+		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @class="combatListColor('', _valueC, 'Tentacle')"><<print _labelC>></span>
-		<<print '<<'+$args[1]+'DifficultyTentacle "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'DifficultyTentacle "'+_valueC+'">>'>> |
 	</label>
 <</for>>
 <</widget>>
 
 /*Generated each set of actions in the form of a list*/
 <<widget "generateCombatActionTentacleList">>
-<<if $args[0]>>
-	<<set _options to $args[0]>>
-	<<set _name to $args[1]>>
+<<if _args[0]>>
+	<<set _options to _args[0]>>
+	<<set _name to _args[1]>>
 	<<capture _var _options _name>>
-		<span @id="_name + 'Select'" @class="$args[2] + 'List flavorText '+($args[3] is true?'reducedWidth':'')">
+		<span @id="_name + 'Select'" @class="_args[2] + 'List flavorText '+(_args[3] is true?'reducedWidth':'')">
 			<<listbox `"$"+_name` autoselect>>
 				<<optionsfrom _options>>
 			<</listbox>>
@@ -179,7 +179,7 @@
 <<if $_changetype isnot true>>
 	<<leftActionsTentacle>>
 	<<if Object.keys(_leftaction).length gt 0>>
-		<<if Object.values(_leftaction).includes($leftactiondefault) is false or $args[0] is true or ["rest","leftgrabtentacle"].includes($leftactiondefault)>>
+		<<if Object.values(_leftaction).includes($leftactiondefault) is false or _args[0] is true or ["rest","leftgrabtentacle"].includes($leftactiondefault)>>
 			<<set _defaultsCombatAction to "leftaction">>
 			<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 			<<set _pass to false>>
@@ -312,10 +312,10 @@
 <</widget>>
 
 <<widget "leftactionDifficultyTentacle">>
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $leftaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 	<<case "showbottomtentacle" "showthighstentacle" "showmouthtentacle" "showpenistentacle" "showvaginatentacle">><<deviant5>>
@@ -339,6 +339,7 @@
 		<</if>>
 		<<set _leftaction["잡는다"] to "leftgrabtentacle">>
 	<</if>>
+	<<leftclothesnew>>
 <<case "grappled">>
 	<<if $angel gte 4 and $angelBanish gte 1 and !$banishDisable>>
 		<<for _i to 0; _i lt $tentacles.max; _i++>>
@@ -355,6 +356,9 @@
 	<<if $deviancy gte 75>>
 		<<if $player.penisExist and $penisuse is 0 and $nopenile is 0>>
 			<<set _leftaction["자지로 유도한다"] to "showpenis"+_tentacleLeftOption>>
+		<</if>>
+		<<if playerHasStrapon() and $penisuse is 0 and $nopenile is 0>>
+			<<set _leftaction["페니스 밴드 자지로 유도한다"] to "showpenis"+_tentacleLeftOption>>
 		<</if>>
 		<<if $player.vaginaExist and $vaginause is 0 and $novaginal is 0>>
 			<<set _leftaction["보지로 유도한다"] to "showvagina"+_tentacleLeftOption>>
@@ -479,7 +483,7 @@
 <<if $_changetype isnot true>>
 	<<rightActionsTentacle>>
 	<<if Object.keys(_rightaction).length gt 0>>
-		<<if Object.values(_rightaction).includes($rightactiondefault) is false or $args[0] is true or ["rest","rightgrabtentacle"].includes($rightactiondefault)>>
+		<<if Object.values(_rightaction).includes($rightactiondefault) is false or _args[0] is true or ["rest","rightgrabtentacle"].includes($rightactiondefault)>>
 			<<set _defaultsCombatAction to "rightaction">>
 			<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 			<<set _pass to false>>
@@ -612,10 +616,10 @@
 <</widget>>
 
 <<widget "rightactionDifficultyTentacle">>
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $rightaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 	<<case "showbottomtentacle" "showthighstentacle" "showmouthtentacle" "showpenistentacle" "showvaginatentacle">><<deviant5>>
@@ -639,6 +643,7 @@
 		<</if>>
 		<<set _rightaction["잡는다"] to "rightgrabtentacle">>
 	<</if>>
+	<<rightclothesnew>>
 <<case "grappled">>
 	<<if $angel gte 4 and $angelBanish gte 1 and !$banishDisable>>
 		<<for _i to 0; _i lt $tentacles.max; _i++>>
@@ -655,6 +660,9 @@
 	<<if $deviancy gte 75>>
 		<<if $player.penisExist and $penisuse is 0>>
 			<<set _rightaction["자지로 유도한다"] to "showpenis"+_tentaclerightOption>>
+		<</if>>
+		<<if $worn.under_lower.type.includes("strap-on") and $penisuse is 0 and $nopenile is 0>>
+			<<set _rightaction["페니스 밴드 자지로 유도한다"] to "showpenis"+_tentacleRightOption>>
 		<</if>>
 		<<if $player.vaginaExist and $vaginause is 0>>
 			<<set _rightaction["보지로 유도한다"] to "showvagina"+_tentaclerightOption>>
@@ -742,7 +750,7 @@
 	<<if $_changetype isnot true>>
 		<<feetActionsTentacle>>
 		<<if Object.keys(_feetaction).length gt 0>>
-			<<if Object.values(_feetaction).includes($feetactiondefault) is false or $args[0] is true or ["rest","feetgrab"].includes($feetactiondefault)>>
+			<<if Object.values(_feetaction).includes($feetactiondefault) is false or _args[0] is true or ["rest","feetgrab"].includes($feetactiondefault)>>
 				<<set _defaultsCombatAction to "feetaction">>
 				<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 				<<set _pass to false>>
@@ -861,10 +869,10 @@
 <</widget>>
 
 <<widget "feetactionDifficultyTentacle">>
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $feetaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 	<<case "showbottomtentacle" "showthighstentacle" "showpenistentacle" "showvaginatentacle">><<deviant5>>
@@ -896,6 +904,9 @@
 		<<if $player.penisExist and $penisuse is 0>>
 			<<set _feetaction["자지로 유도한다"] to "showpenis"+_tentacleFeetOption>>
 		<</if>>
+		<<if playerHasStrapon() and $penisuse is 0 and $nopenile is 0>>
+			<<set _feetaction["페니스 밴드 자지로 유도한다"] to "showpenis"+_tentacleFeetOption>>
+		<</if>>
 		<<if $player.vaginaExist and $vaginause is 0>>
 			<<set _feetaction["보지로 유도한다"] to "showvagina"+_tentacleFeetOption>>
 		<</if>>
@@ -925,14 +936,22 @@
 			<<if $tentacles[_i].head is "mouthentrance">>
 				<<set _mouthOptions to "entrance">>
 				<<set _tentacleMouthOption to $tentacles[_i].id>>
-				<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 입을 위협한다.</span>
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 <<worn_face_name_ul>> 위협한다.</span>
+				<<else>>
+					<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 입을 위협한다.</span>
+				<</if>>
 				<<break>>
 			<</if>>
 		<<case "tentacleimminent">>
 			<<if $tentacles[_i].head is "mouthimminent">>
 				<<set _mouthOptions to "imminent">>
 				<<set _tentacleMouthOption to $tentacles[_i].id>>
-				<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 입에 대고 누른다.</span>
+				<<if $worn.face.type.includes("covered") or $worn.face.type.includes("gag")>>
+					<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 <<worn_face_name>>에 대고 누른다.</span>
+				<<else>>
+					<span @class="($lastOptions.mouth isnot _mouthOptions ?'gold':'')"><<trTentacle $tentacles[_i].fullDesc "이">> 당신의 입에 대고 누른다.</span>
+				<</if>>
 				<<break>>
 			<</if>>
 		<<case "tentacle">>
@@ -960,7 +979,7 @@
 	<<if $_changetype isnot true>>
 		<<mouthActionsTentacle>>
 		<<if Object.keys(_mouthaction).length gt 0>>
-			<<if Object.values(_mouthaction).includes($mouthactiondefault) is false or $args[0] is true or $mouthactiondefault is "rest">>
+			<<if Object.values(_mouthaction).includes($mouthactiondefault) is false or _args[0] is true or $mouthactiondefault is "rest">>
 				<<set _defaultsCombatAction to "mouthaction">>
 				<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 				<<set _pass to false>>
@@ -999,10 +1018,10 @@
 
 <<widget "mouthactionDifficultyTentacle">>
 /*
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $mouthaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 
@@ -1016,13 +1035,17 @@
 <<switch _mouthOptions>>
 	<<case "entrance">>
 		<<set _mouthaction["쉰다"] to "rest">>
-		<<set _mouthaction["핥는다"] to "mouthlick"+_tentacleMouthOption>>
+		<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+			<<set _mouthaction["핥는다"] to "mouthlick"+_tentacleMouthOption>>
+		<</if>>
 		<<if $head isnot "grappled">>
 			<<set _mouthaction["밀어낸다"] to "mouthpullaway"+_tentacleMouthOption>>
 		<</if>>
 	<<case "imminent">>
 		<<set _mouthaction["쉰다"] to "rest">>
-		<<set _mouthaction["키스한다"] to "mouthkiss"+_tentacleMouthOption>>
+		<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+			<<set _mouthaction["키스한다"] to "mouthkiss"+_tentacleMouthOption>>
+		<</if>>
 		<<if $head isnot "grappled">>
 			<<set _mouthaction["밀어낸다"] to "mouthpullaway"+_tentacleMouthOption>>
 		<</if>>
@@ -1086,7 +1109,7 @@
 	<<if $_changetype isnot true>>
 		<<penisActionsTentacle>>
 		<<if Object.keys(_penisaction).length gt 0>>
-			<<if Object.values(_penisaction).includes($penisactiondefault) is false or $args[0] is true or $penisactiondefault is "rest">>
+			<<if Object.values(_penisaction).includes($penisactiondefault) is false or _args[0] is true or $penisactiondefault is "rest">>
 				<<set _defaultsCombatAction to "penisaction">>
 				<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 				<<set _pass to false>>
@@ -1129,10 +1152,10 @@
 
 <<widget "penisactionDifficultyTentacle">>
 /*
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $penisaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 
@@ -1210,7 +1233,7 @@
 	<<if $_changetype isnot true>>
 		<<vaginaActionsTentacle>>
 		<<if Object.keys(_vaginaaction).length gt 0>>
-			<<if Object.values(_vaginaaction).includes($vaginaactiondefault) is false or $args[0] is true or $vaginaactiondefault is "rest">>
+			<<if Object.values(_vaginaaction).includes($vaginaactiondefault) is false or _args[0] is true or $vaginaactiondefault is "rest">>
 				<<set _defaultsCombatAction to "vaginaaction">>
 				<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 				<<set _pass to false>>
@@ -1253,10 +1276,10 @@
 
 <<widget "vaginaactionDifficultyTentacle">>
 /*
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $vaginaaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 
@@ -1338,7 +1361,7 @@
 	<<if $_changetype isnot true>>
 		<<anusActionsTentacle>>
 		<<if Object.keys(_anusaction).length gt 0>>
-			<<if Object.values(_anusaction).includes($anusactiondefault) is false or $args[0] is true or $anusactiondefault is "rest">>
+			<<if Object.values(_anusaction).includes($anusactiondefault) is false or _args[0] is true or $anusactiondefault is "rest">>
 				<<set _defaultsCombatAction to "anusaction">>
 				<<set _actionsSet = DefaultActions.get($defaultsCombatType, "Tentacles", _defaultsCombatAction)>>
 				<<set _pass to false>>
@@ -1381,10 +1404,10 @@
 
 <<widget "anusactionDifficultyTentacle">>
 /*
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $anusaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 
@@ -1457,10 +1480,10 @@
 
 <<widget "chestactionDifficultyTentacle">>
 /*
-<<if $args[0] is undefined>>
+<<if _args[0] is undefined>>
 	<<set _diffAction to $chestaction>>
 <<else>>
-	<<set _diffAction to $args[0]>>
+	<<set _diffAction to _args[0]>>
 <</if>>
 <<switch (""+_diffAction).replace(/\d+/g,'')>>
 
@@ -1506,7 +1529,7 @@
 <</if>>
 <div id="listContainer">
 	<div id="leftaction" @class="$combatControls + 'Control'">
-		<<if $lefttarget is "vore">>
+		<<if $lefttarget is "vore" or $tentacles.active is 0>>
 			<<leftActionInitVore>>
 		<<else>>
 			<<leftActionInitTentacle>>
@@ -1514,7 +1537,7 @@
 	</div>
 
 	<div id="rightaction" @class="$combatControls + 'Control'">
-		<<if $righttarget is "vore">>
+		<<if $righttarget is "vore" or $tentacles.active is 0>>
 			<<rightActionInitVore>>
 		<<else>>
 			<<rightActionInitTentacle>>

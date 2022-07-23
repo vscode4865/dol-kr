@@ -6,25 +6,29 @@ window.overlayShowHide = function (elementId) {
 			V.debugMenu[0] = !V.debugMenu[0];
 		}
 	}
+	window.cacheDebugDiv();
 }
 
 window.overlayMenu = function (elementId, type) {
-	switch (type) {
-		case "debug":
-			var debug = ["debugMain", "debugCharacter", "debugEvents"]
-			for (var i = 0, l = debug.length; i < l; i++) {
-				var div = document.getElementById(debug[i]);
-				if (div != undefined) {
-					V.debugMenu[1] = elementId;
-					if (elementId === debug[i]) {
-						div.classList.remove("hidden");
-					} else {
-						div.classList.add("hidden");
-					}
-				}
-			}
-			break;
+	if (type == "debug"){
+		window.toggleClassDebug(elementId+"Button", "bg-color")
+		V.debugMenu[1] = elementId;
+		if (document.getElementById(elementId) != undefined) {
+			if (V.debugMenu[2].length > 0)
+				window.toggleClassDebug(elementId, "hideWhileSearching")
+			else
+				window.toggleClassDebug(elementId, "classicHide")
+		}
+		if ((elementId == "debugFavourites" || elementId == "debugAdd") && V.debugMenu[2] != undefined && V.debugMenu[2].length > 0){
+			V.debugMenu[2] = "";
+			document.getElementById('searchEvents').value = ""
+			window.researchEvents("")
+		}
+		if (elementId == "debugFavourites"){
+			window.patchDebugMenu();
+		}
 	}
+	window.cacheDebugDiv();
 }
 
 /*Sidebar swipe*/
@@ -255,13 +259,13 @@ window.getTimeNumber = function (t) {
 
 window.extendStats = function () {
 	V.extendedStats = !V.extendedStats;
-	var captionDiv = document.getElementById('storyCaptionDiv'),
+	var captionDiv = document.getElementById('storyCaptionContent'),
 		statsDiv = document.getElementById('stats');
 	if (V.extendedStats === true) {
-		captionDiv.classList.add("storyCaptionDivExtended");
+		captionDiv.classList.add("storyCaptionContentExtended");
 		statsDiv.classList.add("statsExtended");
 	} else {
-		captionDiv.classList.remove("storyCaptionDivExtended");
+		captionDiv.classList.remove("storyCaptionContentExtended");
 		statsDiv.classList.remove("statsExtended");
 	}
 	new Wikifier(null, '<<replace #stats>><<statsCaption>><</replace>>');
@@ -337,7 +341,7 @@ window.settingsAsphyxiation = function () {
 		}
 		jQuery('#numberslider-value-asphyxialvl').text('').append(text).addClass('small-description');
 	};
-	
+
 	jQuery(document).ready(() => {
 		updateText();
 		jQuery('#numberslider-input-asphyxialvl').on('input change', function (e) { updateText(); });
@@ -464,12 +468,30 @@ window.settingsPCGenderUpdate = function () {
 }
 
 window.settingsDoubleAnalToggleGreyOut = function() {
-    let updateButtonsActive = () => {
-        jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
-    };
+	let updateButtonsActive = () => {
+		jQuery('[id*=checkbox-analdoubledisable]').prop("disabled", V.analdisable == "t");
+	};
 
-    jQuery(document).ready(() => {
-        updateButtonsActive();
-        jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
-    });
+	jQuery(document).ready(() => {
+		updateButtonsActive();
+		jQuery('[id*=checkbox-analdisable]').on('change', function (e) { updateButtonsActive(); });
+	});
+}
+
+$(document).on('click', '#cbtToggleMenu .cbtToggle', function (e) {
+	$('#cbtToggleMenu').toggleClass('visible');
+});
+
+function sliderPerc(e){
+	let valSpan = $(e.currentTarget).siblings().first();
+	let value = valSpan.text();
+
+	valSpan.text((i, value) => Math.round(value * 100) + '%');
+
+	if (value > 1)
+		valSpan.css('color', 'gold');
+	else if (value < 1)
+		valSpan.css('color', 'green');
+	else
+		valSpan.css('color', 'unset');
 }

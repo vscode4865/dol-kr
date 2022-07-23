@@ -2,6 +2,16 @@
 
 <<widget "endcombat">>
 
+<!-- Need to defer execution of this until the next passage.
+	Because <<endcombat>> can be called in a link. -->
+<<if $ironmanmode>>
+	<<run IronMan.addSetter(function(v) {
+		v.enemytrust = 0;
+	})>>
+<<else>>
+	<<set $enemytrust to 0>>
+<</if>>
+
 <<if $enemyhealth lte 0>>
 	<<if $enemytype is "man">>
 		<<famescrap $enemynomax>>
@@ -77,12 +87,12 @@
 			<span class="brat">상황을 통제할 수 있어서 좋았어.</span>
 			<br>
 		<</if>>
-	<<set $assertive to 0>>
+		<<set $assertive to 0>>
 	<</if>>
 
 <</if>>
 
-
+<<unset $enemytype>>
 
 <<endevent>>
 <<struggle_end>>
@@ -102,6 +112,8 @@
 <<unset $speechspraycycleplant>>
 <<unset $newlyWritten>>
 <<unset $combatBegun>>
+<<unset $combatPhase>>
+<<unset $fightTargets>>
 
 <<switch $player.gender>>
 <<case "f">>
@@ -126,6 +138,13 @@
 	<<set $vaginause to 0>>
 	<<set $penisuse to 0>>
 <</switch>>
+<<if playerHasStrapon()>>
+	<<set $penisstate to 0>>
+	<<set $penisuse to 0>>
+	<<if $playerPenisSizeBackup isnot undefined>>
+		<<set $player.penissize to $playerPenisSizeBackup>>
+	<</if>>
+<</if>>
 
 <<set $anusstate to 0>>
 <<set $mouthstate to 0>>
@@ -166,12 +185,11 @@
 
 <<set $walltype to 0>>
 
-<<set $understruggle to 0>>
+<<set $underlowerstruggle to 0>>
 <<set $lowerstruggle to 0>>
 <<set $upperstruggle to 0>>
 <<set $overlowerstruggle to 0>>
 <<set $overupperstruggle to 0>>
-<<set $enemytrust to 0>>
 <<set $alarm to 0>>
 <<set $rescue to 0>>
 <<set $phase to 0>>
@@ -250,11 +268,11 @@
 <<set $feettarget to 0>>
 <<set $mouthtarget to 0>>
 <<if $player.penisExist>>
-<<set $penistarget to 0>>
+	<<set $penistarget to 0>>
 <</if>>
 <<if $player.vaginaExist>>
-<<set $vaginatarget to 0>>
-<<unset $vaginadoubletarget>>
+	<<set $vaginatarget to 0>>
+	<<unset $vaginadoubletarget>>
 <</if>>
 <<set $anustarget to 0>>
 <<unset $anusdoubletarget>>
@@ -303,7 +321,7 @@
 <<set $front to 0>>
 <<set $chest to 0>>
 
-<<set $claws to 1>>
+<!-- <<set $claws to 1>> -->
 <<set $water to 0>>
 
 <<set $vorestrength to 0>>
@@ -346,6 +364,12 @@
 <<set $speechhermaroused to 0>>
 <<set $speechhermshock to 0>>
 <<set $speechhermdisappointed to 0>>
+
+<<set $speechsextoyangry to 0>>
+<<set $speechsextoyshocked to 0>>
+<<set $speechsextoyaroused to 0>>
+<<set $speechsextoydisappointed to 0>>
+<<set $speechsextoy to 0>>
 
 <<set $prop to []>>
 
@@ -427,13 +451,18 @@
 <<if $penileskillup gte 1>>
 	<<set $penileskillup to 0>>
 	<<if $penileskill lt 1000>>
-		<span class="gold">당신은 자지로 다른 사람들을 기쁘게 해주는 능력에 더 자신감을 느낀다.</span>
+		<span class="gold">당신은 <<= $player.penisExist ? "자지" : "페니스 밴드 자지">>로 다른 사람들을 기쁘게 해주는 능력에 더 자신감을 느낀다.</span>
 		<br>
 	<</if>>
 <</if>>
 <<set $enemyArousalLossReduction to 1>>
 
-
+<<unset $phalluscolorA>>
+<<unset $phalluscolorB>>
+<<unset $currentSexToyLeft>>
+<<unset $currentSexToyRight>>
+<<unset $selectedItemLeft>>
+<<unset $selectedItemRight>>
 
 <<manend>>
 <<turnend>>
@@ -447,6 +476,9 @@
 
 <<for _i = 0; _i < $NPCList.length; _i++>>
 	<<set $NPCList[_i] to clone(setup.baseNPC)>>
+	<<if $NPCList[_i].strapon isnot undefined>>
+		<<run delete $NPCList[_i].strapon>>
+	<</if>>
 <</for>>
 
 <<set $pronoun to 0>>
@@ -474,11 +506,11 @@
 -->
 <<widget "clearsinglenpc">>
 
-<<if typeof $args[0] isnot "number">>
+<<if typeof _args[0] isnot "number">>
 	<span class="red">Widget "clearsinglenpc" used incorrectly! Please report this!</span>
 <</if>>
 
-<<set _i to $args[0]>>
+<<set _i to _args[0]>>
 <<set $NPCList[_i] to clone(setup.baseNPC)>>
 <<if $enemyno gt 0>>
 	<<set $enemyno -= 1>>
@@ -492,6 +524,9 @@
 		<<run EventSystem.Clear()>>
 	<</if>>
 <</if>>
+<<if $NPCList[_i].strapon isnot undefined>>
+	<<run delete $NPCList[_i].strapon>>
+<</if>>
 <</widget>>
 
 :: Widgets End Event [widget]
@@ -504,7 +539,7 @@
 
 <<set $molestavoid to 1>>
 
-<<if $args[0] isnot "phaseless">>
+<<if _args[0] isnot "phaseless">>
 	<<set $phaselast to $phase>>
 	<<set $phase to 0>>
 	<<set $phase2 to 0>>
@@ -544,6 +579,7 @@
 <<unset $sydneyComments>>
 <<unset $sydneyUniqueComments>>
 <<unset $noBodyWriting>>
+<<unset $noAdmire>>
 <<unset $breakIgnore>>
 <<unset $eventforced>>
 
@@ -626,6 +662,10 @@
 <<unset $speechcheeks>>
 <<unset $speechhandjobpenis>>
 <<unset $speechhandjobvagina>>
+<<unset $speechmasturbate>>
+<<unset $speechdildovagina>>
+<<unset $speechdildoanus>>
+<<unset $speechstroker>>
 
 <<unset $speechthroat>>
 <<unset $speechvaginafoot>>
@@ -667,6 +707,20 @@
 <</widget>>
 
 <<widget "turnend">>
+
+<<if $ironmanmode>>
+	<!-- Need to defer execution of this until the next passage.
+		Because <<endcombat>> can be called in a link. -->
+	<<run IronMan.addSetter(function(v) {
+		if (v.enemyarousal < 0) {
+			v.enemyarousal = 0;
+		}
+	})>>
+<<else>>
+	<<if $enemyarousal lt 0>>
+		<<set $enemyarousal to 0>>
+	<</if>>
+<</if>>
 
 <<set $speechcum to 0>>
 <<set $speechorgasmrepeat to 0>>
@@ -740,14 +794,10 @@
 	<<unset $speechhermdisappointed>>
 <</if>>
 
-<<if $enemyarousal lt 0>>
-	<<set $enemyarousal to 0>>
-<</if>>
-
 <</widget>>
 
 <<widget "manspeech">>
-<<set _n to $args[0]>>
+<<set _n to _args[0]>>
 <<if $NPCList[_n].speechpenisescape is 1>>
 <<set $speechpenisescape to 1>>
 <</if>>

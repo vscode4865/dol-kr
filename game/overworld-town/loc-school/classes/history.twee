@@ -1,6 +1,6 @@
 :: History Classroom
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<run getRobinLocation()>>
+<<set _robin to statusCheck("Robin")>>
 <<if _robin_location is "school">>
 	<<set $robinhistory to "active">>
 <<else>>
@@ -11,11 +11,11 @@
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
 		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 겉옷 아래에 아무것도 입지 않았다는 사실을 자각했다.
+			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 외투 아래에 아무것도 입지 않았다는 사실을 자각했다.
 		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 겉옷 아래에 수영복만 입고 있다는 사실을 자각했다.
+			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 외투 아래에 수영복만 입고 있다는 사실을 자각했다.
 		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 겉옷 아래에 속옷만 입고 있다는 사실을 자각했다.
+			<<if _middleOutfit>><<worn_over_upper_name_ul>><<else>><<worn_over_upper_name_gwa>> <<worn_over_lower_name_ul>><</if>> 벗자마자, 당신은 외투 아래에 속옷만 입고 있다는 사실을 자각했다.
 		<</if>>
 		<br><br>
 		<<npc Winter>><<person1>>
@@ -52,7 +52,7 @@
 					<<npc Robin>><<generatey2>><<person2>>
 					당신이 다가가지만, 당신이 도착하기 전에 <<person_i>> 그 자리에 앉는다.
 					<br><br>
-					<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20>>
+					<<if _robin.dom gte 20>>
 						"저기," 로빈이 말한다. "거긴 내 <<if $robinromance is 1>><<girlfriend_ga>><<else>>친구가<</if>> 앉으려고 한 자리야."
 						<br><br>
 						<<if random(1, 2) is 2>>
@@ -92,10 +92,16 @@
 		<<else>>
 			당신은 역사 교실에 들어간다.
 			<<npc Winter>><<person1>>
-			윈터가 말을 하다 말고 당신을 바라본다. <<HePost "은">> 손목시계를 툭툭 두들기고는 손가락으로 당신의 자리를 가리킨다.
-			<<gdelinquency>>
+			윈터가 말을 하다 말고 당신을 바라본다.
+			<<if $historyExcused>>
+				<<unset $historyExcused>>
+				"지각할 거라고 들었다," <<he_ga>> 짧게 말하고, 당신의 자리를 가리킨다.
+			<<else>>
+				<<HePost "은">> 손목시계를 툭툭 두들기고는 손가락으로 당신의 자리를 가리킨다.
+				<<gdelinquency>>
+				<<detention 1>>
+			<</if>>
 			<br><br>
-			<<detention 1>>
 			당신은
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
 				교실 뒷편에 코트를 건 뒤
@@ -126,7 +132,7 @@
 	당신은 역사 교실에 들어간다.
 	<<if _robin_location is "school" and $luncheaten is 1>>
 		로빈은 이미 들어와 있다.
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20>>
+			<<if _robin.trauma gte 20>>
 				<<nnpc_He_nun Robin>> 창 밖을 바라보고 있다.
 			<<elseif $robinromance is 1>>
 				<<nnpc_He_nun Robin>> 미소를 짓고 당신에게 손을 흔들며 부른다.
@@ -208,7 +214,7 @@
 
 	<<endevent>>
 	<<exam_cheat history>>
-	<<link [[집중한다|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>> | <span class="green">+ 5% 합격 기회</span>
+	<<link [[집중한다|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
 	<br>
 	<<link [[긴장을 푼다|History Exam]]>><<set $phase to 1>><</link>>
 	<br>
@@ -417,7 +423,7 @@
 
 :: History Classroom Study
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<run getRobinLocation()>>
+<<run statusCheck("Robin")>>
 <<if $robinhistory is "seat">>
 	당신은 로빈 옆에 앉아 역사 교과서를 읽는다.
 <<else>>

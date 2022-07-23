@@ -8,6 +8,9 @@
 	<<earnAllFeats true>>
 	<<set $noon_check to 0>>
 	<<set $dawn_check to 0>>
+	<<if $renttime lte 0>>
+		<<set $baileyOverdue++>>
+	<</if>>
 	<<set $renttime -= 1>>
 	<<set $motherwake to 0>>
 	<<if $gamemode isnot "hard" and $uncomfortable.lewd is true>>
@@ -26,6 +29,8 @@
 	<<set $luncheaten to 0>>
 	<<set $canteenapproach to 0>>
 	<<set $detentionattended to 0>>
+	<<unset $school_infirmary_painkiller>>
+	<<unset $school_infirmary_bed>>
 	<<if $locker_suspicion isnot undefined and $locker_suspicion gt 0>>
 		<<locker_suspicion -1>>
 	<</if>>
@@ -62,6 +67,18 @@
 	<<set $schooleventtimer -= 1>>
 	<<if $robindebtevent gt 0>>
 		<<set $robindebtevent -= 1>>
+		<<switch $robinmissing>>
+			<<case "dinner">>
+				<<npcincr Robin trauma 40>>
+			<<case "docks">>
+				<<npcincr Robin trauma 15>>
+			<<case "landfill">>
+				<<if $robindebtevent gte 1>>
+					<<npcincr Robin trauma 10>>
+				<<else>>
+					<<npcincr Robin trauma 25>>
+				<</if>>
+		<</switch>>
 	<</if>>
 	<<unset $robin_tending>>
 	<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gt 0>>
@@ -118,8 +135,8 @@
 	<</if>>
 	<<set $boysroomentered to 0>>
 	<<set $girlsroomentered to 0>>
-	<<set $famepark -= 7>>
-	<<set $famepark = Math.clamp($famepark, 0, 100)>>
+	<<set $park_fame -= 7>>
+	<<set $park_fame = Math.clamp($park_fame, 0, 100)>>
 	<<unset $robinbeachpolice>>
 	<<unset $robinparksnow>>
 	<<set $sewersfeeding to 0>>
@@ -202,6 +219,8 @@
 			<<set $wolfchallengetimer-->>
 		<</if>>
 	<</if>>
+	<<unset $wolf_cave_dog>>
+	<<unset $jordan_missing>>
 	<<unset $blackWolfMonsterRoll>>
 	<<unset $temple_pray>>
 	<<unset $lake_meditate>>
@@ -265,6 +284,7 @@
 	<<unset $pharmTriedSeduction>>
 	<<unset $pharmSexFinished>>
 	<<unset $pharmClosed>>
+	<!-- future plan: change pharm nurse to a persistent npc and clear it here; the generation method below can enforce npc gen that ignores settings. -->
 	<<set $pharmNurseGender = (random(100) gt $malechance ? "f" : "m")>>
 	<<set $pharmNurseLvl = random(0, 18)>>
 
@@ -353,6 +373,7 @@
 		<</if>>
 	<</if>>
 
+	<<set $left_before_nurse_returned to 0>>
 
 	<<if $school_crossdress_message gte 1 or $school_herm_message gte 1>>
 		<<set $effectsmessage to 1>>
@@ -455,7 +476,6 @@
 	<</if>>
 	<<unset $alex_breakfast>>
 	<<unset $alex_tea>>
-	<<unset $alex_admin_oral>>
 	<<unset $alex_to_bed>>
 	<<if $alex_countdown gte 1>>
 		<<set $alex_countdown -= 1>>
@@ -493,6 +513,12 @@
 	<<if $awarelevel gte 2 and $loveInterest.primary isnot "None" and $loveInterest.secondary is "None" and $loveInterestAwareMessage is 0>>
 		<<set $loveInterestAwareMessage to 1>>
 		<span class = "pink"><i>당신의 마음은 여러 명의 연인들을 받아 들인다. 당신은 이제 두번째 연애 상대를 선택할 수 있다.</i></span>
+	<</if>>
+	
+	<<if $pound>>
+		<<set $pound.compete to 0>>
+		<<stray_happiness -1>>
+		<<set $pound.tasks to []>>
 	<</if>>
 
 
@@ -607,6 +633,11 @@
 	<<case "january" "may" "september">>
 		<<if $weekday is 1 or $weekday is 2>>
 			<<set $schoolterm to 1>>
+			/* reset inspections event cycle; inspections per term to "track students' growth" */
+			<<if $schoolevent gt 2>>
+				<<set $schoolevent to 0>>
+				<<set $schooleventtimer to 10>>
+			<</if>>
 		<</if>>
 	<<case "april" "july" "december">>
 		<<if $weekday is 7 or $weekday is 1 or $weekday is 2>>
@@ -635,6 +666,9 @@
 		<<unset $halloween_whitney>>
 		<<unset $halloween_whitney_proposed>>
 		<<unset $halloween_robin>>
+		<<if $halloween_robin_costume and $NPCName[$NPCNameList.indexOf("Robin")].outfits and $NPCName[$NPCNameList.indexOf("Robin")].outfits.includes($halloween_robin_costume)>>
+			<<removeNNPCOutfit "Robin" $halloween_robin_costume>>
+		<</if>>
 		<<unset $halloween_robin_costume>>
 		<<unset $halloween_winter_key>>
 		<<unset $halloween_eden>>
@@ -672,10 +706,8 @@
 	<<if $bell_timer>>
 		<<set $bell_timer -= 1>>
 	<</if>>
-	<<if $weekday isnot 1>>
-		<<if $robindebtevent is 0>>
-			<<set $robinmissing to 0>>
-		<</if>>
+	<<if $robindebtevent is 0>>
+		<<set $robinmissing to 0>>
 	<</if>>
 
 	<<if $birthmonth is $month and $birthday is $monthday>>
@@ -685,7 +717,7 @@
 	<<physicalAdjustments>>
 
 	<<if $player.penisExist>>
-		<<set _amount to $penissize - 1>>
+		<<set _amount to $player.penissize - 1>>
 		<<if $semen_volume lte 24>>
 			<<set _amount++>>
 		<</if>>
@@ -707,13 +739,13 @@
 
 	<<set $lactation_pressure -= 1>>
 	<<if $lactating is 1>>
-		<<if $lactation_pressure lt 30 or $breastsize lte 0>>
+		<<if $lactation_pressure lt 30 or $player.breastsize lte 0>>
 			<<set $lactating to 0>>
 			<<set $effectsmessage to 1>>
 			<<set $lactationmessage to 1>>
 		<</if>>
 	<<else>>
-		<<if $lactation_pressure gte 30 and $breastfeedingdisable is "f" and $breastsize gte 1>>
+		<<if $lactation_pressure gte 30 and $breastfeedingdisable is "f" and $player.breastsize gte 1>>
 			<<set $lactating to 1>>
 			<<set $effectsmessage to 1>>
 			<<set $lactationmessage to 1>>
@@ -740,31 +772,18 @@
 			<<set $nectar_timer to 21>>
 		<</if>>
 	<</if>>
-
 	<<if $purity lte 0>>
 		<<if $fallenangel gte 2>>
-			<<set $demonbuild to 30>>
-			<<set $demon to 6>>
-			<<set $fallenangel to 1>>
-			<<set $specialTransform to 1>>
-			<span class="gold">검게 변한 당신의 날개가 더욱 어두워져간다. 산산조각난 광륜이 희미해진다. 머리에서 뿔이 솟아오르고 엉덩이 쪽에서 꼬리가 자라난다. 당신이 느끼고 있던 상실감이 복수심으로 바뀌었다.</span>
+			<<fallenDescend>> /* Moved to transformations.twee */
 
-			<<set $transformationParts.fallenAngel.halo to "disabled">>
-			<<set $transformationParts.fallenAngel.wings to "disabled">>
-
-			<<set $transformationParts.demon.horns to "default">>
-			<<set $transformationParts.demon.tail to "default">>
-			<<set $transformationParts.demon.wings to "default">>
-			<<earnFeat "Demon">>
-			<<garousal>><<arousal 600>>
 		<</if>>
-		<<set $demonbuild += 1>>
+		<<transform demon 1>>
 	<<else>>
-		<<set $demonbuild -= 1>>
+		<<transform demon -1>>
 	<</if>>
 
 	<<if $purity gte 1 and ($demon gte 6 or ($demon gte 1 and $demonFeat is true))>>
-		<span class="red">끔찍한 빛이 몸을 불사지르는 듯한 느낌이다.</span>
+		<span class="red">끔찍한 빛이 몸을 불사르는 듯한 느낌이다.</span>
 		<<gstress>><<set $stress += $stressmax>>
 	<</if>>
 
@@ -776,7 +795,7 @@
 	<<if $player.virginity.vaginal is true and $player.virginity.penile is true>>
 		<<purity 2>>
 		<<if $purity gte 1000>>
-			<<set $angelbuild += 2>>
+			<<transform angel 2>>
 		<</if>>
 	<</if>>
 
@@ -787,7 +806,7 @@
 		<<set $angelBanish to 0>>
 	<</if>>
 
-	<<set $angelbuild -= 1>>
+	<<transform angel -1>>
 
 	<<if $fallenangel gte 2>>
 		<<purity -10>>
@@ -1012,6 +1031,27 @@
 		<<set $edenspring -= 1>>
 	<</if>>
 
+	<<if $robinromance is 1 && $NPCName[$NPCNameList.indexOf("Robin")].dom gte 40>>
+		<<npcincr Robin lust 1>>
+	<</if>>
+
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+		<<set $robinDaily to {}>>
+		<<set $robinDaily.cdevent to 0>>
+	<</if>>
+
+	<<if $NPCName[$NPCNameList.indexOf("Alex")].init is 1>>
+		<<set $alexDaily to {}>>
+	<</if>>
+
+	<<if $farm_stage gte 7 && $NPCName[$NPCNameList.indexOf("Alex")].dom gte 40>>
+		<<npcincr Alex lust 1>>
+	<</if>>
+
+	<<if $NPCName[$NPCNameList.indexOf("Eden")].init is 1>>
+		<<npcincr Eden lust 1>>
+	<</if>>
+
 	<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
 	<!-- prevent kylar's stalker routine before they're even introduced to the player -->
 		<<npcincr Kylar lust 1>>
@@ -1054,11 +1094,22 @@
 	<</if>>
 
 	<<if $sydneyScience isnot 1 and $days gte random(7, 12)>>
-		/*<<set $sydneyLate to 1>><<set $sydneyScience to 1>>*/
+		/*<<set $sydneyLate to 1>><<set $sydneyScience to 1>>*/ <!-- Uncomment this when Sydney can show up in Science Class -->
 	<</if>>
 
+	<<if $adultshopprogress lt 22 and $weekday is 6>>
+		<<set $adultshopprogress += 1>>
+	<<elseif $adultshopgrandopening is true>>
+		<<unlockAdultShop>>
+	<<elseif $adultshopprogress gte 22 and $adultshopunlocked isnot true>>
+		<<set $adultshopgrandopening to true>>
+	<<elseif $adultshopdegree lt 15>>
+		<<set $adultshopdegree += 0.1>>
+	<</if>>
+	<<unset $adultshophelped>>
+
 	<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
-		<<NPCStatusCheck "Sydney">>
+		<<run statusCheck("Sydney")>>
 		<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gte 1 and $NPCName[$NPCNameList.indexOf("Sydney")].virginity.temple is true>>
 			<<npcincr Sydney purity 1>>
 		<</if>>
@@ -1079,7 +1130,7 @@
 				<<set $sydneyLeightonConfront to 1>>
 				<<set $sydneyLeightonWhitneyGuilty to 1>>
 			<<elseif $libraryMoneyStolen gte 100 or $sydneyStolenKnown>>
-				<<set $sydneyLeightonConfront to 1>>		
+				<<set $sydneyLeightonConfront to 1>>
 				<<set $sydneyLeightonPlayerGuilty to 1>>
 			<</if>>
 		<<elseif $sydneyLeightonConfrontTimer>>
@@ -1144,6 +1195,10 @@
 	<</if>>
 
 	<<unset $scienceExcused>>
+	<<unset $mathsExcused>>
+	<<unset $englishExcused>>
+	<<unset $historyExcused>>
+	<<unset $swimmingExcused>>
 
 	<<if $temple_evaluation>>
 		<<set $temple_evaluation -= 1>>
@@ -1286,6 +1341,25 @@
 	<<else>>
 		<<set $clothingShop.banExtension to false>>
 	<</if>>
+	<<if $adultShop isnot undefined>>
+		<<if $adultShop.ban gt 0>>
+			<<set $adultShop.ban-->>
+		<<else>>
+			<<set $adultShop.banExtension to false>>
+		<</if>>
+	<<else>>
+		<<if $adultShop is undefined>>
+			<<set $adultShop to {
+				ban: 0,
+				banExtension: false,
+				spotted: false,
+				stolenClothes: 0,
+				totalStolenClothes: 0,
+				banCount: 0,
+				rng: random(0,1000)
+			}>>
+		<</if>>
+	<</if>>
 	<<unset $slimeFarmNaked>>
 	<<if $farm>>
 		<<if $farm.milking.catchChance gt random(10,1000)/10>>
@@ -1310,6 +1384,17 @@
 	<<if $wolfcavepatrol is 1>>
 		<<set $wolfcavepatrolchance to random(1,3)>>
 	<</if>>
+
+	<<if $randomNNPCStraponsToClear>>
+		<!-- Clear any strapons that were randomly generated for the NNPCs -->
+		<<run $NPCName.forEach(npc => {
+			if (npc.strapons && npc.strapons.length >= 1){
+				/* This removes all strapons that have the temp tag, and ignores any that lack this variable */
+				npc.strapons = npc.strapons.filter(strapon => !strapon.temp);
+				console.log("Removed temp strap-ons");
+			}
+		})>>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -1321,6 +1406,7 @@
 	<<clearNPC bartend>>
 <</if>>
 <<set $clothingShop.spotted to false>>
+<<set $adultShop.spotted to false>>
 <<dailySellProduce>>
 <<if $lake_ice_broken gte 1>>
 	<<set $lake_ice_broken -= 1>>
@@ -1335,6 +1421,9 @@
 <<unset $birdSleep>>
 <<unset $glideScared>>
 <<unset $edenbed>>
+<<if $pound>>
+	<<set $pound.sneak to 0>>
+<</if>>
 <</widget>>
 
 <<widget "dawn">>
@@ -1363,9 +1452,6 @@
 		<</if>>
 		<<if $kylarwatched is 1>>
 			<<set $kylarwatchedtimer -= 1>>
-		<</if>>
-		<<if $NPCName[$NPCNameList.indexOf("Eden")].init is 1>>
-		<<npcincr Eden lust 1>>
 		<</if>>
 		<<if $parasite.nipples.name>>
 		<<milkvolume 1>>
@@ -1409,7 +1495,7 @@
 	<<if $wolfevent is 0>>
 		<<set $wolfevent to 1>>
 	<</if>>
-	
+
 	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
 	<<if $pregnancyTesting is undefined>>
 	<<elseif $sexStats.vagina.menstruation.currentState is "pregnant" or ($sexStats.vagina.menstruation.currentState is "normal" and ($playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f"))>>
@@ -1444,6 +1530,9 @@
 		<<set $wolfpatrolsent++>>
 	<</if>>
 
+	<<if $robinPillory and $robinPillory.danger isnot undefined>>
+		<<robinPilloryHour>>
+	<</if>>
 <</if>>
 <</widget>>
 
@@ -1530,7 +1619,8 @@
 	<</if>>
 <</if>>
 <<if $robinpaid isnot 1 and $robindebt gte $robindebtlimit and $robindebtevent lte 0>>
-	<<set $NPCName[$NPCNameList.indexOf("Robin")].trauma to 100>><<set $robin_injured to 1>><<set $robineventnote to 1>><<set $robinmissing to 1>>
+	<<robinPunishment "docks">>
+	<<set $robineventnote to 1>>
 <</if>>
 <<set $robinmoney += 300>>
 <<unset $robinBrothelWeekly>>
@@ -1545,8 +1635,6 @@
 	<<set $loft_spray to 0>>
 <</if>>
 
-<<set $kylarfameconfront to 0>>
-
 <<set $leightondanceoffered to 0>>
 <<set $leightondancerefused to 0>>
 
@@ -1554,6 +1642,7 @@
 <<unset $oceanbreezetheft>>
 <<unset $stripclubtheft>>
 <<unset $clothingshoptheft>>
+<<unset $adultshoptheft>>
 <<unset $hairdresserstheft>>
 <<unset $tailortheft>>
 <<unset $petshoptheft>>
@@ -1562,6 +1651,8 @@
 <<unset $ridingschooltheft>>
 <<unset $spatheft>>
 <<unset $schoollibrarymoneytheft>>
+<<unset $infirmarydrugstheft>>
+<<unset $furnitureshoptheft>>
 
 <<set $streetpolice to 0>>
 <<unset $sewersantiquecrystal>>
@@ -1573,6 +1664,7 @@
 <<unset $police_high>>
 <<unset $school_pool_swap>>
 <<unset $beach_cave_compass>>
+<<unset $dance_job>>
 
 <<if $farm>>
 	<<if $farm.tower_guard>>
@@ -1597,6 +1689,8 @@
 	<</if>>
 	<<set $photo.shoot to 0>>
 <</if>>
+
+<<unset $adultShopWhitney>>
 
 <</widget>>
 

@@ -35,6 +35,18 @@
 				<<set _askActions["목을 조르지 말라고" + _diffText] to "nochoke">>
 			<</if>>
 		<</if>>
+
+		<<set $_npcname to $npc[$npcrow.indexOf($mouthtarget)]>>
+		<<if ["Robin","Kylar","Alex","Avery","Whitney","Eden","Sydney"].includes($_npcname) and !npcHasStrapon($mouthtarget)
+			and [0, "clothed"].includes($NPCList[$mouthtarget].vagina)>>
+			<<if ["Avery","Whitney"].includes($_npcname) or $npc[$npcrow.indexOf($mouthtarget)] is $_npcname and checkIfNPCHasCategorySextoy($_npcname,"strap-on").length > 0>>
+				<<set _askActions["페니스 밴드를 착용하라고"] to "wearStrapon">>
+			<</if>>
+		<</if>>
+		<<if npcHasStrapon($mouthtarget) and $NPCList[$mouthtarget].penis is 0>>
+			<<set _askActions[$NPCList[$mouthtarget].pronouns.his+" 페니스 밴드를 벗으라고"] to "removeStrapon">>
+		<</if>>
+
 	<<else>>
 		<<set _mouthaction["비명지른다"] to "scream">>
 		<<set _mouthaction["애원한다"] to "plead">>
@@ -42,7 +54,9 @@
 			<<set _mouthaction["용서한다"] to "forgive">>
 		<</if>>
 		<<if $submissive lte 850>>
-			<<set _mouthaction["요구한다"] to "demand">>
+			<<if $fightTargets is undefined>>
+				<<set _mouthaction["요구한다"] to "demand">>
+			<</if>>
 		<</if>>
 	<</if>>
 	<<if $worn.over_upper.name isnot "naked" and $worn.over_upper.cursed isnot 1 or $worn.upper.name isnot "naked" and $worn.upper.cursed isnot 1 or $worn.under_upper.name isnot "naked" and $worn.under_upper.cursed isnot 1>>
@@ -50,7 +64,7 @@
 			<<set _askActions["웃옷을 벗기지 말라고" + _diffText] to "noupper">>
 		<</if>>
 	<</if>>
-	<<if $submissive gte 1150>>
+	<<if $submissive gte 1150 and !$robinRentEvent>>
 		<<set _mouthaction["신음한다"] to "moan">>
 	<</if>>
 	<<if !$npcSub and $asphyxiaLvl gte 1 and $consensual is 1 and $enemytype is "man" and ($choketrait or ($chokeorgasm gte 1 and $submissive gt 850) or ($awarelevel gte 2 and $submissive gte 1150))>>
@@ -64,6 +78,16 @@
 		<<if $npcCondoms isnot undefined>>
 			<<set _askActions["콘돔을 사용하지 말라고"] to "noCondoms">>
 		<</if>>
+	<</if>>
+	<<if $robinRentEvent is 1 and $combatPhase is "pay">>
+		<<if $money gte $rentmoney>>
+			<<set _mouthaction["베일리에게 지불한다"] to "pay">>
+		<<else>>
+			<<set _mouthaction["베일리에게 낼 돈이 없다고 한다"] to "pay">>
+		<</if>>
+	<</if>>
+	<<if $worn.face.name isnot "naked" and $worn.face.type.includes("mask") and $consensual is 1 and $enemytype is "man" and !$npcSub>>
+			<<set _askActions["마스크를 벗기지 말라고" + _diffText] to "nomask">>
 	<</if>>
 	<<if Object.keys(_askActions).length gt 0>>
 		<<set _mouthaction[_pron+" 부탁한다"] to "ask">>

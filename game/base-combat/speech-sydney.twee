@@ -1,6 +1,6 @@
 :: Widgets speech-SYDNEY [widget]
 <<widget "speech-sydney">>
-<<NPCStatusCheck "Sydney">><<set $rng to random(1, 100)>>
+<<run statusCheck("Sydney")>><<set $rng to random(1, 100)>>
 <<if !$sydneyComments>>
 	<<set $sydneyComments to {}>>
 	<<set $sydneyComments.penetrated to 0>>
@@ -78,6 +78,16 @@
 			<<set _sydneyText to `<<He_nun>> 굳은 표정을 짓는다. "누... 누구? 그게 누구야?!"`>>
 	<</switch>>
 	<<npcincr Sydney love -10>><<llllove>>
+<<elseif $speechsextoy is 1>>
+	<<set $speechsextoy to 0>>
+	<<set _sexToy to ($rightarm is "heldSexToy" and $leftarm is "heldSexToy" ? "섹스 장난감들을" : "섹스 장난감을")>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<set _sydneyText to `<<He_nun>> 당신의 <<print _sexToy>> 보며 싱긋 웃는다. "<<print either("오, 그걸 너랑 같이 시험해보는 게 가장 좋을 것 같아.","그거 할인 받아서 샀지, 그렇지?")>>"`>>
+	<<elseif _sydneyStatus.includes("pure")>>
+		<<set _sydneyText to `<<He_nun>> 당신의 <<print _sexToy>> 보며 얼굴을 붉힌다. "<<print either("오, 그거 <<sydneymumPost '의'>> 가게에 있던 거다!","...그거 어떻게 쓰는지 알아?")>>"`>>
+	<<else>>
+		<<set _sydneyText to `<<He_nun>> 당신의 <<print _sexToy>> 보며 얼굴을 붉힌다. "잘못되었다는 느낌은 들지만 그만두고 싶지는 않아."`>>
+	<</if>>
 <<elseif $speechcum is 1>>
 	<<if $speechspank is 1>>
 		<<switch _sydneyStatus>>
@@ -121,7 +131,7 @@
 		<<case "corrupt" "corruptLust">>
 			<<if $enemyarousal gte ($enemyarousalmax / 5) * 4>>
 				<<if $rng gte 80>>
-					<<set _sydneyText to `<<He_nun>> 당신의 머리를 잡고 당신의 얼굴을 <<his_yi>> 얼굴 가까이 끌어당긴다. "나는 네가 내 안에 아이를 만들어 주기를 원해. 당장."`>>
+					<<set _sydneyText to `<<He_nun>> 당신의 머리를 잡고 당신의 얼굴을 <<hersPost>>에 가까이 끌어당긴다. "나는 네가 내 안에 아이를 만들어 주기를 원해. 당장."`>>
 				<<else>>
 					<<set _sydneyText to `<<He_ga>> 신음한다. "세게. 더 세게! 나는 거의 다 갔어!"`>>
 				<</if>>
@@ -181,7 +191,7 @@
 		<<case "corrupt" "corruptLust">>
 			<<if $enemyarousal gte ($enemyarousalmax / 5) * 4>>
 				<<if $rng gte 80>>
-					<<set _sydneyText to `<<He_nun>> 당신의 머리를 잡고 당신의 얼굴을 <<his_yi>> 얼굴 가까이 끌어당긴다. "나는 네 안에 아이를 만들기를 원해."`>>
+					<<set _sydneyText to `<<He_nun>> 당신의 머리를 잡고 당신의 얼굴을 <<hersPost>>에 가까이 끌어당긴다. "나는 네 안에 아이를 만들기를 원해."`>>
 				<<else>>
 					<<set _sydneyText to `<<He_ga>> 신음한다. "나는 거의 가버리려고 해! 너는 준비 됐어?"`>>
 				<</if>>
@@ -404,7 +414,7 @@
 			<<if $enemyarousal gte ($enemyarousalmax / 5) * 4>>
 				<<set _sydneyText to `<<He_ga>> 신음한다. "나를 희롱하기만 하는 것은 그만둬!"`>>
 			<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 2>>
-				<<set _sydneyText to `<<He_ga>> 말한다.  "나는 네 안에 들어가기를 원해."`>>
+				<<set _sydneyText to `<<He_ga>> 말한다. "나는 네 안에 들어가기를 원해."`>>
 			<<else>>
 				<<set _sydneyText to `<<He_ga>> 말한다. "나는 그것을 집어넣기를 원해."`>>
 			<</if>>
@@ -424,7 +434,7 @@
 				<<if $rng lte 35>>
 					<<set _sydneyText to `<<He_nun>> 히죽 웃는다. "네가 이것을 좋아하는 것을 알고 있었지." <<npcincr Sydney purity -1>><<lspurity>>`>>
 				<<elseif $rng lte 70>>
-   					<<set _sydneyText to `<<He_nun>> 히죽 웃는다. "음란한 <<girls_nun>> 처벌받아야지, 그리고 나는 네가 음란해지는 것을 사량한다니까." <<npcincr Sydney purity -1>><<lspurity>>`>>
+					<<set _sydneyText to `<<He_nun>> 히죽 웃는다. "음란한 <<girls_nun>> 처벌받아야지, 그리고 나는 네가 음란해지는 것을 사량한다니까." <<npcincr Sydney purity -1>><<lspurity>>`>>
 				<<else>>
 					<<set _sydneyText to `<<He_nun>> 히죽 웃는다. "나는 네 신음소리를 만끽하기를 원해. 내가 네 엉덩이를 더 자주 때려줘야 겠어." <<npcincr Sydney purity -1>><<lspurity>>`>>
 				<</if>>
@@ -687,6 +697,20 @@
 				<<set _sydneyText to `<<He_ga>> 말한다. "얼마나 깊이 집어넣어야 하는 거야?"`>>
 			<</if>>
 	<</switch>>
+<<elseif ($speechpenis is 1 or $speechglans is 1) and $sydneyComments.fondle is 0 and playerHasStrapon()>>
+	<<set $sydneyComments.fondle to 3>>
+	<<switch _sydneyStatus>>
+		<<case "pure" "pureLust">>
+			<<set _sydneyText to `<<He_ga>> 말한다. "내... 내가 이걸 제대로 하고 있는 거야?"`>>
+		<<case "corrupt" "corruptLust">>
+			<<set _sydneyText to `<<He_ga>> 킥킥 웃는다. "이 장난감이 나를 뜨겁게 달구고 있어. 이걸 내 안에 넣고 싶어."`>>
+		<<default>>
+			<<if $rng lte 50>>
+				<<set _sydneyText to `<<He_ga>> 말한다. "이런 것은 절대 배우지 못했을 거야, 너를 위해서가 아니었다면 말야."`>>
+			<<else>>
+				<<set _sydneyText to `<<He_ga>> 말한다. "점점 이걸 어떻게 해야 하는 지 알게 되어가는 것 같아!"`>>
+			<</if>>
+	<</switch>>
 <<elseif ($speechpenis is 1 or $speechglans is 1) and $sydneyComments.fondle is 0>>
 	<<set $sydneyComments.fondle to 3>>
 	<<switch _sydneyStatus>>
@@ -799,6 +823,12 @@
 				<<set _sydneyText to `<<He_ga>> 당신의 옷을 살펴보고, 킥킥 웃는다. "그건 적절한 학교 유니폼이 아니야. 걱정 마, 내가 네가 그것을 벗는 것을 도와줄게." <<set $combatgoal to "strip">>`>>
 			<<else>>
 				<<set _sydneyText to `<<He_ga>> 당신의 옷을 살펴본다. "너-너는 복장 규칙을 정말로 지켜야 해, 문제가 생기기 전에 말야..."`>>
+			<</if>>
+		<<elseif $worn.lower.name is "naked" and playerHasStrapon()>>
+			<<if _sydneyStatus.includes("corrupt")>>
+				<<set _sydneyText to `<<He_ga>> 당신의 <<penisSimple_ul>> 보며 킥킥 웃는다. "오 이 장난감들은 재미있어."`>>
+			<<else>>
+				<<set _sydneyText to `<<He_ga>> 당신의 <<penisSimple_ul>> 보며 얼굴을 붉힌다. "<<sydneyMumPost '이'>> 항상 그것들에 대해 말하곤 해."`>>
 			<</if>>
 		<<elseif $exposed gte 1>>
 			<<if _sydneyStatus.includes("corrupt")>>

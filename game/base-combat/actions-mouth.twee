@@ -121,14 +121,16 @@
 <<elseif _stanceCheck is "top">>
 	<!-- Do Nothing -->
 <<else>>
-	<<if $NPCList[$mouthtarget].penis is 0 and ($enemytype isnot "man" or ($NPCList[$mouthtarget].location.genitals is 0 and $NPCList[$mouthtarget].location.head isnot "head"))>>
+	<<if $NPCList[$mouthtarget].penis is 0 and ($enemytype isnot "man" or ($NPCList[$mouthtarget].location.genitals is 0 and $NPCList[$mouthtarget].location.head isnot "head")) and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 		<<if $NPCList[$mouthtarget].chastity.penis.includes("chastity")>>
 			<<trClothes "genitals" $NPCList[$mouthtarget].chastity.penis "name" "으로">><<set _mouthaction["머리를 " + $NPCList[$mouthtarget].pronouns.his + " " + _trResult + " 옮긴다"] to "mouth">>
+		<<elseif npcHasStrapon($mouthtarget)>>
+			<<set _mouthaction["입술을 " + $NPCList[$mouthtarget].pronouns.his + " 페니스 밴드 자지로 옮긴다"] to "mouth">>
 		<<else>>
 			<<set _mouthaction["입술을 " + $NPCList[$mouthtarget].pronouns.his + " 자지로 옮긴다"] to "mouth">>
 		<</if>>
 	<</if>>
-	<<if $NPCList[$mouthtarget].vagina is 0 and ($enemytype isnot "man" or ($NPCList[$mouthtarget].location.genitals is 0 and $NPCList[$mouthtarget].location.head isnot "head"))>>
+	<<if $NPCList[$mouthtarget].vagina is 0 and ($enemytype isnot "man" or ($NPCList[$mouthtarget].location.genitals is 0 and $NPCList[$mouthtarget].location.head isnot "head")) and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 		<<if $NPCList[$mouthtarget].chastity.vagina.includes("chastity")>>
 			<<trClothes "genitals" $NPCList[$mouthtarget].chastity.vagina "name" "으로">><<set _mouthaction["머리를 " + $NPCList[$mouthtarget].pronouns.his + " " + _trResult + " 옮긴다"] to "othervagina">>
 		<<else>>
@@ -139,8 +141,10 @@
 
 <<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 	<!-- Do Nothing -->
+<<elseif _stanceCheck is "topface">>
+	<!-- Do Nothing -->
 <<elseif !$gloryhole>>
-	<<if $NPCList[$mouthtarget].chest is 0 and $NPCList[$mouthtarget].location.genitals isnot "head" and $NPCList[$mouthtarget].location.head isnot "head" and $NPCList[$mouthtarget].location.head isnot "genitals">>
+	<<if $NPCList[$mouthtarget].chest is 0 and $NPCList[$mouthtarget].location.genitals isnot "head" and $NPCList[$mouthtarget].location.head isnot "head" and $NPCList[$mouthtarget].location.head isnot "genitals" and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 		<<set _mouthaction["입술을 " + $NPCList[$mouthtarget].pronouns.his + " 가슴팍으로 옮긴다"] to "movetochest">>
 	<</if>>
 <</if>>
@@ -163,8 +167,10 @@
 <<widget "oralswallownew">>
 <<if $consensual is 1 and ($promiscuity lte 74 and $enemytype is "man" or $deviancy lte 74 and $enemytype isnot "man") and !$promiscuityIgnore>>
 <<else>>
-	<<if !$NPCList[$mouthtarget].chastity.penis.includes("chastity") and ($NPCList[$mouthtarget].penis is "mouthentrance" or $NPCList[$mouthtarget].penis is "mouthimminent")>>
-		<<set _mouthaction[$NPCList[$mouthtarget].pronouns.his + " 자지를 입에 넣는다"] to "swallow">>
+	<<set $_pp to (npcHasStrapon($mouthtarget) ? "페니스 밴드 자지" : "자지")>>
+	<<set $_npc to $NPCList[$mouthtarget]>> <<set $_facetype to $worn.face.type>>
+	<<if !$_npc.chastity.penis.includes("chastity") and ($_npc.penis is "mouthentrance" or $_npc.penis is "mouthimminent") and !$_facetype.includes("covered") and !$_facetype.includes("gag")>>
+		<<set _mouthaction[$NPCList[$mouthtarget].pronouns.his + " " + $_pp + "를 입에 넣는다"] to "swallow">>
 	<</if>>
 <</if>>
 <</widget>>
@@ -176,7 +182,9 @@
 <</widget>>
 
 <<widget "combatPenisEntrance">>
-<<set _mouthaction["키스한다"] to "peniskiss">>
+<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+	<<set _mouthaction["키스한다"] to "peniskiss">>
+<</if>>
 
 <<if $consensual is 1 and ($promiscuity lte 34 and $enemytype is "man" or $deviancy lte 34 and $enemytype isnot "man") and !$promiscuityIgnore>>
 <<elseif $chestuse is 0>>
@@ -190,7 +198,9 @@
 <</widget>>
 
 <<widget "combatPenisImminent">>
-<<set _mouthaction["핥는다"] to "lick">>
+<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+	<<set _mouthaction["핥는다"] to "lick">>
+<</if>>
 <<set _mouthaction["밀어낸다"] to "pullaway">>
 <<oralswallownew>>
 <<speak>>
@@ -198,7 +208,7 @@
 
 <<widget "combatPenisPenetrated">>
 <<set _mouthaction["빤다"] to "suck">>
-<<if $consensual isnot 1>>
+<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 	<<set _mouthaction["문다"] to "bite">>
 <</if>>
 <<if $head isnot "grappled" and $head isnot "bound">>
@@ -208,7 +218,7 @@
 
 <<widget "combatOthervagina">>
 <<set _mouthaction["핥는다"] to "vaginalick">>
-<<if $consensual isnot 1>>
+<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 	<<set _mouthaction["문다"] to "bitepussy">>
 <</if>>
 <<if $head isnot "grappled" and $head isnot "bound" and $mouthuse isnot "facesit">>
@@ -217,16 +227,20 @@
 <</widget>>
 
 <<widget "combatMouthOtherAnus">>
+<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 	<<set _mouthaction["항문을 핥는다"] to "anallick">>
 	<<if $submissive gte 1150>>
 		<<set _mouthaction["항문에 키스한다"] to "analkiss">>
 	<</if>>
+<</if>>
 <</widget>>
 
 <<widget "combatBreast">>
-<<set _mouthaction["빤다"] to "breastsuck">>
-<<set _mouthaction["핥는다"] to "breastlick">>
-<<set _mouthaction["입다물고 있는다"] to "breastclosed">>
+<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+	<<set _mouthaction["빤다"] to "breastsuck">>
+	<<set _mouthaction["핥는다"] to "breastlick">>
+	<<set _mouthaction["입다물고 있는다"] to "breastclosed">>
+<</if>>
 <<if $consensual is 1 or $head isnot "breasts">>
 	<<set _mouthaction["밀어낸다"] to "breastpull">>
 <</if>>
@@ -238,7 +252,7 @@
 <<if $consensual is 1 or $head isnot "breasts">>
 	<<set _mouthaction["밀어낸다"] to "breastpull">>
 <</if>>
-<<if $consensual isnot 1>>
+<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 	<<set _mouthaction["문다"] to "breastbite">>
 <</if>>
 <</widget>>
