@@ -497,6 +497,7 @@ const EasyPostMacroList = [
 	{ name: "combatperson_", orig_name: "combatpersonPost", is_print: 0},
 	{ name: "combatpersons_", orig_name: "combatpersonPost", is_print: 0},
 	{ name: "combatPerson_", orig_name: "combatpersonPost", is_print: 0},
+	{ name: "combatPersons_", orig_name: "combatpersonPost", is_print: 0},
 
 	// <<people_ ul>> = <<people>>을 
 	{ name: "people_", orig_name: "peoplePost", is_print: 0},
