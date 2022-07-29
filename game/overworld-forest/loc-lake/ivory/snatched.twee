@@ -231,8 +231,8 @@ You clumsily walk over to the $container[$location].name.
 <<set _container to $container[$location]>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
 <<set $checkboxResult to {}>><<set _paleCount to 0>>
-<<for _i to 0; _i lt _container.count; _i++>>
-	<<if _container.creatures[_i].creature.includes("Pale")>>
+<<for _i to 0; _i lt Object.keys(_container.creatures).length; _i++>>
+	<<if _container.creatures[_i] isnot null and _container.creatures[_i].creature.includes("Pale")>>
 		<<set _paleCount ++>>
 	<</if>>
 <</for>>
@@ -430,8 +430,8 @@ You find yourself sinking through the ice, submerging without causing a break.
 					<</if>>
 				<<else>>
 					<<if $phaseWraith lt 1 and $container and $container.home and $container.home.count gte 1 and !$wraithPaleVisit>>
-						<<for _i to 0; _i lt $container.home.count; _i++>>
-							<<if $container.home.creatures[_i].creature.includes("Pale")>>
+						<<for _i to 0; _i lt Object.keys($container.home.creatures).length; _i++>>
+							<<if $container.home.creatures[_i] isnot null and $container.home.creatures[_i].creature.includes("Pale")>>
 								<<set $wraithPaleVisit to "home">>
 							<</if>>
 						<</for>>
@@ -620,8 +620,8 @@ You find yourself sinking through the ice, submerging without causing a break.
 			<<case "Lake Waterfall">>
 				<<pass 5>>
 				<<if $phaseWraith lt 1 and $container and $container.lake and $container.lake.count gte 1 and !$wraithPaleVisit>>
-					<<for _i to 0; _i lt $container.lake.count; _i++>>
-						<<if $container.lake.creatures[_i].creature.includes("Pale")>>
+					<<for _i to 0; _i lt Object.keys($container.lake.creatures).length; _i++>>
+						<<if $container.lake.creatures[_i] isnot null and $container.lake.creatures[_i].creature.includes("Pale")>>
 							<<set $wraithPaleVisit to "lake">>
 						<</if>>
 					<</for>>
@@ -710,23 +710,23 @@ You find yourself sinking through the ice, submerging without causing a break.
 			<<set $willpowerSuccess to 0>>
 			<br>
 			<span class="pink">You let it take you.</span>
-			<<pain -2>><<stress -12>><<set $submissive += 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
+			<<pain -2>><<stress -12>><<sub 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
 			<br><br>
 		<<else>>
 			<<set $willpowerSuccess to 0>>
 			<<willpowerdifficulty 1 _wraithWill true>>
 			<<if $willpowerSuccess>>
-				<<set $control += Math.floor(currentSkillValue('willpower') / 8)>>
+				<<control `Math.floor(currentSkillValue('willpower') / 80)`>>
 				<<controlcaption>>
 				<br>
 				<span class="green">You fight for control. It becomes slower.</span>
-				<<pass 4>><<pain 4>><<stress 12>><<trauma 12>><<set $submissive -= 2>><<gpain>><<ggtrauma>><<ggstress>><<gcontrol>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 8)>>
+				<<pass 4>><<pain 4>><<stress 12>><<trauma 12>><<def 2>><<gpain>><<ggtrauma>><<ggstress>><<gcontrol>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 8)>>
 				<br><br>
 			<<else>>
 				<<controlcaption>>
 				<br>
 				<span class="red">Your body does not obey.</span>
-				<<stress 6>><<trauma 6>><<willpower 1>><<set $submissive -= 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 10)>>
+				<<stress 6>><<trauma 6>><<willpower 1>><<def 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 10)>>
 				<br><br>
 			<</if>>
 		<</if>>
