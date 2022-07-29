@@ -1,0 +1,183 @@
+:: Options Overlay [widget]
+
+<<widget "options">>
+
+<h3>옵션</h3>
+옵션들 중 몇몇은 스토리 통로가 바뀐 이후에 적용됩니다. 장소 변경, 전투/섹스 신 진입 혹은 비슷한 행동을 취하는 것으로 충분합니다.
+<br><br>
+
+<span class="gold">일반 옵션</span>
+
+<br>
+<<if $debug is 1>>
+	/*<label><<checkbox "$notifyUpdate" false true autocheck>> Notify when there's a new game update available</label>
+	<br>*/
+	<<link "Check for updates">>
+		<<run checkNewVersion()>>
+	<</link>>
+	<br><br>
+<</if>>
+
+
+테마:
+<label>
+	<input type="radio" name="theme" value="dark" /> 다크(Dark)
+</label> |
+<label>
+	<input type="radio" name="theme" value="arctic" /> 노드(Nord)
+</label> |
+<label>
+	<input type="radio" name="theme" value="zen" /> 젠번(Zenburn)
+</label> |
+<label>
+	<input type="radio" name="theme" value="monokai" /> 모노카이(Monokai)
+</label> |
+<label>
+	<input type="radio" name="theme" value="storm" /> 스톰(Storm)
+</label> |
+<label>
+	<input type="radio" name="theme" value="system-default" /> 시스템 기본
+</label>
+<<script>>
+	window.Theme.initControl();
+<</script>>
+<br>
+
+문단 줄 높이: <<link "1.75">><<unset $reducedLineHeight>><<removeclass "#passages" "reducedLineHeight">><</link>> | <<link "1.5">><<set $reducedLineHeight to true>><<addclass "#passages" "reducedLineHeight">><</link>>
+<br><br>
+<label>
+	<<checkbox "$newWardrobeStyle" false true autocheck>>
+	새로운 스타일의 옷장 사용
+</label>
+<br>
+
+<label>
+	<<checkbox "$useNarrowMarket" false true autocheck>>
+	상점 목록을 "좁은 화면" 버전으로 보여줌
+</label>
+<br>
+
+<label>
+	<<checkbox "$neverNudeMenus" false true autocheck>>
+	메뉴에서 플레이어 노출 숨기기
+</label>
+<br>
+
+<label>
+	<<checkbox "$showCaptionText" false true autocheck>>
+	사이드바에서 캡션 텍스트 보기
+</label>
+<br>
+
+<label>
+	<<checkbox "$skipStatisticsConfirmation" false true autocheck>>
+	추가 통계를 볼 때 확인을 하지 않음
+</label>
+<br>
+
+<label>
+	<<if $ironmanmode is true>>
+		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled checked>'>>
+		<span style="color: #7e7e7e;">자는 동안 자동저장을 하지 않음</span>
+	<<else>>
+		<<checkbox "$autosavedisabled" false true autocheck>>
+		자는 동안 자동저장을 하지 않음
+	<</if>>
+</label>
+<br>
+
+<label>
+	<<checkbox "$scroll_remember" false true autocheck>>
+	전투 중 스크롤 위치를 기억함
+</label>
+<br>
+
+<label>
+	<<checkbox "$numpad" false true autocheck>>
+	숫자패드 활성화. 모바일 환경에서 번역기 등으로 링크가 깨질 때 유용함
+</label>
+
+<<if $map isnot undefined>>
+	<br><br>
+	<span class="gold">지도 옵션</span>
+	<br>
+	<label>
+		<<checkbox "$map.movement" false true autocheck>>
+		지도 아이콘을 클릭/터치하는 것으로 지도 이동 허용
+	</label>
+	<br>
+	<label>
+		<<checkbox "$map.markers" false true autocheck>>
+		지도에서 클릭 가능한 영역 표시
+	</label>
+	<br>
+	<<if $map isnot undefined>>
+		<label><<print '<<checkbox "$map.legacy" false true '+($map.legacy is true ? "checked" : "")+'>>'>> SVG 지도 비활성화. 도시 지도가 보이지 않는다면 활성화하세요. 이 옵션이 활성화되어있다면 위의 옵션이 작동하지 않습니다. </label><br>
+	<</if>>
+	<label><<print '<<checkbox "$map.top" false true '+($map.top is true ? "checked" : "")+'>>'>>
+		지도 링크 위로 지도 이동
+	</label>
+<</if>>
+<br><br>
+
+<span class="gold">이미지 옵션</span>
+<br>
+사이드바 캐릭터 렌더러:
+<label><<radiovar "$sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> 구버전</label> |
+<label><<radiovar "$sidebarRenderer" "canvas">><<updatesidebarimg>><</radiovar>> 신버전</label> |
+<label><<radiovar "$sidebarRenderer" "both">><<updatesidebarimg>><</radiovar>> 둘 다</label>
+<br>
+
+캐릭터 이미지 뒷배경 밝게 하기:
+<label><<radiobutton "$imgLighten" "" autocheck>> 비활성화</label> |
+<label><<radiobutton "$imgLighten" "imgLighten" autocheck>> 밝게</label> |
+<label><<radiobutton "$imgLighten" "imgLighten2" autocheck>> 더 밝게</label>
+<br>
+
+닫힌 사이트바에서 상태 표시:
+<label><<radiobutton "$sidebarStats" "Disabled" autocheck>> 비활성화</label> |
+<label><<radiobutton "$sidebarStats" "Limited" autocheck>> 중요한 정보 한정</label> |
+<label><<radiobutton "$sidebarStats" "All" autocheck>> 전부 보기</label>
+<br>
+
+닫힌 사이드바 시간:
+<label><<radiobutton "$sidebarTime" "Disabled" autocheck>> 비활성화</label> |
+<label><<radiobutton "$sidebarTime" "top" autocheck>> 사이드바 상태 위</label> |
+<label><<radiobutton "$sidebarTime" "bottom" autocheck>> 사이드바 상태 아래</label>
+<br>
+/*<label>
+	<<checkbox "$sidebarImage" false true autocheck>>
+	텍스트 말고 사이드바 아이콘 사용
+</label>
+<br>*/
+<label><<checkbox "$showDebugRenderer" false true autocheck>> 렌더러 디버거 사용</label>
+<br><br>
+
+<span class="gold">전투 설정</span>
+<br>
+행동 표시 형식:
+<label><<radiobutton "$combatControls" "radio" autocheck>> 라디오 버튼</label> |
+<label><<radiobutton "$combatControls" "lists" autocheck>> 리스트(너비 제한 없음)</label> |
+<label><<radiobutton "$combatControls" "limitedLists" autocheck>> 리스트 (너비 제한)</label>
+<br>
+
+"당신 자신" 을 대상에 추가:
+<label><<radiobutton "$targetYourself" false autocheck>> 비활성화</label> |
+<label><<radiobutton "$targetYourself" true autocheck>> 활성화</label>
+<br><br>
+
+<div class="small-description">애니메이션이 제대로 작동하지 않는 경우 그것을 클릭하거나, <code>[F]</code> 키를 누르거나, 아래의 버튼을 눌러 고칠 수 있습니다.</div>
+<br>
+<<if $passage isnot "Start">>
+	<<button "게임 재시작">>
+		<<script>>
+			SugarCube.UI.restart();
+		<</script>>
+	<</button>>
+<</if>>
+
+<<button "멈춘 애니메이션 고침">>
+	<<run fixStuckAnimations()>>
+<</button>>
+
+<</widget>>

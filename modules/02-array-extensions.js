@@ -42,3 +42,28 @@ Object.defineProperty(Array.prototype, 'select', {
 		return this[safeIndex];
 	}
 });
+
+Object.defineProperty(Array.prototype, 'formatList', {
+	configurable: true,
+	writable: true,
+	value(options) {
+		let { conjunction, useOxfordComma, separator } = Object.assign(
+			{
+				conjunction: "그리고",
+				useOxfordComma: false,
+				separator: ", ",
+			},
+			options
+		);
+		if (this == null) {
+			throw new TypeError('Array.prototype.formatList called on null or undefined.');
+		}
+		if (this.length === 0) {
+			return "";
+		}
+		if (!useOxfordComma && this.length > 1)  conjunction = (conjunction === "그리고"?["과", "와", "과"]:["이나", "나", "이나"])[getPostNum(this.at(-2))]; conjunction += " "; getPostNum(this.at(-1));	/* useOxfordComma가 false일 때는 조사처리, 아니면 conjunction 사용. 끝으로 출력후의 조사처리를 위해 마지막 글자의 _postNum을 계산해둔다 */
+		if (this.length <= 2) return this.join((useOxfordComma ? " " : "")+ conjunction);
+		const oxConj = (useOxfordComma ? separator + conjunction : conjunction + " ");
+		return this.slice(0, -1).join(separator) + oxConj + this.last();
+	}
+});

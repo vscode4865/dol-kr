@@ -27,6 +27,8 @@
 <<else>>
 	<<set $fringelengthstage to "short">>
 <</if>>
+<<set $hairlength = Math.clamp($hairlength, 0, 1000)>>
+<<set $fringelength = Math.clamp($fringelength, 0, 1000)>>
 <</widget>>
 
 <<widget "mirror">>
@@ -45,7 +47,7 @@
 	<<case "debug">>
 		<<mirrorDebug>>
 	<<default>>
-		<<mirrorMenu>>
+		<<mirrorMenu _args[0]>>
 	<</switch>>
 </div>
 <<calchairlengthstage>>
@@ -98,11 +100,15 @@
 <</widget>>
 
 <<widget "mirrorMenu">>
-당신은 거울을 들여다본다.
+<<set $_mirror to _args[0] || 'mirror'>>
+당신은 <<putpost $_mirror "을">> 들여다본다.
 <<if $fallenangel gte 2>>
 	사람 같지도 않은 모습의 인물이
 <<elseif $hallucinogen gte 200>>
-	거울이 새까만 검은 웅덩이로 녹아내리더니, 당신의 앞에 둥둥 떠있다. 유리 파편이 당신의 살갗을 스치고 지나가더니 허공 속으로 녹아든다.
+	<<putpost $_mirror "이">> 새까만 검은 웅덩이로 녹아내리더니, 당신의 앞에 둥둥 떠있다.
+	<<if $_mirror is 'mirror'>>
+		유리 파편이 당신의 살갗을 스치고 지나가더니 허공 속으로 녹아든다.
+	<</if>>
 	<br>
 	당신은 공허 속을 바라보고, 공허 또한
 <<elseif $hallucinogen gte 100>>
@@ -760,7 +766,7 @@ __신체 낙서__<br>
 <</if>>
 <<if $bodyWritingSelected isnot undefined>>
 	당신은 <<trBodypart $bodyPartSelected>>_trResult에
-	<<if $skin[$bodyPartSelected].special is $loveInterest.primary or $skin[$bodyPartSelected].special is $loveInterest.secondary>>
+	<<if isLoveInterest($skin[$bodyPartSelected].special)>>
 		"<span class="lewd"><<print $bodyWritingSelected>></span>"
 	<<elseif $skin[$bodyPartSelected].special isnot "none">>
 		"<span class="red"><<print $bodyWritingSelected>></span>"
@@ -1063,8 +1069,24 @@ __신체 낙서__<br>
 		문구를 가능한 모든 곳에 쓴다
 		<<link [[확인|$passage]]>>
 			<<set $mirrorMenu to "skin">>
-			<<for _part range _bodyPartOptions>>
+			<<for _part, _value range $skin>>
 				<<add_bodywriting _part _bodyWritingDebugSelected "pen">>
+			<</for>>
+		<</link>>
+		<br />
+		/*Write*/
+		<<listbox "_bodyWritingDebugSelected">>
+			<<optionsfrom _bodyWritingOptions[$bodywritingSet]>>
+		<</listbox>>
+		문구를 커스텀 스프라이트가 있는 모든 곳에 쓴다
+
+
+		<<link [[확인|$passage]]>>
+			<<set $mirrorMenu to "skin">>
+			<<for _part, _value range $skin>>
+				<<if _bodyWritingDebugSelected.sprites.includes(_part)>>
+					<<add_bodywriting _part _bodyWritingDebugSelected "pen">>
+				<</if>>
 			<</for>>
 		<</link>>
 		<br />
@@ -1258,7 +1280,11 @@ __화장__
 		<<set _ownedMakeup to $makeup.owned[_makeupData[_i]]>>
 		<<if _makeupNames[_i] is "eyelenses">>
 			<<set _rng to random(0, _ownedMakeup.length)>>
-			<<set $makeup[_makeupNames[_i]] to (_rng is _ownedMakeup.length ? { "left": 0, "right": 0 } : _ownedMakeup[_rng])>>
+			<<set _lens to _rng is _ownedMakeup.length ? 0 : _ownedMakeup[_rng]>>
+			<<set $makeup[_makeupNames[_i]] to {
+				"left": _lens,
+				"right": _lens
+			}>>
 		<<else>>
 			<<set _rngset to []>>
 			<<for _label, _value range _ownedMakeup>>
@@ -1541,251 +1567,340 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 내적 자아의 일부를 감추면 시간에 따라 트라우마가 천천히 상승하게 됩니다 (음모와 겨드랑이털 제외).
 트라우마가 너무 높아지게 된다면, 더는 내적 자아를 감출 수 없습니다.
 <br><br>
-<<if $angel gt 1>>
-	__천사__
-	<br>
-	<<if $transformationParts.angel.halo isnot "disabled">>
-		천사 고리:
-		<<listbox "$transformationParts.angel.halo" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
+
+<<set _angel to $transformationParts.angel>>
+<<set _fallen to $transformationParts.fallenAngel>>
+<<set _demon to $transformationParts.demon>>
+<<set _cat to $transformationParts.cat>>
+<<set _cow to $transformationParts.cow>>
+<<set _wolf to $transformationParts.wolf>>
+<<set _bird to $transformationParts.bird>>
+
+<div id='transformations-menu' class='grid col-2'>
+	<div id='transformations-list' class='list'>
+		<div class='tf-angel'>
+			<<if $angel gt 1>>
+				__천사__
+				<br>
+				<<if _angel.halo isnot "disabled">>
+					<div class='tf-part-item'>
+						고리:
+						<<listbox "_angel.halo" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+					<br>
+				<</if>>
+				<<if _angel.wings isnot "disabled">>
+					<div class='tf-part-item'>
+						날개:
+						<<listbox "_angel.wings" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+					<br>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-fallen'>
+			<<if $fallenangel gt 1>>
+				__타천사__
+				<br>
+				<<if _fallen.halo isnot "disabled">>
+					<div class='tf-part-item'>
+						고리:
+						<<listbox "_fallen.halo" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+					<br>
+				<</if>>
+				<<if _fallen.wings isnot "disabled">>
+					<div class='tf-part-item'>
+						날개:
+						<<listbox "_fallen.wings" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-demon'>
+			<<if $demon gt 1>>
+				__악마__
+				<br>
+				<<if _demon.horns isnot "disabled">>
+					<div class='tf-part-item'>
+						뿔:
+						<<listbox "_demon.horns" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "클래식" "classic">>
+							<<option "서큐버스" "succubus">>
+						<</listbox>>
+						<<gencolourselector "_demon.horns_colour">>
+					</div>
+				<</if>>
+				<<if _demon.wings isnot "disabled">>
+					<div class='tf-part-item'>
+						날개:
+						<<listbox "_demon.wings" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "서큐버스" "succubus">>
+						<</listbox>>
+						<<gencolourselector "_demon.wings_colour">>
+					</div>
+				<</if>>
+				<<if _demon.tail isnot "disabled">>
+					<div class='tf-part-item'>
+						꼬리:
+						<<listbox "_demon.tail" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "클래식" "classic">>
+							<<option "서큐버스" "succubus">>
+						<</listbox>>
+						<<gencolourselector "_demon.tail_colour">>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-cat'>
+			<<if $cat gt 1>>
+				__고양이__
+				<br>
+				<<if _cat.ears isnot "disabled">>
+					<div class='tf-part-item'>
+						귀:
+						<<listbox "_cat.ears" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _cat.tail isnot "disabled">>
+					<div class='tf-part-item'>
+						꼬리:
+						<<listbox "_cat.tail" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _cat.heterochromia isnot "disabled">>
+					<div class='tf-part-item'>
+						오드아이:
+						<<listbox "_cat.heterochromia" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-cow'>
+			<<if $cow gt 1>>
+				__소__
+				<br>
+				<<if _cow.horns isnot "disabled">>
+					<div class='tf-part-item'>
+						뿔:
+						<<listbox "_cow.horns" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _cow.ears isnot "disabled">>
+					<div class='tf-part-item'>
+						귀:
+						<<listbox "_cow.ears" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "검은 점박이" "spotted black">>
+							<<option "갈색 점박이" "spotted brown">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _cow.tail isnot "disabled">>
+					<div class='tf-part-item'>
+						꼬리:
+						<<listbox "_cow.tail" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-wolf'>
+			<<if $wolfgirl gt 1>>
+				__늑대__
+				<br>
+				<<if _wolf.ears isnot "disabled">>
+					<div class='tf-part-item'>
+						귀:
+						<<listbox "_wolf.ears" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "야성" "feral">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _wolf.tail isnot "disabled">>
+					<div class='tf-part-item'>
+						꼬리:
+						<<listbox "_wolf.tail" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+							<<option "야성" "feral">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+				<<if _wolf.cheeks isnot "disabled">>
+					<div class='tf-part-item'>
+						뺨:
+						<<listbox "_wolf.cheeks" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "야성" "feral">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _wolf.pubes isnot "disabled" and $pbdisable is "f">>
+					<div class='tf-part-item'>
+						음모:
+						<<listbox "_wolf.pubes" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+				<<if _wolf.pits isnot "disabled" and $pbdisable is "f">>
+					<div class='tf-part-item'>
+						겨드랑이 털:
+						<<listbox "_wolf.pits" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<div class='tf-bird'>
+			<<if $harpy gt 1>>
+				__새__
+				<br>
+				<<if _bird.eyes isnot "disabled">>
+					<div class='tf-part-item'>
+						눈:
+						<<listbox "_bird.eyes" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _bird.malar isnot "disabled">>
+					<div class='tf-part-item'>
+						뺨 줄무늬:
+						<<listbox "_bird.malar" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _bird.plumage isnot "disabled">>
+					<div class='tf-part-item'>
+						깃털:
+						<<listbox "_bird.plumage" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _bird.tail isnot "disabled">>
+					<div class='tf-part-item'>
+						꼬리:
+						<<listbox "_bird.tail" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<<if _bird.wings isnot "disabled">>
+					<div class='tf-part-item'>
+						날개:
+						<<listbox "_bird.wings" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+					<br>
+				<</if>>
+				<<if _bird.pubes isnot "disabled" and $pbdisable is "f">>
+					<div class='tf-part-item'>
+						음모:
+						<<listbox "_bird.pubes" autoselect>>
+							<<option "숨기기" "hidden">>
+							<<option "기본값" "default">>
+						<</listbox>>
+					</div>
+				<</if>>
+				<br>
+			<</if>>
+		</div>
+		<<set $_chimeraOptions to {
+			"demoncat_tail" : !["disabled", "hidden"].includesAny(_demon.tail, _cat.tail)
+		}>>
+		<<set $_chimeraEnabled to Object.values($_chimeraOptions).some(o => o) ? "" : " hide">>
+		<div @class="'chimera' + $_chimeraEnabled">
+			__키메라__
+			<<if $_chimeraOptions.demoncat_tail>>
+				/* Using demon cat chimera tail. */
+				<div class='tf-part-item'>
+					악마 고양이 꼬리:
+					<<listbox "$chimera.demoncat.tail" autoselect>>
+						<<option "보이기" true>>
+						<<option "숨기기" false>>
+					<</listbox>>
+				</div>
+			<</if>>
+		</div>
+	</div>
+	<<if _isMenuEnabled>>
+		<div id="transformations-colour-selector" class='list sticky centre'>
+			<<set _options to ['ffffff', 'ff0000', '00ff00', '0000ff', '590099', '000000']>>
+			<<gencoloursquares _options>>
+			<<gencolourpicker>>
+		</div>
 	<</if>>
-	<<if $transformationParts.angel.wings isnot "disabled">>
-		천사 날개:
-		<<listbox "$transformationParts.angel.wings" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $fallenangel gt 1>>
-	__타천사__
-	<br>
-	<<if $transformationParts.fallenAngel.halo isnot "disabled">>
-		타천사 고리:
-		<<listbox "$transformationParts.fallenAngel.halo" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.fallenAngel.wings isnot "disabled">>
-		타천사 날개:
-		<<listbox "$transformationParts.fallenAngel.wings" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $demon gt 1>>
-	__악마__
-	<br>
-	<<if $transformationParts.demon.horns isnot "disabled">>
-		악마 뿔:
-		<<listbox "$transformationParts.demon.horns" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "클래식" "classic">>
-			<<option "분홍색" "pink">>
-			<<option "파란색" "blue">>
-			<<option "라임색" "lime">>
-			<<option "빨간색" "red">>
-			<<option "노란색" "yellow">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.demon.wings isnot "disabled">>
-		악마 날개:
-		<<listbox "$transformationParts.demon.wings" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "분홍색" "pink">>
-			<<option "파란색" "blue">>
-			<<option "라임색" "lime">>
-			<<option "빨간색" "red">>
-			<<option "노란색" "yellow">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.demon.tail isnot "disabled">>
-		악마 꼬리:
-		<<listbox "$transformationParts.demon.tail" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "클래식" "classic">>
-			<<option "분홍색" "pink">>
-			<<option "파란색" "blue">>
-			<<option "라임색" "lime">>
-			<<option "빨간색" "red">>
-			<<option "노란색" "yellow">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $cat gt 1>>
-	__고양이__
-	<br>
-	<<if $transformationParts.cat.ears isnot "disabled">>
-		고양이 귀:
-		<<listbox "$transformationParts.cat.ears" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.cat.tail isnot "disabled">>
-		고양이 꼬리:
-		<<listbox "$transformationParts.cat.tail" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $cow gt 1>>
-	__소__
-	<br>
-	<<if $transformationParts.cow.horns isnot "disabled">>
-		소 뿔:
-		<<listbox "$transformationParts.cow.horns" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.cow.ears isnot "disabled">>
-		소 귀:
-		<<listbox "$transformationParts.cow.ears" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "검은 점박이" "spotted black">>
-			<<option "갈색 점박이" "spotted brown">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.cow.tail isnot "disabled">>
-		소 꼬리:
-		<<listbox "$transformationParts.cow.tail" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $wolfgirl gt 1>>
-	__늑대__
-	<br>
-	<<if $transformationParts.wolf.ears isnot "disabled">>
-		늑대 귀:
-		<<listbox "$transformationParts.wolf.ears" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "야성" "feral">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.wolf.tail isnot "disabled">>
-		늑대 꼬리:
-		<<listbox "$transformationParts.wolf.tail" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-			<<option "야성" "feral">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-	<<if $transformationParts.wolf.cheeks isnot "disabled">>
-		늑대 얼굴:
-		<<listbox "$transformationParts.wolf.cheeks" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "야성" "feral">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.wolf.pubes isnot "disabled" and $pbdisable is "f">>
-		늑대 음모:
-		<<listbox "$transformationParts.wolf.pubes" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-	<<if $transformationParts.wolf.pits isnot "disabled" and $pbdisable is "f">>
-		늑대 겨드랑이 털:
-		<<listbox "$transformationParts.wolf.pits" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
-<<if $harpy gt 1>>
-	__새__
-	<br>
-	<<if $transformationParts.bird.eyes isnot "disabled">>
-		새 눈:
-		<<listbox "$transformationParts.bird.eyes" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.bird.malar isnot "disabled">>
-		새 뺨 줄무늬:
-		<<listbox "$transformationParts.bird.malar" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.bird.plumage isnot "disabled">>
-		새 깃털:
-		<<listbox "$transformationParts.bird.plumage" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.bird.tail isnot "disabled">>
-		새 꼬리:
-		<<listbox "$transformationParts.bird.tail" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.bird.wings isnot "disabled">>
-		새 날개:
-		<<listbox "$transformationParts.bird.wings" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<<if $transformationParts.bird.pubes isnot "disabled" and $pbdisable is "f">>
-		새 음모:
-		<<listbox "$transformationParts.bird.pubes" autoselect>>
-			<<option "숨기기" "hidden">>
-			<<option "기본값" "default">>
-		<</listbox>>
-		<br>
-	<</if>>
-	<br>
-<</if>>
+</div>
 <<link [[확인|$passage]]>>
 	<<set $mirrorMenu to "transformation">>
+	<<if $transformationParts.cat.heterochromia is "hidden">>
+		<<catHeterochromiaTF "hide">>
+	<<elseif $cat gte 7 and $cat lte 10>>
+		<<catHeterochromiaTF `$cat - 7`>>
+	<</if>>
 <</link>>
+<!-- Attach an event to every listbox item to update the PC on the sidebar. -->
+<<script>>
+jQuery('#passages').on('change', 'select.macro-listbox', function (e) {
+	Wikifier.wikifyEval('<<updatesidebarimg>>');
+});
+<</script>>
 <</widget>>
 
 <<widget "mirrorDebug">>

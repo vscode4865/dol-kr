@@ -101,19 +101,19 @@
 <<if $leftaction is "leftprotect" and $rightaction is "rightprotect">>
 	<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftprotect">><<set $rightactiondefault to "rightprotect">>
 	당신은 몸의 급소를 보호하며 더 심한 부상을 막는다. <span class="green"> - 고통</span>
-	<<meek 2>><<set $pain -= 2>><<set _br to true>>
+	<<meek 2>><<pain -2>><<set _br to true>>
 <</if>>
 
 <<if $leftaction is "leftprotect">>
 	<<set $leftaction to 0>><<set $leftactiondefault to "leftprotect">>
 	당신은 왼손으로 몸의 급소를 보호하며 더 심한 부상을 막는다. <span class="green"> - 고통</span>
-	<<meek 1>><<set $pain -= 1>><<set _br to true>>
+	<<meek 1>><<pain -1>><<set _br to true>>
 <</if>>
 
 <<if $rightaction is "rightprotect">>
 	<<set $rightaction to 0>><<set $rightactiondefault to "rightprotect">>
 	당신은 오른손으로 몸의 급소를 보호하며 더 심한 부상을 막는다. <span class="green"> - 고통</span>
-	<<meek 1>><<set $pain -= 1>><<set _br to true>>
+	<<meek 1>><<pain -1>><<set _br to true>>
 <</if>>
 
 <<if _br is true>>
@@ -123,13 +123,19 @@
 <<if $mouthaction is "stifle">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "stifle">>
 	당신은 호흡을 가다듬고 흐느낌을 억누르려 노력한다. 효과가 있는듯하다. <span class="green"> - 고통</span>
-	<<set $pain -= 1>>
+	<<pain -1>>
 <</if>>
 
 <<if $mouthaction is "letout">>
 	<<set $mouthaction to 0>><<set $mouthactiondefault to "letout">><<set _sound to 1>>
 	당신은 눈물을 참지 않는다. 당신의 흐느끼며 간간이 터져 나오는 울음소리를 훌쩍인다. <span class="green"> - 스트레스</span>
 	<<meek 1>><<stress -2>>
+<</if>>
+
+<<if $gamemode is "soft">>
+	<<set $pain to Math.clamp($pain, 0, 0)>>
+<<else>>
+	<<set $pain to Math.clamp($pain, 0, 200)>>
 <</if>>
 
 <</widget>>
@@ -554,7 +560,7 @@
 	<<set _resist to 0>>
 	<<if $leftaction isnot "leftresistW" and $rightaction isnot "rightresistW" and $feetaction isnot "feetresistW" and $mouthaction isnot "mouthresistW">>
 		<span class="pink">당신은 그것이 당신을 움직이도록 둔다.</span>
-		<<pain -2>><<stress -12>><<set $submissive += 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
+		<<pain -2>><<stress -12>><<sub 2>><<lpain>><<llstress>><<set $wraith.will += 30>>
 	<<else>>
 		<<if $leftaction is "leftresistW" and $rightaction is "rightresistW" and $feetaction is "feetresistW">>
 			<<set _resist to 3>>
@@ -596,11 +602,11 @@
 					<span class="purple">그럼에도 불구하고, 당신은 입에서 줄줄 나오는 말을 멈출 수가 없다.</span>
 				<</if>>
 			<</if>>
-			<<pain _resist>><<stress _resist>><<trauma _resist>><<set $submissive -= 2>><<gpain>><<gtrauma>><<gstress>><<if _resist is 4>><<ggcontrol>><<else>><<gcontrol>><</if>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 24)*_resist>>
+			<<pain _resist>><<stress _resist>><<trauma _resist>><<def 2>><<gpain>><<gtrauma>><<gstress>><<if _resist is 4>><<ggcontrol>><<else>><<gcontrol>><</if>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 24)*_resist>>
 			<<set $control += Math.floor(currentSkillValue('willpower') / 24)*_resist>>
 		<<else>>
 			<span class="red">당신의 몸이 말을 듣지 않는다.</span>
-			<<stress 6>><<trauma 6>><<willpower 1>><<set $submissive -= 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 40)*_resist>>
+			<<stress 6>><<trauma 6>><<willpower 1>><<def 1>><<gtrauma>><<gstress>><<gwillpower>><<set $wraith.will -= Math.floor(currentSkillValue('willpower') / 40)*_resist>>
 		<</if>>
 	<</if>>
 	<br><br>
@@ -693,7 +699,7 @@
 		<<if $NPCList[_s].righthand is "mouth">>
 			<<set $NPCList[_s].righthand to 0>>
 		<</if>>
-		<span class="teal"><<He_nun _s>> 아픔에 움찔하면서, 당신의 입을 놓아준다.</span>
+		<span class="teal"><<He_ nun _s>> 아픔에 움찔하면서, 당신의 입을 놓아준다.</span>
 		<<defiance 1 _s>>
 		<<break>>
 	<</for>>
