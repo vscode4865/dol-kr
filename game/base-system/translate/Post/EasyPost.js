@@ -439,10 +439,10 @@ const EasyPostMacroList = [
 	{ name: "daylight_", orig_name: "daylightPost", is_print: 0},
 
 	// <<ppackbrother_ nun>> = <<ppackbrother>>는 
-	{ name: "ppackbrother_", orig_name: "ppackbrotherPost", is_print: 0},
-
 	// <<pPackbrother_ nun>> = <<pPackbrother>>는 
+	{ name: "ppackbrother_", orig_name: "ppackbrotherPost", is_print: 0},
 	{ name: "pPackbrother_", orig_name: "ppackbrotherPost", is_print: 0},
+
 
 	// <<pheat_ nun>> = <<pheat>>는 
 	{ name: "pheat_", orig_name: "pheatPost", is_print: 0},
@@ -487,6 +487,7 @@ const EasyPostMacroList = [
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},
+	{ name: "persons_", orig_name: "personPost", is_print: 0},
 
 	// <<personsimple_ ul>> = <<personsimple>>을 
 	{ name: "personsimple_", orig_name: "personsimplePost", is_print: 0},
