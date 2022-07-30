@@ -528,7 +528,7 @@ const EasyPostMacroList = [
 	{ name: "tentacle_", orig_name: "trTentacle", is_print: 0},
 
 	// <<vorecreature_ nun>> = <<trVore $vorecreature "은">> 
-	{ name: "vorecreature_", orig_name: "trVore", is_print: 1},
+	{ name: "vorecreature_", orig_name: "vorecreature", is_print: 0},
 
 	// <<struggle_creature_ nun "lurker">> = <<trStruggle "lurker" "은">> 
 	{ name: "struggle_creature_", orig_name: "trStruggle", is_print: 1},
