@@ -1340,7 +1340,12 @@
         e.g.
         <<kylar_pet_namePost "을">>               // <<kylar_pet_name>>을
     ```
-
+     
+    ```
+    <<virginPost>>
+        virgin을 처녀/동정으로 나누어 번역하기 위해 추가. 성별에 따라 달리 표현해야 할 때만 사용할것.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
 	
 
 * personPost

@@ -484,6 +484,9 @@ const EasyPostMacroList = [
 	// <<kylar_pet_name_ nun>> = <<kylar_pet_name>>는 
 	{ name: "kylar_pet_name_", orig_name: "kylar_pet_namePost", is_print: 0},
 
+	// <<virgin_ un>> = <<virginPost>>는 
+	{ name: "virgin_", orig_name: "virginPost", is_print: 0},
+
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},
@@ -528,7 +531,7 @@ const EasyPostMacroList = [
 	{ name: "tentacle_", orig_name: "trTentacle", is_print: 0},
 
 	// <<vorecreature_ nun>> = <<trVore $vorecreature "은">> 
-	{ name: "vorecreature_", orig_name: "trVore", is_print: 1},
+	{ name: "vorecreature_", orig_name: "vorecreature", is_print: 0},
 
 	// <<struggle_creature_ nun "lurker">> = <<trStruggle "lurker" "은">> 
 	{ name: "struggle_creature_", orig_name: "trStruggle", is_print: 1},
