@@ -39,6 +39,7 @@ const trEasyPostAliasList = {
 	사용법 : { name : "EasyPost 매크로명", orig_name : "실제 매크로명", is_print : (_trResult를 프린트해야 하면 1) },
 */
 const EasyPostMacroList = [
+	{ name: "testEasyPost_", orig_name: "testEasyPost", is_print: 0},
 	// trClothes 
 	// <<worn_upper_name_ ul>> = $worn.upper.name을 
 	{ name: "worn_butt_plug_name_", orig_name: "worn_butt_plug_name", is_print: 0},
