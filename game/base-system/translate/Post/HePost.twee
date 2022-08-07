@@ -42,7 +42,7 @@
 		<<if $pronoun>>
 			<<simpleHePost $_post $_sep>>
 		<<else>>
-			<<set _trResult to `<span class="red">[에러: "He" 위젯에서 알려지지 않은 대명사]</span>`>>
+			<<set _trResult to `<span class="red">에러: HePost: 알려지지 않은 대명사 {$pronoun}</span>`>>
 		<</if>>
 	<</if>>
 <</silently>><<print _trResult>><</widget>>
@@ -52,7 +52,13 @@
 		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>	/* 첫번째 옵션이 한글 - 조사 */
 			<<set $_post to _args[0]>><<set $_sep to _args[1]>>
 		<<else>>	/* 첫번째 옵션이 영문 혹은 숫자 - He 매크로의 옵션 */
-			<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<if $NPCNameList.includes(_args[0])>>
+				<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<elseif Number.isInteger(_args[0]) and between(_args[0],1,6)>>
+				<<personselect _args[0]>>
+			<<else>>
+				<<set _trResult to "<span class='red'>에러: simpleHePost: 잘못된 인수: " + _args[0] + "</span>">>
+			<</if>>
 			<<set $_post to _args[1]>><<set $_sep to _args[2]>>
 		<</if>>
 	<</if>>
@@ -66,6 +72,9 @@
 		<<set _trResult to "그자">><<trPost 1 $_post $_sep>>
 	<<elseif $pronoun is "t">>
 		<<set _trResult to "그들">><<trPost 2 $_post $_sep>>
+	<<else>>
+		<<set _trResult to `<span class="red">에러: simpleHePost: 알려지지 않은 대명사 {$pronoun}</span>`>>
+
 	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
@@ -85,7 +94,13 @@
 		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>	/* 첫번째 옵션이 한글 - 조사 */
 			<<set $_post to _args[0]>><<set $_sep to _args[1]>>
 		<<else>>	/* 첫번째 옵션이 영문 혹은 숫자 - He 매크로의 옵션 */
-			<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<if $NPCNameList.includes(_args[0])>>
+				<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<elseif Number.isInteger(_args[0]) and between(_args[0],1,6)>>
+				<<personselect _args[0]>>
+			<<else>>
+				<<set _trResult to "<span class='red'>에러: simpleHePost: 잘못된 인수: " + _args[0] + "</span>">>
+			<</if>>
 			<<set $_post to _args[1]>><<set $_sep to _args[2]>>
 		<</if>>
 	<</if>>
@@ -105,7 +120,13 @@
 		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>	/* 첫번째 옵션이 한글 - 조사 */
 			<<set $_post to _args[0]>><<set $_sep to _args[1]>>
 		<<else>>	/* 첫번째 옵션이 영문 혹은 숫자 - He 매크로의 옵션 */
-			<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<if $NPCNameList.includes(_args[0])>>
+				<<set $pronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>
+			<<elseif Number.isInteger(_args[0]) and between(_args[0],1,6)>>
+				<<personselect _args[0]>>
+			<<else>>
+				<<set _trResult to "<span class='red'>에러: simpleHePost: 잘못된 인수: " + _args[0] + "</span>">>
+			<</if>>
 			<<set $_post to _args[1]>><<set $_sep to _args[2]>>
 		<</if>>
 	<</if>>
@@ -274,7 +295,7 @@
 <<widget "nnpc_HersPost">><<nnpc_HePost _args[0] _args[1] _args[2]>><</widget>>
 <<widget "nnpc_hersPost">><<nnpc_HePost _args[0] _args[1] _args[2]>><</widget>>
 <<widget "nnpc_HesPost">><<nnpc_HePost _args[0] _args[1] _args[2]>><</widget>>
-<<widget "nnpc_himselfPost">><<nnpc_HePost _args[0]>><<set _trResult += " 자신">><<trPost 0 _args[1] _args[2]>><</widget>>
+<<widget "nnpc_himselfPost">><<silently>><<nnpc_HePost _args[0]>><<set _trResult += " 자신">><<trPost 0 _args[1] _args[2]>><</silently>><<print _trResult>><</widget>>
 
 <<widget "nnpc_wifePost">><<silently>>
 <<set _npcPronoun to $NPCName[$NPCNameList.indexOf(_args[0])].pronoun>>

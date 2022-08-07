@@ -891,6 +891,11 @@
     ```
 
     ```
+    <<nnpc_genderyPost>>
+        + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<nnpc_genitalsPost>>
         + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략
     ```
@@ -1127,6 +1132,12 @@
     ```
 
     ```
+    <<malePost>>
+        <<male>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<daylight>>
         <<daylight>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
@@ -1314,6 +1325,28 @@
         e.g.
         <<pound_textPost "을">>               // <<pound_text>>을
     ```
+
+   ```
+    <<kylar_pet_namePost>>
+        <<kylar_pet_namePost [cap] post "sep">>
+
+       <<kylar_pet_name>>의 대체 위젯. 조사를 붙일 수 있다. 
+        
+        선택사항
+			- cap: 원본 매크로의 인수. 대문자 표시용
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<kylar_pet_namePost "을">>               // <<kylar_pet_name>>을
+    ```
+     
+    ```
+    <<virginPost>>
+        virgin을 처녀/동정으로 나누어 번역하기 위해 추가. 성별에 따라 달리 표현해야 할 때만 사용할것.
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+	
 
 * personPost
     ```
@@ -2020,6 +2053,7 @@
 			?urosseo/?rosseo - 으로써/로써
 			?urobuter/?robuter - 으로부터/로부터
 			?ira/?ra - 이라/라
+			?iut/?yeot - 이었/였
 			?irago/?rago - 이라고/라고
 			?ina/?na - 이나/나
 			?iran/?ran - 이란/란
@@ -2167,6 +2201,36 @@
         + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
     ```
 
+* base-system/text.twee
+    ```
+    <<npcHairColour>>
+		<<npcHairColour *npcID post "sep">>
+		
+		npc의 머리색을 번역한다.
+		
+		필수사항
+		- *npcID: 원본 npcHairColour의 인수
+		
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<npcHairColour "Sydney" "으로">>             // "백금색으로"
+    ```
+
+    ```
+    <<printChastity>>
+		<<printChastity post "sep">>
+		
+		당신의 정조대를 번역한다. <<worn_genitals_name>> 과 동일.
+		
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+    ```
+
+
 * base-system/widget.twee
     ```
     <<A_pillory_person>>
@@ -2203,7 +2267,7 @@
 # 기타
 	- 동사 매크로중 몇몇은 영어와 한글의 차이 때문에 추가 옵션을 받는 매크로가 존재한다.
 	
-* text.twee
+* base-system/text.twee
     ```
 	<<strokes>> 
 		원래는 "애무한다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "애무하고" 로 표시됨
@@ -2214,121 +2278,162 @@
 		원래는 "벗긴다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "벗기고", "but" 이 추가되면 "벗기려 하지만" 으로 표시됨
     ```
 
+* base-system/widjets.js
+    ```
+	formatList()
+		formatList(*arr, conjunction = "그리고", useOxfordComma = false, separator=", ")
+			
+		문자열 배열 내의 문자열을 열거한다. 
+		참고- 이 함수는 <Array>.formatList() (modules/02-array-extensions.js 모듈에서 확장)의 사용을 쉽게 하기 위해 만들어진 함수이며,
+		원본인 <Array>.formatList()는 인자를 Object 의 key-value 쌍으로 받는다.
+		
+		필수사항
+		- *arr: 출력하려는 문자열 배열
+		
+        선택사항
+        - conjunction: 문자열을 이어주는 접속사. 원래 아무 단어나 들어갈 수 있지만 한글번역판에서는 
+			"그리고" 와 "그리고"가 아닌 (ex. "또는" "혹은" 등) 접속사로 구분한다.
+        - useOxfordComma: 마지막과 마지막 전 단어 사이에 separator 를 넣을지를 선택한다.
+			(ex. useOxfordComma = false: 사과, 귤과 수박 | useOxfordComma = true: 사과, 귤, 그리고 수박)
+		- separator: 문자열이 셋 이상 (useOxfordComma = true인 경우 둘 이상)일 때 문자열을 나눠주는 기호.
+			보통 쉼표+빈칸을 사용.
+		 
+		 현재 (useOxfordComma = false)인 경우 conjunction이 "그리고" 인 경우 조사는 과/와 를 사용하며, 그렇지 않은 경우 이나/나 를 사용한다.
+		 (ex. conjunction = "그리고": 사과, 귤과 수박 | conjunction = "또는": 사과, 귤이나 수박)
+
+		formatList() 가 불렸을 경우 위와 같이 처리를 하고 마지막 단어의 조사 번호를 _postNum 에 저장하게 되어 있다.
+		
+		사용법 (함수로 사용)
+		- 위젯형: <<set _trResult to formatList(_fruits)>><<trPost _postNum "을">><<print _trResult>>
+		- 템플릿형: <<print formatList(_fruits)>>?ul
+		
+		사용법 (배열의 메소드로 사용)
+		- 위젯형: <<set _trResult to _fruits.formatList()>><<trPost _postNum "을">><<print _trResult>>
+		- 템플릿형: <<print _fruits.formatList()>>?ul
+    ```
+
 
 -----------------
 # EasyPost
 
 위의 매크로들을 좀 더 직관적으로 쉽게 사용하기 위해 추가한 매크로 군입니다.
+원본버전 0.3.10.4부터 새로운 형식의 EasyPost 쪽을 사용하도록 권장합니다. 
+이전 형식도 당분간은 사용 가능합니다만 새로운 형식이 정착되면 삭제할 예정입니다.
 
 * 규칙
+	이전 형식: <<(영문의 위젯명)(언더바)(조사|어미) [옵션]>>
+	새로운 형식: <<(영문의 위젯명)(언더바)(빈칸)(조사|어미) [옵션]>>	// 조사/어미 사이에 한 칸을 띄우시면 됩니다. 나머지는 동일
+
     ```
-	- <<(명사 | 대명사)_(조사 | 어미) [옵션]>>
-		예: <<He_nun>> - 그는, <<weather_ga "rain">> - 비가
+	- <<(명사 | 대명사)_ (조사 | 어미) [옵션]>>
+		예: <<He_ nun>> - 그는, <<weather_ ga "rain">> - 비가
 	- 조사/어미 종류는 trinit_post 에 정의된 것에 준해 만들었음
-		은/는 - _un/_nun
-		이/가 - _i/_ga
-		을/를 -  _ul/_rul
-		과/와 -  _gwa/_wa
-		이랑/랑 - _irang/_rang
-		아/야 - _a/_ya
-		이여/여 - _iyo/_yo
-		이야/야 - _iya ( _ya 는 아/야 에서 이미 사용하고 있어서 _iya로 통일시킴)
-		으로/로 - _uro/_ro
-		으로서/로서 - _uroseo/_roseo
-		으로써/로써 - _urosseo/_rosseo
-		으로부터/로부터 - _urobuter/_robuter
-		이라/라 - _ira/_ra
-		이라고/라고 - _irago/_rago
-		이나/나 - _ina/_na
-		이란/란 - _iran/_ran
-		이든가/든가 - _idunga/_dunga
-		이던가/던가 - _idonga/_donga
-		이든지/든지 - _idunji/_dunji
-		이던지/던지 - _idonji/_donji
-		이야말로/야말로 - _iyamalro/_yamalro
-		이구나/구나 - _iguna/_guna
-		이다/다 - _ida/_da
-		이지/지	- _iji/_ji
-		의 - _yi
+		은/는 - un/nun
+		이/가 - i/ga
+		을/를 -  ul/rul
+		과/와 -  gwa/wa
+		이랑/랑 - irang/rang
+		아/야 - a/ya
+		이여/여 - iyo/yo
+		이야/야 - iya ( ya 는 아/야 에서 이미 사용하고 있어서 iya로 통일시킴)
+		으로/로 - uro/ro
+		으로서/로서 - uroseo/roseo
+		으로써/로써 - urosseo/rosseo
+		으로부터/로부터 - urobuter/robuter
+		이라/라 - ira/ra
+		이었/였 - iut/yeot	// 0.3.10.4 에 추가
+		이라고/라고 - irago/rago
+		이나/나 - ina/na
+		이란/란 - iran/ran
+		이든가/든가 - idunga/dunga
+		이던가/던가 - idonga/donga
+		이든지/든지 - idunji/dunji
+		이던지/던지 - idonji/donji
+		이야말로/야말로 - iyamalro/yamalro
+		이구나/구나 - iguna/guna
+		이다/다 - ida/da
+		이지/지	- iji/ji
+		의 - yi
 	- 붙는 조사/어미는 명사/대명사의 영어발음에 준해 붙임
-		예: He_nun - 히_는, bottom_un - 바텀_은
+		예: He_ nun - 히_는, bottom_ un - 바텀_은
 	- 옷의 경우 $worn.(위치).name 식의 사용이 대부분으로 보여 이를 대체하는 매크로만 만들었음
-		예: $worn.under_lower.name은 - <<worn_under_lower_name_un>>
+		예: $worn.under_lower.name은 - <<worn_under_lower_name_ un>>
     ```
 
 * 예시
     ```
 	원본: <<He>> ripped your $worn.under_lower.name and shove <<his>> <<penis>> into your <<pussy>>.
 	기존번역: <<HePost "은">> 당신의 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 찢고 <<hisPost "의">> <<penisPost "을">> 당신의 <<pussyPost "으로">> 집어넣는다.
-	EasyPost: <<He_nun>> 당신의 <<worn_under_lower_name_ul>> 찢고 <<his_yi>> <<penis_rul>> 당신의 <<pussy_ro>> 집어넣는다.
+	EasyPost: <<He_ nun>> 당신의 <<worn_under_lower_name_ ul>> 찢고 <<his_ yi>> <<penis_ rul>> 당신의 <<pussy_ ro>> 집어넣는다.
 	출력: 그는 당신의 평범한 팬티를 찢고 그의 조그마한 자지를 당신의 보지로 집어넣는다.
     ```
 
 * 현재 등록된 매크로
 	- trClothes 계열
 		```
-		<<worn_(착용부위)_name_(조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
+		<<worn_(착용부위)_name_ (조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
 		<<worn_(착용부위)_name>> 시리즈. 조사 없이 이름만 가져오게 함
 		NOTE: 플레이어가 착용중인 buttplug 는 butt_plug, 플레이어가 착용중인 strap-on 은 under_lower 부위
 		```
 	- beasttypePost 계열
 		```
-		<<beasttype_(조사)>>, <<beastsplural_(조사)>>
+		<<beasttype_ (조사)>>, <<beastsplural_ (조사)>>
 		```
 	- bodyPost 계열
 		```
-		<<breasts_(조사)>>, <<nipple_(조사)>>, <<nipples_(조사)>>, <<bottom_(조사)>>, <<pussy_(조사)>>, <<genitals_(조사)>>, <<genitalsandbreasts_(조사)>>,
-		<<clit_(조사)>>, <<penis_(조사)>>, <<penisSimple_(조사)>>, <<glans_(조사)>>, <<testicles_(조사)>>, <<testicle_(조사)>>, <<hand_(조사)>>, 
-		<<npcPenis_(조사)>>, <<npcPenisSimple_(조사)>>, <<npcVagina_(조사)>>, <<npcAnus_(조사)>>, <<npcGenitals_(조사)>>, 
+		<<breasts_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
+		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, 
+		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
 	- clothesPost 계열
 		```
-		<<undertop_(조사)>>, <<groin_(조사)>>, <<crotch_(조사)>>, <<undies_(조사)>>, <<bottoms_(조사)>>, <<underbottoms_(조사)>>, <<top_(조사)>>, 
-		<<topaside_(조사)>>, <<breastsaside_(조사)>>, <<outfit_(조사)>>, <<underoutfit_(조사)>>, <<lewdness_(조사)>>, <<nudity_(조사)>>, 
-		<<allTops_(조사)>>, <<allBottoms_(조사)>>, <<allTopsUnderwear_(조사)>>, <<allBottomsUnderwear_(조사)>>, 
+		<<undertop_ (조사)>>, <<groin_ (조사)>>, <<crotch_ (조사)>>, <<undies_ (조사)>>, <<bottoms_ (조사)>>, <<underbottoms_ (조사)>>, <<top_ (조사)>>, 
+		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>>, 
+		<<allTops_ (조사)>>, <<allBottoms_ (조사)>>, <<allTopsUnderwear_ (조사)>>, <<allBottomsUnderwear_ (조사)>>, 
 		```
 	- HePost 계열
 		```
-		<<He_(조사)>>, <<he_(조사)>>, <<Him_(조사)>>, <<him_(조사)>>, <<Hers_(조사)>>, <<hers_(조사)>>, <<Himself_(조사)>>, <<himself_(조사)>>, 
-		<<bHe_(조사)>>, <<bhe_(조사)>>, <<bHimself_(조사)>>, <<bhimself_(조사)>>, <<bHim_(조사)>>, <<bhim_(조사)>>, <<bHers_(조사)>>, <<bhers_(조사)>>, 
-		<<pShe_(조사)>>, <<pshe_(조사)>>, <<pher_(조사)>>, <<pHer_(조사)>>, <<pHerself_(조사)>>, <<pherself_(조사)>>, <<phim_(조사)>>, <<ohe_(조사)>>, 
-		<<farm_He_(조사)>>, <<farm_he_(조사)>>, <<nnpc_He_(조사)>>, <<nnpc_he_(조사)>>, <<nnpc_Him_(조사)>>, <<nnpc_him_(조사)>>, <<nnpc_himself_(조사)>>, 
-		<<nnpc_wife_(조사)>>, <<nnpc_lass_(조사)>>, <<nnpc_gender_(조사)>>, <<nnpc_gendery_(조사)>>, <<nnpc_genitals_(조사)>>, <<nnpc_girlfriend_(조사)>>,
-		<<nnpc_brother_(조사)>>, <<nnpc_Brother_(조사)>>, <<nnpc_title_(조사)>>, <<nnpc_Title_(조사)>>, 
-		<<His_yi>>, <<his_yi>>, <<bhis_yi>>, <<Bhis_yi>>, <<hisselect_yi>>, <<his1_yi>> ~ <<his6_yi>>, <<farm_His_yi>>, <<farm_his_yi>>, 
-		<<nnpc_His_yi>>, <<nnpc_his_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<He_ (조사)>>, <<he_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Hers_ (조사)>>, <<hers_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
+		<<bHe_ (조사)>>, <<bhe_ (조사)>>, <<bHimself_ (조사)>>, <<bhimself_ (조사)>>, <<bHim_ (조사)>>, <<bhim_ (조사)>>, <<bHers_ (조사)>>, <<bhers_ (조사)>>, 
+		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
+		<<farm_He_ (조사)>>, <<farm_he_ (조사)>>, <<nnpc_He_ (조사)>>, <<nnpc_he_ (조사)>>, <<nnpc_Him_ (조사)>>, <<nnpc_him_ (조사)>>, <<nnpc_himself_ (조사)>>, 
+		<<nnpc_wife_ (조사)>>, <<nnpc_lass_ (조사)>>, <<nnpc_gender_ (조사)>>, <<nnpc_gendery_ (조사)>>, <<nnpc_genitals_ (조사)>>, <<nnpc_girlfriend_ (조사)>>,
+		<<nnpc_brother_ (조사)>>, <<nnpc_Brother_ (조사)>>, <<nnpc_title_ (조사)>>, <<nnpc_Title_ (조사)>>, 
+		<<His_ (조사)>>, <<his_ (조사)>>, <<bhis_ (조사)>>, <<Bhis_ (조사)>>, <<hisselect_ (조사)>>, <<his1_ (조사)>> ~ <<his6_ (조사)>>, <<farm_His_ (조사)>>, <<farm_his_ (조사)>>, 
+		<<nnpc_His_ (조사)>>, <<nnpc_his_ (조사)>>
 		```
 	- otherPost 계열
 		```
-		<<charles_(조사)>>, <<theowner_(조사)>>, <<someone_(조사)>>, <<spouse_(조사)>>, <<father_(조사)>>, <<Father_(조사)>>, <<mummy_(조사)>>, <<Mummy_(조사)>>, 
-		<<girl_(조사)>>, <<girls_(조사)>>, <<girlfriend_(조사)>>, <<wife_(조사)>>,
-		<<victimgirl_(조사)>>, <<victimgirls_(조사)>>, <<lass_(조사)>>, <<gender_(조사)>>, <<bitch_(조사)>>, <<whore_(조사)>>, <<slut_(조사)>>, <<semen_(조사)>>, <<prostate_(조사)>>, 
-		<<personpenis_(조사)>>, <<wallet_(조사)>>, <<sir_(조사)>>, <<monk_(조사)>>, <<monks_(조사)>>, <<monks_and_nuns_(조사)>>, <<priest_(조사)>>, <<priests_(조사)>>,
-		<<farm_text_many_(조사)>>, <<farm_text_(조사)>>, <<Master_(조사)>>, <<master_(조사)>>, <<daughter_(조사)>>, <<daylight_(조사)>>, <<ppackbrother_(조사)>>, <<pPackbrother_(조사)>>, 
-		<<pheat_(조사)>>, <<wolf_cave_plural_(조사)>>, <<beast_jaws_text_(조사)>>, <<beast_Jaws_text_(조사)>>, <<beast_teeth_text_(조사)>>,
-		<<lefttool_(조사)>>, <<righttool_(조사)>>, <<struggle_appendage_(조사)>>, <<plant_details_(조사)>>, <<Plant_details_(조사)>>, <<tower_creature_text_(조사)>>, <<pound_text_(조사)>>
-		<<someones_yi>>,  <<their_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<charles_ (조사)>>, <<theowner_ (조사)>>, <<someone_ (조사)>>, <<spouse_ (조사)>>, <<father_ (조사)>>, <<Father_ (조사)>>, <<mummy_ (조사)>>, <<Mummy_ (조사)>>, 
+		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>,
+		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
+		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, <<priest_ (조사)>>, <<priests_ (조사)>>,
+		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
+		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, 
+		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
+		<<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>
+		<<someones_ (조사)>>,  <<their_ (조사)>>
 		```
 	- personPost 계열
 		```
-		<<person_(조사)>>, <<personsimple_(조사)>>, <<combatperson_(조사)>>, <<combatPerson_(조사)>>,<<people_(조사)>>, <<peopley_(조사)>>, <<persony_(조사)>>, <<group_(조사)>>,
-		<<fullGroup_(조사)>>,<<enumeratedGroup_(조사)>>,
-		<<persons_yi>>, <<combatpersons_yi>>, <<combatPersons_yi>> 는 소유격이라 _yi 조사만 지원함
+		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<persony_ (조사)>>, <<group_ (조사)>>,
+		<<fullGroup_ (조사)>>,<<enumeratedGroup_ (조사)>>,
+		<<persons_ (조사)>>, <<combatpersons_ (조사)>>, <<combatPersons_ (조사)>>
 		```
 	- putpost 계열
 		```
-		<<putpost_(조사)>>
+		<<putpost_ (조사)>>
 		```
 	- creature 계열
 		```
-		<<creature_(조사)>>,  <<tentacle_(조사)>>, <<vorecreature_(조사)>>, <<struggle_creature_(조사)>>,
-		<<struggle_mouth_creature_(조사)>>, <<struggle_vagina_creature_(조사)>>, <<struggle_penis_creature_(조사)>>, <<struggle_anus_creature_(조사)>>, <<struggle_chest_creature_(조사)>>, 
-		<<swarmtype_(조사)>>, <<swarmname_(조사)>>, <<swarm_(조사>>, 
+		<<creature_ (조사)>>,  <<tentacle_ (조사)>>, <<vorecreature_ (조사)>>, <<struggle_creature_ (조사)>>,
+		<<struggle_mouth_creature_ (조사)>>, <<struggle_vagina_creature_ (조사)>>, <<struggle_penis_creature_ (조사)>>, <<struggle_anus_creature_ (조사)>>, <<struggle_chest_creature_ (조사)>>, 
+		<<swarmtype_ (조사)>>, <<swarmname_ (조사)>>, <<swarm_(조사)>>, 
 		<<swarmmove>>, <<swarmspill>>, <<swarmsteady>> 는 서술어 번역이라 조사가 필요없음
 		```
 	- 기타
 		```
-		<<beastdesc_(조사)>>, <<bodypart_(조사)>>, <<bodywriting_(조사)>>, <<breastsdesc_(조사)>>, <<namedNPC_(조사)>>,
-		<<NPCdesc_(조사)>>, <<NPCname_(조사)>>, <<penisdesc_(조사)>>, <<plants_(조사)>>, <<plants_plural_(조사)>>, 
-		<<weather_(조사)>>, <<sextoy_(조사)>>
+		<<beastdesc_ (조사)>>, <<bodypart_ (조사)>>, <<bodywriting_ (조사)>>, <<breastsdesc_ (조사)>>, <<namedNPC_ (조사)>>,
+		<<NPCdesc_ (조사)>>, <<NPCname_ (조사)>>, <<penisdesc_ (조사)>>, <<plants_ (조사)>>, <<plants_plural_ (조사)>>, 
+		<<weather_ (조사)>>, <<sextoy_ (조사)>>
 		```

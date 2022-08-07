@@ -41,9 +41,9 @@
 
 <<elseif $rng gte 41>>
 
-당신 발밑의 땅이 무너져, 당신을 좁은 구덩이로 떨어트린다.
-<br><br>
-	<<set $rng to random(1, 100)>>
+	당신 발밑의 땅이 무너져, 당신을 좁은 구덩이로 떨어트린다.
+	<br><br>
+	<<rng>>
 	<<if $rng gte 51 or $swarmdisable is "t">>
 	당신은 구덩이에서 기어나온다. 떨어질 때 살짝 굴렀고 쓰라린 부분이 있지만, 그것 외엔 괜찮다.
 	<br><br>
@@ -57,18 +57,31 @@
 	<<link [[다음|Trash Swarm]]>><<set $molestationstart to 1>><</link>>
 	<br>
 	<</if>>
+<<elseif $rng gte 11>>
 
+	갈매기 한 무리가 근처의 더미 위에 앉아, 바닥의 쓰레기들을 잡아 던져대고 있다.
+
+	<<dancedifficulty 200 400 ignore>>
+	<<if $danceSuccess>>
+		바나나 껍질 하나가 당신 쪽으로 날아오지만, <span class="green">당신은 옆으로 뛰어 피한다.</span> 그것은 당신이 서 있던 곳에 떨어진다.
+	<<else>>
+		바나나 껍질 하나가 당신 쪽으로 날아와, <span class="red">당신 머리 위에 떨어진다.</span> 당신은 그것을 쓰레기 더미 위에 다시 던진다.<<gstress>><<stress 6>>
+	<</if>>
+	<br><br>
+
+	<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
+	<br>
 <<elseif $rng gte 21>>
 
-희미하게 웅웅겨리는 소리가 들린다. 소리는 당신이 계속 나아갈수록 커져, 거의 귀가 멀 것 같은 수준이 된다.
-<<gstress>><<stress 6>>
-<br><br>
+	희미하게 웅웅겨리는 소리가 들린다. 소리는 당신이 계속 나아갈수록 커져, 거의 귀가 멀 것 같은 수준이 된다.
+	<<gstress>><<stress 6>>
+	<br><br>
 
-<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
+	<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
 
 <<else>>
 
-	<<set $rng to random(1, 100)>>
+	<<rng>>
 	<<if $rng gte 91 and $parasitedisable is "f" and $parasite.right_thigh.name is undefined>>
 		당신은 무언가에 걸려 넘어졌다. 장소의 특성을 생각해 보면 그리 놀랄 만한 일은 아니지만, 당신은 곧 <span class="lewd">무언가가 당신의 오른쪽 허벅지를 타고 기어오르는 게 느껴진다.</span> 당신이 아래쪽을 보자, 거대한 구더기가 보인다. 그건 당신에게 달라붙어 있고, 아무리 다리를 흔들어도 떨어질 것 같지 않다. <i>어쩌면 물에 씻어낼 수 있을지도 모르겠다.</i>
 		<br><br>
@@ -148,7 +161,7 @@
 	<<pregnancyWatersBrokenPassout "trash">>
 <<else>>
 	<<passout>>
-	당신은 스스로를 너무 몰아붙였다.
+	당신은 몸을 너무 혹사시켰다.
 	<br><br>
 	<<link [[다음|Trash Pass Out]]>><</link>>
 	<br>
@@ -158,8 +171,7 @@
 <<widget "trashSelect">>
 	<!-- This could potentially be adapted into a more all-encompassing widget that selects a random NPC -->
 	<<if _audience>>
-		<<personselect _audience.random()>>
-		<<run _audience.deleteAt($index)>>
+		<<personselect _audience.pluck()>>
 	<<else>>
 		<<personselect random(0,5)>>
 	<</if>>
