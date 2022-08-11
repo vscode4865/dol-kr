@@ -212,6 +212,9 @@ const EasyPostMacroList = [
 	{ name: "bHe_", orig_name: "bHePost", is_print: 0},
 	{ name: "bhe_", orig_name: "bHePost", is_print: 0},
 
+	{ name: "bHes_", orig_name: "bHePost", is_print: 0},
+	{ name: "bhes_", orig_name: "bHePost", is_print: 0},
+
 	// <<bHimself_ nun>> = <<bHimself>>는, <<bHimself_ nun 1>> = <<bHimself 1>>는 
 	// <<bhimself_ nun>> = <<bhimself>>는, <<bhimself_ nun 1>> = <<bhimself 1>>는 
 	{ name: "bHimself_", orig_name: "bHimselfPost", is_print: 0},
@@ -233,6 +236,8 @@ const EasyPostMacroList = [
 	{ name: "pShe_", orig_name: "pShePost", is_print: 0},
 	{ name: "pshe_", orig_name: "pShePost", is_print: 0},
 
+	{ name: "pShes_", orig_name: "pShePost", is_print: 0},
+	{ name: "pshes_", orig_name: "pShePost", is_print: 0},
 
 	// <<pHer_ nun>> = <<pHer>>는 
 	// <<pher_ nun>> = <<pher>>는 
@@ -285,6 +290,9 @@ const EasyPostMacroList = [
 	// <<nnpc_he_ nun "Robin">> = <<nnpc_he "Robin">>는 
 	{ name: "nnpc_He_", orig_name: "nnpc_HePost", is_print: 0},
 	{ name: "nnpc_he_", orig_name: "nnpc_HePost", is_print: 0},
+
+	{ name: "nnpc_Hes_", orig_name: "nnpc_HePost", is_print: 0},
+	{ name: "nnpc_hes_", orig_name: "nnpc_HePost", is_print: 0},
 
 	// <<nnpc_Him_ ul>> = <<nnpc_Him>>을, <<nnpc_Him_ ul 1>> = <<nnpc_Him 1>>을 
 	// <<nnpc_him_ ul>> = <<nnpc_him>>을, <<nnpc_him_ ul 1>> = <<nnpc_him 1>>을 
