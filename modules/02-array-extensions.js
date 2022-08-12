@@ -61,7 +61,7 @@ Object.defineProperty(Array.prototype, 'formatList', {
 		if (this.length === 0) {
 			return "";
 		}
-		try {if (!useOxfordComma && this.length > 1)  conjunction = (conjunction === "그리고"?["과", "와", "과"]:["이나", "나", "이나"])[getPostNum(this.at(-2))]; conjunction += " "; getPostNum(this.at(-1));	/* useOxfordComma가 false일 때는 조사처리, 아니면 conjunction 사용. 끝으로 출력후의 조사처리를 위해 마지막 글자의 _postNum을 계산해둔다 */} catch(e) { return `${e}: typeof(this)=${typeof(this)}${Array.isArray(this)?"= "+this.toString():""}`}
+		try {if (!useOxfordComma && this.length > 1)  conjunction = (conjunction === "그리고"?["과", "와", "과"]:["이나", "나", "이나"])[getPostNum(this.at(-2))]; conjunction += " "; getPostNum(this.at(-1));	/* useOxfordComma가 false일 때는 조사처리, 아니면 conjunction 사용. 끝으로 출력후의 조사처리를 위해 마지막 글자의 _postNum을 계산해둔다 */} catch(e) { return `<span class='red'>에러: formatList: ${e}: typeof(this)=${typeof(this)}${Array.isArray(this)?"= "+this.toString():""}</span>`}
 		if (this.length <= 2) return this.join((useOxfordComma ? " " : "")+ conjunction);
 		const oxConj = (useOxfordComma ? separator + conjunction : conjunction + " ");
 		return this.slice(0, -1).join(separator) + oxConj + this.last();
