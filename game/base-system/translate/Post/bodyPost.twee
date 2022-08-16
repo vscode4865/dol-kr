@@ -187,32 +187,29 @@
 <<widget "handPost">><<silently>>
 	<<set $_preword to "">>
 	<<if _args[0] isnot undefined>>
-		<<set $_tempArray to _args[0].split(' ')>>
-		<<if $_tempArray.length gt 2>>
-			<<set $_preword to $_tempArray[0] + " ">>
-			<<set $_hand to $_tempArray[1]>>
+		<<if _args[0].substring(0,1).search("[가-힣]") gte 0>>
+			<<set $_postStr to _args[0]>><<set $_postOpt to _args[1]>>
 		<<else>>
-			<<set $_hand to $_tempArray[0]>>
+			<<set $_tempArray to _args[0].split(' ')>>
+			
+			<<set $_hand to $_tempArray.pop()>>
+			<<if $_hand is "hand">>	/* ex. "left hand" */
+				<<set $_hand to $_tempArray.pop()>>
+			<</if>>
+			<<if $_tempArray.length>>
+				<<set $_preword to $_tempArray.join(" ")>>
+			<</if>>
+			<<set $_postStr to _args[1]>><<set $_postOpt to _args[2]>>
 		<</if>>
 	<</if>>
 	<<if $_hand is "left">>
-		<<set _trResult to $_preword + "왼손">>
-		<<set $_postStr to _args[1]>>
-		<<set $_postOpt to _args[2]>>
+		<<set _trResult to $_preword + " 왼손">>
 	<<elseif $_hand is "right">>
-		<<set _trResult to $_preword + "오른손">>
-		<<set $_postStr to _args[1]>>
-		<<set $_postOpt to _args[2]>>
+		<<set _trResult to $_preword + " 오른손">>
 	<<elseif $_hand is "both">>
-		<<set _trResult to $_preword + "양손">>
-		<<set $_postStr to _args[1]>>
-		<<set $_postOpt to _args[2]>>
+		<<set _trResult to $_preword + " 양손">>
 	<<else>>
-		<<set _trResult to $_preword + "손">>
-		<<if _args[0] isnot undefined>>
-			<<set $_postStr to _args[0]>>
-			<<set $_postOpt to _args[1]>>
-		<</if>>
+		<<set _trResult to $_preword + " 손">>
 	<</if>>
     <<if $_postStr isnot undefined>>
         <<trPost 0 $_postStr $_postOpt>>

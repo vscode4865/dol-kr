@@ -82,3 +82,83 @@ const ErrorSystem = ((Scripting, Errors) => {
 		getTargetSource
 	});
 })(Scripting, Errors);
+
+var General = ((Macro, SexTypes) => {
+	/** 
+	 * Expand at a later date to include a differentiation between a random grouping, and the currently loaded NPC group.
+	 */
+	function getFluidsFromGroup(override) {
+		const sperm = either("정액", "씨물", "좆물");
+		const id = override || getSexesFromRandomGroup();
+		switch (id) {
+			case SexTypes.ALL_DICKGIRLS:
+				return `${sperm}과 모유`;
+			case SexTypes.ALL_MALES:
+			case SexTypes.ALL_DICKS:
+				return sperm;
+			case SexTypes.ALL_CUNTBOYS:
+			case SexTypes.ALL_VAGINAS:
+				return '애액';
+			case SexTypes.ALL_FEMALES:
+				return '애액과 모유';
+			default:
+				return `${sperm}, 애액과 모유`;
+		}
+	}
+
+	function getGooTypes(override) {
+		const id = override || getSexesFromRandomGroup();
+		switch (id) {
+			case SexTypes.ALL_MALES:
+			case SexTypes.ALL_DICKS:
+				return ['cum'];
+			case SexTypes.ALL_CUNTBOYS:
+			case SexTypes.ALL_VAGINAS:
+			case SexTypes.ALL_FEMALES:
+				return ['goo'];
+			default:
+				return ['both'];
+		}
+	}
+
+	Macro.add('getfluidsfromgroup', {
+		handler() {
+			this.output.append(getFluidsFromGroup(...this.args));
+		}
+	});
+
+	Macro.add('drenchfromgroup', {
+		handler() {
+			const type = getGooTypes(...this.args)[0];
+			new Wikifier(null, `<<drench ${type} 3 "outside">>`);
+		}
+	});
+
+	/* Unused for now. */
+	Macro.add('fertilisefromgroup', {
+		handler() {
+			const type = getGooTypes(...this.args)[0];
+			if (type === 'cum' || type === 'both') {
+				new Wikifier(null, '<<fertilise>>');
+			}
+		}
+	});
+
+	Macro.add('capitalise2', {
+		tags: null,
+		handler() {
+			if (this.payload[0]) {
+				const contents = this.payload[0].contents;
+				if (contents) {
+					const text = Wikifier.wikifyEval(contents).textContent;
+					this.output.append(text.toUpperFirst());
+				}
+			}
+		}
+	});
+
+	return Object.seal({
+		getFluidsFromGroup
+	});
+})(Macro, SexTypes);
+window.General = General;

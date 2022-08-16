@@ -80,21 +80,29 @@ function sexToysInventoryOnItemClick(index, category) {
 }
 window.sexToysInventoryOnItemClick = sexToysInventoryOnItemClick;
 
+/**
+ * Top button.
+ * @param {number} index Position in category.
+ * @param {string} category Type within sextoy inventory.
+ * @returns void
+ */
 function sexToysInventoryOnCarryClick(index, category) {
-	let shortcut_category = setup.sextoys[V.player.inventory.sextoys[category][index].index].category;
+	const toy = V.player.inventory.sextoys[category][index];
+	const setupToy = setup.sextoys[toy.index];
+	const setupCategory = setupToy.category;
 
-	if (V.player.inventory.sextoys[category][index].carried == false && countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
+	if (!toy.carried && countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
 		return;
-	V.player.inventory.sextoys[category][index].carried = !V.player.inventory.sextoys[category][index].carried;
-	if (V.player.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
-		V.worn[shortcut_category] = undefined;
-	if (V.player.inventory.sextoys[category][index].carried == false) // if player chose "Put back in the cupboard"
-		V.player.inventory.sextoys[category][index].worn = false; // also unwear the item
-	document.getElementById("stiWearButton").textContent = (V.player.inventory.sextoys[category][index].worn) ? "벗는다" : "착용한다"; // update button text value
-	document.getElementById("stiCarryButton").textContent = (V.player.inventory.sextoys[category][index].carried != true ? "가져간다" : "돌려놓는다"); // update button text value
+		toy.carried = !toy.carried;
+	if (toy.worn && setupCategory != "strap-on")
+		delete V.worn[setupCategory];
+	if (!toy.carried) // if player chose "Put back in the cupboard"
+		toy.worn = false; // also unwear the item
+	document.getElementById("stiWearButton").textContent = (toy.worn) ? "벗는다" : "착용한다"; // update button text value
+	document.getElementById("stiCarryButton").textContent = (toy.carried != true ? "가져간다" : "돌려놓는다"); // update button text value
 	// update worn/carried tag on cell
-	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.player.inventory.sextoys[category][index].worn == true ? "착용중" : V.player.inventory.sextoys[category][index].carried == true ? "소지중" : "");
-	if (shortcut_category == "strap-on" && V.player.inventory.sextoys[category][index].worn == false) { // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (toy.worn ? "착용중" : toy.carried ? "소지중" : "");
+	if (setupCategory == "strap-on" && !toy.worn) { // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
 		V.worn.under_lower = setup.clothes.under_lower[0];
 		Wikifier.wikifyEval(' <<updatesidebarimg>>');
 	}
@@ -103,22 +111,39 @@ function sexToysInventoryOnCarryClick(index, category) {
 }
 window.sexToysInventoryOnCarryClick = sexToysInventoryOnCarryClick;
 
+/**
+ * Mid button.
+ * @param {number} index Position
+ * @param {string} category Category within the inventory of sextoys.
+ * @returns void
+ */
 function sexToysInventoryOnWearClick(index, category) { // "Wear it" / "Take off"
-	let shortcut_category = setup.sextoys[V.player.inventory.sextoys[category][index].index].category;
+	const toy = V.player.inventory.sextoys[category][index];
+	const setupToy = setup.sextoys[toy.index];
+	const setupCategory = setupToy.category;
 
-	if (shortcut_category == "strap-on" && V.worn.under_lower.cursed == 1) { // if player tries to wear a strapon but that under_lower is cursed
+	if (setupCategory === "strap-on" && V.worn.under_lower.cursed === 1) { // if player tries to wear a strapon but that under_lower is cursed
 		Wikifier.wikifyEval('<<trClothes "under_lower" "'+V.worn.under_lower.name+'" "name" "을">>');document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">당신은 ` + T.trResult + ` 벗으려 하지만, 실패한다</div>`;
 		return;
 	}
-	if (shortcut_category == "butt_plug" && V.worn.genitals.cursed == 1 && V.worn.genitals.anal_shield == 1) { // if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
-		Wikifier.wikifyEval('<<trClothes "genitals" "'+V.worn.genitals.name+'" "name">>');document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">당신은 ` + T.trResult + `의 애널 보호대 안으로 ` + sextoyPost(V.player.inventory.sextoys[category][index].name, "name", "을") + ` 밀어넣을 수가 없다</div>`;
+
+	if (setupCategory === "butt_plug") {
+		if (V.worn.genitals.cursed === 1 && V.worn.genitals.anal_shield === 1) {
+			// if player tries to wear a butt plug but there is a cursed chastity belt fitted with an anal shield
+			Wikifier.wikifyEval('<<trClothes "genitals" "'+V.worn.genitals.name+'" "name">>');document.getElementById("stiCursedText").outerHTML = `<div id="stiCursedText" class="ssm_fade_in">당신은 ` + T.trResult + `의 애널 보호대 안으로 ` + sextoyPost(toy.name, "name", "을") + ` 밀어넣을 수가 없다</div>`;
+			return;
+		}
+	}
+
+	if (!toy.carried && countCarriedSextoys() >= max_carried) { 
+		// if player has reached maximum item carried, stop the function
 		return;
 	}
-	if (V.player.inventory.sextoys[category][index].carried == false && countCarriedSextoys() >= max_carried) // if player has reached maximum item carried, stop the function
-		return;
-	if (V.player.inventory.sextoys[category][index].worn == true && shortcut_category != "strap-on")
-		V.worn[shortcut_category] = undefined;
-	if (V.player.inventory.sextoys[category][index].worn == false) { // If player chose "Wear it"
+
+	if (setupCategory != "strap-on" && toy.worn) {
+		delete V.worn[setupCategory];
+	}
+	if (!toy.worn) { // If player chose "Wear it"
 		for (let s_item of setup.sextoys) { // retrieve main category of our item in setup.sextoys
 			if (s_item.name == category)
 				var cat = s_item.category;
@@ -130,26 +155,26 @@ function sexToysInventoryOnWearClick(index, category) { // "Wear it" / "Take off
 			}
 		}
 	}
-	V.player.inventory.sextoys[category][index].worn = !V.player.inventory.sextoys[category][index].worn; // then wear chose item.
-	if (shortcut_category != "strap-on") {
-		V.worn[shortcut_category] = V.player.inventory.sextoys[category][index];
-		V.worn[shortcut_category].state = "worn";
+	toy.worn = !toy.worn; // then wear chose item.
+	if (setupCategory != "strap-on") {
+		V.worn[setupCategory] = toy;
+		V.worn[setupCategory].state = "worn";
 	}
-	V.player.inventory.sextoys[category][index].carried = true; // also carry the item if not done alreadys
-	document.getElementById("stiWearButton").textContent = (V.player.inventory.sextoys[category][index].worn) ? "벗는다" : "착용한다"; // update button text value
-	document.getElementById("stiCarryButton").textContent = (V.player.inventory.sextoys[category][index].carried != true ? "가져간다" : "돌려놓는다"); // update button text value
-	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (V.player.inventory.sextoys[category][index].worn ? "착용중" : V.player.inventory.sextoys[category][index].carried ? "소지중" : "");
+	toy.carried = true; // also carry the item if not done alreadys
+	document.getElementById("stiWearButton").textContent = (toy.worn) ? "벗는다" : "착용한다"; // update button text value
+	document.getElementById("stiCarryButton").textContent = (!toy.carried ? "가져간다" : "돌려놓는다"); // update button text value
+	document.getElementById("sti_already_owned_" + category.replace(/\s/g, '_') + "_" + index).textContent = (toy.worn ? "착용중" : toy.carried ? "소지중" : "");
 	$("[id*='sti_already_owned_']").each(function (i, element) {
 		let c = element.getAttribute("data-category");
 		let ind = element.getAttribute("data-index");
 		element.textContent = (V.player.inventory.sextoys[c][ind].worn ? "착용중" : V.player.inventory.sextoys[c][ind].carried ? "소지중" : "");
 	});
-	if (shortcut_category == "strap-on") { // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
-		if (V.player.inventory.sextoys[category][index].worn == true) {
+	if (setupCategory == "strap-on") { // this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+		if (toy.worn) {
 			Wikifier.wikifyEval(' <<underlowerundress "wardrobe">>');
 			V.worn.under_lower = {
-				...setup.clothes.under_lower[V.player.inventory.sextoys[category][index].clothes_index],
-				...{ colour: V.player.inventory.sextoys[category][index].colour }
+				...setup.clothes.under_lower[toy.clothes_index],
+				...{ colour: toy.colour }
 			};
 		}
 		else
