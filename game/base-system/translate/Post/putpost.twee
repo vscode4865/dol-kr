@@ -70,11 +70,16 @@
 
 
 <<widget "putpost">><<silently>>
+<<if def _args[0]>>
 	<<if _putpostList is undefined>>
 		<<trinit_putpostList>>
 	<</if>>
     
-    <<set $_key to _args[0].toLowerCase()>>
+	<<if typeof(_args[0]) isnot "string">>
+		<<set $_key to _args[0].toString()>>
+	<<else>>
+		<<set $_key to _args[0].toLowerCase()>>
+	<</if>>
 	
 	<<if _putpostList.hasOwnProperty($_key)>>
 		<<set _trResult to _putpostList[$_key].koname>>
@@ -82,10 +87,11 @@
 			<<trPost _putpostList[$_key].post _args[1] _args[2]>>
 		<</if>>
 	<<else>>
-		<<set _trResult to _args[0]>>
+		<<set _trResult to $_key>>
 		<<if _args[1] isnot undefined>>
-			<<getPostNum _args[0]>>
+			<<getPostNum $_key>>
 			<<trPost _postNum _args[1] _args[2]>>
 		<</if>>
 	<</if>>
+<</if>>
 <</silently>><<print _trResult>><</widget>>
