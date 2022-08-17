@@ -64,7 +64,7 @@ DefineMacro("trPost", trPost);
 function getPostNum(txt)
 {
 	State.temporary.postNum = 1;	// default: 종성 없음
-	if (!txt || txt.length == 0) return '';
+	if (!txt || txt.length == 0) return State.temporary.postNum;
 
 	var code = txt.charCodeAt(txt.length-1);	// 마지막 글자
 	var jong;
