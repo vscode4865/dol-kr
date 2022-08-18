@@ -2323,7 +2323,7 @@
 * 규칙
 	이전 형식: <<(영문의 위젯명)(언더바)(조사|어미) [옵션]>>
 	새로운 형식: <<(영문의 위젯명)(언더바)(빈칸)(조사|어미) [옵션]>>	// 조사/어미 사이에 한 칸을 띄우시면 됩니다. 나머지는 동일
-
+		이전 형식과 다르게 한글로 쓰셔도 됩니다. <<he_ nun>>, <<he_ un>>, <<he_ "는">>, <<he_ "은">>, <<he_ 는>>, <<he_ 은>> 은 전부 똑같이 취급됩니다.
     ```
 	- <<(명사 | 대명사)_ (조사 | 어미) [옵션]>>
 		예: <<He_ nun>> - 그는, <<weather_ ga "rain">> - 비가
@@ -2388,7 +2388,7 @@
 	- clothesPost 계열
 		```
 		<<undertop_ (조사)>>, <<groin_ (조사)>>, <<crotch_ (조사)>>, <<undies_ (조사)>>, <<bottoms_ (조사)>>, <<underbottoms_ (조사)>>, <<top_ (조사)>>, 
-		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>>, 
+		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>> (문장 끝에 <<nudityPostend>>를 반드시 넣을것), 
 		<<allTops_ (조사)>>, <<allBottoms_ (조사)>>, <<allTopsUnderwear_ (조사)>>, <<allBottomsUnderwear_ (조사)>>, 
 		```
 	- HePost 계열
@@ -2411,7 +2411,7 @@
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
-		<<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>
+		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>
 		<<someones_ (조사)>>,  <<their_ (조사)>>
 		```
 	- personPost 계열
