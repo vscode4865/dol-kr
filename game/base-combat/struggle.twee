@@ -138,7 +138,6 @@
 	<<struggle_actions>>
 <</widget>>
 
-
 <<widget "struggle_state">>
 	<<for $_part range ["mouth", "vagina", "penis", "anus", "chest"]>>
 		<<if $struggle[$_part].creature>>
@@ -368,7 +367,7 @@
 	<<if _lurker_net_possible is true>>
 		<<set _leftaction["채집망을 던진다"] to "capture">>
 	<</if>>
-
+	<<set _leftaction["방어한다"] to "guard">>
 	<<leftclothesnew>>
 
 	<<if $combatControls isnot "radio">>
@@ -518,7 +517,7 @@
 	<<if _lurker_net_possible is true>>
 		<<set _rightaction["채집망을 던진다"] to "capture">>
 	<</if>>
-
+	<<set _rightaction["방어한다"] to "guard">>
 	<<rightclothesnew>>
 
 	<<if $combatControls isnot "radio">>
@@ -807,7 +806,6 @@
 <<combatstate>>
 <<carryblock>>
 
-
 <<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0 and $combatControls isnot "radio_old">>
 	<<struggle_difficulty_set>>
 	<<if $combatControls is "radio">>
@@ -1027,7 +1025,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		<</if>>
 	<<elseif $mouthaction is "suck" and $mouthstate is "struggle_pen">>
 		당신은 <<struggle_name mouth "의">> <<struggle_appendage_ rul mouth>> 빨아서<<if $struggle.mouth.progress gte 8>>, 그것이 달콤한 액체를 당신의 목구멍 안으로 더 많이 흘려넣도록 강요한다<</if>>.
-		<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>><<submission 2>>
+		<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<bodyliquid "mouth" "goo">><<submission 2>>
 		<<if $struggle.mouth.progress gt 7 and $struggle.mouth.progress lt 13>>
 			<<set $struggle.mouth.progress += 1>>
 		<</if>>
@@ -1122,7 +1120,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 					그것을 흥분시키기를 바라며, 당신은 <<struggle_name _actionpart "의">> <<struggle_appendage_ rul _actionpart>> 쓰다듬는다.
 					<<if $struggle[_actionpart].progress gt 7 and $struggle[_actionpart].progress lt (_actionpart is "chest" ? 12 : 13)>>
 						<<set $struggle[_actionpart].progress++>>
-						<<set $player.bodyliquid[_actionpart].goo++>>
+						<<bodyliquid _actionpart "goo">>
 						<<if ["vagina", "anus"].includes(_actionpart)>>
 							<<struggle_fluid _actionpart>>
 							<<purity -1>>
@@ -1296,6 +1294,19 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<span class="red">그 녀석은 옆으로 꿈틀대며 피한다.</span><<gnet>><<prof net 1>>
 		<</if>>
 	<</if>>
+
+	<<if $leftaction is "guard" and $rightaction is "guard">>
+		당신은 양손을 올려, 어떤 공격도 쳐 내기 위해 준비한다.
+		<<set $left_guard to 1>>
+		<<set $right_guard to 1>>
+	<<elseif $leftaction is "guard">>
+		당신은 왼손을 올려, 어떤 공격도 쳐 내기 위해 준비한다.
+		<<set $left_guard to 1>>
+	<<elseif $rightaction is "guard">>
+		당신은 오른손을 올려, 어떤 공격도 쳐 내기 위해 준비한다.
+		<<set $right_guard to 1>>
+	<</if>>
+
 	<<if !$carryblock>>
 		<<set $leftactiondefault to ($leftaction ? $leftaction : "rest"); $leftaction to 0>>
 		<<set $rightactiondefault to ($rightaction ? $rightaction : "rest"); $rightaction to 0>>
@@ -1341,12 +1352,12 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<case 6>>
 				그 <<struggle_mouth_creature_ ga>> <<struggle_appendage_ rul mouth>> 당신의 목구멍 안으로 밀어넣는다. <<if $underwater isnot 1>><span class="purple">당신은 숨을 쉴 수가 없다!</span><</if>><<neutral 5>>
 			<<case 7>>
-				그 <<struggle_mouth_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>><<oralejacstat>><<ejacstat>>
+				그 <<struggle_mouth_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<bodyliquid "mouth" "goo">><<oralejacstat>><<ejacstat>>
 			<<case 13>>
 				<<if $struggle.creature is "lurker">>
 					<<impregnate "Lurker" 400>><<fertilise>>
 					<<if _impreg is true>>
-						그 <<struggle_mouth_creature_ yi>> <<struggle_appendage_ ga mouth>> <span class="red">다시 팽창하기 시작하지만</span>, 그 추가 압력은 빠르게 사라진다. 마치 그것이 무언가를 남겨둔 것 같은 느낌이 든다. <<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>>
+						그 <<struggle_mouth_creature_ yi>> <<struggle_appendage_ ga mouth>> <span class="red">다시 팽창하기 시작하지만</span>, 그 추가 압력은 빠르게 사라진다. 마치 그것이 무언가를 남겨둔 것 같은 느낌이 든다. <<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<bodyliquid "mouth" "goo">>
 					<<else>>
 						<<set _failedImpreg to true>>
 					<</if>>
@@ -1355,7 +1366,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 					<<set _failedImpreg to true>>
 				<</if>>
 				<<if _failedImpreg>>
-					그 <<struggle_mouth_creature_ nun>> 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>>
+					그 <<struggle_mouth_creature_ nun>> 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<bodyliquid "mouth" "goo">>
 				<</if>>
 			<<case 14>>
 				그 <<struggle_mouth_creature_ nun>> 경련하며, <span class="blue">그것의 <<struggle_appendage_ rul mouth>> 당신의 목구멍에서 빼낸다.</span> 그것은 당신의 얼굴에서 떨어진다.<<neutral 5>><<struggle_fluid mouth>>
@@ -1363,7 +1374,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set $mouthstate to 0>>
 				<<struggle_part_init "mouth" "cum">>
 			<<default>>
-				그 <<struggle_mouth_creature_ nun>> 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<set $player.bodyliquid.mouth.goo += 1>>
+				그 <<struggle_mouth_creature_ nun>> 달콤한 액체를 당신의 목구멍 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid mouth>><<purity -1>><<internalejac>><<bodyliquid "mouth" "goo">>
 		<</switch>>
 		<<if $struggle.mouth.progress gte 6 and $struggle.mouth.progress lte 14>>
 			<<if $underwater isnot 1>>
@@ -1420,14 +1431,14 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<case 6>>
 				그 <<struggle_vagina_creature_ yi>> <<struggle_appendage_ ga vagina>> 당신의 <<pussy_ rul>> 찔러대기 시작한다.<<neutral 5>>
 			<<case 7>>
-				그 <<struggle_vagina_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 <<pussyPost>> 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid vagina>><<purity -1>><<internalejac>><<set $player.bodyliquid.vagina.goo += 1>><<vaginalejacstat>><<ejacstat>>
+				그 <<struggle_vagina_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 <<pussyPost>> 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid vagina>><<purity -1>><<internalejac>><<bodyliquid "vagina" "goo">><<vaginalejacstat>><<ejacstat>>
 			<<case 14>>
 				그 <<struggle_vagina_creature_ nun>> 경련하며, <span class="blue">그것의 <<struggle_appendage_ rul vagina>> 당신의 <<pussyPost>>에서 빼낸다.</span> 그것은 당신의 골반에서 떨어진다.<<neutral 5>><<struggle_fluid vagina>>
 				<<set $vaginause to 0>>
 				<<set $vaginastate to 0>>
 				<<struggle_part_init "vagina" "cum">>
 			<<default>>
-				그 <<struggle_vagina_creature_ nun>> 달콤한 액체를 당신의 <<pussyPost>> 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid vagina>><<purity -1>><<internalejac>><<set $player.bodyliquid.vagina.goo += 1>>
+				그 <<struggle_vagina_creature_ nun>> 달콤한 액체를 당신의 <<pussyPost>> 안으로 쏟아내기 시작한다.<<neutral 5>><<struggle_fluid vagina>><<purity -1>><<internalejac>><<bodyliquid "vagina" "goo">>
 			<</switch>>
 		<<set $struggle.vagina.progress += 1>>
 		<br>
@@ -1466,14 +1477,14 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<case 6>>
 				그 <<struggle_penis_creature_ nun>> 당신의 <<penis_ rul>> 그것의 안으로 찔러대기 시작한다.<<neutral 5>>
 			<<case 7>>
-				그 <<struggle_penis_creature_ nun>> <span class="pink">경련하며 당신의 <<penis_ rul>> 그것의 중심부에 찔러댄다.</span><<neutral 5>><<set $player.bodyliquid.penis.goo += 1>>
+				그 <<struggle_penis_creature_ nun>> <span class="pink">경련하며 당신의 <<penis_ rul>> 그것의 중심부에 찔러댄다.</span><<neutral 5>><<bodyliquid "penis" "goo">>
 			<<case 14>>
 				그 <<struggle_penis_creature_ nun>> 경련하며, <span class="blue">당신의 <<penis_ rul>> 놓아준다.</span> 그것은 당신의 배에서 떨어진다.<<neutral 5>>
 				<<set $penisuse to 0>>
 				<<set $penisstate to 0>>
 				<<struggle_part_init "penis" "cum">>
 			<<default>>
-				그 <<struggle_penis_creature_ nun>> 당신의 <<penis_ rul>> 그것의 안으로 찔러댄다.<<neutral 5>><<set $player.bodyliquid.penis.goo += 1>>
+				그 <<struggle_penis_creature_ nun>> 당신의 <<penis_ rul>> 그것의 안으로 찔러댄다.<<neutral 5>><<bodyliquid "penis" "goo">>
 		<</switch>>
 		<<set $struggle.penis.progress += 1>>
 		<br>
@@ -1511,14 +1522,14 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 		<<case 6>>
 			그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> 당신의 <<bottom_ ul>> 찔러대기 시작한다.<<neutral 5>>
 		<<case 7>>
-			그 <<struggle_anus_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 <<bottomPost>> 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid anus>><<purity -1>><<internalejac>><<set $player.bodyliquid.anus.goo += 1>><<analejacstat>><<ejacstat>>
+			그 <<struggle_anus_creature_ nun>> <span class="pink">경련하며 달콤한 액체를 당신의 <<bottomPost>> 안으로 쏟아내기 시작한다.</span><<neutral 5>><<struggle_fluid anus>><<purity -1>><<internalejac>><<bodyliquid "anus" "goo">><<analejacstat>><<ejacstat>>
 		<<case 13>>
 			<<impregnate $struggle.anus.creature 50>>
 			<<if _impreg is true>>
-				그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> <span class="red">다시 팽창하기 시작하지만</span>, 그 추가 압력은 빠르게 사라진다. 마치 그것이 무언가를 남겨둔 것 같은 느낌이 든다.<<neutral 5>><<set $player.bodyliquid.anus.goo += 1>><<struggle_fluid anus>><<purity -1>><<internalejac>><<set $player.bodyliquid.anus.goo += 1>>
+				그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> <span class="red">다시 팽창하기 시작하지만</span>, 그 추가 압력은 빠르게 사라진다. 마치 그것이 무언가를 남겨둔 것 같은 느낌이 든다.<<neutral 5>><<bodyliquid "anus" "goo">><<struggle_fluid anus>><<purity -1>><<internalejac>><<bodyliquid "anus" "goo">>
 				<<set _impreg to false>>
 			<<else>>
-				그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> 당신의 <<bottomPost>> 안에 찔러댄다.<<neutral 5>><<set $player.bodyliquid.anus.goo += 1>><<struggle_fluid anus>><<purity -1>><<internalejac>><<set $player.bodyliquid.anus.goo += 1>>
+				그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> 당신의 <<bottomPost>> 안에 찔러댄다.<<neutral 5>><<bodyliquid "anus" "goo">><<struggle_fluid anus>><<purity -1>><<internalejac>><<bodyliquid "anus" "goo">>
 			<</if>>
 		<<case 14>>
 			그 <<struggle_anus_creature_ nun>> 경련하며, <span class="blue">그것의 <<struggle_appendage_ rul anus>> 빼내어,</span> 당신의 <<bottomPost>>에서 떨어진다.<<neutral 5>><<struggle_fluid anus>>
@@ -1526,7 +1537,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<<set $anusstate to 0>>
 			<<struggle_part_init "anus" "cum">>
 		<<default>>
-			그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> 당신의 <<bottomPost>> 안에 찔러댄다.<<neutral 5>><<set $player.bodyliquid.anus.goo += 1>><<struggle_fluid anus>><<purity -1>><<internalejac>><<set $player.bodyliquid.anus.goo += 1>>
+			그 <<struggle_anus_creature_ yi>> <<struggle_appendage_ ga anus>> 당신의 <<bottomPost>> 안에 찔러댄다.<<neutral 5>><<bodyliquid "anus" "goo">><<struggle_fluid anus>><<purity -1>><<internalejac>><<bodyliquid "anus" "goo">>
 		<</switch>>
 		<<set $struggle.anus.progress += 1>>
 		<br>
@@ -1624,7 +1635,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breasts_ rul>> 범한다. 그 생물체는 경련하며 <span class="purple">따뜻한 액체를 그것의 <<struggle_appendagePost chest>>에서 분출시킨다.</span>
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<</if>>
 				<<else>>
 					<<struggle_flat_chest>>
@@ -1648,7 +1659,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breasts_ rul>> 범하며, 따뜻한 액체를 쏟아댄다.
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<</if>>
 				<<else>>
 					<<struggle_flat_chest>>
@@ -1663,7 +1674,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breasts_ rul>> 범하며 <span class="pink">촉수가 계속 쥐어짠다.</span> 그 생물체는 경련하며 따뜻한 액체를 그것의 <<struggle_appendagePost chest>>에서 분출시킨다.
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<<else>>
 						<<if $lactating is 1 and $breastfeedingdisable is "f" and $milk_amount gte 1>>
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breasts_ rul>> 범하며, 찔러댈 때마다 따뜻한 액체를 쏟아대자 <span class="pink">모유가 당신의 유두에서 흘러나온다.</span>
@@ -1672,14 +1683,14 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 계속 당신의 <<breastsPost>> 사이로 찔러대며, 따뜻한 액체를 쏟아댄다.
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<</if>>
 				<<else>>
 					<<struggle_flat_chest>>
 				<</if>>
 			<<case 12>>
 				<<if $player.breastsize gte 3>>
-					그 <<struggle_chest_creature_ nun>> 경련하며 <span class="blue">그것의 <<struggle_appendage_ rul chest>> 빼내어,</span> 당신의 <<breastsPost>>에서 떨어진다.<<set $player.bodyliquid.chest.goo += 1>>
+					그 <<struggle_chest_creature_ nun>> 경련하며 <span class="blue">그것의 <<struggle_appendage_ rul chest>> 빼내어,</span> 당신의 <<breastsPost>>에서 떨어진다.</span> leaping from your <<breasts>><<bodyliquid "chest" "goo">>
 				<<else>>
 					그 <<struggle_chest_creature_ nun>> <span class="blue">당신의 <<breastsPost>>에서 떨어진다.</span>
 				<</if>>
@@ -1696,7 +1707,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breastsPost>> 사이로 계속 찔러대며, 따뜻한 액체를 쏟아낸다.
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<<else>>
 						<<if $lactating is 1 and $breastfeedingdisable is "f" and $milk_amount gte 1>>
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 당신의 <<breasts_ rul>> 범하며, 찔러댈 때마다 따뜻한 액체를 쏟아대자 <span class="pink">모유가 당신의 유두에서 흘러나온다.</span>
@@ -1705,7 +1716,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 							그 <<struggle_chest_creature_ yi>> <<struggle_appendage_ ga chest>> 계속 당신의 <<breastsPost>> 사이로 찔러대며, 따뜻한 액체를 쏟아댄다.
 							<<milkvolume 1>>
 						<</if>>
-						<<sex 5>><<set $player.bodyliquid.chest.goo += 1>>
+						<<sex 5>><<bodyliquid "chest" "goo">>
 					<</if>>
 				<<else>>
 					<<struggle_flat_chest>>
@@ -1756,6 +1767,14 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set _doge_chance to (($feetskill / 3) + (currentSkillValue('danceskill') / 3) - $drunk - (!!$worn.feet.type.includes("heels") * 200))>>
 				<<feetskilluse>>
 			<</if>>
+			<<if $left_guard is 1>>
+				<<set _left_guard_chance to ($handskill / 3)>>
+				<<handskilluse>>
+			<</if>>
+			<<if $right_guard is 1>>
+				<<set _right_guard_chance to ($handskill / 3)>>
+				<<handskilluse>>
+			<</if>>
 			<<set _hit_chance to random(1, 1000)>>
 			<<if _doge_chance gte _hit_chance>>
 				<<struggle_bide_the>> <<print $struggle.enemy[_i].description>> <<struggle_creature_ ga $struggle.enemy[_i].name>>
@@ -1793,6 +1812,45 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 					<</if>>
 					<<neutral 2>>
 				<</if>>
+			<<elseif _left_guard_chance gte _hit_chance or _right_guard_chance gte _hit_chance>>
+				<<struggle_bide_the>> <<print $struggle.enemy[_i].description>> <<struggle_creature_ ga $struggle.enemy[_i].name>>
+				<<if $underwater is 1 or $struggle.enemy[_i].motion is "swimming">>
+					당신에게로 수영해 오지만,
+				<<elseif $struggle.enemy[_i].motion is "flying">>
+					당신에게로 날아오지만,
+				<<else>>
+					당신에게로 펄쩍 뛰어오지만,
+				<</if>>
+				<<if $handskill gte 800>>
+					당신은 그 움직임을 적절하게 쳐내 방향을 바꿔,
+				<<elseif $handskill gte 200>>
+					당신은 그것을 옆으로 쳐내,
+				<<else>>
+					당신은 팔을 휘둘러 그것을 옆으로 쳐내,
+				<</if>>
+				<<if _left_guard_chance - _hit_chance gte 200 or _right_guard_chance - _hit_chance gte 200>>
+					<span class="green">그것을 바닥에 충돌시킨다.</span>
+					<<set $struggle.enemy[_i].health -= 1>>
+				<<else>>
+					<span class="teal">아슬아슬하게 그것을 피한다.</span>
+					<<for $_slot range ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower"]>>
+						<<if $worn[$_slot].name isnot "naked">>
+							<<set $worn[$_slot].integrity -= random(10, 15)>>
+							<<set _clothesdamaged to true>>
+							그것은 지나가며 당신의 <<trClothes $_slot $worn[$_slot].name "name" "을">>_trResult 찢는다.
+							<<break>>
+						<</if>>
+					<</for>>
+					<<if !_clothesdamaged>>
+						그것은 지나가며 당신을 찰싹 때린다. <<pain 2>>
+					<</if>>
+					<<neutral 2>>
+				<</if>>
+				<<if _left_guard_chance gte _hit_chance>>
+					<<unset $left_guard>>
+				<<elseif _right_guard_chance gte _hit_chance>>
+					<<unset $right_guard>>
+				<</if>>
 			<<elseif $rng lte 66 and _targets.length gt 0>>
 				<<set _target to _targets.pluck()>>
 				<<struggle_bide_the>> <<print $struggle.enemy[_i].description>> <<struggle_creature_ ga $struggle.enemy[_i].name>>
@@ -1808,6 +1866,9 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 				<<set V[_target + 'use'] to "struggle">>
 				<<set V[_target + 'state'] to "struggle">>
 				<<set V[_target + 'target'] to "struggle">>
+			<<elseif random(1, 2) is 2>>
+				<<print $struggle.enemy[_i].description>> <<struggle_creature_ $struggle.enemy[_i].name>>에게서 부속 기관이 튀어나와, <span class="blue">끈적끈적한 액체를 당신에게 쏜다.</span>
+				<<randomgoo>>
 			<<else>>
 				<<print $struggle.enemy[_i].description>> <<struggle_creature_ nun $struggle.enemy[_i].name>> 빈틈이 나기를 기다리고 있다.
 				<<set $struggle.enemy[_i].bide to true>>
@@ -1815,7 +1876,8 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 			<br>
 		<</if>>
 	<</for>>
-
+	<<unset $left_guard>>
+	<<unset $right_guard>>
 	<<if $oxygen lt $oxygenmax and $underwater isnot 1 and _strangle is 1>>
 		<<unset _strangle>>
 		<br>공기: <<oxygencaption>>

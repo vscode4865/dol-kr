@@ -157,7 +157,7 @@
 		<br>
 	<</if>>
 	<<if $money gte 700>>
-		<<if $images is 1>><img id="icon" src="img/misc/icon/beer_bottle.png"><</if>>
+		<<icon "beer_bottle.png">>
 		<<if $season is "winter">>
 			<<link [[윈터 에일을 주문한다 (0:10 £7)|Cafe Winter Ale]]>><<set $cafeeaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 100>><<pass 10>><</link>><<lstress>><<galcohol>>
 			<br>
@@ -180,17 +180,17 @@
 		<</if>>
 	<</if>>
 	<<if $money gte 500>>
-		<<if $images is 1>><img id="icon" src="img/misc/icon/food_fruitsalad.png"><</if>>
+		<<icon "food_fruitsalad.png">>
 		<<link [[과일 샐러드를 주문한다 (0:20 £5)|Cafe Fruit Salad]]>><<set $cafeeaten to 1>><<set $money -= 500>><<stress -6>><<pass 20>><</link>><<lstress>>
 		<br>
 	<</if>>
 	<<if $money gte 1000>>
-		<<if $images is 1>><img id="icon" src="img/misc/icon/food_pancakes.png"><</if>>
+		<<icon "food_pancakes.png">>
 		<<link [[팬케이크를 주문한다 (0:20 £10)|Cafe Pancakes]]>><<set $cafeeaten to 1>><<set $money -= 1000>><<tiredness -6>><<pass 20>><</link>><<ltiredness>>
 		<br>
 	<</if>>
 	<<if $money gte 5000>>
-		<<if $images is 1>><img id="icon" src="img/misc/icon/food_creambun.png"><</if>>
+		<<icon "food_creambun.png">>
 		<<link [[딜럭스 크림 빵을 주문한다 (0:20 £50)|Cafe Cream Bun]]>><<set $cafeeaten to 1>><<transform cat 1>><<set $money -= 5000>><<pass 20>><<stress -18>><</link>><<llstress>>
 		<br>
 	<</if>>
@@ -778,7 +778,6 @@
 	<<consensual>>
 	<<set $consensual to 1>>
 	<<neutral 1>>
-
 	<<maninit>>
 	<<set $enemytrust += 40>>
 	<<set $tipmod to 2>><<tipset "serving">>
@@ -786,20 +785,19 @@
 	<<pass 5>>
 	당신은 아무도 보지 않을 때 몰라 빠져나와, 약속대로 쓰레기통 옆에서 기다리고 있던 <<hePost "에게">>로 간다. <<HePost "은">> 조금도 망설이지 않고 다가온다.
 	<<promiscuity2>>
-	<br><br>
 <</if>>
 
 <<effects>>
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyarousal lte $enemyarousalmax and $enemyhealth gt 0 and $alarm lte 0 and $finish is 0>>
-	<span id="next"><<link [[다음|Ocean Breeze Whore]]>><</link>></span><<nexttext>>
-<<else>>
+<<if _combatend>>
 	<span id="next"><<link [[다음|Ocean Breeze Whore Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음|Ocean Breeze Whore]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Ocean Breeze Whore Refuse
@@ -1036,14 +1034,13 @@
 	<<neutral 1>>
 	<<molested>>
 	<<beastCombatInit>>
-
 	<<enable_rescue>>
 
 <</if>>
 
 <<effects>>
 <<effectsman>>
-<br>
+<<alarmstate>>
 <<beast $enemyno>>
 <br><br>
 
@@ -1051,11 +1048,7 @@
 <br><br>
 <<actionsman>>
 
-<<if $alarm is 1 and $rescue is 1>>
-	<span id="next"><<link [[다음|Ocean Breeze Dog Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[다음|Ocean Breeze Dog Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
+<<if _combatend>>
 	<span id="next"><<link [[다음|Ocean Breeze Dog Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Ocean Breeze Dog Rape]]>><</link>></span><<nexttext>>
@@ -1096,7 +1089,6 @@
 <<if $phase is 0>>
 	당신은 그 자리에서 빙그르르 돌며, 치마를 더더욱 들춰 올려 바람이 가라앉기 전에 모두가 그 밑을 더 잘 볼 수 있게 한다.
 	<<exhibitionism1>>
-	<br><br>
 
 	<<set $tipmod to 0.2>><<tipset "serving">>
 
@@ -1108,7 +1100,6 @@
 	<br><br>
 <<else>>
 	당신은 <<genitalsPost "을">> 가리기 위해 치마 앞쪽을 누르나, 그러기 위해 몸을 앞으로 숙이며 당황한 척을 하면서 맨엉덩이를 내민다. <<exhibitionism3>>
-	<br><br>
 
 	<<set $tipmod to 0.2>><<tipset "serving">>
 
@@ -1459,7 +1450,7 @@
 			<<set _photos_taken to 0>>
 			<<if $cameras_raised gte 1>>
 				<!-- Necessary as attempting to clear the first NPC if it did not exist would cause issues with $eventslot. -->
-				<<if $eventslot isnot undefined and $eventslot.includes(0)>>
+				<<if EventSystem.IsSlotTaken(0)>>
 					<<clearsinglenpc 0>>
 				<</if>>
 				<span class="pink">
@@ -1482,7 +1473,7 @@
 			<</if>>
 
 			<<if $cameras_raised gte 2>>
-				<<if $eventslot isnot undefined and $eventslot.includes(1)>>
+				<<if EventSystem.IsSlotTaken(1)>>
 					<<clearsinglenpc 1>>
 				<</if>>
 				<span class="pink">
@@ -1505,7 +1496,7 @@
 			<</if>>
 
 			<<if $cameras_raised gte 3>>
-				<<if $eventslot isnot undefined and $eventslot.includes(2)>>
+				<<if EventSystem.IsSlotTaken(2)>>
 					<<clearsinglenpc 2>>
 				<</if>>
 				<span class="pink">
