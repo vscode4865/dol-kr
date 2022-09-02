@@ -13,17 +13,25 @@
 <</if>>
 <<if $hour is 6>>
 
-	마감 시간이다. 경비원들이 모두를 밖으로 내보낸다. <<if $exposed gte 1>>누군가가 수건을 건네준다.<<towelup>><</if>>
-	<br><br>
-
-	<<if $brothel_rivalry isnot undefined and $brothel_rivalry_timer lte 0>>
-		<<link [[떠난다|Strip Club Goon]]>><</link>>
+	마감 시간이다. 경비원들이 모두를 밖으로 내보낸다.
+	<<if ($stripclubdancingintro is 1 or $stripclubbartendingintro is 1) and $exposed gte 1>>
+		당신은 분장실로 안내된다.
+		<br><br>
+		
+		<<link [[분장실|Strip Club Dressing Room]]>><</link>>
 		<br>
 	<<else>>
-		<<link [[떠난다|Connudatus Street]]>><</link>>
-		<br>
-	<</if>>
+		<<if $exposed gte 1>>One hands you some towels.<<towelup>><</if>>
+		<br><br>
 
+		<<if $brothel_rivalry isnot undefined and $brothel_rivalry_timer lte 0>>
+			<<link [[떠난다|Strip Club Goon]]>><</link>>
+			<br>
+		<<else>>
+			<<link [[떠난다|Connudatus Street]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
 <<elseif $daystate isnot "night" and $daystate isnot "dusk">>
 	당신은 텅 빈 클럽에 혼자 있다.
 	<br><br>
@@ -139,8 +147,18 @@
 <<mirroricon>><<link [[거울|Strip Club Mirror]]>><</link>>
 <br><br>
 
-<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><</link>>
-<br>
+<<if $hour is 6>>
+	<<if $exposed gte 1>>
+		<span class="blue">경비원들은 당신이 옷을 입지 않으면 내보내 주지 않을 것이다.</span>
+		<br>
+	<<else>>
+		<<link [[떠난다|Connudatus Street]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<link [[클럽으로 돌아간다 (0:01)|Strip Club]]>><<pass 1>><</link>>
+	<br>
+<</if>>
 
 :: Strip Club Mirror
 <<effects>>
@@ -724,7 +742,6 @@
 	<<if $phase is 0>>
 		당신은 카운터에 누워 아랫입술을 깨물면서, 가해자의 눈을 바라본다. 당신이 바라던 효과가 있었다. <<He_ nun>> 데릴을 내버려 두고 당신의 위로 덮친다. 둘은 카운터에서 굴러 떨어진다.
 		<<promiscuity3>>
-		<br><br>
 		<<set $enemyarousal += 200>>
 	<<else>>
 		당신은 잔을 들어 가해자의 머리 위로 내리친다. 잔이 산산조각나며 <<him_ ul>> 데릴에게서 떼어놓긴 했지만, 그 대신 <<he_ nun>> 이제 당신을 돌아본다. 분노하며, <<he_ nun>> 카운터를 넘어 당신을 바닥에 쓰러뜨린다.
@@ -965,22 +982,19 @@
 	<<consensual>>
 	<<set $consensual to 1>>
 	<<neutral 1>>
-
 	<<maninit>>
 	<<set $enemytrust += 100>><<enable_rescue>>
 <</if>>
+
 <<effects>>
-<<effectsman>><<man>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
-<<if $finish is 1>>
-	<span id="next"><<link [[다음|Strip Club Exposed Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[다음|Strip Club Exposed Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[다음|Strip Club Exposed Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $rescue is 1 and $alarm is 1>>
+
+<<if _combatend>>
 	<span id="next"><<link [[다음|Strip Club Exposed Sex Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Strip Club Exposed Sex]]>><</link>></span><<nexttext>>
@@ -1162,8 +1176,6 @@
 	<<skulduggeryuse>>
 
 	<<link [[다음|Connudatus Street]]>><<set $eventskip to 1>><<endevent>><</link>>
-	<br>
-
 <<else>>
 
 	<<He_ ga>> 히죽 웃는다. <span class="red">당신은  <<he_ ga>> 그것을 믿는다고 생각되지 않는다.</span>
@@ -1174,6 +1186,4 @@
 	<<skulduggeryuse>>
 
 	<<link [[다음|Connudatus Street]]>><<set $eventskip to 1>><<endevent>><</link>>
-	<br>
-
 <</if>>

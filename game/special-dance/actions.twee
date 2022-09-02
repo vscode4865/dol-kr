@@ -4,31 +4,37 @@
 	<<exposure>>
 	<<if $danceevent is 0>>
 		<<if $exposed gte 2 and $exhibitionism lte 74 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel")>>
+			<!--
+				No dancing if:
+				Under 75 exhib, fully exposed, not forced, (not at brothel or not corrupt dance)
+			-->
 		<<elseif $exposed gte 1 and $exhibitionism lte 34 and $forceddance isnot 1 and ($corruptionDancing is undefined or $dancelocation isnot "brothel") and !$worn.under_lower.type.includes("dance")>>
+			<!--
+				No dancing if:
+				Under 35 exhib, half exposed, not forced,
+				not wearing dance clothes, (not at brothel or not corrupt Dancing)
+			-->
 		<<else>>
+			<!-- Generate "dance near" boxes -->
 			<<if $audience gte 1>>
-				<<if $dance_place is undefined>>
-					<label><<person1>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 1 checked>></label> | 
-				<<else>>
-					<label><<person1>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 1 autocheck>></label> | 
-				<</if>>
+				<<for $_audienceMemberIndex to 0; $_audienceMemberIndex lt $enemyno; $_audienceMemberIndex++>> <!-- For each audience member 1-6 -->
+					<<personselect $_audienceMemberIndex>>
+					<div class="dance_box"><label>
+						<<if $NPCList[$_audienceMemberIndex].masturbating gte 1>>
+							<<person_ un>> 자위하고 있다.
+							<<dance_npc_masturbation_chance $_audienceMemberIndex>>
+						<<else>>
+							<<person_ un>> 구경하고 있다.
+						<</if>>
+						<<capture $_audienceMemberIndex>>
+							| <<himPost>> 근처에서 춤춘다. <<radiobutton "$dance_place" $_audienceMemberIndex autocheck>>
+						<</capture>>
+					</label></div>
+					<br>
+				<</for>>
+				<br>
 			<</if>>
-			<<if $audience gte 2>>
-				<label><<person2>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 2 autocheck>></label> | 
-			<</if>>
-			<<if $audience gte 3>>
-				<label><<person3>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 3 autocheck>></label> | 
-			<</if>>
-			<<if $audience gte 4>>
-				<label><<person4>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 4 autocheck>></label> | 
-			<</if>>
-			<<if $audience gte 5>>
-				<label><<person5>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 5 autocheck>></label> | 
-			<</if>>
-			<<if $audience gte 6>>
-				<label><<person6>><<personPost>> 근처에서 춤춘다 <<radiobutton "$dance_place" 6 autocheck>></label> | 
-			<</if>>
-			<br><br>
+			<!-- Generate general dance actions -->
 			<<if $danceactiondefault is "cool">>
 				<label>멋진 춤 (0:01) <<radiobutton "$danceaction" "cool" checked>></label> |
 			<<elseif $danceactiondefault is 0>>
@@ -57,14 +63,15 @@
 				<</if>>
 				<br>
 			<</if>>
-			<<goooutsidecount>>
-			<<if $cat gte 6 and ($goooutsidecount + $semenoutsidecount) gte 1 and $leftarm isnot "bound" and $rightarm isnot "bound">>
+			<<goocount>>
+			<<if $cat gte 6 and $liquidoutsidecount gte 1 and $leftarm isnot "bound" and $rightarm isnot "bound">>
 				<<if $danceactiondefault is "groom">>
 					<label><span class="sub">그루밍</span> (0:01) <span class="blue">고양이</span> <<radiobutton "$danceaction" "groom" checked>></label> |
 				<<else>>
 					<label><span class="sub">그루밍</span> (0:01) <span class="blue">고양이</span> <<radiobutton "$danceaction" "groom">></label> |
 				<</if>>
 			<</if>>
+			<!-- Generate stripping dance actions -->
 			<<dancestripactions>>
 			<br><br>
 			<<link [[계속|$passage]]>><</link>>
@@ -187,22 +194,13 @@
 		<</if>>
 		<<rng>>
 		<<if ($allure / 100 + currentSkillValue('danceskill') / 20 + $audienceexcitement / 5 + $audiencearousal / 5 + _heelBonus) gte $rng>>
-			<<set $audience += 1>>
-			<<if $audience is 1>>
-				<<generatel>><<person1>><<personPost "이">> 당신을 보기 시작했다.
-			<<elseif $audience is 2>>
-				<<generatel>><<person2>><<personPost "이">> 당신을 보기 시작했다.
-			<<elseif $audience is 3>>
-				<<generatel>><<person3>><<personPost "이">> 당신을 보기 시작했다.
-			<<elseif $audience is 4>>
-				<<generatel>><<person4>><<personPost "이">> 당신을 보기 시작했다.
-			<<elseif $audience is 5>>
-				<<generatel>><<person5>><<personPost "이">> 당신을 보기 시작했다.
-			<<elseif $audience is 6>>
-				<<generatel>><<person6>><<personPost "이">> 당신을 보기 시작했다.
+			<<if $audience gte 0 and $audience lte 5>>
+				<<generatel>><<personselect $audience>>
+				<<personPost "이">> 당신을 보기 시작한다.
 			<<else>>
 				다른 사람이 청중에 합류한다.
 			<</if>>
+			<<set $audience += 1>>
 			<<person_dance>>
 		<</if>>
 		<<if $audience is 0>>
@@ -239,6 +237,7 @@
 			많은 인원의 사람들이 당신을 지켜보고 있다. 뒤쪽에 있는 사람들은 좋은 시야를 얻기 위해 고군분투하고 있다.
 		<</if>>
 		<<dancespeech>>
+		<<dance_npc_masturbation>>
 		<<person_dance>>
 		<br><br>
 		<<if $audience gte 1>>
@@ -274,10 +273,23 @@
 			<<else>>
 				<span class="red">욕망으로 가득 차있다.</span>
 			<</if>>
+			<<if $dance_stage_cum gte 10>>
+				무대의 <span class="red">어떤 곳에도</span> 정액이 묻지 않은 곳이 없다.
+			<<elseif $dance_stage_cum gte 8>>
+				무대는 정액으로 <span class="pink">흠뻑 젖어있다</span>.
+			<<elseif $dance_stage_cum gte 6>>
+				무대는 정액으로 <span class="purple">뒤덮여 있다</span>.
+			<<elseif $dance_stage_cum gte 4>>
+				무대는 정액으로 <span class="blue">젖어있다</span>.
+			<<elseif $dance_stage_cum gte 2>>
+				무대 위에는 <span class="lblue">커다란</span> 정액 웅덩이가 생겨있다.
+			<<elseif $dance_stage_cum gte 1>>
+				무대 위에는 <span class="teal">조그만</span> 정액 웅덩이가 생겨있다.
+			<</if>>
 			<<set $audiencemod to Math.clamp($audiencemod, 1, 10)>>
 			<br>
 			경외심: <<statbarinverted $audiencemod 10>>
-			
+
 			<<rng>>
 			<<if ($allure / 100 + currentSkillValue('danceskill') / 20 + $audienceexcitement / 5 + $audiencearousal / 5) gte $rng + 50>>
 				<<rng 10>>
@@ -313,6 +325,18 @@
 			<<rng>><<rngWraith 2 "night">>
 			<<if $wraith and ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
 				<<danceWraith>>
+				<<set $_blockDancingEvents to true>>
+			<<elseif currentSkillValue('danceskill') lt ( ($dance_stage_cum * 50) + random(1,250) )>>
+				<<if currentSkillValue('danceskill') gte ( ($dance_stage_cum * 40) + random(1,100) )>>
+					당신의 발이 정액으로 뒤덮인 무대 위에서 미끄러졌지만, <span class="green">당신은 중심을 되찾을 수 있었고,</span> 그 움직임을 춤 속에 포함시킨다.
+				<<else>>
+					당신의 발이 정액으로 뒤덮인 무대 위에서 미끄러졌고, <span class="red">당신은 <<bottom_ ul>> 바닥에 부딪힌다.</span>
+					<<dancefall>>
+					<<set $_blockDancingEvents to true>>
+				<</if>>
+			<</if>>
+			<<if $_blockDancingEvents>>
+				<!-- No other events can trigger -->
 			<<elseif $dancelocation is 0>>
 				<<if $audiencearousal gte 100>>
 					<<if $rng gte 91>>
@@ -511,6 +535,7 @@
 				<<elseif $audiencearousal gte 41>>
 					<<if $rng gte 91>>
 						<<dancestrip>>
+						<<dancestrip>>
 					<<elseif $rng gte 71>>
 						<<dancelight>>
 					<</if>>
@@ -593,6 +618,11 @@
 	청중들은 정욕에 사로잡혀 당신을 향해 몰려온다. 청중들의 눈은 원초적인 굶주림으로 가득 차 있다.
 <</widget>>
 
+<<widget "dancefall">>
+	<<set $danceevent to "rape">>
+	당신의 취약한 상태에 이끌려 흥분하여, 눈에는 원초적인 굶주림이 가득 찬 채로, 청중들이 당신을 향해 몰려온다.
+<</widget>>
+
 <<widget "dancemolest">>
 	<<set $danceevent to "molest">><<molested>>
 	<<personPost "이">> 손을 뻗어 당신의 허리를 잡는다!<<trauma 6>><<stress 6>>
@@ -650,7 +680,7 @@
 <</widget>>
 
 <<widget "danceprivate">>
-	그 <<person1>><<person_ un>> <<his_ yi>> <<if $pronoun is "m">>지갑을 들어,<<else>>핸드백을 들어,<</if>> <<he_ ga>> 당신의 서비스를 받고 싶다는 것을 보인다.
+	그 <<person_ un>> <<his_ yi>> <<if $pronoun is "m">>지갑을 들어,<<else>>핸드백을 들어,<</if>> <<he_ ga>> 당신의 서비스를 받고 싶다는 것을 보인다.
 	<<set $danceevent to "private">>
 	<<if $promiscuity lte 34 and $uncomfortable.prostituting is true>>
 		하지만, 당신은 <<his_ yi>> 제안을 받을 만큼 문란한 사람이 아니다.
@@ -672,7 +702,6 @@
 
 <<widget "dancevip">>
 	<<set $danceevent to "vip">>
-	A <<person>> wearing an expensive <<if $pronoun is "f">>gown<<else>>suit<</if>> grasps your arm and tugs you closer. Security look away. "They won't bother us," <<he>> says. "They know who I am."
 	비싼 <<if $pronoun is "f">>가운<<else>>정장<</if>>을 입은 <<personPost "은">> 당신의 팔을 잡고 끌어당긴다. 경비는 눈을 피한다. "걔들은 우릴 귀찮게 안 할거야" <<HePost "은">> 말한다. "걔네는 내가 누군지 알아."
 <</widget>>
 
