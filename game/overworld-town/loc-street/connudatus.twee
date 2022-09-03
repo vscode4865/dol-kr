@@ -3,13 +3,37 @@
 <<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "connudatus">><<getTarget true>>
 당신은 코누다투스 가에 있다. 클럽과 바, 레스토랑이 즐비하여 밤에는 도시에서 가장 활력이 넘치는 장소가 된다. 낮에는 다양한 물건을 파는 행상인들이 거리에 널려있다.
 <<if $daystate is "day">>
-	거리는 쇼핑객들로 가득하다.
+	<<if $weather is "rain">>
+		쇼핑객들이 지붕이 있는 가판대 주위에 옹기종기 모여있다.
+	<<elseif $weather is "snow">>
+		거리는 추위에 대비해 잔뜩 껴입은 쇼핑객들로 가득하다.
+	<<else>>
+		거리는 쇼핑객들로 가득하다.
+	<</if>>
 <<elseif $daystate is "dawn">>
-	노점상들이 가판대를 준비하고 있다.
+	<<if $weather is "rain">>
+		노점상들이 비를 피하기 위해 빠르게 지붕을 세우며, 가판대를 준비하고 있다.
+	<<elseif $weather is "snow">>
+		잔뜩 껴입은 노점상들이 가판대를 준비하고 있다.
+	<<else>>
+		노점상들이 가판대를 준비하고 있다.
+	<</if>>
 <<elseif $daystate is "dusk">>
-	노점상들이 가판대를 정리하고 있다. 레스토랑에 손님들로 가득하다.
+	<<if $weather is "rain">>
+		노점상들이 비를 피하려고 서두르며, 가판대를 정리하고 있다.
+	<<elseif $weather is "snow">>
+		노점상들이 추위를 간절히 피하고 싶어하며, 가판대를 정리하고 있다.
+	<<else>>
+		노점상들이 가판대를 정리하고 있다. 레스토랑에 손님들로 가득하다.
+	<</if>>
 <<elseif $daystate is "night">>
-	밤놀이가 무르익었다. 머리 위에서 네온 사인들이 빛난다.
+	<<if $weather is "rain">>
+		비가 내리는데도 불구하고, 밤놀이가 무르익었다.
+	<<elseif $weather is "snow">>
+		추위에도 불구하고, 밤놀이가 무르익었다.
+	<<else>>
+		밤놀이가 무르익었다. 머리 위에서 네온 사인들이 빛난다.
+	<</if>>
 <</if>>
 <<streeteffects>>
 <br><br>
@@ -82,15 +106,15 @@
 		<br>
 		<<if $daystate isnot "dawn" and $daystate isnot "day">>
 			<<if $exposed gte 1 and $stripclubintro is 1>>
-				<<stripclubicon>><<link [[스트립 클럽|Strip Club Exposed]]>><</link>>
+				<<stripclubicon>><<link [[스트립 클럽 (0:02)|Strip Club Exposed]]>><<pass 2>><</link>>
 				<br>
 			<<else>>
-				<<stripclubicon>><<link [[스트립 클럽|Strip Club]]>><</link>>
+				<<stripclubicon>><<link [[스트립 클럽 (0:02)|Strip Club]]>><<pass 2>><</link>>
 				<br>
 			<</if>>
 		<</if>>
 		<<if $daystate isnot "dusk" and $daystate isnot "night" and $hour isnot 6>>
-			<<stripclubicon>><<link [[스트립 클럽|Strip Club Lock]]>><</link>>
+			<<stripclubicon>><<link [[스트립 클럽 (0:01)|Strip Club Lock]]>><<pass 1>><</link>>
 			<br>
 		<<elseif $hour is 6>>
 			<span class="blue">사람들이 클럽에서 나오고 있다.</span> 문을 닫을 시간인가 보다.
@@ -145,24 +169,19 @@
 	<<violence 1>>
 	<<neutral 1>>
 	<<molested>>
-
 	<<maninit>>
 	<<if $daystate isnot "night">><<enable_rescue>><</if>>
 <</if>>
 
 <<effects>>
-
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<alarmstate>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyhealth lte 0>>
-	<span id="next"><<link [[다음|Connudatus VIP Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[다음|Connudatus VIP Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $alarm is 1 and $rescue is 1>>
+<<if _combatend>>
 	<span id="next"><<link [[다음|Connudatus VIP Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Connudatus VIP Rape]]>><</link>></span><<nexttext>>
@@ -299,4 +318,3 @@
 <br><br>
 
 <<link [[다음|Domus Street]]>><<endevent>><</link>>
-<br>

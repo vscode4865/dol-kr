@@ -81,7 +81,12 @@
 <<set $halfcloseddisable to "f">>
 
 <<set $newWardrobeStyle to true>>
-<<set $imgLighten to "">>
+<<set $lightSpotlight to 0.2>>
+<<set $lightGradient to 0>>
+<<set $lightGlow to 0>>
+<<set $lightFlat to 0>>
+<<set $lightCombat to 0.2>>
+<<set $lightTFColor to 0.2>>
 <<set $sidebarStats to "Disabled">>
 <<set $sidebarTime to "Disabled">>
 <<set $combatControls to "radio">>
@@ -137,6 +142,7 @@
 <<if $currentSettings isnot "importConfirmDetails">>
 	<<unset $importString>>
 <</if>>
+<<run settingsDisableElement()>>
 <</widget>>
 
 <<widget "displaySubsection">>
@@ -439,7 +445,6 @@
 	<label>후타나리 <<radiobutton "$player.gender" "h" autocheck>></label>
 	<br><br>
 	</div>
-	<<run settingsPCGenderUpdate()>>
 
 	<span class="gold">체형</span>
 	<br>
@@ -456,12 +461,12 @@
 		<br><br>
 	<</if>>
 
-	<span class="gold">자지 크기</span> - 적용 가능할 경우
-	<br>
+	<span data-target="player.gender" data-disabledif="V.player.gender==='f'">
+	<span class="gold">자지 크기</span> - 적용 가능할 경우<br>
 	<label>조그마함 <<radiobutton "$player.penissize" 0 autocheck>></label> |
 	<label>작음 <<radiobutton "$player.penissize" 1 autocheck>></label> |
 	<label>평범함 <<radiobutton "$player.penissize" 2 autocheck>></label>
-	<br><br>
+	</span><br><br>
 
 	<span class="gold">가슴 크기</span>
 	<br>
@@ -480,11 +485,11 @@
 	<label>푹신함 <<radiobutton "$player.bottomsize" 3 autocheck>></label>
 	<br><br>
 
-	<span class="gold">고환</span> - 후타나리인 경우에만 적용
-	<br>
+	<span data-target="player.gender" data-disabledif="V.player.gender!=='h'">
+	<span class="gold">고환</span> - 후타나리인 경우에만 적용<br>
 	<label>있음 <<radiobutton "$player.ballsExist" true autocheck>></label> |
 	<label>없음 <<radiobutton "$player.ballsExist" false autocheck>></label> |
-	<br><br>
+	</span><br><br>
 
 	<span class="gold">가슴 감도</span>
 	<br>
@@ -621,7 +626,7 @@
 	<br>
 	<label><span class="lewd">미인</span> <<radiobutton "$background" "beautiful" autocheck>> - 당신은 시선을 끕니다. <i>초심자에게 권장하지 않습니다.</i></label>
 	<br>
-	<label><span class="lewd">크로스드레서</span> <<radiobutton "$background" "crossdresser" autocheck>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리에겐 아무 효과도 없습니다.</label>
+	<label data-target="player.gender" data-disabledif="V.player.gender==='h'"><span class="lewd">크로스드레서</span> <<radiobutton "$background" "crossdresser" autocheck>> - 당신은 반대되는 성별의 옷을 선호합니다. 후타나리인 경우 아무 효과도 없습니다.</label>
 	<br>
 	<label><span class="lewd">성욕 많음</span> <<radiobutton "$background" "lustful" autocheck>> - 흥분도가 시간에 따라 증가하고, 어떻게든 처리해줘야 합니다.</label>
 	/*<br>
@@ -758,7 +763,6 @@
 	<label><div class="settingsToggle">
 	<<checkbox "$analdisable" "t" "f" autocheck>> 항문 활성화
 	</div></label>
-	<<run settingsDoubleAnalToggleGreyOut()>>
 	<div class="settingsToggle" role="group" aria-labelledby="settingsAnalingusHead">
 	<span id="settingsAnalingusHead">항문 핥기:</span>
 	<label>
@@ -773,7 +777,7 @@
 	<label>
 		<<checkbox "$vaginaldoubledisable" "t" "f" autocheck>> 보지
 	</label>
-	<label>
+	<label data-target="analdisable" data-disabledif="V.analdisable==='t'">
 		<<checkbox "$analdoubledisable" "t" "f" autocheck>> 항문
 	</label>
 	<mouse class="tooltip linkBlue">(?)<span>항문 동시삽입에는 항문 활성화가 필요합니다.
@@ -795,7 +799,8 @@
 	<<checkbox "$breastfeedingdisable" "t" "f" autocheck>> 젖 분비 활성화
 	</div></label>
 	<label><div class="settingsToggle">
-	<<checkbox "$watersportsdisable" "t" "f" autocheck>> 방뇨 활성화
+	<<checkbox "$watersportsdisable" "t" "f" autocheck>> 워터스포츠 활성화
+	<mouse class="tooltip linkBlue">(?)<span>워터스포츠란 방뇨가 관련된 성적인 활동을 뜻합니다.</span></mouse>
 	</div></label>
 
 	<label><div class="settingsToggle">
@@ -1192,7 +1197,8 @@
 		<label><div class="settingsToggleBig">
 		<<checkbox "$images" 0 1 autocheck>> 이미지 활성화
 		<div class="description">옛 버전의 안드로이드에서는 이미지가 제대로 표시되지 않을 수도 있습니다.</div>
-		</div></label>
+		<label data-target="images" data-disabledif="V.images===0"><<checkbox "$combatimages" 0 1 autocheck>> 전투 이미지 사용
+		</label></div>
 
 		<label><div class="settingsToggleBig">
 		CSS 애니메이션
@@ -1475,7 +1481,7 @@
 
 			T.keys = {};
 			T.keyNames = [];
-			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "wraith", "pinch"];
+			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "wraith", "pinch", "black_dog"];
 			Object.keys(V.per_npc).forEach(k => {
 				for (const j of allowed_npcs){
 					if (k.includes(j)){
@@ -1575,7 +1581,6 @@
 		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
 		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
 		<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> 둘 다</label><</if>>
-		<<run settingsNamedNpcGenderUpdate()>>
 	<<else>>
 		임신하고 있으므로 NPC의 생식기를 바꿀 수 없습니다.
 	<</if>>
@@ -1583,6 +1588,7 @@
 	자지 크기 - 가능할 경우:
 	<br>
 	<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+	<span data-target="npcname-npcidgender" data-disabledif="V.NPCName[T.npcId].gender==='f'">
 	<<for _j to 1; _j lt _penisNames.length; _j++>>
 		<label>
 			<<radiobutton "$NPCName[_npcId].penissize" _j autocheck>>
@@ -1590,6 +1596,7 @@
 		</label>
 		<<if _j isnot _penisNames.length -1>>|<</if>>
 	<</for>>
+	</span>
 	<br><br>
 
 	<div class="settingsToggle" style="display: inline-flex;">
@@ -1636,6 +1643,7 @@
 		<</for>>
 		<br><br>
 	<</if>>
+<<run settingsDisableElement()>>
 <</widget>>
 
 <<widget "perNPCSettingsMenu">>
@@ -1694,16 +1702,18 @@
 			<</link>>
 		<</if>>
 		<br>
+		<span data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'">
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
+		</span>
 		<br>
 		<label><<radiobutton "$per_npc[_pNPCId].gender" "f" autocheck>> Vagina</label> |
 		<label><<radiobutton "$per_npc[_pNPCId].gender" "m" autocheck>> Penis</label>
-		<<run settingsPersistentNpcGenderUpdate()>>
 		<br><br>
 		자지 크기 - 가능할 경우:
 		<br>
 		<<set _penisNames to ["", "조그마함", "평균", "두꺼움", "커다람"]>> /* the empty first element is necessary because _j starts at 1 */
+		<span data-target="pernpc-npcidgender" data-disabledif="V.per_npc[T.pNPCId].gender==='f'">
 		<<for _j to 1; _j lt _penisNames.length; _j++>>
 			<label>
 				<<radiobutton "$per_npc[_pNPCId].penissize" _j autocheck>>
@@ -1711,6 +1721,7 @@
 			</label>
 			<<if _j isnot _penisNames.length -1>>|<</if>>
 		<</for>>
+		</span>
 		<br><br>
 		<div class="settingsToggle" style="display: inline-flex;">
 			가슴 크기:
@@ -1721,6 +1732,7 @@
 	<div style="clear:both;">
 		/*Keep at end of toggles*/
 	</div>
+<<run settingsDisableElement()>>
 <</widget>>
 
 

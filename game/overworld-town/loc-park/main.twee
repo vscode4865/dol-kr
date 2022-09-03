@@ -53,7 +53,7 @@ You awaken to find yourself being dragged behind a bush by a strange <<beasttype
 
 <<effects>>
 <<effectsman>>
-<br>
+<<alarmstate 1>>
 <<beast $enemyno>>
 <br><br>
 
@@ -61,11 +61,8 @@ You awaken to find yourself being dragged behind a bush by a strange <<beasttype
 <br><br>
 <<actionsman>>
 
-<<if $alarm is 1>>
-
-	No one comes to your aid.
+<<if $alarm is 1 and $rescue is 0>>
 	<<set $alarm to 0>>
-	<<if $drugged gte 1>>약에 취한 상태로는, 당신의 비명소리는 별로 설득력 있게 들리지 않는다.<</if>>
 	<br><br>
 	<<if $enemyarousal gte $enemyarousalmax>>
 		<span id="next"><<link [[다음->Dog Park Ejaculation]]>><</link>></span><<nexttext>>
@@ -94,17 +91,15 @@ You awaken to find yourself being dragged behind a bush by a strange <<beasttype
 <</if>>
 
 <<effects>>
-<<effectsman>><<man>>
-
+<<effectsman>>
+<<alarmstate 1>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $alarm is 1>>
-
-	No one comes to your aid.
+<<if $alarm is 1 and $rescue is 0>>
 	<<set $alarm to 0>>
-	<<if $drugged gte 1>>약에 취한 상태로는, 당신의 비명소리는 별로 설득력 있게 들리지 않는다.<</if>>
 	<br><br>
 	<<if $enemyarousal gte $enemyarousalmax>>
 		<span id="next"><<link [[다음->Park Woman Ejaculation]]>><</link>></span><<nexttext>>
@@ -227,6 +222,13 @@ The <<beasttype>> whimpers and flees into a bush. <<tearful>> 당신은 마음�
 <<if $rng gte $park_fame>>
 	<<rng>>
 	<<if $rng gte 91>>
+		<<generate1>><<person1>>
+		You hear footsteps behind you, and spare a glance over your shoulder. A <<person>> follows, <span class="pink">pursuing you.</span>
+		<br><br>
+		
+		<<link [[다음|Park Run Stalk]]>><<set $molestationstart to 1>><</link>>
+		<br>	
+	<<elseif $rng gte 86>>
 		While running, you have to pass through some bushes.
 		<<if $worn.lower.type.includes("naked")>>
 			As you push through, a branch whips back into your <<undies>>, stinging you.
@@ -236,7 +238,7 @@ The <<beasttype>> whimpers and flees into a bush. <<tearful>> 당신은 마음�
 		<</if>>
 		<<pain 5>>
 		<br><br>
-	<<link [[다음|Park]]>><<set $eventskip to 1>><</link>>
+		<<link [[다음|Park]]>><<set $eventskip to 1>><</link>>
 	<<elseif $rng gte 81>>
 	<<generate1>><<person1>>You run past a <<person>>. <<He>> smiles at you across a
 
@@ -465,7 +467,7 @@ Your clothes are stored beneath the sinks.
 		<span class="lewd">A lewd idea strikes you.</span> You could strip and wait in one of the stalls for an unsuspecting passerby to see you.
 			<<if $daystate is "dusk" or $daystate is "night">>
 				<br><br>
-				<<link [[Strip and wait in a stall (0:20)|Toilets Stall]]>><<pass 20>><</link>><<exhibitionist4>>
+				<<link [[벌거벗고 화장실 칸에서 기다린다 (0:20)|Toilets Stall]]>><<pass 20>><</link>><<exhibitionist4>>
 				<br>
 			<<else>>
 				<span class="blue">However, it would be best to wait until night falls.</span>
@@ -476,12 +478,12 @@ Your clothes are stored beneath the sinks.
 		<br>
 		<<link [[자위한다|Men's Toilets Masturbation]]>><<set $masturbationstart to 1>><</link>>
 		<br>
-		<<if $player.bodyliquid.face.semen gte 1 or $player.bodyliquid.face.goo gte 1 or $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen" or $skin.left_cheek.pen is "mud" or $skin.right_cheek.pen is "mud" or $skin.forehead.pen is "mud" or $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
-			<<link [[Wash face (0:05)|Men's Toilets Wash]]>><<pass 5>><</link>>
+		<<if setup.bodyliquid.combined("face") gte 1 or $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen" or $skin.left_cheek.pen is "mud" or $skin.right_cheek.pen is "mud" or $skin.forehead.pen is "mud" or $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
+			<<link [[얼굴을 씻는다 (0:05)|Men's Toilets Wash]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
-		<<if $player.bodyliquid.mouth.semen gte 1 or $player.bodyliquid.mouth.goo gte 1>>
-			<<link [[Rinse mouth (0:05)|Men's Toilets Rinse]]>><<pass 5>><</link>>
+		<<if setup.bodyliquid.combined("mouth") gte 1>>
+			<<link [[입을 헹군다 (0:05)|Men's Toilets Rinse]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
 		<<pregnancyTest "Men's Toilets">>
@@ -503,7 +505,7 @@ Your clothes are stored beneath the sinks.
 :: Men's Toilets Wash
 <<effects>>
 
-<<if $player.bodyliquid.face.semen gte 1 or $player.bodyliquid.face.goo gte 1>>
+<<if setup.bodyliquid.combined("face") gte 1>>
 	<<if $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen">>
 		Bending over the sink, you wash the lewd fluid and ink from your face.
 	<<elseif $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
@@ -560,7 +562,7 @@ Your clothes are stored beneath the sinks.
 		<span class="lewd">A lewd idea strikes you.</span> You could strip and wait in one of the stalls for an unsuspecting passerby to see you.
 			<<if $daystate is "dusk" or $daystate is "night">>
 				<br><br>
-				<<link [[Strip and wait in a stall (0:20)|Toilets Stall]]>><<pass 20>><</link>><<exhibitionist4>>
+				<<link [[벌거벗고 화장실 칸에서 기다린다 (0:20)|Toilets Stall]]>><<pass 20>><</link>><<exhibitionist4>>
 				<br>
 			<<else>>
 				<span class="blue">However, it would be best to wait until night falls.</span>
@@ -571,12 +573,12 @@ Your clothes are stored beneath the sinks.
 		<br>
 		<<link [[자위한다|Women's Toilets Masturbation]]>><<set $masturbationstart to 1>><</link>>
 		<br>
-		<<if $player.bodyliquid.face.semen gte 1 or $player.bodyliquid.face.goo gte 1 or $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen" or $skin.left_cheek.pen is "mud" or $skin.right_cheek.pen is "mud" or $skin.forehead.pen is "mud" or $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
-			<<link [[Wash face (0:05)|Women's Toilets Wash]]>><<pass 5>><</link>>
+		<<if setup.bodyliquid.combined("face") gte 1 or $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen" or $skin.left_cheek.pen is "mud" or $skin.right_cheek.pen is "mud" or $skin.forehead.pen is "mud" or $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
+			<<link [[얼굴을 씻는다 (0:05)|Women's Toilets Wash]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
-		<<if $player.bodyliquid.mouth.semen gte 1 or $player.bodyliquid.mouth.goo gte 1>>
-			<<link [[Rinse mouth (0:05)|Women's Toilets Rinse]]>><<pass 5>><</link>>
+		<<if setup.bodyliquid.combined("mouth") gte 1>>
+			<<link [[입을 헹군다 (0:05)|Women's Toilets Rinse]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
 		<<pregnancyTest "Women's Toilets">>
@@ -598,7 +600,7 @@ Your clothes are stored beneath the sinks.
 :: Women's Toilets Wash
 <<effects>>
 
-<<if $player.bodyliquid.face.semen gte 1 or $player.bodyliquid.face.goo gte 1>>
+<<if setup.bodyliquid.combined("face") gte 1>>
 	<<if $skin.left_cheek.pen is "pen" or $skin.right_cheek.pen is "pen" or $skin.forehead.pen is "pen">>
 		Bending over the sink, you wash the lewd fluid and ink from your face.
 	<<elseif $skin.left_cheek.pen is "lipstick" or $skin.right_cheek.pen is "lipstick" or $skin.forehead.pen is "lipstick">>
@@ -906,19 +908,14 @@ You sit on the toilet, and wait.
 	<</switch>>
 <</if>>
 <<effects>>
-<<effectsman>><<man>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
 <<stateman>>
 <br><br>
 <<actionsman>>
-<<if $alarm is 1>>
-	Your cries echo against the tiles, but no one comes.
-	<br><br>
-<</if>>
-<<if $finish is 1>>
-	<span id="next"><<link [[다음|Toilets Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[다음|Toilets Sex Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+
+<<if _combatend>>
 	<span id="next"><<link [[다음|Toilets Sex Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Toilets Sex]]>><</link>></span><<nexttext>>
@@ -1090,13 +1087,12 @@ You <<nervously>> poke your head outside. There's no one around. You leave the s
 
 :: Park Lizard Rape
 <<if $molestationstart is 1>>
-<<set $molestationstart to 0>>
-<<controlloss>>
-<<violence 1>>
-<<neutral 1>>
-<<molested>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
 	<<beastCombatInit>>
-
 <</if>>
 
 <<effects>>
@@ -1104,14 +1100,11 @@ You <<nervously>> poke your head outside. There's no one around. You leave the s
 <br><br>
 <<beast $enemyno>>
 <br><br>
-
 <<stateman>>
 <br><br>
 <<actionsman>>
 
-<<if $enemyhealth lte 0>>
-	<span id="next"><<link [[다음|Park Lizard Rape Finish]]>><</link>></span><<nexttext>>
-<<elseif $enemyarousal gte $enemyarousalmax>>
+<<if _combatend>>
 	<span id="next"><<link [[다음|Park Lizard Rape Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<span id="next"><<link [[다음|Park Lizard Rape]]>><</link>></span><<nexttext>>
