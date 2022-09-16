@@ -8,30 +8,33 @@
 			<<set $_optionPerson to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
 		<</if>>
 	<</if>>
-	<<trNPCdesc $description>><<set $_trResult to _trResult + " ">>
-	<<if ($NPCList[$index].type and $NPCList[$index].type isnot "human") and $_optionPerson isnot "normal">>
-		<<if $pronoun is "m" or $pronoun is "f">>
+	<<trNPCdesc $description>><<set $_text_output to _trResult + " ">>
+	<<if ($NPCList[$index].type and $NPCList[$index].type isnot "human") and $_optionPerson isnot "normal">>	/* beast */
+		<<if $pronoun is "m" or $pronoun is "f">>	/* monster boy/girl */
 			<<trBeasttypeFun $NPCList[$index].type>>
 		<<else>>
 			<<trBeasttypeFun $NPCList[$index].type $_post $_sep>>
 		<</if>>
-		<<set $_trResult += _trResult>><<set _trResult to $_trResult>>
+		<<set $_text_output += _trResult>>
 	<</if>>
 	<<if $npc_named is 1 or $description is "pale figure">>
-		<<trNPCdesc $description $_post $_sep>>
+		<<trNPCdesc $description $_post $_sep>><<set $_text_output to _trResult>>
 	<<elseif $role and $role isnot "normal">>
-		<<trRole $role $_post $_sep>><<set _trResult = $_trResult + _trResult>>
+		<<trRole $role $_post $_sep>><<set $_text_output += _trResult>>
 	<<elseif $pronoun is "m">>
-		<<set _trResult to $_trResult + ($npcadult is 1 ? "남자" : "소년")>>
+		<<set _trResult to ($npcadult is 1 ? "남자" : "소년")>>
 		<<if $npcadult is 0>>
 			<<trPost 0 $_post $_sep>>
 		<<else>>
 			<<trPost 1 $_post $_sep>>
 		<</if>>
+		<<set $_text_output += _trResult>>
 	<<elseif $pronoun is "f">>
-		<<set _trResult to $_trResult + ($npcadult is 1 ? "여자" : "소녀")>>
+		<<set _trResult to ($npcadult is 1 ? "여자" : "소녀")>>
 		<<trPost 1 $_post $_sep>>
+		<<set $_text_output += _trResult>>
 	<</if>>
+	<<set _trResult to $_text_output>> 
 <<else>>
 	<<combatpersonPost _args[0] _args[1] _args[2]>>
 <</if>>
@@ -49,31 +52,32 @@
 	<</if>>
 	
 	<<if !$NPCList[$index].type or $NPCList[$index].type is "human" or $_optionPerson is "normal">>
-		<<set $_trResult to "">>
+		<<set $_text_output to "">>
 	<<else>>
 		<<if $pronoun is "m" or $pronoun is "f">>
 			<<trBeasttypeFun $NPCList[$index].type>>
 		<<else>>
 			<<trBeasttypeFun $NPCList[$index].type $_post $_sep>>
 		<</if>>
-		<<set $_trResult to _trResult>>
+		<<set $_text_output to _trResult>>
 	<</if>>
 	
 	<<if $role and $role isnot "normal" and $_optionPerson isnot "normal">>
-		<<trRole $role $_post $_sep>><<set _trResult = $_trResult + _trResult>>
+		<<trRole $role $_post $_sep>><<set $_text_output += _trResult>>
 	<<elseif $npcadult is 1>>
-		<<set $_trResult += ($pronoun is "m" ? "남자" : "여자")>>
-		<<set _trResult to $_trResult>>
+		<<set _trResult to ($pronoun is "m" ? "남자" : "여자")>>
 		<<trPost 1 $_post $_sep>>
+		<<set $_text_output += _trResult>>
 	<<else>>
-		<<set $_trResult += ($pronoun is "m" ? "소년" : "소녀")>>
-		<<set _trResult to $_trResult>>
+		<<set _trResult to ($pronoun is "m" ? "소년" : "소녀")>>
 		<<if $pronoun is "m">>
             <<trPost 0 $_post $_sep>>
         <<else>>
             <<trPost 1 $_post $_sep>>
 		<</if>>
+		<<set $_text_output += _trResult>>
 	<</if>>
+	<<set _trResult to $_text_output>> 
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "combatpersonPost">><<silently>>
