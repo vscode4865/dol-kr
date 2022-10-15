@@ -496,6 +496,9 @@ const EasyPostMacroList = [
 	// <<virgin_ un>> = <<virginPost>>는 
 	{ name: "virgin_", orig_name: "virginPost", is_print: 0},
 
+	// <<getfluidsfromgroup_ un>> = <<getfluidsfromgroupPost>>는 
+	{ name: "getfluidsfromgroup_", orig_name: "getfluidsfromgroupPost", is_print: 0},
+
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},

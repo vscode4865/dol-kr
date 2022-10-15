@@ -1346,7 +1346,22 @@
         virgin을 처녀/동정으로 나누어 번역하기 위해 추가. 성별에 따라 달리 표현해야 할 때만 사용할것.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
-	
+   ```
+    <<getfluidsfromgroupPost>>
+        <<getfluidsfromgroupPost *sexID post "sep">>
+
+       <<getfluidsfromgroup>>의 대체 위젯. 조사를 붙일 수 있다. 
+        
+		필수사항
+			- sexID: 액체의 생성자 ID. 원본 매크로의 인수.
+		
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<getfluidsfromgroupPost _sexID "을">>               // 정액을
+    ```
 
 * personPost
     ```
@@ -2413,8 +2428,9 @@
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
-		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>
-		<<someones_ (조사)>>,  <<their_ (조사)>>
+		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
+		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>
+		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
 	- personPost 계열
 		```
