@@ -121,10 +121,14 @@
 					<<default>> <<set $_timeStr to "1:00">><<set _pass to 60>>
 				<</switch>>
 
-				<<if $images is 1 and $_plantedPlant.icon>>
-					<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plantedPlant.icon">
+				<<if $leftarm is "bound" and $rightarm is "bound">>
+					<span class="red">손이 묶인 상태로는 딸 수가 없다.</span>
+				<<else>>
+					<<if $options.images is 1 and $_plantedPlant.icon>>
+						<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plantedPlant.icon">
+					<</if>>
+					<<link "딴다 ($_timeStr)" $passage>><<pass _pass>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</link>>
 				<</if>>
-				<<link "딴다 ($_timeStr)" $passage>><<pass _pass>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</link>>
 				<br>
 
 			<<elseif _plantbed.stage is 4>>
@@ -176,9 +180,11 @@
 		<<if $location is "alex_farm" and _plotsToWater.length gte $_hoursUntilAttack>>
 			<span class="pink">당신은 레미가 오기 전에 모든 밭에 물을 줄 만한 충분한 시간이 없다.</span>
 		<<else>>
-			<<link "모든 마른 모판에 물을 준다 ($_time)" $passage>>
-				<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
-			<</link>><<gtiredness>><<gtending>>
+			<<if !($leftarm is "bound" and $rightarm is "bound")>>
+				<<link "모든 마른 모판에 물을 준다 ($_time)" $passage>>
+					<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
+				<</link>><<gtiredness>><<gtending>>
+			<</if>>
 		<</if>>
 		<br>
 
@@ -202,10 +208,14 @@
 	<</switch>>
 
 	<<set $_time to getTimeString(_tPass)>>
-	<<link "물을 준다 ($_time)" $passage>>
-		<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
-		<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
-	<</link>><<gtiredness>><<gtending>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">손이 묶인 상태로는 물을 줄 수가 없다.</span>
+	<<else>>
+		<<link "물을 준다 ($_time)" $passage>>
+			<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
+			<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
+		<</link>><<gtiredness>><<gtending>>
+	<</if>>
 <</widget>>
 
 <<widget "tendingWaterAllDryBeds">>
@@ -244,7 +254,7 @@
 				<</switch>>
 				<<set $_timeString to getTimeString(_passTime)>>
 				<<capture _passTime _plantbed _plantType>>
-					<<if $images is 1 and $_plant.icon>>
+					<<if $options.images is 1 and $_plant.icon>>
 						<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plant.icon">
 					<</if>>
 					<<trPlants $_plant.plural "을">><<link "_trResult 심는다 ($_timeString)" $passage>><<pass _passTime>><<run plantSeedsInPlot(_plantbed, _plantType)>><</link>>
@@ -288,52 +298,57 @@
 	<<if $farm_attack_timer is 0>>
 		<<set $_timeUntilAttack to ((23 - $hour) * 60) + (60 - $minute)>>
 	<</if>>
-	<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
-		<span class="pink">당신은 레미가 오기 전에 모든 밭을 경작할 만한 충분한 시간이 없다.</span>
-	<<else>>
-		<<capture _baseTiredsness _baseTime _plantbed>>
-			<<link "경작한다 (_timeString)" $passage>>
-				<<set $tendingvars.plot_tilled to true>>
-				<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
-				<<pass _baseTime>>
-				<<if $location is "farm">>
-					<<farm_count _baseTime>>
-				<</if>>
-				<<set _plantbed.till to 1>>
-			<</link>><<gtiredness>>
-		<</capture>>
-	<</if>>
-	<br>
-	<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and currentSkillValue('tending') gte 400>>
-		<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
-		<<set _timeString to getTimeString(_baseTimeFert)>>
-		<<set _fertTiredness to Math.floor(_baseTiredsness * 1.5)>>
-		<<capture _baseTimeFert _fertTiredness _plantbed>>
-			<<link "경작하고 비료를 뿌린다 (_timeString)" $passage>>
-				/* Till */
-				<<set $tendingvars.plot_tilled_fertiliser to true>>
-				<<tiredness _fertTiredness>><<physique _fertTiredness>>
-				<<pass _baseTimeFert>>
-				<<if $location is "farm">>
-					<<farm_count _baseTimeFert>>
-				<</if>>
-				<<set _plantbed.till to 1>>
-
-				/* Fertilise */
-				<<set $fertiliser.current-->><<set $fertiliser.used++>>
-				<<set _plantbed.quality++>>
-				<<if !$backgroundTraits.includes("greenthumb")>>
-					<<if _plantbed.baseQuality is undefined>>
-						<<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>>
-					<</if>>
-					<<set _plantbed.fertiliserDecay to 2>>
-					<<if _plantbed.size isnot "large">>
-						<<set _plantbed.fertiliserDecay++>>
-					<</if>>
-				<</if>>
-			<</link>><<gtiredness>>
-		<</capture>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">손이 묶인 상태로는 경작할 수가 없다.</span>
 		<br>
+	<<else>>
+		<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
+			<span class="pink">당신은 레미가 오기 전에 모든 밭을 경작할 만한 충분한 시간이 없다.</span>
+		<<else>>
+			<<capture _baseTiredsness _baseTime _plantbed>>
+				<<link "경작한다 (_timeString)" $passage>>
+					<<set $tendingvars.plot_tilled to true>>
+					<<tiredness _baseTiredsness>><<physique _baseTiredsness>>
+					<<pass _baseTime>>
+					<<if $location is "farm">>
+						<<farm_count _baseTime>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+				<</link>><<gtiredness>>
+			<</capture>>
+		<</if>>
+		<br>
+		<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and currentSkillValue('tending') gte 400>>
+			<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
+			<<set _timeString to getTimeString(_baseTimeFert)>>
+			<<set _fertTiredness to Math.floor(_baseTiredsness * 1.5)>>
+			<<capture _baseTimeFert _fertTiredness _plantbed>>
+				<<link "경작하고 비료를 뿌린다 (_timeString)" $passage>>
+					/* Till */
+					<<set $tendingvars.plot_tilled_fertiliser to true>>
+					<<tiredness _fertTiredness>><<physique _fertTiredness>>
+					<<pass _baseTimeFert>>
+					<<if $location is "farm">>
+						<<farm_count _baseTimeFert>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+
+					/* Fertilise */
+					<<set $fertiliser.current-->><<set $fertiliser.used++>>
+					<<set _plantbed.quality++>>
+					<<if !$backgroundTraits.includes("greenthumb")>>
+						<<if _plantbed.baseQuality is undefined>>
+							<<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>>
+						<</if>>
+						<<set _plantbed.fertiliserDecay to 2>>
+						<<if _plantbed.size isnot "large">>
+							<<set _plantbed.fertiliserDecay++>>
+						<</if>>
+					<</if>>
+				<</link>><<gtiredness>>
+			<</capture>>
+			<br>
+		<</if>>
 	<</if>>
 <</widget>>
 
@@ -471,12 +486,12 @@
 	당신은
 	<<if _tending_amount is 1>>
 		
-		<<if $images is 1 and setup.plants[$_type].icon>>
+		<<if $options.images is 1 and setup.plants[$_type].icon>>
 			<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[$_type].icon">
 		<</if>>
 		<<trPlants setup.plants[$_type].name "을">><<print _trResult>> 한 <<trPlants setup.plants[$_type].name "unit">>_trResult 수확한다.
 	<<else>>
-		<<if $images is 1 and setup.plants[$_type].icon>>
+		<<if $options.images is 1 and setup.plants[$_type].icon>>
 			<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[$_type].icon">
 		<</if>>
 		<<trPlants setup.plants[$_type].plural "을">><<print _trResult>> <<trNumber _tending_amount>> <<trPlants setup.plants[$_type].plural "unit">>_trResult 수확한다.

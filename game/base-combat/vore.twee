@@ -5,16 +5,16 @@
 	<<getTargetList>>
 <</if>>
 <div id="listContainer">
-	<div id="leftaction" @class="$combatControls + 'Control'">
+	<div id="leftaction" @class="$options.combatControls + 'Control'">
 		<<leftActionInitVore>>
 	</div>
 
-	<div id="rightaction" @class="$combatControls + 'Control'">
+	<div id="rightaction" @class="$options.combatControls + 'Control'">
 		<<rightActionInitVore>>
 	</div>
 
 	<<if ($mouthuse is 0 and !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)))>>
-		<div id="mouthaction" @class="$combatControls + 'Control'">
+		<div id="mouthaction" @class="$options.combatControls + 'Control'">
 			<<mouthActionInit>>
 		</div>
 	<</if>>
@@ -39,21 +39,15 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">당신의 왼팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span><br>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
+			<br>
 		<</if>>
 	<</if>>
 <<case "bound">>
@@ -66,10 +60,10 @@
 		<span class="pink">당신의 왼팔은 묶인 상태로 축 처져 있다.</span>
 	<<else>>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">당신의 왼팔은 묶여 있다.</span>
-	<</if>><<if $combatControls is "radio">><br><</if>>
+	<</if>><<if $options.combatControls.includes("adio")>><br><</if>>
 <<case "trapped">>
 	<<set _leftOptions to "trapped">>
-	<span @class="($lastOptions.left isnot _leftOptions ?'gold':'purple')">당신의 왼팔은 <<trVore $vorecreature>>_trResult에게 잡혀있다.</span><<if $combatControls is "radio">><br><</if>>
+	<span @class="($lastOptions.left isnot _leftOptions ?'gold':'purple')">당신의 왼팔은 <<trVore $vorecreature>>_trResult에게 잡혀있다.</span><<if $options.combatControls.includes("adio")>><br><</if>>
 <<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
 	<<set $_changetype to true>><<leftActionInit>>
 <<case "struggle">>
@@ -92,7 +86,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Vore">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="leftactionDifficulty">
 				<<leftactionDifficulty>>
 			</div>
@@ -149,21 +143,15 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">당신의 오른팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span><br>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
+			<br>
 		<</if>>
 	<</if>>
 <<case "bound">>
@@ -202,7 +190,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Vore">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="rightactionDifficulty">
 				<<rightactionDifficulty>>
 			</div>
@@ -247,25 +235,25 @@
 <<rng>>
 <<if $vorestage is 1>>
 	당신의 넓적다리는 그 <<vorecreature_ yi>> 입에 붙잡혀 있고, 당신의 정강이와 발은 그것의 탐색하는 혀에 노출되어 있다.
-	<<neutral 5>>
+	<<neutral 4>>
 <<elseif $vorestage is 2>>
 	당신의 허리는 그 <<vorecreature_ yi>> 입에 붙잡혀 있고, 당신의 민감한 부위는 그것의 미끌미끌한 혀에 속수무책이다.
-	<<neutral 5>>
+	<<neutral 2 "genitals">><<neutral 2 "bottom">>
 <<elseif $vorestage is 3>>
 	당신의 가슴은 그 <<vorecreature_ yi>> 입에 붙잡혀 있고, 당신의 몸은 그것의 끈적끈적한 혀에 속수무책이다.
-	<<neutral 10>>
+	<<neutral 2 "breasts">><<neutral 3 "genitals">><<neutral 3 "bottom">>
 <<elseif $vorestage is 4>>
 	당신의 어깨는 그 <<vorecreature_ yi>> 입에 붙잡혀 있고, 당신의 몸은 그것의 침입하는 혀에 속수무책이다.
-	<<neutral 10>>
+	<<neutral 3 "breasts">><<neutral 4 "genitals">><<neutral 4 "bottom">>
 <<elseif $vorestage is 5>>
 	당신의 온 몸은 그 <<vorecreature_ yi>> 입에 붙잡혀 있다. 그것의 끈적끈적한 혀가 당신의 온 몸을 누르고 있다.
-	<<neutral 15>>
+	<<neutral 4 "breasts">><<neutral 5 "genitals">><<neutral 5 "bottom">>
 <<elseif $vorestage is 6>>
 	당신은 그 <<vorecreature_ yi>> 식도 안에 있고, 식도벽의 움직임에 의해 밀려 내려가고 있다.
-	<<neutral 15>>
+	<<neutral 5 "breasts">><<neutral 6 "genitals">><<neutral 6 "bottom">>
 <<elseif $vorestage is 7>>
 	당신은 그 <<vorecreature_ yi>> 위장 안에 있고, 당신의 머리를 미끈미끈한 액체 위로 내어 놓는 것만도 힘들다.
-	<<neutral 20>>
+	<<neutral 6 "breasts">><<neutral 7 "genitals">><<neutral 7 "bottom">>
 <</if>>
 <<if $vorestage is 1>>
 	<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
@@ -483,21 +471,21 @@
 		<<neutral 5>>
 	<<elseif $rng gte 33>>
 		그 <<vorecreature_ yi>> 혀가 그것의 목구멍에서 튀어나와, 당신의 넓적다리 안쪽을 핥는다.
-		<<neutral 5>>
+		<<neutral 5 "genitals">>
 	<<else>>
 		그 <<vorecreature_ yi>> 혀가 그것의 목구멍에서 튀어나와, 당신의 엉덩이를 핥는다.
-		<<neutral 5>>
+		<<neutral 5 "anus">>
 	<</if>>
 <<elseif $vorestage is 2>>
 	<<if $rng gte 66>>
 		당신은 그 <<vorecreature_ yi>> 혀가 당신의 엉덩이를 핥는 것을 느낀다.
-		<<neutral 5>>
+		<<neutral 5 "anus">>
 	<<elseif $rng gte 33>>
 		그 <<vorecreature_ nun>> 당신의 <<groin_ ul>> 부드럽게 핥는다.
-		<<neutral 10>>
+		<<neutral 10 "genitals">>
 	<<else>>
 		그 <<vorecreature_ yi>> 혀가 당신의 골반을 둘러싸고, 당신의 넓적다리 전체를 위아래로 핥는다.
-		<<neutral 5>>
+		<<neutral 5 "genitals">>
 	<</if>>
 <<elseif $vorestage is 3>>
 	<<if $rng gte 66>>
@@ -505,10 +493,10 @@
 		<<neutral 5>>
 	<<elseif $rng gte 33>>
 		그 <<vorecreature_ nun>> 당신의 <<groin_ ul>> 부드럽게 찌른다.
-		<<neutral 10>>
+		<<neutral 10 "genitals">>
 	<<else>>
 		그 <<vorecreature_ yi>> 혀가 당신의 넓적다리 안쪽을 애무한다.
-		<<neutral 5>>
+		<<neutral 5 "genitals">>
 	<</if>>
 <<elseif $vorestage is 4>>
 	<<if $rng gte 66>>
@@ -516,10 +504,10 @@
 		<<neutral 5>>
 	<<elseif $rng gte 33>>
 		그 <<vorecreature_ nun>> 당신의 <<groin_ ul>> 부드럽게 찌른다.
-		<<neutral 10>>
+		<<neutral 10 "genitals">>
 	<<else>>
 		그 <<vorecreature_ yi>> 혀가 당신의 넓적다리 안쪽을 애무한다.
-		<<neutral 10>>
+		<<neutral 10 "genitals">>
 	<</if>>
 <<elseif $vorestage is 5>>
 	<<if $rng gte 66>>
@@ -530,7 +518,7 @@
 		<<neutral 10>>
 	<<else>>
 		그 <<vorecreature_ nun>> 그것의 혀 끝으로 당신의 <<groin_ ul>> 톡톡 친다.
-		<<neutral 15>>
+		<<neutral 15 "genitals">>
 	<</if>>
 <<elseif $vorestage is 6>>
 	<<if $rng gte 81 and $leftarm is 0>>
@@ -643,7 +631,7 @@
 <</widget>>
 :: Widgets Vore Actions [widget]
 <<widget "voreactions">>
-<<if $images is 1 and $combatimages is 1>>
+<<if $options.images is 1 and $options.combatImages is 1>>
 	<<timed 100ms>>
 		<<combatimg>>
 		<br>

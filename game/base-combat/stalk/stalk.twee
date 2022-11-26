@@ -30,22 +30,20 @@
 
 	<<if $NPCList[_n].distance lte _n>>
 		<<if !$stalk_end>>
-			<<if $NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000)>>
+			<<if $NPCList[0].fullDescription isnot "Ivory Wraith" and ($NPCList[_n].legs is "run" or $NPCList[0].bold gte random(1, 1000))
+			or $NPCList[0].fullDescription is "Ivory Wraith" and C.npc["Ivory Wraith"].lust gte random(5,15)>>
 				<span class="red">당신은 불러세워졌다.</span>
 				<<if $npcrow.includes(0)>>
 					<<stalk_nnpc_text_attack $NPCList[0].fullDescription>>
 					<<if !$stalk_assess>>
-						<span class="pink">그자는 <<namedNPC_ da $npc[$npcrow.indexOf(0)]>>.</span>
+						<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+							<span class="red"><<if $wraith.seen gte 3>>친숙한 <</if>>창백한 형체 하나가 <<wraithEyes>> 눈을 반짝이며, 당신을 내려다본다.</span>
+						<<else>>
+							<span class="pink">그자는 <<namedNPC_ da $npc[$npcrow.indexOf(0)]>>.</span>
+						<</if>>
 					<</if>>
 					<br><br>
 					<<events_stalk_nnpc $NPCList[0].fullDescription>>
-				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-					<<stalk_nnpc_text_attack "Wraith">>
-					<<if !$stalk_assess>>
-						<span class="red"><<if $wraith.seen gte 3>>친숙한 <</if>>창백한 형체 하나가 <<wraithEyes>> 눈을 반짝이며, 당신을 내려다본다.</span>
-					<</if>>
-					<br><br>
-					<<events_stalk_nnpc "Wraith">>
 				<<else>>
 					<br><br>
 					<<events_stalk>>
@@ -53,8 +51,6 @@
 			<<else>>
 				<<if $npcrow.includes(0)>>
 					<<stalk_nnpc_text_passed $NPCList[0].fullDescription>>
-				<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-					<<stalk_nnpc_text_passed "Wraith" "passed">>
 				<<else>>
 					한 <<person1>>
 					<<switch $enemyno>>
@@ -83,9 +79,49 @@
 <<widget "stalk_walk_events">>
 <<switch $location>>
 	<<case forest>>
-
+		<<set _rng to random(1, 10)>>
+		<<switch _rng>>
+			<<case 1>>
+				<<if $season is "autumn">>
+					낙엽들이 주변에 떨어진다.
+				<<elseif $season is "winter">>
+					눈이 뒤집어진 나뭇가지에서 풀썩 떨어진다.
+				<<elseif $season is "spring">>
+					싹이 트기 시작한 나뭇가지가 산들바람에 흔들린다.
+				<<else>>
+					햇빛이 만든 얼룩들이 앞길을 뒤덮고 있다.
+				<</if>>
+			<<case 2>>
+				당신은 아래로 늘어진 나뭇가지들을 밀고 지나간다.
+			<<case 3>>
+				당신의 발이 나무뿌리에 걸릴 뻔 한다.
+			<<case 4>>
+				<<if $season is "autumn">>
+					낙엽들이 발 아래에서 바삭거린다.
+				<<elseif $season is "winter">>
+					눈이 발 아래에서 뽀드득거린다.
+				<<elseif $season is "spring">>
+					당신은 야생화들이 피어있는 사이로 지나간다.
+				<<else>>
+					당신은 야생화들이 피어있는 사이로 지나간다.
+				<</if>>
+			<<case 5>>
+				당신은 빽빽하게 자라있는 양치식물을 밀치며 지나간다.
+		<</switch>>
 	<<case moor>>
-
+		<<set _rng to random(1, 10)>>
+		<<switch _rng>>
+			<<case 1>>
+				당신은 작은, 돌이 가득한 이랑을 가로지른다.
+			<<case 2>>
+				당신은 작은 웅덩이를 피해간다.
+			<<case 3>>
+				당신은 헤더 꽃이 피어있는 사이를 밀치며 지나간다.
+			<<case 4>>
+				당신은 이제 근처의 식물들에게 거의 먹혀진, 오래된 길의 잔해를 발견한다.
+			<<case 5>>
+				당신은 조그만 동물이 종종걸음치며 덤불 안으로 들어가는 것을 언뜻 본다.
+		<</switch>>
 	<<case alley>>
 		<<set _rng to random(1, 10)>>
 		<<switch _rng>>
@@ -555,8 +591,6 @@
 <<if $combatgoal is "confront">>
 	<<if $npcrow.includes(0)>>
 		<<stalk_nnpc_text_confront $NPCList[0].fullDescription>>
-	<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-		<<stalk_nnpc_text_confront "Wraith">>
 	<<else>>
 		<span class="purple">당신은 팔을 잡혀 뒤로 당겨져 습격자와 마주한다.</span>
 	<</if>>
@@ -838,32 +872,35 @@
 				<<case 2>>"네가 안심할 수 있을 거라 생각했어? 다시 생각해봐."
 				<<case 1>>"내가 가장 좋아하는 <<bitch_ ga>>, 혼자 있잖아." <<He_ ga>> 씩 웃는다. "운이 좋은걸."
 			<</switch>>
-		<<case "Wraith">>
-			<span class="wraith"><<if $wraith.state is "haunt">>
+		<<case "Ivory Wraith">>
+			<<set $stalk_assess to true>>
+			<<if $wraith.state is "haunt">>
 				<<switch random(1, 5)>>
-					<<case 5>>"돌려줘."
-					<<case 4>>"나는 어디든지 있다."
-					<<case 3>>"<<pcPetnamePost "Wraith" "이여">>."
-					<<case 2>>"내려가는 것 말고 어디로 가려고?"
-					<<case 1>>"네 죄에서 도망가 봐야, 빈 손으로 돌아오는 것을."
+					<<case 5>><<set _wraith_output to "돌려줘.">>
+					<<case 4>><<set _wraith_output to "나는 어디든지 있다.">>
+					<<case 3>><<set _wraith_output to "<<pcPetnamePost \"Wraith\" \"이여\">>.">>
+					<<case 2>><<set _wraith_output to "내려가는 것 말고 어디로 가려고?">>
+					<<case 1>><<set _wraith_output to "네 죄에서 도망가 봐야, 빈 손으로 돌아오는 것을.">>
 				<</switch>>
-			<<elseif $wraith.offspring is "dead">>
+			<<elseif ["dead","sold"].includes($wraith.offspring)>>
 				<<switch random(1, 5)>>
-					<<case 5>>"겁쟁이."
-					<<case 4>>"모두 네 잘못이다."
-					<<case 3>>"<<pcPetnamePost "Wraith" "이여">>."
-					<<case 2>>"두려움. 외로움. 너도 그 아픔을 공유하게 될 것이다."
-					<<case 1>>"너는 그들의 무덤을 팠다. 이제 그들과 같이 잠들라."
+					<<case 5>><<set _wraith_output to "겁쟁이.">>
+					<<case 4>><<set _wraith_output to "모두 네 잘못이다.">>
+					<<case 3>><<set _wraith_output to "<<pcPetnamePost \"Wraith\" \"이여\">>.">>
+					<<case 2>><<set _wraith_output to "두려움. 외로움. 너도 그 아픔을 공유하게 될 것이다.">>
+					<<case 1>><<set _wraith_output to ($wraith.offspring is "dead" ? "너는 그들의 무덤을 팠다. 이제 그들과 같이 잠들라." : "그들은 아직 네 이름을 부르고 있다. 그들의 목소리를 들을 것인가?")>>
 				<</switch>>
 			<<else>>
 				<<switch random(1, 5)>>
-					<<case 5>>"찾았다."
-					<<case 4>>"왜 운명에서 도망치는가?"
-					<<case 3>>"<<pcPetnamePost "Wraith" "이여">>."
-					<<case 2>>"도망갈 수는 있겠지. 그러나 어디로 가겠는가?"
-					<<case 1>>"날 수 있을 동안 날아보거라, 네 날개가 꺾이기 전 까지."
+					<<case 5>><<set _wraith_output to "찾았다.">>
+					<<case 4>><<set _wraith_output to "왜 운명에서 도망치는가?">>
+					<<case 3>><<set _wraith_output to "<<pcPetnamePost \"Wraith\" \"이여\">>.">>
+					<<case 2>><<set _wraith_output to "도망갈 수는 있겠지. 그러나 어디로 가겠는가?">>
+					<<case 1>><<set _wraith_output to "날 수 있을 동안 날아보거라, 네 날개가 꺾이기 전 까지.">>
 				<</switch>>
-			<</if>></span>
+			<</if>>
+			"<span class="wraith"><<print _wraith_output>></span>"
+			<<rainWraith true>>
 		<<default>>
 			"협조하는 게 좋을 거야," <<he_ ga>> 말한다. "그러는 것이 네게 더 편할 테니까 말야."
 	<</switch>>
@@ -941,16 +978,17 @@
 		<<case "Whitney">>
 			<<switch random(1, 3)>>
 				<<case 3>><span class="green"><<He_ ga>> 당신을 밀치며 지나가,</span> 당신을 거의 때려눕힐 뻔 한다.<br><br> 당신은 몸에 묻은 먼지를 털며, 그 때문에 더 나빠진 것이 없다는 사실에 감사한다.
-				<<case 2>><span class="green"><<He_ ga>> <<his_ yi>> 손을 들어올리며,</span> 천진난만하게 미소짓는다. "그냥 여기 뒤에서 네 모습을 즐기고 있었어."<br><br> <<He_ nun>> 걸어가며 당신의 <<bottom_ ul>> 찰싹 때린다.<<stress 2>><<arousal 150>><<gstress>><<garousal>>
+				<<case 2>><span class="green"><<He_ ga>> <<his_ yi>> 손을 들어올리며,</span> 천진난만하게 미소짓는다. "그냥 여기 뒤에서 네 모습을 즐기고 있었어."<br><br> <<He_ nun>> 걸어가며 당신의 <<bottom_ ul>> 찰싹 때린다.<<stress 2>><<arousal 150 "bottom">><<gstress>><<garousal>>
 				<<case 1>><<he_ ga>> 근처에 오자마자, <<he_ ga>> 크게 "에비!"하는 소리를 내면서 당신 쪽으로 펄쩍 뛰어오른다. 당신은 본능적으로 움찔한다.<br><br> "쪼다 같으니," <<he_ nun>> 웃으며 <span class="green">당신을 뒤에 두고 간다.</span><<stress 4>><<gstress>>
 			<</switch>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			그것은 낄낄 웃으며, <span class="teal">두껍고, 차가운 안개 속으로 사라진다.</span> 그것의 목소리가 당신 주위에서 메아리친다.
-			<span class="wraith"><<switch random(1, 3)>>
-				<<case 3>>"할 수 있을 때 햇볕을 쬐어 두거라. 밤이 빠르게 올 테니까."
-				<<case 2>>"도움이 될 지 모르겠지만 작은 안식을 얻도록."
-				<<case 1>>"가까이 있도록."
-			<</switch>></span>
+			<<switch random(1, 3)>>
+				<<case 3>><<set _wraith_output to "할 수 있을 때 햇볕을 쬐어 두거라. 밤이 빠르게 올 테니까.">>
+				<<case 2>><<set _wraith_output to "도움이 될 작은 안식을 얻도록.">>
+				<<case 1>><<set _wraith_output to "가까이 있도록.">>
+			<</switch>>
+			"<span class="wraith"><<print _wraith_output>></span>"
 			<br><br>
 			당신은 당신 주위의 안개가 사라지며, 빈 <<if $location is "forest">>공터가<<elseif $location is "moor">>들판이<<else>>거리가<</if>> 드러나는 것을 보며 몸을 떤다.
 			<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
@@ -1019,16 +1057,16 @@
 		<<case "Whitney">>
 			<<switch random(1, 3)>>
 				<<case 3>><span class="teal"><<stalk_nnpc_name>> 지나치며 담배꽁초를 어깨 너머로 탁 튀긴다.</span> 그것은 당신의 뺨으로 튀어온다.
-				<<case 2>><<stalk_nnpc_name>> 지나치며 당신의 <<bottom_ ul>> 찰싹 때린다.<<if $stalk_assess>><<He_ nun>> <<his_ yi>> 어깨 너머로 의기양양하게 히죽거린다.<<else>><<He_ nun>> 당신이 <<him_ ul>> 제대로 보기 전에 사라진다.<</if>><<stress 2>><<arousal 150>><<gstress>><<garousal>>
+				<<case 2>><<stalk_nnpc_name>> 지나치며 당신의 <<bottom_ ul>> 찰싹 때린다.<<if $stalk_assess>><<He_ nun>> <<his_ yi>> 어깨 너머로 의기양양하게 히죽거린다.<<else>><<He_ nun>> 당신이 <<him_ ul>> 제대로 보기 전에 사라진다.<</if>><<stress 2>><<arousal 150 "bottom">><<gstress>><<garousal>>
 				<<case 1>><<stalk_nnpc_name>> <<his_ yi>> 손톱을 물어뜯으면서 지나친다. <span class="teal"><<He_ nun>> 너무 몰두해서 당신을 알아채지 못한다.</span>
 			<</switch>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			<<switch random(1, 3)>>
 				<<case 3>>차가운 한기가 당신에게 불어오지만, <span class="teal">빠르게 사라진다.</span>
 				<<case 2>>차갑고, 축축한 손이 당신의 어깨를 잡는다. 당신은 뒤로 돌지만, <span class="teal">거기에는 아무도 없다.</span>
-				<<case 1>>당신은 어떤 존재감을 느낀다. 누군가가 당신의 귀에 숨을 내쉰다. <span class="wraith">"아직은 아니야."</span> 따뜻한 산들바람이 당신에게 불어와, <span class="teal">반갑지 않은 존재감을 쓸어간다.</span>
+				<<case 1>>당신은 어떤 존재감을 느낀다. 누군가가 당신의 귀에 숨을 내쉰다. "<span class="wraith">아직은 아니야.</span>" 따뜻한 산들바람이 당신에게 불어와, <span class="teal">반갑지 않은 존재감을 쓸어간다.</span>
 			<</switch>>
-			당신은 당신이 혼자 있다고 생각한다.<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
+			희미한 안개가 공기 중에서 사라진다. 당신은 당신이 혼자 있다고 생각한다.<<trauma 2>><<stress 4>><<gtrauma>><<gstress>>
 		<<default>>
 			<<personsimplePost>> 하나가 옆으로 지나친다. <span class="teal"><<He_ nun>> 당신을 흘낏 쳐다보지도 않는다.</span>
 	<</switch>>
@@ -1044,7 +1082,7 @@
 			<<else>>
 				상대방을 마주본다.
 			<</if>>
-		<<case "Wraith">>
+		<<case "Ivory Wraith">>
 			당신 주위의 공기가 차가워진다. 본능적으로 움직여, 당신은 뒤로 돌고 <<wraithEyes>> 눈 한 쌍이 마주 응시하고 있다는 것을 알아차린다.
 		<<default>>
 			당신은 팔을 잡혀 뒤로 당겨져 습격자와 마주한다.			
@@ -1052,24 +1090,40 @@
 <</widget>>
 
 <<widget "stalk_nnpc_name">>
-	<<if $stalk_assess>>
-		<<NPCdesc_ ga $NPCList[0].fullDescription>>
+	<<if $NPCList[0].fullDescription is "Ivory Wraith">>
+		<<if $stalk_assess>>
+			창백한 형체가
+		<<else>>
+			누군가가
+		<</if>>
 	<<else>>
-		<<personsimple_ i>>
+		<<if $stalk_assess>>
+			<<NPCdesc_ ga $NPCList[0].fullDescription>>
+		<<else>>
+			<<personsimple_ i>>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "stalk_img">>
-<<if $images is 1>>
+<<if $options.images is 1>>
 	<br><br>
 	<div class="div_stalk">
 	<<for _i to 0; _i lt 8; _i++>>
 		<img @class="'stalk_' + _i" src="img/misc/stalk/base.png">
 	<</for>>
+	<<if $NPCList[0].fullDescription is "Ivory Wraith" and $stalk_assess>>
+		<<set $_stalker to "_wraith">>
+	<<else>>
+		<<set $_stalker to "">>
+	<</if>>
 	<<if $NPCList[0].distance is 0 and $NPCList[0].state isnot "pursuit" or $stalk_end is "hide">>
-		<<if $stalk_end>>
+		<<if $stalk_end is "confront">>
+			<img class="stalk_3" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 			<img class="stalk_4" src="img/misc/stalk/pc.png">
-			<img class="stalk_5" src="img/misc/stalk/safe_npc.png">
+		<<elseif $stalk_end>>
+			<img class="stalk_4" src="img/misc/stalk/pc.png">
+			<img class="stalk_5" @src="'img/misc/stalk/safe_npc' + $_stalker + '.png'">
 		<<else>>
 			<img class="stalk_4" src="img/misc/stalk/caught.png">
 		<</if>>
@@ -1077,12 +1131,12 @@
 		<<if $NPCList[0].distance lt 4>>
 			<<if $NPCList[0].state is "pursuit">>
 				<<set _stalk_position to 4 + $NPCList[0].distance>>
-				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/npc.png">
+				<img @class="'stalk_' + _stalk_position" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/clothes.png">
 			<<elseif $stalk_end is "escaped">>
 			<<else>>
 				<<set _stalk_position to 4 - $NPCList[0].distance>>
-				<img @class="'stalk_' + _stalk_position" src="img/misc/stalk/npc.png">
+				<img @class="'stalk_' + _stalk_position" @src="'img/misc/stalk/npc' + $_stalker + '.png'">
 			<</if>>
 		<</if>>
 		<img class="stalk_4" src="img/misc/stalk/pc.png">

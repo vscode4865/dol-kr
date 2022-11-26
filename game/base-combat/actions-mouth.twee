@@ -1,27 +1,37 @@
 :: Widgets Actions Mouth FlavorText [widget]
 <<widget "breastFlavorText">>
-	<<set _j to ($NPCList.findIndex(x => x.chest is "mouthentrance"))>><<personselect _j>>
-	당신의 머리가
-	<<if $enemyno gte 2>>
-		<<persons_ yi>>
-	<<else>>
-		<<his_ yi>>
+	<<set _j to ($NPCList.findIndex(x => x.chest is "mouthentrance"))>>
+	<<if _j gte 0>>
+		<<personselect _j>>
+		당신의 머리가
+		<<if $enemyno gte 2>>
+			<<persons_ yi>>
+		<<else>>
+			<<his_ yi>>
+		<</if>>
+		<<trBreastsdesc $NPCList[_j].breastsdesc>>_trResult<<print ($NPCList[_j].breastsize gte 6?" 사이에":"에 대고")>> 눌린다.
+	<<elseif $debug or $debugdisable is "f">>
+		Errors.report("breastFlavorText failed to find correct index, ignoring")
 	<</if>>
-	<<trBreastsdesc $NPCList[_j].breastsdesc>>_trResult<<print ($NPCList[_j].breastsize gte 6?" 사이에":"에 대고")>> 눌린다.
 <</widget>>
 
 <<widget "nippleFlavorText">>
-	<<set _j to ($NPCList.findIndex(x => x.chest is "mouth"))>><<personselect _j>>
-	당신의 머리가
-	<<if $enemyno gte 2>>
-		<<persons_ yi>>
-	<<else>>
-		<<his_ yi>>
+	<<set _j to ($NPCList.findIndex(x => x.chest is "mouth"))>>
+	<<if _j gte 0>>
+		<<personselect _j>>
+		당신의 머리가
+		<<if $enemyno gte 2>>
+			<<persons_ yi>>
+		<<else>>
+			<<his_ yi>>
+		<</if>>
+		<<if $NPCList[_j].lactation is 1 and $breastfeedingdisable is "f">>
+			모유가 흐르는
+		<</if>>
+		<<trBreastsdesc $NPCList[_j].breastsdesc>>_trResult에 대고 눌린다.
+	<<elseif $debug or $debugdisable is "f">>
+		Errors.report("nippleFlavorText failed to find correct index, ignoring")
 	<</if>>
-	<<if $NPCList[_j].lactation is 1 and $breastfeedingdisable is "f">>
-		모유가 흐르는
-	<</if>>
-	<<trBreastsdesc $NPCList[_j].breastsdesc>>_trResult에 대고 눌린다.
 <</widget>>
 
 <<widget "facesitFlavorText">>
@@ -201,23 +211,40 @@
 <<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 	<<set _mouthaction["핥는다"] to "lick">>
 <</if>>
+<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $oralskill gte 800>>
+	<<set _mouthaction["애태운다"] to "oraledge">>
+<</if>>
 <<set _mouthaction["밀어낸다"] to "pullaway">>
 <<oralswallownew>>
 <<speak>>
 <</widget>>
 
 <<widget "combatPenisPenetrated">>
-<<set _mouthaction["빤다"] to "suck">>
+<<if $enemyarousal gte $enemyarousalmax and $consensual is 1>>
+	<<set _mouthaction["삼킨다"] to "ejacswallow">>
+<<else>>
+	<<set _mouthaction["빤다"] to "suck">>
+<</if>>
+<<if ($consensual is 0 or (($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore ) and $enemyarousal lte $enemyarousalmax) and $oralskill gte 800>>
+	<<set _mouthaction["애태운다"] to "oraledge">>
+<</if>>
 <<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 	<<set _mouthaction["문다"] to "bite">>
 <</if>>
 <<if $head isnot "grappled" and $head isnot "bound">>
+<<if $enemyarousal gte $enemyarousalmax and $consensual is 1>>
+	<<set _mouthaction["뱉어낸다"] to "ejacspit">>
+<<else>>
 	<<set _mouthaction["밀어낸다"] to "pullaway">>
+<</if>>
 <</if>>
 <</widget>>
 
 <<widget "combatOthervagina">>
 <<set _mouthaction["핥는다"] to "vaginalick">>
+<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $oralskill gte 800>>
+	<<set _mouthaction["애태운다"] to "oraledge">>
+<</if>>
 <<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtaget))>>
 	<<set _mouthaction["문다"] to "bitepussy">>
 <</if>>
@@ -232,6 +259,9 @@
 	<<if $submissive gte 1150>>
 		<<set _mouthaction["항문에 키스한다"] to "analkiss">>
 	<</if>>
+<</if>>
+<<if $consensual is 1 and $head isnot "grappled" and $head isnot "bound" and $mouthuse isnot "facesit">>
+	<<set _mouthaction["밀어낸다"] to "analpull">>
 <</if>>
 <</widget>>
 
