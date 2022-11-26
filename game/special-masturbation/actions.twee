@@ -58,7 +58,7 @@
 	<<if $awareness gte 200 and $worn.genitals.anal_shield isnot 1>>
 		| <label><<radiobutton "$leftaction" "manusentrance" autocheck>> <span class="sub">항문을 문지른다</span> <<combataware 3>></label>
 	<</if>>
-	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> <!-- v0.3.6.2: Player sex toys -->
+	<<if $awareness gte 200 and (["home","brothel","cafe"].includes($location) or _enableSexToys)>> <!-- v0.3.6.2: Player sex toys -->
 		<<if _playerToys.length gte (_sextoysInUse + 1)>>
 			<<set $_playerToysLeft to {}>>
 			<<run _playerToys.forEach((toy,i) => {
@@ -211,12 +211,21 @@
 	<br>
 	| <label><<radiobutton "$leftaction" "mpenisstroker" autocheck>> <span class="sub">자위한다</span></label>
 	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> 손을 뗀다</label>
-
+<<elseif $leftarm is "mdildomouthentrance">>
+	당신은 왼손으로 <<trColour $_lefttoycolour>>_trResult <<sextoy_ rul $_lefttoy>> 당신의 입에 대고 있다.
+	<br>
+	| <label><<radiobutton "$leftaction" "mdildomouth" autocheck>> <span class="sub">입 안에 집어넣는다</span></label>
+	| <label><<radiobutton "$leftaction" "mmouthstopdildo" autocheck>> 손을 치운다</label>
+<<elseif $leftarm is "mdildomouth">>
+	당신은 왼손으로 입 안의 <<trColour $_lefttoycolour>>_trResult <<sextoy_ rul $_lefttoy>> 잡고 있다.
+	<br>
+	| <label><<radiobutton "$leftaction" "mdildopiston" autocheck>> <span class="sub">앞뒤로 움직인다</span></label>
+	| <label><<radiobutton "$leftaction" "mmouthstopdildo" autocheck>> 손을 치운다</label>
 <<elseif $leftarm is "mpickupdildo">>
 	당신은 <<trColour $_lefttoycolour>>_trResult <<sextoy_ rul $_lefttoy>> 왼손으로 잡고 있다.
 	<br>
 	<<if _playerToys[$currentToyLeft].type.includes("stroker")>>
-		<<if $player.penisExist and _playerToys[$currentToyLeft].type.includes("stroker")>>
+		<<if $player.penisExist and _playerToys[$currentToyLeft].type.includes("stroker") and ($penisuse is 0 or $penisuse is "stroker")>>
 			| <label><<radiobutton "$leftaction" "mpenisentrancestroker" autocheck>> <span class="sub">자지로 가져간다</span></label>
 		<</if>>
 	| <label><<radiobutton "$leftaction" "mpenisstopstroker" autocheck>> 손을 뗀다</label>
@@ -225,6 +234,21 @@
 			| <label><<radiobutton "$leftaction" "mvaginaentrancedildo" autocheck>> <span class="sub">보지로 가져간다</span></label>
 		<</if>>
 		| <label><<radiobutton "$leftaction" "manusentrancedildo" autocheck>> <span class="sub">항문으로 가져간다</span></label>
+		<<switch _playerToys[$currentToyLeft].name>>
+			<<case "bullet vibe">>
+				<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$leftaction" "mpenisvibrate" autocheck>> <span class="sub">자지에 대고 있는다</span></label>
+				<<elseif !$player.penisExist and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$leftaction" "mvaginaclitvibrate" autocheck>> <span class="sub">클리토리스에 대고 있는다</span></label>
+				<</if>>
+				| <label><<radiobutton "$leftaction" "mchestvibrate" autocheck>> <span class="sub">젖꼭지에 대고 누른다</span></label>
+			<<case "small dildo" "dildo">>
+				<<if $mouth is 0 and $awareness gte 200>>
+					| <label><<radiobutton "$leftaction" "mdildomouthentrance" autocheck>> <span class="sub">입에 대고 있는다</span></label>
+				<</if>>
+		<</switch>>
+		<<if _playerToys[$currentToyLeft].name is "bullet vibe">>
+		<</if>>
 		| <label><<radiobutton "$leftaction" "mvaginastopdildo" autocheck>> 손을 뗀다</label>
 	<</if>>
 
@@ -246,7 +270,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$leftaction" "mbreastW" autocheck>> <span class="wraith">가슴을 애무한다</span></label>
-		| <label><<radiobutton "$leftaction" "mbreaststopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$leftaction" "mbreaststopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<<elseif $player.penisExist>>
 		<<if $leftaction is "mpenisW">>
 			당신은 당신의 의사와는 무관하게, <<penis_ rul>> 왼손으로 쓰다듬는다.
@@ -255,7 +279,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$leftaction" "mpenisW" autocheck>> <span class="wraith">육봉을 문지른다</span></label>
-		| <label><<radiobutton "$leftaction" "mpenisstopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$leftaction" "mpenisstopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<<else>>
 		<<if $leftaction is "mvaginaW">>
 			당신은 당신의 의사와는 무관하게, <<pussy_ rul>> 왼손으로 쓰다듬는다.
@@ -264,7 +288,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$leftaction" "mvaginaW" autocheck>> <span class="wraith">보지를 문지른다</span></label>
-		| <label><<radiobutton "$leftaction" "mvaginastopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$leftaction" "mvaginastopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<</if>>
 <</if>>
 <<if $leftarm isnot "bound">>
@@ -337,7 +361,7 @@
 	<<if $awareness gte 200 and $worn.genitals.anal_shield isnot 1>>
 		| <label><<radiobutton "$rightaction" "manusentrance" autocheck>> <span class="sub">항문을 문지른다</span> <<combataware 3>></label>
 	<</if>>
-	<<if $awareness gte 200 and ["home","brothel","cafe"].includes($location)>> /* Player sex toys */
+	<<if $awareness gte 200 and (["home","brothel","cafe"].includes($location) or _enableSexToys)>> /* Player sex toys */
 		<<if _playerToys.length gte (_sextoysInUse + 1)>>
 			<<set $_playerToysRight to {}>>
 			<<run _playerToys.forEach((toy,i) => {
@@ -487,12 +511,21 @@
 	<br>
 	| <label><<radiobutton "$rightaction" "mpenisstroker" autocheck>> <span class="sub">자위한다</span></label>
 	| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> 손을 뗀다</label>
-
+<<elseif $rightarm is "mdildomouthentrance">>
+	당신은 오른손으로 <<trColour $_righttoycolour>>_trResult <<sextoy_ rul $_righttoy>> 당신의 입에 대고 있다.
+	<br>
+	| <label><<radiobutton "$rightaction" "mdildomouth" autocheck>> <span class="sub">입 안에 집어넣는다</span></label>
+	| <label><<radiobutton "$rightaction" "mmouthstopdildo" autocheck>> 손을 치운다</label>
+<<elseif $rightarm is "mdildomouth">>
+	당신은 오른손으로 입 안의 <<trColour $_righttoycolour>>_trResult <<sextoy_ rul $_righttoy>> 잡고 있다.
+	<br>
+	| <label><<radiobutton "$rightaction" "mdildopiston" autocheck>> <span class="sub">앞뒤로 움직인다</span></label>
+	| <label><<radiobutton "$rightaction" "mmouthstopdildo" autocheck>> 손을 치운다</label>
 <<elseif $rightarm is "mpickupdildo">>
 	당신은 <<trColour $_righttoycolour>>_trResult <<sextoy_ rul $_righttoy>> 오른손으로 잡고 있다.
 	<br>
 	<<if _playerToys[$currentToyRight].type.includes("stroker")>>
-		<<if $player.penisExist>>
+		<<if $player.penisExist and ($penisuse is 0 or $penisuse is "stroker")>>
 			| <label><<radiobutton "$rightaction" "mpenisentrancestroker" autocheck>> <span class="sub">자지로 가져간다</span></label>
 		<</if>>
 		| <label><<radiobutton "$rightaction" "mpenisstopstroker" autocheck>> 손을 뗀다</label>
@@ -501,6 +534,19 @@
 			| <label><<radiobutton "$rightaction" "mvaginaentrancedildo" autocheck>> <span class="sub">보지로 가져간다</span></label>
 		<</if>>
 		| <label><<radiobutton "$rightaction" "manusentrancedildo" autocheck>> <span class="sub">항문으로 가져간다</span></label>
+		<<switch _playerToys[$currentToyRight].name>>
+			<<case "bullet vibe">>
+				<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$rightaction" "mpenisvibrate" autocheck>> <span class="sub">자지에 대고 있는다</span></label>
+				<<elseif !$player.penisExist and !$worn.genitals.type.includes("chastity")>>
+					| <label><<radiobutton "$rightaction" "mvaginaclitvibrate" autocheck>> <span class="sub">클리토리스에 대고 있는다</span></label>
+				<</if>>
+				| <label><<radiobutton "$rightaction" "mchestvibrate" autocheck>> <span class="sub">젖꼭지에 대고 누른다</span></label>
+			<<case "small dildo" "dildo">>
+				<<if $mouth is 0 and $awareness gte 200>>
+					| <label><<radiobutton "$rightaction" "mdildomouthentrance" autocheck>> <span class="sub">입에 대고 있는다</span></label>
+				<</if>>
+		<</switch>>
 		| <label><<radiobutton "$rightaction" "mvaginastopdildo" autocheck>> 손을 뗀다</label>
 	<</if>>
 
@@ -522,7 +568,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$rightaction" "mpenisW" autocheck>> <span class="wraith">육봉을 문지른다</span></label>
-		| <label><<radiobutton "$rightaction" "mpenisstopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$rightaction" "mpenisstopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<<elseif $lactating and $breastfeedingdisable is "f">>
 		<<if $rightaction is "mbreastW">>
 			당신은 당신의 의사와는 무관하게, <<breasts_ rul>> 오른손으로 꼬집고 짓누른다.
@@ -531,7 +577,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$rightaction" "mbreastW" autocheck>> <span class="wraith">가슴을 애무한다</span></label>
-		| <label><<radiobutton "$rightaction" "mbreaststopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$rightaction" "mbreaststopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<<else>>
 		<<if $rightaction is "mvaginaW">>
 			당신은 당신의 의사와는 무관하게, <<pussy_ rul>> 오른손으로 쓰다듬는다.
@@ -540,7 +586,7 @@
 		<</if>>
 		<br>
 		| <label><<radiobutton "$rightaction" "mvaginaW" autocheck>> <span class="wraith">보지를 문지른다</span></label>
-		| <label><<radiobutton "$rightaction" "mvaginastopW" autocheck>> <Span class="brat">팔을 움직이지 않게 힘을 준다</span></label>
+		| <label><<radiobutton "$rightaction" "mvaginastopW" autocheck>> <span class="brat">손을 움직이지 않게 한다</span></label>
 	<</if>>
 <</if>>
 <<if $rightarm isnot "bound">>
@@ -572,7 +618,9 @@
 <</if>>
 
 /* Mouth Actions */
-<<if $moorPhallusPlant or $awareness gte 200>>
+<<if $moorPhallusPlant or $awareness gte 200 or $mouth isnot 0>>
+	<<set _corruptionCheck to $corruptionMasturbation and $awareness lt 200>>
+	<<set _awarenessCheck to $corruptionMasturbation or $awareness gte 200>>
 	<<set $mouthaction to $mouthactiondefault>>
 	<<if $mouth is 0>>
 		<br><br>
@@ -588,43 +636,59 @@
 			<</if>>
 		<</for>>
 
-		<<if _hasAphrodisiac is true>>
-			| <label><<radiobutton "$mouthaction" "maphropill" autocheck>> 미약을 한 개 삼킨다<<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _hasAphrodisiac is true and $awareness gte 200>>
+			| <label><<radiobutton "$mouthaction" "maphropill" autocheck>> 미약을 삼킨다 <<combataware 3>></label>
 		<</if>>
 
-		<<if $_genitals_exposed>>
+		<<if $_genitals_exposed and $awareness gte 200>>
 			<<if $canSelfSuckPenis and $penisuse is 0>>
-				| <label><<radiobutton "$mouthaction" "mpenisentrance" autocheck>> <span class="sub">당신의 자지를 핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+				| <label><<radiobutton "$mouthaction" "mpenisentrance" autocheck>> <span class="sub">자지를 핥는다</span> <<combataware 3>></label>
 			<</if>>
 			<<if $canSelfSuckVagina and $vaginause is 0 and $fingersInVagina is 0>>
-				| <label><<radiobutton "$mouthaction" "mvaginaentrance" autocheck>> <span class="sub">당신의 보지를 핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+				| <label><<radiobutton "$mouthaction" "mvaginaentrance" autocheck>> <span class="sub">보지를 핥는다</span> <<combataware 3>></label>
 			<</if>>
 		<</if>>
 		<<if $moorPhallusPlant is 1>>
-			| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">자지 모양 식물을 핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">자지 모양 식물을 핥는다</span></label>
 		<</if>>
 		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> 가만히 둔다</label>
 
 	<<elseif $mouth is "mpenisentrance">>
 		<br><br>
-		당신의 입은 자신의 자지 앞에 있다.
+		<<if _corruptionCheck>>
+			<span class="red">귓속의 슬라임이 당신의 입을 자지 앞에 두도록 강요하고 있다.</span>
+		<<else>>
+			당신의 입은 자신의 자지 앞에 있다.
+		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenislick" autocheck>> <span class="sub">당신의 자지를 핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mpenistakein" autocheck>> <span class="sub">그것을 입에 넣는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mpenislick" autocheck>> <span class="sub">자지를 핥는다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mpenistakein" autocheck>> <span class="sub">입에 집어넣는다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+		<</if>>
 		| <label><<radiobutton "$mouthaction" "mpenisstop" autocheck>> 입을 치운다</label>
 		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> 가만히 둔다</label>
 
 	<<elseif $mouth is "mvaginaentrance">>
 		<br><br>
-		당신의 입은 자신의 보지 앞에 있다.
+		<<if _corruptionCheck>>
+			<span class="red">귓속의 슬라임이 당신의 보지를 핥도록 강요하고 있다.</span>
+		<<else>>
+			당신의 입은 자신의 보지 앞에 있다.
+		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mvaginalick" autocheck>> <span class="sub">당신의 보지를 핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mvaginaclit" autocheck>> <span class="sub">클리토리스에 집중한다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mvaginalick" autocheck>> <span class="sub">보지를 핥는다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			| <label><<radiobutton "$mouthaction" "mvaginaclit" autocheck>> <span class="sub">클리토리스에 집중한다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+		<</if>>
 		| <label><<radiobutton "$mouthaction" "mvaginastop" autocheck>> 입을 치운다</label>
 
 	<<elseif $mouth is "mpenis">>
 		<br><br>
-		당신은 스스로의 자지를 빨고 있다.
+		<<if _corruptionCheck>>
+			<span class="red">귓속의 슬라임이 당신의 자지를 빨도록 강요하고 있다.</span>
+		<<else>>
+			당신은 스스로의 자지를 빨고 있다.
+		<</if>>
 		<<if $selfsuckDepth is $selfsuckLimit>>
 			당신은 자지 전체를 입<<if $selfsuckDepth gte 2>>과 목구멍에<</if>>에 넣고 있다.
 		<<else>>
@@ -636,9 +700,12 @@
 			<</switch>>
 		<</if>>
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenissuck" autocheck>> <span class="sub">당신의 자지를 빤다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		<<if $selfsuckDepth lt $selfsuckLimit>>
-			| <label><<radiobutton "$mouthaction" "mpenisdeepthroat" autocheck>> <span class="sub">그것을 더 깊이 넣는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		
+		<<if _awarenessCheck>>
+			| <label><<radiobutton "$mouthaction" "mpenissuck" autocheck>> <span class="sub">자지를 빤다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			<<if $selfsuckDepth lt $selfsuckLimit>>
+				| <label><<radiobutton "$mouthaction" "mpenisdeepthroat" autocheck>> <span class="sub">더 깊이 집어넣는다</span> <<if !_corruptionCheck>><<combataware 3>><</if>></label>
+			<</if>>
 		<</if>>
 		<<if $selfsuckDepth gte 1>>
 			| <label><<radiobutton "$mouthaction" "mpenispullback" autocheck>> 뒤로 뺀다</label>
@@ -648,20 +715,43 @@
 		<<if $selfsuckDepth lte 1>>
 			| <label><<radiobutton "$mouthaction" "mpenisstop" autocheck>> 입을 치운다</label>
 		<</if>>
-
+	<<elseif $mouth is "mdildomouthentrance">>
+		<br><br>
+		<<if $leftarm is "mdildomouthentrance">>
+			당신의 <<trColour $_lefttoycolour>>_trResult <<sextoy_ nun $_lefttoy>>
+		<<else>>
+			당신의 <<trColour $_righttoycolour>>_trResult <<sextoy_ nun $_righttoy>>
+		<</if>>
+		당신의 입 앞에 있다.
+		<br>
+		| <label><<radiobutton "$mouthaction" "mdildolick" autocheck>> <span class="sub">핥는다</span></label>
+		| <label><<radiobutton "$mouthaction" "mdildokiss" autocheck>> <span class="sub">키스한다</span></label>
+		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> 가만히 둔다</label>
+	<<elseif $mouth is "mdildomouth">>
+		<br><br>
+		<<if $leftarm is "mdildomouth">>
+			당신의 <<trColour $_lefttoycolour>>_trResult <<sextoy_ nun $_lefttoy>>
+		<<else>>
+			당신의 <<trColour $_righttoycolour>>_trResult <<sextoy_ nun $_righttoy>>
+		<</if>>
+		당신의 입 안에 있다.
+		<br>
+		| <label><<radiobutton "$mouthaction" "mdildolick" autocheck>> <span class="sub">핥는다</span></label>
+		| <label><<radiobutton "$mouthaction" "mdildosuck" autocheck>> <span class="sub">빤다</span></label>
+		| <label><<radiobutton "$mouthaction" "mrest" autocheck>> 가만히 둔다</label>
 	<<elseif $mouth is "mpenisflowerlick">>
 		<br><br>
 		당신은 자지 모양 식물을 핥고 있다.
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
-		| <label><<radiobutton "$mouthaction" "mpenisflowertakein" autocheck>> <span class="sub">그것을 입에 넣는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowerlick" autocheck>> <span class="sub">핥는다</span></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowertakein" autocheck>> <span class="sub">입에 집어넣는다</span></label>
 		| <label><<radiobutton "$mouthaction" "mpenisflowerstop" autocheck>> 입을 치운다</label>
 
 	<<elseif $mouth is "mpenisflowersuck">>
 		<br><br>
 		당신은 자지 모양 식물을 빨고 있다.
 		<br>
-		| <label><<radiobutton "$mouthaction" "mpenisflowersuck" autocheck>> <span class="sub">핥는다</span> <<if !$moorPhallusPlant>><<combataware 3>><</if>></label>
+		| <label><<radiobutton "$mouthaction" "mpenisflowersuck" autocheck>> <span class="sub">핥는다</span></label>
 		| <label><<radiobutton "$mouthaction" "mpenisflowersuckstop" autocheck>> 입을 치운다</label>
 	<</if>>
 <</if>>

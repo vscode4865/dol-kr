@@ -117,7 +117,7 @@ Forth argument - item index*/
 	<<warmth _temp_choice.warmth>>
 	<br><br>
 	<<shoptraits>>
-	<<set _slimeSlots to ["over_upper","over_lower","upper","lower","under_upper","under_lower"]>>
+	<<set _slimeSlots to setup.clothingLayer.torso>>
 	<<if !_slimeSlots.includes($clothingShopSlot) or currentSkillValue('willpower') gte 800 or _temp_choice.reveal gte 500 or _temp_choice.type.includesAny("school", "event") or $corruption_slime lt 80>>
 		<<if _temp_choice.colour_options.length gt 1>>
 			<<run _temp_choice.colour_options.pushUnique("random")>>
@@ -162,7 +162,7 @@ Forth argument - item index*/
 			<br>
 			<<shopCustomColors>>
 		<</if>>
-		<<if $images is 1>>
+		<<if $options.images is 1>>
 			<input type="button" value="Image" onclick="Wikifier.wikifyEval('<<shopFullImageToggle>>');">
 			<br>
 			<div id="shopFullImage" @class="($shopDefaults.invertImagesHidden is true? '' : ' hidden')"><<shopFullImage $clothingShopSlot $clothes_choice>></div>
@@ -386,7 +386,7 @@ Forth argument - item index*/
 		<br>
 	<<elseif $shopListStartCount gte $shopListMax or _listCount is $shopListMax + $shopListStartCount>>
 		<<if $shopListStartCount gte $shopListMax>>
-			<<link [["이전 페이지"|$passage]]>>
+			<<link [[이전 페이지|$passage]]>>
 				<<run $shopListStartCount -= $shopListMax>>
 			<</link>>
 			<<set _extrabr to true>>
@@ -399,7 +399,7 @@ Forth argument - item index*/
 		<<print Math.floor(_trueListCount / $shopListMax) + 1>> |
 		<<if _listCount is $shopListMax + $shopListStartCount>>
 
-			<<link [["다음 페이지"|$passage]]>>
+			<<link [[다음 페이지|$passage]]>>
 				<<run $shopListStartCount += $shopListMax>>
 			<</link>>
 			<<set _extrabr to true>>
@@ -506,6 +506,9 @@ Forth argument - item index*/
 			<<set _clothesDesc to "당신을 끌고 다니기에 편리한 손잡이.">>
 		<<case "event">>
 			<<set _clothesDesc to "특별한 행사를 위한 특별한 옷.">>
+		<<case "pushup">>
+			<<set _clothesTrait to "보정">>
+			<<set _clothesDesc to "가슴을 크게 보이게 한다.">>
 		<<default>>
 			<<set $noTraitDescription to 1>>
 	<</switch>>
@@ -558,7 +561,7 @@ Forth argument - item index*/
 <br>
 <label><<print '<<checkbox "$shopDefaults.invertCustomColorsHidden" false true '+($shopDefaults.invertCustomColorsHidden is true? "checked" : "")+'>>'>> 기본으로 커스텀 색상을 표시합니다.</label>
 <br>
-<<if $images is 1>>
+<<if $options.images is 1>>
 <label><<print '<<checkbox "$shopDefaults.invertImagesHidden" false true '+($shopDefaults.invertImagesHidden is true? "checked" : "")+'>>'>> 기본으로 옷 이미지를 표시합니다.</label>
 <br>
 <</if>>
@@ -791,7 +794,7 @@ __커스텀 색상__
 <br>
 이름: <input id="colorName" type="text" value="커스텀" maxlength="30" onfocus="V.tempDisable = true;">
 <br>
-<<link [["설정 저장"|$passage]]>>
+<<link [[설정 저장|$passage]]>>
 	<<script>>
 		T.colorName = document.getElementById("colorName").value.replace(/[^a-zA-Z가-힣 0-9]+/g,"");
 	<</script>>
@@ -988,11 +991,25 @@ __커스텀 색상__
 		"mummyfacewrap":"locked",
 		"mummytop":"locked",
 		"mummyskirt":"locked",
+		"cowbell":"locked",
+		"featheredhairclip":"locked",
 		"catsuit":"locked",
 		"holystole":"locked",
-		"minisnowman":"locked"
+		"minisnowman":"locked",
+		"cowbra":"locked",
+		"cowpanties":"locked",
+		"cowsocks":"locked",
+		"cowsleeves":"locked",
+		"bellydancer'sveil":"locked",
+		"rose":"locked",
+		"scarecrowshirt":"locked",
+		"scarecrowhat":"locked",
+		"skeletonmask":"locked",
+		"skeletonoutfit":"locked",
+		"classyvampirejacket":"locked"
 	}>>
 <</if>>
+<!-- the following lines are for backwards compatibility with older saves. if you want to add a new item, add it above as well. -->
 <<if $specialClothes.cowbell is undefined>>
 	<<set $specialClothes.cowbell to "locked">>
 <</if>>
@@ -1024,6 +1041,13 @@ __커스텀 색상__
 	<<set $specialClothes.scarecrowshirt to "locked">>
 	<<set $specialClothes.scarecrowhat to "locked">>
 <</if>>
+<<if $specialClothes.skeletonmask is undefined>>
+	<<set $specialClothes.skeletonmask to "locked">>
+	<<set $specialClothes.skeletonoutfit to "locked">>
+<</if>>
+<<if $specialClothes.classyvampirejacket is undefined>>
+	<<set $specialClothes.classyvampirejacket to "locked">>
+<</if>>
 <</widget>>
 
 <<widget "specialClothesUpdate">>
@@ -1033,7 +1057,7 @@ __커스텀 색상__
 <<if $undergroundbrothelescaped>>
 	<<set $specialClothes["slutshirt"] to "unlocked">>
 <</if>>
-<<if $yeardays gte 47 and $yeardays lte 90>>
+<<if $halloween is 1>>
 	<<set $specialClothes["witchdress"] to "unlocked">>
 	<<set $specialClothes["vampirejacket"] to "unlocked">>
 	<<set $specialClothes["witchhat"] to "unlocked">>
@@ -1043,8 +1067,11 @@ __커스텀 색상__
 	<<set $specialClothes["mummyskirt"] to "unlocked">>
 	<<set $specialClothes["scarecrowshirt"] to "unlocked">>
 	<<set $specialClothes["scarecrowhat"] to "unlocked">>
+	<<set $specialClothes["skeletonmask"] to "unlocked">>
+	<<set $specialClothes["skeletonoutfit"] to "unlocked">>
+	<<set $specialClothes["classyvampirejacket"] to "unlocked">>
 <</if>>
-<<if $yeardays gte 102 and $yeardays lte 181>>
+<<if $christmas is 1>>
 	<<set $specialClothes["christmasdress"] to "unlocked">>
 	<<set $specialClothes["christmasshirt"] to "unlocked">>
 	<<set $specialClothes["christmastrousers"] to "unlocked">>
@@ -1052,7 +1079,7 @@ __커스텀 색상__
 	<<set $specialClothes["christmaslegwarmers"] to "unlocked">>
 	<<set $specialClothes["minisnowman"] to "unlocked">>
 <</if>>
-<<if $yeardays gte 156 and $yeardays lte 181>>
+<<if $valentines is 1>>
 	<<set $specialClothes["rose"] to "unlocked">>
 <</if>>
 <<if $brothelshowdata.intro>>
@@ -1094,53 +1121,9 @@ __커스텀 색상__
 <<if $grace gte 100>>
 	<<set $specialClothes["holystole"] to "unlocked">>
 <</if>>
-<<set _count to 0>>
-<<for $_label, $_value range $specialClothes>>
-	<<if $_value is "unlocked">>
-		<<set _count++>>
-	<</if>>
-<</for>>
-<<if _count is Object.keys($specialClothes).length>>
+
+<<if Object.values($specialClothes).every(item => item is "unlocked")>>
 	<<earnFeat "Curious Attire">>
-<</if>>
-/*Fix for previous save issue when starting without the specialClothing boost, should not be adjusted unless a similar issue occurs*/
-<<if $featsBoosts is undefined>>
-<<elseif $featsBoosts.upgrades.specialClothing is 40>>
-	<<set $specialClothes["serafuku"] to "unlocked">>
-	<<set $specialClothes["slutshirt"] to "unlocked">>
-	<<set $specialClothes["witchdress"] to "unlocked">>
-	<<set $specialClothes["vampirejacket"] to "unlocked">>
-	<<set $specialClothes["witchhat"] to "unlocked">>
-	<<set $specialClothes["witchshoes"] to "unlocked">>
-	<<set $specialClothes["mummyfacewrap"] to "unlocked">>
-	<<set $specialClothes["mummytop"] to "unlocked">>
-	<<set $specialClothes["mummyskirt"] to "unlocked">>
-	<<set $specialClothes["christmasdress"] to "unlocked">>
-	<<set $specialClothes["christmasshirt"] to "unlocked">>
-	<<set $specialClothes["christmastrousers"] to "unlocked">>
-	<<set $specialClothes["christmashat"] to "unlocked">>
-	<<set $specialClothes["christmaslegwarmers"] to "unlocked">>
-	<<set $specialClothes["bellydancer'stop"] to "unlocked">>
-	<<set $specialClothes["bellydancer'sbottoms"] to "unlocked">>
-	<<set $specialClothes["bellydancer'sveil"] to "unlocked">>
-	<<set $specialClothes["loincloth"] to "unlocked">>
-	<<set $specialClothes["chefhat"] to "unlocked">>
-	<<set $specialClothes["fedora"] to "unlocked">>
-	<<set $specialClothes["holypendant"] to "unlocked">>
-	<<set $specialClothes["darkpendant"] to "unlocked">>
-	<<set $specialClothes["stonependant"] to "unlocked">>
-	<<set $specialClothes["cowbell"] to "unlocked">>
-	<<set $specialClothes["cowbra"] to "unlocked">>
-	<<set $specialClothes["cowpanties"] to "unlocked">>
-	<<set $specialClothes["cowsocks"] to "unlocked">>
-	<<set $specialClothes["cowsleeves"] to "unlocked">>
-	<<set $specialClothes["featheredhairclip"] to "unlocked">>
-	<<set $specialClothes["catsuit"] to "unlocked">>
-	<<set $specialClothes["holystole"] to "unlocked">>
-	<<set $specialClothes["minisnowman"] to "unlocked">>
-	<<set $specialClothes["rose"] to "unlocked">>
-	<<set $specialClothes["scarecrowshirt"] to "unlocked">>
-	<<set $specialClothes["scarecrowhat"] to "unlocked">>
 <</if>>
 
 <</widget>>
@@ -1149,18 +1132,18 @@ __커스텀 색상__
 <<if _specialClothesHint is undefined>>
 	<<set _specialClothesHint to {
 		"witchdress":"10월 21일부터 판매한다.",
-		"christmasdress":"12월 15일부터 판매한다.",
+		"christmasdress":"12월 18일부터 판매한다.",
 		"serafuku":"교장 선생님의 비밀을 밝힌다.",
 		"vampirejacket":"10월 21일부터 판매한다.",
 		"slutshirt":"지하 창관의 노예생활에서 살아남는다.",
-		"christmasshirt":"12월 15일부터 판매한다.",
+		"christmasshirt":"12월 18일부터 판매한다.",
 		"bellydancer'stop":"창관의 쇼에서 주역을 제안받는다.",
-		"christmastrousers":"12월 15일부터 판매한다.",
+		"christmastrousers":"12월 18일부터 판매한다.",
 		"bellydancer'sbottoms":"창관의 쇼에서 주역을 제안받는다.",
 		"bellydancer'sveil":"창관의 쇼에서 주역을 제안받는다.",
 		"loincloth":"외로운 사냥꾼과 친구가 되거나, 늑대 무리의 일원이 된다.",
 		"witchhat":"10월 21일부터 판매한다.",
-		"christmashat":"12월 15일부터 판매한다.",
+		"christmashat":"12월 18일부터 판매한다.",
 		"chefhat":"당신의 크림빵으로 유명해진다.",
 		"fedora":"바텐더 일을 하며 엿듣고 진행중인 범죄에 대해 알아낸다.",
 		"holypendant":"무료 급식소를 발견한다.",
@@ -1171,7 +1154,7 @@ __커스텀 색상__
 		"cowpanties":"가축이 된다.",
 		"cowsocks":"가축이 된다.",
 		"cowsleeves":"가축이 된다.",
-		"christmaslegwarmers":"12월 15일부터 판매한다.",
+		"christmaslegwarmers":"12월 18일부터 판매한다.",
 		"witchshoes":"10월 21일부터 판매한다.",
 		"mummyfacewrap":"10월 21일부터 판매한다.",
 		"mummytop":"10월 21일부터 판매한다.",
@@ -1179,16 +1162,19 @@ __커스텀 색상__
 		"featheredhairclip":"새와 사랑에 빠진다.",
 		"catsuit":"수송품을 약탈한다.",
 		"holystole":"사원에 충분한 헌신을 한다.",
-		"minisnowman":"12월 15일부터 판매한다.",
+		"minisnowman":"12월 18일부터 판매한다.",
 		"rose":"2월 7일부터 판매한다.",
 		"scarecrowshirt":"10월 21일부터 판매한다.",
-		"scarecrowhat":"10월 21일부터 판매한다."
+		"scarecrowhat":"10월 21일부터 판매한다.",
+		"skeletonoutfit":"10월 21일부터 판매한다.",
+		"skeletonmask":"10월 21일부터 판매한다.",
+		"classyvampirejacket":"10월 21일부터 판매한다."
 	}>>
 <</if>>
 <</widget>>
 
 <<widget "updatesidebarimg">>
-	<<if $images is 1>>
+	<<if $options.images is 1>>
 		<<if $passage is "Start">>
 			<<startingPlayerImageUpdate>>
 		<<else>>

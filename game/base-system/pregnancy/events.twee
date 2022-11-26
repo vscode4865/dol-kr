@@ -49,6 +49,10 @@
 	<<link [[항문의 후타나리 기생충 제거에 대해 묻는다 (0:30)|Remove Futa Pregnancy]]>><<pass 30>><<set $futaCheck to true>><<set $firstOption to false>><</link>>
 	<br>
 <</if>>
+<<if $sexStats.anus.pregnancy.typesSeen.length gte 4 and $sexStats.anus.pregnancy.book is 1>>
+	<<link [[Inquire about information on parasites (0:05)|Harper Parasite Book]]>><<pass 5>><<set $firstOption to false>><</link>>
+	<br>
+<</if>>
 
 <<link [[대기실로 돌아간다|Hospital Foyer]]>><<endevent>><<unset $firstOption>><</link>>
 
@@ -61,6 +65,24 @@
 <br><br>
 "지역 사회는 고마워할 거다," <<he_ ga>> 말한다.
 <br><br>
+<<set _paleAmount to 0>>
+<<for _i to 0; _i lt $container.portable.creatures.length; _i++>>
+	<<if $container.portable.creatures[_i].creature.includes("Pale")>>
+		<<set _wraithMessage to true>>
+		<<set _paleAmount++>>
+	<</if>>
+<</for>>
+<<if $wraith.state and _wraithMessage is true>>
+	<<set $wraith.offspring to "sold">>
+	<<set $wraithCompoundChance to ($wraithCompoundChance ? $wraithCompoundChance += 10 : 10)>>
+	<<if $wraithAngerCooldown>>
+		<<set $wraithAngerCooldown += (15 * _wraithAmount)>>
+	<<else>>
+		<<set $wraithAngerCooldown to (15 * _wraithAmount)>>
+	<</if>>
+	You feel a sudden sense of dread and regret as you watch your pale child<<if _paleAmount gt 1>>ren<</if>> slip out of your reach. <<gobsession _wraithAmount>>
+	<br><br>
+<</if>>
 <<set $container.portable.value to 0>>
 <<set $container.portable.creatures to []>>
 <<link [[다음|Pregnancy Discussion]]>><</link>>
@@ -133,14 +155,14 @@
 <</if>>
 
 <<He_ nun>> 다른 서랍을 열고, 동그란 구슬이 끝에 달린 매끈한 하얀 막대를 꺼낸다. <<He_ nun>> 그것의 얇은 끝을 당신의 <<bottomPost>>에 밀어넣는다. "그냥 긴장을 풀고 있거라,<<if pregnancyBellyVisible()>> 이건 아기를 해치지 않으니까,<</if>>" <<he_ ga>> 말한다. 그것은 마치 윤활제가 발린 듯이, 아픔 없이 미끄러져 들어온다. 하퍼가 반대쪽 끝을 이리저리 비틀자, 당신은 당신 안에서 그것이 고동치는 것을 느낀다.
-<<garousal>><<arousal 1200>>
+<<garousal>><<arousal 1200 "bottom">>
 <br><br>
 
 그 고동의 세기가 점점 세지는 동안 하퍼는 눈도 깜박이지 않고 당신의 <<bottom_ ul>> 주시한다. 당신이 더 이상 참을 수 없다고 느끼려는 찰나, <<he_ ga>> 그것을 빼낸다. 그 <<if _pregnancy.namesChildren is true>>아기는<<else>>기생충은<</if>><<if _extra is true>> 더 작은 녀석과 함께<</if>> 그 끝에 감겨 있다. <<He_ nun>> 그것을 불투명한 상자 안에 넣고, 상자를 꽉 닫는다.
 <br><br>
 
 "다 됐다," <<he_ ga>> 끈을 풀며 말한다. <<He_ nun>> 당신이 옷을 다시 입을 동안 뒤로 몸을 돌린다.
-<br><br><br><br>
+<br><br>
 <<link [[다음|Pregnancy Discussion]]>><<unset $futaCheck>><</link>>
 
 :: GiveBirth
@@ -148,13 +170,14 @@
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
 <<set _pregnancy.feltMovement to false>>
-<<set _container to $container[$location]>>
+<<set _container to $container[$phase]>>
 <<set $pregResult to "notReady">>
 <<set _stressMulti to 2 - _pregnancy.motherStatus>>
 <<set $checkboxResult to {}>>
 <<set $checkboxReplace to {}>>
 <<set $parasiteSelectionCount to 0>>
-<<set _vine to 0>><<set _metal to 0>><<set _pale to 0>>
+<<set _newlyBirthed to {}>>
+<<set _allSeen to _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length>>
 
 하퍼 선생님이 알려준 방법대로, 당신은 자세를 잡고 <<if _pregnancy.namesChildren is true>>당신의 아기를<<else>>기생충들을<</if>> 낳으려 시도한다. <<if _stressMulti gt 0>><<gstress>><</if>><<set $stress += 250 * _stressMulti>>
 <br><br>
@@ -165,7 +188,7 @@
 	<</if>>
 	<<if _pregnancy[_i].stats.gender isnot "Futa">>
 		<<set _rand to random(0,100)>>
-		<<if (_rand lte 80 and _pregnancy[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy[_i].daysLeft lte 3)>>
+		<<if (_rand lte 80 and _pregnancy[_i].daysLeft is 0) or (_rand lte 50 and _pregnancy[_i].daysLeft lte 1) or (_rand lte 30 and _pregnancy[_i].daysLeft lte 2) or (_rand lte 10 and _pregnancy[_i].daysLeft lte 3) or $parasiteBirthDebug>>
 			<<if $pregResult is "notReady">>
 				<<set $pregResult to [clone(_i)]>>
 			<<else>>
@@ -185,32 +208,56 @@
 
 	<ul>
 		<<for _i to 0; _i lt $pregResult.length; _i++>>
-			<li><label><<print '<<checkbox "$checkboxResult[' + clone($pregResult[_i]) + ']" false true checked>>'>> - <<trCreature "all" _pregnancy[$pregResult[_i]].creature>><<print _trResult>> - <<creatureActivity _pregnancy[$pregResult[_i]].stats.speed>></label></li>
-			<<if _pregnancy[$pregResult[_i]].creature is "Vine">>
-				<<set _vine++>>
-			<</if>>
-			<<if _pregnancy[$pregResult[_i]].creature.includes("Metal")>>
-				<<set _metal++>>
-			<</if>>
-			<<if _pregnancy[$pregResult[_i]].creature.includes("Pale")>>
-				<<set _pale++>>
+			<<set _result to _pregnancy[$pregResult[_i]]>>
+			<!-- Printing the checkbox -->
+			<li><label><<print '<<checkbox "$checkboxResult[' + clone($pregResult[_i]) + ']" false true checked>>'>> - <<print _result.creature>> - <<creatureActivity _result.stats.speed>></label></li>
+			<<if _result.creature.includes(" ")>>
+				<!-- If the creature has a variant, like Pale. Currently does not account for creatures with more than one variant, because those don't yet exist -->
+				<!-- Possible task for the future: turn parasite variants into variables, so there can be multiple -->
+				<<set _split to _result.creature.split(" ")>>
+				<<if !_pregnancy.variantsSeen.includes(_split[0]) and _split[0] isnot _split[1]>>
+					<<set _pregnancy.variantsSeen.pushUnique(_split[0])>>
+					<!-- For Pale Tentacle, this will set _newlyBirthed.Pale to "tentacle" -->
+					<<set _newlyBirthed[_split[0]] to _split[1].toLowerCase()>>
+				<</if>>
+				<<if !_pregnancy.typesSeen.includes(_split[1])>>
+					<<set _pregnancy.typesSeen.pushUnique(_split[1])>>
+					<<set _newlyBirthed[_split[1]] to true>>
+				<</if>>
+			<<else>>
+				<!-- Creatures without variants -->
+				<<if !_pregnancy.typesSeen.includes(_result.creature)>>
+					<<set _pregnancy.typesSeen.pushUnique(_result.creature)>>
+					<<set _newlyBirthed[_result.creature] to true>>
+				<</if>>
 			<</if>>
 		<</for>>
 	</ul>
-	<<if _vine gte 1 and !$containerVine and $location is "home">>
-		<<set $containerVine to true>>
-		당신은 식물아기<<if _vine gte 2>>들이<<else>>가<</if>> 더 나은 환경에 심어지지 않으면 살아남지 못할 거라 걱정했으나, <<if _vine is 1>>그것은<<else>>그들은<</if>> 당신의 <<print $container[$location].name>> 안에서 꿈틀거리는 모습이, 괜찮아 보인다. 당신은 <<if _vine is 1>>그것이<<else>>그들이<</if>> 엄밀하게는 식물이라고 할 수 없다고 의심한다.
+	<<for _n to 0; _n lt Object.values(_newlyBirthed).length; _n++>>
+		<<switch Object.keys(_newlyBirthed)[_n]>>
+			<<case "Tentacle">>
+				You watch the tentacle in fascination. It writhes around blindly and coils around itself, almost like a snake. It's so energetic, just looking at it makes you feel less tired.
+			<<case "Slime">>
+				The slime doesn't move for a while. You poke at it, a little worried, and it jiggles. It has an indescribable consistency. It looks almost without flaw, and you feel <<if _pregnancy.namesChildren is true>>proud to have birthed<<else>>almost proud to have hosted<</if>> such a creature.
+			<<case "Worm">>
+				Almost immediately, the worm tries to find somewhere to dig. It has little success, and squirms in agitation until you place it in the <<print _container.name.toLowerCase()>>. You feel odd, having <<if _pregnancy.namesChildren is true>>birthed<<else>>hosted<</if>> such a creature.
+			<<case "Lurker">>
+				The lurker moves mainly by crawling, but sometimes hops surprising distances. You quickly place it in the <<print _container.name.toLowerCase()>> before you can lose it.
+			<<case "Vine">>
+				당신은 식물아기가 더 나은 환경에 심어지지 않으면 살아남지 못할 거라 걱정했으나, 그것은 당신의 <<print _container.name>> 안에서 꿈틀거리는 모습이, 괜찮아 보인다. 당신은 그것이 엄밀하게는 식물이라고 할 수 없다고 의심한다.
+			<<case "Metal">>
+				더 자세히 검토해 보니, 금속 <<trCreature "all" _newlyBirthed.Metal "은">><<print _trResult>> 완전히 금속이 아니다. 그것은 금속 색상과 무늬가 있긴 하지만, 일반 금속이 할 수 없는 방법으로 구부러지고 꿈틀거린다. 당신은 그것이 특수한 먹이가 필요하지 않기를 바란다.
+			<<case "Pale">>
+				당신의 양손은 마치 그 자신의 의지가 있는 듯이 움직였고, 당신은 당신이 그 창백한 <<trCreature "all" _newlyBirthed.Pale "을">><<print _trResult>> 잡고 있다는 것을 알아챈다. 그것은 너무 창백해서 거의 투명하게 비쳐보인다. 당신은 두려움의 통증을 느꼈으나, 그것은 빠르게 이상한 만족감으로 대체된다.
+				<span class="blue">당신은 그것을 남겨둘지 말지에 대해 조심스럽게 결정하는 것이 좋다.</span>
+			<<default>>
+				<!-- This way, species like Wasp that don't have a unique line don't print <br>s for no reason -->
+				<<continue>>
+		<</switch>>
 		<br><br>
-	<</if>>
-	<<if _metal gte 1 and !$containerMetal and $location is "home">>
-		<<set $containerMetal to true>>
-		더 자세히 검토해 보니, 금속 촉수는 완전히 금속이 아니다. 그것은 금속 색상과 무늬가 있긴 하지만, 일반 금속이 할 수 없는 방법으로 구부러지고 꿈틀거린다. 당신은 그것이 특수한 먹이가 필요하지 않기를 희망했다.
-		<br><br>
-	<</if>>
-	<<if _pale gte 1 and !$containerPale and $location is "home">>
-		<<set $containerPale to true>>
-		당신의 양손은 마치 그 자신의 의지가 있는 듯이 움직였고, 당신은 당신이 그 창백한 생물체<<if _pale gte 2>>들<</if>>을 잡고 있다는 것을 알아챈다. <<if _pale gte 2>>그들은<<else>>그것은<</if>> 너무 창백해서 <<if _pale gte 2>>그들이<<else>>그것이<</if>> 거의 투명하게 비쳐보인다. 당신은 두려움의 통증을 느꼈으나, 그것은 빠르게 이상한 만족감으로 대체된다.
-		<span class="blue">당신은 <<if _pale gte 2>>그들을<<else>>그것을<</if>> 남겨둘지 말지에 대해 조심스럽게 결정하는 것이 좋다.</span>
+	<</for>>
+	<<if _pregnancy.book is 3 and _pregnancy.typesSeen.length + _pregnancy.variantsSeen.length gt _allSeen>>
+		You write about <<if _pregnancy.namesChildren is true>>your new children<<else>>the new parasites<</if>> in your notebook.
 		<br><br>
 	<</if>>
 	<<if $pregResult.length gt (_container.maxCount - _container.count)>>
@@ -235,7 +282,7 @@
 <<widget "PregEventsResult">>
 <<set $outside to 0>><<set $location to $container.lastLocation>><<effects>>
 <<set _pregnancy to $sexStats.anus.pregnancy>>
-<<set _container to $container[$location]>>
+<<set _container to $container[$phase]>>
 <<set $parasiteSelectionCount to 0>>
 <<set $parasiteReplaceArray to []>>
 <<set _availableStorage to (_container.maxCount - _container.count)>>
@@ -280,7 +327,7 @@
 <<elseif $parasiteSelectionCount gt 0>>
 	선택한 양만큼의 공간이 없습니다. <<trNumber $parasiteSelectionCount-_availableStorage>> <<if _pregnancy.namesChildren is true>><<print $parasiteSelectionCount - _availableStorage gt 1 ? '명의 아기들을' : '명의 아기를'>><<else>><<print $parasiteSelectionCount - _availableStorage gt 1 ? '마리의 기생충들을' : '마리의 기생충을'>><</if>> 대체해 주세요.
 	<br>
-	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) is _availableStorage>>
+	<<if ($parasiteSelectionCount - $parasiteReplaceArray.length) lte _availableStorage>>
 		<<if _pregnancy.namesChildren is true>>
 			<<link [[선택한 아기들을 대체한다|PregEventsResult2]]>>
 				<<set $pregChoice to "ReplaceSelected">>
@@ -342,7 +389,7 @@
 			<<moveCreature $pregResult[_i] "portable">>
 		<</if>>
 	<</for>>
-	당신은 <<trNumber $parasiteSelectionCount>> <<if _pregnancy.namesChildren is true>>명의 당신 아기들을<<else>>마리의 기생충들을<</if>> 남겨두기로 결정해서 <<if $parasiteSelectionCount isnot 1>>그들을<<else>>그것을<</if>> <<print $container[$location].name>>의 <<trNumber $parasiteReplaceArray.length>> 자리에 대체해 보관하였고, 나머지는 하퍼 선생님에게 가져갈 준비를 한다.
+	당신은 <<trNumber $parasiteSelectionCount>> <<if _pregnancy.namesChildren is true>>명의 당신 아기들을<<else>>마리의 기생충들을<</if>> 남겨두기로 결정하고, <<if $parasiteSelectionCount isnot 1>>그들을<<else>>그것을<</if>> <<print $container[$phase].name>>의 <<trNumber $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>녀석들과<<else>>녀석과<</if>> 바꾸어 보관하고 나머지는 하퍼 선생님에게 가져갈 준비를 한다.
 	<br><br>
 <<case "KeepSelected">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
@@ -352,19 +399,19 @@
 			<<moveCreature $pregResult[_i] "portable">>
 		<</if>>
 	<</for>>
-	당신은 <<trNumber $parasiteSelectionCount>> <<if _pregnancy.namesChildren is true>>명의 당신 아기들을<<else>>마리의 기생충들을<</if>> 남겨두기로 결정해서 <<if $parasiteSelectionCount isnot 1>>그들을<<else>>그것을<</if>> <<print $container[$location].name>>에 보관하였고, 나머지는 하퍼 선생님에게 가져갈 준비를 한다.
+	당신은 <<trNumber $parasiteSelectionCount>> <<if _pregnancy.namesChildren is true>>명의 당신 아기들을<<else>>마리의 기생충들을<</if>> 남겨두기로 결정하고, <<if $parasiteSelectionCount isnot 1>>그들을<<else>>그것을<</if>> <<print $container[$phase].name>>에 보관하고 나머지는 하퍼 선생님에게 가져갈 준비를 한다.
 	<br><br>
 <<case "keepAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<moveCreature $pregResult[_i] "container">>
 	<</for>>
-	당신은 <<if _pregnancy.namesChildren is true>>당신 아기들을<<else>>기생충들을<</if>> 모두 남겨두기로 결정해서 <<print $container[$location].name>>에 보관한다.
+	당신은 <<if _pregnancy.namesChildren is true>>당신 아기들을<<else>>기생충들을<</if>> 모두 남겨두기로 결정하고, <<print $container[$phase].name>>에 보관한다.
 	<br><br>
 <<case "sellAll">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<moveCreature $pregResult[_i] "portable">>
 	<</for>>
-	당신은 <<if _pregnancy.namesChildren is true>>당신 아기들을<<else>>기생충들을<</if>> 모두 팔기로 결정해서 그들을 하퍼 선생님에게 가져갈 준비를 한다.
+	당신은 <<if _pregnancy.namesChildren is true>>당신 아기들을<<else>>기생충들을<</if>> 모두 팔기로 결정하고, 그들을 하퍼 선생님에게 가져갈 준비를 한다.
 	<br><br>
 <</switch>>
 
@@ -373,6 +420,17 @@
 	<<unset $checkboxResult>><<unset $checkboxReplace>>
 	<<unset $parasiteSelectionCount>><<unset $parasiteReplaceArray>>
 <</link>>
+
+:: Harper Parasite Book
+<<effects>>
+<<set $sexStats.anus.pregnancy.book to 2>>
+Harper nods approvingly. "It's good that you want to know more." <<He>> brings out a rather thick book and shows it to you. "This is a popular reference guide among scientists. It has a lot of information on this subject, but it's property of the hospital. I'm not authorised to lend it out."
+<br><br>
+
+<<He>> thinks for a few seconds. "<span class="gold">The pet shop on High Street may have something.</span> If nothing else, you could pick up a notebook and fill out info you gather yourself."
+<br><br>
+
+<<link [[다음|Pregnancy Discussion]]>><</link>>
 
 
 :: Pregnancy Birth Hospital Passout
@@ -443,25 +501,21 @@ Player gets on the bed, midwife checking the player over and helping to prepare.
 Midwife give the ok to push
 <br><br>
 
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<if _pregnancy.totalBirthEvents gte 5>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<if $_pregnancy.totalBirthEvents gte 5>>
 	<<set _min to 15>>
 	<<set _max to 60>>
-<<elseif _pregnancy.totalBirthEvents gte 3>>
+<<elseif $_pregnancy.totalBirthEvents gte 3>>
 	<<set _min to 30>>
 	<<set _max to 120>>
 <<else>>
 	<<set _min to 60>>
 	<<set _max to 180>>
 <</if>>
-<<for _i to 7; _i gte 0; _i-->>
-	<<if _pregnancy[_i] is null>>
-		<<continue>>
-	<</if>>
-	<<set _max to Math.floor(_max * (1 + Math.floor(_i * 0.2)))>>
-	<<set _min to Math.floor(_min * (1 + Math.floor(_i * 0.2)))>>
-	<<break>>
-<</for>>
+
+<<set _max to Math.floor(_max * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor($_pregnancy.fetus.length * 0.2)))>>
+
 <<set $timeCalc to random(_min, _max)>>
 <<set _hours to Math.floor($timeCalc / 60)>>
 <<set _minutes to $timeCalc % 60>>
@@ -481,7 +535,7 @@ Player pushes and eventually gives birth, and is given the children to hold. Mil
 Player is taken somewhere more comfortable where they can recover and start to have special time with their newborns. Option to name occurs here.
 <br><br>
 /*Debug args[3] "human" should be removed later*/
-/*Debug args[0] should be set to something specific*/
+/*ToDo: Pregnancy - Debug args[0] should be set to the specific location*/
 <<birthUi "test" "Pregnancy Birth Hospital 6" _time>>
 
 :: Pregnancy Birth Hospital 6
@@ -588,14 +642,12 @@ Player re-equips clothes.
 <<if !$player.vaginaExist>>
 	<span class="green">음성이다.</span> 당신은 양성이 나올 수는 있는지 궁금해한다.
 <<else>>
-	<<set _pregnancy to $sexStats.vagina.pregnancy>>
-	<<if _pregnancy.timerStart is null>>
-		<span class="green">음성이다.</span>
-	<<elseif _pregnancy.timerStart is _pregnancy.timer or (between(_pregnancy.timerStart - _pregnancy.timer, 1, 3) and $random(0,100) gte 3) or (between(_pregnancy.timerStart - _pregnancy.timer, 4, 6) and $random(0,100) gte 15)>>
+	<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+	<<if $_pregnancy.fetus.length is 0 or $_pregnancy.timerStart is $_pregnancy.timer or (between($_pregnancy.timerStart - $_pregnancy.timer, 1, 3) and random(0,100) gte 10) or (between($_pregnancy.timerStart - $_pregnancy.timer, 4, 6) and random(0,100) gte 15)>>
 		<span class="green">음성이다.</span>
 	<<else>>
 		<span class="lewd">양성이다.</span> 많은 생각들이 당신의 머리를 스쳐지나가고, 당신은 생각을 가다듬으려 앉는다. <<gstress>><<stress 3>><<garousal>><<arousal 100>>
-		<<set _pregnancy.awareOf to true>>
+		<<set $_pregnancy.awareOf to true>>
 	<</if>>
 <</if>>
 
@@ -619,7 +671,7 @@ Player re-equips clothes.
 
 :: Pregnancy ultrasound
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
 <<harper_intro>>
 <<if $ultrasoundIntro isnot 1>>
 	<<set $ultrasoundIntro to 1>>
@@ -632,18 +684,18 @@ Player is taken somewhere where it occurs, they remove their upper related cloth
 <<upperstrip>>
 <<underupperstrip>>
 
-<<link [[다음|Pregnancy ultrasound 2]]>><</link>>
+<<link [[Next|Pregnancy ultrasound 2]]>><</link>>
 
 :: Pregnancy ultrasound 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
 
 Ultrasound occurs, Dr Harper lets them know what going on.
-<<set _pregnancy to $sexStats.vagina.pregnancy>>
-<<if _pregnancy.currentCount gt 1>>
+<<set $_pregnancy to $sexStats.vagina.pregnancy>>
+<<if $_pregnancy.fetus.length gt 1>>
 	<<set _multiple to true>>
 <<else>>
 	<<set _multiple to false>>
-	<<switch _pregnancy[0].gender>>
+	<<switch $_pregnancy.fetus[0].gender>>
 		<<case "m">>
 			<<set $_he to "he">>
 			<<set $_He to "He">>
@@ -663,75 +715,75 @@ Ultrasound occurs, Dr Harper lets them know what going on.
 			<<set $_gender to "hermaphrodite">>
 	<</switch>>
 <</if>>
-<<switch _pregnancy.type>>
+<<switch $_pregnancy.type>>
 	<<case "human">>
-		<<if _pregnancy.timer gte _pregnancy.timerStart * 0.9>>
+		<<if $_pregnancy.timer gte $_pregnancy.timerStart * 0.9>>
 			<<if _multiple>>
 				아기들이 너무 작아서, 초음파로 간신히 파악할 수 있었다. 아기들의 조그마한 심장은 거의 매초에 한 번씩 박동하고 있다.
-				<<if _pregnancy.currentCount gt 1>>
-					당신은 당신이 <<if _pregnancy.currentCount is 3>>세쌍둥이<<else>>쌍둥이<</if>>를 임신하고 있다는 걸 알았다.
+				<<if $_pregnancy.fetus.length gt 1>>
+					당신은 당신이 <<if $_pregnancy.fetus.length is 3>>세쌍둥이<<else>>쌍둥이<</if>>를 임신하고 있다는 걸 알았다.
 				<</if>>
 			<<else>>
 				아기가 너무 작아서. 초음파로 간신히 파악할 수 있었다. 아기의 조그마한 심장은 거의 매초에 한 번씩 박동하고 있다.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.8>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.8>>
 			<<if _multiple>>
 				아기들은 조그맣지만 당신은 더 세부적인 형태를 볼 수 있다. 당신은 귀와 눈이 형성되기 시작하려는 것을 볼 수 있고, 팔과 다리가 있을 자리에 조그마한 봉오리가 형성되려 하는 걸 볼 수 있다. 아기들의 머리는 나머지 몸에 비해 훨씬 크다.
 			<<else>>
 				아기는 여전히 조그맣지만 당신은 더 세부적인 형태를 볼 수 있다. 당신은 귀와 눈이 형성되기 시작하려는 것을 볼 수 있고, 팔과 다리가 있을 자리에 조그마한 봉오리가 형성되려 하는 걸 볼 수 있다. 아기들의 머리는 나머지 몸에 비해 훨씬 크다.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.7>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.7>>
 			<<if _multiple>>
 				이제 당신의 아기들은 더이상 조그맣지 않고 모든 형태를 갖추었다. 팔, 손, 손가락, 발, 발가락 모두가 완전히 형성되어 있다. 그들은 이제 주먹을 쥐어 보이는 것 따위의 행동으로 탐색을 시작하고 있다.
 			<<else>>
 				이제 당신의 아기는 더이상 조그맣지 않고 모든 형태를 갖추었다. 팔, 손, 손가락, 발, 발가락 모두가 완전히 형성되어 있다. 그들은 이제 주먹을 쥐어 보이는 것 따위의 행동으로 탐색을 시작하고 있다.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.6>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.6>>
 			<<if _multiple>>
 				Babies continues to grow in size. Their hearts are audible through an instrument called a doppler. Eyelids, eyebrows, eyelashes, nails and hair are formed. They can suck their own thumbs, yawn, stretch and make faces. Genitalia are fully developed so they can be told to the player.
 				<<pregnancyGendersText>>
 			<<else>>
 				<<print $_He>> continues to grow in size. Heart is audible through an instrument called a doppler. Eyelids, eyebrows, eyelashes, nails and hair are formed. <<print $_He>> can suck <<print $_his>> own thumbs, yawn, stretch and make faces. Genitalia are fully developed now so you know <<print $_he>> is a little
-				<<switch _pregnancy[0].gender>>
+				<<switch $_pregnancy.fetus[0].gender>>
 					<<case "m">>boy.
 					<<case "f">>girl.
 					<<case "h">>hermaphrodite.
 				<</switch>>
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.5>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.5>>
 			<<if _multiple>>
 				Babies continues to grow in size. They can move around, developing muscles and exercising them. Hair is growing on their head, protective hair/white coating is growing over the baby, this will shed shortly after birth.
 			<<else>>
 				<<print $_He>> continues to grow in size. <<print $_He>> can move around, developing muscles and exercising them. Hair is growing on <<print $_his>> head, protective hair/white coating is growing over the baby, this will shed shortly after birth.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.4>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.4>>
 			<<if _multiple>>
 				Babies continues to grow in size. Eyelids begin to part and eyes open/close. They have started to develop some body fat, hearing is fully developed. They change position frequently and responds to stimuli, including sound, pain and light. The amniotic fluid begins to diminish.
 			<<else>>
 				<<print $_He>> continues to grow in size. Eyelids begin to part and eyes open/close. <<print $_He>> has started to develop some body fat, hearing is fully developed. <<print $_He>> change position frequently and responds to stimuli, including sound, pain and light. The amniotic fluid begins to diminish.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.3>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.3>>
 			<<if _multiple>>
 				Babies continues to mature and develop more reserves of body fat. They will be will be kicking more at this point. Their brain is developing rapidly at this time, and they can see and hear.
 			<<else>>
 				<<print $_He>> continues to mature and develop more reserves of body fat. <<print $_He>> will be will be kicking more at this point. <<print $_His>> brain is developing rapidly at this time, and they can see and hear.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.2>>
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.2>>
 			<<if _multiple>>
 				Babies are getting close to being fully grown. Their reflexes are coordinated so they can blink, close the eyes, turn the head, grasp firmly, and respond to sounds, light, and touch. Lungs are close to fully developed.
 			<<else>>
 				<<print $_He>> is getting close to being fully grown. <<print $_His>> reflexes are coordinated so <<print $_he>> can blink, close the eyes, turn the head, grasp firmly, and respond to sounds, light, and touch. Lungs are close to fully developed.
 			<</if>>
-		<<elseif _pregnancy.timer gte _pregnancy.timerStart * 0.1>>
-			<<if _pregnancy.currentCount gt 1>>
-				Babies are almost fully grown, they are slightly smaller than if you weren't pregnant with <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>>. They will start to move around less, their position will have moved to having their head closer to your pelvis.
+		<<elseif $_pregnancy.timer gte $_pregnancy.timerStart * 0.1>>
+			<<if $_pregnancy.fetus.length gt 1>>
+				Babies are almost fully grown, they are slightly smaller than if you weren't pregnant with <<if $_pregnancy.fetus.length is 3>>triplets<<else>>twins<</if>>. They will start to move around less, their position will have moved to having their head closer to your pelvis.
 			<<else>>
 				<<print $_He>> is almost fully grown. <<print $_He>> will start to move around less, <<print $_his>> position will have moved to having <<print $_his>> head closer to your pelvis.
 			<</if>>
 			Mention the time for labour is starting to get close.
 		<<else>>
-			<<if _pregnancy.currentCount gt 1>>
-				Babies are fully grown and ready to face the world, they are slightly smaller than if you weren't pregnant with <<if _pregnancy.currentCount is 3>>triplets<<else>>twins<</if>>.
+			<<if $_pregnancy.fetus.length gt 1>>
+				Babies are fully grown and ready to face the world, they are slightly smaller than if you weren't pregnant with <<if $_pregnancy.fetus.length is 3>>triplets<<else>>twins<</if>>.
 			<<else>>
 				<<print $_He>> is fully grown and ready to face the world.
 			<</if>>
@@ -741,7 +793,7 @@ Ultrasound occurs, Dr Harper lets them know what going on.
 	<<default>>
 <</switch>>
 
-<<link [[다음|Pregnancy ultrasound 2]]>><</link>>
+<<link [[Next|Pregnancy ultrasound 2]]>><</link>>
 
 :: Pregnancy ultrasound 3
 <<set $outside to 0>><<set $location to "hospital">><<effects>>

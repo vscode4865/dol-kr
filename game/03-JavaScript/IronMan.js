@@ -6,115 +6,125 @@ var IronMan = (Save => {
 	 * Set to true to allow debug mode changes during gameplay.
 	 * By default this should always be false, if it is not false, please change it.
 	 */
-	const IRONMAN_DEBUG = false;
-
 	// eslint-disable-next-line no-unused-vars
-	let varsFrozen = false;
-
-	/*  --------------------------------------
-		Event code to set protected variables.
-		-------------------------------------- */
-
-	const _setterHandlers = new Set();
-
-	function addSetter(handler) {
-		if (typeof handler === "function") {
-			_setterHandlers.add(handler);
-		} else {
-			Errors.report(
-				"The IronMan setter function requires a function to be passed as the parameter."
-			);
-		}
-	}
-
-	function clearSetters() {
-		_setterHandlers.clear();
-	}
-
-	function handleSetters() {
-		let workDone = false;
-		const stateObj = session.get("state");
-		_setterHandlers.forEach(handler => {
-			/* We could delete entries as we call them, but clearing the entire structure at the end works too. */
-			if (typeof handler === "function") {
-				/* Pass the stateobj variables object as args, manipulate story vars there. */
-				handler.apply(this, [stateObj.delta[0].variables]);
-				workDone = true;
-			}
-		});
-		_setterHandlers.clear();
-		if (workDone) {
-			session.set("state", stateObj);
-			State.restore();
-		}
-	}
+	const IRONMAN_DEBUG = false;
 
 	/*  -------------------------------------
 		Integral IronMan mode core functions.
 		------------------------------------- */
+
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+	const schema = 3;
+	const keys = [
+		"ironmanmode",
+		"debug",
+		"options.autosaveDisabled",
+		"cheatdisable",
+		"ironmanautosaveschedule",
+		"player.virginity",
+		"enemyhealth",
+		"enemyarousal",
+		"enemytrust",
+		"enemystrength",
+		"passage",
+		"money",
+		"time",
+	];
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+	/* DO NOT MODIFY WITHOUT UPDATING SCHEMA */
+
+	/**
+	 *
+	 * @param {object} obj The object to traverse.
+	 * @param {string} path The indices to look-up.
+	 * @returns {any | null} The value resolved from the object.
+	 */
+	function resolve(obj, path) {
+		const x = path.split(".");
+		let y;
+		while ((y = x.shift())) {
+			if (typeof obj !== "object") return null;
+			obj = obj[y];
+		}
+		return obj;
+	}
+
+	// Don't worry about cleaning up this variable as it's already tightly controlled, and will be disposed of via restarting.
+	const internals = {};
 
 	function ironmanLock() {
 		/* Immediately exit if on the starting passage. */
 		if (["Start", "Clothes Testing", "Renderer Test Page", "Tips"].includes(V.passage)) return;
 		/* Immediately exit if the game is in debug mode or test mode. */
 		if (Config.debug) return;
-		const readonly = { writable: false, configurable: false };
-		Object.defineProperty(
-			V,
-			"ironmanmode",
-			Object.assign({}, readonly, { value: V.ironmanmode })
-		);
 		if (V.ironmanmode) {
-			Object.defineProperties(V, {
-				cheatdisable: Object.assign({}, readonly, { value: "t" }),
-				ironmanautosaveschedule: Object.assign({}, readonly, {
-					value: V.ironmanautosaveschedule,
-				}),
-				autosavedisabled: Object.assign({}, readonly, { value: true }),
-				virginity: Object.assign({}, readonly, { value: V.player.virginity }),
-			});
-			if (!IRONMAN_DEBUG) {
-				Object.defineProperty(V, "debug", Object.assign({}, readonly, { value: 0 }));
+			for (const key of keys) {
+				const target = resolve(V, key);
+				const parts = key.split(".");
+				const prop = parts.pop();
+				// Only process enemy values if in combat.
+				if (
+					V.combat !== 1 &&
+					["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"].includes(prop)
+				)
+					continue;
+				const parent = resolve(V, parts.join(".") || "");
+				internals[key] = target;
+				Object.defineProperty(parent, prop, {
+					get() {
+						return internals[key];
+					},
+					set(value) {
+						if (window.ironmanFlag) internals[key] = value;
+					},
+				});
 			}
-			if (V.combat === 1) {
-				for (const item of ["enemyhealth", "enemyarousal", "enemytrust", "enemystrength"])
-					Object.defineProperty(V, item, Object.assign({}, readonly, { value: V[item] }));
-			}
-			for (const type in V.player.virginity) {
-				if (!V.player.virginity[type] && type !== "temple") {
-					/* Should be removed in a later revision, completely unnecessary. */
-					try {
-						Object.defineProperty(
-							V.player.virginity,
-							type,
-							Object.assign({}, readonly, { value: V.player.virginity[type] })
-						);
-					} catch (e) {
-						console.debug(e);
-					}
-				}
-			}
+			// Set flag to lock out setter.
+			delete window.ironmanFlag;
 		}
 	}
 
+	/**
+	 * Generates the signature from the given save object.
+	 *
+	 * @param {object} save The save object.
+	 * @returns {string} The hashed (md5) signature.
+	 */
 	function getSignature(save = null) {
-		const keys = [
-			"debug",
-			"autosavedisabled",
-			"virginity",
-			"player",
-			"enemyhealth",
-			"enemyarousal",
-			"enemytrust",
-			"enemystrength",
-			"passage",
-			"money",
-		];
 		const target = save == null ? V : save.state.delta[0].variables;
-		const subset = keys.map(key => target[key]);
+		const subset = keys.map(key => resolve(target, key));
 		const encodedSubset = JSON.stringify(subset);
 		const signature = md5(encodedSubset);
 		return signature;
+	}
+
+	/**
+	 *
+	 * @param {object} metadata The metadata within the save details area.
+	 * @param {object} saveObj The save object.
+	 */
+	function compareSignatures(metadata, saveObj = null) {
+		const metaSignature = metadata.signature;
+		const saveSignature = getSignature(saveObj);
+		if (schema !== metadata.schema) {
+			// For debugging: console.log("Updating schema record for ironman save.", schema, metadata.schema, metaSignature, saveSignature);
+			return true;
+		}
+		// Check signatures, return true if match. Loads the game normally.
+		if (saveSignature === metaSignature) return true;
+		// Last part for error checking. Returns false to indicate failure, and to not load the game. Implies cheating.
+		if (V.debug) {
+			Errors.report("Ironman signatures failed to match.", {
+				saveSig: saveSignature,
+				internalSig: metaSignature,
+				saveObj,
+				metadata,
+			});
+		}
+		return false;
 	}
 
 	/*  --------------------------------------
@@ -131,6 +141,17 @@ var IronMan = (Save => {
 	/*  --------------------------------------
 		UI Functions relating to IronMan mode.
 		-------------------------------------- */
+
+	function sliderPerc(e) {
+		const valSpan = $(e.currentTarget).siblings().first();
+		const value = valSpan.text();
+
+		valSpan.text((i, value) => Math.round(value * 100) + "%");
+
+		if (value > 1) valSpan.css("color", "gold");
+		else if (value < 1) valSpan.css("color", "green");
+		else valSpan.css("color", "unset");
+	}
 
 	function uiCheckBox(mode = "normal") {
 		$(function () {
@@ -156,9 +177,9 @@ var IronMan = (Save => {
 							'<<replace #sliderAllureMode>><<numberslider "$alluremod" $alluremod 0.2 2 0.1 $ironmanmode>><</replace>>'
 						);
 					}
-					V.maxStates = 1;
+					V.options.maxStates = 1;
 					V.cheatdisabletoggle = "t";
-					V.autosavedisabled = true;
+					V.options.autosaveDisabled = true;
 					$(".ironman-slider input")
 						.on("input change", e => sliderPerc(e))
 						.trigger("change");
@@ -249,9 +270,7 @@ var IronMan = (Save => {
 		const finalData = btoa(encodedData);
 		/* Navigate to the export-import page. */
 		T.presetData = finalData;
-		Wikifier.wikifyEval(
-			'<<overlayReplace "optionsExportImport">><<set $currentOverlay to null>>'
-		);
+		Wikifier.wikifyEval('<<overlayReplace "optionsExportImport">><<unset _currentOverlay>>');
 		return finalData;
 	}
 
@@ -327,24 +346,11 @@ var IronMan = (Save => {
 			// autosave
 			ironmanAutoSave();
 			//
-			V.ironmanautosaveschedule = (
-				date.getTime() +
-				getRandomIntInclusive(432000, 777600) * 1000
-			).toString(8);
+			V.ironmanautosaveschedule = (date.getTime() + random(432000, 777600) * 1000).toString(
+				8
+			);
 		}
 	}
-
-	/* If the game is in ironman mode, generate the objects necessary. Can use the updater code for it without issues. */
-	/* $(document).on(':start2', function() {
-		if (V.ironmanmode) {
-			update();
-		}
-	}); */
-
-	$(document).on(":passagestart", function () {
-		varsFrozen = false;
-		handleSetters();
-	});
 
 	/*  IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
 		IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE IRONMAN PREVENTION CODE
@@ -352,24 +358,13 @@ var IronMan = (Save => {
 		This runs at the end of the passage processing pipeline. Check docs for SugarCube.md for more information about the pipeline. */
 	$(document).on(":passageend", function () {
 		ironmanLock();
-		varsFrozen = true;
-	});
-
-	/* DEPRECATED - Macro definition */
-	Macro.add("ironmandefer", {
-		tags: null,
-		handler() {
-			/* TODO: Provide a mechanism for TwineScript users to do this. */
-		},
 	});
 
 	/* Export the module object containing functions. */
 	return Object.seal({
 		lock: ironmanLock,
 		getSignature,
-		/* Setter helpers that control the setter object, to defer variable assignments at the very beginning of the next passage. */
-		addSetter,
-		clearSetters,
+		compare: compareSignatures,
 		export: exportSlot,
 		exportDebug,
 		importDebug,
@@ -383,6 +378,10 @@ var IronMan = (Save => {
 		},
 		update,
 		scheduledSaves,
+		get schema() {
+			return schema;
+		},
+		resolve,
 	});
 })(Save);
 window.IronMan = IronMan;

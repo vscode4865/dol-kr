@@ -1008,11 +1008,11 @@
 	<<ind>><<link [[알렉스와 함께 한다 (0:20)|Farm Rest]]>><<farm_count 20>><<trauma -2>><<stress -2>><<npcincr Alex love 1>><<set $phase to 1>><<pass 20>><</link>><<glove>><<ltrauma>><<lstress>>
 	<br>
 <<if $farm_stage gte 4 and $milkshake gte 2>>
-	<<ind>><<link [[Offer milkshake (0:20)|Alex Give Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 2>><<set $alexDaily.milkshake to true>><<npcincr Alex love 1>><<stress -5>><</link>><<glove>><<lstress>>
+	<<ind>><<link [[Offer milkshake (0:20)|Alex Give Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 2>><<set $daily.alex.milkshake to true>><<npcincr Alex love 1>><<stress -5>><</link>><<glove>><<lstress>>
 	<br>
 <</if>>
 <<if $farm_stage gte 7 and $alex_countdown is undefined and $milkshake gte 1>>
-	<<ind>><<link [[Share milkshake (0:20)|Alex Share Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 1>><<set $alexDaily.milkshake to true>><<npcincr Alex love 2>><<stress -10>><</link>><<gglove>><<lstress>>
+	<<ind>><<link [[Share milkshake (0:20)|Alex Share Milkshake]]>><<farm_count 20>><<pass 20>><<set $milkshake -= 1>><<set $daily.alex.milkshake to true>><<npcincr Alex love 2>><<stress -10>><</link>><<gglove>><<lstress>>
 	<br>
 <</if>>
 <</if>>
@@ -1362,7 +1362,7 @@
 
 <<widget "farm_count">>
 <<if _args[0]>>
-	<<set $farm_count += _args[0]>>
+	<<set $farm_count to ($farm_count || 0) + _args[0]>>
 	<<set $farm_shift += _args[0]>>
 	<<set $farm_work.recent_shift += _args[0]>>
 <</if>>
@@ -1861,7 +1861,7 @@
 		<<elseif $farm_stage gte 7>>
 			Alex smacks your <<bottom>> as you pass by.<<gpain>><<pain 1>>
 			<br><br>
-			
+
 			<<link [[Scold|Farm Spank Scold]]>><</link>>
 			<br>
 			<<link [[Retaliate|Farm Spank Retaliate]]>><</link>><<athleticsdifficulty 400 1000>>
@@ -2203,6 +2203,13 @@
 
 <<widget "barn_img">>
 <<machine_init>>
+
+<<if _args[2]>>
+	<<set $_prop to _args[2]>>
+<<else>>
+	<<set $_prop to "haybale">>
+<</if>>
+
 <<if _args[0] is "penis">>
 	<<if _args[1] is "livestock">>
 		<<set _barn_semen to $livestock_semen>>
@@ -2228,7 +2235,7 @@
 	<<else>>
 		<<set _semen_img to "semen_1">>
 	<</if>>
-	<<prop haybale semen penis_pump>>
+	<<prop $_prop semen penis_pump>>
 <<elseif _args[0] is "breasts">>
 	<<if _args[1] is "livestock">>
 		<<set _barn_milk to $livestock_milk>>
@@ -2254,7 +2261,7 @@
 	<<else>>
 		<<set _milk_img to "milk_1">>
 	<</if>>
-	<<prop haybale milk breast_pump>>
+	<<prop $_prop milk breast_pump>>
 <<else>>
 	<<if _args[1] is "livestock">>
 		<<set _barn_semen to $livestock_semen>>
@@ -2299,9 +2306,9 @@
 	<<else>>
 		<<set _milk_img to "milk_1">>
 	<</if>>
-	<<prop haybale semen penis_pump milk breast_pump>>
+	<<prop $_prop semen penis_pump milk breast_pump>>
 <</if>>
-<<if $images is 1 and $combatimages is 1>>
+<<if $options.images is 1 and $options.combatImages is 1>>
 	<br><br>
 	<<timed 100ms>>
 		<<combatimg>>
@@ -2469,6 +2476,8 @@
 <</widget>>
 
 <<widget "farm_sleep_options">>
+<<nightmareCheck "Farm Sleep">>
+
 <<if $sleeptrouble is 1 and $controlled is 0>>
 	<<link [[10시간 잔다|Farm Sleep]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
 	<br>
@@ -2553,7 +2562,7 @@
 <<elseif random(1, 14) is 10 and $fame.socialite gte 30>>
 	You tell <<him>> that you schmooze in town. "It's nice that a townie elite can still get <<pher>> hands dirty with a country<<nnpc_gendery "Alex">> like me," <<he>> says teasingly.
 <<elseif random(1, 14) is 9 and $adultshopclerk>>
-	You tell <<him>> that you also work as an adult shop clerk. "Do you get an employee discount? I could use more-" <<He>> cuts <<himself>> off. "Nevermind."
+	You tell <<him>> that you also work as an adult shop clerk. "Do you get an employee discount? I could use more-" <<He>> cuts <<himself>> off. "Never mind."
 <<elseif random(1, 14) is 8 and $spa_job gte 1>>
 	You tell <<him>> that you massage clients at the spa in town. "I'm overdue for one," <<he>> says. "Ever had a mud bath? I'd recommend it."
 <<elseif random(1, 14) is 7 and $oceanbreezejob is 1>>
@@ -2584,27 +2593,27 @@
 <</widget>>
 
 <<widget "farm_cottage_options">>
-<<link [[Your room (0:01)|Farm Bedroom]]>><<pass 1>><</link>>
+<<link [[Your room (0:01)|Farm Bedroom]]>><<pass 1>><<endevent>><</link>>
 <br>
-<<link [[Alex's room (0:01)|Farm Alex Bedroom]]>><<pass 1>><</link>>
+<<link [[Alex's room (0:01)|Farm Alex Bedroom]]>><<pass 1>><<endevent>><</link>>
 <br>
 <<if $farm.stock>>
-	<<link [[Check stock|Farm Stock]]>><</link>>
+	<<link [[Check stock|Farm Stock]]>><<endevent>><</link>>
 	<br>
 <</if>>
 <br>
-<<link [[밖으로 나간다 (0:01)|Farm Work]]>><<pass 1>><</link>>
+<<link [[Go outside (0:01)|Farm Work]]>><<pass 1>><<endevent>><</link>>
 <br>
 <</widget>>
 
 <<widget "farm_cottage_tv_options">>
 <<if $alex_countdown is undefined>>
-	<<link [[Cuddle Alex (0:20)|Farm Breakfast Cuddle]]>><<npc Alex>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
+	<<link [[Cuddle Alex (0:20)|Farm Breakfast Cuddle]]>><<npcincr Alex love 1>><<pass 20>><</link>><<glove>>
 	<br>
-	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<npc Alex>><<stress -2>><<pass 20>><</link>><<lstress>>
+	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<stress -2>><<pass 20>><</link>><<lstress>>
 	<br>
 <<else>>
-	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<npc Alex>><<stress -2>><<pass 20>><</link>><<lstress>>
+	<<link [[Watch TV with Alex (0:20)|Farm Breakfast TV]]>><<stress -2>><<pass 20>><</link>><<lstress>>
 	<br>
 <</if>>
 <</widget>>

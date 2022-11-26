@@ -442,6 +442,12 @@
     ```
 
     ```
+    <<mouthPost>>
+	     <<mouth>>의 대체 위젯.
+        + <<mouthPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<npcPenisPost>>
         <<npcPenisPost [num] post "sep">>
 
@@ -496,6 +502,12 @@
         e.g.
         <<npcGenitalsPost 1 "이">>                 //<<npcGenitalsPost 1>>이
         <<npcGenitalsPost "이">>                   //<<npcGenitalsPost>>이
+    ```
+
+    ```
+    <<npcChestPost>>
+        <<npcChest>>의 대체 위젯.
+        + <<npcPenisPost>>와 용도 및 방식 같음. 생략
     ```
 
    ```
@@ -572,6 +584,12 @@
     ```
     <<breastsasidePost>>
         <<breastsaside>>의 대체 위젯.
+        + <<undertopPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<bottomasidePost>>
+        <<bottomaside>>의 대체 위젯.
         + <<undertopPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -790,6 +808,12 @@
    ```
     <<pHerselfPost>>
         <<pHerself>>의 대체 위젯. <<pherselfPost>> 도 사용할 수 있음. <<himselfPost>>의 플레이어 버전.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<psirPost>>
+        <<psir>>의 대체 위젯. <<pSirPost>> 도 사용할 수 있음. <<sirPost>>의 플레이어 버전.
         + <<HePost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1145,7 +1169,7 @@
 
     ```
     <<ppackbrotherPost>>
-        <<ppackbrother>>의 대체 위젯. <<pPackbrotherPost>>로도 사용가능.
+        <<ppackbrother>>의 대체 위젯. <<pPackbrotherPost>>, <<ppackbrothersPost>>, <<pPackbrothersPost>>로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1783,6 +1807,27 @@
         <<trHairtype "braid left">>             // "왼쪽으로 땋은 머리"
     ```
 
+* trList
+    ```
+    <<trList>>
+        <<trList *list [method]>>
+        
+        배열을 번역하여 _trList 변수에 저장한다.
+
+        필수사항
+        - list: 번역할 배열
+
+		선택사항
+		- method: 번역할 위젯. 생략시 "putpost" 가 사용됨
+		
+		note
+		- 이 위젯은 formatList 로 출력하는 것을 전제로 제작되었습니다.
+
+        e.g.
+        <<trList _boygirlArray>><<print formatList(_trList)>>             // "소년이나 소녀" (putpost 사용)
+		<<trList _redyellowArray "trColour">><<print formatList(_trList)>>	// "빨간색이나 노란색" (trColour 사용)
+    ```
+
 * trListboxItems
 	```
 	<<trListboxItemsFromArray>>
@@ -2399,20 +2444,20 @@
 	- bodyPost 계열
 		```
 		<<breasts_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
-		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, 
+		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, <<mouth_ (조사)>>,  
 		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
 	- clothesPost 계열
 		```
 		<<undertop_ (조사)>>, <<groin_ (조사)>>, <<crotch_ (조사)>>, <<undies_ (조사)>>, <<bottoms_ (조사)>>, <<underbottoms_ (조사)>>, <<top_ (조사)>>, 
-		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>> (문장 끝에 <<nudityPostend>>를 반드시 넣을것), 
+		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<bottomaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>> (문장 끝에 <<nudityPostend>>를 반드시 넣을것), 
 		<<allTops_ (조사)>>, <<allBottoms_ (조사)>>, <<allTopsUnderwear_ (조사)>>, <<allBottomsUnderwear_ (조사)>>, 
 		```
 	- HePost 계열
 		```
 		<<He_ (조사)>>, <<he_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Hers_ (조사)>>, <<hers_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
 		<<bHe_ (조사)>>, <<bhe_ (조사)>>, <<bHimself_ (조사)>>, <<bhimself_ (조사)>>, <<bHim_ (조사)>>, <<bhim_ (조사)>>, <<bHers_ (조사)>>, <<bhers_ (조사)>>, 
-		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
+		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
 		<<farm_He_ (조사)>>, <<farm_he_ (조사)>>, <<nnpc_He_ (조사)>>, <<nnpc_he_ (조사)>>, <<nnpc_Him_ (조사)>>, <<nnpc_him_ (조사)>>, <<nnpc_himself_ (조사)>>, 
 		<<nnpc_wife_ (조사)>>, <<nnpc_lass_ (조사)>>, <<nnpc_gender_ (조사)>>, <<nnpc_gendery_ (조사)>>, <<nnpc_genitals_ (조사)>>, <<nnpc_girlfriend_ (조사)>>,
 		<<nnpc_brother_ (조사)>>, <<nnpc_Brother_ (조사)>>, <<nnpc_title_ (조사)>>, <<nnpc_Title_ (조사)>>, 
@@ -2426,7 +2471,7 @@
 		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
 		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, <<priest_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
-		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, 
+		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
 		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>

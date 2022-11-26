@@ -18,6 +18,7 @@
 		<<npc River>><<person1>>
 		당신이 리버를 쳐다보자 <<his_ yi>> 눈이 가늘어진다. "교복 없이는 내 수업을 들을 수 없어. 교장실로 가렴."
 		<br><br>
+		<<pubfameComplete "river">>
 		<!--<<link [[코트를 걸어놓는다|]]>><<endevent>><</link>>
 		<br><br> good starting point for when you can go to class naked-->
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
@@ -42,8 +43,8 @@
 			당신은 수학 교실에 들어간다.
 			<<npc River>><<person1>>
 			리버가 말을 하다 말고 당신을 바라본다.
-			<<if $mathsExcused>>
-				<<unset $mathsExcused>>
+			<<if $daily.school.mathsExcused>>
+				<<run delete $daily.school.mathsExcused>>
 				"자리에 앉아서 따라잡도록 해라." <<He_ nun>> 당신의 지각에 대해 언급하지 않는다.
 			<<else>>
 				"늦었구나. 징계를 받다보면 앞으로도 이렇게 게으름을 피우는 일을 방지할 수 있겠지."
@@ -60,6 +61,7 @@
 		<</if>>
 		<br><br>
 
+		<<pubfameComplete "river">>
 		<<link [[다음|Maths Lesson]]>><<endevent>><</link>>
 		<br>
 	<<elseif $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
@@ -68,6 +70,7 @@
 		"이번에도인가. 이봐, 네가 뭔 요상한 장난을 하는 건지는 몰라도 그만 해야해. 이 안에 그렇게 묶인 상태로 들어올 일은 없어. 교장실로 가렴."
 		<br><br>
 
+		<<pubfameComplete "river">>
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 		<br><br>
 	<<else>>
@@ -75,21 +78,23 @@
 		당신이 들어가자 리버의 눈이 가늘어진다. "교복 없이는 내 수업을 들을 수 없어. 교장실로 가렴."
 		<br><br>
 
+		<<pubfameComplete "river">>
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 		<br><br>
 	<</if>>
 <<elseif $schoollesson is 1>>
 	<<npc River>><<person1>>
-	<<if $mathsinterrupted is 1>>
+	<<if $daily.school.mathsInterrupted is 1>>
 		당신은 수학 교실에 들어간다. 리버가 갑자기 말을 멈추고는 당신을 바라본다. "또 너야? 당장 나가." <<HePost "은">> 당신 앞에서 문을 닫는다.
 		<<detention 1>><<gdelinquency>>
 		<br><br>
 
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 	<<else>>
-		<<set $mathsinterrupted to 1>>
+		<<set $daily.school.mathsInterrupted to 1>>
 		당신은 수학 교실에 들어간다. 리버가 갑자기 말을 멈추고는 당신을 바라본다. "그래, 무슨 일이니?" 보아하니 당신이 수업을 방해한 모양이다.
 		<br><br>
+		<<pubfameComplete "river">>
 
 		<<link [[사과한다|Maths Classroom Apology]]>><<trauma 1>><<stress 1>><</link>><<gstress>><<gtrauma>>
 		<br>
@@ -135,7 +140,7 @@
 	<<if $whitneymaths is "active">>
 		휘트니 조차 말이 없지만, <<nnpc_him_ i "Whitney">> 당신의 등에 언더스로우로 지우개를 던지기를 멈추진 않는다.
 	<<elseif $whitneymaths is "seat">>
-		휘트니 조차 말이 없지만, <<nnpc_him_ i "Whitney">> 책상 밑에서 당신을 더듬거리기를 멈추진 않는다.<<garousal>><<arousal 600>>
+		휘트니 조차 말이 없지만, <<nnpc_him_ i "Whitney">> 책상 밑에서 당신을 더듬거리기를 멈추진 않는다.<<garousal>><<arousal 300 "bottom">><<arousal 300 "genitals">>
 	<</if>>
 	<br><br>
 	<<endevent>>
@@ -169,13 +174,9 @@
 		<br>
 	<</if>>
 <<else>>
-	<<if $time lte ($hour * 60 + 5)>>
-		수학 수업이 시작되었다. 무엇을 할까?
-		<br><br>
-	<<else>>
-		수학 수업이 계속된다. 무엇을 할까?
-		<br><br>
-	<</if>>
+	<<set _continues to ($time lte ($hour * 60 + 5) ? "시작되었다" : "계속된다")>>
+	수학 수업이 _continues. 무엇을 할까?
+	<br><br>
 	<<if $arousal gte $arousalmax>>
 		<<set _teacher to "River">>
 		<<orgasmLocation "classroom">>

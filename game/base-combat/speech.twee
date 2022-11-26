@@ -2983,7 +2983,7 @@
 				<<HePost "이">> 말한다. "네 비단같은 머릿결이 사랑스러워."
 			<<else>>
 				<<HePost "이">> 말한다. "네 머리카락은 너무 길고 아름다워."
-			<</if>>		
+			<</if>>
 		<<else>>
 			<<if $rng lte 35>>
 				<<HePost "이">> 말한다. "네 머리카락 가지고 노는 게 재밌어."
@@ -2991,7 +2991,7 @@
 				<<HePost "이">> 말한다. "너 머릿결이 비단같이 곱네."
 			<<else>>
 				<<HePost "이">> 말한다. "네 머리카락은 너무 아름다워."
-			<</if>>		
+			<</if>>
 		<</if>>
 	<<elseif $enemyanger lte 100>>
 		<<if $hairlength gte 400>>
@@ -3110,6 +3110,58 @@
 			<<HePost "이">> 말한다. "받아라, 걸레야!"
 		<<else>>
 			<<HePost "이">> 말한다. "너의 안전을 위해서라도 잘 하는 게 좋을 거야."
+		<</if>>
+	<</if>>
+
+<<elseif $speechgrowl is 1>>
+	<<HePost "이">> 말한다. 
+	<<if $enemyanger lte 20>>
+		<<if $npcspeechcycle is 0>>
+			"물기를 좀 할 것 같은 소리를 내는군!"
+		<<elseif $npcspeechcycle is 1>>
+			"너는 누구를 위협하기에는 너무 귀여워."
+		<<elseif $npcspeechcycle is 2>>
+			"착한 <<print ($player.gender_appearance is "m"?"수캐":"암캐")>>가 있네."
+		<<elseif $npcspeechcycle is 3>>
+			"네가 내는 소리보다 네가 더 길들여져 있다는 데 걸지."
+		<<elseif $npcspeechcycle is 4>>
+			"송곳니가 귀여운데."
+		<<elseif $npcspeechcycle is 5>>
+			"누가 착한 강아지지?"
+		<<else>>
+			"네가 잘 핧을 거라는 데 걸지."
+		<</if>>
+	<<elseif $enemyanger lte 100>>
+		<<if $npcspeechcycle is 0>>
+			"꽤나 잘 무는데!"
+		<<elseif $npcspeechcycle is 1>>
+			"곧 암캐처럼 짖어댈 거야."
+		<<elseif $npcspeechcycle is 2>>
+			"물지 않는 게 좋아. 후회하게 될 걸."
+		<<elseif $npcspeechcycle is 3>>
+			"네 괴상한 이빨로는 나를 겁주게 할 수 없어."
+		<<elseif $npcspeechcycle is 4>>
+			"나를 물어봐. 그럴 수 있으면."
+		<<elseif $npcspeechcycle is 5>>
+			"너를 길들이는 것을 기다릴 수 없어."
+		<<else>>
+			"네가 나를 겁먹게 할 수 있으리라고 생각하는 거야?"
+		<</if>>
+	<<else>>
+		<<if $npcspeechcycle is 0>>
+			"네 입에 입마개를 씌워 버리겠어."
+		<<elseif $npcspeechcycle is 1>>
+			"내가 닥치게 하기 전에 그 이빨 치워."
+		<<elseif $npcspeechcycle is 2>>
+			"너를 개판으로 만들어주지, <<print ($player.gender_appearance is "m"?"수캐":"암캐")>>녀석아."
+		<<elseif $npcspeechcycle is 3>>
+			"너 같은 <<print ($player.gender_appearance is "m"?"수캐":"암캐")>>를 어떻게 입닥치게 하는 지 알지."
+		<<elseif $npcspeechcycle is 4>>
+			"네 콧대를 꺾어주지, <<print ($player.gender_appearance is "m"?"수캐":"암캐")>>녀석아."
+		<<elseif $npcspeechcycle is 5>>
+			"내가 너를 끝장내 놓으면 너는 낑낑거리게 될 거야."
+		<<else>>
+			"네 턱을 잡아 다물지 못하게 해 버리겠어."
 		<</if>>
 	<</if>>
 
@@ -3836,19 +3888,22 @@
 
 <<widget "beastspeech">>
 <<set _n to _args[0]>>
-	<<if $NPCList[_n].type is "lizardgirl" or $NPCList[_n].type is "lizardboy">>
+	<<switch $NPCList[_n].type>>
+	<<case "lizardgirl" "lizardboy">>
 		<<bHe_ ga>> 쉭쉭거린다.
-	<<elseif $NPCList[_n].type is "dolphingirl" or $NPCList[_n].type is "dolphinboy">>
+	<<case "dolphingirl" "dolphinboy">>
 		<<bHe_ ga>> 딱딱거린다.
-	<<elseif $NPCList[_n].type is "catgirl" or $NPCList[_n].type is "catboy">>
+	<<case "catgirl" "catboy">>
 		<<bHe_ ga>> 가르랑거린다.
-	<<elseif $NPCList[_n].type is "harpy">>
+	<<case "harpy">>
 		<<bHe_ ga>> 짹짹거린다.
-	<<elseif $NPCList[_n].type is "cowgirl" or $NPCList[_n].type is "bullboy">>
+	<<case "cowgirl" "bullboy">>
 		<<bHe_ ga>> 음메 하고 운다.
-	<<else>>
+	<<case "spidergirl" "spiderboy">>
+		<<bHe_ ga>> 칫칫거린다.
+	<<default>>
 		<<bHe_ ga>> 으르렁거린다.
-	<</if>>
+	<</switch>>
 	<<if $NPCList[_n].penis isnot "none">>
 		<<if $player.gender_appearance is "f">>
 			<<if $enemyanger gte 60>>
@@ -5101,13 +5156,13 @@
 <<elseif random(1,10) is 10 and $NPCList[_n].penis isnot "chest" and $NPCList[_n].location.genitals isnot "head" and $mouthstate is 0 and !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
 	<span class="blue"><<He_ nun>><<his_ yi>> 입술을 당신에게 가까이 가져와, 키스하려 한다.</span>
 	<span class="pink"><<His_ yi>> 숨결에서 달콤한 냄새가 난다.</span>
-	<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">><<set $NPCList[_n].mouth to "kissentrance">><<sex 1>><<set $mouthtarget to _n>>
+	<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">><<set $NPCList[_n].mouth to "kissentrance">><<sex 1 "mouth">><<set $mouthtarget to _n>>
 	<<set $NPCList[_n].location.head = "head">>
 <<elseif random(1,20) is 20 and $tentacleMouth>>
 	<<He_ nun>> <span class="lblue"><<trTentacle $tentacleMouth "을">> 당신의 입에서 <<if $mouthstate is "tentacle" or $mouthstate is "tentacledeep">>홱 빼내었고<<else>>홱 잡아당겼고<</if>></span>
 	<span class="blue"><<his_ yi>> 입술을 당신에게 가까이 가져와, 키스하려 한다.</span>
 	<span class="pink"><<His_ yi>> 숨결에서 달콤한 냄새가 난다.</span>
-	<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">><<set $NPCList[_n].mouth to "kissentrance">><<sex 1>><<set $mouthtarget to _n>>
+	<<set $mouthuse to "kiss">><<set $mouthstate to "kissentrance">><<set $NPCList[_n].mouth to "kissentrance">><<sex 1 "mouth">><<set $mouthtarget to _n>>
 	<<set $NPCList[_n].location.head = "head">>
 	<<set $tentacleMouth to "removed">>
 <<elseif random(1,3) is 3>>
@@ -5346,37 +5401,39 @@
 			<</if>>
 		<<elseif _silent isnot 1>>
 			<<switch $kylarsexcycle>>
-				<<case 0>>
+				<<case 1>>
+					<<set $_text_output to "\"너는 최고의 " + ($player.gender_appearance is "m" ? "아빠" : "엄마") + "가 될 거야,\" <<he_ ga>> 말한다.">>
+				<<case 2>>
+					<<set $_text_output to "\"너는 너무 음란해,\" <<he_ ga>> 말한다. \"우리는 아직 결혼하지도 않았어!\"">>
+				<<case 3>>
+					<<set $_text_output to "\"나는 네가 나를 지치게 해 주기를 원해,\" <<he_ ga>> 말한다, \"그리고 계속 하는 거지.\"">>
+				<<case 4>>
+					<<set $_text_output to "\"네가 너를 바라보는 모든 " + ($pronoun is "m" ? "씨발놈" : "씨발년") + "들을 다 잊어버릴 때까지 내가 이걸 계속 계속 해 줄 거야,\" <<he_ ga>> 말한다.">>
+				<<case 5>>
+					<<set $_text_output to "\"내가 네가 언제나 생각하고 있을 사람이 되겠어,\" <<he_ ga>> 말한다.">>
+				<<case 6>>
+					<<set $_text_output to "\"모든 사람들은 나빠,\" <<he_ ga>> 말한다. \"너만 빼고. 너는 완벽해.\"">>
+				<<case 7>>
+					<<set $_text_output to "\"나는 이런 식으로 안전하다고 느껴,\" <<he_ ga>> 말한다. \"그게 끝나기를 절대 원하지 않아.\"">>
+				<<case 8>>
+					<<set $_text_output to "\"나는 너를 사-사랑해,\" <<he_ ga>> 말한다.">>
+					<<set $kylarSeen.pushUnique("saidLove")>>
+				<<case 9>>
+					<<set $_text_output to "\"너는 너무 선정적이고 음란하고 전부 내 거야,\" <<he_ ga>> 말한다.">>
+				<<default>>
 					<<set $_kylarCanBePreg to (_kylar.vagina isnot "none" and ($genderknown.includes("Kylar") ? $player.penisExist : $player.gender_appearance is "m"))>>
 					<<set $_youCanBePreg   to (_kylar.penis isnot "none" and ($genderknown.includes("Kylar") ? $player.vaginaExist : $player.gender_appearance is "f"))>>
 					<<if $pregnancyspeechdisable is "f" and ($_kylarCanBePreg or $_youCanBePreg)>>
-						<<set $_text_output to `<<He_ nun>> 당신의 귀에 속삭인다. "우리는 아이들을 많이 만들 거야."`>>
+						<<set $_text_output to "<<He_ ga>> 당신의 귀에 속삭인다. \"우리는 아이들을 많이 만들 거야.\"">>
 					<<else>>
-						<<set $_text_output to `"우리는 아이들을 많이 입양할 거야," <<He_ ga>> 말한다.`>>
+						<<set $_text_output to "\"우리는 아이들을 많이 입양할 거야,\" <<he_ ga>> 말한다.">>
 					<</if>>
-				<<case 1>>
-					<<set $_text_output to `"너는 최고의 ${$player.gender_appearance is "m" ? "아빠" : "엄마"}가 될 거야," <<he_ ga>> 말한다.`>>
-				<<case 2>>
-					<<set $_text_output to `"너는 너무 음란해," <<He_ ga>> 말한다. "우리는 아직 결혼하지도 않았어!"`>>
-				<<case 3>>
-					<<set $_text_output to `"나는 네가 나를 지치게 해 주기를 원해," <<he_ ga>> 말한다, "그리고 계속 하는 거지."`>>
-				<<case 4>>
-					<<set $_text_output to `"네가 너를 바라보는 모든 ${$pronoun is "m" ? "씨발놈" : "씨발년"}들을 다 잊어버릴 때까지 내가 이걸 계속 계속 해 줄 거야," <<he_ ga>> 말한다.`>>
-				<<case 5>>
-					<<set $_text_output to `"내가 네가 언제나 생각하고 있을 사람이 되겠어," <<He_ ga>> 말한다.`>>
-				<<case 6>>
-					<<set $_text_output to `"모든 사람들은 나빠," <<He_ ga>> 말한다. "너만 빼고. 너는 완벽해."`>>
-				<<case 7>>
-					<<set $_text_output to `"나는 이런 식으로 안전하다고 느껴," <<He_ ga>> 말한다. "그게 끝나기를 절대 원하지 않아."`>>
-				<<case 8>>
-					<<set $_text_output to `"나는 너를 사-사랑해," <<He_ ga>> 말한다.`>>
-					<<set $kylarSeen.pushUnique("saidLove")>>
-				<<default>>
-					<<set $_text_output to `"너는 너무 선정적이야, 그리고 음란해, 그리고 전부 내 거야," <<He_ ga>> 말한다.`>>
+					/* reset the cycle and/or fix the corrupted/undefined variable */
+					<<set $kylarsexcycle to 0>>
 			<</switch>>
-			<<set $kylarsexcycle to ($kylarsexcycle + 1) % 10>> <!-- increase by one, and reset to 0 if it hits 10 -->
+			<<set $kylarsexcycle++>>
 		<<else>>
-			<<set $_text_output to ` `>>
+			<<set $_text_output to " ">>
 		<</if>>
 	<<case "Eden">>
 		<<if ($speechpenisvirgin is 1 and $player.virginity.penile is _args[0]) or ($speechvaginavirgin is 1 and $player.virginity.vaginal is _args[0])>>
@@ -5400,38 +5457,32 @@
 			<<set $_sexToy to ($rightarm is "heldSexToy" and $leftarm is "heldSexToy" ? "섹스 장난감들을" : "섹스 장난감을")>>
 			<<set $_text_output to `에덴은 당신의 $_sexToy 쳐다본다. "그런 장난감들은 필요 없어," <<he_ ga>> 말한다. "그런 것들은 방해만 될 수도 있어."`>>
 		<</if>>
-		<<if $edenhuntcaught is 1>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"어떻게 감히 녀석이 너에게 손을 댈 수 있지?" 에덴이 으르렁거린다.`>>
-		<<elseif $edenhuntcaught is 2>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"너는 내게 속해 있어," 에덴이 투덜거린다.`>>
-		<<elseif $edenhuntcaught is 3>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"너는 내 거야." 에덴이 말한다. "나만의 것이라고."`>>
-		<<elseif $edenhuntcaught is 4>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"내가 너에게 이런 것을 할 수 있도록 허가된 단 한 사람이라고," 에덴이 말한다.`>>
-		<<elseif $edenhuntcaught is 5>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"만약 다는 누군가가 네게 손을 댄다면," 에덴이 말한다, "그 녀석은 죽었어."`>>
-		<<elseif $edenhuntcaught is 6>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"단지 나만이 네게 이런 식으로 손을 댈 수 있어," 에덴은 화를 낸다.`>>
-		<<elseif $edenhuntcaught is 7>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"말해," 에덴이 으르렁거린다. "내게 너는 내 거라고 말해."`>>
-		<<elseif $edenhuntcaught is 8>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"너는 내 소유물이야." 에덴이 말한다. "나 혼자만의 것이라고."`>>
-		<<elseif $edenhuntcaught is 9>>
-			<<set $edenhuntcaught += 1>>
-			<<set $_text_output to `"네가 누구에게 속해 있는지 잊지 말라고," 에덴이 말한다.`>>
-		<<elseif $edenhuntcaught is 10>>
-			<<set $edenhuntcaught to 1>>
-			<<set $_text_output to `"나는 네 모든 부분을 소유하고 있는 거야," 에덴이 으르렁거린다.`>>
-
-		<</if>>
+		<<switch $daily.eden.huntCaught>>
+			<<case 1>>
+				<<set $_text_output to "\"어떻게 감히 녀석이 너에게 손을 댈 수 있지?\" 에덴이 으르렁거린다.">>
+			<<case 2>>
+				<<set $_text_output to "\"너는 내게 속해 있어,\" 에덴이 투덜거린다.">>
+			<<case 3>>
+				<<set $_text_output to "\"너는 내 거야.\" 에덴이 말한다. \"나만의 것이라고.\"">>
+			<<case 4>>
+				<<set $_text_output to "\"내가 너에게 이런 것을 할 수 있도록 허가된 단 한 사람이라고,\" 에덴이 말한다.">>
+			<<case 5>>
+				<<set $_text_output to "\"만약 다른 누군가가 네게 손을 댄다면,\" 에덴이 말한다, \"그 녀석은 죽었어.\"">>
+			<<case 6>>
+				<<set $_text_output to "\"단지 나만이 네게 이런 식으로 손을 댈 수 있어,\" 에덴은 화를 낸다.">>
+			<<case 7>>
+				<<set $_text_output to "\"말해,\" 에덴이 으르렁거린다. \"내게 너는 내 거라고 말해.\"">>
+			<<case 8>>
+				<<set $_text_output to "\"너는 내 소유물이야.\" 에덴이 말한다. \"나 혼자만의 것이라고.\"">>
+			<<case 9>>
+				<<set $_text_output to "\"네가 누구에게 속해 있는지 잊지 말라고,\" 에덴이 말한다.">>
+			<<case 10>>
+				<<set $_text_output to "\"나는 네 모든 부분을 소유하고 있는 거야,\" 에덴이 으르렁거린다.">>
+		<</switch>>
+		<<run $daily.eden.huntCaught lt 10 /* only valid numbers can ever return true here */
+			? $daily.eden.huntCaught++ /* $daily.eden.huntCaught is a valid number expected to be between 1 to 9 */
+			: $daily.eden.huntCaught = ($daily.eden.huntCaught === 10) * 1 || undefined /* reset to 1 if $daily.eden.huntCaught is 10, otherwise keep it undefined */
+		>>
 	<<case "Whitney">>
 		<<if ($speechpenisvirgin is 1 and $player.virginity.penile is _args[0]) or ($speechvaginavirgin is 1 and $player.virginity.vaginal is _args[0])>>
 			<<set $_text_output to `<<He_ ga>> 웃는다. "이후로는 누구도 너를 <<if $player.gender is "m">>동정이라<<else>>처녀라<</if>>고 부를 수 없겠군. 너는 이제 내 추잡한 <<slut_ iya>>."`>>
@@ -5447,7 +5498,7 @@
 				<<if random(1, 2) lte 1>>
 					<<set $_text_output to `<<He_ ga>> 웃는다. "방금 네가 개랑 교미했다고 인정하는 거야? 너는 이걸 너무 쉽게 만드는걸."`>>
 				<<else>>
-					<<set $_text_output to `<<He_ ga>> 웃는다. "내가 너에게 네가 사실 누구의 <<bitchPost>>인지 상기시켜 줄 필요가 있다는 생각이 드는데."`>>
+					<<set $_text_output to `<<He_ ga>> 웃는다. "너에게 네가 사실 누구의 <<bitchPost>>인지 상기시켜 줄 필요가 있다는 생각이 드는데."`>>
 				<</if>>
 			<<elseif _loveInterest is "Great Hawk">>
 				<<if random(1, 2) lte 1>>

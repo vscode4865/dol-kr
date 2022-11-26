@@ -5,8 +5,8 @@
 
 /*Sends the required variables to the chosen display type*/
 <<widget "generateCombatAction">>
-<<switch $combatControls>>
-	<<case "radio">>
+<<switch $options.combatControls>>
+	<<case "radio" "columnRadio">>
 		<<generateCombatActionRadio _args[0] _args[1] _args[3]>>
 	<<case "lists" "limitedLists">>
 		<<generateCombatActionList _args[0] _args[1] _args[2]>>
@@ -20,7 +20,7 @@
 	<label>
 		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @id="(_valueC isnot 'ask' ?'':'askLabel')" @class="(_valueC isnot 'ask' ? combatListColor('', _valueC, '') : $askActionColour)"><<print _labelC>></span>
-		<<print '<<'+_args[1]+'Difficulty "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'Difficulty "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
 	</label>
 <</for>>
 <br><br>
@@ -59,46 +59,46 @@
 <</if>>
 <<if !$stalk_end>>
 	<div id="listContainer">
-		<div id="leftaction" @class="$combatControls + 'Control'">
+		<div id="leftaction" @class="$options.combatControls + 'Control'">
 			<<leftActionInit>>
 		</div>
 
-		<div id="rightaction" @class="$combatControls + 'Control'">
+		<div id="rightaction" @class="$options.combatControls + 'Control'">
 			<<rightActionInit>>
 		</div>
 
-		<div id="feetaction" @class="$combatControls + 'Control'">
+		<div id="feetaction" @class="$options.combatControls + 'Control'">
 			<<feetActionInit>>
 		</div>
 
-		<div id="mouthaction" @class="$combatControls + 'Control'">
+		<div id="mouthaction" @class="$options.combatControls + 'Control'">
 			<<mouthActionInit>>
 		</div>
 
 		<<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
-			<div id="penisaction" @class="$combatControls + 'Control'">
+			<div id="penisaction" @class="$options.combatControls + 'Control'">
 				<<penisActionInit>>
 			</div>
 		<</if>>
 
 		<<if $player.vaginaExist>>
-			<div id="vaginaaction" @class="$combatControls + 'Control'">
+			<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 				<<vaginaActionInit>>
 			</div>
 		<</if>>
 
-		<div id="anusaction" @class="$combatControls + 'Control'">
+		<div id="anusaction" @class="$options.combatControls + 'Control'">
 			<<anusActionInit>>
 		</div>
 
 		<<if $chestuse isnot 0>>
-			<div id="chestaction" @class="$combatControls + 'Control'">
+			<div id="chestaction" @class="$options.combatControls + 'Control'">
 				<<chestActionInit>>
 			</div>
 		<</if>>
 
 		<<if $thighuse isnot 0>>
-			<div id="thighaction" @class="$combatControls + 'Control'">
+			<div id="thighaction" @class="$options.combatControls + 'Control'">
 				<<thighActionInit>>
 			</div>
 		<</if>>
@@ -189,24 +189,40 @@
 		<<unset $replaceAction>>
 <</switch>>
 
-<<replace #replaceAction>><<replaceActionLink _replace>><</replace>>
-<<replace #leftaction>><<leftActionInit true>><</replace>>
-<<replace #rightaction>><<rightActionInit true>><</replace>>
-<<replace #feetaction>><<feetActionInit true>><</replace>>
-<<replace #mouthaction>><<mouthActionInit true>><</replace>>
+<<safereplace #replaceAction>><<replaceActionLink _replace>><</safereplace>>
+<<safereplace #leftaction>><<leftActionInit true>><</safereplace>>
+<<safereplace #rightaction>><<rightActionInit true>><</safereplace>>
+<<safereplace #feetaction>><<feetActionInit true>><</safereplace>>
+<<safereplace #mouthaction>><<mouthActionInit true>><</safereplace>>
 <<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
-	<<replace #penisaction>><<penisActionInit true>><</replace>>
+	<<safereplace #penisaction>><<penisActionInit true>><</safereplace>>
 <</if>>
 <<if $player.vaginaExist>>
-	<<replace #vaginaaction>><<vaginaActionInit true>><</replace>>
+	<<safereplace #vaginaaction>><<vaginaActionInit true>><</safereplace>>
 <</if>>
-<<replace #anusaction>><<anusActionInit true>><</replace>>
+<<safereplace #anusaction>><<anusActionInit true>><</safereplace>>
 <<if $chestuse isnot 0>>
-	<<replace #chestaction>><<chestActionInit true>><</replace>>
+	<<safereplace #chestaction>><<chestActionInit true>><</safereplace>>
 <</if>>
 <<if $thighuse isnot 0>>
-	<<replace #thighaction>><<thighActionInit true>><</replace>>
+	<<safereplace #thighaction>><<thighActionInit true>><</safereplace>>
 <</if>>
+<</widget>>
+
+/*This takes two arguments and one optional argument*/
+/*_arg[0] is the name of the body part*/
+/*_arg[1] is the list of targets*/
+/*_arg[2] is optional and used if a special reciever is needed*/
+<<widget "targetListBox">>
+	<<set _onChangeString to "actionsreplace('" + _args[0] + "')">>
+	<<set _listBoxReciever to  _args[2] === undefined ? "$" + _args[0] + "target" : _args[2]>>
+	<label>
+		대상: <span @onchange=_onChangeString>
+			<<listbox _listBoxReciever autoselect>>
+				<<optionsfrom _args[1]>>
+			<</listbox>>
+		</span>
+	</label>
 <</widget>>
 
 /*Each set of actions are based on the same set of rules*/
@@ -245,21 +261,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1 and $stealstateleft is undefined>>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and $stealstateleft is undefined>><br>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $lefttarget to _firsttarget>>
@@ -320,21 +329,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["당신 자신"] to "self">>
 	<</if>>
-	<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-		대상: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<set _leftOptions to "heldSexToy">>
 	<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼손은 <<sextoy_ rul $currentSexToyLeft.name>> 잡고 있다.</span>
-	<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-		대상: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $lefttarget to _firsttarget>>
@@ -411,7 +413,7 @@
 		<<generateCombatAction _leftaction "leftaction" _textColor $leftaction>>
 
 		/*Checks/Difficulty*/
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="leftactionDifficulty">
 				<<leftactionDifficulty>>
 			</div>
@@ -430,6 +432,7 @@
 <<switch _diffAction>>
 	<<case "leftwork" "leftclit">><<handdifficulty>>
 	<<case "leftplay" "leftgrab">><<handdifficulty>> <<combatpromiscuous3>>
+	<<case "handedge">> <<combatpromiscuous4>>
 	<<case "steal">><<skulduggerydifficulty>><<combatcrime>>
 	<<case "spray">>잔량: $spray / $spraymax
 	<<case "lefthandholdnew">><<handholdingvirginitywarning>><<NPCvirginitywarning $NPCList[$lefttarget].fullDescription "handholding">>
@@ -449,6 +452,13 @@
 			<</listbox>>
 		<</if>>
 		<<combatpromiscuous3>>
+	<<case "handguide">>
+		<<if Object.keys(_handGuideOptions).length gt 0>>
+			<<listbox "$handGuideLeft" autoselect>>
+				<<optionsfrom _handGuideOptions>>
+			<</listbox>>
+		<</if>>
+		<<handdifficulty>> <<combatpromiscuous2>>
 <</switch>>
 <</widget>>
 
@@ -486,16 +496,21 @@
 			<<leftdildowhack>>
 			<<pickupSexToy "left">>
 			<<leftcamerapose>>
+			<<lefthandpull>>
 		<<case "handheld">>
 			<<if $consensual is 1>>
 			<<set _leftaction["계속 잡고 있는다"] to "lefthandholdkeep">>
 			<</if>>
+			<<combathandguide "left">>
 			<<set _leftaction["멈춘다"] to "lefthandholdstop">>
 		<<case "penis">>
 			<<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>>
 				<<set _leftaction[$NPCList[$lefttarget].pronouns.him + " 희롱한다"] to "leftwork">>
 			<<else>>
 				<<set _leftaction[$NPCList[$lefttarget].pronouns.his + " 자지를 애무한다"] to "leftwork">>
+				<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $handskill gte 800>>
+					<<set _leftaction["애태운다"] to "handedge">>
+				<</if>>
 			<</if>>
 			<<set _leftaction["멈춘다"] to "leftstoppenis">>
 		<<case "grappled">>
@@ -507,6 +522,9 @@
 				<<set _leftaction[$NPCList[$lefttarget].pronouns.him + " 희롱한다"] to "leftclit">>
 			<<else>>
 				<<set _leftaction[$NPCList[$lefttarget].pronouns.his + " 클리토리스를 문지른다"] to "leftclit">>
+				<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $handskill gte 800>>
+					<<set _leftaction["애태운다"] to "handedge">>
+				<</if>>
 			<</if>>
 			<<set _leftaction["멈춘다"] to "leftothervaginastop">>
 		<<case "coverVagina">>
@@ -610,21 +628,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1 and $stealstateright is undefined>>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and $stealstateright is undefined>><br>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $righttarget to _firsttarget>>
@@ -685,21 +696,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["당신 자신"] to "self">>
 	<</if>>
-	<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-		대상: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<set _rightOptions to "heldSexToy">>
 	<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른손은 <<sextoy_ rul $currentSexToyRight.name>> 잡고 있다.</span>
-	<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-		대상: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $righttarget to _firsttarget>>
@@ -776,7 +780,7 @@
 		<<generateCombatAction _rightaction "rightaction" _textColor $rightaction>>
 
 		/*Checks/Difficulty*/
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="rightactionDifficulty">
 				<<rightactionDifficulty>>
 			</div>
@@ -795,6 +799,7 @@
 <<switch _diffAction>>
 	<<case "rightwork" "rightclit">><<handdifficulty>>
 	<<case "rightplay" "rightgrab">><<handdifficulty>> <<combatpromiscuous3>>
+	<<case "handedge">> <<combatpromiscuous4>>
 	<<case "steal">><<skulduggerydifficulty>><<combatcrime>>
 	<<case "spray">>잔량: $spray / $spraymax
 	<<case "righthandholdnew">><<handholdingvirginitywarning>><<NPCvirginitywarning $NPCList[$lefttarget].fullDescription "handholding">>
@@ -814,6 +819,13 @@
 			<</listbox>>
 		<</if>>
 		<<combatpromiscuous3>>
+	<<case "handguide">>
+		<<if Object.keys(_handGuideOptions).length gt 0>>
+			<<listbox "$handGuideRight" autoselect>>
+				<<optionsfrom _handGuideOptions>>
+			<</listbox>>
+		<</if>>
+		<<handdifficulty>> <<combatpromiscuous2>>
 <</switch>>
 <</widget>>
 
@@ -851,16 +863,21 @@
 			<<rightdildowhack>>
 			<<pickupSexToy "right">>
 			<<rightcamerapose>>
+			<<righthandpull>>
 		<<case "handheld">>
 			<<if $consensual is 1>>
 				<<set _rightaction["계속 잡고 있는다"] to "righthandholdkeep">>
 			<</if>>
+			<<combathandguide "right">>
 			<<set _rightaction["멈춘다"] to "righthandholdstop">>
 		<<case "penis">>
 			<<if $NPCList[$righttarget].chastity.penis.includes("chastity")>>
 				<<set _rightaction[$NPCList[$righttarget].pronouns.him + " 희롱한다"] to "rightwork">>
 			<<else>>
 				<<set _rightaction[$NPCList[$righttarget].pronouns.his + " 자지를 애무한다"] to "rightwork">>
+				<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $handskill gte 800>>
+					<<set _rightaction["애태운다"] to "handedge">>
+				<</if>>
 			<</if>>
 			<<set _rightaction["멈춘다"] to "rightstoppenis">>
 		<<case "grappled">>
@@ -872,6 +889,9 @@
 				<<set _rightaction[$NPCList[$righttarget].pronouns.him + " 희롱한다"] to "rightclit">>
 			<<else>>
 				<<set _rightaction[$NPCList[$righttarget].pronouns.his + " 클리토리스를 문지른다"] to "rightclit">>
+				<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $handskill gte 800>>
+					<<set _rightaction["애태운다"] to "handedge">>
+				<</if>>
 			<</if>>
 			<<set _rightaction["멈춘다"] to "rightothervaginastop">>
 		<<case "coverVagina">>
@@ -966,13 +986,9 @@
 			<<if _targetYourself is true and _targetnumber gt 1>>
 				<<set _targetlistall["당신 자신"] to "self">>
 			<</if>>
-			<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
 				<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
-					대상: <span onchange="actionsreplace('feet')">
-					<<listbox "$feettarget" autoselect>>
-						<<optionsfrom _targetlistall>>
-					<</listbox>>
-					</span>
+					<<targetListBox "feet" _targetlistall>>
 				<</if>>
 			<</if>>
 			<<if $leftleg is 0 and $rightleg is 0>>
@@ -994,12 +1010,9 @@
 				<<set _feetOptions to "free">>
 				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
 			<</if>>
-			<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-				대상: <span onchange="actionsreplace('feet')">
-				<<listbox "$feettarget" autoselect>>
-					<<optionsfrom _targetlistall>>
-				<</listbox>>
-				</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>>
+				<br>
+				<<targetListBox "feet" _targetlistall>>
 			<</if>>
 			<<if _targetnumber is 1>>
 				<<set $feettarget to _firsttarget>>
@@ -1021,6 +1034,9 @@
 	<<case "walk">>
 		<<set _feetOptions to "walk">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 걷고 있다.</span>
+	<<case "strut">>
+		<<set _feetOptions to "strut">>
+		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 과시하듯이 걷고 있다.</span>
 	<<case "run">>
 		<<set _feetOptions to "run">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신은 달리고 있다.</span>
@@ -1059,7 +1075,7 @@
 			<<generateCombatAction _feetaction "feetaction" _textColor $feetaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="feetactionDifficulty">
 					<<feetactionDifficulty>>
 				</div>
@@ -1092,6 +1108,7 @@
 <<set _feetaction to {}>>
 <<if $position is "stalk">>
 	<<feet_walk>>
+	<<feet_strut>>
 	<<feet_run>>
 	<<feet_hobble>>
 	<<feet_stand>>
@@ -1166,21 +1183,14 @@
 <<else>>
 	<<switch $mouthuse>>
 	<<case 0>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('mouth')">
-			<<listbox "$mouthtarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "mouth" _targetlist>>
 		<</if>>
 		<<set _mouthOptions to "free">>
 		<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">당신의 입은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('mouth')">
-			<<listbox "$mouthtarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "mouth" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $mouthtarget to _firsttarget>>
@@ -1227,7 +1237,11 @@
 			<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouthimminent">><<set $mouthtarget to $index>><<combatPerson_ yi>> <<npcPenis_ ga $index>> 당신의 입술을 누른다.</span>
 		<<case "penetrated">>
 			<<set _mouthOptions to "penisPenetrated">>
-			<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouth">><<set $mouthtarget to $index>><<combatPerson_ yi>> <<npcPenis_ ga $index>> 당신의 입에 삽입되어 있다.</span>
+			<<if $enemyarousal gte $enemyarousalmax>>
+				<span class="gold"><<selectNpcWithPartInPosition "penis" "mouth">><<set $mouthtarget to $index>><<combatPerson_ yi>> <<npcPenis_ ga $index>> 당신의 입 안에서 경련한다.</span>
+			<<else>>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouth">><<set $mouthtarget to $index>><<combatPerson_ yi>> <<npcPenis_ ga $index>> 당신의 입에 삽입되어 있다.</span>
+			<</if>>
 		<<case "gagged">>
 			<<set _mouthOptions to "gagged">>
 			<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">당신의 입은 무력하게 막혀있다.</span>
@@ -1283,7 +1297,7 @@
 		<<generateCombatAction _mouthaction "mouthaction" _textColor $mouthaction>>
 
 		/*Checks/Difficulty*/
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="mouthactionDifficulty">
 				<<mouthactionDifficulty>>
 			</div>
@@ -1301,9 +1315,13 @@
 <</if>>
 <<switch _diffAction>>
 	<<case "mouth" "othervagina">><<oraldifficulty>> <<combatpromiscuous4>>
+	<<case "oraledge">> <<combatpromiscuous4>>
 	<<case "movetochest">><<oraldifficulty>> <<combatpromiscuous3>>
+	<<case "ejacswallow">><<oraldifficulty>> <<combatpromiscuous5>>
+	<<case "ejacspit">><<oraldifficulty>>
 	<<case "swallow">><<oralvirginitywarning>> <<combatpromiscuous5>>
 	<<case "grasp">><<chestdifficulty>> <<combatpromiscuous3>>
+	<<case "kisslips">><<oraldifficulty>> <<combatpromiscuous1>>
 	<<case "pullaway" "pullawaykiss">><<oraldifficulty>>
 	<<case "finish">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
 	<<case "novaginal">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
@@ -1327,7 +1345,7 @@
 			<<default>>
 				<<set $_label to "bratList">>
 		<</switch>>
-		<div id="askDifficulty" @class="($combatControls is 'radio' ? '' : $_label)" style="display:inline;">
+		<div id="askDifficulty" @class="($options.combatControls is 'radio' ? '' : $_label)" style="display:inline;">
 			<<listbox "$askAction" autoselect>>
 				<<optionsfrom _askActions>>
 			<</listbox>>
@@ -1418,21 +1436,14 @@
 <<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $penisstate>>
 	<<case 0>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('penis')">
-			<<listbox "$penistarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "penis" _targetlist>>
 		<</if>>
 		<<set _penisOptions to "free">>
 		<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">당신의 <<penisPost "은">> 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('penis')">
-			<<listbox "$penistarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "penis" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $penistarget to _firsttarget>>
@@ -1531,7 +1542,7 @@
 			<<generateCombatAction _penisaction "penisaction" _textColor $penisaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="penisactionDifficulty">
 					<<penisactionDifficulty>>
 				</div>
@@ -1636,21 +1647,14 @@
 <<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
 	<<switch $vaginastate>>
 	<<case 0>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginatarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "vagina" _targetlist>>
 		<</if>>
 		<<set _vaginaOptions to "free">>
 		<span @class="($lastOptions.vagina isnot _vaginaOptions ?'gold':'')">당신의 <<pussyPost "은">> 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginatarget" autoselect>>
-				<<optionsfrom _targetlist>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+			<<targetListBox "vagina" _targetlist>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $vaginatarget to _firsttarget>>
@@ -1671,15 +1675,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			대상: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "imminent">>
 		<<set _vaginaOptions to "penisImminent">>
@@ -1688,15 +1688,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			대상: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "penetrated">>
 		<<set _vaginaOptions to "penisPenetrated">>
@@ -1705,15 +1701,11 @@
 			<<getDoubleTargetList>>
 		<</if>>
 		<<if _secondtarget is true>>
-			<<if $combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 			<<if $vaginadoubletarget is undefined>>
 				<<set $vaginadoubletarget to _firstdoubletarget>>
 			<</if>>
-			대상: <span onchange="actionsreplace('vagina')">
-			<<listbox "$vaginadoubletarget" autoselect>>
-				<<optionsfrom _doubletargetlist>>
-			<</listbox>>
-			</span>
+			<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
 		<</if>>
 	<<case "othervaginaentrance">>
 		<<set _vaginaOptions to "vaginaEntrance">><<selectNpcWithPartInPosition "vagina" "vaginaentrance">><<set $vaginatarget to $index>>
@@ -1805,7 +1797,7 @@
 			<<generateCombatAction _vaginaaction "vaginaaction" _textColor $vaginaaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="vaginaactionDifficulty">
 					<<vaginaactionDifficulty>>
 				</div>
@@ -1839,7 +1831,7 @@
 	<<case "penisDoubleEdging">><<combatpromiscuous5>> <<combataware 4>>
 	<<case "vaginatopenisdouble">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>>
 	<<case "vaginapenisdoublefuck">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>> <<vaginalvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
-	<<case "penisEdging">><<combatpromiscuous4>>
+	<<case "penisEdging" "tribedge">><<combatpromiscuous4>>
 <</switch>>
 <</widget>>
 
@@ -1912,21 +1904,14 @@
 	<<else>>
 		<<switch $anusstate>>
 		<<case 0>>
-			<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-				대상: <span onchange="actionsreplace('anus')">
-				<<listbox "$anustarget" autoselect>>
-					<<optionsfrom _targetlist>>
-				<</listbox>>
-				</span>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "anus" _targetlist>>
 			<</if>>
 			<<set _anusOptions to "free">>
 			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">당신의 <<bottomPost "은">> 자유롭다.</span>
-			<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-				대상: <span onchange="actionsreplace('anus')">
-				<<listbox "$anustarget" autoselect>>
-					<<optionsfrom _targetlist>>
-				<</listbox>>
-				</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+				<<targetListBox "anus" _targetlist>>
 			<</if>>
 			<<if _targetnumber is 1>>
 				<<set $anustarget to _firsttarget>>
@@ -1953,15 +1938,11 @@
 				<<getDoubleTargetList>>
 			<</if>>
 			<<if _secondtarget is true>>
-				<<if $combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 				<<if $anusdoubletarget is undefined>>
 					<<set $anusdoubletarget to _firstdoubletarget>>
 				<</if>>
-				대상: <span onchange="actionsreplace('anus')">
-				<<listbox "$anusdoubletarget" autoselect>>
-					<<optionsfrom _doubletargetlist>>
-				<</listbox>>
-				</span>
+				<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
 			<</if>>
 		<<case "imminent">>
 			<<set _anusOptions to "penisImminent">><<selectNpcWithPartInPosition "penis" "anusimminent">><<set $anustarget to $index>>
@@ -1973,15 +1954,11 @@
 				<<getDoubleTargetList>>
 			<</if>>
 			<<if _secondtarget is true>>
-				<<if $combatControls is "radio" and _targetnumber gt 1>><br><</if>>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
 				<<if $anusdoubletarget is undefined>>
 					<<set $anusdoubletarget to _firstdoubletarget>>
 				<</if>>
-				대상: <span onchange="actionsreplace('anus')">
-				<<listbox "$anusdoubletarget" autoselect>>
-					<<optionsfrom _doubletargetlist>>
-				<</listbox>>
-				</span>
+				<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
 			<</if>>
 		<<case "doubleentrance">>
 			<<set _anusOptions to "penisDoubleEntrance">>
@@ -2044,7 +2021,7 @@
 			<<generateCombatAction _anusaction "anusaction" _textColor $anusaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="anusactionDifficulty">
 					<<anusactionDifficulty>>
 				</div>
@@ -2086,7 +2063,8 @@
 /*Generate Actions*/
 <<set _anusaction to {}>>
 <<if $position is "stalk">>
-
+	<<set _anusaction["쉰다"] to "rest">>
+	<<bottom_wiggle>><<seductiondifficulty>>
 <<else>>
 	<<switch _anusOptions>>
 		<<case "free">>
@@ -2152,7 +2130,7 @@
 			<<generateCombatAction _chestaction "chestaction" _textColor $chestaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="chestactionDifficulty">
 					<<chestactionDifficulty>>
 				</div>
@@ -2214,7 +2192,7 @@
 			<<generateCombatAction _thighaction "thighaction" _textColor $thighaction>>
 
 			/*Checks/Difficulty*/
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="thighactionDifficulty">
 					<<thighactionDifficulty>>
 				</div>
@@ -2284,13 +2262,13 @@
 			<<if _firsttarget is undefined>>
 				<<set _firsttarget to _namecontroller>>
 			<</if>>
-			<<if $targetYourself is true>>
+			<<if $options.targetYourself is true>>
 				<<set _targetYourself to true>>
 			<</if>>
 			<<break>>
 		<<elseif $NPCList[_namecontroller].active is "active" and $NPCList[_namecontroller].stance isnot "defeated">>
-			<<if $NPCList[_namecontroller].description is "pale figure">>
-				<<trNamedNPC $NPCList[_namecontroller].description "title">><<set _smoltext to _trResult>>
+			<<if $NPCList[_namecontroller].fullDescription is "Ivory Wraith">>
+				<<set _smoltext to "창백한 형체">>
 				<<set $_wraithbreak to true>>
 			<<else>>
 				<<trNPCdesc $NPCList[_namecontroller].fullDescription>><<set _smoltext to _trResult>>
@@ -2304,7 +2282,7 @@
 			<<if _firsttarget is undefined>>
 				<<set _firsttarget to _namecontroller>>
 			<</if>>
-			<<if $targetYourself is true>>
+			<<if $options.targetYourself is true>>
 				<<set _targetYourself to true>>
 			<</if>>
 			<<if $_wraithbreak is true>>
@@ -2319,7 +2297,7 @@
 <</if>>
 <<if $swarm.type isnot 0>>
 	<<trSwarm $swarm.type>><<set _targetlistall[_trResult] to "swarm">><<set _targetnumber += 1>>
-	<<if $targetYourself is true>>
+	<<if $options.targetYourself is true>>
 		<<set _targetYourself to true>>
 	<</if>>
 <</if>>
@@ -2417,21 +2395,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $lefttarget to _firsttarget>>
@@ -2453,21 +2424,14 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["당신 자신"] to "self">>
 	<</if>>
-	<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-		대상: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<set _leftOptions to "heldSexToy">>
 	<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">당신의 왼손은 <<sextoy_ rul $currentSexToyLeft.name>> 잡고 있다.</span>
-	<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-		대상: <span onchange="actionsreplace('left')">
-		<<listbox "$lefttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<br>
+		<<targetListBox "left" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $lefttarget to _firsttarget>>
@@ -2478,7 +2442,7 @@
 	<<set _leftGold to true>>
 <</if>>
 <<leftActionsSelf>>
-<<if Object.keys(_leftaction).length gt 0>><<if $combatControls is "radio">><br><</if>>
+<<if Object.keys(_leftaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 	<<if Object.values(_leftaction).includes($leftactiondefault) is false or _args[0] is true or $leftactiondefault is "rest">>
 		<<set _defaultsCombatAction to "leftaction">>
 		<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2499,14 +2463,14 @@
 	<<set _textColor to combatListColor('leftaction', (Object.values(_leftaction).includes($leftaction) ? $leftaction : Object.values(_leftaction)[0]), "Self")>>
 	<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Self">>
 
-	<<if $combatControls.includes("ists")>>
+	<<if $options.combatControls.includes("ists")>>
 		<div id="leftactionDifficulty">
 			<<leftactionDifficulty>>
 		</div>
 		<div id="leftactionDifficultySelf">
 			<<leftactionDifficultySelf>>
 		</div>
-	<</if>><<if $combatControls is "radio">><br><br><</if>>/* Seems to render no effect..? */
+	<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
 <</if>>
 <<set $lastOptions.left to clone(_leftOptions)>>
 <</widget>>
@@ -2605,21 +2569,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $righttarget to _firsttarget>>
@@ -2641,21 +2598,13 @@
 	<<if _targetYourself is true and _targetnumber gt 1>>
 		<<set _targetlistarms["당신 자신"] to "self">>
 	<</if>>
-	<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-		대상: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<set _rightOptions to "heldSexToy">>
 	<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">당신의 오른손은 <<sextoy_ rul $currentSexToyRight.name>> 잡고 있다.</span>
-	<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-		대상: <span onchange="actionsreplace('right')">
-		<<listbox "$righttarget" autoselect>>
-			<<optionsfrom _targetlistarms>>
-		<</listbox>>
-		</span>
+	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br>
+		<<targetListBox "right" _targetlistarms>>
 	<</if>>
 	<<if _targetnumber is 1>>
 		<<set $righttarget to _firsttarget>>
@@ -2665,7 +2614,7 @@
 	<<set _rightGold to true>>
 <</if>>
 <<rightActionsSelf>>
-<<if Object.keys(_rightaction).length gt 0>><<if $combatControls is "radio">><br><</if>>
+<<if Object.keys(_rightaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 	<<if Object.values(_rightaction).includes($rightactiondefault) is false or _args[0] is true or $rightactiondefault is "rest">>
 		<<set _defaultsCombatAction to "rightaction">>
 		<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2686,14 +2635,14 @@
 	<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "Self")>>
 	<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Self">>
 
-	<<if $combatControls.includes("ists")>>
+	<<if $options.combatControls.includes("ists")>>
 		<div id="rightactionDifficulty">
 			<<rightactionDifficulty>>
 		</div>
 		<div id="rightactionDifficultySelf">
 			<<rightactionDifficultySelf>>
 		</div>
-	<</if>><<if $combatControls is "radio">><br><br><</if>>/* Seems to render no effect..? */
+	<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
 <</if>>
 <<set $lastOptions.right to clone(_rightOptions)>>
 <</widget>>
@@ -2782,21 +2731,14 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistall["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<set _feetOptions to "free">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 발은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions is "free">><br>
-			대상: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions is "free">>
+			<br>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $feettarget to _firsttarget>>
@@ -2806,7 +2748,7 @@
 		<<set _feetGold to true>>
 	<</if>>
 	<<feetActionsSelf>>
-	<<if Object.keys(_feetaction).length gt 0>><<if $combatControls is "radio">><br><</if>>
+	<<if Object.keys(_feetaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
 		<<if Object.values(_feetaction).includes($feetactiondefault) is false or _args[0] is true or $feetactiondefault is "rest">>
 			<<set _defaultsCombatAction to "feetaction">>
 			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
@@ -2827,11 +2769,11 @@
 		<<set _textColor to combatListColor('feetaction', (Object.values(_feetaction).includes($feetaction) ? $feetaction : Object.values(_feetaction)[0]), "Self")>>
 		<<generateCombatActionOthers _feetaction "feetaction" _textColor $feetaction "Self">>
 
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="feetactionDifficulty">
 				<<feetactionDifficulty>>
 			</div>
-		<</if>><<if $combatControls is "radio">><br><</if>>/* Seems to render no effect..? */
+		<</if>><<if $options.combatControls.includes("adio")>><br><</if>>/* Seems to render no effect..? */
 	<</if>>
 	<<set $lastOptions.feet to clone(_feetOptions)>>
 <<else>>
@@ -2863,8 +2805,8 @@
 <</widget>>
 
 <<widget "generateCombatActionOthers">>
-<<switch $combatControls>>
-	<<case "radio">>
+<<switch $options.combatControls>>
+	<<case "radio" "columnRadio">>
 		<<generateCombatActionOthersRadio _args[0] _args[1] _args[3] _args[4]>>
 	<<case "lists" "limitedLists">>
 		<<generateCombatActionOthersList _args[0] _args[1] _args[2] _args[4]>>
@@ -2876,7 +2818,7 @@
 	<label>
 		<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
 		<span @class="combatListColor('', _valueC, _args[3])"><<print _labelC>></span>
-		<<print '<<'+_args[1]+'Difficulty'+_args[3]+' "'+_valueC+'">>'>> |
+		<<print '<<'+_args[1]+'Difficulty'+_args[3]+' "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
 	</label>
 <</for>>
 <</widget>>
@@ -2925,7 +2867,7 @@
 	<</if>>
 <</if>>
 
-<<if $images is 1 and $combatimages is 1>>
+<<if $options.images is 1 and $options.combatImages is 1>>
 	<<if $position isnot "stalk">>
 		<<timed 100ms>>
 			<<combatimg>>
@@ -2963,7 +2905,7 @@
 
 <<if $trance lte 0 and $panicparalysis is 0 and ($panicviolence is 0 or $position is "stalk")>>
 	<<if $dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and ["man", "plant", "beast"].includes($enemytype)>>
-		<<if $images is 1 and $combatimages is 1 and $consensual is 1 and $position_lock isnot 1>>
+		<<if $options.images is 1 and $options.combatImages is 1 and $consensual is 1 and $position_lock isnot 1>>
 			<<if $position is "doggy">>
 				| <label>몸을 돌린다 <<radiobutton "$bodyaction" "missionary">></label>
 			<<elseif $position is "missionary">>
@@ -2997,7 +2939,7 @@
 <</if>>
 <<if _targetnumber gte 1>>
 	<div id="listContainer">
-		<div id="leftaction" @class="$combatControls + 'Control'">
+		<div id="leftaction" @class="$options.combatControls + 'Control'">
 			<<switch $lefttarget>>
 			<<case "self">>
 				<<leftActionInitSelf>>
@@ -3028,7 +2970,7 @@
 			<</switch>>
 		</div>
 
-		<div id="rightaction" @class="$combatControls + 'Control'">
+		<div id="rightaction" @class="$options.combatControls + 'Control'">
 			<<switch $righttarget>>
 			<<case "self">>
 				<<rightActionInitSelf>>
@@ -3060,7 +3002,7 @@
 		</div>
 
 		<<if Object.values(_targetlistall).length gte 1>>
-			<div id="feetaction" @class="$combatControls + 'Control'">
+			<div id="feetaction" @class="$options.combatControls + 'Control'">
 				<<switch $feettarget>>
 				<<case "self">>
 					<<feetActionInitSelf>>
@@ -3091,29 +3033,29 @@
 		<<if Object.values(_targetlist).length gte 1>>
 			<<switch $mouthtarget>>
 			<<case "tentacles">>
-				<div id="mouthaction" @class="$combatControls + 'Control'">
+				<div id="mouthaction" @class="$options.combatControls + 'Control'">
 					<<mouthActionInitTentacle>>
 				</div>
 			<<case "struggle">>
-				<div id="mouthaction" @class="$combatControls + 'Control'">
+				<div id="mouthaction" @class="$options.combatControls + 'Control'">
 					<<mouthActionInitStruggle>>
 				</div>
 			<<default>>
 				<<if !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined))>>
-					<div id="mouthaction" @class="$combatControls + 'Control'">
+					<div id="mouthaction" @class="$options.combatControls + 'Control'">
 						<<mouthActionInit>>
 					</div>
 				<<elseif Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
-					<div id="mouthaction" @class="$combatControls + 'Control'">
+					<div id="mouthaction" @class="$options.combatControls + 'Control'">
 						<<mouthActionInit>>
 					</div>
 				<<else>>
 					<<if $mouthuse is "struggle" and $struggle.mouth.creature>>
-						<div id="mouthaction" @class="$combatControls + 'Control'">
+						<div id="mouthaction" @class="$options.combatControls + 'Control'">
 							<<mouthActionInitStruggle>>
 						</div>
 					<<elseif $mouthstate isnot 0>>
-						<div id="mouthaction" @class="$combatControls + 'Control'">
+						<div id="mouthaction" @class="$options.combatControls + 'Control'">
 							<<mouthActionInitTentacle>>
 						</div>
 					<</if>>
@@ -3123,25 +3065,25 @@
 			<<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
 				<<switch $penistarget>>
 				<<case "tentacles">>
-					<div id="penisaction" @class="$combatControls + 'Control'">
+					<div id="penisaction" @class="$options.combatControls + 'Control'">
 						<<penisActionInitTentacle>>
 					</div>
 				<<case "struggle">>
-					<div id="penisaction" @class="$combatControls + 'Control'">
+					<div id="penisaction" @class="$options.combatControls + 'Control'">
 						<<penisActionInitStruggle>>
 					</div>
 				<<default>>
 					<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
-						<div id="penisaction" @class="$combatControls + 'Control'">
+						<div id="penisaction" @class="$options.combatControls + 'Control'">
 							<<penisActionInit>>
 						</div>
 					<<else>>
 						<<if $penisuse is "struggle">>
-							<div id="penisaction" @class="$combatControls + 'Control'">
+							<div id="penisaction" @class="$options.combatControls + 'Control'">
 								<<penisActionInitStruggle>>
 							</div>
 						<<elseif $penisstate isnot 0>>
-							<div id="penisaction" @class="$combatControls + 'Control'">
+							<div id="penisaction" @class="$options.combatControls + 'Control'">
 								<<penisActionInitTentacle>>
 							</div>
 						<</if>>
@@ -3152,25 +3094,25 @@
 			<<if $player.vaginaExist>>
 				<<switch $vaginatarget>>
 				<<case "tentacles">>
-					<div id="vaginaaction" @class="$combatControls + 'Control'">
+					<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 						<<vaginaActionInitTentacle>>
 					</div>
 				<<case "struggle">>
-					<div id="vaginaaction" @class="$combatControls + 'Control'">
+					<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 						<<vaginaActionInitStruggle>>
 					</div>
 				<<default>>
 					<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
-						<div id="vaginaaction" @class="$combatControls + 'Control'">
+						<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 							<<vaginaActionInit>>
 						</div>
 					<<else>>
 						<<if $vaginause is "struggle">>
-							<div id="vaginaaction" @class="$combatControls + 'Control'">
+							<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 								<<vaginaActionInitStruggle>>
 							</div>
 						<<elseif $vaginastate isnot 0>>
-							<div id="vaginaaction" @class="$combatControls + 'Control'">
+							<div id="vaginaaction" @class="$options.combatControls + 'Control'">
 								<<vaginaActionInitTentacle>>
 							</div>
 						<</if>>
@@ -3180,25 +3122,25 @@
 
 			<<switch $anustarget>>
 			<<case "tentacles">>
-				<div id="anusaction" @class="$combatControls + 'Control'">
+				<div id="anusaction" @class="$options.combatControls + 'Control'">
 					<<anusActionInitTentacle>>
 				</div>
 			<<case "struggle">>
-				<div id="anusaction" @class="$combatControls + 'Control'">
+				<div id="anusaction" @class="$options.combatControls + 'Control'">
 					<<anusActionInitStruggle>>
 				</div>
 			<<default>>
 				<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
-					<div id="anusaction" @class="$combatControls + 'Control'">
+					<div id="anusaction" @class="$options.combatControls + 'Control'">
 						<<anusActionInit>>
 					</div>
 				<<else>>
 					<<if $anususe is "struggle">>
-						<div id="anusaction" @class="$combatControls + 'Control'">
+						<div id="anusaction" @class="$options.combatControls + 'Control'">
 							<<anusActionInitStruggle>>
 						</div>
 					<<elseif $anusstate isnot 0>>
-						<div id="anusaction" @class="$combatControls + 'Control'">
+						<div id="anusaction" @class="$options.combatControls + 'Control'">
 							<<anusActionInitTentacle>>
 						</div>
 					<</if>>
@@ -3206,21 +3148,21 @@
 			<</switch>>
 
 			<<if $chestuse isnot "struggle">>
-				<div id="chestaction" @class="$combatControls + 'Control'">
+				<div id="chestaction" @class="$options.combatControls + 'Control'">
 					<<chestActionInitStruggle>>
 				</div>
 			<<elseif $chestuse is "tentaclerub">>
-				<div id="chestaction" @class="$combatControls + 'Control'">
+				<div id="chestaction" @class="$options.combatControls + 'Control'">
 					<<chestActionInitTentacle>>
 				</div>
 			<<elseif $chestuse is "penis">>
-				<div id="chestaction" @class="$combatControls + 'Control'">
+				<div id="chestaction" @class="$options.combatControls + 'Control'">
 					<<chestActionInit>>
 				</div>
 			<</if>>
 
 			<<if $thighuse isnot 0>>
-				<div id="thighaction" @class="$combatControls + 'Control'">
+				<div id="thighaction" @class="$options.combatControls + 'Control'">
 					<<thighActionInit>>
 				</div>
 			<</if>>

@@ -1,7 +1,6 @@
 :: Widgets Journal [widget]
 <<widget "journal">>
-
-<h4>일지</h4>
+<br>
 오늘은 $year년 <<month>> $monthday<<monthday>>이다.
 <br>
 게임이 시작된지 $days일이 지났다.
@@ -28,9 +27,9 @@
 <<for _t to 0; _t lt _plant_keys.length; _t++>>
 	<<if $plants[_plant_keys[_t]].amount gte 1>><<set _plant_temp to 1>>
 		당신은 <span class="gold"><<print $plants[_plant_keys[_t]].amount>></span> <<trPlants $plants[_plant_keys[_t]].plural "unit" "의">>_trResult
-		<<if $images is 1 and setup.plants[_plant_keys[_t]].icon>>
+		<<if $options.images is 1 and setup.plants[_plant_keys[_t]].icon>>
 			<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_t]].icon">
-		<</if>>		
+		<</if>>
 		<<trPlants $plants[_plant_keys[_t]].plural "name" "을">>_trResult 가지고 있다. |
 	<</if>>
 <</for>>
@@ -47,7 +46,7 @@
 <</if>>
 <br>
 
-<<if $images is 1>>
+<<if $options.images is 1>>
 	<<if $season is "winter">>
 		<img id="world_map" src="img/misc/world_map_winter.png">
 	<<else>>
@@ -83,7 +82,7 @@
 	<</if>>
 <</if>>
 
-<<if $edendistract gte 1 and $location is "asylum">>
+<<if $daily.eden.distract gte 1 and $location is "asylum">>
 	<<if $hour lt 21>>
 		에덴은 오늘밤 <<ampm 21 00>>에 소동을 일으킬 것이다.
 	<</if>>
@@ -119,22 +118,70 @@
 	잠긴 경찰서 컴퓨터에 대해서는 랜드리가 도와줄 수 있을지도 모른다.
 	<br>
 <<elseif $pub_hack_job is 1>>
-	랜드리는 도무스 가 고아원에 사는 해커를 찾아오길 원한다.
+	랜드리는 도무스 가 고아원에 사는 아마 '미키'라는 해커를 찾아오길 원한다.
 	<br>
 <<elseif $pub_hack_job is 2>>
-	함께 일하자고 해커 꼬마를 설득하자.
+	함께 일하자고 '미키'를 설득해야 한다.
 	<br>
 <<elseif $pub_hack_job is 3>>
-	<<if not $hacker_tasks.includes("bailey")>>
-		해커는 베일리가 컴퓨터에 로그인 되어있는 동안 그 컴퓨터에 장치를 심어오길 원한다.
+	<<if !$hacker_tasks.includes("bailey")>>
+		'미키'는 베일리가 컴퓨터에 로그인 되어있는 동안 그 컴퓨터에 어떤 장치를 심어오길 원한다.
 		<br>
 	<</if>>
-	<<if not $hacker_tasks.includes("leighton")>>
-		해커는 레이턴의 책상 밑에 있는 금고에서 메모리 카드를 훔쳐오길 원한다.
+	<<if !$hacker_tasks.includes("leighton")>>
+		'미키'는 레이턴의 책상 밑에 있는 금고에서 메모리 카드를 훔쳐오길 원한다.
 		<br>
 	<</if>>
 	<<if $hacker_tasks.length gte 2>>
-		랜드리와 해커에 대해 이야기를 나눠야 한다.
+		랜드리와 '미키'에 대해 이야기를 나눠야 한다.
+		<br>
+	<</if>>
+<</if>>
+
+<<if $pubfame>>
+	<<if $pubfame.status is "accepted">>
+		<<switch $pubfame.task>>
+			<<case "river">>
+				'미키'는 학교의 수학 선생님인 리버에 대해 확인해오기를 원한다.
+			<<case "gwylan">>
+				'미키'는 <<if $forest_shop_intro is 1>>그윌란의 가게<<else>>숲의 외곽에 있는 가게<</if>>에서 특별한 스노우볼을 찾아오기를 원한다.
+			<<case "temple">>
+				'미키'는 커버 안쪽에 암호가 쓰여있는 사원의 건축에 대한 책을 찾아주기를 원한다.
+			<<case "kylar">>
+				'미키'는 편지를
+				<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison">>
+					경찰서에 배달해서, 그들이 카일라에게 전해주기를 원한다.
+				<<else>>
+					<<if $NPCName[$NPCNameList.indexOf("Kylar")].init isnot 1>>당신의 학교 학생인, <</if>>카일라에게 전해주기를 원한다.
+				<</if>>
+			<<case "wren">>
+				'미키'는 편지를 <<if $wren_intro is undefined>>렌이라는 <<nnpc_genderPost "Wren">>에게 전해주기를 원한다. <<nnpc_He_ nun "Wren">> 황무지에 있는 레미의 사유지나, 밤에 부두에서 찾을 수 있을 것이다<<else>>렌에게 전해주기를 원한다<</if>>.
+			<<case "hospital">>
+				'미키'는 병원에서 키 카드를 훔쳐오기를 원한다.
+				<<if $location is "asylum">>
+					그러나, 당신은 그들도 역시 이 장소의 키 카드가 있으면 좋아할 것이라고 생각한다.
+				<</if>>
+			<<case "morgan">>
+				'미키'는 오래된 하수도에서 USB 드라이브를 가져오기를 원한다. 그들은 <<if $sewersintro is 1>>모건이<<else>>그 아래의 누군가가<</if>> 그걸 가지고 있으리라고 생각한다.
+			<<case "niki">>
+				'미키'는 니키의 사진 스튜디오에서 <<trColour $pubfame.niki.hair>>_trResult 머리의 <<trNPCdesc $per_npc.pubfame_model.fullDescription>> 사진을 가져오기를 원한다.
+			<<case "bailey">>
+				'미키'는 베일리가 컴퓨터에 로그인 되어있는 동안 그 컴퓨터에 어떤 장치를 심어오길 원한다.
+			<<case "briar">>
+				'미키'는 창관에서 브라이어가 컴퓨터에 로그인 되어있는 동안 그 컴퓨터에 어떤 장치를 심어오길 원한다.
+			<<case "remy">>
+				<!-- intentionally does not include the password -->
+				'미키'는 <<if $ridingschoolintro is undefined>>하베스트 거리 너머 시골 지역의<</if>> 레미의 승마 학교에 있는 정보원에게서 상자를 가져오기를 원한다.
+			<<case "compound">>
+				'미키'는 엘크 가의 단지 주위에 감시 카메라를 설치하기를 바란다.
+				<<if $pubfame.compound.cameras.length gte 1>>
+					당신은 이미 <<trList $pubfame.compound.cameras>><<print formatList(_trList, "그리고", true)>>에 카메라를 숨겼다.
+				<</if>>
+		<</switch>>
+		그들은 임무 완수의 보상으로 <<if $pubfame.goal.includes("perm")>>영구적으로<<else>>일시적으로<</if>> 당신의 <<fameProse $pubfame.target>> 명성을 <<if $pubfame.goal.includes("Raise")>>올려<<else>>내려<</if>>줄 것이다.
+		<br>
+	<<elseif $pubfame.status is "done">>
+		당신은 '미키'에게 임무를 완수했다고 알려줄 수 있다.
 		<br>
 	<</if>>
 <</if>>
@@ -207,6 +254,12 @@
 	<</if>>
 	<<if $halloween_eden is 1>>
 		당신은 에덴과 할로윈을 기념하기 위해 사탕을 살 수 있다.
+	<</if>>
+	<<if $halloween_lake is 1>>
+		학생들은 <<ampm 15 00>>부터 자정까지 호수에서 파티를 열 것이다.
+		<<if $halloweenWolves>>
+			늑대 무리중 하나가 거기에서 다쳤다.
+		<</if>>
 	<</if>>
 	<br>
 <</if>>
@@ -360,7 +413,7 @@
 
 <<if $farm>>
 	<<if $farm.tower gte 1 and !$farm.tower_guard>>
-		농장의 감시탑은 비어 있다. 당신은 하베스트 가의 주점에서 필요한 경비원 후보를 찾을 수 있다.
+		농장의 감시탑은 비어 있다. 당신은 하베스트 가의 술집에서 필요한 경비원 후보를 찾을 수 있다.
 		<br>
 	<</if>>
 <</if>>
@@ -603,7 +656,7 @@
 	<<for _i to 0; _i lt _plant_keys.length; _i++>>
 		<<if setup.plants[_plant_keys[_i]].type is "flower" or setup.plants[_plant_keys[_i]].type is "vegetable">>
 			<<if $plants_known.includes( setup.plants[_plant_keys[_i]].name)>>
-				<<if $images is 1 and setup.plants[_plant_keys[_i]].icon>>
+				<<if $options.images is 1 and setup.plants[_plant_keys[_i]].icon>>
 					<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_i]].icon">
 				<</if>>
 				<<trPlants setup.plants[_plant_keys[_i]].name>><span class="green"><<print _trResult>></span> |

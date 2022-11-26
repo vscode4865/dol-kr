@@ -107,6 +107,9 @@ const EasyPostMacroList = [
 	// <<hand_ rul "left">> = 왼손을 
 	{ name: "hand_", orig_name: "handPost", is_print: 0},
 
+	// <<mouth_ rul>> = <<mouth>>를 
+	{ name: "mouth_", orig_name: "mouthPost", is_print: 0},
+
 	// <<npcPenis_ rul>> = <<npcPenis>>를 
 	{ name: "npcPenis_", orig_name: "npcPenisPost", is_print: 0},
 
@@ -121,6 +124,9 @@ const EasyPostMacroList = [
 
 	// <<npcGenitals_ rul>> = <<npcGenitals>>를 
 	{ name: "npcGenitals_", orig_name: "npcGenitalsPost", is_print: 0},
+
+	// <<npcChest_ rul>> = <<npcChest>>를 
+	{ name: "npcChest_", orig_name: "npcChestPost", is_print: 0},
 
 	// clothesPost 
 	// <<undertop_ ul>> = <<undertop>>을 
@@ -149,6 +155,9 @@ const EasyPostMacroList = [
 
 	// <<breastsaside_ rul>> = <<breastsaside>>를 
 	{ name: "breastsaside_", orig_name: "breastsasidePost", is_print: 0},
+
+	// <<bottomaside_ rul>> = <<bottomaside>>를 
+	{ name: "bottomaside_", orig_name: "bottomasidePost", is_print: 0},
 
 	// <<outfit_ ul>> = <<outfit>>을 
 	{ name: "outfit_", orig_name: "outfitPost", is_print: 0},
@@ -248,6 +257,10 @@ const EasyPostMacroList = [
 	// <<pherself_ rul>> = <<pherself>>를 
 	{ name: "pHerself_", orig_name: "pHerselfPost", is_print: 0},
 	{ name: "pherself_", orig_name: "pHerselfPost", is_print: 0},
+
+	// <<psir_ rul>> = <<psir>>를 
+	{ name: "psir_", orig_name: "psirPost", is_print: 0},
+	{ name: "pSir_", orig_name: "psirPost", is_print: 0},
 
 	// <<phim_ ul>> = <<phim>>을 
 	{ name: "phim_", orig_name: "pShePost", is_print: 0},
@@ -451,6 +464,8 @@ const EasyPostMacroList = [
 	// <<pPackbrother_ nun>> = <<pPackbrother>>는 
 	{ name: "ppackbrother_", orig_name: "ppackbrotherPost", is_print: 0},
 	{ name: "pPackbrother_", orig_name: "ppackbrotherPost", is_print: 0},
+	{ name: "ppackbrothers_", orig_name: "ppackbrotherPost", is_print: 0},
+	{ name: "pPackbrothers_", orig_name: "ppackbrotherPost", is_print: 0},
 
 
 	// <<pheat_ nun>> = <<pheat>>는 

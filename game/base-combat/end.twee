@@ -2,15 +2,7 @@
 
 <<widget "endcombat">>
 
-<!-- Need to defer execution of this until the next passage.
-	Because <<endcombat>> can be called in a link. -->
-<<if $ironmanmode>>
-	<<run IronMan.addSetter(function(v) {
-		v.enemytrust = 0;
-	})>>
-<<else>>
-	<<set $enemytrust to 0>>
-<</if>>
+<<set $enemytrust to 0>>
 
 <<if $enemyhealth lte 0>>
 	<<if $enemytype is "man">>
@@ -118,6 +110,8 @@
 <<unset $combatBegun>>
 <<unset $combatPhase>>
 <<unset $fightTargets>>
+<<unset $pounce_delay>>
+<<unset $hypnosis_deviancy_check>>
 
 <<switch $player.gender>>
 <<case "f">>
@@ -238,6 +232,9 @@
 <<unset $stealstateleft>>
 <<unset $stealstateright>>
 <<unset $position_lock>>
+<<unset $handGuideLeft>>
+<<unset $handGuideRight>>
+<<unset $easySteal>>
 
 
 <<set $leftactiondefault to $leftaction>>
@@ -498,7 +495,7 @@
 <<set $npcnum.splice(0)>>
 <<set $npcrow.splice(0)>>
 <<if $endeventerror is undefined>>
-	<<run EventSystem.Clear()>>
+	<<run EventSystem.clear()>>
 <</if>>
 <</widget>>
 
@@ -520,12 +517,12 @@
 	<<set $enemyno -= 1>>
 <</if>>
 <<if $endeventerror is undefined>>
-	<<run EventSystem.Pop(_i)>>
+	<<run EventSystem.pop(_i)>>
 <</if>>
 <<if $enemyno is 0>>
 	<<set $pronoun to 0>>
 	<<if $endeventerror is undefined>>
-		<<run EventSystem.Clear()>>
+		<<run EventSystem.clear()>>
 	<</if>>
 <</if>>
 <<if $NPCList[_i].strapon isnot undefined>>
@@ -616,6 +613,7 @@
 <<unset $childrenPassage>>
 
 <<set $index to 0>>
+<<set $modeloptionsOverride to {}>>
 
 <</widget>>
 
@@ -715,18 +713,8 @@
 
 <<widget "turnend">>
 
-<<if $ironmanmode>>
-	<!-- Need to defer execution of this until the next passage.
-		Because <<endcombat>> can be called in a link. -->
-	<<run IronMan.addSetter(function(v) {
-		if (v.enemyarousal < 0) {
-			v.enemyarousal = 0;
-		}
-	})>>
-<<else>>
-	<<if $enemyarousal lt 0>>
-		<<set $enemyarousal to 0>>
-	<</if>>
+<<if $enemyarousal lt 0>>
+	<<set $enemyarousal to 0>>
 <</if>>
 
 <<set $speechcum to 0>>
@@ -750,6 +738,7 @@
 <<unset $speechmouthvirgin>>
 <<unset $speechpenisvirgin>>
 <<unset $speechkissvirgin>>
+<<unset $speechgrowl>>
 
 
 <<if $speechcrossdressangry is 2>>

@@ -171,6 +171,9 @@
 <<else>>
 	<<set _vaginaaction["문지른다"] to "othervaginarub">>
 <</if>>
+<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $vaginalskill gte 800>>
+	<<set _vaginaaction["애태운다"] to "tribedge">>
+<</if>>
 	<<set _vaginaaction["밀어낸다"] to "tribescape">>
 <</widget>>
 
@@ -257,8 +260,11 @@
 <<else>>
 	<<set _vaginaaction["같이 비빈다"] to "tribcooperate">>
 <</if>>
-	<<set _vaginaaction["하는대로 둔다"] to "tribtake">>
-	<<set _vaginaaction["밀어낸다"] to "tribescape">>
+<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and $vaginalskill gte 800>>
+	<<set _vaginaaction["애태운다"] to "tribedge">>
+<</if>>
+<<set _vaginaaction["하는대로 둔다"] to "tribtake">>
+<<set _vaginaaction["밀어낸다"] to "tribescape">>
 <</widget>>
 
 <<widget "actionsTribRest">>
@@ -326,29 +332,31 @@
 <<widget "effectsvaginatopenis">>
 <<if $vaginaaction is "vaginatopenis">>
 	<<personselect $vaginatarget>>
-	<<set $vaginaaction to 0>><<submission 10 $vaginatarget>><<vaginalskilluse>><<combatpromiscuity5>>
-	<<if combatSkillCheck("vaginal", $vaginatarget)>>
-		<<if $NPCList[$vaginatarget].penis is 0>>
-			<<submission 2 $vaginatarget>><<set $vaginause to "penis">><<set $NPCList[$vaginatarget].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginaactiondefault to "penistease">>
-			<<if $leftarm is "vagina">>
-				<<set $leftarm to 0>>
+	<<set $vaginaaction to 0>><<submission 10>><<vaginalskilluse>><<combatpromiscuity5>>
+	<<if $vaginause is 0>>
+		<<if combatSkillCheck("vaginal", $vaginatarget)>>
+			<<if $NPCList[$vaginatarget].penis is 0>>
+				<<submission 2>><<set $vaginause to "penis">><<set $NPCList[$vaginatarget].penis to "vaginaentrance">><<set $vaginastate to "entrance">><<set $vaginaactiondefault to "penistease">>
+				<<if $leftarm is "vagina">>
+					<<set $leftarm to 0>>
+				<</if>>
+				<<if $rightarm is "vagina">>
+					<<set $rightarm to 0>>
+				<</if>>
+				<<if $condomUse is false>>
+				<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[$vaginatarget].condom is false>>
+					<<equipCondom $vaginatarget>>
+					<span class="green"><<He_ nun>> <<his_ yi>> 자지에 콘돔을 씌운다.</span>
+				<</if>>
+				<span class="lblue">당신은 <<combatpersonPost "의">> 위에 올라타 <<if $NPCList[$vaginatarget].chastity.penis.includes("chastity")>> <<his_ yi>> <<trClothes "genitals" $NPCList[$vaginatarget].chastity.penis "name" "을">>_trResult 통해<</if>> <<pussyPost "으로">> <<hisPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult에 키스한다.</span>
+				<<if $enemytype is "beast">><<set $NPCList[$vaginatarget].stance to "top">><</if>>
+				<<set $NPCList[$vaginatarget].location.genitals to "genitals">>
+			<<else>>
+				<span class="blue">당신은 <<combatpersonPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult 위에 올라타려 하지만, 그 자지는 이미 사용중이다.</span><<set $vaginaactiondefault to "vaginatopenis">>
 			<</if>>
-			<<if $rightarm is "vagina">>
-				<<set $rightarm to 0>>
-			<</if>>
-			<<if $condomUse is false>>
-			<<elseif ($condomUse is true or (random(0,100) lt $condomautochance and $npcCondoms isnot undefined)) and $NPCList[$vaginatarget].condom is false>>
-				<<equipCondom $vaginatarget>>
-				<span class="green"><<He_ nun>> <<his_ yi>> 자지에 콘돔을 씌운다.</span>
-			<</if>>
-			<span class="lblue">당신은 <<combatpersonPost "의">> 위에 올라타 <<if $NPCList[$vaginatarget].chastity.penis.includes("chastity")>> <<his_ yi>> <<trClothes "genitals" $NPCList[$vaginatarget].chastity.penis "name" "을">>_trResult 통해<</if>> <<pussyPost "으로">> <<hisPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult에 키스한다.</span>
-			<<if $enemytype is "beast">><<set $NPCList[$vaginatarget].stance to "top">><</if>>
-			<<set $NPCList[$vaginatarget].location.genitals to "genitals">>
 		<<else>>
-			<span class="blue">당신은 <<combatpersonPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult 위에 올라타려 하지만, 그 자지는 이미 사용중이다.</span><<set $vaginaactiondefault to "vaginatopenis">>
+			<span class="blue">당신은 <<combatpersonPost "의">> 위에 올라타려 하지만 <<ohePost "이">> 당신을 밀어낸다.</span><<set $vaginaactiondefault to "vaginatopenis">>
 		<</if>>
-	<<else>>
-		<span class="blue">당신은 <<combatpersonPost "의">> 위에 올라타려 하지만 <<ohePost "이">> 당신을 밀어낸다.</span><<set $vaginaactiondefault to "vaginatopenis">>
 	<</if>>
 <</if>>
 
@@ -357,10 +365,10 @@
 <<widget "effectsvaginatovagina">>
 <<if $vaginaaction is "vaginatovagina">>
 	<<personselect $vaginatarget>>
-	<<set $vaginaaction to 0>><<submission 5 $vaginatarget>><<vaginalskilluse>><<combatpromiscuity5>>
+	<<set $vaginaaction to 0>><<submission 5>><<vaginalskilluse>><<combatpromiscuity5>>
 	<<if combatSkillCheck("vaginal", $vaginatarget)>>
 		<<if $NPCList[$vaginatarget].vagina is 0>>
-			<<set $vaginause to "othervagina">><<set $vaginastate to "othervaginaentrance">><<set $NPCList[$vaginatarget].vagina to "vaginaentrance">><<submission 5 $vaginatarget>><<set $vaginaactiondefault to "othervaginarub">>
+			<<set $vaginause to "othervagina">><<set $vaginastate to "othervaginaentrance">><<set $NPCList[$vaginatarget].vagina to "vaginaentrance">><<submission 5>><<set $vaginaactiondefault to "othervaginarub">>
 			<<if $leftarm is "vagina">>
 				<<set $leftarm to 0>>
 			<</if>>
@@ -381,9 +389,9 @@
 
 <<widget "effectsvaginatovaginafuck">>
 <<if $vaginaaction is "vaginatovaginafuck" and $NPCList[$vaginatarget].vagina.toString().includes("vagina")>>
-	<<set $vaginaaction to 0>><<submission 5 $vaginatarget>><<vaginalskilluse>><<combatpromiscuity5>>
+	<<set $vaginaaction to 0>><<submission 5>><<vaginalskilluse>><<combatpromiscuity5>>
 	<<if combatSkillCheck("vaginal", $vaginatarget)>>
-		<<submission 5 $vaginatarget>><<set $vaginause to "othervagina">><<set $vaginastate to "othervagina">><<set $NPCList[$vaginatarget].vagina to "vagina">><<set $vaginaactiondefault to "tribcooperate">>
+		<<submission 5>><<set $vaginause to "othervagina">><<set $vaginastate to "othervagina">><<set $NPCList[$vaginatarget].vagina to "vagina">><<set $vaginaactiondefault to "tribcooperate">>
 		<span class="blue">당신은 <<personselect $vaginatarget>><<combatpersonPost "의">> 보지에 자신의 보지를 대고 누른다.</span>
 	<<else>>
 		<span class="blue">당신은 <<pussyPost "으로">> <<personselect $vaginatarget>><<combatpersonPost "의">> 보지를 누르려 하지만, <<ohePost "이">> 당신을 밀어낸다.</span><<set $vaginaactiondefault to "vaginatovaginafuck">>
@@ -393,7 +401,7 @@
 
 <<widget "effectsvaginapenisfuck">>
 <<if $vaginaaction is "vaginapenisfuck" and $NPCList[$vaginatarget].penis.toString().includes("vagina")>>
-	<<set $vaginaaction to 0>><<submission 20 $vaginatarget>><<vaginalskilluse>><<combatpromiscuity5>>
+	<<set $vaginaaction to 0>><<submission 20>><<vaginalskilluse>><<combatpromiscuity5>>
 	<<if $vaginaWetness + ($vaginalskill / 10) gte ($NPCList[$vaginatarget].penissize * 15) + random(1, 40) or random(1, 2) is 2>>
 		<<if $player.virginity.vaginal isnot true>>
 			<<set $NPCList[$vaginatarget].penis to "vagina">>
@@ -408,43 +416,43 @@
 			<<default>>
 				<span class="lewd"></span>
 			<</switch>>
-			<<sex 30 $vaginatarget>><<vaginalstat>><<raped>><<vaginaraped>><<takeVirginity $NPCList[$vaginatarget].fullDescription "vaginal">><<takeNPCVirginity $vaginatarget "penile">><<set $vaginastate to "penetrated">><<set $vaginaactiondefault to "cooperate">>
+			<<sex 30 "genitals">><<vaginalstat>><<raped>><<vaginaraped>><<takeVirginity $NPCList[$vaginatarget].fullDescription "vaginal">><<takeNPCVirginity $vaginatarget "penile">><<set $vaginastate to "penetrated">><<set $vaginaactiondefault to "cooperate">>
 		<<elseif $player.virginity.vaginal is true>>
 			<<set $NPCList[$vaginatarget].penis to "vagina">><<set $vaginaactiondefault to "cooperate">>
 			<<vagina_lube_text>> <span class="pink">당신은 <<vaginaltext>> 처녀 보지를 <<personselect $vaginatarget>><<combatpersonPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult에 대고 눌러, 깊숙한 곳까지 받아들인다.</span>
 			<<if $sexStats.vagina.pregnancy.totalBirthEvents gt 0>>
 				<span class="red">당신은 처녀막이 없음에도 불구하고, 당신의 처녀와 순결을 뺏겨 당신 안의 무언가가 바뀐 것 같은 기분이 든다.</span>
-				<<violence 10 $vaginatarget>>
+				<<violence 10>>
 			<<else>>
 				<<switch $NPCList[$vaginatarget].penissize>>
 					<<case 5>>
 						그 크기가 당신에게 생각을 할 여지도 주지 않는다. <span class="red">당신의 처녀막이 흔적도 없이 찢어지고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-						<<violence 50 $vaginatarget>>
+						<<violence 50>>
 					<<case 4>>
 						<span class="red">당신의 처녀막이 찢어지고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-						<<violence 40 $vaginatarget>>
+						<<violence 40>>
 					<<case 1>>
 						<span class="red">그 크기에도 불구하고 당신은 처녀막이 찢어지는 것을 느끼고, <<virginitylosttext $NPCList[_n].fullDescription>></span> <span class="green"> While technically no longer a virgin, you can barely feel it.</span>
-						<<violence 20 $vaginatarget>>
+						<<violence 20>>
 					<<default>>
 						<span class="red">당신은 처녀막이 찢어지는 것을 느끼고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-						<<violence 30 $vaginatarget>>
+						<<violence 30>>
 				<</switch>>
 			<</if>>
-			<<sex 100 $vaginatarget>><<bruise vagina>><<vaginalstat>><<raped>><<vaginaraped>><<takeVirginity $NPCList[$vaginatarget].fullDescription "vaginal">><<takeNPCVirginity $vaginatarget "penile">><<set $vaginastate to "penetrated">><<set $speechvaginavirgin to 1>>
+			<<sex 100 "genitals">><<bruise vagina>><<vaginalstat>><<raped>><<vaginaraped>><<takeVirginity $NPCList[$vaginatarget].fullDescription "vaginal">><<takeNPCVirginity $vaginatarget "penile">><<set $vaginastate to "penetrated">><<set $speechvaginavirgin to 1>>
 		<</if>>
 	<<else>>
 		당신은 <<vaginaltext>> <<pussyPost "을">> <<personselect $vaginatarget>><<combatpersonPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult에 대고 누르지만, <span class="blue">안에 받아들이는데에는 실패한다.</span> <<hisPost "의">> 자지는 각도를 틀어 당신의 <<if $player.penisExist>><<penisPost "을">><<else>>클리토리스를<</if>> 문지른다.
-		<<sex 20 $vaginatarget>><<set $vaginaactiondefault to "vaginapenisfuck">>
+		<<sex 20 "genitals">><<set $vaginaactiondefault to "vaginapenisfuck">>
 	<</if>>
 <</if>>
 <</widget>>
 
 <<widget "effectsvaginatopenisdouble">>
 <<if $vaginaaction is "vaginatopenisdouble" and $NPCList[$vaginadoubletarget].penis is 0>>
-	<<set $vaginaaction to 0>><<submission 10 $vaginatarget $vaginadoubletarget>><<vaginalskilluse>><<set $vaginaactiondefault to "vaginatopenisdouble">><<combatpromiscuity5>>
+	<<set $vaginaaction to 0>><<submission 10>><<vaginalskilluse>><<set $vaginaactiondefault to "vaginatopenisdouble">><<combatpromiscuity5>>
 	<<if combatSkillCheck("vaginal", $vaginadoubletarget)>>
-		<<submission 2 $vaginatarget $vaginadoubletarget>><<set $vaginause to "penisdouble">><<set $NPCList[$vaginadoubletarget].penis to "vaginaentrancedouble">><<set $vaginastate to "doubleentrance">>
+		<<submission 2>><<set $vaginause to "penisdouble">><<set $NPCList[$vaginadoubletarget].penis to "vaginaentrancedouble">><<set $vaginastate to "doubleentrance">>
 		<<if $NPCList[$vaginatarget].penis is "vaginaimminent">>
 			<<set $NPCList[$vaginatarget].penis to "vaginaimminentdouble">>
 			<<set $vaginastate to "doubleimminent">>
@@ -477,7 +485,7 @@
 
 <<widget "effectsvaginapenisdoublefuck">>
 <<if $vaginaaction is "vaginapenisdoublefuck">>
-	<<set $vaginaaction to 0>><<submission 20 $vaginatarget $vaginadoubletarget>><<vaginalskilluse>><<set $vaginaactiondefault to "vaginapenisdoublefuck">><<combatpromiscuity5>>
+	<<set $vaginaaction to 0>><<submission 20>><<vaginalskilluse>><<set $vaginaactiondefault to "vaginapenisdoublefuck">><<combatpromiscuity5>>
 
 		<<set _npcA to $vaginatarget>>
 		<<set _npcB to $vaginadoubletarget>>
@@ -508,7 +516,7 @@
 				<</switch>>
 				<span class="pink">당신의 몸이 두 자지를 받아들이느라 벌벌 떨리며 당신의 <<nipples_ ga>> 딱딱해진다.</span>
 				<<set _mydesc to ($NPCList[_npcA].fullDescription + " and " + $NPCList[_npcB].fullDescription)>>
-				<<sex 30 $vaginatarget $vaginadoubletarget>><<vaginalstat>><<vaginaldoublestat>><<raped>><<vaginaraped>><<set $vaginastate to "doublepenetrated">>
+				<<sex 30 "genitals">><<vaginalstat>><<vaginaldoublestat>><<raped>><<vaginaraped>><<set $vaginastate to "doublepenetrated">>
 				<<takeVirginity _mydesc "vaginal">><<takeNPCVirginity _npcA "penile">><<takeNPCVirginity _npcB "penile">>
 			<<elseif $player.virginity.vaginal is true>>
 				<<set $NPCList[_npcA].penis to "vaginadouble">>
@@ -516,27 +524,27 @@
 				<<vagina_lube_text>> <span class="pink">당신은 <<vaginaltext>> 당신의 처녀 <<pussyPost "을">> <<NPCdesc_ yi $NPCList[_npcA].fullDescription>> <<penisdesc_ wa $NPCList[_npcA].penisdesc>> <<NPCdesc_ yi $NPCList[_npcB].fullDescription>> <<trPenisdesc $NPCList[_npcB].penisdesc>>_trResult에 대고 눌러, 깊숙한 곳까지 받아들인다.</span>
 				<<if $sexStats.vagina.pregnancy.totalBirthEvents gt 0>>
 					<span class="red">당신은 처녀막이 없음에도 불구하고, 당신의 처녀와 순결을 뺏겨 당신 안의 무언가가 바뀐 것 같은 기분이 든다.</span>
-					<<violence 10 $vaginatarget $vaginadoubletarget>>
+					<<violence 10>>
 				<<else>>
 					<<switch _doublepenissize>>
 						<<case 5>>
 							그들의 자지 크기가 생각을 할 여지도 주지 않는다. <span class="red">당신의 처녀막이 흔적도 없이 찢어지고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-							<<violence 50 $vaginatarget $vaginadoubletarget>>
+							<<violence 50>>
 						<<case 4>>
 							<span class="red">당신의 처녀막이 두 자지로 찢어지고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-							<<violence 40 $vaginatarget $vaginadoubletarget>>
+							<<violence 40>>
 						<<default>>
 							<span class="red">당신은 처녀막이 두 자지로 찢어지는 것을 느끼고, <<virginitylosttext $NPCList[_n].fullDescription>></span>
-							<<violence 30 $vaginatarget $vaginadoubletarget>>
+							<<violence 30>>
 					<</switch>>
 				<</if>>
 				<span class="pink">당신의 몸이 두 자지를 받아들이느라 벌벌 떨리며 당신의 <<nipples_ ga>> 딱딱해진다.</span>
 				<<set _mydesc to ($NPCList[_npcA].fullDescription + " and " + $NPCList[_npcB].fullDescription)>>
-				<<sex 100 $vaginatarget $vaginadoubletarget>><<bruise vagina>><<vaginalstat>><<vaginaldoublestat>><<raped>><<vaginaraped>><<takeVirginity _mydesc "vaginal">><<takeNPCVirginity _npcA "penile">><<takeNPCVirginity _npcB "penile">><<set $vaginastate to "doublepenetrated">><<set $speechvaginavirgin to 1>>
+				<<sex 100 "genitals">><<bruise vagina>><<vaginalstat>><<vaginaldoublestat>><<raped>><<vaginaraped>><<takeVirginity _mydesc "vaginal">><<takeNPCVirginity _npcA "penile">><<takeNPCVirginity _npcB "penile">><<set $vaginastate to "doublepenetrated">><<set $speechvaginavirgin to 1>>
 			<</if>>
 		<<else>>
 			당신은 <<vaginaltext>> <<pussyPost "을">> <<personselect $vaginatarget>><<combatpersonPost "의">> <<trPenisdesc $NPCList[$vaginatarget].penisdesc>>_trResult에 대고 누르지만, <span class="blue">안에 받아들이는데에는 실패한다.</span> <<hisPost "의">> 자지는 각도를 틀어 당신의 <<if $player.penisExist>><<penisPost "을">><<else>>클리토리스를<</if>> 문지른다.
-			<<sex 20 $vaginatarget $vaginadoubletarget>><<set $vaginaactiondefault to "vaginapenisdoublefuck">>
+			<<sex 20 "genitals">><<set $vaginaactiondefault to "vaginapenisdoublefuck">>
 		<</if>>
 	<</if>>
 <</widget>>

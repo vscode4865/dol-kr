@@ -381,8 +381,11 @@
 	<</if>>
 <</widget>>
 
-<<widget "neutral">>
-	<<if _args[0]>>
+<<widget "neutral">> <!-- This widget's names ('neutral') is awful. Maybe 'molest' might better describe its use? -->
+	<!-- args[1] now modifies the arousal applied to the PC -->
+	<!-- Consult the 'arousal' widget to see how -->
+	<<if _args[0] and (typeof _args[0]) is "number">>
+		
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
 				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
@@ -393,50 +396,41 @@
 			<<stress _args[0] $_stress_multiplier>>
 			<<combattrauma _args[0]>>
 		<</if>>
+
 		<<set _arousal to 20 * _args[0]>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
+		<<if _args[1] and _args[2] and (typeof _args[1]) is "string" and (typeof _args[2]) is "number">>
+			<<arousal _arousal _args[1]>>
+			<<enemyarousal _args[0] _args[2]>>
+		<<elseif _args[1] and (typeof _args[1]) is "string">>
+			<<arousal _arousal _args[1]>>
+			<<enemyarousal _args[0]>>
+		<<elseif _args[1] and (typeof _args[1]) is "number">>
+			<<arousal _arousal>>
+			<<enemyarousal _args[0] _args[1]>>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "neutralbreast">>
-	<<if _args[0]>>
-		<<if $consensual isnot 1>>
-			<<if $drunk gt 0>>
-				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
-				<<set $_stress_multiplier to [9,8,6,4,3][$_drunk_level]>>
-			<<else>>
-				<<set $_stress_multiplier to 10>>
-			<</if>>
-			<<stress _args[0] $_stress_multiplier>>
-			<<combattrauma _args[0]>>
-		<</if>>
-		<<set _arousal to 20 * _args[0] * $breastsensitivity>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
-	<</if>>
+	<<neutral _args[0] "breasts">>
 <</widget>>
 
 <<widget "neutralgenitals">>
-	<<if _args[0]>>
-		<<if $consensual isnot 1>>
-			<<if $drunk gt 0>>
-				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
-				<<set $_stress_multiplier to [9,8,6,4,3][$_drunk_level]>>
-			<<else>>
-				<<set $_stress_multiplier to 10>>
-			<</if>>
-			<<stress _args[0] $_stress_multiplier>>
-			<<combattrauma _args[0]>>
-		<</if>>
-		<<set _arousal to 20 * _args[0] * $genitalsensitivity>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += _args[0]>>
-	<</if>>
+	<<neutral _args[0] "genitals">>
+<</widget>>
+
+<<widget "enemyarousal">>
+	<<set $enemyarousal += _args[0]>>
 <</widget>>
 
 <<widget "sex">>
-	<<if _args[0]>>
+	<!-- args[1] - indicates target: "genitals" if penile or vaginal, "anus" if anal, "mouth" if oral -->
+
+	<!-- Comment Akoz: args[2] was used at some places to show double penetration and at others -->
+	<!-- to pass which enemy NPC is doing the fucking. I'd leave it to mean the later, but -->
+	<!-- I didn't want to make a decision about a system I'm not working on. -->
+	<!-- So I chose to leave args[2] unused -->
+	<<if _args[0] and (typeof _args[0]) is "number">>
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
 				<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
@@ -450,8 +444,15 @@
 			<<stress _args[0] -10>>
 		<</if>>
 		<<set _arousal to 20 * _args[0]>>
-		<<arousal _arousal>>
-		<<set $enemyarousal += 2 * _args[0]>>
+		<<set _enemyarousal to 2 * _args[0]>>
+		<<if _args[1] is undefined>>
+			<<error {
+				message : `Expected a second parameter, but none was provided.`,
+				source : "Called from " + Utils.GetStack()
+			}>>
+		<</if>>
+		<<arousal _arousal _args[1]>>
+		<<enemyarousal _enemyarousal>>
 	<</if>>
 <</widget>>
 
@@ -487,7 +488,7 @@
 		<<set _stressMod = _args[1] || 1>>
 		<<set _traumaMod = _args[2] || 1>>
 		<<set _painMod = _args[3] || 1>>
-		<<set _arousalMod = _args[4] || 1>>
+		<!-- args[4] - indicates NPC id (but is currently unused) -->
 
 		<<if _violence gt 0 or _violence lt 0>>
 			<<if $drunk gt 0>>
@@ -497,7 +498,8 @@
 				<<set _drunkMod to 10>>
 			<</if>>
 			<<if $possessed is true and _violence gte 0>>
-				<<control `_violence / 10`>>
+				<<set $_controlMod to (10 * $enemyno)>>
+				<<control `_violence / $_controlMod`>>
 				<<set $wraith.will -= _violence>>
 				<<set _possessMod to 3>>
 			<<else>>
@@ -506,9 +508,8 @@
 			<<set $stress += (_violence * _drunkMod * _stressMod) * (1 - ($masochism / 1200))>>
 			<<combattrauma _violence * _traumaMod>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)) / _possessMod)>>
-			<<set _arousal to (_violence * _arousalMod * (0 + ($masochism / 18)))>>
-			<<arousal _arousal/_possessMod>>
-			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
+			<<set _arousal to (_violence * (0 + ($masochism / 18)))>>
+			<<arousal _arousal/_possessMod "maso">>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
 					<<masochism `(_violence / 20)`>>
@@ -556,7 +557,7 @@
 			<<trauma _violence * _traumaMod>>
 			<<set $pain += (_violence * _painMod * (1 - ($masochism / 1200)) * (1 - ($sciencetrait / 10)))>>
 			<<set _arousal to (_violence * _arousalMod * (0 + ($masochism / 18)))>>
-			<<arousal _arousal>>
+			<<arousal _arousal "maso">>
 			<<set $arousalmasochism += (_violence * (0 + ($masochism / 7)))>>
 			<<if $orgasmdown gte 1>>
 				<<if $masochism gte 800>>
@@ -581,6 +582,10 @@
 <</widget>>
 
 <<widget "submission">>
+	<!-- Comment Akoz: this won't use sensitivities as I reckon this arousal source is -->
+	<!-- entirely psychological. -->
+	<!-- args[0] - the submission value -->
+	<!-- args[1] - the NPC to whom PC is submitting (currently unused) -->
 	<<if _args[0]>>
 		<<if $consensual isnot 1>>
 			<<if $drunk gt 0>>
@@ -632,7 +637,7 @@
 			<<set $_stress_multiplier to 10>>
 		<</if>>
 		<<stress _args[0] $_stress_multiplier>>
-		<<combattrauma `-_args[0]`>>
+		<<combattrauma `-1 * _args[0]`>>
 		<<if _args[1] is "demanding">>
 			<<set $enemyanger += 20 * _args[0]>>
 		<<elseif $NPCList[0].legs isnot "walk">>
@@ -640,11 +645,15 @@
 		<</if>>
 		<<def `_args[0] / 4`>>
 		<<set $enemytrust -= 2>>
-		<<set $NPCList[0].bold -= (_args[0] * 10)>>
+		<<set $NPCList[0].bold to ($NPCList[0].bold gte _args[0] * 10 ? $NPCList[0].bold - _args[0] * 10 : 0)>>
 	<</if>>
 <</widget>>
 
 <<widget "meek">>
+	<!-- Comment Akoz: this won't use sensitivities as I reckon this arousal source is -->
+	<!-- entirely psychological. -->
+	<!-- args[0] - the meek value -->
+	<!-- args[1] - the NPC for whom PC is acting meekly (currently unused) -->
 	<<if _args[0]>>
 		<<if $consensual isnot 1>>
 			<<sub `_args[0] / 4`>>
@@ -659,26 +668,48 @@
 	<</if>>
 <</widget>>
 
-<<widget "crimeup">>
-<<if $statFreeze isnot true>>
-	<<set _crime_up to 1>>
-	<<for _active_clothes range Object.keys($worn)>>
-		<<if $worn[_active_clothes].type.includes("stealthy")>>
-			<<set _crime_up -= 0.05>>
-		<</if>>
-	<</for>>
+<<widget "crimeup">><<silently>>
+	<<if $statFreeze isnot true>>
 		<<if _args[0]>>
-			<<set $crime += Math.trunc(_args[0] * _crime_up)>>
-			<<set $crimehistory += Math.trunc(_args[0] * _crime_up)>>
+			<<set $_crimemod to _args[0]>>
+			<<if _args[0] gte 1>>
+				<!-- Our crime value is positive, adjust by stealth factor -->
+				<<set $_crimefactor to 1>>
+				/* The following commented code contains experimental factors for calculating stealth */
+				/*
+					<<set $_crime1 to Math.clamp($crime, C.crime.min, C.crime.max / 10)>>
+					<<set $_crime2 to $crime - $_crime1>>
+					<<set $_crime2 to Math.clamp($crime - $_crime1, C.crime.min, C.crime.max / 10)>>
+					<!-- crime1 = first 5k of crime, crime2 = next 5k of crime -->
+					<<set $_normCrime1 to normalise($_crime1, C.crime.max / 10)>>
+					<<set $_normCrime2 to normalise($_crime2, C.crime.max / 10)>>
+					<!-- Both normalized to percentage of max/10 (currently 5k) -->
+					<<set $_stealthReduce1 to expCurve($_normcrime1, 3.0)>>
+					<!-- First 5k of crime at a curve to 5000 -->
+				*/
+				<<set $_stealthfactor to ( 0.15 * ( 1 - normalise($crime, C.crime.max / 5 ) ) )>>
+				<!-- Stealth gives 15%, but reduced by existing crime stat down to 0 at C.crime.max / 5 -->
+				<!-- At 10k crime, stealth equipment is effectively useless - too much evidence -->
+
+				<!-- Filter to all items with type "stealthy" and count them... -->
+				<<set $_stealthMult to Object.values($worn).filter(item => item.type.includes("stealthy")).length>>
+				<<set $_crimefactor -= $_stealthfactor * $_stealthMult>>
+
+				<<set $_crimemod to Math.ceil($_crimemod * $_crimefactor)>>
+				<!-- Add to crime history and Avery crimetracker-->
+				<<set $crimehistory += $_crimemod>>
+				<<if $averyCrimeTracker neq null>>
+					<<set $averyCrimeTracker += $_crimemod>>
+				<</if>>
+			<</if>>
+			<<set $crime += $_crimemod>> <!-- This works for negative values as well! -->
+			<<set $crime to Math.clamp($crime, C.crime.min, C.crime.max)>> <!-- Auto-clamp crime -->
 		<</if>>
 		<<if $slimeEvent is "steal something">>
 			<<unset $slimeEvent>>
 		<</if>>
-	<<if $averyCrimeTracker isnot undefined>>
-	<<set $averyCrimeTracker+= (_args[0] * _crime_up)>>
 	<</if>>
-<</if>>
-<</widget>>
+<</silently>><</widget>>
 
 <<widget "seductionskilluse">>
 	<<set $enemyarousal += ($seductionskill / 100)>><<seductionskill 5>>
@@ -1096,19 +1127,19 @@
 <</widget>>
 
 <<widget "tirednesscaption">>
-<div id="tirednesscaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="tirednesscaption" @title="'Fatigue: ' + $tiredness?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		피로:
-		<<if $showCaptionText is true>>
-			<<if $tiredness gte $tirednessmax>>
+		<<if $options.showCaptionText is true>>
+			<<if $tiredness gte C.tiredness.max>>
 				<span class="red">기진맥진하다.</span>
-			<<elseif $tiredness gte ($tirednessmax / 5) * 4>>
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 4>>
 				<span class="pink">피로하다.</span>
-			<<elseif $tiredness gte ($tirednessmax / 5) * 3>>
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
 				<span class="purple">피곤하다.</span>
-			<<elseif $tiredness gte ($tirednessmax / 5) * 2>>
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 2>>
 				<span class="blue">지쳤다.</span>
-			<<elseif $tiredness gte $tirednessmax / 5>>
+			<<elseif $tiredness gte C.tiredness.max / 5>>
 				<span class="lblue">정신이 말짱하다.</span>
 			<<elseif $tiredness gte 1>>
 				<span class="teal">완전히 정신이 또렷하다.</span>
@@ -1118,13 +1149,13 @@
 		<</if>>
 	</div>
 
-	<<if $tiredness gte $tirednessmax>>
-		<<set $stress += (($tiredness - $tirednessmax) * 16)>><<set $trauma += (($tiredness - $tirednessmax) / 3)>>
+	<<if $tiredness gte C.tiredness.max>>
+		<<set $stress += (($tiredness - C.tiredness.max) * 16)>><<set $trauma += (($tiredness - C.tiredness.max) / 3)>>
 	<</if>>
 
-	<<set $tiredness = Math.clamp($tiredness, 0, $tirednessmax)>>
-	<<set _showCaptionText to !$showCaptionText>>
-	<<statbar $tiredness $tirednessmax _showCaptionText>>
+	<<set $tiredness = Math.clamp($tiredness, 0, C.tiredness.max)>>
+	<<set _showCaptionText to !$options.showCaptionText>>
+	<<statbar $tiredness `C.tiredness.max` _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
 <</widget>>
@@ -1148,10 +1179,10 @@
 <</widget>>
 
 <<widget "stresscaption">>
-<div id="stresscaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="stresscaption" @title="'Stress: ' + $stress?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		스트레스:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $stress gte $stressmax>>
 				<span class="red">정신을 차릴 수가 없다!</span>
 			<<elseif $stress gte ($stressmax / 5) * 4>>
@@ -1170,17 +1201,17 @@
 		<</if>>
 	</div>
 	<<set $stress = Math.clamp($stress, 0, $stressmax)>>
-	<<set _showCaptionText to !$showCaptionText>>
+	<<set _showCaptionText to !$options.showCaptionText>>
 	<<statbar $stress $stressmax _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
 <</widget>>
 
 <<widget "traumacaption">>
-<div id="traumacaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="traumacaption" @title="'Trauma: ' + $trauma?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		트라우마:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $trauma gte $traumamax>>
 				<span class="red">정신이 멍하다.</span>
 			<<elseif $trauma gte ($traumamax / 5) * 4>>
@@ -1198,7 +1229,7 @@
 			<</if>>
 		<</if>>
 	</div>
-	<<set _showCaptionText to !$showCaptionText>>
+	<<set _showCaptionText to !$options.showCaptionText>>
 	<<statbar $trauma $traumamax _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
@@ -1206,9 +1237,9 @@
 
 <<widget "innocencecaption">>
 <div id="innocencecaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		순수함:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $awareness gte 0>>
 				<span class="red">모두 이해하고 있다.</span>
 			<<elseif $awareness gt -40>>
@@ -1226,17 +1257,17 @@
 			<</if>>
 		<</if>>
 	</div>
-	<<set _showCaptionText to !$showCaptionText>>
+	<<set _showCaptionText to !$options.showCaptionText>>
 	<<statbarinverted $awareness -200 _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
 <</widget>>
 
 <<widget "controlcaption">>
-<div id="controlcaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="controlcaption" @title="'Control: ' + $control?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		통제력:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $possessed>>
 				<<if $control gte $controlmax>>
 					<span class="green">통제하고 있다.</span>
@@ -1272,17 +1303,17 @@
 			<</if>>
 		<</if>>
 	</div>
-	<<set _showCaptionText to !$showCaptionText>>
+	<<set _showCaptionText to !$options.showCaptionText>>
 	<<statbarinverted $control $controlmax _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
 <</widget>>
 
 <<widget "arousalcaption">>
-<div id="arousalcaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="arousalcaption" @title="'Arousal: ' + $arousal?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		흥분:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $arousal gte $arousalmax>>
 				<span class="red">흥분에 몸을 떤다.</span>
 			<<elseif $arousal gte ($arousalmax / 5) * 4>>
@@ -1300,17 +1331,17 @@
 			<</if>>
 		<</if>>
 	</div>
-	<<set _showCaptionText to !$showCaptionText>>
+	<<set _showCaptionText to !$options.showCaptionText>>
 	<<statbar $arousal $arousalmax _showCaptionText>>
 	<div style="clear:both;"></div>
 </div>
 <</widget>>
 
 <<widget "allurecaption">>
-<div id="allurecaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="allurecaption" @title="'Allure: ' + $allure?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		색기:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $allure gte (6000 * $alluremod)>><span class="red">금방이라도 유린당할 것처럼 보인다.</span>
 			<<elseif $allure gte (4000 * $alluremod)>><span class="pink">변태같다.</span>
 			<<elseif $allure gte (3000 * $alluremod)>><span class="purple">음란한 모습이다.</span>
@@ -1321,7 +1352,7 @@
 			<</if>>
 		<</if>>
 	</div>
-	<div @class="($showCaptionText is true ? 'meter' : 'rightMeter')">
+	<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
 		<<set $percent=Math.floor(($allure/(8000 * $alluremod))*100)>>
 		<<if $allure gte (6000 * $alluremod)>>
 		<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
@@ -1359,10 +1390,10 @@
 <<widget "oxygencaption">>
 <div id="oxygencaption">
 	<<if _args[0] is true>>
-		<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+		<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 			공기:
 		</div>
-		<<set _showCaptionText to !$showCaptionText>>
+		<<set _showCaptionText to !$options.showCaptionText>>
 	<<else>>
 		<<unset _showCaptionText>>
 	<</if>>
@@ -1409,8 +1440,8 @@
 		<<set $_barWidth to `width:${$_percent}%`>>
 
 		<div id="drunkcaption">
-			<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
-				<<if $showCaptionText is true>>
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				<<if $options.showCaptionText is true>>
 					<<set $_drunk_level to Math.clamp(Math.floor($drunk / 120), 0, 4) * 120>>
 					<<switch $_drunk_level>>
 						<<case 0>><span @class="$_colour">정신이 멍하다.</span>
@@ -1423,7 +1454,7 @@
 					취기:
 				<</if>>
 			</div>
-			<div @class="($showCaptionText is true ? 'meter' : 'rightMeter')">
+			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
 				<div @class="$_barColour" @style="$_barWidth"></div>
 			</div>
 			<div style="clear:both;"></div>
@@ -1439,14 +1470,14 @@
 		<<set $_barWidth to `width:${$_percent}%`>>
 
 		<div id="druggedcaption">
-			<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
-				<<if $showCaptionText is true>>
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				<<if $options.showCaptionText is true>>
 					<span class="pink">음란한 온기가 몸을 가득 채운다</span>
 				<<else>>
 					약물:
 				<</if>>
 			</div>
-			<div @class="($showCaptionText is true ? 'meter' : 'rightMeter')">
+			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
 				<div @class="$_barColour" @style="$_barWidth"></div>
 			</div>
 			<div style="clear:both;"></div>
@@ -1462,14 +1493,14 @@
 		<<set $_barWidth to `width:${$_percent}%`>>
 
 		<div id="hallucinogencaption">
-			<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
-				<<if $showCaptionText is true>>
+			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
+				<<if $options.showCaptionText is true>>
 					<span class="purple">인지 능력이 뒤틀려 있다</span>
 				<<else>>
 					환각:
 				<</if>>
 			</div>
-			<div @class="($showCaptionText is true ? 'meter' : 'rightMeter')">
+			<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
 				<div @class="$_barColour" @style="$_barWidth"></div>
 			</div>
 			<div style="clear:both;"></div>
@@ -1478,10 +1509,10 @@
 <</widget>>
 
 <<widget "paincaption">>
-<div id="paincaption">
-	<div @class="($showCaptionText is true ? '' : 'rightMeterText')">
+<div id="paincaption" @title="'Pain: ' + $pain?.toFixed(2)">
+	<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 		고통:
-		<<if $showCaptionText is true>>
+		<<if $options.showCaptionText is true>>
 			<<if $pain gte 100 and $willpowerpain is 0>><span class="red">겉잡을 수 없이 흐느끼고 있다.</span>
 			<<elseif $pain gte 80>><span class="pink">울며 훌쩍이고 있다.</span>
 			<<elseif $pain gte 60>><span class="purple">울고 있다.</span>
@@ -1492,7 +1523,7 @@
 			<</if>>
 		<</if>>
 	</div>
-	<div @class="($showCaptionText is true ? 'meter' : 'rightMeter')">
+	<div @class="($options.showCaptionText is true ? 'meter' : 'rightMeter')">
 		<<set $percent=Math.floor(($pain/100)*100)>>
 		<<if $pain gte 100 and $willpowerpain is 0>>
 		<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
@@ -1652,7 +1683,7 @@
 		<<set _weather_display to "normal">>
 	<</if>>
 
-	<<if $images is 1>>
+	<<if $options.images is 1>>
 		<<if $daystate is "day">>
 			<<if $location is "tentworld">>
 				<img id="daystate" src="img/misc/tentskyday.png">
@@ -1801,10 +1832,14 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/factory_day.gif'">
 				<<case "pound">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/town_day.gif'">
+				<<case "office_building">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/office_day.png'">
+				<<case "kylar_manor">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/kylar_manor_day.png'">
 			<</switch>>
 		<<elseif $daystate is "night">>
 			<!-- if bloodmoon -->
-			<<set _bloodmoon to ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+			<<set _bloodmoon to (isBloodmoon() or $forcedBloodmoon)>>
 
 			<<if $location is "tentworld">>
 				<img id="daystate" src="img/misc/tentskynight.png">
@@ -1948,6 +1983,10 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/factory_night.png'">
 				<<case "pound">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/town_night.gif'">
+				<<case "office_building">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/office_night.png'">
+				<<case "kylar_manor">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/kylar_manor_night.png'">
 			<</switch>>
 		<<elseif $daystate is "dawn">>
 			<<if $location is "tentworld">>
@@ -2088,6 +2127,10 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/factory_dawn.gif'">
 				<<case "pound">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/town_dawn.gif'">
+				<<case "office_building">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/office_dawn.png'">
+				<<case "kylar_manor">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/kylar_manor_dawn.png'">
 			<</switch>>
 		<<elseif $daystate is "dusk">>
 			<<if $location is "tentworld">>
@@ -2232,6 +2275,10 @@
 					<img id="location" @src="'img/misc/' + _weather_display + '/factory_dusk.gif'">
 				<<case "pound">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/town_dusk.png'">
+				<<case "office_building">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/office_dusk.png'">
+				<<case "kylar_manor">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/kylar_manor_dusk.png'">
 			<</switch>>
 		<</if>>
 	<<else>>
@@ -2745,7 +2792,7 @@ or _args[0] is "force">>
 		<<set $_arousal += $pass * 10 * $genitalsensitivity>>
 	<</if>>
 	<<if $parasite.bottom.name>>
-		<<set $_arousal += $pass * 10>>
+		<<set $_arousal += $pass * 10 * $bottomsensitivity>>
 	<</if>>
 	<<if $parasite.tummy.name>>
 		<<set $_arousal += $pass * 10>>
@@ -2953,36 +3000,29 @@ or _args[0] is "force">>
 <<bodyliquid "feet" "goo">>
 <</widget>>
 
-<<widget "randomgoo">>
-<<set _rng to random (1, 10)>>
-그것이 당신의
-<<if random(1, 2) is 2>>
-	<<set $_cover to "위로 후두둑 떨어진다.">>
-<<else>>
-	<<set $_cover to "위를 뒤덮는다.">>
+<<widget "waist_goo">>
+<<bodyliquid "feet" "goo" 5>>
+<<bodyliquid "bottom" "goo" 5>>
+<<bodyliquid "thigh" "goo" 5>>
+<<if $player.penisExist>>
+	<<bodyliquid "penis" "goo" 5>>
 <</if>>
-<<switch _rng>>
-	<<case 1>>
-		<<bodyliquid "neck" "goo">><span class="purple">목</span> $_cover
-	<<case 2>>
-		<<bodyliquid "rightarm" "goo">><span class="purple">오른팔</span> $_cover
-	<<case 3>>
-		<<bodyliquid "leftarm" "goo">><span class="purple">왼팔</span> $_cover
-	<<case 4>>
-		<<bodyliquid "thigh" "goo">><span class="purple">넓적다리</span> $_cover
-	<<case 5>>
-		<<bodyliquid "bottom" "goo">><span class="purple">엉덩이</span> $_cover
-	<<case 6>>
-		<<bodyliquid "tummy" "goo">><span class="purple">배</span> $_cover
-	<<case 7>>
-		<<bodyliquid "chest" "goo">><span class="purple">가슴</span> $_cover
-	<<case 8>>
-		<<bodyliquid "face" "goo">><span class="purple">얼굴</span> $_cover
-	<<case 9>>
-		<<bodyliquid "hair" "goo">><span class="purple">머리</span> $_cover
-	<<case 10>>
-		<<bodyliquid "feet" "goo">><span class="purple">발</span> $_cover
-<</switch>>
+<<if $player.vaginaExist>>
+	<<bodyliquid "vaginaoutside" "goo" 5>>
+<</if>>
+<</widget>>
+
+<<widget "random_goo">>
+	<<set $_rng to random (0, 9)>> <!-- 1-10 but 0 indexed -->
+	<<set $_part_text to [
+		"neck", "right arm", "left arm", "thigh", "bottom",
+		"tummy", "chest", "face", "hair", "feet"
+		].select($_rng)>>
+	<<set $_part to $_part_text.replace(" ","")>>
+	<<set $player.bodyliquid[$_part].goo += 1>>
+
+	그것이 당신의 
+	<span class="purple"><<trBodypart $_part>>_trResult</span> <<print either("위로 후두둑 떨어진다", "위를 뒤덮는다", "위에 떨어진다", "위에 철벅 떨어진다")>>.
 <</widget>>
 
 <<widget "random_semen">>
@@ -2999,11 +3039,14 @@ or _args[0] is "force">>
 <</widget>>
 
 <<widget "washmakeup">>
-<<if $makeup.lipstick != 0 or $makeup.eyeshadow != 0 or $makeup.mascara != 0 or $makeup.concealer != 0>>
+<<if $makeup.lipstick != 0 or $makeup.eyeshadow != 0 or ($makeup.mascara != 0 and !$makeup.mascara.includes('waterproof')) or $makeup.concealer != 0>>
 	<<set $makeupWashed = 1>>
 	<<set $makeup.lipstick = 0>>
 	<<set $makeup.eyeshadow = 0>>
-	<<set $makeup.mascara = 0>>
+	<<if $makeup.mascara and !$makeup.mascara.includes('waterproof')>>
+		<<set $makeup.mascara = 0>>
+		<<set $makeup.mascara_running = 0>>
+	<</if>>
 	<<set $makeup.concealer = 0>>
 <</if>>
 <</widget>>
@@ -3094,37 +3137,11 @@ or _args[0] is "force">>
 	<<set $tipreaction to "mid">>
 <</if>>
 
-<<set _temp_tip to $tip>>/*Remembers base tip value*/
-
-	<<if _args[0] is "serving">>
-		<<if $worn.upper.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>/*20% increase on base value*/
-		<</if>>
-		<<if $worn.lower.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.under_upper.type.includes("serving") and $worn.upper.exposed gte 2>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.under_lower.type.includes("serving") and $worn.lower.exposed gte 2>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.head.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.face.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.neck.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.legs.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-		<<if $worn.feet.type.includes("serving")>>
-		<<set $tip += ((_temp_tip * 1.2) - _temp_tip)>>
-		<</if>>
-	<</if>>
+<<if _args[0] is "serving">>
+	<!-- +20% for every visible clothing item with 'serving' tag -->
+	<<set $_servingClothesCount to getVisibleClothesList().countWith(item => item.type.includes("serving"))>>
+	<<set $tip += $tip * 0.2 * $_servingClothesCount>>
+<</if>>
 
 <<set $tip to $tipmod * $tip>>
 <<set $tip *= (1 + ($attractiveness / 10000))>>
@@ -3137,7 +3154,7 @@ or _args[0] is "force">>
 	<<set $tip to $tip_add>>
 <</if>>
 
-<<if $tip gte 10000>>
+<<if $tip gte 10000 and _args[0] isnot "body">>
 	<<set $tip to 2000 * Math.round( $tip / 2000.0 )>>
 <<elseif $tip gte 1000>>
 	<<set $tip to 500 * Math.round( $tip / 500.0 )>>
@@ -3172,6 +3189,7 @@ or _args[0] is "force">>
 <<widget "passout">>
 	<<set $stress -= 5000>>
 	<<set $passoutstat += 1>>
+	<<ruffleHair>>
 <</widget>>
 
 <<widget "vaginaraped">>
@@ -3231,7 +3249,7 @@ $mouthstate is "tentacledeep">>
 
 <<widget "textmap">>
 
-<<if $map.movement is true and !$possessed>>
+<<if $options.mapMovement is true and !$possessed>>
 __Map__<br>
 |.....<a class="no-numberify mapmove" onclick="mapMove('Barb Street')" title="Barb Street">Ba</a> &#9866; <a class="no&#9866;numberify mapmove" onclick="mapMove('Cliff Street')" title="Cliff Street">Cl</a> &#9866; <a class="no&#9866;numberify mapmove" onclick="mapMove('Starfish Street')" title="Starfish Street">St</a> &#9866; <a class="no&#9866;numberify mapmove" onclick="mapMove('Mer Street')" title="Mer Street">Me</a><br>
 |..╱ ╲ ╱ ╲ ╱ ╲ ╱ ╲<br>
@@ -3251,7 +3269,7 @@ __Map__<br>
 
 <<widget map>>
 	<<set $map.location to _args[0]>>
-	<<if $images is 1 and $map.movement is true and $map.legacy isnot true and !$possessed>>
+	<<if $options.images is 1 and $options.mapMovement is true and $options.mapLegacy isnot true and !$possessed>>
 		<<set _boxLocations to [
 			{ x: 1,		y: 46}, /*Domus				*/
 			{ x: 38,	y: 9},	/*Barb				*/
@@ -3279,7 +3297,7 @@ __Map__<br>
 
 			<<for _i to 0; _i lt $map.arrayList.length; _i++>>
 				<<set _canMoveTo = $debug || $map.available[$passage].includes($map.arrayList[_i])>>
-				<<set _showMarker = $debug || ($map.markers && (_canMoveTo || $passage is $map.arrayList[_i]))>>
+				<<set _showMarker = $debug || ($options.mapMarkers && (_canMoveTo || $passage is $map.arrayList[_i]))>>
 
 				<a class="mapmove"
 						@onclick="'mapMove(V.map.arrayList[' + _i + ']);'"
@@ -3296,13 +3314,13 @@ __Map__<br>
 			<</for>>
 		<</svg>>
 
-	<<elseif $images is 1 and $map.legacy isnot true>>
+	<<elseif $options.images is 1 and $options.mapLegacy isnot true>>
 		<svg width="260" height="130">
 			<image x="2" xlink:href="img/misc/map.png"/>
 			<image x="2" @xlink:href="'img/misc/maparrow'+$map.location+'.png'"/>
 		</svg>
-	<<elseif $images is 1>>
-		<<if $images is 1 and $map.movement is true and !$possessed>>
+	<<elseif $options.images is 1>>
+		<<if $options.mapMovement is true and !$possessed>>
 			<!-- Image Map Generated by http://www.image-map.net/ -->
 			<map id="town-image-map" name="town-image-map">
 				<area class="no-numberify" alt="Barb Street" title="Barb Street" coords="62,20,39,42" shape="rect" onclick="mapMove('Barb Street')">
@@ -3383,7 +3401,13 @@ __Map__<br>
 
 <<widget "encountersteal">>
 	<<rng>>
-	<<if $location is "prison">>
+	<<if isPubfameTaskAccepted("morgan") and $npc.includes("Morgan")>>
+		<<pubfameComplete "morgan" "steal">>
+		<<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
+	<<elseif isPubfameTaskAccepted("hospital") and $pubfame.hospital.active is 1>>
+		<<pubfameComplete "hospital" "steal">>
+		<<crimeup 20>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
+	<<elseif $location is "prison">>
 		<<set _teeth to random(3,10)>>
 		당신은 하얗고, 반투명한 보석들을 훔친다.
 		<<prison_teeth _teeth>> <<prison_teeth_text _teeth>>
@@ -3391,7 +3415,7 @@ __Map__<br>
 		<<spray 1>>
 		<span class="green">당신은 후추 스프레이 충전제를 훔친다.</span>
 		<<crimeup 50>><<combatskulduggeryskilluse>><<combatcontrol 10>><<gcombatcontrol>>
-	<<elseif $rng gte 90 and $compoundstate is undefined and $compoundcard is undefined>>
+	<<elseif $rng gte 90 and !$compoundcard>>
 		<<set $compoundcard to 1>>
 		당신은 기이한 카드를 훔친다. 거기엔 주소가 하나 쓰여있다. <span class="gold">엘크 가</span>에 위치한 장소다.
 	<<else>>
@@ -3402,7 +3426,7 @@ __Map__<br>
 <</widget>>
 
 <<widget "statbaricons">>
-	<<if $images is 1 and _args[0]>>
+	<<if $options.images is 1 and _args[0]>>
 		<<if _args[1] gte 1>>
 			<img id="statbar" @src="'img/ui/' + _args[0] + '.png'">
 		<<elseif _args[2] gte 1>>
@@ -3549,7 +3573,7 @@ __Map__<br>
 
 	<div class="characteristic-box">
 		<div class="characteristic-top-line">
-			<<if $images is 1 and _config.icon>>
+			<<if $options.images is 1 and _config.icon>>
 				<img class="characteristic-icon" @src="'img/' + _config.icon + '.png'" />
 			<</if>>
 			<span class="characteristic-title">_config.name<<characteristic-box-modifier `clone(_config.modifier)` `clone(_config.modTypes)` `clone(_config.name)`>></span>
@@ -3664,7 +3688,7 @@ __Map__<br>
 	<div class="relation-box" @style="(_boxConfig.style || '')">
 		<<if _boxConfig.name>>
 			<div class="relation-top-line">
-				<<if $images and _boxConfig.icon>>
+				<<if $options.images and _boxConfig.icon>>
 						<img class="relation-icon" @src="_boxConfig.icon" />
 				<</if>>
 				<span class="relation-name">_boxConfig.name</span>
@@ -3732,13 +3756,13 @@ __Map__<br>
 				},
 				"purity" : {
 					name: "순결",
-					value: State.temporary.npcData.purity,
-					activeIcon: (State.temporary.npcData.virginity.vaginal == false || State.temporary.npcData.virginity.penile == false ? "img/ui/sym_fallen_purity.png" : "img/ui/sym_purity.png"),
+					value: T.npcData.purity,
+					activeIcon: (T.npcData.virginity.vaginal == false || T.npcData.virginity.penile == false ? "img/ui/sym_fallen_purity.png" : "img/ui/sym_purity.png"),
 					color: 'white'
 				},
 				"corruption" : {
 					name: "타락",
-					value: State.temporary.npcData.corruption,
+					value: T.npcData.corruption,
 					iconOrientation : 'horizontal-inverted',
 					activeIcon: "img/ui/sym_demon_purity.png",
 					color: 'purple'
@@ -3765,11 +3789,62 @@ __Map__<br>
 		<</script>>
 	<</silently>>
 	<<if _npcData and _npcData.init is 1>>
-		<<if _npcOverrides and _npcOverrides.important>>
+		<<if (_npcData.nam is ("Ivory Wraith") or ($wraith.mimic is _npcData.nam and $wraith.revealed))>>
+			<<rngWraithSocial>>
+			<<if _npcData.nam is ("Ivory Wraith") and ($wraith.mimic is "" and (_wraithEventSocial or $wraith.type)) and $wraithIntro>>
+				<div class="relation-box">
+					<div class="relation-top-line">
+						<span class="relation-name">
+							<<trNamedNPC _npcData.nam>>_trResult<small> _npcData.nam</small>
+							<small class="relation-title black"><i><<trNamedNPC _wraithTitle>>_trResult</i></small>
+						</span>
+						<div class="quick-stats">
+							<<for _j = 0; _j lt _otherNpcStats.length; _j++>>
+								<<if _npcData[_otherNpcStats[_j]] gt 0 and _checkRequirements(_otherNpcStats[_j])>>
+									<<relation-box-stat _getStatConfig(_otherNpcStats[_j])>>
+								<</if>>
+							<</for>>
+						</div>
+					</div>
+					<div class="relation-description">
+						<<if $options.images is 1 and (_rngWraithFace is 1 or $possessed)>>
+							<img id="wraith" @src="'img/misc/icon/wraith' + V.wraith.state + '.png'">
+						<<else>>
+							<<npcrelationship _npcData.nam>>
+						<</if>>
+					</div>
+				</div>
+			<<elseif $wraithIntro and $wraith.mimic is _npcData.nam and $wraith.revealed and _npcOverrides and _npcOverrides.important>>
+				<div class="relation-box">
+					<div class="relation-top-line">
+						<span class="relation-name">
+							<<trNamedNPC _npcData.nam>><<print _trResult>>?
+							<small class="relation-title black"><i><<trNamedNPC _wraithTitle>>_trResult</i></small>
+						</span>
+						<<if _loveInterest>>
+							<img class="love-interest-icon" src="img/ui/love_interest.png" alt="연애 상대" title="연애 상대"/>
+						<</if>>
+					</div>
+					<div class="relation-description">
+						<<set _rngWraithLineChance to 1>>
+						<<npcrelationship "Ivory Wraith">>
+					</div>
+					<div @class="'relation-stat-list' + ($options.images ? '' : ' no-images')">
+						<<for _j = 0; _j lt _importantNpcStats.length; _j++>>
+							<<if _npcData[_importantNpcStats[_j]] gt 0 and _checkRequirements(_importantNpcStats[_j])>>
+								<<relation-box-stat _getStatConfig(_importantNpcStats[_j]) true>>
+							<</if>>
+						<</for>>
+					</div>
+				</div>
+			<<else>>
+			/* Do not display anything */
+			<</if>>		
+		<<elseif _npcOverrides and _npcOverrides.important>>
 			<div class="relation-box">
 				<div class="relation-top-line">
 					<span class="relation-name">
-						<<trNamedNPC _npcData.nam>>_trResult<small> _npcData.nam</small>
+						<<trNamedNPC _npcData.nam>>_trResult
 						<small class="relation-title black"><i><<trNamedNPC _npcData.title>>_trResult</i></small>
 					</span>
 					<<if _loveInterest>>
@@ -3779,7 +3854,7 @@ __Map__<br>
 				<div class="relation-description">
 					<<npcrelationship _npcData.nam>>
 				</div>
-				<div @class="'relation-stat-list' + ($images ? '' : ' no-images')">
+				<div @class="'relation-stat-list' + ($options.images ? '' : ' no-images')">
 					<<for _j = 0; _j lt _importantNpcStats.length; _j++>>
 						<<if _npcData[_importantNpcStats[_j]] gt 0 and _checkRequirements(_importantNpcStats[_j])>>
 							<<relation-box-stat _getStatConfig(_importantNpcStats[_j]) true>>
@@ -3821,7 +3896,7 @@ __Map__<br>
 		<<if _important>>
 			<label>_config.name</label>
 		<</if>>
-		<<if $images>>
+		<<if $options.images>>
 			<div class="relation-stat">
 				<span @class="'relation-stat-icon ' + (_config.iconOrientation || 'horizontal')">
 					<img class="active-icon-img" @src="_config.activeIcon">
@@ -3850,7 +3925,7 @@ __Map__<br>
 <</widget>>
 
 <<widget "oralpassage">>
-	<<takeVirginity _args[0] "oral">><<oralstat>><<oralejacstat>><<ejacstat>><<set $hunger -= 200>><<set $thirst -= 200>><<bodyliquid "mouth" "semen" 1>>
+	<<takeVirginity _args[0] "oral">><<oralstat>><<oralejacstat>><<ejacstat>><<cumswallow 'human'>>
 <</widget>>
 
 <<widget "relationshipclamp">>
@@ -3941,6 +4016,15 @@ __Map__<br>
 	<<set _i to $NPCNameList.indexOf("Remy")>>
 	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -100, 100)>>
 	<<set $NPCName[_i].dom = Math.clamp($NPCName[_i].dom, -50, 50)>>
+
+	<<set _i to $NPCNameList.indexOf("Ivory Wraith")>>
+	<<if $wraith.state is "haunt">>
+		<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, 0, 10)>>
+		<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 10, 20)>>
+	<<else>>
+		<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, 0, 20)>>
+		<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 0, 20)>>
+	<</if>>
 <</widget>>
 
 <<widget "fringecheck">>
@@ -3956,18 +4040,23 @@ __Map__<br>
 <</widget>>
 
 <<widget "fringelength">>
+	<<set _fringecolour = "">>
+	<<if $haircolour isnot $hairfringecolour>>
+		<<trColour $hairfringecolour>><<set _fringecolour = _trResult + " ">>	
+	<</if>>
+
 	<<if $fringelength gte 980>>
-		당신의 앞머리는 매우 길다.
+		당신의 <<print _fringecolour>>앞머리는 매우 길다.
 	<<elseif $fringelength gte 800>>
-		당신의 앞머리는 길다.
+		당신의 <<print _fringecolour>>앞머리는 길다.
 	<<elseif $fringelength gte 600>>
-		당신의 앞머리는 조금 길다.
+		당신의 <<print _fringecolour>>앞머리는 조금 길다.
 	<<elseif $fringelength gte 400>>
-		당신의 앞머리는 보통의 길이다.
+		당신의 <<print _fringecolour>>앞머리는 보통의 길이다.
 	<<elseif $fringelength gte 200>>
-		당신의 앞머리는 짧다.
+		당신의 <<print _fringecolour>>앞머리는 짧다.
 	<<else>>
-		당신의 앞머리는 매우 짧다.
+		당신의 <<print _fringecolour>>앞머리는 매우 짧다.
 	<</if>>
 <</widget>>
 
@@ -4760,6 +4849,9 @@ __Map__<br>
 
 <<widget "cheatStart">>
 <<set $cheatdisable to "f">><<set $money to 500000>>
+<<set $rentmoney to 10000>><<rentmod>>
+<<set $renttime to 7>><<set $rentday to $weekday>>
+<<set $rentstage to 1>>
 <</widget>>
 
 <<widget "swim_check">>
@@ -4820,8 +4912,8 @@ __Map__<br>
 <<widget "schoolrep">>
 <<if _args[0] and _args[1] and (!$worn.face.type.includes("mask") or _args[1] lt 0)>>
 	<<if $schoolrep[_args[0]] lt 5 or _args[1] lt 0>>
-		<<if _args[0] is "crossdress" and ($school_crossdress_day is undefined or _args[1] lt 0)>>
-			<<set $school_crossdress_day to 1>>
+		<<if _args[0] is "crossdress" and ($daily.school.crossdress is undefined or _args[1] lt 0)>>
+			<<set $daily.school.crossdress to 1>>
 			<<set $schoolrep[_args[0]] += _args[1]>>
 			<<if $schoolrep.crossdress gte 5>>
 				<<set $genderknown.pushUnique("Kylar")>>
@@ -4838,8 +4930,8 @@ __Map__<br>
 				<<set $school_crossdress_message to $schoolrep.crossdress>>
 			<</if>>
 			<<set $schoolrep.crossdress = Math.clamp($schoolrep.crossdress, 0, 5)>>
-		<<elseif _args[0] is "herm" and ($school_herm_day is undefined or _args[1] lt 0)>>
-			<<set $school_herm_day to 1>>
+		<<elseif _args[0] is "herm" and ($daily.school.herm is undefined or _args[1] lt 0)>>
+			<<set $daily.school.herm to 1>>
 			<<set $schoolrep[_args[0]] += _args[1]>>
 			<<if $schoolrep.herm gte 5>>
 				<<set $genderknown.pushUnique("Kylar")>>
@@ -5153,5 +5245,18 @@ __Map__<br>
 			message	: `bodyliquid widget on ${Utils.GetStack()} failed, please report`,
 			source	: `Arguments: ${$_bodypart} | ${_args[0]} | ${_args[1]} | ${_args[2]} | ${_args[3]}.`
 		}>>
+	<</if>>
+<</widget>>
+
+
+<<widget "semenswallowedstat">>
+	<<if $statFreeze isnot true and $args[0] isnot undefined>>
+		<<set $semenswallowedstat += $args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "animalsemenswallowedstat">>
+	<<if $statFreeze isnot true and $args[0] isnot undefined>>
+		<<set $animalsemenswallowedstat += $args[0]>>
 	<</if>>
 <</widget>>

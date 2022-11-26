@@ -5,43 +5,44 @@
 	합의된 섹스에 대해 어떻게 느끼나요? <i>얼마나 적극적이었냐에 따라 합의된 섹스 후 보너스가 부과됩니다.</i>
 	<br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "submissive" '+($assertiveaction is "submissive" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "submissive" autocheck>>
 	<span class="meek">전 사람들을 기분 좋게 만들어주는게 좋아요</span> (순종성 증가)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "defiant" '+($assertiveaction is "defiant" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "defiant" autocheck>>
 	<span class="brat">상황을 통제하는게 좋아요</span> (반항성 증가)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "trauma" '+($assertiveaction is "trauma" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "trauma" autocheck>>
 	<span class="green">짓궂어요</span> (트라우마 감소)
 </label>
 <br>
 <label>
-	<<print '<<radiobutton "$assertiveaction" "stress" '+($assertiveaction is "stress" ? "checked" : "")+'>>'>>
+	<<radiobutton "$assertiveaction" "stress" autocheck>>
 	<span class="green">재밌어요</span> (스트레스 감소)
 </label>
 <br><br>
 
 어떤 것에 불편함을 느끼나요?
 <br>
-<<if $exhibitionism gte 55 or $uncomfortable.underwear is false>>
-	<label><<print '<<checkbox "$uncomfortable.underwear" false true '+($uncomfortable.underwear ? "checked" : "")+'>>'>> 다른 사람들에게 속옷을 보이는 것.</label>
+/* some events can force the switches to false without actually unlocking them */
+<<if $attitudesControl.unlockExhibitionismUnderwear or $uncomfortable.underwear is false>>
+	<label><<checkbox "$uncomfortable.underwear" false true autocheck>> 다른 사람들에게 속옷을 보이는 것이 불편하다.</label>
 <<else>>
-	<span class="black">다른 사람들에게 속옷을 보이는 것. <i>더 높은 노출증 수치 필요.</i></span>
+	<span class="black">다른 사람들에게 속옷을 보이는 것이 불편하다. <i>더 높은 노출증 수치 필요.</i></span>
 <</if>>
 <br>
-<<if $exhibitionism gte 95 or $uncomfortable.nude is false>>
-	<label><<print '<<checkbox "$uncomfortable.nude" false true '+($uncomfortable.nude ? "checked" : "")+'>>'>> 다른 사람들 앞에서 알몸으로 있는 것.</label>
+<<if $attitudesControl.unlockExhibitionismNude or $uncomfortable.nude is false>>
+	<label><<checkbox "$uncomfortable.nude" false true autocheck>> 다른 사람들 앞에서 알몸으로 있는 것이 불편하다.</label>
 <<else>>
-	<span class="black">다른 사람들 앞에서 알몸으로 있는 것. <i>더 높은 노출증 수치 필요.</i></span>
+	<span class="black">다른 사람들 앞에서 알몸으로 있는 것이 불편하다. <i>더 높은 노출증 수치 필요.</i></span>
 <</if>>
 <br>
-<<if $specialTransform is 1 or $physicalTransform is 1>>
-	<<if ($exhibitionism gte 95 and $demon gte 6) or $uncomfortable.flaunting is false>>
-		<label><<print '<<checkbox "$uncomfortable.flaunting" false true '+($uncomfortable.flaunting ? "checked" : "")+'>>'>> 당신은 다른 이들 앞에서 알몸을 과시하는 것이 불편하다. (악마 꼬리와 날개).</label>
+<<if $attitudesControl.unlockTransformation>>
+	<<if $attitudesControl.unlockDemonFlaunt or $uncomfortable.flaunting is false>>
+		<label><<checkbox "$uncomfortable.flaunting" false true autocheck>> 다른 이들 앞에서 알몸을 과시하는 것이 불편하다. (악마 꼬리와 날개).</label>
 	<<elseif $exhibitionism gte 95>>
 		<span class="black">다른 이들 앞에서 알몸을 과시하는 것이 불편하다. <i>완전한 악마 변화 필요.</i></span>
 	<<elseif $demon gte 6>>
@@ -53,8 +54,8 @@
 <</if>>
 <br>
 
-<<if $soldCount gte 1>>
-	<label><<print '<<checkbox "$uncomfortable.prostituting" false true ' + ($uncomfortable.prostituting ? "checked" : "") + '>>'>> 당신은 베일리의 괴롭힘을 피하기 위해 몸을 파는 것이 불편하다. <i>체크표시를 끄면, 음란도 기준에 못 미치더라도 매춘을 할 수 있습니다. 그러나 이 경우 통제력이 감소합니다.</i></label>
+<<if $attitudesControl.unlockProstitution>>
+	<label><<checkbox "$uncomfortable.prostituting" false true autocheck>> 베일리의 괴롭힘을 피하기 위해 몸을 파는 것이 불편하다. <i>체크표시를 끄면, 음란도 기준에 못 미치더라도 매춘을 할 수 있습니다. 그러나 이 경우 통제력이 감소합니다.</i></label>
 	<br>
 <<else>>
 	베일리의 괴롭힘을 피하기 위해 몸을 팔아볼만 할까요? <i>음란도 기준을 충족시키지 못해도 매춘을 할 수 있습니다. 이 경우 통제력이 감소합니다.</i>
@@ -65,18 +66,18 @@
 <br>
 
 <<if $gamemode isnot "hard">>
-	<<if $lewd_unlock is true>>
-		<label><<print '<<checkbox "$uncomfortable.lewd" false true ' + ($uncomfortable.lewd ? "checked" : "") + '>>'>> 당신은 당신이 행한 모든 음란한 행동을 되돌아보는 것이 불편하다. <i>체크표시를 끄면, 노출증, 음란도, 이상성욕 수치가 떨어지지 않습니다. 대신 통제력을 유지하기가 어려워질 수 있습니다.</i></label>
+	<<if $attitudesControl.unlockLewd>>
+		<label><<checkbox "$uncomfortable.lewd" false true autocheck>> 당신이 행한 모든 음란한 행동을 되돌아보는 것이 불편하다. <i>체크표시를 끄면, 노출증, 음란도, 이상성욕 수치가 떨어지지 않습니다. 대신 통제력을 유지하기가 어려워질 수 있습니다.</i></label>
 	<<else>>
-		당신은 당신이 행한 모든 음란한 행동을 되돌아보는 것이 불편하다.
+		당신이 행한 모든 음란한 행동을 되돌아보는 것이 불편하다.
 		<br>
 		<span class="black"><i>3 레벨 이상의 노출증, 음란도, 혹은 이상성욕 필요.</i></span>
 	<</if>>
 	<br>
 <</if>>
 
-<<if Object.keys($hypnosis_traits).length gte 1>>
-	<label><<print '<<checkbox "$uncomfortable.hypnosis" false true ' + ($uncomfortable.hypnosis ? "checked" : "") + '>>'>> 당신은 성교중에 최면에 걸리는 것이 불편하다. <i>체크표시를 끄면, 당신은 의지력에 상관없이 최면 시도를 받아들이게 됩니다.</i></label>
+<<if $attitudesControl.unlockHypnosis>>
+	<label><<checkbox "$uncomfortable.hypnosis" false true autocheck>> 성교중에 최면에 걸리는 것이 불편하다. <i>체크표시를 끄면, 당신은 의지력에 상관없이 최면 시도를 받아들이게 됩니다.</i></label>
 	<br>
 <</if>>
 
@@ -94,8 +95,8 @@
 	다른 이들에 대해서 어떻게 느끼나요? (기본 전투 행동 설정.)
 	<br>
 	<<if $moleststat gt 0 or $debug is 1>>
-		<<set _options to ["Everyone","Strangers","Animals","Tentacles","Acquaintances","Robin", "Bailey"]>>
-		<<set _named to ["Whitney","Kylar","Eden","Avery","Leighton"]>>
+		<<set _options to ["Everyone","Strangers","Animals","Tentacles","Acquaintances","Robin","Bailey"]>>
+		<<set _named to ["Whitney","Kylar","Eden","Avery","Leighton","Sydney","Black Wolf","Great Hawk"]>>
 
 		<<for _i to 0; _i lt _named.length; _i++>>
 			<<set _index to $NPCNameList.indexOf(_named[_i])>>
@@ -231,31 +232,39 @@ __합의된 경우:__
 
 <<if _requireConfirm is true>>
 	<<link [[관련 설정 덮어쓰기|$passage]]>>
+		<<run DefaultActions.save(T.defaultActions)>>
 		<<switch _options[_currentOptions]>>
 			<<case "Everyone">>
-				<<set _override to clone($actionDefaults.Everyone)>>
-				<<set _loop to Object.keys($actionDefaults)>>
-				<<run _loop.delete("Everyone")>>
-				<<run _loop.delete("Defiant")>>
-				<<run _loop.delete("Submissive")>>
-				<<run _loop.delete("Alternative")>>
-				<<run _loop.delete("Tentacles")>>
-				<<for _i to 0; _i lt _loop.length;_i++>>
-					<<set $actionDefaults[_loop[_i]] to clone(_override)>>
+				<<set _options to ["Strangers","Animals","Acquaintances","Robin", "Bailey","Whitney","Kylar","Eden","Avery","Leighton","Sydney","Black Wolf","Great Hawk"]>>
+				<<for _option range _options>>
+					<<if !$actionDefaults.consensual>>
+						<<set $actionDefaults.consensual to {}>>
+					<</if>>
+					<<if !$actionDefaults.rape>>
+						<<set $actionDefaults.rape to {}>>
+					<</if>>
+					<<set _index to $NPCNameList.indexOf(_option)>>
+					<<if $NPCName[_index] && $NPCName[_index].init isnot 1>>
+						<<continue>>
+					<</if>>
+					<<set $actionDefaults.consensual[_option] to clone($actionDefaults.consensual.Everyone)>>
+					<<set $actionDefaults.rape[_option] to clone($actionDefaults.rape.Everyone)>>
 				<</for>>
 			<<case "Acquaintances">>
-				<<set _override to clone($actionDefaults.Everyone)>>
-				<<set _loop to Object.keys($actionDefaults)>>
-				<<run _loop.delete("Everyone")>>
-				<<run _loop.delete("Strangers")>>
-				<<run _loop.delete("Acquaintances")>>
-				<<run _loop.delete("Animals")>>
-				<<run _loop.delete("Defiant")>>
-				<<run _loop.delete("Submissive")>>
-				<<run _loop.delete("Alternative")>>
-				<<run _loop.delete("Tentacles")>>
-				<<for _i to 0; _i lt _loop.length;_i++>>
-					<<set $actionDefaults[_loop[_i]] to clone(_override)>>
+				<<set _options to ["Robin","Bailey","Whitney","Kylar","Eden","Avery","Leighton","Sydney","Black Wolf","Great Hawk"]>>
+				<<for _option range _options>>
+					<<if !$actionDefaults.consensual>>
+						<<set $actionDefaults.consensual to {}>>
+					<</if>>
+					<<if !$actionDefaults.rape>>
+						<<set $actionDefaults.rape to {}>>
+					<</if>>
+					<<set _index to $NPCNameList.indexOf(_option)>>
+					<<if $NPCName[_index] && $NPCName[_index].init isnot 1>>
+						<<continue>>
+					<</if>>
+					<<set $actionDefaults.consensual[_option] to clone($actionDefaults.consensual.Everyone)>>
+					<<set $actionDefaults.rape[_option] to clone($actionDefaults.rape.Everyone)>>
 				<</for>>
 		<</switch>>
 	<</link>>
@@ -361,6 +370,10 @@ __합의된 경우:__
 <<if _args[0] is true>>
 	<<set _mouth["비명지른다"] to "scream">>
 	<<set _mouth["애원한다"] to "plead">>
+<</if>>
+
+<<if $wolfgirl gte 2>>
+	<<set _mouth["으르렁거린다"] to "growl">>
 <</if>>
 
 <<if $submissive gte 1150>>
@@ -720,40 +733,27 @@ __합의된 경우:__
 
 <</widget>>
 
-<<widget "attitudesControl">>
-<<set $attitudesControl[_args[0]] to _args[1]>>
-<<set $attitudesControl.showGoldLink to true>>
-<</widget>>
-
 <<widget "attitudesControlCheck">>
-<<if $exhibitionism gte 55 and $attitudesControl.unlockExhibitionismUnderwear is false>>
-	<<attitudesControl "unlockExhibitionismUnderwear" true>>
-<</if>>
-<<if $exhibitionism gte 95 and $attitudesControl.unlockExhibitionismNude is false>>
-	<<attitudesControl "unlockExhibitionismNude" true>>
-<</if>>
-<<if ($specialTransform is 1 or $physicalTransform is 1) and $attitudesControl.unlockTransformation is false>>
-	<<attitudesControl "unlockTransformation" true>>
-<</if>>
-<<if $demon gte 6 and $exhibitionism gte 95 and $attitudesControl.unlockDemonFlaunt is false>>
-	<<attitudesControl "unlockDemonFlaunt" true>>
-<</if>>
-<<if $rentsale gte 1 and $attitudesControl.unlockProstitution is false>>
-	<<attitudesControl "unlockProstitution" true>>
-<</if>>
-<<if $loveInterest.primary isnot "None" and $attitudesControl.unlockLoveInterest1 is false>>
-	<<attitudesControl "unlockLoveInterest1" true>>
-<</if>>
-<<if $awarelevel gte 2 and $loveInterest.primary isnot "None" and $loveInterest.secondary is "None" and $attitudesControl.unlockLoveInterest2 is false>>
-	<<attitudesControl "unlockLoveInterest2" true>>
-<</if>>
-<<if $moleststat gt 0 and $attitudesControl.unlockDefaultActions is false>>
-	<<attitudesControl "unlockDefaultActions" true>>
-<</if>>
-<<if $lewd_unlock is true and !$attitudesControl.unlockLewd>>
-	<<attitudesControl "unlockLewd" true>>
-<</if>>
-<<if Object.keys($hypnosis_traits).length gte 1 and !$attitudesControl.unlockHypnosis>>
-	<<attitudesControl "unlockHypnosis" true>>
-<</if>>
+	/* highlight the attitudes button when new attitude controls are available */
+	<<script>>
+		/* back up the old variable for later comparison */
+		T.oldControl = clone(V.attitudesControl);
+		/* update available controls */
+		V.attitudesControl.unlockExhibitionismUnderwear = V.exhibitionism >= 55;
+		V.attitudesControl.unlockExhibitionismNude = V.exhibitionism >= 95;
+		V.attitudesControl.unlockTransformation = V.specialTransform === 1 || V.physicalTransform === 1;
+		V.attitudesControl.unlockDemonFlaunt = V.demon >= 6 && V.exhibitionism >= 95;
+		V.attitudesControl.unlockProstitution = V.soldCount >= 1;
+		/* getting the first LI automatically assigns them as a primary one, indicating that now there's options */
+		V.attitudesControl.unlockLoveInterest1 = V.loveInterest.primary !== "None";
+		/* there's no point in highlighting that you can assign the second LI if you've not assigned the first one */
+		V.attitudesControl.unlockLoveInterest2 = V.awarelevel >= 2 && V.loveInterest.primary !== "None" && V.loveInterest.secondary === "None";
+		V.attitudesControl.unlockDefaultActions = V.moleststat > 0;
+		V.attitudesControl.unlockLewd = V.exhibitionism >= 35 || V.promiscuity >= 35 || V.deviancy >= 35;
+		V.attitudesControl.unlockHypnosis = Object.keys(V.hypnosis_traits).length >= 1;
+		/* set the highlight flag when one of the controls switches to true */
+		for (const c in V.attitudesControl) {
+			if (V.attitudesControl[c] && !T.oldControl[c]) { V.attitudesControl.showGoldLink = true; break }
+		}
+	<</script>>
 <</widget>>

@@ -1,8 +1,6 @@
 :: Social [widget]
 
 <<widget "social">>
-
-
 <div id="relation-display">
 	<<silently>>
 		<<script>>
@@ -36,8 +34,8 @@
 				"Sydney" : {
 					important : true,
 					love : { maxValue: 150 },
-					purity : { requirements : State.variables.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
-					corruption : { requirements : State.variables.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
+					purity : { requirements : V.NPCName[28].purity > 0, maxValue : 100, minValue : 0 },
+					corruption : { requirements : V.NPCName[28].corruption > 0, maxValue : 50, minValue : 0 }
 				},
 				"Mason" : {
 					love : { maxValue : 50 }
@@ -56,42 +54,64 @@
 				},
 				"Sam" : {
 					love : { maxValue : 50 }
+				},
+				"Ivory Wraith" : {
+					lust : { name: "Obsession", activeIcon : (V.wraith && V.wraith.state == "haunt" ? "img/ui/obsessionblood.png" : "img/ui/obsession.png"), inactiveIcon : "img/ui/obsessionempty.png", maxValue : 20 }
 				}
 			};
 
-			/*This list is backwards due to the method used to sort via index, with unimportant NPCs being assigned -1*/
-			T.importantNpcOrder = [ "Alex", "Great Hawk", "Avery", "Sydney", "Kylar", "Eden", "Whitney", "Robin"];
+			/* This list dictates the order that the important NPCs will show up in on the social menu screen */
+			T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Alex"];
+			T.specialNPCs = ["Ivory Wraith"];
 
-			/*Clones the NPC list, and orderes it by important first, then by alphabetical order*/
-			T.orderedNPCs = V.NPCName.slice().sort(function(a, b) {
-				let diff = T.importantNpcOrder.indexOf(a.nam) - T.importantNpcOrder.indexOf(b.nam);
+			/* this list is sorted */
+			T.importantNPCs = T.importantNpcOrder.map(name => V.NPCName[V.NPCNameList.indexOf(name)]);
+			
+			/* this list is unsorted */
+			T.otherNPCs = V.NPCName.filter(npc => !T.importantNpcOrder.includes(npc.nam) && !T.specialNPCs.includes(npc.nam));
 
-				if(diff == 0) {
-					diff = a.nam < b.nam ? 1 : -1;
-				}
-
-				return diff;
-			});
-			T.orderedNPCs.reverse();
-
-
-			T.importantNPCs = T.orderedNPCs.slice(0, T.importantNpcOrder.length);
-			T.otherNPCs = T.orderedNPCs.slice(T.importantNpcOrder.length);
+			/* sorting takes the lower value and puts it first, so if a < b, a goes first. */
+			/* yes, this works on words, somehow. it's math shit, but it works. read a book if necessary. */
+			T.otherNPCs.sort((a,b) => a.nam - b.nam);
 		<</script>>
 	<</silently>>
-	<h4>주요 관계</h4>
+
+	<br>
+	<span class="gold">주요 관계</span>
 	<div id="npc-relations" class="relation-box-list">
+		<<set _initNPC to 0>>
 		<<for _k = 0; _k lt _importantNPCs.length; _k++>>
 			<<relation-box _importantNPCs[_k] _npcConfig[_importantNPCs[_k].nam]>>
+			<<set _initNPC += _npcData.init>>
 		<</for>>
 	</div>
-	<h4>관심있는 사람들</h4>
+	<<if _initNPC is 0>>
+		//주요 관계 없음//
+		<br>
+	<</if>>
+
+	<br>
+	<span class="gold">관심있는 사람들</span>
 	<div id="secondary-npcs" class="relation-box-list">
+		<<set _initNPC to 0>>
 		<<for _k= 0; _k lt _otherNPCs.length; _k++>>
 			<<relation-box _otherNPCs[_k] _npcConfig[_otherNPCs[_k].nam]>>
+			<<set _initNPC += _npcData.init>>
 		<</for>>
 	</div>
-	<h4>평판</h4>
+	<div id="secondary-npcs" class="relation-box-list">
+		<<for _ik= 0; _ik lt _specialNPCs.length; _ik++>>
+			<<relation-box $NPCName[$NPCNameList.indexOf(_specialNPCs[_ik])] _npcConfig[_specialNPCs[_ik]]>>
+			<<set _initNPC += _npcData.init>>
+		<</for>>
+	</div>
+	<<if _initNPC is 0>>
+		//No secondary relationships//
+		<br>
+	<</if>>
+
+	<br>
+	<span class="gold">평판</span>
 	<div id="faction-reputations" class="relation-box-list">
 		<<silently>>
 			/* Police config */
@@ -336,7 +356,8 @@
 			<</if>>
 		<</silently>>
 
-		<h4>농장</h4>
+		<br>
+		<span class="gold">농장 평판</span>
 		<div id="farm-status" class="relation-box-list">
 			<<relation-box-simple _farmHorseBoxConfig>>
 			<<relation-box-simple _farmPigBoxConfig>>
@@ -347,7 +368,9 @@
 			<</if>>
 		</div>
 	<</if>>
-	<h4>명성</h4>
+
+	<br>
+	<span class="gold">명성</span>
 	<div id="global-recognition" class="relation-box-list">
 		<<silently>>
 			<<set _fameStates = [
@@ -437,20 +460,23 @@
 		<<relation-box-simple _overallFameBoxConfig>>
 	</div>
 
+	<br>
 	도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost 부른다.
 
 	<<if $syndromewolves is 1 or $dockwork gte 2>>
-		<h4>기타</h4>
+
+		<br>
+		<span class="gold">기타</span>
 	<</if>>
 	<<if $syndromewolves is 1>>
 		<div id="other-relation-blocks">
-				늑대 무리 화합: <img id="statbar" src="img/ui/wolfharmony.png">
+				<b>늑대 무리 화합:</b> <img id="statbar" src="img/ui/wolfharmony.png">
 				<div class="meter">
 					<<set $percent=Math.floor((Math.min(20, $wolfpackharmony)/20)*100)>>
 					<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
 				</div>
 
-				늑대 무리 흉폭성: <img id="statbar" src="img/ui/wolfferocity.png">
+				<b>늑대 무리 흉폭성:</b> <img id="statbar" src="img/ui/wolfferocity.png">
 				<div class="meter">
 					<<set $percent=Math.floor((Math.min(20, $wolfpackferocity)/20)*100)>>
 					<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
@@ -461,7 +487,7 @@
 
 	<<if $dockwork gte 2>>
 		<div id="other-relation-blocks">
-				부두:
+				<b>부두:</b>
 				<<set $dockstatus = Math.clamp($dockstatus, 0, 100)>>
 				<<if $dockstatus gte 100>>
 					<span class="green">다른 일꾼들은 당신을 존중한다.</span>

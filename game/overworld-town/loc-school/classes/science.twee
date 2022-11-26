@@ -33,7 +33,12 @@
 			<br>
 		<<elseif $time lte ($hour * 60 + 5)>>
 
-			당신은 과학 교실에 들어간다.
+			<<if $daily.sydney.scienceWalk>>
+				<<run delete $daily.sydney.scienceWalk>>
+				당신은 시드니와 함께 과학 교실에 들어간다.
+			<<else>>
+				당신은 과학 교실에 들어간다.
+			<</if>>
 			<<npc Sirris>><<person1>>
 			학생들이 자리에 앉는 동안 시리스가 교실 앞쪽에서 수업 준비를 하고 있다.
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
@@ -46,17 +51,33 @@
 			<br>
 
 		<<else>>
-			당신은 과학 교실에 들어간다.
-			<<npc Sirris>><<person1>>
-			<<if $scienceExcused is true>>
-				<<unset $scienceExcused>>
-				시리스가 말을 하다 말고 당신을 바라본다. "지각 사유를 들었으니, 가서 앉아라." <<He_ nun>> 당신에게 웃음짓는다.
+			<<if $daily.sydney.scienceWalk>>
+				<<run delete $daily.sydney.scienceWalk>>
+				당신은 시드니와 함께 과학 교실에 들어간다.
+				<<npc Sirris>><<person1>>
+				<<if $daily.school.scienceExcused is true>>
+					<<run delete $daily.school.scienceExcused>>
+					시리스가 말을 하다 말고 당신을 바라본다. "너희 둘 다, 지각 사유를 들었단다. 가서 앉아라." <<He_ nun>> 당신에게 웃음짓는다.
+				<<else>>
+					시리스가 말을 하다 말고 당신을 바라본다. "미안하지만, 지각 기록을 해야겠어. 너희 둘 다 말이야." 시드니는 부끄러워하는 것 처럼 보인다.
+					<<gdelinquency>><<lspurity>>
+					<br><br>
+					<<detention 1>>
+				<</if>>
 			<<else>>
-				시리스가 말을 하다 말고 당신을 바라본다. "미안하지만, 지각 기록을 해야겠어."
-				<<gdelinquency>>
-				<br><br>
-				<<detention 1>>
+				당신은 과학 교실에 들어간다.
+				<<npc Sirris>><<person1>>
+				<<if $daily.school.scienceExcused is true>>
+					<<run delete $daily.school.scienceExcused>>
+					시리스가 말을 하다 말고 당신을 바라본다. "지각 사유를 들었으니, 가서 앉아라." <<He_ nun>> 당신에게 웃음짓는다.
+				<<else>>
+					시리스가 말을 하다 말고 당신을 바라본다. "미안하지만, 지각 기록을 해야겠어."
+					<<gdelinquency>>
+					<br><br>
+					<<detention 1>>
+				<</if>>
 			<</if>>
+
 			당신은
 			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
 				교실 뒷편에 코트를 건 뒤
@@ -101,7 +122,7 @@
 	<br>
 
 <<elseif $schoollesson is 1>>
-	<<if $scienceinterrupted is 1>>
+	<<if $daily.school.scienceInterrupted is 1>>
 
 		<<npc Sirris>><<person1>>당신은 과학 교실에 들어간다. 당신이 들어오는 걸 보자 시리스가 말을 멈추고는, 처음에는 놀란 표정을 지었다가, 곧 짜증이 난 듯한 표정을 짓는다. "또 너냐? 계속 이런 식으로 방해하면 안돼, 훠이!" <<HePost "은">> 당신의 눈 앞에서 문을 닫는다.
 		<<gdelinquency>>
@@ -113,7 +134,11 @@
 
 		<<npc Sirris>><<person1>>당신은 과학 교실의 문을 연다. 당신이 들어오는 것을 보자, 시리스는 말을 멈추고는 놀란 표정을 짓는다. "무슨 일이니?" 보아하니 당신이 수업을 방해한 모양이다.
 		<br><br>
-		<<set $scienceinterrupted to 1>>
+		<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+			당신은 시드니가 교실 맨 앞에 앉아 있는 것을 발견한다. <<nnpc_He_ nun "Sydney">> 당혹한 얼굴로 당신을 바라보고 있다.
+			<br><br>
+		<</if>>
+		<<set $daily.school.scienceInterrupted to 1>>
 
 		<<link [[사과한다|Science Classroom Apology]]>><<trauma 1>><<stress 1>><</link>><<gstress>><<gtrauma>>
 		<br>
@@ -153,9 +178,18 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 당신은 선생님을 조롱한다. "흰색 실험실 가운은 좋은 생각 같아요, 선생님. 얼룩을 가려줄 테니까요." 앉아있던 학생들이 웃음을 터트린다.
+<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+	<<run statusCheck("Sydney")>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		시드니조차도 웃음보를 터뜨리지 않으려 몸부림치고 있다.
+	<<else>>
+		시드니의 눈이 충격으로 크게 벌어져 있다.
+	<</if>>
+	<<lspurity>>
+<</if>>
 <br><br>
 
-시리스는 몹시 화가난 것 같다. "좋아. 이런 행동은 교장에게 전달하도록 하지. 그러니, 그냥 가렴."
+시리스는 몹시 화가 난 것 같다. "좋아. 이런 행동은 교장에게 전달하도록 하지. 그러니, 그냥 가렴."
 <<gdelinquency>>
 <br><br>
 <<detention 1>><<npcincr Sirris love -1>>

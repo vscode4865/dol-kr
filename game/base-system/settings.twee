@@ -10,7 +10,9 @@
 <<set $player.penissize to 1>>
 <<set $devlevel to 12>>
 <<set $bodysize to 2>>
+<<set $mouthsensitivity to 1>>
 <<set $breastsensitivity to 1>>
+<<set $bottomsensitivity to 1>>
 <<set $genitalsensitivity to 1>>
 <<set $eyeselect to "purple">>
 <<set $hairselect to "red">>
@@ -18,10 +20,6 @@
 <<set $awareselect to "innocent">>
 <<set $background to "waif">>
 <<set $startingseason to "autumn">>
-<<if StartConfig.enableImages is true>>
-	<<set $images to 1>>
-	<<set $silhouettedisable to "f">>
-<</if>>
 <<set $numberify_enabled to 1>>
 <<set $gamemode to "normal">>
 <<set $whitechance to 90>>
@@ -62,7 +60,6 @@
 <<set $pregnancyspeechdisable to "f">>
 <<set $tipdisable to "f">>
 <<set $statdisable to "f">>
-<<set $bodywritingImages to true>>
 <<if $debug is 1>>
 	<<set $debugdisable to "f">>
 <<else>>
@@ -72,27 +69,12 @@
 <<set $watersportsdisable to "f">>
 <<set $facesitdisable to "f">>
 <<set $timestyle to "military">>
-<<set $saveName to "">>
 <<set $zoom to 100>>
+<<set $saveName to "">>
 <<set $checkstyle to "words">>
 <<set $blackwolfmonster to 1>>
 <<set $greathawkmonster to 1>>
-<<set $blinkingdisable to "f">>
-<<set $halfcloseddisable to "f">>
-
-<<set $newWardrobeStyle to true>>
-<<set $lightSpotlight to 0.2>>
-<<set $lightGradient to 0>>
-<<set $lightGlow to 0>>
-<<set $lightFlat to 0>>
-<<set $lightCombat to 0.2>>
-<<set $lightTFColor to 0.2>>
-<<set $sidebarStats to "Disabled">>
-<<set $sidebarTime to "Disabled">>
-<<set $combatControls to "radio">>
 <<set $reducedLineHeight to false>>
-<<set $sidebarAnimations to true>>
-<<set $combatAnimations to true>>
 <<set $clothesPrice to 1>>
 <<set $clothesPriceUnderwear to 1>>
 <<set $clothesPriceSchool to 1>>
@@ -109,7 +91,6 @@
 <<set $condomchance to 50>>
 <<set $condomautochance to 50>>
 <<set $multipleWardrobes to "isolated">>
-<<set $targetYourself to false>>
 <<set $tending_yield_factor to 5>>
 
 <<set $notifyUpdate = true>>
@@ -175,7 +156,7 @@
 		<<button "캐릭터 생성<span class='red'>*</span>">>
 			<<displaySettings "characterSettings">>
 		<</button>>
-		<<if $images is 1>>
+		<<if $options.images is 1>>
 			<<button "도전과제 부스트<span class='red'>*</span> <img class='imgButton' src='img/ui/GoldCoin.gif'/>">>
 				<<displaySettings "featSettings">>
 			<</button>>
@@ -232,9 +213,9 @@
 	<<set _buttonName to "확인">>
 <</if>>
 <<link _buttonName>>
-	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1)) and $maxStates lte 5>>
+	<<if ($feats.locked is true or ($cheatdisabletoggle is "t" and $rentmod gte 1)) and ($feats.soft is true or ($gamemode isnot "soft" and $alluremod gte 1)) and $options.maxStates lte 5>>
 		<<settingsExitFunction>>
-	<<elseif $maxStates lte 5>><!-- confirm cheats -->
+	<<elseif $options.maxStates lte 5>><!-- confirm cheats -->
 		<<replace #settingsExit>><<settingsExitConfirm>><</replace>>
 	<<else>><!-- confirm huge history -->
 		<<replace #settingsExit>><<settingsExitConfirmHistory>><</replace>>
@@ -271,13 +252,13 @@
 </span>
 <br>
 <<link "이 기능을 끈다">>
-	<<set $maxStates to 1>>
+	<<set $options.maxStates to 1>>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<displaySettings>>
 <</link>>
 <br>
 <<link "설정을 안전한 깊이로 내린다">>
-	<<set $maxStates to 5>>
+	<<set $options.maxStates to 5>>
 	<<replace #settingsExit>><<settingsExit>><</replace>>
 	<<displaySettings>>
 <</link>>
@@ -310,11 +291,13 @@
 	<<if $player.freckles is "random">>
 		<<set $player.freckles to (random(1, 5) is 1)>>
 	<</if>>
+	/* this never worked as intended
 	<!-- check if specified face style is installed -->
 	<img id="testImage" class="hidden" @scr="'img/face/' + $facestyle + '/base.png'">
 	<<if $facestyle is "" or isImageOk("#testImage")>>
 		<<set $facestyle = "default">>
 	<</if>>
+	*/
 	<!-- Init shop mannequin gender -->
 	<<if $mannequinHasPenis is undefined>>
 		<<set $mannequinHasPenis to $player.penisExist>>
@@ -491,18 +474,32 @@
 	<label>없음 <<radiobutton "$player.ballsExist" false autocheck>></label> |
 	</span><br><br>
 
+	<span class="gold">입 감도</span>
+	<br>
+	<label>평범함 <<radiobutton "$mouthsensitivity" 1 autocheck>></label> |
+	<label><span class="pink">민감함</span> <<radiobutton "$mouthsensitivity" 2 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$mouthsensitivity" 3 autocheck>></label>
+	<br><br>
+
 	<span class="gold">가슴 감도</span>
 	<br>
 	<label>평범함 <<radiobutton "$breastsensitivity" 1 autocheck>></label> |
-	<label><span class="pink">민감함</span> <<radiobutton "$breastsensitivity" 3 autocheck>></label> |
-	<label><span class="red">아주 민감함</span> <<radiobutton "$breastsensitivity" 5 autocheck>></label>
+	<label><span class="pink">민감함</span> <<radiobutton "$breastsensitivity" 2 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$breastsensitivity" 3 autocheck>></label>
+	<br><br>
+
+	<span class="gold">엉덩이 감도</span>
+	<br>
+	<label>평범함 <<radiobutton "$bottomsensitivity" 1 autocheck>></label> |
+	<label><span class="pink">민감함</span> <<radiobutton "$bottomsensitivity" 2 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$bottomsensitivity" 3 autocheck>></label>
 	<br><br>
 
 	<span class="gold">성기 감도</span>
 	<br>
 	<label>평범함 <<radiobutton "$genitalsensitivity" 1 autocheck>></label> |
-	<label><span class="pink">민감함</span> <<radiobutton "$genitalsensitivity" 3 autocheck>></label> |
-	<label><span class="red">아주 민감함</span> <<radiobutton "$genitalsensitivity" 5 autocheck>></label>
+	<label><span class="pink">민감함</span> <<radiobutton "$genitalsensitivity" 2 autocheck>></label> |
+	<label><span class="red">아주 민감함</span> <<radiobutton "$genitalsensitivity" 3 autocheck>></label>
 	<br><br>
 
 	<span class="gold">눈 색</span>
@@ -573,17 +570,17 @@
 	<<if StartConfig.enableImages is true>>
 		<<link "색상 미리보기">>
 			<<replace #test>>
-				<<if $skinColor.tanImgEnabled is "f">>
-					<<set $skinColor.tanImgEnabled to "t">>
+				<<if $options.tanImgEnabled>>
+					<<set $options.tanImgEnabled to true>>
 					<<set _skincolortemp to true>>
 				<</if>>
-				<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($skinColor.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>
+				<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($options.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>
 				<<if _skincolortemp is true>>
-					<<set $skinColor.tanImgEnabled to "f">>
+					<<set $options.tanImgEnabled to false>>
 				<</if>>
 			<</replace>>
 		<</link>> (근사치)
-		<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($skinColor.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
+		<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($options.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
 		<br>
 	<</if>>
 	<br>
@@ -813,6 +810,7 @@
 	<mouse class="tooltip linkBlue">(?)<span>커닐링구스를 막지 않습니다.</span></mouse>
 	</div></label>
 
+	/*ToDo: Pregnancy, remove duplicate option once enabled*/
 	<label><div class="settingsToggle">
 	<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> 임신 언급 활성화.
 	<mouse class="tooltip linkBlue">(?)<span>플레이어의 임신, 혹은 다른 존재를 임신시키는 것에 대한 언급을 활성화합니다. 특히 다른 임신 관련 설정이 활성화되어 있는 경우, 비활성화하는 것이 임신에 대한 모든 언급을 막지는 않습니다.</span></mouse>
@@ -1130,7 +1128,7 @@
 			<<numberslider "$wolfPregnancyWeeks" $wolfPregnancyWeeks 2 12 1>>
 		</div>
 		<br>
-		<div class="small-description"><span class="red">아래 설정은 진행중인 임신을 멈추지는 못합니다.</span></div>
+		<div class="small-description"><span class="red">진행중인 임신을 멈추거나 이미 존재하는 아이들과 상호작용하는 것을 멈추지는 못합니다.</span></div>
 		<label><div class="settingsToggle">
 			<<checkbox "$playerPregnancyHumanDisable" "t" "f" autocheck>>
 			인간 아이 임신 활성화
@@ -1138,11 +1136,18 @@
 		<label><div class="settingsToggle">
 			<<checkbox "$playerPregnancyBeastDisable" "t" "f" autocheck>> 짐승 임신 활성화
 		</div></label>
-		<label><div class="settingsToggle">
-			<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> NPC 임신 활성화
-		</div></label>
+		/*ToDo: Pregnancy NPC - Remove when adding pregnancy for named npc's */
+		<<if $pregnancyTesting>>
+			<label><div class="settingsToggle">
+				<<checkbox "$npcPregnancyDisable" "t" "f" autocheck>> NPC 임신 활성화
+			</div></label>
+		<</if>>
 		<label><div class="settingsToggle">
 		<<checkbox "$analpregdisable" "t" "f" autocheck>> 항문 기생 임신 활성화
+		</div></label>
+		<label><div class="settingsToggle">
+		<<checkbox "$pregnancyspeechdisable" "t" "f" autocheck>> 임신 언급 활성화.
+		<mouse class="tooltip linkBlue">(?)<span>플레이어의 임신, 혹은 다른 존재를 임신시키는 것에 대한 언급을 활성화합니다. 특히 다른 임신 관련 설정이 활성화되어 있는 경우, 비활성화하는 것이 임신에 대한 모든 언급을 막지는 않습니다.</span></mouse>
 		</div></label>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -1154,14 +1159,18 @@
 	<br>
 	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$breastsizemax" `_i` autocheck>></label> |
+		<span data-target="breastsizemin" @data-disabledif="'V.breastsizemin > ' + _i">
+			<label><<print _name[_i]>> <<radiobutton "$breastsizemax" `_i` autocheck>></label>
+		</span> |
 	<</for>>
 	<br><br>
 
 	<span class="gold">플레이어 캐릭터 최소 가슴 크기</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이하로 작아진 가슴은 자동으로 커지거나 하지 않습니다.</span></mouse>
 	<br>
 	<<for _i to 0; _i lt 5; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
+		<span data-target="breastsizemax" @data-disabledif="_i + ' > V.breastsizemax'">
+			<label><<print _name[_i]>> <<radiobutton "$breastsizemin" _i autocheck>></label> |
+		</span>
 	<</for>>
 	<br><br>
 
@@ -1177,7 +1186,9 @@
 	<br>
 	<<set _name to ["진짜 작음", "아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label> |
+		<span data-target="penissizemin" @data-disabledif="_i - 2 + ' < V.penissizemin'">
+			<label><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label> |
+		</span>
 	<</for>>
 	<br><br>
 
@@ -1185,112 +1196,25 @@
 	<br>
 	<<set _name to ["진짜 작음", "아주 작음", "조그마함"]>>
 	<<for _i to 0; _i lt _name.length; _i++>>
-		<label><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label> |
+		<span data-target="penissizemax" @data-disabledif="_i - 2 + ' > V.penissizemax'">
+			<label><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label> |
+		</span>
 	<</for>>
 	<br><br>
 
 <</widget>>
 
 <<widget "generalSettings">>
-	<span class="gold">이미지</span>
-	<<if StartConfig.enableImages is true>>
-		<label><div class="settingsToggleBig">
-		<<checkbox "$images" 0 1 autocheck>> 이미지 활성화
-		<div class="description">옛 버전의 안드로이드에서는 이미지가 제대로 표시되지 않을 수도 있습니다.</div>
-		<label data-target="images" data-disabledif="V.images===0"><<checkbox "$combatimages" 0 1 autocheck>> 전투 이미지 사용
-		</label></div>
-
-		<label><div class="settingsToggleBig">
-		CSS 애니메이션
-		<div><label><<checkbox "$sidebarAnimations" false true autocheck>> 사이드바 애니메이션</label></div>
-		<div><label><<checkbox "$combatAnimations" false true autocheck>> 전투 애니메이션</label></div>
-		<div class="description">비활성화하면 성능이 향상될 수도 있고 어쩌면 이미지가 잘못 로드되는 것을 방지할지도 모릅니다. 먼저 사이드바의 이미지의 비활성화를 합니다.</div>
+	<<if StartConfig.enableImages is true and $debug is 1>>
+		<span class="gold">이미지</span>
+		<label><div class="settingsToggleBig"><div style="display: inline-flex;">
+		얼굴 스타일
+		<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
+		<div class="description">이 설정은 기본 얼굴 외의 다른 얼굴 스타일을 설치했을 때에만 작동합니다.</div>
+		<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
 		</div></label>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$bodywritingImages" false true autocheck>> 낙서 이미지 활성화
-		<div class="description">비활성화하면 성능이 향상될 수도 있고 이미지가 잘못 로드되는 것을 방지할지도 모릅니다.</div>
-		</div></label>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$silhouettedisable" "t" "f" autocheck>> NPC 실루엣 활성화
-		</div></label>
-
-		<<if $skinColor.init is false and $passage isnot "Start">>
-			<span class="gold">이제 당신의 캐릭터의 피부색을 고를 수 있습니다. "테스트"를 눌러서 당신의 세팅을 인형으로 미리보기 할 수 있습니다. 결정하면 "확인"을 누르세요.</span> 일부 장치에서는 퍼포먼스 문제가 발생할 수 있습니다. 그런 문제가 발생한다면, 새로운 피부 시스템을 비활성화하는 옵션이 여기 표시될 것입니다.
-			<br>
-			<div id="skinColorDiv"><img class="" src="img/bodyRed/baseReColorTest.png"></div>
-
-			피부색:<br>
-			붉게:
-			<label>연하게 <<radiobutton "$naturalSkinColor" "light" autocheck>></label> |
-			<label>중간 <<radiobutton "$naturalSkinColor" "medium" autocheck>></label> |
-			<label>짙게 <radiobutton "$naturalSkinColor" "dark" autocheck>></label> |
-			<label>갸루 <<radiobutton "$naturalSkinColor" "gyaru" autocheck>> (선탠 없으면 연하고, 완전히 선탠하면 아주 짙음)</label>
-			<br>
-			노랗게:
-			<label>연하게 <<radiobutton "$naturalSkinColor" "ylight" autocheck>></label> |
-			<label>중간 <<radiobutton "$naturalSkinColor" "ymedium" autocheck>></label> |
-			<label>짙게 <radiobutton "$naturalSkinColor" "ydark" autocheck>></label>
-			<label>갸루 <<radiobutton "$naturalSkinColor" "ygyaru" autocheck>></label>
-			<br><br>
-			<<if $range is undefined>>
-				<<set $range to 0>>
-			<</if>>
-			<label>초기 선탠: <<numberslider "$range" 0 0 100 1>></label>
-			<br>
-			<<link "테스트">>
-				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
-					<<replace #skinColorDiv>><<SkinColorImgTest $range $naturalSkinColor>><</replace>>
-				<</if>>
-			<</link>>
-
-			<br>
-			<<link [[확인|$passage]]>>
-				<<if $range isnot undefined and $naturalSkinColor isnot undefined>>
-					<<set $skinColor.range to $range>>
-					<<set $skinColor.natural to $naturalSkinColor>>
-					<<set $skinColor.tanningEnabled to true>>
-					<<set $skinColor.tanImgEnabled to "t">>
-					<<setSkinColorBase>>
-					<<unset $naturalSkinColor>>
-					<<unset $range>>
-				<</if>>
-			<</link>> - <span class="red">확인을 누른 뒤에는 설정을 바꿀 수 없습니다.</span>
-		<<else>>
-			<label><div class="settingsToggleBig">
-			<<checkbox "$skinColor.tanImgEnabled" "f" "t" autocheck>> 플레이어 캐릭터의 피부색 시각적으로 표현
-			<div class="description"><span class="pink">일부 장치에서는 퍼포먼스가 저하될 수 있습니다</span></div>
-			</div></label>
-			<label><div class="settingsToggleBig">
-			<<checkbox "$skinColor.tanningEnabled" false true autocheck>> 태양에 노출되는 정도에 따라 선탠량 변화
-			<div class="description"><span class="red">비활성화 옵션은 추후 제거될 수도 있습니다</span></div>
-			</div></label>
-		<</if>>
-
-		<label><div class="settingsToggleBig">
-		<<checkbox "$blinkingdisable" "t" "f" autocheck>> 눈 깜박임 애니메이션
-		<div class="description">CSS 애니메이션이 활성화 되어야 작동합니다.</div>
-		</div></label>
-		<<if $eyelidTEST is true>>
-		<label><div class="settingsToggleBig">
-		<<checkbox "$halfcloseddisable" "t" "f" autocheck>> 반쯤 감긴 눈 그래픽 사용
-		<div class="description">높은 흥분 상태에서 사이드바의 눈꺼풀이 반쯤 감긴 이미지를 사용합니다.</div>
-		</div></label>
-		<</if>>
-		<<if $debug is 1>>
-			<label><div class="settingsToggleBig"><div style="display: inline-flex;">
-			얼굴 스타일
-			<div style="margin-left: 1em;"><<textbox "$facestyle" $facestyle>></div></div>
-			<div class="description">이 설정은 기본 얼굴 외의 다른 얼굴 스타일을 설치했을 때에만 작동합니다.</div>
-			<<script>>jQuery(document).ready(() => { jQuery('#textbox-facestyle').css('width', '100%').css('min-width', 'unset').css('height', '0.75em'); });<</script>>
-			</div></label>
-		<</if>>
-	<<else>>
-		<br>
-		설정 불가능
+		<br><br>
 	<</if>>
-	<br><br>
 	<span class="gold">숫자 링크 탐색</span>
 	<br>
 	<<if StartConfig.enableLinkNumberify is true>>
@@ -1330,7 +1254,7 @@
 	<label><div class="settingsToggleBig">
 	<<checkbox "$tipdisable" "t" "f" autocheck>> 힌트와 팁 활성화
 	<div class="description">사이드바에 보여줍니다.</div>
-	<div><<link [["모든 팁 보기"|Tips]]>><<set $lastPassage to $passage>><</link>></div>
+	<div><<link [[모든 팁 보기|Tips]]>><<set $lastPassage to $passage>><</link>></div>
 	</div></label>
 	<br><br>
 
@@ -1347,56 +1271,28 @@
 	<<textbox "$saveName" $saveName>>
 	<div class="description">세이브 메뉴에서 세이브 id 자리에 표시됩니다.</div>
 	<div class="description"><span class="red">현재 세이브 메뉴 상에서는 최대 10글자까지만 표시가 되고, 세이브 ID를 표시하려면 공란으로 남겨두세요</span></div>
-	<br>
-	<span class="gold">게임 확대</span> <mouse class="tooltip linkBlue">(?)<span>게임 요소와 텍스트를 조정할 수 있게 됩니다. 기본값은 100입니다.
-	50으로 설정하면 기존의 절반 크기가 되고, 200으로 설정하면 두 배로 커지게 됩니다.
-	테스트 버튼을 눌러도 현재 세이브에 확대 설정치가 저장되진 않습니다.
-	<span class="red">
-		이 항목을 설정할 때에는 조심하세요! 게임을 다시 기동하면 세이브에서 마지막으로 사용된 값으로 돌아가게 되니까, 변경한 상태가 마음에 드는 경우에만 저장하시기 바랍니다.
-		장치와 브라우저에 따라 이 설정이 작동하지 않을 수도 있고, 예상치 못한 현상이 발생할 수도 있습니다. 그러한 문제가 있을 경우 제보해주시기 바랍니다.
-	</span></span></mouse>
 	<br><br>
-	<<numberslider "$zoom" $zoom 50 200 1>>
-	<input type="button" value="설정한 값 테스트" onclick="zoom()"/>
-	<br><br>
-	<input type="button" value="확대 설정 리셋" onclick="zoom(100, true)"/>
-	<input type="button" value="확대 설정" onclick="zoom(undefined, true)"/>
-	<br><br>
-
-
-	<span class="gold">이력 깊이</span><br>
-	<div class="description">이력에서 N-1 단계(passage)까지 뒤로 갈 수 있습니다. 변경은 설정창을 나간 후 적용됩니다.<br>
-	<span class="red"><b>주의:</b> 속도저하를 일으킬 수 있습니다. 그리고, 5 이상의 숫자는 당신의 로컬 스토리지 용량을 넘어 <br>
-	<b>세이브 문제를 일으킬 수 있습니다</b>. 사용시 일어날 수 있는 불상사는 자신의 책임입니다.</span>
-	</div>
-	<<numberslider "$maxStates" $maxStates 1 20 1 $ironmanmode>>
-	<br><br>
-
 
 	<span class="gold">치트 메뉴</span>
 	<label><div class="settingsToggleBig">
-	<<if $ironmanmode is true>>
-		<<print '<input id="checkbox-autosavedisabled" name="checkbox-autosavedisabled" type="checkbox" tabindex="0" class="macro-checkbox" disabled>'>>
-		<span style="color: #7e7e7e;">치트 활성화</span>
-	<<else>>
-		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>>
-		치트 활성화
-	<</if>>
+	<label data-disabledif="V.ironmanmode===true">
+		<<checkbox "$cheatdisabletoggle" "t" "f" autocheck>> 치트 활성화
+	</label>
 	<div class="description">버튼은 사이드바에 표시됩니다. <span class="red">설정에서 치트를 활성화하는 경우 세이브에서 도전과제를 달성할 수 없게 됩니다.</span></div>
 	</div></label>
 	<br><br>
 	<span class="gold">갤러리</span> - 세이브 파일에는 어떤 식으로도 영향을 주지 않습니다.
 	<br>
 	<<if version.major gt 2 or version.minor gt 29>>
-		<<link [["캐릭터 뷰어"|Clothes Testing]]>>
+		<<link [[캐릭터 뷰어|Clothes Testing]]>>
 			<<set $lastPassage to $passage>>
-			<<set $gameTanImgSetting to clone($skinColor.tanImgEnabled)>>
+			<<set $gameTanImgSetting to clone($options.tanImgEnabled)>>
 		<</link>>
 		- 캐릭터 스프라이트를 갖고 놀 수 있습니다.
 		<br>
 	<</if>>
 	<<if $passage isnot "Start">>
-		<<link [["씬 뷰어"|Scene Viewer]]>>
+		<<link [[씬 뷰어|Scene Viewer]]>>
 			<<set $lastPassage to $passage>>
 			<<seenPassageChecks>>
 		<</link>>
@@ -1406,7 +1302,7 @@
 		씬 뷰어는 시작 페이지에서는 사용할 수 없습니다.
 		<br>
 	<</if>>
-	<<link [["렌더러 테스트"|Renderer Test Page]]>>
+	<<link [[렌더러 테스트|Renderer Test Page]]>>
 		<<set $lastPassage to $passage>>
 	<</link>>
 	- 여기에서 당신의 브라우저가 새 렌더러를 지원하는 지 확인할 수 있습니다.
@@ -1466,6 +1362,9 @@
 	<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
 		<<set $_name to $NPCNameList[$_i]>><<trNamedNPC $_name "name">><<set _npcList[_trResult] to clone($_i)>>
 	<</for>>
+	<<if $passage is "Start" or !$wraithIntro>>
+		<<run delete _npcList["Ivory Wraith"]>>
+	<</if>>
 <</if>>
 
 <div id="npcSettingsMenu">
@@ -1475,13 +1374,13 @@
 <<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
 	<<run
 		if (!T.perNPCLock) {
-			$("#passages").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
+			$(".passage").on('change', '#perNPCSettingsMenu .macro-listbox', function (e) {
 				new Wikifier(null, '<<replace #perNPCSettingsMenu>><<perNPCSettingsMenu>><</replace>>');
 			});
 
 			T.keys = {};
 			T.keyNames = [];
-			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "wraith", "pinch", "black_dog"];
+			const allowed_npcs = ["steed", "guard", "inmate", "panty_thief", "school_nurse", "tower_creature", "pinch", "black_dog", "hacker"];
 			Object.keys(V.per_npc).forEach(k => {
 				for (const j of allowed_npcs){
 					if (k.includes(j)){
@@ -1565,19 +1464,31 @@
 		<<else>>
 			<<set _npcId-->>
 		<</if>>
+		<<if _npcList[$NPCName[_npcId].nam] is undefined>>
+			<<set _npcId-->>
+		<</if>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>> |
 	<<link "다음">>
-		<<set _npcId++>>
+		<<if _npcId is $NPCNameList.length - 1>>
+			<<set _npcId to 0>>
+		<<else>>
+			<<set _npcId++>>
+		<</if>>
+		<<if _npcList[$NPCName[_npcId].nam] is undefined>>
+			<<set _npcId++>>
+		<</if>>
 		<<replace #npcSettingsMenu>><<npcSettingsMenu>><</replace>>
 	<</link>>
 	<br><br>
 	<span class="gold"><<trNamedNPC $NPCName[_npcId].title>>_trResult <<trNamedNPC $NPCName[_npcId].nam>>_trResult</span>
 	<br>
+	<span data-target="npcname-npcidpronoun" data-disabledif="V.NPCName[T.npcId].pronoun==='i'">
 	<label><<radiobutton "$NPCName[_npcId].pronoun" "f" autocheck>> 여자</label> |
 	<label><<radiobutton "$NPCName[_npcId].pronoun" "m" autocheck>> 남자</label>
+	</span>
 	<br>
-	<<if $NPCName[_npcId].pregnancy[0] is null>>
+	<<if !$NPCName[_npcId].pregnancy or !$NPCName[_npcId].pregnancy.enabled or !$NPCName[_npcId].pregnancy.fetus.length>>
 		<label><<radiobutton "$NPCName[_npcId].gender" "f" autocheck>> 보지</label> |
 		<label><<radiobutton "$NPCName[_npcId].gender" "m" autocheck>> 자지</label>
 		<<if $debug is 1>>| <label><<radiobutton "$NPCName[_npcId].gender" "h" autocheck>> 둘 다</label><</if>>
@@ -1598,6 +1509,19 @@
 	<</for>>
 	</span>
 	<br><br>
+
+	<<if $NPCName[_npcId].pregnancy && $NPCName[_npcId].pregnancy.enabled isnot undefined>>
+		<<if !$NPCName[_npcId].pregnancy.fetus.length>>
+			NPC가 임신가능하게 설정 - 가능한 경우:
+			<mouse class="tooltip linkBlue">(?)<span>'NPC 임신 활성화' 설정이 활성화되어 있어야 합니다.</span></mouse>
+			<br>
+			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" true autocheck>> 가능</label> |
+			<label><<radiobutton "$NPCName[_npcId].pregnancy.enabled" false autocheck>> 불가능</label>
+		<<else>>
+			임신하고 있으므로 NPC 임신 설정을 변경할 수 없습니다.
+		<</if>>
+		<br><br>
+	<</if>>
 
 	<div class="settingsToggle" style="display: inline-flex;">
 	가슴 크기:
@@ -1684,10 +1608,10 @@
 	<<else>>
 		<<if $per_npc[_pNPCId].name_known>>
 			<span class="gold"><<trNPCname $per_npc[_pNPCId].name>>_trResult the <<print _pNPCId.replace(/_/g, ' ')>></span>
-		<<elseif $per_npc[_pNPCId].name is "Ivory Wraith">>
-			<span class="wraith">상아 유령</span>
 		<<elseif _pNPCId is "tower_creature">>
 			<span class="gold">밤의 괴물</span>
+		<<elseif _pNPCId is "hacker">>
+			<span class="gold">해커 '미키'</span>
 		<<else>>
 			<span class="gold"><<print _pNPCId.toUpperFirst().replace(/_/g, ' ')>></span>
 		<</if>>
@@ -1702,7 +1626,7 @@
 			<</link>>
 		<</if>>
 		<br>
-		<span data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'">
+		<span data-target="pernpc-npcidpronoun" data-disabledif="V.per_npc[T.pNPCId].pronoun==='i'||V.per_npc[T.pNPCId].pronoun==='t'">
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "f" autocheck>> Female</label> |
 		<label><<radiobutton "$per_npc[_pNPCId].pronoun" "m" autocheck>> Male</label>
 		</span>
