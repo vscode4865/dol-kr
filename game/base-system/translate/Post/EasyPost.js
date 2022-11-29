@@ -183,6 +183,27 @@ const EasyPostMacroList = [
 	// <<allBottomsUnderwear_ rul>> = <<allBottomsUnderwear>>를 
 	{ name: "allBottomsUnderwear_", orig_name: "allBottomsUnderwearPost", is_print: 0},
 
+	// <<exposedupper_ rul>> = <<exposedupper>>를 
+	{ name: "exposedupper_", orig_name: "exposedupperPost", is_print: 0},
+
+	// <<exposedlower_ rul>> = <<exposedlower>>를 
+	{ name: "exposedlower_", orig_name: "exposedlowerPost", is_print: 0},
+
+	// <<dress_ rul>> = <<dress>>를 
+	{ name: "dress_", orig_name: "dressPost", is_print: 0},
+
+	// <<skirt_ rul>> = <<skirt>>를 
+	{ name: "skirt_", orig_name: "skirtPost", is_print: 0},
+
+	// <<panties_ rul>> = <<panties>>를 
+	{ name: "panties_", orig_name: "pantiesPost", is_print: 0},
+
+	// <<bra_ rul>> = <<bra>>를 
+	{ name: "bra_", orig_name: "braPost", is_print: 0},
+
+	// <<npcClothesText_ rul>> = <<npcClothesText>>를 
+	{ name: "npcClothesText_", orig_name: "npcClothesTextPost", is_print: 0},
+
 	// HePost 
 	// <<He_ nun>> = <<He>>는, <<He_ nun 1>> = <<He 1>>는 
 	{ name: "He_", orig_name: "HePost", is_print: 0},

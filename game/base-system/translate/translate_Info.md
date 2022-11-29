@@ -2451,7 +2451,8 @@
 		```
 		<<undertop_ (조사)>>, <<groin_ (조사)>>, <<crotch_ (조사)>>, <<undies_ (조사)>>, <<bottoms_ (조사)>>, <<underbottoms_ (조사)>>, <<top_ (조사)>>, 
 		<<topaside_ (조사)>>, <<breastsaside_ (조사)>>, <<bottomaside_ (조사)>>, <<outfit_ (조사)>>, <<underoutfit_ (조사)>>, <<lewdness_ (조사)>>, <<nudity_ (조사)>> (문장 끝에 <<nudityPostend>>를 반드시 넣을것), 
-		<<allTops_ (조사)>>, <<allBottoms_ (조사)>>, <<allTopsUnderwear_ (조사)>>, <<allBottomsUnderwear_ (조사)>>, 
+		<<allTops_ (조사)>>, <<allBottoms_ (조사)>>, <<allTopsUnderwear_ (조사)>>, <<allBottomsUnderwear_ (조사)>>, <<exposedupper_ (조사)>>, <<exposedlower_ (조사)>>, 
+		<<dress_ (조사)>>, <<skirt_ (조사)>>, <<panties_ (조사)>>, <<bra_ (조사)>>, <<npcClothesText_ (조사)>>, 
 		```
 	- HePost 계열
 		```
