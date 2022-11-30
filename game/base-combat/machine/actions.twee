@@ -5,20 +5,20 @@
 	<<getTargetList>>
 <</if>>
 <div id="listContainer">
-	<div id="leftaction" @class="$combatControls + 'Control'">
+	<div id="leftaction" @class="$options.combatControls + 'Control'">
 		<<leftActionInitMachine>>
 	</div>
 
-	<div id="rightaction" @class="$combatControls + 'Control'">
+	<div id="rightaction" @class="$options.combatControls + 'Control'">
 		<<rightActionInitMachine>>
 	</div>
 
-	<div id="feetaction" @class="$combatControls + 'Control'">
+	<div id="feetaction" @class="$options.combatControls + 'Control'">
 		<<feetActionInitMachine>>
 	</div>
 
 	<<if ($mouthuse is 0 and !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined)))>>
-		<div id="mouthaction" @class="$combatControls + 'Control'">
+		<div id="mouthaction" @class="$options.combatControls + 'Control'">
 			<<mouthActionInit>>
 		</div>
 	<</if>>
@@ -42,21 +42,15 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "left" _targetlistarms>>
 		<</if>>
 		<<set _leftOptions to "free">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">당신의 왼팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('left')">
-			<<listbox "$lefttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span><br>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "left" _targetlistarms>>
+			<br>
 		<</if>>
 	<</if>>
 <<case "mechgrappled">>
@@ -88,7 +82,7 @@
 	<<else>>
 		<<set _leftOptions to "bound">>
 		<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">당신의 왼팔은 무력하게 묶여있다.</span>
-	<</if>><<if $combatControls is "radio">><br><</if>>
+	<</if>><<if $options.combatControls.includes("adio")>><br><</if>>
 <<case "trapped">>
 	<<set $_changetype to true>><<leftActionInitVore>>
 <<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
@@ -109,7 +103,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Machine">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="leftactionDifficulty">
 				<<leftactionDifficulty>>
 			</div>
@@ -185,21 +179,15 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistarms["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<<targetListBox "right" _targetlistarms>>
 		<</if>>
 		<<set _rightOptions to "free">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">당신의 오른팔은 자유롭다.</span>
-		<<if $combatControls is "radio" and _targetnumber gt 1>><br>
-			대상: <span onchange="actionsreplace('right')">
-			<<listbox "$righttarget" autoselect>>
-				<<optionsfrom _targetlistarms>>
-			<</listbox>>
-			</span><br>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+			<br>
+			<<targetListBox "right" _targetlistarms>>
+			<br>
 		<</if>>
 	<</if>>
 <<case "mechgrappled">>
@@ -231,7 +219,7 @@
 	<<else>>
 		<<set _rightOptions to "bound">>
 		<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">당신의 오른팔은 무력하게 묶여있다.</span>
-	<</if>><<if $combatControls is "radio">><br><</if>>
+	<</if>><<if $options.combatControls.includes("adio")>><br><</if>>
 <<case "trapped">>
 	<<set $_changetype to true>><<rightActionInitVore>>
 <<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
@@ -252,7 +240,7 @@
 		<div class="extraMargin">
 			<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Machine">>
 		</div>
-		<<if $combatControls.includes("ists")>>
+		<<if $options.combatControls.includes("ists")>>
 			<div id="rightactionDifficulty">
 				<<rightactionDifficulty>>
 			</div>
@@ -319,14 +307,10 @@
 		<<if _targetYourself is true and _targetnumber gt 1>>
 			<<set _targetlistall["당신 자신"] to "self">>
 		<</if>>
-		<<if $combatControls isnot "radio" and _targetnumber gt 1>>
+		<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
 			<<if ($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound")>>
 			<<else>>
-				대상: <span onchange="actionsreplace('feet')">
-				<<listbox "$feettarget" autoselect>>
-					<<optionsfrom _targetlistall>>
-				<</listbox>>
-				</span>
+				<<targetListBox "feet" _targetlistall>>
 			<</if>>
 		<</if>>
 		<<if $leftleg is 0 and $rightleg is 0>>
@@ -340,12 +324,9 @@
 			<<set _feetOptions to "free">>
 			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 양다리는 자유롭다.</span>
 		<</if>>
-		<<if $combatControls is "radio" and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>><br>
-			대상: <span onchange="actionsreplace('feet')">
-			<<listbox "$feettarget" autoselect>>
-				<<optionsfrom _targetlistall>>
-			<</listbox>>
-			</span>
+		<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>>
+			<br>
+			<<targetListBox "feet" _targetlistall>>
 		<</if>>
 		<<if _targetnumber is 1>>
 			<<set $feettarget to _firsttarget>>
@@ -353,7 +334,7 @@
 	<<case "mechgrappled">>
 		<<set _feetOptions to "mech">>
 		<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">당신의 양다리는 사슬로 묶여 있다.</span>
-	<<case "bound" "penis" "othervagina" "walk" "run" "none">>
+	<<case "bound" "penis" "othervagina" "walk" "run" "strut" "none">>
 		<<set $_changetype to true>><<feetActionInit>>
 	<<default>>
 		<<set $_changetype to true>><<feetActionInitTentacle>>
@@ -372,7 +353,7 @@
 			<div class="extraMargin">
 				<<generateCombatActionOthers _feetaction "feetaction" _textColor $feetaction "Machine">>
 			</div>
-			<<if $combatControls.includes("ists")>>
+			<<if $options.combatControls.includes("ists")>>
 				<div id="feetactionDifficulty">
 					<<feetactionDifficulty>>
 				</div>
@@ -438,12 +419,12 @@
 <<combatstate>>
 <<carryblock>>
 
-<<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0 and $combatControls isnot "disabled">>
+<<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0 and $options.combatControls isnot "disabled">>
 	<<generateActionsMachine>>
 <</if>>
 
 <<if $trance lte 0 and $dissociation lte 1 and $panicparalysis is 0 and $panicviolence is 0
-and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $combatControls is "disabled">>
+and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $options.combatControls is "disabled">>
 
 <<if $leftarm is 0>>
 	<br>
@@ -681,7 +662,7 @@ and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined) and $com
 <</if>>
 
 
-<<if $images is 1 and $combatimages is 1>>
+<<if $options.images is 1 and $options.combatImages is 1>>
 	<br><br>
 	<<timed 100ms>>
 		<<combatimg>>

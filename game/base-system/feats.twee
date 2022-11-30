@@ -269,7 +269,7 @@
 		legs:[],
 		feet:[]
 	}>>
-	<<set _equip to ["head","face","neck","upper","lower","under_upper","under_lower", "hands","legs","feet"]>>
+	<<set _equip to setup.clothingLayer.body>>
 	<<for _i to 0; _i lt _equip.length; _i++>>
 		<<set _slot to _equip[_i]>>
 		<<for _j to 0; _j lt setup.clothes[_slot].length; _j++>>
@@ -500,6 +500,11 @@
 		<<if $sexStats.anus.pregnancy.motherStatus is 2>>
 			<<earnFeat "Broodmother Host">>
 		<</if>>
+		<<if $sexStats.anus.pregnancy.typesSeen.length gte 14 and $sexStats.anus.pregnancy.variantsSeen.length gte 2 and $sexStats.anus.pregnancy.book is 3>>
+			<!-- typesSeen: fish, snake, slime, spider, maggot, worm, eel, wasp, bee, lurker, squid, slug, tentacle, vine -->
+			<!-- variantsSeen: pale, metal -->
+			<<earnFeat "Broodmother Zoologist">>
+		<</if>>
 		<<if $spraymax gte 7>>
 			<<earnFeat "Max Those Shots">>
 		<</if>>
@@ -537,7 +542,7 @@
 		<<if $plants_known.length gte 16>>
 			<<earnFeat "Seedy">>
 		<</if>>
-		<<if $ex_road is 1 and $ex_cream is 1 and $ex_flyover is 1>>
+		<<if $daily.ex.road is 1 and $daily.ex.cream is 1 and $daily.ex.flyover is 1>>
 			<<earnFeat "A Lewd Adventure">>
 		<</if>>
 		<<if $athletics gte 1000>>
@@ -557,6 +562,12 @@
 		<<if $sadism_level gte 4>>
 			<<earnFeat "Served Hot">>
 		<</if>>
+		<!-- ToDo: Pregnancy, remove $pregnancyTesting to properly enable -->
+		<<if $fame.sex lte 29 and $fame.prostitution lte 29 and $fame.rape lte 29 and $fame.bestiality lte 29 and $fame.exhibitionism lte 29 and ($pregnancyTesting and $fame.pregnancy lte 29)
+		and $fame.scrap gte 1000 and $fame.good gte 1000 and $fame.business gte 1000 and $fame.social gte 1000 and $fame.model gte 1000 /* and $fame.pimp gte 1000 */>>
+			<<earnFeat "Shining Reputation">>
+		<</if>>
+		<<specialClothesUpdate>>
 	<</if>>
 	<<if $money gte 100000>>
 		<<earnFeat "Pocket Change">>
@@ -592,7 +603,7 @@
 		<<earnFeat "Green Fingered">>
 	<</if>>
 
-	<<if $allure gte (7000 * $alluremod) and $outside is 1 and $moonstate is 0>>
+	<<if $baseAllure gte 7000 and $outside is 1 and $moonstate is 0>>
 		<<earnFeat "Alluring">>
 	<</if>>
 	<<if $science gte 1000 and $maths gte 1000 and $english gte 1000 and $history gte 1000>>
@@ -943,6 +954,13 @@
 			series: "",
 			filter: ["All", "Stats"],
 		},
+		"Shining Reputation":{
+			title: "빛나는 명성",
+			desc: "유명하다, 올바른 쪽으로만.",
+			difficulty: 3,
+			series: "",
+			filter: ["All", "Stats"],
+		},
 		"Social Butterfly":{
 			title: "사회적 나비",
 			desc: "당신은 모두의 관심 한가운데에 있다.",
@@ -1257,6 +1275,14 @@
 			series: "",
 			filter: ["All", "Special"],
 			hint: "Hint: 무언가 엄청난 것을 뒤에다 둔다."
+		},
+		"Broodmother Zoologist":{
+			title: "산모 동물학자",
+			desc: "기생충 노트를 전부 채웠다.",
+			difficulty: 3,
+			series: "",
+			filter: ["All", "Special"],
+			hint: "Hint: 남겨진 모든 것들을, 세심하고 자세히 적는다."
 		},
 		"Producer of Lewd Fluids":{
 			title: "애액 생산자",
@@ -1808,6 +1834,14 @@
 			hint: "Hint: 당신의 형량을 짧게 줄여라.",
 			softLockable: true,
 		},
+		"Slip Through the Backdoor":{
+			title: "뒷문으로 빠져나가다",
+			desc: "베일리의 목록을 지우고 처벌을 피했다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 깨끗이 지우고 처벌을 모면하라.",
+		},
 		"Life of the Party":{
 			title: "파티의 스타 춤꾼",
 			desc: "파티에서 댄스로 깊은 인상을 주었다.",
@@ -1887,6 +1921,24 @@
 			series: "",
 			filter: ["All", "Discoveries"],
 			hint: "Hint: 황무지에서 술을 왕창 마셔라.",
+			softLockable: true,
+		},
+		"Bewitching Echoes":{
+			title: "홀린 듯한 반응",
+			desc: "부카케 쇼 중에 광란을 일으켰다.",
+			difficulty: 1,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 악마의 쇼를 최상의 방법으로 망쳐놓아라.",
+			softLockable: true,
+		},
+		"Dark Delvings":{
+			title: "어둠의 탐구",
+			desc: "흰색 크리스탈을 얻었다.",
+			difficulty: 2,
+			series: "",
+			filter: ["All", "Discoveries"],
+			hint: "Hint: 고대 유적에 침입하라.",
 			softLockable: true,
 		},
 		"Max Those Shots":{

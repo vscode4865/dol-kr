@@ -5,7 +5,7 @@
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif wraithCanHunt() and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $season is "winter">>
@@ -200,7 +200,7 @@
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif wraithCanHunt() and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $sciencelichenknown is 1 and $sciencelichenlake isnot 1 and $scienceproject is "ongoing">>
@@ -245,7 +245,7 @@
 	<<passoutlake>>
 <<elseif $foresthunt gte 10>>
 	<<foresthunt>>
-<<elseif ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
+<<elseif wraithCanHunt() and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
 	<<if $lakeruinkey is 1>>
@@ -273,9 +273,7 @@
 <<set $lakeruinkey to 2>>
 당신은 오래된 장치가 삐걱거리며 문이 열리는 소리를 듣는다. 그 너머에는 잔해가 깔린 방에 홀로 서 있는 받침대가 있다. 그 위에는 상아로 된 목걸이가 있다. 그것은 파란색 보석으로 장식되어 있다.
 <br><br>
-<<link [[가져간다|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
-<br>
-<<link [[떠난다|Lake Ruin Deep]]>><</link>>
+<<link [[안으로 헤엄쳐 들어간다|Lake Ruin Plinth]]>><</link>>
 <br>
 
 :: Lake Ruin Sit
@@ -294,8 +292,8 @@
 <<set $corruption_slime to 1>>
 
 <<if $slime_tf is 1>>
-<<set $slime_tf to 0>>
-<<set $physicalTransform to 0>>
+	<<set $slime_tf to 0>>
+	<<set $physicalTransform to 0>>
 <</if>>
 
 <<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
@@ -304,27 +302,28 @@
 <</if>>
 
 <<if $parasite.left_ear.name is "slime">>
-<<removeparasite left_ear>>
+	<<removeparasite left_ear>>
 <</if>>
 <<if $parasite.right_ear.name is "slime">>
-<<removeparasite right_ear>>
+	<<removeparasite right_ear>>
 <</if>>
+<<set $noEarSlime to true>>
 
 <<if $tentacledisable is "f">>
 
-불빛이 희미해지고, 모든 것이 조용해진다. 그러나 당신은 존재감을 느낀다. 무언가 남아있다.
-<br><br>
+	불빛이 희미해지고, 모든 것이 조용해진다. 그러나 당신은 존재감을 느낀다. 무언가 남아있다.
+	<br><br>
 
-12개가 넘는 촉수가 대좌의 주위를 휘감아 주변에 감옥을 형성합니다.
-<br><br>
+	12개가 넘는 촉수가 대좌의 주위를 휘감아 주변에 감옥을 형성한다.
+	<br><br>
 
-<<link [[다음|Lake Ruin Sit Tentacles]]>><<set $molestationstart to 1>><</link>>
-<br>
+	<<link [[다음|Lake Ruin Sit Tentacles]]>><<set $molestationstart to 1>><</link>>
+	<br>
 
 <<else>>
 
-<<link [[다음|Lake Ruin Plinth]]>><</link>>
-<br>
+	<<link [[다음|Lake Ruin Plinth]]>><</link>>
+	<br>
 
 <</if>>
 
@@ -363,12 +362,15 @@
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
 당신은 호수 깊은 곳에 있는 유적의 대좌가 있는 작은 방에 있다.
+<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+	상아 목걸이가 그 위에 있다. 그것은 파란색 보석으로 장식되어 있다.
+<</if>>
 <<set _leave to 1>>
-<<set _bmoon to (($moonstate is "evening" and $hour gte 21) or ($moonstate is "morning" and $hour lt 6))>>
+<<set _bmoon to isBloodmoon()>>
 <<set _parasite to ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime")>>
 <<if _bmoon>>
 	/* Display these on every blood moon entry */
-	<<if $wraith and $wraith.hunt>>
+	<<if $wraith.hunt>>
 		당신은 당신을 따라오는 존재가 멈춘 것을 느낀다. <span class="blue">그것은 여기에서는 당신에게 다가올 수 없다.</span>
 		<<set $wraith.hunt to 0>><<set $foresthunt to 0>><<set $wraith.timer += 5>>
 	<</if>>
@@ -389,19 +391,13 @@
 
 	<<link [[대좌 위에 앉는다|Lake Ruin Sit]]>><</link>>
 	<br>
-<<elseif $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
-	상아 목걸이가 그 위에 있다. 그것은 파란색 보석으로 장식되어 있다.
-	<br><br>
-
-	<<link [[가져간다|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
-	<br>
 <<elseif $tentacledisable is "f" and $hallucinations gte 2 and !_bmoon>>
-	당신은 무미건조한 방을 둘러본다. 대좌 이외에는 아무것도 보이지 않지만, 희미한 미끄러지는 소리가 들린다. <span class="blue">누군가 당신을 보고 있다.</span>
+	당신은 무미건조한 방을 둘러본다. 대좌<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>와 목걸이<</if>> 이외에는 아무것도 보이지 않지만, 희미한 미끄러지는 소리가 들린다. <span class="blue">누군가 당신을 보고 있다.</span>
 	<br><br>
 
 	<<link [[수색한다|Lake Ruin Deep Offer]]>><<loxygen>><</link>>
 	<br>
-<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1>>
+<<elseif $tentacledisable is "f" and _bmoon and $phase isnot 1 and $museumAntiques.antiques.antiqueivorynecklace isnot "notFound">>
 	<<set _leave to 0>>
 	<br><br>
 	당신은 당신 주위의 물이 움직이는 것을 느끼고, 당신이 주위를 둘러보는 동안 점점 빨라지는 것을 느낀다. 어둠 속에서, 붉은 달빛에 의해 옅게 비추는 가운데, 촉수들이 뻗어나온다. <span class="red">그것들 중 둘은 당신의 발목을 감싸고, 당신을 방 안으로 더 깊게 잡아당기기 시작한다!</span>
@@ -411,7 +407,7 @@
 	<br>
 	<<link [[탈출한다|Lake Ruin Deep Consentacles Leave]]>><<loxygen>><</link>><<swimmingdifficulty 600 1200>>
 	<br>
-<<elseif _bmoon and ($phase is 1 or $tentacledisable isnot "f")>>
+<<elseif _bmoon>>
 	당신 주위의 물은 으스스하게 조용하고, 죽은 듯이 고요하며, 방은 붉은 빛 안에서 겨우 밝혀져 있다.
 	<br><br>
 <<else>>
@@ -419,6 +415,10 @@
 	<br><br>
 <</if>>
 <<if _leave>>
+	<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+		<<link [[목걸이를 가져간다|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
+		<br>
+	<</if>>
 	<<link [[떠난다|Lake Ruin Deep]]>><<set $phase to 0>><</link>>
 	<br>
 <</if>>
@@ -427,11 +427,11 @@
 <<effects>>
 당신은 그 목걸이를 대좌에서 들어올린다. 그 제작솜씨는 거장다웠고, 누군가에게는 이것이 대단한 의미를 가진다는 것을 느낀다.
 <br><br>
-<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
-	당신은 갑자기 당신 주위의 벽들이 쿵쾅거리는 소리를 듣는다. <<if $wraith and $wraith.seen gte 1>>익숙한<<else>>낯설은<</if>> 목소리가 비명지르며, 무엇인가가 당신의 팔과 다리를 잡은 것 같은 느낌이 든다. 당신은 본능적으로 팔다리를 마구 흔들며 당신 자신을 물 속으로 다시 집어넣는다. <<trauma 12>><<ggtrauma>>
+<<if isBloodmoon()>>
+	당신은 갑자기 당신 주위의 벽들이 쿵쾅거리는 소리를 듣는다. <<if $wraith.seen gte 1>>익숙한<<else>>낯설은<</if>> 목소리가 비명지르며, 무엇인가가 당신의 팔과 다리를 잡은 것 같은 느낌이 든다. 당신은 본능적으로 팔다리를 마구 흔들며 물 속으로 다시 들어간다. <<trauma 12>><<ggtrauma>>
 	<br><br>
 	그것은 당신을 겁먹게 하고, 잠시 후 멈춘다.
-	<<if $wraith and $wraith.hunt>>
+	<<if $wraith.hunt>>
 		그 두려움은 서서히 가셨고, 당신은 더이상 당신을 사냥하는 존재를 느낄 수가 없다. <span class="blue"><i>당신은 다음 붉은 달까지 안전하다.</i></span>
 		<br><br>
 	<</if>>
@@ -441,7 +441,7 @@
 		<<set $wraithSkip to true>>
 	<</if>>
 	<<tearful>> 당신은 방을 나간다.
-<<elseif $wraith and $wraith.state isnot "">>
+<<elseif $wraith.state>>
 	당신이 파란 보석에 비친 당신의 모습을 보며 두려움이 찌르르 솟아오르는 것을 느낀다. 당신은 창백해 보인다. <<stress 6>><<gstress>>
 	<br><br>
 	당신은 더 머물러 있지 않기로 결정하고, 목걸이를 손에 쥐고 방을 나간다.
@@ -467,6 +467,9 @@
 :: Lake Ruin Deep Offer 2
 
 <<set $outside to 0>><<set $location to "lake_ruin">><<underwater>><<effects>><<lakeeffects>>
+<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
+	당신은 조심조심 목걸이를 옆으로 밀어제친다.
+<</if>>
 <<if $exposed gte 2>>
 	팔과 다리를 벌리고 방에 있는 물건에 몸을 보여준다. <<deviancy4>>
 <<else>>
@@ -792,8 +795,9 @@
 <<set $worn.genitals.origin to "Underwater Temple">>
 
 <<link [[항아리들을 탐색한다|Lake Pots]]>><<wateraction>><<clotheson>><</link>><<loxygen>>
-	<br>
+<br>
 <<link [[밖으로 헤엄친다|Lake Ruin]]>><<wateraction>><<clotheson>><</link>><<loxygen>>
+<br>
 
 :: Lake Lichen
 
@@ -826,7 +830,7 @@
 		더 많은 팔들이 당신 주위를 기어다닌다.
 	<</if>>
 	<br><br>
-	<<if $wraith.state is "haunt" and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+	<<if $wraith.state is "haunt" and isBloodmoon()>>
 		<<link [[다음|Wraith Caught]]>><<set $wraith.exit to "lake_ruin">><</link>>
 	<<else>>
 		<<link [[다음|Wraith Underwater Rape]]>><<set $molestationstart to 1>><</link>>
@@ -950,7 +954,7 @@
 	<<set $combat to 1>>
 
 	<<set $enemytype to "swarm">>
-	<<if $slimedisable is "f" and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>
+	<<if $slimedisable is "f" and isBloodmoon()>>
 		<<swarminit "pale slimes" "slime mass" "moving towards you" "encircle you" "fend off" 8 0>>
 	<<else>>
 		<<swarminit "fish" "swarm" "moving towards you" "encircle you" "fend off" 1 7>>
@@ -997,7 +1001,7 @@
 	<<endcombat>>
 	<<passoutlake>>
 <<else>>
-	<<tearful>> 당신은 <<if $slimedisable is "f" and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6)>>유령 슬라임<<else>>물고기<</if>> 떼에게서 탈출한다. 그들은 더 이상 쫒아오지 않는다.
+	<<tearful>> 당신은 <<if $slimedisable is "f" and isBloodmoon()>>유령 슬라임<<else>>물고기<</if>> 떼에게서 탈출한다. 그들은 더 이상 쫒아오지 않는다.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>

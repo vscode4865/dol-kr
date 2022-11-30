@@ -90,44 +90,64 @@
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
+<<widget "bottomasidePost">><<silently>>
+<<if $worn.over_lower.exposed lte 1>>
+	<<trClothes "over_lower" $worn.over_lower.name "name" _args[0] _args[1]>>
+<<elseif $worn.lower.exposed lte 1>>
+	<<trClothes "lower" $worn.lower.name "name" _args[0] _args[1]>>
+<<elseif $worn.under_lower.exposed is 0>>
+	<<set _text_output to $worn.under_lower.name>>
+	<<trClothes "under_lower" $worn.under_lower.name "name" _args[0] _args[1]>>
+<<else>>
+	<<bottomPost _args[0] _args[1]>>
+<</if>>
+<</silently>>_text_output<</widget>>
+
+
 <<widget "outfitPost">><<silently>>
 	<<outfitChecks>>
 	<<if _middleOutfit>>
         <<trClothes "upper" $worn.upper.name "name" _args[0] _args[1]>>
         <<set $stripset to 1>>
-    <<else>>
-        <<trClothes "upper" $worn.upper.name "name" "과">>
-        <<set _trTemp1 to _trResult>>
-        <<trClothes "lower" $worn.lower.name "name" _args[0] _args[1]>>
-        <<set _trResult to _trTemp1 + " " + _trResult>>
+	<<else>>
+/* text.twee의 outfit 위젯은 다음과 같이 바뀌었는데 현 번역 시스템상에서 이 방법을 적용하기 어려움.
+	 만약 더 좋은 방법이 있다면 그에 맞게 수정할 것.
+		<<set $_clothes to [$worn.upper.name, $worn.lower.name].filter(a => a !== "naked")>>
+		<<set _text_output to $_clothes.formatList()>>
+*/
+		<<set $_clothes to []>>
+		<<if $worn.upper.name neq "naked">>
+			<<trClothes "upper" $worn.upper.name "name">>
+			<<set $_clothes.push(_trResult)>>
+		<</if>>
+		<<if $worn.lower.name neq "naked">>
+			<<trClothes "lower" $worn.lower.name "name">>
+			<<set $_clothes.push(_trResult)>>
+		<</if>>
+		<<set _trResult to $_clothes.formatList()>>
+		<<if _args[0]>>
+			<<trPost _postNum _args[0] _args[1]>>
+		<</if>>
         <<set $stripset to 0>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "underoutfitPost">><<silently>>
-<<outfitChecks>>
-<<if _underOutfit>>
-	<<trClothes "under_upper" $worn.under_upper.name "name" _args[0] _args[1]>>
-<<elseif $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-	<<breastsPost "과">>
-	<<set _trTemp1 to _trResult>>
-	<<genitalsPost _args[0] _args[1]>>
-	<<set _trResult to _trTemp1 + " " + _trResult>>
-<<elseif $worn.under_lower.name is "naked">>
-	<<genitals _args[0] _args[1]>>
-	<<set _trTemp1 to _trResult>>
-	<<trClothes "under_upper" $worn.under_upper.name "name" "과">>
-    <<set _trResult to _trResult + " " + _trTemp1>>
-<<elseif $worn.under_upper.name is "naked">>
-	<<breastsPost "과">>
-	<<set _trTemp1 to _trResult>>
-	<<trClothes "under_lower" $worn.under_lower.name "name" _args[0] _args[1]>>
-    <<set _trResult to _trTemp1 + " " + _trResult>>
-<<else>>
-	<<trClothes "under_upper" $worn.under_upper.name "name" "과">><<set _trTemp1 to _trResult>>
-    <<trClothes "under_lower" $worn.under_lower.name "name" _args[0] _args[1]>>
-    <<set _trResult to _trTemp1 + " " + _trResult>>
-<</if>>
+	<<outfitChecks>>
+	<<undiesPost _args[0] "sep">><<set $_secondhalf to _trResult>><<set $_secondhalfPost to _trPost>>
+	<<undertopPost _args[0] "sep">>
+	<!-- _text_output now has top (either worn under_upper name, or breasts desc) -->
+
+	<<if !_underOutfit>> <!-- Two separate items, not an outfit -->
+		<<getPostNum _trResult>><<trPost _postNum "과">><<set _trResult += " " + $_secondhalf>>
+		<<if _args[1] eq "sep">>
+			<<set _trPost to $_secondhalfPost>>
+		<<else>>
+			<<set _trResult += $_secondhalfPost>>
+		<</if>>
+	<<elseif _args[1] neq "sep">>
+		<<set _trResult += _trPost>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "lewdnessPost">><<silently>>

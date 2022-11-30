@@ -102,7 +102,7 @@
 		<br><br>
 
 		<<if $promiscuity gte 55 and $submissive gte 1900>>
-			<<link [["기꺼이 응한다"|Forest Slime Pair Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
+			<<link [[기꺼이 응한다|Forest Slime Pair Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 			<br>
 		<</if>>
 		<<link [[복종한다|Forest Slime Pair Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
@@ -239,7 +239,7 @@
 
 
 <<widget "eventforest">>
-<<if $foresthunt lte 0 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and ($wraith.hunt or $wraith.timer gte random(0, 40))>>
+<<if $foresthunt lte 0 and wraithCanHunt() and $wraith.state and ($wraith.hunt or $wraith.timer gte random(0, 40))>>
 	<<wHunt "forest">>
 <<else>>
 	<<cleareventpool>>
@@ -263,6 +263,7 @@
 		<</addinlineevent>>
 	<</if>>
 	<<addevent "forestwolfspy" 0.25>>
+	<<addevent "forestboar" 0.20>>
 	<<addinlineevent "forest_wolf" 0.33>>
 		<<beastNEWinit 1 wolf>>
 		<!-- Modified for monster people -->
@@ -299,7 +300,7 @@
 
 
 <<widget "eventforestdeep">>
-<<if $foresthunt lte 0 and ($moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 5) and $wraith and $wraith.state isnot "" and ($wraith.hunt or $wraith.timer gte random(0, 20))>>
+<<if $foresthunt lte 0 and wraithCanHunt() and $wraith.state and ($wraith.hunt or $wraith.timer gte random(0, 20))>>
 	<<wHunt "forest">>
 <<else>>
 	<<cleareventpool>>
@@ -453,6 +454,9 @@
 		<br>
 	<</addinlineevent>>
 <</if>>
+<<if $halloween is 1 and $monthday is 31 and !$halloween_lake>>
+	<<addevent "halloween_lake_invite" 1000>>
+<</if>>
 <<runeventpool>>
 
 <</widget>>
@@ -502,7 +506,7 @@
 	<br><br>
 
 	<<if $deviancy gte 55 and $submissive gte 1900>>
-		<<link [["기꺼이 응한다"|Forest Slime Wolf Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<deviant4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
+		<<link [[기꺼이 응한다|Forest Slime Wolf Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<deviant4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 		<br>
 	<</if>>
 	<<link [[복종한다|Forest Slime Wolf Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
@@ -587,6 +591,29 @@
 <<link [[다음|Forest Snake]]>><<set $molestationstart to 1>><</link>>
 <br>
 
+<</widget>>
+
+<<widget "forestboar">>
+<<beastNEWinit 1 boar>><<person1>>
+당신은 나뭇가지가 부러지는 소리, 그 다음에는 나뭇잎이 바스락거리는 소리, 그리고 킁킁대는 소리를 듣는다. <<beasttypePost>> 하나가 빠르게 다가온다.
+<br><br>
+<<if $monster is 1>>
+	<<bHe_ ga>> 양치식물을 흐트러뜨리며, 속도를 줄이지 않고 달려온다. "내 영역," <<bhe_ ga>> 꿀꿀거리며, 궤도를 바꿔 속도를 올린다. "무단침입자!" <<bHe_ ga>> 당신을 향해 똑바로 돌진해 온다!
+<<else>>
+	<<bHe_ ga>> 양치식물을 흐트러뜨리며, 속도를 줄이지 않고 달려온다. <<bHe_ ga>> 궤도를 바꿔 속도를 올리며, 당신을 향해 똑바로 돌진해 온다!
+<</if>>
+<br><br>
+<<if $bestialitydisable is "f" or $monster is 1>>
+	<<link [[대비한다|Forest Boar Brace]]>><</link>>
+	<br>
+	<<link [[피한다|Forest Boar Dodge]]>><</link>><<dancedifficulty 1 600>>
+	<br>
+<<else>>
+	당신은 그 생물의 진로에서 펄쩍 뛰어, 피해보지만 가시덩굴 안에 착지한다. 그 생물은 당신을 개의치 않고, 숲 속으로 달려간다.<<beastescape>>
+	<br><br>
+	<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
 <</widget>>
 
 
@@ -753,7 +780,7 @@
 
 <<widget "foresthunt">>
 <<set $foresthunt to 0>>
-<<if $wraith and $wraith.hunt>>
+<<if $wraith.hunt>>
 	<<set $wraith.hunt to 0>>
 	<<if $location is "forest">>
 		<<set $wraith.exit to "forest">>
@@ -804,7 +831,7 @@
 	<</if>>
 <<else>>
 	<<rngWraith 2 "night">>
-	<<if $wraith and _wraithEvent and ($wraith.state is "haunt" or $wraith.offspring is "dead") and $syndromeeden is 1>>
+	<<if _wraithEvent and ($wraith.state is "haunt" or $wraith.offspring is "dead") and $syndromeeden is 1>>
 
 		<<set $wraith.mimic to "Eden">><<npc Eden>><<person1>>무언가가 휙 지나가선 당신 앞에 있는 나무에 부딪힌다. 당신은 당신의 팔로 당신의 얼굴을 가리고 뒤로 비틀거린다. 무언가가 당신의 등을 누르고, 당신은 <<personsimple_ yi>> 목소리를 듣는다. "지금 내가 널 잡았어. 저항하지마."
 		<br><br>
@@ -871,12 +898,6 @@
 					당신은 나뭇가지를 밟는다. 당신이 거의 방심한 순간 로프가 당신의 다리를 옭아매기 시작한다. <span class="green">당신은 그곳에서 뛰처나온다.</span> 그러나 얼마 지나지 않아 당신은 나무에 매달린다.
 					<br><br>
 					"너무 가까워." 외치는 목소리가 들린다. 에덴이다. "그 덫은 짐승을 잡기 위한 거야. 가는 길을 잘 살펴봐야지."
-					<br><br>
-
-					<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><</link>>
-					<br>
-					<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-					<br>
 				<<else>>
 					<<npc Eden>><<person1>>
 					당신은 나뭇가지를 밟는다. 당신이 거의 방심한 순간 로프가 당신의 다리를 옭아매, 공중으로 들어올린다. 밧줄은 당신을 거꾸로 뒤집고, 나무에 매단다.<<gstress>><<stress 6>>
@@ -884,44 +905,25 @@
 					당신은 스스로 밧줄을 풀기 위해 손을 뻗으나, 누군가 지켜보는 걸 알아차린다. 에덴이다.
 					<br><br>
 					"그 덫은 짐승을 잡기 위한거야." <<hePost "이">> 말한다. "가는 길을 잘 살펴봐야지." <<HePost "은">> 당신을 팔에 두고 매듭을 푼다. <<hePost "은">> 조심스럽게 당신을 땅에 내려놓는다.
-					<br><br>
-
-					<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><</link>>
-					<br>
-					<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-					<br>
 				<</if>>
 			<<else>>
 				<<npc Eden>><<person1>>
 				당신은 나뭇잎이 바스락거리는 소리를 듣는다. 사슴이 근처의 덤불에서 뛰어오르고, 그 뒤에 에덴이 있다. 그러나 <<he_ nun>> 추적을 멈추고 당신을 본다.
 				<br><br>
 				"난 거의 널 못 봤어." <<hePost "이">> 말한다. "넌 오두막으로 돌아가야 해. 거긴 안전하잖아."
-				<br><br>
-				<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><</link>>
-				<br>
-				<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-				<br>
 			<</if>>
 		<<else>>
 			<<if $rng gte 51>>
 				<<npc Eden>><<person1>>
 				빛이 당신의 눈에서 번쩍이고, 시야를 차단한다. 당신은 팔을 올려 얼굴을 가린다. "젠장, 아무것도 안 보여." 한 목소리가 말한다. 에덴이다. <<HePost "이">> 횃불로 당신을 가리키고 있다. "이 시간에 밖에서 뭐하는 거야?"
-				<br><br>
-				<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><</link>>
-				<br>
-				<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-				<br>
 			<<else>>
 				<<npc Eden>><<person1>>팔이 뒤에서 당신의 목을 감싼다. 동시에 손이 당신의 뒷머리를 누른다. 당신이 몸부림치자, 범인이 당신을 풀어준다. "미안" 한 목소리가 말한다. 에덴이다. "단지 널 확인하고 싶었어. 왜 그렇게 무서워하는 거야?"
-
-				<br><br>
-
-				<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><</link>>
-				<br>
-				<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
-				<br>
 			<</if>>
 		<</if>>
+
+		<br><br>
+
+		<<forestCabinReturnLinks>>
 	<<else>>
 	<<npc Eden>><<person1>>총알이 휙하고 지나, 당신 앞의 나무에 박힌다. 당신은 팔로 얼굴을 가리며 비틀거린다. 차갑고 딱딱한 물체가 당신의 등에 닿는다. 당신은 <<personsimple_ yi>> 목소리를 듣는다. "내가 지금 널 잡은 거야. 저항하지 마."
 	<br><br>
@@ -1094,7 +1096,7 @@
 	<<if _forest_item is 1>>
 		당신은 공터 끝자락, 아주 오래된 나무의 둥치에서 난초를 발견했다.
 	<<else>>
-		<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+		<<if isBloodmoon()>>
 			<span class="red">붉은 줄무늬가 있는</span> 레몬이 작은 나무들에서 자라나 있다.
 		<<else>>
 			레몬이 작은 나무들에서 자라나 있다.
@@ -1188,7 +1190,7 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 		<</if>>
 	<<else>>
 		<<if currentSkillValue('tending') gte 200>>
-			<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+			<<if isBloodmoon()>>
 				<<icon "tending/lemon.png">> <<link [[레몬을 딴다 (0:20)|Forest Blood Lemon Pick]]>><<pass 20>><</link>><<tendingdifficulty 200 500>>
 				<br>
 			<<else>>
@@ -1209,4 +1211,162 @@ or $lowerwetstage gte 3 and $underlowerwetstage gte 3>>
 
 <<widget "gwylanitem">>
 	<<print either("트로피","야구공","야구 방망이","스노우 글로브","마법의 8번 당구공","탁구채","체스 세트","돼지저금통","머그컵","쿠키 상자","프라이팬","효자손","연필통","도시락 상자","용암 램프","손전등","뻐꾸기 시계","루빅스 큐브","지구본","물총","사전","손거울","싸구려 카메라","조개껍데기가 꽉찬 집락 비닐백","작은 발판사다리","어디 쓰이는지 모를 골동품")>> <<set _trResult to "하나">><<trPost 1 _args[0]>>_trResult
+<</widget>>
+
+<<widget "slimePunishmentForest">>
+	슬라임이 당신이 반항한 것에 대해 벌을 주며 당신은 강한 고통을 느낀다.
+	<<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+<</widget>>
+
+<<widget "forestRescueSetup">>
+	<<set $_eden_available to (isLoveInterest("Eden") and (random(1, 2) is 2 or $eden_rescue isnot 1))>>
+	<<if $_eden_available or $forest lte 20>>
+		<<if $_eden_available and $forest lte 20>>
+			<<set $rescue to 2>>
+		<<else>>
+			<<enable_rescue>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "forestRescueFail">>
+	<<if $gwylan_rescue is 1>>
+		<span class="red">당신이 너무 깊은 숲 속에 있어서 그윌란은 당신의 소리를 들을 수 없<<if _args[0] isnot "hunter" and isLoveInterest("Eden")>>고, 에덴은 이 구역에 올 수 없<</if>>다.</span>
+	<<else>>
+		<span class="red">당신이 마을에서 너무 멀리 떨어진 곳에 있어서 누구도 당신의 소리를 들을 수 없<<if _args[0] isnot "hunter" and isLoveInterest("Eden")>>고, 에덴은 이 구역에 올 수 없<</if>>다.</span>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueFail">>
+	<!-- Note: This widget was initially designed to expect ONE argument which is ONLY either "wolf" or "hunter"; If you want to use it for other animals, you will need to edit this widget. -->
+	<<set $_gwylan_abort_value to (_args[0] is "wolf" ? 2 : 1)>>
+
+	<<if $forest lte 20 and $gwylan_aborted isnot $_gwylan_abort_value>>
+		<<set $gwylan_aborted to $_gwylan_abort_value>>
+		<<set $rescue to 0>>
+		<<set $_assailant to (_args[0] is "wolf" ? "늑대" : "가해자")>> <!-- If you want to use this widget for other animals, change this -->
+		당신은 당신의 고함소리에 놀란 <<if $forest_shop_intro is 1 or $gwylan_rescue is 1>>그윌란이<<else>>칙칙한 갈색머리의 <<nnpc_gendery_ ga "Gwylan">><</if>> 나무줄기를 헤치고 뛰어 나오는 것을 본다.
+		<<nnpc_He_ nun "Gwylan">> 그  $_assailant를 한번 보고는, <span class="red">돌아서서 도망친다.</span>
+		<br><br>
+	<<elseif $forest gt 20>>
+		<<forestRescueFail _args[0]>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApology">>
+	<<if $gwylan_aborted is 3>>
+		<<nnpc_He_ nun "Gwylan">> 걱정스럽게 당신을 훑어본다. "괜찮아? 너는 조금 창백해 보이고, 내가 저번 밤에 네 비명소리를 들었던 것 같은데..."
+	<<else>>
+		<<nnpc_He_ nun "Gwylan">> 당신의 시선을 피한다. <<gwylanRescueApologySpeech>>
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApologyShop">>
+	<<if $gwylan_aborted is 3>>
+		<<if _args[0] is "Intro">>
+			<<nnpc_He_ nun "Gwylan">> 걱정스럽게 당신을 훑어본다.
+		<<else>>
+			"어이," 당신이 들어오자 그윌란이 말한다. <<nnpc_He_ nun "Gwylan">> 걱정스러워 보인다.
+		<</if>>
+		"괜찮아? 너는 조금 창백해 보이고, 내가 저번 밤에 네 비명소리를 들었던 것 같은데..."
+	<<else>>
+		<<if _args[0] is "Robin">>
+			<<nnpc_He_ nun "Gwylan">> 미안해하는 웃음을 지으며 당신에게 돌아선다. <<gwylanRescueApologySpeech "btw">>
+		<<elseif _args[0] is "Intro">>
+			<<nnpc_He_ nun "Gwylan">> <<nnpc_his_ yi "Gwylan">> 목 뒤를 문지른다. <<gwylanRescueApologySpeech "btw">>
+		<<else>>
+			"어이," 당신이 들어오자 그윌란이 말한다. <<gwylanRescueApologySpeech>>
+		<</if>>
+	<</if>>
+
+	<<if _args[0] is "Robin">>
+		로빈은 눈을 깜박이지만, 그것에 대해 물어보지 않는다.
+	<</if>>
+<</widget>>
+
+<<widget "gwylanRescueApologySpeech">>
+	<<if _args[0] is "btw">>
+		"그나저나, 전에 너를 구해주지 못한 건 미안하지만, 나는
+	<<else>>
+		"전에 너를 구해주지 못한 건 미안하지만, 나는
+	<</if>>
+	<<if $gwylan_aborted is 1 and $gwylan_eden_coop gte 1>>
+		에덴을 건드리지는 않을 거야. <<nnpc_He_ nun "Eden">> 여전히 날 두렵게 하거든.."
+	<<elseif $gwylan_aborted is 1>>
+		그 <<nnpc_title_ ul "Eden">> 건드리지는 않을 거야. <<nnpc_He_ nun "Eden">> 숲에서 가장 무서운 존재거든."
+	<<elseif $gwylan_aborted is 2>>
+		난 우두머리를 건드리지는 않을 거야. 나는 무리 전체가 내 가게의 문을 부수는 건 바라지 않거든."
+	<</if>>
+<</widget>>
+
+<<widget "gwylanForestRescue">>
+	<<set _gwylanKnown to ($forest_shop_intro is 1 or $gwylan_rescue is 1)>>
+
+	<<switch _args[0]>>
+		<<case "beast">> <<beasttype_ un>> 으르렁거리지만, 날아온 ?gwylanItem에 얼굴을 맞는다. <<bHe_ nun>> 낑낑거리며, 놀라서 주위를 둘러본다. <<if $monster is 1>>"인간의 공격! 인간 어디?!"<</if>>
+		<<case "river">> <<beasttype_ un>> 쉬익거리지만, 날아온 ?gwylanItem에 얼굴을 맞는다. <<bHe_ nun>> 놀라서 주위를 둘러본다.
+		<<case "man">> <<person1>><<person_ i>> 당신에게 달려들려 하지만, 그 순간 ?gwylanItem?i <<his_ yi>> 얼굴에 날아와 멈춘다. <<person2>><<person_ i>> 흘깃 쳐다보지만, <<his_ yi>> 얼굴에도 ?gwylanItem?i 날아온다.
+	<</switch>>
+	<br><br>
+
+	"어이!" <<if _gwylanKnown>>그윌란이<<else>>한 <<nnpc_gendery_ ga "Gwylan">><</if>>  나무 줄기 너머에서 소리를 지른다.
+	<<set $_theboy to (_gwylanKnown ? "그윌란이" : "그 " + _trResult)>> <!-- This _text_output comes from the nnpc_gendery call one line above. Do not move this line without accounting for that. -->
+	<<switch _args[0]>>
+		<<case "beast">> "훠이!" <<nnpc_He_ nun "Gwylan">> ?gwylanItem?ul 던져, 옆에 있는 <<beasttype_ ul>> 맞춘다. <<bHe_ nun>> <<bhis_ yi>> 꼬리를 <<bhis_ yi>> 다리 사이에 말고, 허둥지둥 달아난다.
+		<<case "river">> "훠이!" <<nnpc_He_ nun "Gwylan">> ?gwylanItem?ul 던져, 옆에 있는 <<beasttype_ ul>> 맞춘다. <<bHe_ nun>> 거품이 이는 물 속으로 다시 잠수한다.
+		<<case "man">> "<<phimPost>>에게서 떨어져. 나는 던질 만한 것을 더 가지고 있어." 그 말을 증명이라도 하려는 듯, <<nnpc_he_ nun "Gwylan">> 다시 ?gwylanItem?ul 던져, 다시 <<person1>><<person_ yi>> 얼굴에 맞춘다. 두 사람은 서로를 힐끗 쳐다보고는, 돌아서서 도망간다.
+	<</switch>>
+	<br><br>
+
+	<<set $pronoun to $NPCName[$NPCNameList.indexOf("Gwylan")].pronoun>>
+	<<switch _args[0]>>
+		<<case "beast">> "맹세하건대 녀석들은 매일 더 공격적으로 변할 거야."," $_theboy 중얼거린다.
+		<<case "river">> "강은 점점 더 위험해질 거야," $_theboy 중얼거린다.
+		<<case "man">> "저들이 내 손님이 아니었으면 좋겠군," $_theboy 중얼거린다. "뭐, 어쨌든 나도 저들의 돈은 원하지 않아."
+	<</switch>>
+	<<He_ ga>> 나무 줄기에서 나와, 당신을 향해 다가온다. "괜찮니? 내가 근처에 있어서 다행이었구나."
+	<<if _args[0] is "river">><<He_ ga>> 당신의 팔을 잡고 당신을 물 밖으로 끌어낸다.<</if>>
+
+	<<if !_gwylanKnown>>
+		<br><br>
+
+		<<He_ nun>> 당신 나이쯤 되어 보이고, 칙칙한 갈색 머리에 주근깨가 있다. "나는 보기보다 나이가 많단다," <<he_ nun>> 마치 당신의 마음을 읽는 것처럼 말한다. "나는 그윌란이라고 해. 만나서 반가워."
+		<br><br>
+
+		"나는 숲 변두리에 가게를 하나 가지고 있는데," <<he_ ga>> 말한다. "너도 쉽게 찾을거야. 나는 장사를 하고 있는데-" <<he_ nun>> 잠시 멈칫한다. "우리 <<if $pronoun is "m">>할아버지가<<else>>할머니가<</if>> 장사를 하고 있는데-" 다시 한번 말을 멈춘다. "나는 거기서 잡동사니를 팔고 있어. 일반적인 상점에서는 찾아볼 수 없는 물건들이지. 심지어 나조차도 어떤 재고가 있는지 모른단다!" <<He_ nun>> 자랑스러운 듯 말한다.
+	<<elseif $gwylan_aborted gte 1>>
+		<<gwylanRescueApology>>
+	<</if>>
+	<br><br>
+
+	<<if $gwylan_eden_coop gte 1 and $gwylan_aborted is 0>>
+		<<He_ nun>> 무언가를 기다리는 듯, 잠시 주위를 둘러본다. "이상하네," 하고 <<he_ nun>> 혼잣말처럼 말한다. "<<nnpc_titlePost "Eden">>도 여기에 있을 줄 알았는데. 바쁜가 보네. 뭐 어때."
+		<br><br>
+	<</if>>
+
+	<<if $gwylan_rescue isnot 1>>
+		<<set $gwylan_rescue to 1>>
+		<<He_ nun>> 걸어가기 시작하다가, 걸음을 멈추고 돌아선다. "그건 그렇고," <<he_ ga>> 말한다. "네가 내 가게와 충분히 가까이 있었기 때문에 너를 구할 수 있었어. <span class="gold">네가 호수의 시작점보다 더 멀리 간다면, 나는 네 소리를 들을 수 없을거야.</span> 명심해."
+		<br><br>
+	<</if>>
+	<<He_ nun>> <<his_ yi>> 물건들을 챙긴 다음, <<his_ yi>> 가게 쪽으로 걸어간다.
+	<br><br>
+
+	<<clotheson>><<set $gwylan_aborted to 0>>
+	<<endcombat>>
+
+	<<if _args[1] is "slime">>
+		<<slimePunishmentForest>>
+		<br><br>
+	<</if>>
+
+	<<link [[다음|Forest]]>><<set $eventskip to 1>><</link>>
+<</widget>>
+
+<<widget "forestCabinReturnLinks">>
+	<<link [[오두막으로 돌아간다 (0:30)|Forest Cabin Return]]>><<pass 30>><<endevent>><</link>>
+	<br>
+	<<link [[작별인사를 한다|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
 <</widget>>

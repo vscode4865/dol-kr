@@ -6,6 +6,7 @@
 		<<set $time -= 1440>><<set $days += 1>><<set $weekday += 1>>
 		<<if $weekday gte 8>><<set $weekday -= 7>><<week>><</if>>
 		<<print "<<if $"+"o"+"bj"+"ec"+"t"+"Ve"+"rs"+"io"+"n"+".t"+"es"+"t isnot undefined>><<set $"+"f"+"e"+"at"+"s."+"lo"+"c"+"k"+"e"+"d to true>><</if>>">>
+		<<time>>
 		<<day>>
 		<<set $physiquechange to 1>>
 	<</if>>
@@ -20,20 +21,19 @@
 
 <<if $squidcount is 1>>
 	<span class="purple">당신은 오징어가 당신의 <<genitals_ rul>> 희롱하는 것을 느낀다.</span>
-	<<garousal>><<genitalarousal 100>>
+	<<garousal>><<arousal 100 "genitals">>
 <<elseif $squidcount is 2>>
 	<span class="purple">당신은 오징어들이 당신의 <<genitals_ wa>> 가슴을 희롱하는 것을 느낀다.</span>
-	<<garousal>><<breastarousal 100>><<genitalarousal 100>>
+	<<garousal>><<arousal 100 "breasts">><<arousal 100 "genitals">>
 <<elseif $squidcount is 3>>
 	<span class="purple">당신은 오징어들이 당신의 <<genitals_ wa>> <<breasts_ rul>> 희롱하는 것을 느낀다.</span>
-	<<garousal>><<breastarousal 100>><<genitalarousal 200>>
+	<<garousal>><<arousal 200 "breasts">><<arousal 100 "genitals">>
 <<elseif $squidcount is 4>>
 	<span class="purple">당신은 오징어들이 당신의 <<genitalsPost>>, <<breasts_ wa>>, <<bottom_ ul>> 희롱하는 것을 느낀다.</span>
-	<<garousal>><<breastarousal 200>><<genitalarousal 200>>
+	<<garousal>><<arousal 200 "breasts">><<arousal 100 "genitals">><<arousal 100 "bottom">>
 <<elseif $squidcount gte 5>>
 	<span class="purple">당신은 오징어들이 당신의 <<genitalsPost>>, <<breastsPost>>, <<bottom_ gwa>>, 당신 몸의 다른 부분들을 희롱하는 것을 느낀다.</span>
-	<<garousal>><<breastarousal 200>><<genitalarousal 300>><<set _arousal to ($squidcount * 5 * $genitalsensitivity) + ($squidcount * 5 * $breastsensitivity)>>
-	<<arousal _arousal>>
+	<<garousal>><<arousal ($squidcount * 40) "breasts">><<arousal ($squidcount * 30) "genitals">><<arousal ($squidcount * 30) "bottom">>
 <</if>>
 
 <<if !$worn.upper.type.includes("naked") and !waterproofCheck($worn.upper)>>
@@ -188,6 +188,9 @@
 	<<unset $makeupWashed>>
 	<span class="teal">당신의 화장은 씻겨<<if $beauty gte ($beautymax / 7) * 4>> 내려가 당신의 본래 미모를 드러낸다<<else>>져 있다<</if>>.</span><br>
 <</if>>
+<<if $makeup.mascara and $makeup.mascara_running lt painToTearsLvl($pain) and !$makeup.mascara.includes("waterproof")>>
+	<<set $makeup.mascara_running to painToTearsLvl($pain)>>
+<</if>>
 <</widget>>
 
 <<widget "effects">>
@@ -282,8 +285,33 @@
 		<<flashbackschool>>
 	<</if>>
 <</if>>
-
+<<if $sexStats.vagina.pregnancy && $sexStats.vagina.pregnancy.waterBreaking>>
+	<span class="red">당신의 양수가 터졌다. 당신은 병원으로 가야만 한다, 당장!</span><<ggstress>>
+<</if>>
 <<if $effectsmessage is 1>><<set $effectsmessage to 0>>
+	<<if $recovered_from_pregnancy>>
+		<<unset $recovered_from_pregnancy>>
+		<span class="green">당신은 자궁에 익숙한 비어있는 느낌이 돌아온 것을 느낀다.</span>
+	<</if>>
+	<<if $hypnosis_deviancy_message is 1>>
+		<<unset $hypnosis_deviancy_message>>
+		<<hypnosisicon>>
+		당신은 어제 별로 이상성욕적이지 않았다.
+		<<switch $hypnosis_traits.deviancy>>
+		<<case 1>>
+			그 생각은 당신을 <span class="lblue">수치스러움</span>으로 채운다.
+		<<case 2>>
+			그 생각은 당신을 <span class="blue">후회</span>로 채운다.
+		<<case 3>>
+			그 생각은 당신을 <span class="purple">죄책감</span>으로 채운다.
+		<<case 4>>
+			그 생각은 당신을 <span class="pink">극심한 죄책감</span>으로 채운다.
+		<<case 5>>
+			그 생각은 당신의 마음에 <span class="red">죄책감과 불안감으로 소용돌이친다.</span>
+		<</switch>>
+		<<gggtrauma>>
+		<<hypnosisicon>>
+	<</if>>
 	<<if $science_up_message is 1>>
 		<<unset $science_up_message>>
 		당신은 과학에 더 자신감을 느낀다.
@@ -473,7 +501,6 @@
 	<<if $exhibitionism_message is 1>>
 		<<set $exhibitionism_message to 0>>
 		<span class="lblue">당신은 속옷을 입지 않은 상태로 사람들이 있는 곳에서 시간을 보냈다. 혹시 사람들이 눈치채진 않았을까 하는 생각을 하며, 당신은 전율한다.</span>
-		<<exhibitionism1>>
 	<</if>>
 	<<if $rebuy_success.length gt 0>>
 		<<set _rebuyMessage to {}>>

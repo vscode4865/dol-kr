@@ -63,7 +63,7 @@
 	<<set $_slime to _args[2]>>
 	<<set $_nectar to _args[3]>>
 	당신의 <<trBodypart $_part "은">>_trResult
-	<<if _$_part is "thighs" or $_part is "feet">>
+	<<if $_part is "thighs" or $_part is "feet">>
 		
 	<<else>>
 		
@@ -140,7 +140,7 @@
 	활발한 <<girlPost "이">>
 <</if>>
 이쪽을 바라보고 있다.
-<<if $wraith and $wraith.state is "haunt" and $hallucinations gte 1 and random(1, 100) is 1>>
+<<if $wraith.state is "haunt" and $hallucinations gte 1 and random(1, 100) is 1>>
 	<span class="fading">창백한 형체가 당신 뒤에 서 있다.</span>
 <</if>>
 <br>
@@ -470,7 +470,7 @@ __화장__
 		정액에 적셔짐
 		<br>
 	<</if>>
-	<<if $moonstate is "evening" and $hour gte 21 or $moonstate is "morning" and $hour lt 6>>
+	<<if isBloodmoon()>>
 		보름달
 		<br>
 	<</if>>
@@ -1135,7 +1135,7 @@ __머리 모양__
 <br>
 <<if !$savedHairStyles>>
 	<<set $savedHairStyles to {
-		"기본": {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}
+		기본: { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }
 	}>>
 <</if>>
 <<set _hairTypeByName to {"왼쪽으로 땋은": "braid left", "오른쪽으로 땋은": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린": "swept left", "양쪽으로 땋은": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl", "니트": "neat", "곱슬머리 피그테일": "curly pigtails", "경단머리": "sailor buns", "레게머리": "dreads", "짧은 뾰족머리": "short spiky", "버블테일": "bubble tails", "옆을 올린 곱슬머리": "curly side up", "하트모양 땋은머리": "heart braid", "도넛모양 땋은머리": "loop braid", "헝클어진": "ruffled"}>>
@@ -1207,9 +1207,9 @@ __머리 모양__
 	<label>이름: <<textbox "_hairStyleName" "">></label>
 	<mouse class="tooltip linkBlue">(?)<span>중복된 이름은 항목을 덮어씌울 것입니다. 최대 30자, 글자, 숫자, 대시와 밑줄기호만 사용 가능합니다</span></mouse>
 	<br>
-	<<link [["현재 스타일 저장"|$passage]]>>
+	<<link [[현재 스타일 저장|$passage]]>>
 		<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z가-힣0-9_-]+/g,"").substring(0,30)>>
-		<<set $savedHairStyles[_hairStyleName] to {hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition}>>
+		<<set $savedHairStyles[_hairStyleName] to { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }>>
 	<</link>>
 </div>
 
@@ -1234,8 +1234,18 @@ __머리 모양__
 		<<capture _itemType>>
 		<span class="no-numberify">
 		<<link "지운다">>
-		<<set $makeup[_itemType] = 0>>
+
+		<<if _itemType is "eyelenses">>
+			<!-- A safety check for $makeup.eyelenses -->
+			<<set $makeup.eyelenses to { left: 0, right: 0 }>>
+		<<else>>
+			<<set $makeup[_itemType] to 0>>
+		<</if>>
+		<<if _itemType == 'mascara'>>
+			<<set $makeup.mascara_running = 0>>
+		<</if>>
 		<<run Engine.show()>>
+
 		<</link>></span>
 		<<print " | ">>
 		<</capture>>
@@ -1244,11 +1254,14 @@ __머리 모양__
 		<<capture _item, _itemType>>
 			<span class="capitalize no-numberify">
 			<<if $makeup[_itemType] == _item.colour>>
-				<<trColour _item.colour>>_trResult
+				<<trColour setup.colourName(_item.colour)>><<print _trResult>>
 			<<else>>
-				<<trColour _item.colour>><<link _trResult>>
+				<<trColour setup.colourName(_item.colour)>><<link _trResult>>
 					<<set $makeup[_itemType] = _item.colour>>
 					<<set _item.count -= 1>>
+					<<if _itemType == 'mascara'>>
+						<<set $makeup.mascara_running = 0>>
+					<</if>>
 					<<run Engine.show()>>
 				<</link>>
 			<</if>>
@@ -1286,18 +1299,16 @@ __화장__
 	<<set $makeup.lipstick to 0>>
 	<<set $makeup.eyeshadow to 0>>
 	<<set $makeup.mascara to 0>>
-	<<set $makeup.eyelenses to { "left": 0, "right": 0 }>>
+	<<set $makeup.eyelenses to { left: 0, right: 0 }>>
+	<<set $makeup.mascara_running to 0>>
 <</link>> |
-<<link [[알아서 화장한다|$passage]]>>
+<<link [[무작위로|$passage]]>>
 	<<for _i to 0; _i lt _makeupNames.length; _i++>>
 		<<set _ownedMakeup to $makeup.owned[_makeupData[_i]]>>
 		<<if _makeupNames[_i] is "eyelenses">>
 			<<set _rng to random(0, _ownedMakeup.length)>>
 			<<set _lens to _rng is _ownedMakeup.length ? 0 : _ownedMakeup[_rng]>>
-			<<set $makeup[_makeupNames[_i]] to {
-				"left": _lens,
-				"right": _lens
-			}>>
+			<<set $makeup.eyelenses to { left: _lens, right: _lens }>>
 		<<else>>
 			<<set _rngset to []>>
 			<<for _label, _value range _ownedMakeup>>
@@ -1356,26 +1367,26 @@ __화장__
 		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "착용하지 않는다">>
-			<<set $makeup.eyelenses = {"left":0, "right":0}>>
+			<<set $makeup.eyelenses = { left:0, right:0 }>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
 		<</if>>
 		<<for _i, _colour range $makeup.owned.eyelenses>>
 			<<capture _colour>>
-			<span class="capitalize no-numberify">
-			<<trColour _colour>><<link _trResult>>
-			<<if _contact_eye_selected == "Both">>
-				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
-			<<elseif _contact_eye_selected == "Left eye">>
-				<<set $makeup.eyelenses["left"] = _colour>>
-			<<elseif _contact_eye_selected == "Right eye">>
-				<<set $makeup.eyelenses["right"] = _colour>>
-			<</if>>
-			<<run Engine.show()>>
-			<</link>></span>
-				<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-iris"></span></span>
-			<<print " | ">>
+				<span class="capitalize no-numberify">
+				<<trColour _colour>><<link _trResult>>
+					<<if _contact_eye_selected == "Both">>
+						<<set $makeup.eyelenses = { left:_colour, right:_colour }>>
+					<<elseif _contact_eye_selected == "Left eye">>
+						<<set $makeup.eyelenses.left = _colour>>
+					<<elseif _contact_eye_selected == "Right eye">>
+						<<set $makeup.eyelenses.right = _colour>>
+					<</if>>
+					<<run Engine.show()>>
+				<</link>></span>
+					<span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-iris"></span></span>
+				<<print " | ">>
 			<</capture>>
 		<</for>>
 		<br>
@@ -1389,7 +1400,7 @@ __화장__
 		<<if $makeup.eyelenses.left != 0 || $makeup.eyelenses.right != 0>>
 			<span class="no-numberify">
 			<<link "착용하지 않는다">>
-			<<set $makeup.eyelenses = {"left":0, "right":0}>>
+			<<set $makeup.eyelenses = { left:0, right:0 }>>
 			<<run Engine.show()>>
 			<</link>></span>
 			<<print " | ">>
@@ -1402,20 +1413,20 @@ __화장__
 				<</if>>
 			<</for>>
 			<<capture _colour _background_colour>>
-			<span class="capitalize no-numberify">
-			<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>><<trColour _colour_name_with_space>>
-			<<link _trResult>>
-			<<if _custom_eye_selected == "Both">>
-				<<set $makeup.eyelenses = {"left":_colour, "right":_colour}>>
-			<<elseif _custom_eye_selected == "Left eye">>
-				<<set $makeup.eyelenses["left"] = _colour>>
-			<<elseif _custom_eye_selected == "Right eye">>
-				<<set $makeup.eyelenses["right"] = _colour>>
-			<</if>>
-			<<run Engine.show()>>
-			<</link>></span>
-			<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
-			<<print " | ">>
+				<span class="capitalize no-numberify">
+				<<set _colour_name_with_space = window.colorNameTranslate(_colour, "spaced name")>><<trColour _colour_name_with_space>>
+				<<link _trResult>>
+					<<if _custom_eye_selected == "Both">>
+						<<set $makeup.eyelenses = { left:_colour, right:_colour }>>
+					<<elseif _custom_eye_selected == "Left eye">>
+						<<set $makeup.eyelenses.left = _colour>>
+					<<elseif _custom_eye_selected == "Right eye">>
+						<<set $makeup.eyelenses.right = _colour>>
+					<</if>>
+					<<run Engine.show()>>
+				<</link>></span>
+				<span class="eye-custom"><span @style="'background:'+_background_colour" class="colour-sample"></span></span>
+				<<print " | ">>
 			<</capture>>
 		<</for>>
 		<br><br>
@@ -1505,29 +1516,27 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 <</for>>
 <br>
 <<link [[저장된 세트로 화장한다|$passage]]>>
-	<<for $_i to 0; $_i lt _makeupNames.length; $_i++>>
-		<<if _makeupNames[$_i] is "eyelenses">>
-			<<if _presetChosen[_makeupNames[$_i]].left is 0 && _presetChosen[_makeupNames[$_i]].right is 0>>
-				<<set $makeup[_makeupNames[$_i]] to 0>>
-			<<elseif $makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].left) &&
-					$makeup.owned[_makeupNames[$_i]].includes(_presetChosen[_makeupNames[$_i]].right)>>
-				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
-			<<elseif $makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].left) &&
-					$makeup.owned.custom_eyelenses.includes(_presetChosen[_makeupNames[$_i]].right)>>
-				<<set $makeup[_makeupNames[$_i]] to _presetChosen[_makeupNames[$_i]]>>
+	<<for $_makeupName range _makeupNames>>
+		<<set _preset to _presetChosen[$_makeupName]>>
+		<<if $_makeupName is "eyelenses">>
+			<<if _preset.left is 0 and _preset.right is 0>>
+				<<set $makeup.eyelenses to { left:0, right:0 }>>
+			<<elseif $makeup.owned.eyelenses.includes(_preset.left) and $makeup.owned.eyelenses.includes(_preset.right)>>
+				<<set $makeup.eyelenses to _preset>>
+			<<elseif $makeup.owned.custom_eyelenses.includes(_preset.left) and $makeup.owned.custom_eyelenses.includes(_preset.right)>>
+				<<set $makeup.eyelenses to _preset>>
 			<</if>>
-		<<elseif _presetChosen[_makeupNames[$_i]] is 0 and _makeupNames[$_i] is "hairdye">>
+		<<elseif _preset is 0 and $_makeupName is "hairdye">>
 			/*Do Nothing*/
-		<<elseif _presetChosen[_makeupNames[$_i]] is 0>>
-			<<set $makeup[_makeupNames[$_i]] to 0>>
+		<<elseif _preset is 0>>
+			<<set $makeup[$_makeupName] to 0>>
 		<<else>>
-			<<for $_label, $_value range $makeup.owned[_makeupData[$_i]]>>
-				<<if $_value.colour is _presetChosen[_makeupNames[$_i]] and $_value.colour isnot $makeup[_makeupNames[$_i]] and $_value.count gt 0>>
-					<<set $makeup[_makeupNames[$_i]] to clone($_value.colour)>>
-					<<set $_value.count-->>
-					<<break>>
-				<</if>>
-			<</for>>
+			<<set $_makeupName2 to ($_makeupName is "browscolour" ? "hairdye" : $_makeupName)>>
+			<<set $_target to $makeup.owned[$_makeupName2].find(invMakeup => invMakeup.colour is _preset and invMakeup.colour isnot $makeup[$_makeupName] and invMakeup.count gt 0)>>
+			<<if $_target>>
+				<<set $makeup[$_makeupName] to clone($_target.colour)>>
+				<<set $_target.count-->>
+			<</if>>
 		<</if>>
 	<</for>>
 <</link>> |
@@ -1879,7 +1888,8 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 			<</if>>
 		</div>
 		<<set $_chimeraOptions to {
-			"demoncat_tail" : !["disabled", "hidden"].includesAny(_demon.tail, _cat.tail)
+			"demoncat_tail" : !["disabled", "hidden"].includesAny(_demon.tail, _cat.tail),
+			"demonharpy_wings" : !["disabled", "hidden"].includesAny(_demon.wings, _bird.wings)
 		}>>
 		<<set $_chimeraEnabled to Object.values($_chimeraOptions).some(o => o) ? "" : " hide">>
 		<div @class="'chimera' + $_chimeraEnabled">
@@ -1889,6 +1899,16 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 				<div class='tf-part-item'>
 					악마 고양이 꼬리:
 					<<listbox "$chimera.demoncat.tail" autoselect>>
+						<<option "보이기" true>>
+						<<option "숨기기" false>>
+					<</listbox>>
+				</div>
+			<</if>>
+			<<if $_chimeraOptions.demonharpy_wings>>
+				/* Using demon harpy chimera wings. */
+				<div class='tf-part-item'>
+					악마 하피 날개:
+					<<listbox "$chimera.demonharpy.wings" autoselect>>
 						<<option "보이기" true>>
 						<<option "숨기기" false>>
 					<</listbox>>
@@ -1914,7 +1934,7 @@ __새 화장 세트__ - 현재 하고 있는 화장 세트를 저장한다
 <</link>>
 <!-- Attach an event to every listbox item to update the PC on the sidebar. -->
 <<script>>
-jQuery('#passages').on('change', 'select.macro-listbox', function (e) {
+jQuery('.passage').on('change', 'select.macro-listbox', function (e) {
 	Wikifier.wikifyEval('<<updatesidebarimg>>');
 });
 <</script>>

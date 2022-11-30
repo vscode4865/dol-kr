@@ -68,7 +68,7 @@
 			<<for $_outfitPieceSlot, $_outfitPieceName range _wornOutfitPrimary>>
 				<<if $worn[$_outfitPieceSlot].cursed is 1 and _cursedPrevent isnot true>>
 					<<capture $_outfitPieceSlot>>
-						<<cursedtext $worn[$_outfitPieceSlot].name>> 
+						<<cursedtext $worn[$_outfitPieceSlot].name>>
 					<</capture>>
 					<<set _cursedPrevent to true>>
 				<</if>>
@@ -202,7 +202,7 @@
 				<<set _slotsFull to true>>
 			<</if>>
 		<</for>>
-		
+
 		<<if !_slotsFull>>
 			당신은 <<trClothes _slot _item.name "을">>_trResult <<trWardrobeName $wardrobes[_wardrobeTransfer].name "으로">>_trResult 보낸다.
 			/*Transfer everything*/
@@ -359,7 +359,7 @@ __복장 세트__
 __옷__
 <br>
 
-<<if $newWardrobeStyle>>
+<<if $options.newWardrobeStyle>>
 	<<dynamic "wardrobeLinks" "wardrobeLinks">>
 	<<dynamic "wardrobeContents" "wardrobeList">>
 <<else>>
@@ -574,7 +574,7 @@ __옷__
 
 <<widget "toggleHood">>
 	/* If hood is up, put it down and free up the head slot*/
-	<<if $worn.upper.hoodposition is "up" and $worn.head.hood is 1 and $worn.upper.outfitPrimary.head is $worn.head.name>> 
+	<<if $worn.upper.hoodposition is "up" and $worn.head.hood is 1 and $worn.upper.outfitPrimary.head is $worn.head.name>>
 		<<run delete $worn.upper.outfitPrimary.head>>
 		<<set $worn.upper.hoodposition to "down">>
 		<<if _args[0] is "shop" and $tryOn.ownedStored.head.name isnot $worn.head.name and !($tryOn.ownedStored.head.outfitSecondary and $tryOn.ownedStored.head.outfitSecondary[1] isnot "broken")>>
@@ -587,12 +587,12 @@ __옷__
 			<<updateOwned "upper">>
 			<<updateOwned "head">>
 		<</if>>
-	
+
 	/* If hood is down, put it back up and remove anything on the head if necessary */
 	<<elseif $worn.upper.hoodposition is "down">>
 		<<if !$worn.head.cursed>> /* No cursed head items yet, but if one is made, should probably have some popup saying this was prevented */
 			<<if $worn.head.outfitSecondary and $worn.head.outfitSecondary[1] isnot "broken">>
-				<<if $worn.head.hood is 1 and $worn.head.outfitSecondary[1] is $worn.upper.name and 
+				<<if $worn.head.hood is 1 and $worn.head.outfitSecondary[1] is $worn.upper.name and
 				$worn.head.colour is $worn.upper.colour and $worn.head.accessory_colour is $worn.upper.accessory_colour and
 				$worn.head.colourCustom is $worn.upper.colourCustom and $worn.head.accessory_colourCustom is $worn.upper.accessory_colourCustom>>
 					<<set $worn.upper.outfitPrimary.head to clone(setup.clothes.upper[$worn.upper.index].outfitPrimary.head)>>
@@ -622,7 +622,7 @@ __옷__
 				<<if $worn.head.accessory_colour is "custom">>
 					<<set $worn.head.accessory_colourCustom to $worn.upper.accessory_colourCustom>>
 				<</if>>
-				
+
 				<<if _args[0] is "shop" and $tryOn.tryingOn.upper is null>>
 					<<updateOwned "upper">>
 				<</if>>
@@ -654,8 +654,8 @@ __옷__
 	<<else>>
 		<<set _wear to "wear_"+_wardrobe_list>>
 
-		<<set _outfitTypes to ["upper","lower","under_upper","under_lower"]>>
-		<<set _loweroutfitCheck to ["lower","under_lower"]>>
+		<<set _outfitTypes to setup.clothingLayer.torso_inner>>
+		<<set _loweroutfitCheck to setup.clothingLayer.lower>>
 
 		__<<print "<<trClothesType _wardrobe_list>>_trResult">>__ <i>_selectedWardrobe[_wardrobe_list].length / _selectedWardrobe.space</i>
 		<<if _wardrobe_list is "upper">>(원피스는 하의 슬롯의 공간까지 차지합니다)<</if>>
@@ -1137,7 +1137,7 @@ __옷__
 <</widget>>
 
 <<widget "wardrobeGetRepairedClothes">>
-<<set _equip to ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
+<<set _equip to setup.clothingLayer.all >>
 <<set _takenAway to 0>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
 	<<if $wardrobeRepair[_equip[$_i]] is undefined>>
@@ -1318,17 +1318,11 @@ $warmth 따뜻함 | $chill 추움
 			<<else>>
 				이 꼴로는 나갈 수 없다!
 			<</if>>
-		<<case "School Boy Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0>>
+		<<case "School Pool Wardrobe">>
+			<<if $changingRoomGender is "boys">>
 				<<link [[나간다|School Boy Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				이 꼴로는 나갈 수 없다!
-			<</if>>
-		<<case "School Girl Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0>>
 				<<link [[나간다|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
-			<<else>>
-				이 꼴로는 나갈 수 없다!
 			<</if>>
 		<<case "Farm Assault Wardrobe">>
 			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
@@ -1415,23 +1409,9 @@ $warmth 따뜻함 | $chill 추움
 
 <<wardrobe>>
 
+:: School Pool Wardrobe [exitCheckBypass]
 
-:: School Boy Wardrobe [exitCheckBypass]
-
-<<effects>><<set $outside to 0>><<set $location to "pool">>
-<<set $wardrobe_location to "schoolBoys">>
-<<wardrobeSelection>>
-당신은 자신의 열려있는 락커 앞에 서있다.
-<br><br>
-<div id="wardrobewear"><<wardrobewear>></div>
-<div id="wardrobeExits"><<wardrobeExits>></div>
-
-<<wardrobe>>
-
-:: School Girl Wardrobe [exitCheckBypass]
-
-<<effects>><<set $outside to 0>><<set $location to "pool">>
-<<set $wardrobe_location to "schoolGirls">>
+<<effects>>
 <<wardrobeSelection>>
 당신은 자신의 열려있는 락커 앞에 서있다.
 <br><br>
@@ -1478,7 +1458,7 @@ $warmth 따뜻함 | $chill 추움
 
 <<set $tailorMonthlyService to 30>>
 <<set _value to 0>>
-<<set _equip to ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
+<<set _equip to setup.clothingLayer.all>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
 	<<set _toDelete to []>>
 	<<for $_j to 0; $_j lt $wardrobe[_equip[$_i]].length; $_j++>>
@@ -1553,7 +1533,7 @@ $warmth 따뜻함 | $chill 추움
 
 <<set $tailorMonthlyService to 30>>
 <<set $wardrobeRepair to {timeLeft: 1}>>
-<<set _equip to ["over_upper","over_lower","upper","lower","under_upper","under_lower","over_head","head","face","neck","hands","legs","feet"]>>
+<<set _equip to setup.clothingLayer.all>>
 <<set _value to 0>>
 <<for $_i to 0; $_i lt _equip.length; $_i++>>
 	<<set _toDelete to []>>

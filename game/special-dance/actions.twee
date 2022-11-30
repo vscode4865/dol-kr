@@ -21,7 +21,17 @@
 					<<personselect $_audienceMemberIndex>>
 					<div class="dance_box"><label>
 						<<if $NPCList[$_audienceMemberIndex].masturbating gte 1>>
-							<<person_ un>> 자위하고 있다.
+							<<if $NPCList[$_audienceMemberIndex].traits.includes("relaxed") and _danceaction is "sophisticated">>
+								<span class="pink"><<person_ un>> 자위하고 있다.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("sociable") and _danceaction is "cool">>
+								<span class="pink"><<person_ un>> 자위하고 있다.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("brooding") and _danceaction is "sensual">>
+								<span class="pink"><<person_ un>> 자위하고 있다.</span>
+							<<elseif $NPCList[$_audienceMemberIndex].traits.includes("lecher") and _danceaction is "sexual">>
+								<span class="pink"><<person_ un>> 자위하고 있다.</span>
+							<<else>>
+								<<person_ un>> 자위하고 있다.
+							<</if>>
 							<<dance_npc_masturbation_chance $_audienceMemberIndex>>
 						<<else>>
 							<<person_ un>> 구경하고 있다.
@@ -80,8 +90,23 @@
 	<<elseif $danceevent is "vip">>
 		<<link [[허락한다|$passage]]>><<set $danceaction to "vipallow">><</link>>
 		<br>
-		<<link [[밀처낸다|$passage]]>><<set $danceaction to "vippush">><</link>>
+		<<link [[밀쳐낸다|$passage]]>><<set $danceaction to "vippush">><</link>>
 		<br>
+	<<elseif $danceevent is "darryl">>
+		<<link [[안심시킨다|$passage]]>><<set $danceaction to "darrylreassure">><<npcincr Darryl love 1>><</link>><<glove>>
+		<br>
+		<<link [[데릴을 무대 위로 당겨올린다|$passage]]>><<set $danceaction to "darrylpull">><</link>>
+		<br>
+	<<elseif $danceevent is "briar">>
+		<<link [[브라이어에게 윙크한다|$passage]]>><<set $danceaction to "briarwink">><<npcincr Briar love 1>><</link>><<glove>>
+		<br>
+		<<if $promiscuity gte 35>>
+			<<link [[브라이어를 유혹한다|$passage]]>><<set $danceaction to "briarseduce">><</link>><<promiscuous3>>
+			<br>
+		<<else>>
+			<span class="blue">브라이어를 유혹해본다는 생각이 당신의 머리를 스치지만, 당신은 그러기에는 충분히 음란하지 않다.</span>
+			<br>
+		<</if>>
 	<<elseif $danceevent is "strippertrouble">>
 		<<link [[그들을 돕는다|$passage]]>><<set $danceaction to "stripperhelp">><</link>>
 		<br>
@@ -323,7 +348,7 @@
 			<</if>>
 			<br><br>
 			<<rng>><<rngWraith 2 "night">>
-			<<if $wraith and ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
+			<<if ($wraith.state is "haunt" or $wraith.offspring is "dead") and _wraithEvent and $rng lte 10>>
 				<<danceWraith>>
 				<<set $_blockDancingEvents to true>>
 			<<elseif currentSkillValue('danceskill') lt ( ($dance_stage_cum * 50) + random(1,250) )>>
@@ -375,6 +400,12 @@
 						<<dancestrippertrouble>>
 					<<elseif $rng gte 51>>
 						<<dancesalivate>>
+					<<elseif $rng gte 49>>
+						<<dancedarryl>>
+					<</if>>
+				<<else>>
+					<<if $rng gte 99>>
+						<<dancedarryl>>
 					<</if>>
 				<</if>>
 			<<elseif $dancelocation is "cafe">>
@@ -397,6 +428,8 @@
 				<<elseif $audiencearousal gte 100>>
 					<<if $rng gte 101 - ($corruption_slime / 20) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancerape>>
 					<<elseif $rng gte 71>>
@@ -407,7 +440,7 @@
 						<<dancestrip>>
 					<<elseif $rng gte 31 and $privatedanceoffered isnot 1>>
 						<<danceprivate>>
-					<<elseif $rng gte 21 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
+					<<elseif $rng gte 21 and $daily.leightonDanceOffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
 					<<elseif $rng gte 11 and $robinBrothel>>
 						<<dancebrothelrobin>>
@@ -415,6 +448,8 @@
 				<<elseif $audiencearousal gte 81>>
 					<<if $rng gte 101 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancemolest>>
 					<<elseif $rng gte 86 and $enemyno gte 2>>
@@ -423,7 +458,7 @@
 						<<dancestrip>>
 					<<elseif $rng gte 51 and $privatedanceoffered isnot 1>>
 						<<danceprivate>>
-					<<elseif $rng gte 41 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
+					<<elseif $rng gte 41 and $daily.leightonDanceOffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
 					<<elseif $rng gte 31 and $robinBrothel>>
 						<<dancebrothelrobin>>
@@ -431,13 +466,15 @@
 				<<elseif $audiencearousal gte 41>>
 					<<if $rng gte 102 - ($corruption_slime / 25) and $corruptionDancing is undefined>>
 						<<danceCorruption>>
+					<<elseif $rng gte 99>>
+						<<dancebriar>>
 					<<elseif $rng gte 91>>
 						<<dancestrip>>
 					<<elseif $rng gte 86 and $enemyno gte 2>>
 						<<dancevip>>
 					<<elseif $rng gte 71 and $privatedanceoffered isnot 1>>
 						<<danceprivate>>
-					<<elseif $rng gte 61 and $leightondanceoffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
+					<<elseif $rng gte 61 and $daily.leightonDanceOffered isnot 1 and $weekday gte 6 and $leightonbrothel is 1 and $pillory_tenant.special.name isnot "Leighton">>
 						<<danceleighton>>
 					<<elseif $rng gte 51 and $robinBrothel>>
 						<<dancebrothelrobin>>
@@ -705,6 +742,16 @@
 	비싼 <<if $pronoun is "f">>가운<<else>>정장<</if>>을 입은 <<personPost "은">> 당신의 팔을 잡고 끌어당긴다. 경비는 눈을 피한다. "걔들은 우릴 귀찮게 안 할거야" <<HePost "은">> 말한다. "걔네는 내가 누군지 알아."
 <</widget>>
 
+<<widget "dancedarryl">>
+	<<set $danceevent to "darryl">>
+	당신은 데릴이 무대 사이를 돌아다니며, 무용수들을 살피고 있는 것을 알아차린다. <<nnpc_He_ ga "Darryl">> 당신의 무대에 다가와, 당신을 본다.
+<</widget>>
+
+<<widget "dancebriar">>
+	<<set $danceevent to "briar">>
+	당신은 브라이어가 관중들 안에서, 당신을 보며 귓속말을 속삭이는 것을 알아차린다.
+<</widget>>
+
 <<widget "dancestrippertrouble">>
 	<<set $danceevent to "strippertrouble">>
 	<<personPost "은">> 다른 종업원을 무대에서 끌어내리려고 한다.
@@ -720,7 +767,7 @@
 <</widget>>
 
 <<widget "danceleighton">>
-	<<set $leightondanceoffered to 1>><<set $danceevent to "leighton">>
+	<<set $daily.leightonDanceOffered to 1>><<set $danceevent to "leighton">>
 	<<if $headblackmailed is 1>>
 		"널 여기서 볼 줄 알았어,"
 	<<elseif $delinquency gte 400>>

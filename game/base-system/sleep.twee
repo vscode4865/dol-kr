@@ -2,9 +2,13 @@
 
 <<widget "sleep">>
 	<<sleephour>>
+	<<ruffleHairFromSleep>>
 <</widget>>
 
 <<widget "sleephour">>
+	<<if random(1, 2500) is 1>>
+		<<set _toast to 1>>
+	<</if>>
 	<<set $sleepHoursTotal to 0>>
 	<<set $_bonusFatigueLoss to 10>>
 	<!-- wearing sleep clothes -->
@@ -41,7 +45,9 @@
 		<<switch $location>>
 			<<case "home">>
 				<<set _robin to statusCheck("Robin")>>
-				<<if (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
+				<<if $sleepWraith>>
+					<!-- Do nothing. Wraith mimicking Robin guarantees an uninterrupted sleep -->
+				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
 					<!-- Robin climbs into bed with you -->
 					<<if $hour gte 18 or $hour lte 6>>
 						<<set _sleepinterrupt to 1>>
@@ -61,18 +67,18 @@
 				<<elseif $christmas is 1 and $monthday is 25 and $hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
 					<<set _sleepinterrupt to 1>>
 					<<set $christmas_kylar to 1>>
-				<<elseif $schoolday is 1 and $hour is 7 and !$bailey_wake_day>>
+				<<elseif $schoolday is 1 and $hour is 7 and !$daily.baileyWake>>
 					<<set _sleepinterrupt to 1>>
-					<<set $bailey_wake_day to true>>
+					<<set $daily.baileyWake to true>>
 				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and $daystate is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
 				<</if>>
 			<<case "asylum">>
 				<<asylumeffects>>
-				<<if $hour is 6 or ($asylumstate is "firsttreatment" and $asylumfirsttreatment isnot 1) or ($asylumstate is "secondtreatment" and $asylumsecondtreatment isnot 1) or ($asylumstate is "assessment" and $asylumassessment isnot 1)>>
+				<<if $hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
 					<<set _sleepinterrupt to 1>>
-				<<elseif $hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $asylumfirsttreatment isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $asylumsecondtreatment isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $asylumassessment isnot 1 and $location is "asylum">>
+				<<elseif $hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $daily.asylumAssessment isnot 1 and $location is "asylum">>
 					<<set _sleepinterrupt to 1>>
 				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
 					<<set _sleepinterrupt to 1>>
@@ -110,7 +116,7 @@
 					<<wraithEvent>>
 				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
 					<<set _sleepinterrupt to 1>>
-				<<elseif $bird.state is "home" and $bird.satisfied isnot true and random(1, 10) is 10>>
+				<<elseif $bird.state is "home" and !$bird.satisfied and random(1, 10) is 10>>
 					<<set _sleepinterrupt to 1>>
 				<</if>>
 			<<case "wolf_cave">>
@@ -216,6 +222,8 @@
 		<<trauma 10>>
 		<span class="red">스트레스가 자는 동안 최고점을 찍었다가 가라앉았지만, 그 대신 정신 건강이 많이 상했다.</span>
 		<<lstress>><<gtrauma>>
+		<<ruffleHair>>
+		<<saveTempHairStyle>>
 		<br><br>
 	<</if>>
 	<<if $scienceproject is "ongoing" and $sciencephallusknown isnot 1 and $promiscuity gte 35>>
@@ -332,6 +340,44 @@
 	<<set $wraith.nightmare to 2>>
 	<<set $wraith.hunt to 0>>
 	<<set $foresthunt to 0>>
+<</widget>>
+
+<<widget "ruffleHairFromSleep">>
+	<!-- Roll a chance to wake up with ruffled hair -->
+	<!-- Chance is based on number of hours slept, with Trauma and Stress adding "calculated" hours -->
+	<!-- Trauma adds max 4.5, Stress 2 -->
+	<!-- Chances are ~5% at 8 hours, ~13% at 10 hours, 99% at 16.5 calculated hours -->
+
+	<!-- Math below uses rng of 1000, and calculates 75 instead of 750, for more granular probability -->
+
+	<!-- Use the below graph to calculate and demo -->
+	<!-- New Graph: https://www.desmos.com/calculator/xd73rdkx1v -->
+	<<set $_calcTrauma to ($trauma - $traumamax / 10) / 1000>>
+	<<if $_calcTrauma gte 0>>
+		<<set $_calcStress to $stress / 5000>>
+		<<set $_calcTotal to $_calcTrauma + $_calcStress + $sleepHoursTotal>>
+		<<set $_chance to $_calcTotal ** 4 / 75>>
+		<<rng 1000>>
+		<<if $_chance gt $rng>>
+			<span class="yellow">당신의 머리카락이 헝클어졌다.</span>
+			<<ruffleHair>>
+			<<saveTempHairStyle>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "ruffleHair">>
+	<!-- Find a style group of current hair (loose, braid, etc.) and pick a random one from a list of corresponding 'ruffled' styles. If none found then keep current hair -->
+	<<set $_hair to setup.hair.hairtype.find(x => x.list.includes($hairtype))>>
+	<<set $_fringe to setup.hair.fringetype.find(x => x.list.includes($fringetype))>>
+	<<if $_hair>>
+		<<set $_rndhair to $_hair.devolve.random()>>
+	<</if>>
+	<<if $_fringe>>
+		<<set $_rndfringe to $_fringe.devolve.random()>>
+	<</if>>
+	<<set $hairtype to $_rndhair || $hairtype>>
+	<<set $fringetype to $_rndfringe || $fringetype>>
 <</widget>>
 
 :: SleepSlimeEventObey
