@@ -1265,8 +1265,18 @@
      
     ```
     <<pcpetnamePost>>
-        <<pcpetname>>의 대체 위젯.
-       + <<charlesPost>>와 용도 및 방식 같음. 생략
+       <<pcpetnamePost [fromWho [mod]] post "sep">>
+
+       <<pcpetname>>의 대체 위젯. 조사를 붙일 수 있다. <<pcPetnamePost>>로도 사용가능.
+        
+        선택사항
+            - fromWho: 애칭을 말하는 사람. 원본 매크로에 사용되는 인수값.
+            - mod: fromWho의 상태에 따라 사용되는 추가인수. 원본 매크로에 사용되는 인수값.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<pcpetnamePost "Wraith" "을">>               // <<pcpetname "Wraith">>을
     ```
     
     ```
