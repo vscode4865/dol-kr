@@ -936,7 +936,7 @@
 
     ```
     <<nnpc_titlePost>>
-        + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략 <<nnpc_Titlepost>> 도 사용 가능.
+        + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략 <<nnpc_TitlePost>> 도 사용 가능.
     ```
 
 * otherPost
