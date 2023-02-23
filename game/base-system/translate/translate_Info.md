@@ -523,6 +523,95 @@
         <<body_size_textPost "을">>               // 조그마한 신체를
     ```
 
+* childPost
+    ```
+    <<childnamePost>>
+        <<childnamePost [id] post "sep">>
+
+        <<childname>>의 대체 위젯. 조사를 붙일 수 있다.
+
+
+        선택사항
+		- id: 아이의 id. 원본 매크로에 사용되는 인수값.
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<childnamePost "을">>               //<<childname>>을
+    ```
+
+    ```
+    <<childrenNamesPost>>
+        <<childrenNamesPost *names post "sep">>
+
+        <<childrenNames>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        필수사항
+		- *names: 아이 이름 배열. 원본 매크로에 사용되는 인수값.
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<childNamesPost _names "을">>               //<<childNames _names>>을
+    ```
+
+   ```
+    <<childHePost>>
+        <<childHe>>의 대체 위젯. <<childhePost>>, <<childHisPost>>, <<childhisPost>>, <<childHimPost>>, <<childhimPost>>로도 쓸 수 있다.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childHersPost>>
+        <<childHers>>의 대체 위젯. <<childhersPost>>로도 쓸 수 있다.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childhandPost>>
+        <<childhand>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childhandsPost>>
+        <<childhands>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childhairPost>>
+        <<childhair>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childtypePost>>
+        <<childtype>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<childtoyPost>>
+        <<childtoyPost *location *toyid [option] post "sep">>
+
+        <<childtoy>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        필수사항
+		- *location: 장난감 위치. 원본 매크로에 사용되는 인수값.
+		- *toyid: 장난감 id 혹은 이름. 원본 매크로에 사용되는 인수값.
+
+        선택사항
+		- option: 표시 옵션. 원본 매크로에 사용되는 인수값.
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<childtoyPost _location _id "을">>               //<<childtoy _location _id>>을
+    ```
+
 * clothesPost
     ```
     <<undertopPost>>
@@ -1723,7 +1812,7 @@
         바디라이팅을 번역한다.
 
         필수사항
-        - *bodywriting
+        - *bodywriting: 바디라이팅 내용
 
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
@@ -2174,6 +2263,22 @@
         <<trRole "guard" '이' >>_trResult             //  간수가
     ```
 
+* trToyName
+    ```
+    <<trToyName>>
+        <<trToyName [toyName] post "sep">>
+        
+        아이 장난감을 번역한다. 섹스 장난감이 아닌 것에 주의.
+
+        선택사항
+		- toyName: 번역할 장난감 이름/세트/옵션명. 생략시 _toyName 변수를 사용한다.
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trToyName "Teddy Bear" '이' >>_trResult             //  테디베어가
+    ```
+
 
 * trVirginity
     ```
@@ -2457,6 +2562,11 @@
 		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, <<mouth_ (조사)>>,  
 		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
+	- childPost 계열
+		```
+		<<childname_ (조사)>>, <<childrenNames_ (조사)>>, <<childHe_ (조사)>>, <<childhe_ (조사)>>, <<childHis_ (조사)>>, <<childhis_ (조사)>>, <<childHim_ (조사)>>, <<childhim_ (조사)>>,
+		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
+		```
 	- clothesPost 계열
 		```
 		<<undertop_ (조사)>>, <<groin_ (조사)>>, <<crotch_ (조사)>>, <<undies_ (조사)>>, <<bottoms_ (조사)>>, <<underbottoms_ (조사)>>, <<top_ (조사)>>, 
@@ -2509,5 +2619,6 @@
 		```
 		<<beastdesc_ (조사)>>, <<bodypart_ (조사)>>, <<bodywriting_ (조사)>>, <<breastsdesc_ (조사)>>, <<namedNPC_ (조사)>>,
 		<<NPCdesc_ (조사)>>, <<NPCname_ (조사)>>, <<penisdesc_ (조사)>>, <<plants_ (조사)>>, <<plants_plural_ (조사)>>, 
-		<<weather_ (조사)>>, <<sextoy_ (조사)>>
+		<<toyName_ (조사)>>, <<weather_ (조사)>>, <<sextoy_ (조사)>>, 
+		<<relaxed_guard_ (조사)>>, <<anxious_guard_ (조사)>>, <<veteran_guard_ (조사)>>, <<methodical_guard_ (조사)>>, <<tattooed_inmate_ (조사)>>, <<scarred_inmate_ (조사)>>, 
 		```

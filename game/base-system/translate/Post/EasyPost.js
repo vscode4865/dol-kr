@@ -128,6 +128,34 @@ const EasyPostMacroList = [
 	// <<npcChest_ rul>> = <<npcChest>>를 
 	{ name: "npcChest_", orig_name: "npcChestPost", is_print: 0},
 
+	// childPost
+	{ name: "childname_", orig_name: "childnamePost", is_print: 0},
+
+	{ name: "childrenNames_", orig_name: "childrenNamesPost", is_print: 0},
+
+	{ name: "childHe_", orig_name: "childHePost", is_print: 0},
+	{ name: "childhe_", orig_name: "childHePost", is_print: 0},
+
+	{ name: "childHis_", orig_name: "childHePost", is_print: 0},
+	{ name: "childhis_", orig_name: "childHePost", is_print: 0},
+
+	{ name: "childHim_", orig_name: "childHePost", is_print: 0},
+	{ name: "childhim_", orig_name: "childHePost", is_print: 0},
+
+	{ name: "childHers_", orig_name: "childHersPost", is_print: 0},
+	{ name: "childhers_", orig_name: "childHersPost", is_print: 0},
+
+	{ name: "childhand_", orig_name: "childhandPost", is_print: 0},
+	
+	{ name: "childhands_", orig_name: "childhandsPost", is_print: 0},
+
+	{ name: "childhair_", orig_name: "childhairPost", is_print: 0},
+
+	{ name: "childtype_", orig_name: "childtypePost", is_print: 0},
+
+	{ name: "childtoy_", orig_name: "childtoyPost", is_print: 0},
+
+
 	// clothesPost 
 	// <<undertop_ ul>> = <<undertop>>을 
 	{ name: "undertop_", orig_name: "undertopPost", is_print: 0},
@@ -638,6 +666,9 @@ const EasyPostMacroList = [
 
 	// <<plants_plural_ ul "daisy">> = <<trPlants "daisy" "plural" "을">> 
 	{ name: "plants_plural_", orig_name: "trPlantsPlural", is_print: 1},
+
+	// <<toyName_ un "teddy bear">> = <<trToyName "teddy bear" "은">> 
+	{ name: "toyName_", orig_name: "trToyName", is_print: 1},
 
 	// <<weather_ nun "rain">> = <<trWeather "rain" "은">> 
 	{ name: "weather_", orig_name: "trWeather", is_print: 1},
