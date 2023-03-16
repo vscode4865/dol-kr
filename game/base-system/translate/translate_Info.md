@@ -1028,6 +1028,42 @@
         + <<nnpc_wifePost>>와 용도 및 방식 같음. 생략 <<nnpc_TitlePost>> 도 사용 가능.
     ```
 
+* kylarPost
+	카일라 관련 Post 시리즈
+
+   ```
+    <<kylar_pet_namePost>>
+        <<kylar_pet_namePost [cap] post "sep">>
+
+       <<kylar_pet_name>>의 대체 위젯. 조사를 붙일 수 있다. 
+        
+        선택사항
+			- cap: 원본 매크로의 인수. 대문자 표시용
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<kylar_pet_namePost "을">>               // <<kylar_pet_name>>을
+    ```
+     
+    ```
+    <<kylarClothesPost>>
+        <<kylarClothesPost *part *clothes_name post "sep">>
+
+       <<trNpcClothes>>에 카일라의 속옷 번역을 추가하고 ~Post 형식으로 작동하는 버전. 카일라 속옷은 (overworld-town/special-kylar/main.twee)의 <<kylarRandomUnderwear>> 에서 생성됨.
+
+       필수사항
+        - *part: 착용 부위 ("upper"/"lower"), 세트("set"), 속옷("underwear", "undies", "under_lower") 혹은 전체에서 검색 ("all")
+        - *clothes_name: 옷의 이름 혹은 세트명 혹은 세트의 설명
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<kylarClothesPost "undies" "pink panties" "을">>               // 핑크 팬티를
+    ```
+
 * otherPost
     ```
     <<charlesPost>>
@@ -1450,21 +1486,6 @@
     ```
 
    ```
-    <<kylar_pet_namePost>>
-        <<kylar_pet_namePost [cap] post "sep">>
-
-       <<kylar_pet_name>>의 대체 위젯. 조사를 붙일 수 있다. 
-        
-        선택사항
-			- cap: 원본 매크로의 인수. 대문자 표시용
-            - post: 번역결과의 뒤에 조사를 붙인다.
-            - sep: 조사를 분리하여 저장한다.
-
-        e.g.
-        <<kylar_pet_namePost "을">>               // <<kylar_pet_name>>을
-    ```
-     
-    ```
     <<virginPost>>
         virgin을 처녀/동정으로 나누어 번역하기 위해 추가. 성별에 따라 달리 표현해야 할 때만 사용할것.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
