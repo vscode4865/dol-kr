@@ -1742,6 +1742,11 @@
         + <<sydneymumPost>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+    <<sydneyBeachGenderPost>>
+        <<sydneyBeachGender>>의 대체 위젯.
+        + <<sydneymumPost>>와 용도 및 방식 같음. 생략
+    ```
 -----------------
 # Slime
 
