@@ -69,6 +69,12 @@ setup.trSextoyList = {
 		post : 0,
 		desc : "알약 3개가 1팩으로 포장된 미약. 설명서에는 향상된 경험을 하기 위해 성교 전에 '적절한 갯수'를 투약하라고 적혀있다."
 	},
+	"breast pump" : {
+		index : 11,
+		koname : "착유기",
+		post : 1,
+		desc : "휴대용 착유기."
+	},
 };
 
 setup.trSextoyCategoryList = {

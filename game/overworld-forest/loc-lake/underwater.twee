@@ -8,9 +8,9 @@
 <<elseif wraithCanHunt() and $wraith.state and $wraith.hunt is 0 and $wraith.timer gte random(0, 10) and !$possessed>>
 	<<wHunt "lake">>
 <<else>>
-	<<if $season is "winter">>
+	<<if Time.season is "winter">>
 		당신은 호수 아래에 있다. 당신은 수정 같은 천장 아래에서 수초들 사이로 헤엄친다.
-		<<if $daystate is "night">>
+		<<if Time.dayState is "night">>
 			<<if $weather is "snow">>
 				얼음은 칠흑같이 새카맣다.
 			<<elseif $weather is "clear">>
@@ -29,7 +29,7 @@
 		<</if>>
 	<<else>>
 		당신은 호수 아래에 있다. 당신은 어두운 유사와 높은 수초 사이로 헤엄친다.
-		<<if $daystate is "night">>
+		<<if Time.dayState is "night">>
 			<<if $weather is "rain">>
 				물이 검다. 위쪽에서는 둔탁한 빗소리가 들려온다.
 			<<elseif $weather is "clear">>
@@ -47,11 +47,11 @@
 			<</if>>
 		<</if>>
 	<</if>>
-	<<if $schoolday isnot 1 and $weather is "snow" and $daystate is "day" and $mason_ice_lake gte 1>>
+	<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake gte 1>>
 		당신은 식물 사이로 메이슨을 엿볼 수 있다.
 	<</if>>
 	<br><br>
-	<<if $schoolday isnot 1 and $weather is "snow" and $daystate is "day" and $mason_ice_lake is undefined>>
+	<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake is undefined>>
 		<<set $mason_ice_lake to 1>>
 		<<npc Mason>><<person1>>
 		어둠 속에서 형체가 나타난다. 강한 팔은 당신을 붙잡고, 당신이 빛을 향해 되돌아갈 때 날렵한 근육질의 몸체가 당신을 압박한다.
@@ -75,7 +75,7 @@
 		<br>
 		<<link [[화낸다|Lake Mason Angry]]>><<def 1>><<npcincr Mason love -1>><</link>><<llove>>
 		<br>
-	<<elseif $schoolday isnot 1 and $weather is "snow" and $daystate is "day" and $mason_ice_lake is 1 and random(1, 5) is 5>>
+	<<elseif !Time.schoolDay and $weather is "snow" and Time.dayState is "day" and $mason_ice_lake is 1 and random(1, 5) is 5>>
 		<<npc Mason>><<person1>>
 		메이슨이 당신을 발견하고 당신의 방향으로 속도를 낸다. <<HePost "은">> 당신을 <<his>> 의 팔로 껴안고, 빛을 향해 발길질한다. 당신은 얼음 위로 떠밀려있다.
 		<br><br>
@@ -102,10 +102,10 @@
 			<<link [[유적으로 헤엄친다|Lake Ruin]]>><<wateraction>><</link>><<loxygen>>
 		<</if>>
 		<br><br>
-		<<if $schoolday isnot 1 and $weather is "snow" and $daystate is "day">>
+		<<if !Time.schoolDay and $weather is "snow" and Time.dayState is "day">>
 			<<set $lake_ice_broken to 1>>
 		<</if>>
-		<<if $season is "winter">>
+		<<if Time.season is "winter">>
 			<<if $lake_ice_broken is undefined>>
 				<<link [[수면으로|Lake Underwater Ice]]>><</link>>
 				<br>
@@ -416,7 +416,7 @@
 <</if>>
 <<if _leave>>
 	<<if $museumAntiques.antiques.antiqueivorynecklace is "notFound">>
-		<<link [[목걸이를 가져간다|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><</link>>
+		<<link [[Take the necklace|Lake Ruin Ivory]]>><<set $antiquemoney += 2000>><<museumAntiqueStatus "antiqueivorynecklace" "found">><<set $necklaceThief to "player">><</link>>
 		<br>
 	<</if>>
 	<<link [[떠난다|Lake Ruin Deep]]>><<set $phase to 0>><</link>>
@@ -427,6 +427,9 @@
 <<effects>>
 당신은 그 목걸이를 대좌에서 들어올린다. 그 제작솜씨는 거장다웠고, 누군가에게는 이것이 대단한 의미를 가진다는 것을 느낀다.
 <br><br>
+<<if C.npc["Ivory Wraith"].init is 1>>
+	<<set C.npc["Ivory Wraith"].lust to 20>>
+<</if>>
 <<if isBloodmoon()>>
 	당신은 갑자기 당신 주위의 벽들이 쿵쾅거리는 소리를 듣는다. <<if $wraith.seen gte 1>>익숙한<<else>>낯설은<</if>> 목소리가 비명지르며, 무엇인가가 당신의 팔과 다리를 잡은 것 같은 느낌이 든다. 당신은 본능적으로 팔다리를 마구 흔들며 물 속으로 다시 들어간다. <<trauma 12>><<ggtrauma>>
 	<br><br>
@@ -597,7 +600,7 @@
 		<br>
 	<<elseif $rng gte 51>>
 		당신은 항아리 속에 손을 넣는다. 밑에 보라색 가루가 있다. 당신은 더듬다가 그것을 건드렸고, 그것이 당신의 팔을 휘감는다. 몸이 달아오른다.
-		<<gstress>><<stress 3>><<garousal>><<arousal 600>>
+		<<gstress>><<stress `$swarmdisable is "t" and $rng gte 78 ? 6 : 3`>><<garousal>><<arousal 600>>
 		<br><br>
 		<<if $lakeruinkey is 1>>
 			<<link [[청동 열쇠를 사용한다|Lake Ruin Door]]>><<wateraction>><</link>><<loxygen>>
@@ -749,7 +752,7 @@
 		<br><br>
 	<</if>>
 
-	<<if $worn.genitals.name is "naked" and _goldchastity>>
+	<<if $worn.genitals.name is "naked" and _goldchastity and playerBellySize() lte 7>>
 		<<link [[입는다|Lake Gold Chastity Belt]]>><<wateraction>><</link>><<loxygen>>
 		<br>
 	<</if>>

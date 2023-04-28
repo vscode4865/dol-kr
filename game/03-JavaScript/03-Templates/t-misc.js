@@ -113,9 +113,7 @@ Template.add("animals", () =>
 );
 
 /* ?garden */
-Template.add("garden", () =>
-	either("꽃들을 잘라낸다", "나무들을 잘라낸다", "덤불들을 잘라낸다", "꽃들에게 물을 준다", "잡초들을 제거한다")
-);
+Template.add("garden", () => either("꽃들을 잘라낸다", "나무들을 잘라낸다", "덤불들을 잘라낸다", "꽃들에게 물을 준다", "잡초들을 제거한다"));
 
 /* ?admires */
 Template.add("admires", () => either("음흉하게 쳐다본다", "감상한다", "훑어본다", "유심히 쳐다본다"));
@@ -153,6 +151,4 @@ Template.add("gwylanItem", () =>
 );
 
 /* ?sin */
-Template.add("sin", () =>
-	{T.trResult = either("오만", "분노", "질투", "음욕", "탐욕", "인색", "나태"); getPostNum(T.trResult); return T.trResult;}
-);
+Template.add("sin", () => {T.trResult = either("오만", "분노", "질투", "음욕", "탐욕", "인색", "나태"); getPostNum(T.trResult); return T.trResult;});

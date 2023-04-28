@@ -2,8 +2,8 @@
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>>
 
 <<if $poolroomstate is "own">>
-	<<if $time gte ($hour * 60 + 50)>>
-		<<if $swimmingattended is 1>>
+	<<if Time.minute gte 45>>
+		<<if $daily.school.attended.swimming>>
 			당신은 수영장에 들어간다.
 		<br><br>
 			수업이 막 끝났다. 몇몇 뒤처진 학생들이 탈의실로 돌아가고 있다. 메이슨은 뒤에 남아있는 수건들을 정리하고 있다.
@@ -19,11 +19,11 @@
 		<</if>>
 		<<else>>
 			<<include "School Swimming Late">>
-			<<set $swimmingattended to 2>><!-- still a missed lesson -->
+			<<set $daily.school.swimmingLate to true>><!-- still a missed lesson -->
 		<</if>>
 	<<elseif $exposed gte 2 and $swimall is 1>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			당신은 수영 수업에 다시 들어온다.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 			메이슨은 그 즉시 당신의 묶인 <<if $rightarm is "bound" or $leftarm is "bound">>팔<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">>과 <</if>><<if $feetuse is "bound">>다리를<<else>>을<</if>> 본다. "그런 상태로 수영하는 건 안전하지 않단다."
@@ -33,7 +33,7 @@
 		<br><br>
 		<<link [[다음|Swimming Lesson]]>><<endevent>><</link>>
 			<br>
-		<<elseif $time lte ($hour * 60 + 5)>>
+		<<elseif Time.minute lte 5>>
 			당신은 수영장에 들어간다.
 			메이슨은 수영장 옆에 서서 자신의 몸을 가린 채로, 학생들이 들어오는 동안 스트레칭을 하라 말하고 있다.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
@@ -76,7 +76,7 @@
 		<</if>>
 	<<elseif $swimall is 1>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			당신은 수영 수업에 다시 들어간다.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				메이슨은 그 즉시 당신의 묶인 <<if $rightarm is "bound" or $leftarm is "bound">>팔<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">>과 <</if>><<if $feetuse is "bound">>다리를<<else>>을<</if>> 본다. "뭐... 너도 알겠지만 그런 상태로 수영하는 건 안전하지 않단다."
@@ -97,10 +97,10 @@
 			<<link [[알몸으로 수영한다|Swimming Lesson]]>><<schoolpoolundress>><<endevent>><</link>>
 		<</if>>
 	<<elseif ($worn.under_lower.type.includes("swim") or $worn.lower.type.includes("swim"))
-	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and ($player.gender_appearance is "m" or $swimCrossdressPermission is true)))
+	and ($worn.under_upper.type.includes("swim") or $worn.upper.type.includes("swim") or ($worn.under_upper.type.includes("naked") and $worn.upper.type.includes("naked") and ($player.gender_appearance is "m" or $daily.swimCrossdressPermission)))
 	and (($worn.upper.type.includes("naked") or $worn.upper.type.includes("swim")) and ($worn.lower.type.includes("naked") or $worn.lower.type.includes("swim")))>>
 		<<npc Mason>><<person1>>
-		<<if $swimmingattended is 1>>
+		<<if $daily.school.attended.swimming>>
 			당신은 수영 수업에 다시 들어간다.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
 				메이슨은 그 즉시 당신의 묶인 <<if $rightarm is "bound" or $leftarm is "bound">>팔<</if>><<if ($rightarm is "bound" or $leftarm is "bound") and $feetuse is "bound">>과 <</if>><<if $feetuse is "bound">>다리를<<else>>을<</if>> 본다. "뭐... 너도 알겠지만 그런 상태로 수영하는 건 안전하지 않단다."
@@ -110,7 +110,7 @@
 			<br><br>
 			<<link [[다음|Swimming Lesson]]>><<endevent>><</link>>
 			<br>
-		<<elseif $time lte ($hour * 60 + 5)>>
+		<<elseif Time.minute lte 5>>
 			당신은 수영장에 들어간다.
 			메이슨은 수영장 옆에 서서, 학생들이 들어오는 동안 스트레칭을 하라 말하고 있다.
 			<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
@@ -163,14 +163,14 @@
 			<br>
 		<</if>>
 		<<if $player.gender is "f" or ($player.gender is "h" and $player.gender_appearance is "f")>>
-			<<if $swimCrossdressPermission is undefined>>
+			<<if !$daily.swimCrossdressPermission>>
 				<<link [[남학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><</link>>
 				<br>
 		<</if>>
 			<<link [[갈아입을 수영복이 없다고 한다|School Pool Spare]]>><</link>>
 			<br>
 		<<else>>
-			<<if $swimCrossdressPermission is undefined>>
+			<<if !$daily.swimCrossdressPermission>>
 				<<if ($worn.upper.type.includes("naked") and $worn.under_upper.type.includes("naked")) and
 				($worn.lower.type.includes("swim") or ($worn.lower.type.includes("naked") and $worn.under_lower.type.includes("swim")))>>
 					<<link [[남학생용 수영복 밖에 없다고 한다|School Pool Wrong]]>><<set $phase to 1>><</link>>
@@ -350,7 +350,7 @@
 
 :: Swimming Lesson
 <<set $outside to 0>><<set $location to "pool">><<schooleffects>><<effects>><<set $phase to 0>>
-<<set $swimmingattended to 1>>
+<<set $daily.school.attended.swimming to true>>
 
 <<if $swimnudecounter gte 10 and $swimall isnot 1>>
 	<<npc Leighton>><<person1>> 레이턴이 수영장에 몹시 화가 난 상태로 난입한다. "메이슨!" <<HePost "이">> 외친다. "이게 무슨 일입니까! 왜 이 반 학생들은 알몸으로 수영하고 있죠?"
@@ -366,7 +366,7 @@
 
 	<<link [[다음|Pool Leighton Nude Punishment]]>><<pass 5>><</link>>
 <<else>>
-	<<if $time lte ($hour * 60 + 5)>>
+	<<if Time.minute lte 5>>
 		<<if $swimall is 1 and $exposed gte 2>>
 			당신은 <<lewdnessPost>>에 대해서 딱히 신경쓰지 않는다. 이 시점에서 이미 모두가 벗고 있다.
 			<br><br>
@@ -412,7 +412,7 @@
 <</if>>
 
 :: School Pool Wrong
-<<set $outside to 0>><<set $location to "pool">><<set $swimCrossdressPermission to true>><<set _alreadyWearing to false>><<schooleffects>><<effects>>
+<<set $outside to 0>><<set $location to "pool">><<set $daily.swimCrossdressPermission to true>><<set _alreadyWearing to false>><<schooleffects>><<effects>>
 
 당신은 선생님만이 들을 수 있도록 낮은 목소리로 말한다.
 
@@ -602,7 +602,7 @@
 		<<link [[다음|Swimming Lesson]]>><</link>>
 		<br>
 	<<elseif $exposed gte 1>>
-		당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, 낡은 <<if $phase is 9>>여학생용 수영복<<else>>반바지 수영복<</if>>을 입는다.
+		You <<nervously>> undress and tuck your clothes away inside the cupboard, before slipping on the tattered <<if $phase is 1>>swimsuit<<else>>swim shorts<</if>>.
 		당신은 당신의 <<breasts_ rul>> 내려다본다; 당신이 남학생으로서 들어갈 확률은 없다. 당신은 문을 살짝 열고 그 틈으로 살짝 내다본다.
 		밖에는 30명 정도 되는 학생에 선생님까지 계시다. 합류하지 않으면 곤란한 일에 휘말리게 될 것이지만, 이렇게 많은 사람들 앞에서 알몸을 드러내도 괜찮을까?
 		<br><br>
@@ -611,7 +611,7 @@
 		<br>
 		<<link [[별 다른 선택지가 없어|School Pool Crossdress]]>><<set $phase to 2>><</link>>
 	<<elseif $exposed lte 0>>
-		당신은 <<nervously>> 옷을 벗고는 입고 있었던 옷은 선반 위에 쑤셔박은 뒤, 낡은 <<if $phase is 9>>여학생용 수영복<<else>>반바지 수영복<</if>>을 입는다.
+		You <<nervously>> undress and tuck your clothes away inside the cupboard, before slipping on the tattered <<if $phase is 1>>swimsuit<<else>>swim shorts<</if>>.
 		<br><br>
 
 		당신은 당당히 수영장에 들어선다. 몇몇이 고개를 돌려 당신을 쳐다보나, 일단 물 속에 들어가니 관심을 끊는다.
@@ -708,7 +708,7 @@
 		<</if>>
 	<</if>>
 <</if>>
-	<<if $time gte ($hour * 60 + 5) and $time lte ($hour * 60 + 57)>>
+	<<if Time.minute gte 5 and Time.minute lte 57>>
 	<<else>>
 		<<if $player.gender_appearance is "m">>
 			<<link [[여학생들이 나가기를 기다린다 (0:05)|School Pool]]>><<pass 5>><</link>>

@@ -4,7 +4,7 @@
 		<<if $player.breastsize lte 0>>
 			<<set _trResult to "유두">>
 		<<else>>
-			<<set _trResult to setup.breastsizes[$player.breastsize] + " 가슴">>
+			<<set _trResult to setup.breastsizes[$player.breastsize] + " 유방">>
 		<</if>>
 	<<elseif $debugdisable is "f">>
 		<<set _trResult to "ERROR - $$player.breastsize 가 숫자가 아님: $player.breastsize">>
@@ -17,6 +17,72 @@
         <</if>>
     <</if>>
 <</silently>><<breastsensitivity>><<print _trResult>><</widget>>
+
+<!--_args[0] - uses "pc", the named npc's name, or a number-->
+<!--_args[1] - forces the pregnancy description-->
+<<widget "bellyDescriptionPost">><<silently>>
+	<<if !isNaN(_args[0])>>
+		<<set $_size to _args[0]>>
+	<<elseif _args[0] is "pc">>
+		<<set $_size to $bellySizeDebug || playerBellySize()>>
+		<<set $_pregnant to ($bellySizeDebug isnot undefined) || playerIsPregnant()>>
+	<<elseif C.npc[_args[0]]>>
+		<<set $_size to npcBellySize(_args[0])>>
+		<<set $_pregnant to npcIsPregnant(_args[0])>>
+	<</if>>
+	
+	<<if _args[1] isnot undefined and typeof _args[1] is "string" and _args[1].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<<else>>
+		<<set $_force to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+	<</if>>
+
+	<<unset _trResult>>
+	<<if $_pregnant or $_force>>
+		<<switch $_size>>
+			<<case 7 8 9 10 11>><<set _trResult to "살짝 튀어나온 임신한 배">>
+			<<case 12 13 14>><<set _trResult to "커져가는 임신한 배">>
+			<<case 15 16 17 18>><<set _trResult to "임신한 배">>
+			<<case 19 20 21 22 23 24>><<set _trResult to "크게 튀어나온 임신한 배">>
+			<<default>><<set _trResult to "배">>
+		<</switch>>
+	<<else>>
+		<<switch $_size>>
+			<<case 7 8 9 10 11>><<set _trResult to "살짝 튀어나온 배">>
+			<<case 12 13 14>><<set _trResult to "불룩한 배">>
+			<<case 15 16 17 18>><<set _trResult to "커다란 배">>
+			<<case 19 20 21 22 23 24>><<set _trResult to "툭 튀어나온 배">>
+			<<default>><<set _trResult to "배">>
+		<</switch>>
+	<</if>>
+	<<trPost 1 $_post $_sep>>
+<</silently>><<if _trResult>>_trResult<</if>><</widget>>
+
+<<widget "chestPost">><<silently>>
+	<<if Number.isInteger($player.breastsize)>>
+		<<if $player.breastsize lte 0>>
+			<<set _trResult to "가슴">>
+		<<else>>
+			<<set _trResult to setup.breastsizes[$player.breastsize] + " 유방">>
+		<</if>>
+		<<trPost 0 _args[0] _args[1]>>
+	<<elseif $options.debugdisable is "f">>
+		<<set _trResult to "ERROR - $$player.breastsize is not a number: $player.breastsize">>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "chestsimplePost">><<silently>>
+	<<if Number.isInteger($player.breastsize)>>
+		<<if $player.breastsize lte 0>>
+			<<set _trResult to "가슴">>
+		<<else>>
+			<<set _trResult to "유방">>
+		<</if>>
+		<<trPost 0 _args[0] _args[1]>>
+	<<elseif $options.debugdisable is "f">>
+		<<set _trResult to "ERROR - $$player.breastsize is not a number: $player.breastsize">>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
 
 <<widget "nipplePost">><<silently>>
 	<<set _trResult to "젖꼭지">><<if _args[0] isnot undefined>><<trPost 1 _args[0] _args[1]>><</if>>
@@ -60,11 +126,14 @@
 
 	<<set $_virgin to "">>
 	
-	<<if $worn.genitals.type.includes("chastity") and !$_arg and _chastityBreak isnot 1>>
+	<<if playerChastity("hidden") and !$_arg and _chastityBreak isnot 1>>
 		<<trClothes "genitals" $worn.genitals.name "name" $_post $_sep>>
 	<<else>>
 		<<genitalsensitivity>><<set _trResult to _text_output>>
 		<<if $player.penisExist>>
+			<<if playerChastity("cage")>>
+				<<set _trResult += "갇혀있는 ">>
+			<</if>>
 			<<if $player.virginity.penile is true and $_arg isnot 2>>
 				<<set _trResult += "동정 ">>
 			<</if>>
@@ -112,18 +181,18 @@
 	<<else>>
 		<<set $_arg to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
 	<</if>>
-    <<if $player.penisExist>>
-        <<penisPost $_post $_sep>>
-    <<else>>
+	<<if $player.penisExist>>
+		<<penisPost $_post $_sep>>
+	<<else>>
 		<<set _trResult to "">>
 		<<if !$_arg>>
 			<<genitalsensitivity>><<set _trResult += _text_output>>
 		<</if>>
-        <<set _trResult += "클리토리스">>
-        <<if $_post isnot undefined>>
-            <<trPost 1 $_post $_sep>>
-        <</if>>
-    <</if>>
+		<<set _trResult += "클리토리스">>
+		<<if $_post isnot undefined>>
+			<<trPost 1 $_post $_sep>>
+		<</if>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 
@@ -248,13 +317,15 @@
 		<<set $_npcGen to $index>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
 	<</if>>
 <</if>>
-<<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
-	<<set _trResult to "갇혀있는 자지">><<trPost 1 $_post $_sep>>
-<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
-	<<trClothes "genitals" $NPCList[$_npcGen].chastity.penis "name" $_post $_sep>>
-<<else>>
-	<<trPenisdesc $NPCList[$_npcGen].penisdesc $_post $_sep>>
-<</if>>
+	<<if !$NPCList[$_npcGen]>>
+		<<set _trResult to `<span class="red">error-npcPenis-${$_npcGen}</span>`>>
+	<<elseif $NPCList[$_npcGen].chastity.penis is "chastity cage">>
+		<<set _trResult to "갇혀있는 자지">><<trPost 1 $_post $_sep>>
+	<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
+		<<trClothes "genitals" $NPCList[$_npcGen].chastity.penis "name" $_post $_sep>>
+	<<else>>
+		<<trPenisdesc $NPCList[$_npcGen].penisdesc $_post $_sep>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "npcPenisSimplePost">><<silently>>
@@ -270,7 +341,9 @@
 			<<set $_npcGen to $index>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
 		<</if>>
 	<</if>>
-	<<if $NPCList[$_npcGen].chastity.penis is "chastity cage">>
+	<<if !$NPCList[$_npcGen]>>
+		<<set _trResult to `<span class="red">error-npcPenisSimple-${$_npcGen}</span>`>>
+	<<elseif $NPCList[$_npcGen].chastity.penis is "chastity cage">>
 		<<set _trResult to "갇혀있는 자지">><<trPost 1 $_post $_sep>>
 	<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
 		<<trClothes "genitals" $NPCList[$_npcGen].chastity.penis "name" $_post $_sep>>
@@ -295,7 +368,9 @@
 		<</if>>
 	<</if>>
 	<<set $_ppcolor to "tan">>
-	<<if $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
+	<<if !$NPCList[$_npcGen]>>
+		<<set _trResult to `<span class="red">error-npcPenisColored-${$_npcGen}</span>`>>
+	<<elseif $NPCList[$_npcGen].chastity.penis.includes("chastity")>>
 		<<set $_ppcolor to "gray">>
 		<<trClothes "genitals" $NPCList[$_npcGen].chastity.penis "name" $_post "sep">>
 	<<elseif npcHasStrapon($_npcGen)>>
@@ -319,7 +394,9 @@
 		<<set _npcGen to $index>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
 	<</if>>
 <</if>>
-<<if $NPCList[_npcGen].chastity.vagina.includes("chastity")>>
+<<if !$NPCList[_npcGen]>>
+	<<set _trResult to `<span class="red">error-npcVagina-${_npcGen}</span>`>>
+<<elseif $NPCList[_npcGen].chastity.vagina.includes("chastity")>>
 	<<trClothes "genitals" $NPCList[_npcGen].chastity.vagina "name" $_post $_sep>>
 <<else>>
 	<<set _trResult to "보지">><<trPost 1 $_post $_sep>>
@@ -336,7 +413,9 @@
 		<<set _npcGen to $index>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
 	<</if>>
 <</if>>
-<<if $NPCList[_npcGen].chastity.anus.includes("shield")>>
+<<if !$NPCList[_npcGen]>>
+	<<set _trResult to `<span class="red">error-npcAnus-${_npcGen}</span>`>>
+<<elseif $NPCList[_npcGen].chastity.anus.includes("shield")>>
 	<<trClothes "genitals" $NPCList[_npcGen].chastity.anus "name" $_post $_sep>>
 <<else>>
 	<<set _trResult to "엉덩이">><<trPost 1 $_post $_sep>>
@@ -357,7 +436,9 @@
 			<<break>>
 		<</if>>
 	<</for>>
-	<<if $NPCList[_npcGen].penis isnot "none" and $NPCList[_npcGen].vagina isnot "none">>
+	<<if !$NPCList[_npcGen]>>
+		<<set _trResult to `<span class="red">error-npcGenitals-${_npcGen}</span>`>>
+	<<elseif $NPCList[_npcGen].penis isnot "none" and $NPCList[_npcGen].vagina isnot "none">>
 		<<if $_simple is "simple">>
 			<<npcPenisSimplePost _npcGen "과">> <<npcVaginaPost _npcGen $_post $_sep>>
 		<<else>>
@@ -384,7 +465,9 @@
 			<<set _npcGen to $index>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
 		<</if>>
 	<</if>>
-	<<if $NPCList[_npcGen].pronoun is "m" or $NPCList[_npcGen].breastsize is 0>>
+	<<if !$NPCList[_npcGen]>>
+		<<set _trResult to `<span class="red">error-npcChest-${_npcGen}</span>`>>
+	<<elseif $NPCList[_npcGen].pronoun is "m" or $NPCList[_npcGen].breastsize is 0>>
 		<<set _trResult to "가슴">><<trPost 0 $_post $_sep>>
 	<<else>>
 		<<trBreastsdesc $NPCList[_npcGen].breastsdesc $_post $_sep>>

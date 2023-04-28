@@ -96,7 +96,7 @@
 	<br>
 
 <<else>>
-	<<if $hour is $closinghour>>
+	<<if Time.hour is $closinghour>>
 		닫을 시간이다. 샘이 모든 사람을 밖으로 내보내고 있다.
 		<<if $exposed gte 1>>
 			이런 옷으로는 상당히 노출된 상태나 다름 없다는 걸 깨닫자 공포에 몸이 찌릿거린다.
@@ -129,14 +129,14 @@
 
 	<<if $openinghours is 1 and $exposed lt 1 and $oceanbreezejob is 1>>
 		<<if $chef_state is 0>>
-			<<link [[일자리 제의를 받아들인다|Chef Work Accept]]>><</link>>
+			<<ind>><<link [[Accept job offer|Chef Work Accept]]>><</link>>
 			<br>
 		<<elseif $chef_state gte 1>>
-			<<link [[셰프로 일한다 (1:00)|Chef Work]]>><</link>>
+			<<ind>><<link [[Work as a chef (1:00)|Chef Work]]>><</link>>
 			<br>
 		<</if>>
 		<<if $chef_state is 3>>
-			<<link [[샘의 제의를 받아들인다|Chef Photographer]]>><</link>>
+			<<ind>><<link [["Accept Sam's offer"|Chef Photographer]]>><</link>>
 			<br>
 		<</if>>
 		<<if $player.gender_appearance is "m">>
@@ -158,17 +158,33 @@
 	<</if>>
 	<<if $money gte 700>>
 		<<icon "beer_bottle.png">>
-		<<if $season is "winter">>
-			<<link [[윈터 에일을 주문한다 (0:10 £7)|Cafe Winter Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 100>><<pass 10>><</link>><<lstress>><<galcohol>>
+		<<if Time.season is "winter">>
+			<<if playerAwareTheyArePregnant()>>
+				You can't bring yourself to drink winter ale while you know you're with child.
+			<<else>>
+				<<link [[윈터 에일을 주문한다 (0:10 £7)|Cafe Winter Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 100>><<pass 10>><</link>><<lstress>><<galcohol>>
+			<</if>>
 			<br>
-		<<elseif $season is "spring">>
-			<<link [[과일 에일을 주문한다 (0:10 £7)|Cafe Spring Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 60>><<pass 10>><</link>><<lstress>><<galcohol>>
+		<<elseif Time.season is "spring">>
+			<<if playerAwareTheyArePregnant()>>
+				You can't bring yourself to drink fruity ale while you know you're with child.
+			<<else>>
+				<<link [[과일 에일을 주문한다 (0:10 £7)|Cafe Spring Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 60>><<pass 10>><</link>><<lstress>><<galcohol>>
+			<</if>>
 			<br>
-		<<elseif $season is "summer">>
-			<<link [[섄디 맥주를 주문한다 (0:10 £7)|Cafe Summer Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 40>><<pass 10>><</link>><<lstress>><<galcohol>>
+		<<elseif Time.season is "summer">>
+			<<if playerAwareTheyArePregnant()>>
+				You can't bring yourself to drink shandy ale while you know you're with child.
+			<<else>>
+				<<link [[섄디 맥주를 주문한다 (0:10 £7)|Cafe Summer Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 40>><<pass 10>><</link>><<lstress>><<galcohol>>
+			<</if>>
 			<br>
 		<<else>>
-			<<link [[어텀 에일을 주문한다 (0:10 £7)|Cafe Autumn Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 80>><<pass 10>><</link>><<lstress>><<galcohol>>
+			<<if playerAwareTheyArePregnant()>>
+				You can't bring yourself to drink autumn ale while you know you're with child.
+			<<else>>
+				<<link [[어텀 에일을 주문한다 (0:10 £7)|Cafe Autumn Ale]]>><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 80>><<pass 10>><</link>><<lstress>><<galcohol>>
+			<</if>>
 			<br>
 		<</if>>
 	<</if>>
@@ -196,7 +212,7 @@
 	<</if>>
 <</if>>
 
-<<if $openinghours is 0 and $hour isnot $closinghour and $oceanbreezetheft isnot 1>>
+<<if $openinghours is 0 and Time.hour isnot $closinghour and !$weekly.theft.oceanBreeze>>
 	<<link [[금전 등록기를 확인한다|Ocean Breeze Register]]>><</link>>
 	<br>
 <</if>>
@@ -273,9 +289,14 @@
 :: Ocean Breeze Work
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 <<set $NPCName[$NPCNameList.indexOf("Sam")].love = Math.clamp($NPCName[$NPCNameList.indexOf("Sam")].love, -50, 50)>>
-<<rng>>
-
-<<if $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
+<<rng 111>>
+<<if $rng gte 101>>
+	Sam asks you to bring plates of food out to a large table of customers.
+	<br><br>
+	<<link [[Make multiple trips|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Take them all out at once|Ocean Breeze Plates]]>><<set $phase to 1>><</link>><<dancedifficulty 200 800>>
+<<elseif $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure)>>
 		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
@@ -320,7 +341,28 @@
 
 <<elseif $rng gte 81>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure)>>
+	<<if pregnancyBellyVisible() and $lactating is 1 and $breastfeedingdisable is "f">>
+		<<generate1>><<generate2>><<person1>>
+		A voice calls out to you. "Oi, <<if $player.gender_appearance is "m">>waiter<<else>>waitress<</if>>!" you hear from a corner of the cafe. You approach the table, and find the voice belonging to a <<person>> who regards you with rage once you arrive. A <<person2>><<person>> sits in front of <<him>>.
+		<br><br>
+
+		"I asked for a deluxe cream bun, and instead I got this!" the <<person1>><<person>> says. "You call this deluxe? There's barely any cream on them! I paid fifty quid for this! Are you all fucking stupid or are you just taking the piss?" <<He>> continues with <<his>> rant, forcing you to listen whenever you try to look away.
+		<br><br>
+
+		The <<person2>><<person>> stays quiet during <<his>> friend's verbal onslaught, but <<his>> eyes remain fixated on your breasts. "Hold on, you're pregnant aren't you?" <<he>> asks, finally interrupting the tirade. "Those tits must be full right about now, why don't you add your own special touch to the buns so my friend here will stop complaining?" The <<person1>><<person>> simmers down, seemingly content with the proposition.
+		<br><br>
+
+		<<if $milk_amount gte 1>>
+			<<link [[Agree|Ocean Breeze Pregnant Milk Accept]]>><<npcincr Sam love 2>><</link>><<glove>><<promiscuous1>>
+			<br>
+		<<else>>
+			<span class = "pink">You don't have enough milk left.</span>
+			<br>
+		<</if>>
+		<<link [[Refuse|Ocean Breeze Pregnant Milk Refuse]]>><</link>>
+		<br>
+
+	<<elseif $danger gte (9900 - $allure)>>
 		<<generate1>><<person1>>당신은 빵을 주문한 <<personPost>>에게 서빙한다. <<HePost "은">> 크림을 핥는다. "엄청 맛있는데." <<hePost "이">> 깜짝 놀란다. 
 		<<HePost "은">> 의자를 뒤로 빼고는 그 앞에 접시를 가져다 놓는다. "자, 앉아서 한 번 맛을 봐봐. 내 선물이야." 카페는 그렇게 바쁘지 않다.
 		<br><br>
@@ -452,7 +494,7 @@
 		<br>
 		"우와. 진짜로, 아무나? 아무나 상관 없다는-"
 		<br>
-		"진짜로 아무나야. 야." <<hePost "이">> 당신을 본다. "거기 너. <<if $beauty gte($beautymax / 7) * 2>>너 귀엽네. <</if>>강간당한 적 있지, 그치?"
+		"Anyone. Hey," <<he>> looks at you. "You. <<if pregnancyBellyVisible()>>You're pregnant.<<elseif $beauty gte($beautymax / 7) * 2>>You're cute.<</if>> You've been raped, right?"
 		<br><br>
 
 		<<if ($rapestat + $beastrapestat + $tentaclerapestat) gt 0>>
@@ -628,6 +670,37 @@
 	<</if>>
 
 <</if>>
+
+:: Ocean Breeze Plates
+<<if $phase is 0>>
+	It takes a few minutes, but you manage to get everything to the table.
+	<br><br>
+	남은 업무 시간 동안에는 별다른 일이 없다. <<moneyGain 5>>를 얻었다.
+	<br><br>
+<<elseif $phase is 1>>
+	<<if $danceSuccess>>
+		<<set $tipmod to 0.2>><<tipset "serving">>
+		
+		<<set $tip += 500>>
+		<<set $tip += 100>>
+
+		You load the plates onto serving trays and <<dancetext>> balance them on your shoulders, careful not to let anything spill. You manage to get everything to the table in one piece.
+		<br><br>
+		<<npc Sam>><<person1>>Sam gives you a thumbs-up as <<he>> walks by.<<npcincr Sam love 1>><<glove>>
+		<br><br>
+		남은 업무 시간 동안에는 별다른 일이 없다. 누군가 당신에게 팁을 남겨뒀다.<<tipreceive>>
+		<br><br>
+	<<else>>
+		You load the plates onto serving trays and <<dancetext>> balance them on your shoulders, careful not to let anything spill. You lose your balance on your way out of the kitchen, however, and accidentally dump several plates' worth of food onto the floor. Sam gives you a disapproving look.<<npcincr Sam love -1>><<llove>><<stress 6>><<gstress>>
+		<br><br>
+		You sigh as you begin cleaning up your mess.
+		<br><br>
+		남은 업무 시간 동안에는 별다른 일이 없다. <<moneyGain 5>>를 얻었다.
+		<br><br>
+	<</if>>
+<</if>>
+<<pass 1 hour>>
+<<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
 
 :: Ocean Breeze Soup Ignore
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
@@ -1195,8 +1268,8 @@
 
 당신은 <<personPost "이">> 계속하게 냅둔다.
 
-<<if $worn.genitals.type.includes("chastity")>>
-	<<HePost "은">> 당신의 정조대를 보고는 눈을 크게 뜬다.
+<<if playerChastity("hidden")>>
+	<<His>> eyes widen as <<he>> exposes your <<print $worn.genitals.name>>.
 	<<promiscuity1>>
 
 	"완전히 막혀있잖아." <<hePost "이">> 말한다. "맛 좀 보려고 했는데 말이야." <<HePost "은">> 다시 한 번 사라지더니, <<his_ yi>> 의자 옆으로 나온다. 
@@ -1212,7 +1285,7 @@
 		"정말 아름다워." <<HePost "은">> 그렇게 말하고는, 황홀감에 젖어 눈을 감은 뒤, 당신의 자지의 끝부분부터 기둥까지 키스를 하고는 곧 음순에도 키스한다.
 		<br><br>
 
-		그 바람에 당신은 발기한다. <<HePost "은">> 뒤로 물러나 그 광경을 감상한다.
+		<<if playerChastity("cage")>>You erect in response. <</if>><<He>> pulls away and examines you.
 		<<if $player.virginity.penile is true or $player.virginity.vaginal is true>>
 			"너 동정이구나." <<hePost "이">> 경외심이 서린 눈으로 당신의 가랑이를 바라보며 속삭인다. "정말로 귀한 건데 말이야. 내가 가져서는 안되겠지. 조심스럽게 해야겠어."
 		<<else>>
@@ -1225,7 +1298,7 @@
 		<<promiscuity1>>
 
 		<<if $player.penisExist>>
-			그 바람에 당신은 발기한다. <<HePost "은">> 뒤로 물러나 그 광경을 감상한다.
+			<<if playerChastity("cage")>>You erect in response. <</if>><<He>> pulls away and examines you.
 			<<if $player.virginity.penile is true>>
 				"너 동정이구나." <<hePost "이">> 경외심이 서린 눈으로 당신의 가랑이를 바라보며 속삭인다. "정말로 귀한 건데 말이야. 내가 가져서는 안되겠지. 조심스럽게 해야겠어."
 			<<else>>
@@ -1272,6 +1345,58 @@
 <br><br>
 
 <<link [[다음|Ocean Breeze]]>><<endevent>><<pass 1 hour>><</link>>
+<br>
+
+:: Ocean Breeze Pregnant Milk Accept
+<<set $outside to 0>><<set $location to "cafe">><<effects>>
+You nod at the pair, before displacing your
+<<if $worn.upper.type.includes("naked")>>
+	<<underupperstrip>>
+	$worn.under_upper.name
+<<else>>
+	<<upperstrip>>
+	$worn.upper.name
+	<<if !$worn.under_upper.type.includes("naked")>>
+		<<underupperstrip>>
+		and $worn.under_upper.name
+	<</if>>
+<</if>>
+and bending over, bringing your <<breasts>> just above the buns. The isolated position of the table lets you comply with their request inconspicuously. You bring your hand to your chest, but it's slapped away by the <<person1>><<person>>.
+<br><br>
+
+"Here, I'll do it myself," <<he>> scoffs. "Don't want you holding out on us again." <<He>> grasps one of your <<breasts>>, squeezing with little regard to your comfort. The <<person2>><<person>>, not wanting to be left out, grabs your other breast and pulls just as hard, as if competing with <<his>> friend. It doesn't take long for you to start lactating.
+<<promiscuity1>><<breastfeed>>
+
+The pair continue to milk you until their buns are coated in a generous amount of your milk, leaving your nipples sore from the exertion.
+"I changed my mind," the <<person1>><<person>> says, now in a much happier demeanour. "The service here is second to none. Thanks, <<girl>>." They begin to eat their buns, finally leaving you to fix your clothing before anyone else has a chance to see you.
+<br><br>
+
+Sam walks past you. "They sure sounded angry, thanks for dealing with them. Remember, the client's always right!"
+<br><br>
+<<set $tipmod to 0.2>><<tipset "serving">>
+
+<<set $tip += 500>>
+<<set $tip += 100>>
+
+The rest of the shift passes uneventfully. Someone left you a tip. <<tipreceive>><<pass 1 hour>>
+<br><br>
+
+<<link [[다음|Ocean Breeze]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Ocean Breeze Pregnant Milk Refuse
+<<set $outside to 0>><<set $location to "cafe">><<effects>>
+You shake your head and walk away from them. "Hey, I'm talking to you, <<bitch>>!" The <<person1>><<person>> throws insults at you.
+<br><br>
+
+You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, and stares at you in disappointment before moving on.
+<br><br>
+			
+남은 업무 시간 동안에는 별다른 일이 없다. <<moneyGain 5>>를 얻었다.
+<<pass 1 hour>>
+<br><br>
+
+<<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
 <br>
 
 :: Cafe Coffee
@@ -1700,7 +1825,7 @@
 <<elseif currentSkillValue('skulduggery') gte 100>>
 	스스로 노출하고 있자니 등골이 살짝 오싹거리나, 당신은 최대한 흥분하고 있다는 티를 내지 않으려 한다. 
 	<<HePost "이">> 관심을 갖는 걸 확인하자 당신은 조금 더 애태우기로 한다. 
-	<<seatedflashcrotchunderskirt>>. 그 바람에 <<hePost "은">> 당신의 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 뚜렷이 볼 수 있다. 
+	<<flashcrotchunderskirt>> giving <<him>> a clear view of your $worn.under_lower.name covered crotch.
 	<<personPost "은">> 앞에 놓인 <<his_ yi>> 음료를 한 모금 들이키고는 슬쩍 히죽거린다. 아무래도 생각한 것보다 조심스럽지 못했던 것 같다.
 	<br><br>
 	카페에서 처음 보는 사람에게 속옷을 노출하는 것에서 음란한 스릴이 느껴지고, 
@@ -1788,7 +1913,7 @@
 <<rng 50>>
 <<if currentSkillValue('skulduggery') gte (350 + $rng)>>
 	스스로 노출하고 있자니 등골이 살짝 오싹거리나, 당신은 최대한 흥분하고 있다는 티를 내지 않으려 한다. 
-	<<HePost "이">> 관심을 갖는 걸 확인하자 당신은 조금 더 애태우기로 한다. <<seatedflashcrotchunderskirt>>. 그 바람에 <<hePost "은">> 당신의 <<genitalsPost "을">> 뚜렷이 볼 수 있다.
+	Noticing <<his>> increased interest you decide to tease a little more. <<flashcrotchunderskirt>>, giving <<him>> a clear view of your bare <<genitals>>.
 	<br><br>
 	카페에서 처음 보는 사람에게 <<genitalsPost "을">> 노출하는 것에서 음란한 스릴이 느껴진다.
 	<<exhibitionism5>>
@@ -1805,7 +1930,7 @@
 /* are we good enough to at least not provoke mockery at our poor attempts at stealth exhibitionism? */
 <<elseif currentSkillValue('skulduggery') gte 100>>
 	스스로 노출하고 있자니 등골이 살짝 오싹거리나, 당신은 최대한 흥분하고 있다는 티를 내지 않으려 한다. 
-	<<HePost "이">> 관심을 갖는 걸 확인하자 당신은 조금 더 애태우기로 한다. <<seatedflashcrotchunderskirt>>. 그 바람에 <<hePost "은">> 당신의 <<genitalsPost "을">> 뚜렷이 볼 수 있다. 
+	Noticing <<his>> increased interest you decide to tease a little. <<flashcrotchunderskirt>> giving <<him>> a clear view of your bare <<genitals>>.
 	<<personPost "은">> 앞에 놓인 음료를 한 모금 들이키고는 슬쩍 히죽거린다. 아무래도 생각한 것보다 조심스럽지 못했던 것 같다.
 	<br><br>
 	카페에서 처음 보는 사람에게 속옷을 노출하는 것에서 음란한 스릴이 느껴지고, 
@@ -1859,7 +1984,7 @@
 그러고는 일부러 다리를 벌린다. 딱히 상상의 여지가 없을 정도만큼 벌려보이며, 당신은 <<hePost "에게">> 윙크한다. 
 당신의 <<genitalsPost "을">> 보자 <<personPost "은">> 입을 떡 벌린다. 
 몰래 훔쳐보려던 것이 이렇게 대놓고 노출하는 것으로 돌아오게 될 줄은 몰랐던 모양이다. 
-<<seatedflashcrotchunderskirt>>. 그 바람에 <<hePost "은">> 당신의 <<genitalsPost "을">> 뚜렷이 볼 수 있다.
+<<flashcrotchunderskirt>>, giving <<him>> a nice long look at your bare <<genitals>>.
 <br><br>
 카페에서 처음 보는 사람에게 뻔뻔하게 <<genitalsPost "을">> 노출하는 것에서 음란한 스릴이 느껴진다.
 <<exhibitionism5>>
@@ -2167,7 +2292,7 @@
 샘은 고개를 끄덕이나, 몹시 화가 난 눈치다. <<HePost "은">> 다른 직원에게 다가가, 대신 도와줄 수 있냐고 물어본다.
 <br><br>
 
-남은 업무 시간 동안에는 별다른 일이 없다. £5를 얻었다.
+남은 업무 시간 동안에는 별다른 일이 없다. <<moneyGain 5>>를 얻었다.
 <br><br>
 
 <<link [[다음|Ocean Breeze]]>><<endevent>><</link>>

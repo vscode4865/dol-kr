@@ -2,28 +2,28 @@
 
 <<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "oxford">><<getTarget true>>
 당신은 옥스포드 가에 있다. 다양한 건물이 늘어서 있지만, 가장 눈에 띄는 것은 학교다.
-<<if $schoolday is 1>>
-	<<if $daystate is "day">>
+<<if Time.schoolDay>>
+	<<if Time.dayState is "day">>
 		<<if $weather is "rain">>
 			비가 오고 있어도 거리는 부산스럽다.
 		<<elseif $weather is "snow">>
 			거리는 추위에도 불구하고 붐빈다.
 		<<else>>
-			<<if $hour gte 7 and $hour lte 16>>
+			<<if Time.hour gte 7 and Time.hour lte 16>>
 				학교에서 수다 소리와 웃음 소리가 들려온다.
 			<<else>>
 				근처에 학생들이 모여있다.
 			<</if>>
 		<</if>>
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 		근처에 학생들이 모여있다.
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 		몇몇 학생들이 여전히 교복을 입은 채로 모여서 남아있다.
-	<<elseif $daystate is "night">>
+	<<elseif Time.dayState is "night">>
 		도시 한복판에 위치한 탓에 이 시간에도 사람들이 걸어다니고 있다.
 	<</if>>
 <<else>>
-	<<if $daystate is "day">>
+	<<if Time.dayState is "day">>
 		<<if $weather is "rain">>
 			비가 오고 있어도 거리는 부산스럽다.
 		<<elseif $weather is "snow">>
@@ -31,7 +31,7 @@
 		<<else>>
 			많은 자동차와 행인들이 지나다니고 있다.
 		<</if>>
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 		<<if $weather is "rain">>
 			People hurry to work, eager to escape the rain.
 		<<elseif $weather is "snow">>
@@ -39,7 +39,7 @@
 		<<else>>
 			사람들이 직장에 오고 있다.
 		<</if>>
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 		<<if $weather is "rain">>
 			People hurry home, eager to be out of the rain.
 		<<elseif $weather is "snow">>
@@ -47,7 +47,7 @@
 		<<else>>
 			하루의 끝에 사람들이 집으로 돌아가고 있다.
 		<</if>>
-	<<elseif $daystate is "night">>
+	<<elseif Time.dayState is "night">>
 		<<if $weather is "rain">>
 			People are passing through despite the rain and hour.
 		<<elseif $weather is "snow">>
@@ -84,7 +84,7 @@
 	<<link [[다음|Oxford Street]]>><<endevent>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state is "active" and $averyschoolpickup is 0 and $schoolday is 1 and $hour is 15 and $exposed lte 0 and (($NPCName[$NPCNameList.indexOf("Avery")].love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or ($NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and $weekday is 2)) >>
+<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state is "active" and $averyschoolpickup is 0 and Time.schoolDay and Time.hour is 15 and $exposed lte 0 and (($NPCName[$NPCNameList.indexOf("Avery")].love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or ($NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and Time.weekDay is 2))>>
 <<npc Avery>><<person1>>
 <<set $averyschoolpickup to 1>>
 
@@ -115,7 +115,7 @@
 		<</if>>
 		<<set _robin to statusCheck("Robin")>>
 		<<if $robindebtevent gte 1>>
-		<<elseif $hour is 15 and _robin_location is "school" and $exposed lte 0>>
+		<<elseif Time.hour is 15 and _robin_location is "school" and $exposed lte 0>>
 			당신은 로빈이 상점 창문을 들여다보는 걸 본다.
 			<br><br>
 			<<if _robin.trauma gte 80>>
@@ -130,22 +130,26 @@
 				<br><br>
 			<</if>>
 		<</if>>
-		<<if $schoolday is 1 and $hour is 15 and $exposed lte 0 and $weather isnot "rain" and $weather isnot "snow">>
+		<<if Time.schoolDay and Time.hour is 15 and $exposed lte 0 and $weather isnot "rain" and $weather isnot "snow">>
 			근처에서 학생들이 대화를 나누고 있다. 호수에 간다는 것 같다.
 			<br><br>
-			<<link [[동참한다 (0:30)|Lake Journey]]>><<pass 30>><</link>>
+			<<if $town_projects.road gte 4>>
+				<<link [[Join them (0:15)|Lake Journey Road]]>><<pass 15>><</link>>
+			<<else>>
+				<<link [[동참한다 (0:30)|Lake Journey]]>><<pass 30>><</link>>
+			<</if>>
 			<br><br>
 		<</if>>
 		주요 장소
 		<br>
-		<<if $schoolday is 1 and $hour gte 7 and $hour lte 16>>
-			<<schoolicon>><<link [[학교 (0:02)|School Front Playground]]>><<pass 2>><</link>>
+		<<if Time.schoolDay and Time.hour gte 7 and Time.hour lte 16>>
+			<<schoolicon>><<link [[School (0:02)|School Front Courtyard]]>><<pass 2>><</link>>
 			<br>
 		<<else>>
 			<<schoolicon>><<link [[학교 (0:01)|School Locked]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
-		<<if $daystate is "day" and $weekday is 7 or $daystate is "day" and $weekday is 1>>
+		<<if Time.isWeekEnd() and Time.dayState is "day" and $town_projects.diving isnot 3>>
 			<<if $exposed lte 0>>
 				<<museumicon>><<link [[박물관 (0:01)|Museum]]>><<pass 1>><</link>>
 				<br>
@@ -161,7 +165,7 @@
 			<br>
 		<</if>>
 		<br>
-		<<if $exposed gte 1 and $daystate isnot "night">>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
 		<<else>>
 		<<add_link "이동<br>">><<hideDisplay>>
 			<<starfish>>

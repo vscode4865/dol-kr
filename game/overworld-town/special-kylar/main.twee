@@ -46,7 +46,18 @@
 		<br><br>
 	<</if>>
 
-	<<if $location is "school" and $hour isnot 12>>
+	<<if $location is "school" and Time.hour gte 17>>
+		<<if $syndromekylar is 1>>
+			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> looks at you.
+		<<elseif _kylarStatus.includes("Love")>>
+			<<he_ nun>> <<his_ yi>> 시계를 보더니, 이제 가야한다고 말한다. "기다리는 사람들이 있어서." <<he_ nun>> 가는 길에도 당신을 어깨너머로 계속 쳐다본다.
+		<<else>>
+			<<He>> looks at <<his>> watch, mumbles something, then walks away.
+		<</if>>
+		<br><br>
+
+		<<kylaroptionsleave "manor">>
+	<<elseif $location is "school" and Time.hour isnot 12 and $schoolstate isnot "afternoon">>
 		<<if _kylarStatus.includes("Love")>>
 			<<he_ nun>> <<his_ yi>> 시계를 보더니, 이제 가야한다고 말한다. "수업에 늦겠어." <<he_ nun>> 가는 길에도 당신을 어깨너머로 계속 쳐다본다.
 		<<else>>
@@ -55,7 +66,7 @@
 		<br><br>
 
 		<<kylaroptionsleave>>
-	<<elseif ($bus is "starfish" or $bus is "park") and $daystate isnot "day">>
+	<<elseif ($bus is "starfish" or $bus is "park") and Time.dayState isnot "day">>
 		<<if $syndromekylar is 1>>
 			<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "They're waiting for me." <<He>> looks at you.
 		<<elseif _kylarStatus.includes("Love")>>
@@ -66,7 +77,7 @@
 		<br><br>
 
 		<<kylaroptionsleave "manor">>
-	<<elseif $bus is "kylarmanor" and $hour lt 18>>
+	<<elseif $bus is "kylarmanor" and Time.hour lt 18>>
 		<<unset $kylar_action>>
 		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
 		<br><br>
@@ -101,6 +112,10 @@
 		<<if !$daily.kylar.walkKiss and $kylar_action is "walk">>
 			<<link [[키스한다|Kylar Walk In The Park End 2]]>><</link>><<glove>><<glust>><<llksuspicion>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
 			<br>
+		<</if>>
+		<<if $location is "school" and $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown and $schoolstate is "afternoon">>
+			<<link [[Rehearse your roles (2:00)|English Play Rehearse Kylar]]>><<pass 2 hours>><<npcincr Kylar rage -5>><<englishskill 18>><</link>><<llksuspicion>><<gggenglish>><<ggreadiness>>
+			<br><br>
 		<</if>>
 		<<link [[대화한다 (0:15)|Kylar Chat]]>><<pass 15>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><<stress -2>><</link>><<lstress>><<glove>><<lksuspicion>>
 		<br>
@@ -158,8 +173,10 @@
 				<<set $_dest to "Arcade">>
 			<<case "kylarmanor">>
 				<<set $_dest to "Manor Kylar Room">>
+			<<case "rehearsal">>
+				<<set $_dest to "Oxford Street">>
 			<<default>>
-				<<set $_dest to "School Rear Playground">>
+				<<set $_dest to "School Rear Courtyard">>
 		<</switch>>
 		<<if _args[0] is "manor" and $syndromekylar is 1>>
 			<<link [["Walk with " + _kylar.pronouns.him + " (0:20)"|Kylar Walk Manor]]>><</link>>
@@ -193,7 +210,7 @@
 				<</if>>
 			<</if>>
 			<<He_ ga>> 눈길을 피한다.
-		<<elseif $bus is "park" and $kylar.fountain is 1 and $season is "winter" and !$kylarSeen.includes("fountainWinter")>>
+		<<elseif $bus is "park" and $kylar.fountain is 1 and Time.season is "winter" and !$kylarSeen.includes("fountainWinter")>>
 			<<set $kylarSeen.pushUnique("fountainWinter")>>
 			<<he_ nun>> 그 광경에 매혹된 것 처럼 보인다. 끊임없이 흐르는 물과 차가운 온도로 인해 분수의 수 많은 구조물이 얼어 당신의 팔보다 더 두껍고,적어도 두 배는 더 긴 고드름을 형성했다. 중심부 근처에는, 물이 얼지 않은 채로 남아 있다.
 			"너무 이쁘다. 내가 이때 껏 봐온 것 중 가장 놀라운 일이야!" <<he_ nun>> 당신을 힐끗 본다. "으-음, 두번째로 말야."
@@ -219,7 +236,22 @@
 			<<he_ nun>> 당신을 보고 웃는다.
 		<</if>>
 	<<else>>
-		<<if _kylar.love gte 90 and $spray lt $spraymax and !$daily.kylar.spray>>
+		<<if $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and !$englishPlayRoles.KylarKnown>>
+			<<set $englishPlayRoles.KylarKnown to true>>
+			"H-Hey," Kylar says, squeezing your arm gently. "I got a surprise for you. We'll be performing together for the stage play." <<he>> pulls a small booklet from <<his>> bag, and shows it to you.
+			<br><br>
+
+			<<switch $englishPlayRoles.Kylar>>
+				<<case "Sterling">>
+					<<set _playPronoun to (C.npc.Kylar.pronoun is "m" ? "Mr" : "Mrs")>>
+					"I'll be playing the parent, _playPronoun Sterling," <<he>> says. "There's always someone getting in the way, but love always wins in the end, don't you think?" <<He>> draws closer to you before coming to <<his>> senses and withdrawing. "Sorry."
+				<<default>>
+					"I get to play as that rich kid, Taylor, who falls in love with someone." <<He>> blushes deeply and looks you in the eyes. "I... still don't know who, though."
+			<</switch>>
+			<br><br>
+
+			<<He>> looks down timidly. "Say, maybe we should spend some time together? T-To practice, I mean." <<Hes>> about to say something else, but stops <<himself>>. "Just... come see me<<if $schoolstate isnot "afternoon">> after school<</if>>, alright? <span class="gold">I'll be in the rear courtyard.</span>"
+		<<elseif _kylar.love gte 90 and $spray lt $spraymax and !$daily.kylar.spray>>
 			<<set $daily.kylar.spray to true>>
 			"내가 너 줄려고 만든건데." <<he_ ga>> <<his_ yi>> 가방 안을 뒤지며 말한다. <<he_ nun>> 후추 스프레이 하나를 당신에게 건네준다.
 			"내가 직접 만든거야. 이 스프레이가 걸레나 변태들에게서  널 지켜줄거야." <<he_ ga>> 화사하게 웃는다.
@@ -259,6 +291,12 @@
 		<span class="red">카일라는 감옥에 갇혔다. <<nnpc_He_ nun "Kylar">> 더 이상 당신과의 연애 상대라고 주장할 수 없다.</span>
 	<<else>>
 		<span class="red">카일라는 감옥에 갇혔다.</span>
+	<</if>>
+	<<if $englishPlay is "ongoing">>
+		<<if $englishPlayRoles.Kylar isnot "none">>
+			<<set $englishPlayKylarReplace to true>>
+			<<set $englishPlayRoles.Kylar to "none">>
+		<</if>>
 	<</if>>
 	<br><br>
 <</widget>>
@@ -553,7 +591,7 @@
 		Kylar puts <<his>> hands against <<his>> chest. "I wrote a song for you," <<he>> says, and takes a deep breath.
 		<br><br>
 
-		"I love you I love you so much you we are together and happy and..." <<he>> rambles on, following no tune in particular. It's pretty terrible.
+		"I love you I love you so much we are together and happy and..." <<he>> rambles on, following no tune in particular. It's pretty terrible.
 		<br><br>
 		"W-well? <<he>> asks after recovering from a shortage of breath. "Do you like it?"
 		<br><br>
@@ -623,7 +661,6 @@
 		<<link [[다음|Kylar Abduction Event End]]>><</link>>
 		<br>
 	<</if>>
-
 <</widget>>
 
 
@@ -724,6 +761,34 @@
 	<<unset $syndromekylarbuild>>
 <</widget>>
 
+<<widget "kylarStockholmDefaultRape">>
+	"A-ah, aha," Kylar pants, gazing at you with hunger in <<his>> eyes.
+
+	<<if _kylar.penis isnot "none">>
+		<!-- Kylar penis - will try to fuck you -->
+		<<He>> lifts your thighs, and rests your legs against <<his>> shoulders.
+	<<elseif ($genderknown.includes("Kylar") and $player.penisExist) or $player.gender_appearance is "m">>
+		<!-- Kylar vag and you penis - will try to ride you -->
+		<<He>> straddles your thighs, pulling <<his>> body against yours.
+	<<else>>
+		<!-- Kylar vag and you vag - will try to scissor -->
+		<<He>> spreads your legs, pulling <<his>> body against yours.
+	<</if>>
+	<br><br>
+	<<if $pregnancyspeechdisable is "f" and (
+		(_kylar.vagina isnot "none" and ($genderknown.includes("Kylar") ? $player.penisExist : $player.gender_appearance is "m") )
+		or
+		(_kylar.penis isnot "none" and ($genderknown.includes("Kylar") ? $player.vaginaExist : $player.gender_appearance is "f") )
+	)>>
+		"We're going to make lots of babies," <<he>> says.
+	<</if>>
+	<<He>> gazes into your eyes with a mad intensity. "I'm going to fuck you again and again. Until I'm the only one who can satisfy you."
+	<br><br>
+
+	<<link [[Next|Kylar Abduction Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</widget>>
+
 
 :: Kylar Intro Intervene
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
@@ -743,15 +808,16 @@
 <br><br>
 
 괴롭힘을 당하던 <<person1>><<personsimple_ 이>> <<his_>>의 가방을 집어 들고 내용물을 챙기기 시작한다. "고-고마워," <<he_ 가>> 말을 더듬는다. "나-나는," <<he_ 는>> 당신을 쳐다보지만, 얼굴을 붉히며 시선을 피한다. "나는 카일라야." 당신은 <<he_ 가>> 당신보다 어리다고 생각했지만, <<he_ 는>> 당신과 동갑인 모양이다.
-<<if $devlevel lte 6>>
-	당신의 조그만 체구에도, <<hes_ 는>> 고작 당신보다 조금 더 클 뿐이다.
-<<elseif $devlevel lte 10>>
-	당신은 키가 크지 않은데도, <<hes_ 는>> 당신보다 살짝 작을 뿐이다.
-<<elseif $devlevel lte 12>>
-	<<Hes_ 는>> 조그맣다.
-<<else>>
-	<<Hes_ 는>> 당신에 비하면 훨씬 작다.
-<</if>>
+<<switch $bodysize>>
+	<<case 0>>
+		당신의 조그만 체구에도, <<hes_ 는>> 고작 당신보다 조금 더 클 뿐이다.
+	<<case 1>>
+		당신은 키가 크지 않은데도, <<hes_ 는>> 당신보다 살짝 작을 뿐이다.
+	<<case 2>>
+		<<Hes_ 는>> 조그맣다.
+	<<case 3>>
+		<<Hes_ 는>> 당신에 비하면 훨씬 작다.
+<</switch>>
 <<He_ 는>> 뒤돌아서 달려간다.
 <br><br>
 <<endevent>>
@@ -777,15 +843,16 @@
 <br><br>
 
 <<person1>>"고-고마워," <<he_ 가>> 말을 더듬는다. "나-나는," <<he_ 는>> 당신을 쳐다보지만, 얼굴을 붉히며 시선을 피한다. "나는 카일라야." 당신은 <<he_ 가>> 당신보다 어리다고 생각했지만, <<he_ 는>> 당신과 동갑인 모양이다.
-<<if $devlevel lte 6>>
-	당신의 조그만 체구에도, <<hes_ 는>> 고작 당신보다 조금 더 클 뿐이다.
-<<elseif $devlevel lte 10>>
-	당신은 키가 크지 않은데도, <<hes_ 는>> 당신보다 살짝 작을 뿐이다.
-<<elseif $devlevel lte 12>>
-	<<Hes_ 는>> 조그맣다.
-<<else>>
-	<<Hes_ 는>> 당신에 비하면 훨씬 작다.
-<</if>>
+<<switch $bodysize>>
+	<<case 0>>
+		당신의 조그만 체구에도, <<hes_ 는>> 고작 당신보다 조금 더 클 뿐이다.
+	<<case 1>>
+		당신은 키가 크지 않은데도, <<hes_ 는>> 당신보다 살짝 작을 뿐이다.
+	<<case 2>>
+		<<Hes_ 는>> 조그맣다.
+	<<case 3>>
+		<<Hes_ 는>> 당신에 비하면 훨씬 작다.
+<</switch>>
 <<He_ 는>> 뒤돌아서 달려간다.
 <br><br>
 <<endevent>>
@@ -1101,11 +1168,11 @@
 <br><br>
 
 <<person1>>
-<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	당신은 계단을 올라 학교 복도로 나온다. 학생들은 바깥에 줄지어 서있고 자리가 꽉 차있다. 그들은 대기 중인 차를 향해 카일라를 데리고 걸어가며, 학생들이 <<him_>>에게 야유할 마지막 기회를 준다.
 	<br><br>
 <<else>>
-	당신은 계단을 올라 학교 복도로 나온다. 그들은 카일라를 데리고 놀이터를 가로질러 대기 중인 차까지 걸어간다.
+	You climb the stairs and emerge into the school hallways. They march Kylar across the courtyard and into a waiting car.
 	<br><br>
 <</if>>
 
@@ -1146,7 +1213,7 @@
 
 <<generatePolice 1>><<generatePolice 2>><<fullGroup_ i>> 당신을 끌고 계단을 올라간다. 당신은 학교 복도로 나온다.
 
-<<if $schoolday is 1 and $schoolstate isnot "early" and $schoolstate isnot "late">>
+<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
 	학생들은 바깥에 줄지어 서있고 자리가 꽉 차있다. 경찰들은 당신이 정문을 통과해서 시야에서 사라질 때까지, 당신을 데리고 그 사이를 걸어가며, 다른 학생들에게 의심의 여지 없이 험담할 거리를 왕창 제공해 준다.
 	<br><br>
 <<else>>
@@ -1675,7 +1742,7 @@
 	<<ejaculation>><<npcincr Kylar lust -20>><<lllust>>
 
 	<<He_ 는>> 잠시 당신 위에 누워, 만족한 듯 눈을 감고 있다.
-	<<if $orgasmcurrent is 0 and !$worn.genitals.type.includes("chastity")>>
+	<<if $orgasmcurrent is 0 and !playerChastity()>>
 		<<if _kylarStatus.includes("Rage")>>
 			몇 초 후, <<he_ 는>> <<hes_>>의 얼굴이 당신의 <<genitals_ 를>> 마주할 때 까지 몸을 뒤로 물린다. "너는 가버리지 못 했잖아," <<he_ 가>> 중얼거린다. "내가... 충분하지 못해서 그런 거야?" <<He_ 는>> 난폭하게 고개를 흔든다. "내가 만회할 거야. 보여줄게."
 		<<else>>
@@ -1762,7 +1829,7 @@
 
 <<link [[그냥 껴안고 있는다 (0:30)|Kylar Orphanage Cuddle]]>><<trauma -12>><<ltrauma>><<set $phase to 1>><<pass 30>><</link>>
 <br>
-<<link [[잔다|Kylar Orphanage Bed]]>><<set $kylarbed to 1>><</link>>
+<<link [[Sleep|Kylar Orphanage Bed]]>><<set $kylarbed to 1>><<set $bedGuest to "Kylar">><</link>>
 
 :: Kylar Orphanage Cuddle
 <<effects>>
@@ -1794,10 +1861,10 @@
 	<<if $phase is 0>>
 		카일라는 일어나고 싶지 않은 듯, 몇 분 동안 당신에게 달라붙어 있다.
 	<</if>>
-	결국 <<he_ 는>> 낙담한 표정으로, 당신의 품에서 빠져나간다. "여기에 더 있으면 안될 것 같아," <<he_ 가>> 말한다.<<if $hour gte 18 or $hour lte 7>> "그들이 날 기다리고 있어."<</if>> 당신은 <<if $phase isnot 2>>일어나 앉으려고 애쓰며 <</if>><<him_ 을>> 바라본다. <<His_>>의 머리카락이 <<his_>>의 얼굴에 달라붙어 있다. 당신은 손을 뻗어 머리카락을 넘겨주고, <<he_ 는>> 미소 짓는다.
+	Eventually <<he>> untangles <<himself>> from you, looking disappointed. "I shouldn't stay here much longer," <<he>> says.<<if Time.hour gte 18 or Time.hour lte 7>> "They're waiting for me."<</if>> You <<if $phase isnot 2>>push yourself into a sitting position and <</if>>look at <<him>>. <<His>> hair is sticking to <<his>> face. You reach forward and brush it away, and <<he>> smiles.
 	<br><br>
 
-	<<if $hour lte 18 and $hour gte 7>>
+	<<if Time.hour lte 18 and Time.hour gte 7>>
 		<<if $weather is "rain" or $weather is "snow">>
 			<<link [[함께 오락실로 걸어간다 (0:15)|Kylar Arcade Walk]]>><<pass 15>><</link>>
 		<br>
@@ -1939,16 +2006,16 @@ You snuggle under the covers with Kylar.
 <<effects>>
 
 <<if $phase is 1>>
-	결국 <<he_ 는>> 낙담한 표정으로 당신에게서 물러난다. "여기에 더 있으면 안될 것 같아," <<he_ 가>> 말한다. <<if $hour gte 18 or $hour lte 7>>"그들이 날 기다리고 있어." <</if>>당신은 <<him_ 을>> 바라본다. <<His_>>의 머리카락이 <<his_>>의 얼굴에 달라붙어 있<<if $makeup.lipstick isnot 0>>고, <<his_>>의 입에는 당신의 립스틱이 잔뜩 묻어있<</if>>다. 당신은 손을 뻗어 머리카락을 넘겨주고, <<he_ 는>> 미소 짓는다.
+	Eventually <<he>> pulls back from you, looking disappointed. "I shouldn't stay here much longer," <<he>> says. <<if Time.hour gte 18 or Time.hour lte 7>>"They're waiting for me."<</if>>You look at <<him>>. <<His>> hair is sticking to <<his>> face<<if $makeup.lipstick isnot 0>>, and <<his>> mouth is smeared with your lipstick<</if>>. You reach forward and brush <<his>> hair away, and <<he>> smiles.
 	<br><br>
 
 	"너도 나를 사랑해줘서 너무 행복해," <<he_ 가>> 말한다. "그, 물론 그렇지만, 안심하기도 했어. 내가... 너를 사랑한다고<<if $kylarSeen.includes("saidLove")>>, 그 말을 진심으로<</if>> 말한 건 처음이었으니까. 네가 날 받아주지 않을까 봐... 너무 무서웠어. 내가 너무 서두르고 있다고 네가 생각할까 봐." <<He_ 는>> 당신의 손을 <<his_ 의>> 손으로 꼭 잡는다. "고마워. 다... 고마워."
 <<else>>
-	<<He_ 는>> 낙담한 표정으로 침대에서 일어난다. "여기에 더 있으면 안될 것 같아," <<he_ 가>> 말한다. <<if $hour gte 18 or $hour lte 7>>"그들이 날 기다리고 있어." <</if>>당신은 <<him_ 을>> 바라본다. <<His_>>의 머리카락이 <<his_>>의 얼굴에 달라붙어 있다. 당신은 손을 뻗어 머리카락을 넘겨주고, <<he_ 는>> 미소 짓는다.
+	<<He>> stands up from the bed, looking disappointed. "I shouldn't stay here much longer," <<he>> says. <<if Time.hour gte 18 or Time.hour lte 7>>"They're waiting for me."<</if>>You look at <<him>>. <<His>> hair is sticking to <<his>> face. You reach forward and brush <<his>> hair away, and <<he>> smiles.
 <</if>>
 <br><br>
 
-<<if $hour lte 18 and $hour gte 7>>
+<<if Time.hour lte 18 and Time.hour gte 7>>
 	<<if $weather is "rain" or $weather is "snow">>
 		<<link [[함께 오락실로 걸어간다 (0:15)|Kylar Arcade Walk]]>><<pass 15>><</link>>
 		<br>
@@ -2251,7 +2318,7 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 	<<lllust>>
 	<br><br>
 
-	<<if $orgasmcurrent is 0 and !$worn.genitals.type.includes("chastity")>>
+	<<if $orgasmcurrent is 0 and !playerChastity()>>
 		<<if _kylarStatus.includes("Rage")>>
 			After a few seconds, <<he>> kneels down in front of you. "You didn't cum," <<he>> murmurs. "Was I... not good enough?" <<He>> shakes <<his>> head violently. "I'll make up for it. I'll show you."
 		<<else>>
@@ -2279,7 +2346,7 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 <<endcombat>>
 <<npc Kylar>><<person1>>
 
-<<if $hour isnot 12>>
+<<if Time.hour isnot 12>>
 	<<He>> looks at <<his>> watch. "I need to go," <<he>> says. "I'll be late for my lessons." <<He>> keeps looking over <<his>> shoulder as <<he>> walks out.
 	<<if $kylarBathroomGender isnot _kylar.pronoun and random(1,100) lte 75>>
 		<<He>> flinches upon hearing laughter from the halls. Somebody saw <<him>> come out of the <<print ($kylarBathroomGender is "m" ? "boy" : "girl")>>'s bathroom.
@@ -2290,7 +2357,7 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 	<<link [[Next|_destination]]>><<endevent>><</link>>
 
 <<else>>
-	"Let's go back to the <<print ($weather is "rain" or $weather is "snow" ? "library" : "playground")>>," <<he>> says.
+	"Let's go back to the <<print ($weather is "rain" or $weather is "snow" ? "library" : "courtyard")>>," <<he>> says.
 	<br><br>
 	<<link [[다음|Kylar Bathroom Return]]>><</link>>
 <</if>>
@@ -2302,8 +2369,8 @@ The bathroom is empty. You make your way to a stall and pull Kylar in. <<Hes>> u
 	<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoollibrary">>
 	You and Kylar return to your spots at the library.
 <<else>>
-	<<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoolrearplayground">>
-	You and Kylar return to the stump in the rear playground.
+	<<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<set $bus to "schoolrearcourtyard">>
+	You and Kylar return to the stump in the rear courtyard.
 <</if>>
 <br><br>
 
@@ -2447,8 +2514,8 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 <<set $kylar_action to "chat">>
 
 <<if _kylarStatus.includes("Love")>>
-	<<bodywriting_exposure_check>>
-	<<if _bodywriting_exposed gte 1 and !$daily.kylar.bodywriting>>
+	<<bodywritingExposureCheck>>
+	<<if _bodywriting_exposed gte 1 and !$daily.kylar.bodywriting and _bodypart>>
 		<<set $daily.kylar.bodywriting to true>>
 		<<if $skin[_bodypart].special is "Kylar">>
 			<<if $kylarenglish gte 1>>
@@ -2470,6 +2537,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 			<</if>>
 		<<elseif ["Robin","Whitney","Eden","Avery","Alex","Black Wolf","Great Hawk"].includes($skin[_bodypart].special) or ($skin[_bodypart].special is "Sydney" and $kylarSeen.includes("sydneyWriting") and ($skin[_bodypart].lewd is 1 or !_kylarStatus.includes("Calm")))>>
 			<<if ["marker","tattoo","brand","magic"].includes($skin[_bodypart].pen)>>
+				<<set $kylarBodywriting to 1>>
 				당신은 카일라와 이야기한다. <<He_ 는>> 당신의 <<bodypart_ _bodypart>>에 있는 <<tattooPost _bodypart "을">> 닦아내려고 시도한다. <<He_ 는>> 그것이 전혀 지워지지 않자 얼굴을 찡그리더니, 결국 토라져서 다시 자리에 앉는다.
 				<<ggksuspicion>><<glust>><<npcincr Kylar lust 1>><<npcincr Kylar rage 3>>
 			<<else>>
@@ -2496,7 +2564,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 				<<gksuspicion>><<glust>><<npcincr Kylar lust 1>><<npcincr Kylar rage 1>>
 			<<else>>
 				당신은 카일라와 이야기한다. <<He_ 는>> 당신의 <<bodypart_ _bodypart>>에 있는 <<tattooPost _bodypart "을">> 빤히 바라보고 쿡쿡거린다. "<<nnpc_He_ 가 "Sydney">> 너한테도 그랬어?"
-				<<if ($rng gte 51 or $daily.sydney.kylarBook) and $schoolterm is 1 and $weekday isnot 1 and $weekday isnot 7>>
+				<<if ($rng gte 51 or $daily.sydney.kylarBook) and Time.schoolDay>>
 					<<He_ 는>> <<his_>>의 머리카락을 들어올려 
 					<<if $skin[_bodypart].writing is "Book Criminal >:(">>
 						똑같은 낙서가
@@ -2512,6 +2580,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 			/*ToDo: Pregnancy, write once Kylar's reaction to/thoughts on pregnancy is better understood.
 			May differ based on gender, jealousy and whether or not Kylar has impregnated the PC in the past.*/
 		<<elseif ["prostitution","rape","exhibitionism","sex"].includes($skin[_bodypart].special) or $skin[_bodypart].lewd is 1>>
+			<<set $kylarBodywriting to 1>>
 			당신은 카일라와 이야기한다. <<He_ 는>> 당신의 <<bodypart_ _bodypart>>에 있는 <<tattooPost _bodypart "을">> 빤히 바라보지만, 그것에 대해 언급하지는 않는다.
 			<<gksuspicion>><<glust>><<npcincr Kylar lust 1>><<npcincr Kylar rage 1>>
 		<<else>>
@@ -2528,7 +2597,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 				<<default>>
 					"그게 영원히 가지는 않을 거야, 너도 알겠지만," <<he_ 가>> 말한다. "어렸을 땐 내 몸에 낙서를 잔뜩 하곤 했어. 결국 잉크는 늘 언젠가는 사라져버려."
 			<</switch>>
-			<</if>>
+		<</if>>
 	<<elseif $rng gte 96>>
 		당신은 카일라와 이야기한다. "너 다른 사람 생각은 해본 적 없는 거지, 그렇지?" <<he_ 가>> 말한다. "난 알 수 있어."
 		<<if $loveInterest.primary is "Kylar" and $loveInterest.secondary is "None">>
@@ -2557,7 +2626,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 			<<print either("책꽂이 중 하나를", "생물학 교과서에 나오는 비커 사진을", "반쯤 채워진 반납 바구니를", "빗방울이 떨어지는 창문을", "천장 모서리에 걸린 거미줄을")>> 그리기 시작한다.
 		<<elseif $bus is "kylarmanor">>
 			<<print either("헝클어진 침대 시트를", "천장에 난 창문을", "모니터들 중 하나를", "다락방의 난간 중 하나를", "천장 모서리에 걸린 거미줄을")>> 그리기 시작한다.
-		<<elseif $season is "winter">>
+		<<elseif Time.season is "winter">>
 			<<print either("나무에 매달린 고드름을", "근처의 눈 위에 남은 눈 천사 자국을", "잎이 다 떨어진 나무를", "버려진 물병을", "모든 역경을 이겨내고 살아남은 거미줄을")>> 그리기 시작한다.
 		<<else>>
 			<<print either("꽤 멀리 떨어진 곳에 있는 다람쥐를", "원을 그리며 뛰어다니는 얼룩 다람쥐를", "나뭇가지에 앉은 비둘기를", "야생꽃 몇 송이를", "하늘에 떠 있는 이상한 구름을", "나뭇 가지들 사이에 걸린 거미줄을")>> 그리기 시작한다.
@@ -2616,6 +2685,13 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 				Your tail <<print (_tf.wolfTail ? "wags happily" : "swishes in contentment")>>, brushing against <<him>> on occasion.
 			<</if>>
 			<br><br>
+		<<elseif _tf.foxEars and _tfSplit is 1>>
+			After a while, <<his>> hand brushes against your fox ears. It wiggles at <<his>> touch.
+			<<He>> smiles. "Are they sensitive?" For a few minutes, <<he>> scratches around your ears, blowing into them at one point.
+			<<if _tf.foxTail>>
+				Your tail swishes up and down, brushing against <<him>> on occasion.
+			<</if>>
+			<br><br>			
 		<<elseif _tf.birdPlumage and _tfSplit is 1>>
 			After a while, <<he>> brings <<his>> other hand to you and brushes your plumage. "Are these feathers?" <<he>> asks.
 			For a few minutes, <<he>> strokes your hair with one hand and your plumage with the other.
@@ -2640,7 +2716,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 		You tell some jokes. <<He>> mumbles laughter, but doesn't look at you.
 	<<elseif $rng gte 41>>
 		You comment on how nice the weather is. <<He>> nods absently, <<if $weather is "clear" or $weather is "overcast">>silent<<else>>before blinking and looking at you incredulously<</if>>.
-	<<elseif $rng gte 31 and $season isnot "winter">>
+	<<elseif $rng gte 31 and Time.season isnot "winter">>
 		You ask if <<he>> can help you with some schoolwork.
 		<<if $bus is "schoollibrary">>
 			<<He>> wordlessly hands you a nearby <<print either("science textbook", "maths textbook", "English textbook", "history textbook", "comic book. <<He>> doesn't seem to notice what <<he>> gave you")>>.
@@ -3134,7 +3210,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 "<<him_ 을>> 보낸 게 마음에 걸려," <<hes_ 가>> 떠난 후 로빈이 말한다. "모두가 <<him_ 을>> 괴롭히잖아."
 <br><br>
 <<endevent>><<npc Robin>><<person1>>
-<<if $sydneyromance is 1 and _sydney_location is "library" and $schoolstate is "lunch" and $minute lte 35 and random(1, 100) gte 50>>
+<<if $sydneyromance is 1 and _sydney_location is "library" and $schoolstate is "lunch" and Time.minute lte 35 and random(1, 100) gte 50>>
 	/* Checks if _sydney_location is "library" instead of "canteen" because it's impossible for it to be "canteen" given the time passed from eating with Robin */
 	당신은 식사하는 동안 로빈과 대화를 나눈다. 시드니가 식당 구석에서 일어나 <<nnpc_his_ "Sydney">>의 책을 들고 빠르게 도서관으로 걸어가는 것이 당신의 눈에 들어온다. <<nnpc_He_ 는 "Sydney">> 당신이 있는 식탁에 들러 볼에 짧게 키스하고 가느라 <<nnpc_his_ "Sydney">>의 책을 거의 떨어뜨릴 뻔 한다. <<arousal 50>><<garousal>>
 	<br><br>
@@ -3352,7 +3428,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	<</if>>
 	<br><br>
 
-	당신은 식사를 마친다. 카일라는 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3362,7 +3438,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	<<He_ 는>> <<his_>>의 음식을 쿡쿡 찌르는 것을 멈추지만, 대답은 하지 않는다. 당신은 가벼운 잡담을 시도한다. 당신은 <<hes_ 가>> 듣고 있을 거라 생각한다.
 	<br><br>
 
-	당신은 식사를 마치고 떠난다. 카일라는 <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	You finish your food and depart. Kylar walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3414,7 +3490,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 "미친 또라이들이," 휘트니가 말한다. "너희같은 루저들한텐 볼 일 없어." <<He_ 는>> 뒤따르는 <<his_>>의 친구들을 데리고 식당을 떠난다.
 <br><br>
 
-다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<person1>><<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+The other students lose interest. You finish your food beside a relieved Kylar. <<person1>><<He>> carries your trays away once finished, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 <br><br>
 
 <<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3518,7 +3594,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	카일라가 뒤에서 당신을 끌어안는다. "네-네가 날 구해줄 줄 알았어," <<person1>><<he_ 가>> 말한다.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3536,7 +3612,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	카일라가 뒤에서 당신을 끌어안는다. "네-네가 날 구해줄 줄 알았어," <<he_ 가>> 말한다.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3567,14 +3643,19 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	카일라가 뒤에서 당신을 끌어안는다. "네-네가 날 구해줄 줄 알았어," <<he_ 가>> 말한다.<<gglove>><<npcincr Kylar love 3>>
 	<br><br>
 
-	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	The other students lose interest after Whitney's departure. You finish your food beside a relieved Kylar. <<He>> carries your trays away once you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
 	<br><br>
 
 <<else>>
-	휘트니가 우위를 점하고, 당신을 벽에다 꽂아버린다. "좆만한 멍청이가!" <<He_ 가>> 당신의 배를 무릎으로 가격하고, 당신은 고꾸라진다. <<He_ 는>> 당신을 식당 바닥에 내동댕이친다.<<lcool>><<status -10>>
+	Whitney gains the upper hand, pinning you to the wall. "Stupid little shit!"
+	<<if playerBellySize(true) gte 8>>
+		<<He>> pushes you to the ground, and leaves you on the canteen floor.<<lcool>><<status -10>>
+	<<else>>
+		<<He>> knees you in the stomach, and you keel over. <<He>> leaves you on the canteen floor.<<lcool>><<status -10>>
+	<</if>>
 	<br><br>
 
 	<<clotheson>>
@@ -3591,7 +3672,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 		"내가 <<nnpc_him_ 와 "Whitney">> 맞설 수 있으면 좋겠어. 특히 널 위해서. 하-하지만 <<nnpc_hes_ 는 "Whitney">> 너무..." <<He_ 는>> 점점 목소리가 작아진다.
 	<</if>>
 
-	<<tearful>> 당신은 조금 전 일을 곱씹는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>뒤쪽 놀이터<</if>> 방향으로 걸어간다.
+	<<tearful>> you finish your food beside a brooding Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
 	<<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3634,7 +3715,7 @@ Kylar looks around, as if looking for a way out, until <<person1>><<his>> eyes r
 "Alright," Whitney says. "My turn, freak." <<He>> charges. Kylar <<person1>>raises <<his>> arms to defend <<himself>>, but the force shoves <<him>> to the ground. The crowd livens up again, and cheers for Whitney.
 <br><br>
 
-"That hurt?" Whitney asks. <<person2>><<He>> delivers a kick to Kylar's stomach, much to the delight of the onlookers.
+"That hurt?" Whitney asks. <<person2>><<He>> delivers a kick to Kylar's <<if npcIsPregnant("Kylar")>>bottom<<else>>stomach<</if>>, much to the delight of the onlookers.
 <br><br>
 
 <<link [[카일라를 응원한다|Canteen Kylar Cheer]]>><<status -10>><<npcincr Kylar rage -10>><<npcincr Kylar love 3>><<npcincr Whitney dom -1>><</link>><<lcool>><<llksuspicion>><<glove>><<ldom "Whitney">>
@@ -3695,7 +3776,7 @@ You smile and squeeze <<his>> other hand. <<He>> drops the knife with a horrifie
 "You really are perfect," <<he>> says into your shoulder, <<his>> grip a little too tight.
 <br><br>
 
-You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear playground<</if>>.
+You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>library<<else>>rear courtyard<</if>>.
 <br><br>
 
 <<link [[다음|Canteen]]>><<endevent>><</link>>
@@ -3774,7 +3855,7 @@ Kylar stirs on the ground.
 <br><br>
 <<kylaroptions>>
 
-:: Kylar Playground
+:: Kylar Courtyard
 <<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
 
 <<npc Kylar>><<person1>>
@@ -4191,7 +4272,7 @@ When <<he>> finishes, <<he>> opens <<his>> mouth to say something. You turn away
 	<<ejaculation>><<npcincr Kylar lust -20>>
 
 	Kylar closes <<his>> eyes and rests <<his>> head on you.
-	<<if $orgasmcurrent is 0 and !$worn.genitals.type.includes("chastity")>>
+	<<if $orgasmcurrent is 0 and !playerChastity()>>
 		<<if _kylarStatus.includes("Rage")>>
 			After a few seconds, <<he>> backs up until <<hes>> facing your <<genitals>>. "You didn't cum," <<he>> murmurs. "Was I... not good enough?" <<He>> shakes <<his>> head violently. "I'll make up for it. I'll show you."
 		<<else>>
@@ -4238,7 +4319,7 @@ When <<he>> finishes, <<he>> opens <<his>> mouth to say something. You turn away
 	<<neutral 1>>
 	<<molested>>
 	<<maninit>><<set $kylar.raped += 1>>
-	<<if $daystate isnot "night">><<enable_rescue>><</if>>
+	<<if Time.dayState isnot "night">><<enable_rescue>><</if>>
 	Kylar pushes you toward the alley, <<his>> knife poking the small of your back. You turn another corner and find a mattress already lying there.
 	<<if _kylarStatus.includes("MaxRage")>>
 		<<set $NPCList[0].righthand to "none">>
@@ -4306,9 +4387,8 @@ When <<he>> finishes, <<he>> opens <<his>> mouth to say something. You turn away
 :: Kylar Parasites Feed
 <<set $outside to 0>><<set $location to "home">><<effects>>
 <<set _container to $container[$location]>>
-<<set _pregnancy to $sexStats.anus.pregnancy>>
 
-Nothing seems to be amiss, until you check in on <<print (_pregnancy.namesChildren is true ? "your children" : "the parasites")>>.
+Nothing seems to be amiss, until you check in on <<print ($pregnancyStats.namesParasitesChild is true ? "your children" : "the parasites")>>.
 <br><br>
 You see a small note near to the <<print _container.name>> with the letter "K" on it.
 
@@ -4324,7 +4404,7 @@ You see a small note near to the <<print _container.name>> with the letter "K" o
 	<br><br>
 	You bury them.
 	<<ggtrauma>>
-	<<set _traumaMulti to (_pregnancy.namesChildren is true ? 2 : 1)>>
+	<<set _traumaMulti to ($pregnancyStats.namesParasitesChild is true ? 2 : 1)>>
 	<<trauma `30 * _traumaMulti * _container.deadCreatures`>>
 	<<if $wraith.state and $wraithShow>>
 		<<if !$wraithAngerCount>>
@@ -4350,11 +4430,16 @@ You see a small note near to the <<print _container.name>> with the letter "K" o
 <<set $outside to 0>><<effects>>
 <<set $kylar_action to "loft">>
 
-당신은 카일라에게 고아원의 다락방에 대해 이야기하고, <<he_ 가>> 그 공간에서 뭔가 해볼 생각이 있는지 물어본다다.
+You tell Kylar about the loft at the orphanage and ask if <<he>> has any thoughts on what to do with the space.
 <br><br>
 
-"넌 그 위에 뭐든 숨길 수 있어," <<he_ 가>> 말한다. "조-좋은 생각이 있어. 내가 연구실을 만들 수 있을 것 같아. 그러니까 우리 지-" <<he_ 가>> 말을 끊고, 주위를 둘러본다. "TV에서 본 것처럼. 후추 스프레이를 만들 수 있어. 기본적인 재료는 구하기 어렵지 않고, 그냥 발효시키는 데 시간만 좀 걸려."
+"You could hide anything up there," <<he>> says. "I-I have an idea. I could set up a lab like I have at ho-" <<he>> interrupts <<himself>> and glances around. "Like I've seen on TV. You could make pepper spray. The basic ingredients aren't hard to get, it just takes time to ferment."
 <br><br>
+
+<<if $daily.manorLab gte 1>>
+	You're intimately familiar with the lab Kylar's referring to, having cleaned it yourself. <<He>> doesn't need to hide it from you, but you get the feeling <<he>> doesn't want the other orphans to overhear.
+	<br><br>
+<</if>>
 
 "장비를 어디서 구할 수 있는지 알고 있어," <<he_ 가>> 덧붙인다. "하지만 비용이 많이 들 거야."
 <br><br>
@@ -4623,7 +4708,7 @@ The two of you continue walking.
 <<else>>
 	Eventually, you reach the park's fountain.
 <</if>>
-<<if $season is "winter">>
+<<if Time.season is "winter">>
 	<<if !$kylarSeen.includes("fountainWinter")>>
 		<<set $kylarSeen.pushUnique("fountainWinter")>>
 		Kylar stops in place, staring at the fountain. <<He>> seems spellbound. The constantly running water and the cold temperature has caused much of the fountain's structure to freeze over and form icicles thicker than your arm, and at least twice as long. Near the centre, some water remains unfrozen.
@@ -4805,7 +4890,7 @@ Kylar lowers the box, and nods. "I-it's okay," <<he>> says. "P-people refuse gif
 <br><br>
 <<set $kylar_camera to 2>>
 
-<<run Furniture.set('owlplushie', 'decoration', {
+<<run Furniture.set('owlplushie', 'owlplushie', {
 	name	: 'owl plushie',
 	nameCap	: 'Owl plushie'
 })>>

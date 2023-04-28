@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable jsdoc/require-description-complete-sentence */
 function overlayShowHide(elementId) {
 	const div = document.getElementById(elementId);
@@ -138,7 +139,7 @@ $(document).on(":passagerender", function (ev) {
 Links.keyNumberMatcher = /^\([^)]+\)/;
 
 Links.generateLinkNumbers = content => {
-	if (!V.numberify_enabled || !StartConfig.enableLinkNumberify) return;
+	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify) return;
 
 	for (let i = 0; i < disableNumberifyInVisibleElements.length; i++) {
 		if ($(content).find(disableNumberifyInVisibleElements[i]).length || $(content).is(disableNumberifyInVisibleElements[i])) return; // simply skip this render
@@ -158,10 +159,9 @@ Links.generateLinkNumbers = content => {
 Links.generate = () => Links.generateLinkNumbers(document.getElementsByClassName("passage")[0] || document);
 
 $(document).on("keyup", function (ev) {
-	if (!V.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
+	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
 
-	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox")
-		return;
+	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox") return;
 
 	if ((ev.keyCode >= 48 && ev.keyCode <= 57) || (ev.keyCode >= 96 && ev.keyCode <= 105)) {
 		const fixedKeyIndex = ev.keyCode < 60 ? ev.keyCode - 48 : ev.keyCode - 96;
@@ -176,15 +176,6 @@ $(document).on("keyup", function (ev) {
 	}
 });
 
-const defaultSkinColorRanges = {
-	hStart: 45,
-	hEnd: 45,
-	sStart: 0.2,
-	sEnd: 0.4,
-	bStart: 4.5,
-	bEnd: 0.7,
-};
-
 function ensureIsArray(x, check = false) {
 	if (check) x = x != null ? x : [];
 	if (Array.isArray(x)) return x;
@@ -192,38 +183,32 @@ function ensureIsArray(x, check = false) {
 }
 window.ensureIsArray = ensureIsArray;
 
-function skinColor(enabled, percent, overwrite) {
-	if (enabled === false) {
-		return "";
-	}
-
-	const ranges = ensureIsArray(overwrite || defaultSkinColorRanges);
-	const totalProgress = percent / 100;
-
-	const scaledProgress = ranges.length * totalProgress;
-	const rangeIndex = totalProgress === 1 ? ranges.length - 1 : Math.floor(scaledProgress);
-	const progress = totalProgress === 1 ? 1 : scaledProgress - rangeIndex;
-
-	const { hStart, hEnd, sStart, sEnd, bStart, bEnd } = ranges[rangeIndex];
-
-	const hue = (hEnd - hStart) * progress + hStart;
-	const saturation = (sEnd - sStart) * progress + sStart;
-	const brightness = (bEnd - bStart) * progress + bStart;
-
-	const hueCss = `hue-rotate(${hue}deg)`;
-	const saturationCss = `saturate(${saturation.toFixed(2)})`;
-	const brightnessCss = `brightness(${brightness.toFixed(2)})`;
-
-	return `${hueCss} ${saturationCss} ${brightnessCss}`;
-}
-window.skinColor = skinColor;
-
 // feats related widgets
+// This needs updating, it's poorly designed.
 function closeFeats(id) {
 	const div1 = document.getElementById("feat-" + id);
 	const div2 = document.getElementById("closeFeat-" + id);
 	div1.style.display = "none";
 	div2.style.display = "none";
+	let otherFeatDisplay;
+	let elementId = id + 1;
+	let newId = parseInt(div1.classList.value.replace("feat feat", ""));
+	do {
+		otherFeatDisplay = document.getElementById("feat-" + elementId);
+		if (otherFeatDisplay) {
+			if (otherFeatDisplay.style.display !== "none" && !isNaN(newId)) {
+				otherFeatDisplay.removeAttribute("class");
+				otherFeatDisplay.classList.add("feat");
+				otherFeatDisplay.classList.add("feat" + newId);
+				otherFeatDisplay.classList.add("feat-overlay");
+				if (newId >= 3) {
+					otherFeatDisplay.classList.add("hiddenFeat");
+				}
+				newId++;
+			}
+			elementId++;
+		}
+	} while (otherFeatDisplay);
 }
 window.closeFeats = closeFeats;
 
@@ -258,31 +243,25 @@ function customColour(color, saturation, brightness, contrast, sepia) {
 }
 window.customColour = customColour;
 
-window.zoom = function (size, set) {
-    if (size === undefined) {
-        size = document.getElementById("numberslider-input-zoom").value;
-    }
-    var parsedSize = parseInt(size);
-    var body = document.getElementsByTagName("body")[0];
-    if (parsedSize >= 50 && parsedSize <= 200 && parsedSize !== 100) {
-        body.style.zoom = size + "%";
-        if (set === true) {
-            V.zoom = size;
-        }
-    } else {
-        body.style.zoom = "";
-        if (set === true) {
-            V.zoom = 100;
-        }
-    }
+function zoom(value) {
+	const slider = $("[name$='" + Util.slugify("options.zoom") + "']");
+	value = Math.clamp(value || slider[0].value || 0, 50, 200);
+	$("body")
+		.css("zoom", value + "%")
+		.css("-ms-zoom", value + "%");
+	if (slider[0] !== undefined && slider[0].value != value) {
+		slider[0].value = value;
+		slider.trigger("change");
+	}
 }
+window.zoom = zoom;
 
 function beastTogglesCheck() {
 	T.beastVars = [
 		"bestialitydisable",
 		"swarmdisable",
 		"parasitedisable",
-		"analpregdisable",
+		"parasitepregdisable",
 		"tentacledisable",
 		"slimedisable",
 		"voredisable",
@@ -316,7 +295,8 @@ function settingsAsphyxiation() {
 				text = "합의되지 않은 교제 중에, NPC들이 당신의 <span class='red inline-colour'>목을 졸라 질식시킬지도</span> 모릅니다.";
 				break;
 			case 4:
-				text = "합의되지 않은 교제 중에, NPC들이 <span class='red inline-colour'>자주</span> 당신의 <span class='red inline-colour'>목을 졸라 질식시키려</span> 시도합니다.";
+				text =
+					"합의되지 않은 교제 중에, NPC들이 <span class='red inline-colour'>자주</span> 당신의 <span class='red inline-colour'>목을 졸라 질식시키려</span> 시도합니다.";
 				break;
 			default:
 				text = "Error: bad value: " + val;
@@ -334,11 +314,48 @@ function settingsAsphyxiation() {
 }
 window.settingsAsphyxiation = settingsAsphyxiation;
 
+function settingsCondoms() {
+	const updateText = () => {
+		let val = V.condomLvl;
+		let text = null;
+		switch (val) {
+			case 0:
+				text = "<span class='red inline-colour'>모든 사람들이 라텍스와 안전한 성교에 알레르기 반응을 보입니다.</span>";
+				break;
+			case 1:
+				text = "단지 <span class='green inline-colour'>당신</span>만이 콘돔을 사용합니다. 그래도 당신은 NPC들에게 콘돔을 줄 수 있습니다.";
+				break;
+			case 2:
+				text = "NPC들은 그들과 당신 사이에 <span class='blue inline-colour'>임신</span>이 가능한 경우에만 콘돔을 사용할 것입니다.";
+				break;
+			case 3:
+				text = "NPC들은 콘돔을 가지고 있을 수 있으며 <span class='pink inline-colour'>그들이 원할 때에는 언제나</span> 사용합니다.";
+				break;
+			default:
+				text = "Error: bad value: " + val;
+				val = 0;
+		}
+		jQuery("#numberslider-value-condomlvl").text("").append(text).addClass("small-description");
+	};
+
+	$(() => {
+		updateText();
+		$("#numberslider-input-condomlvl").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+window.settingsCondoms = settingsCondoms;
+
 function settingsNudeGenderAppearance() {
 	const updateText = () => {
 		let val = V.NudeGenderDC;
 		let text = null;
 		switch (val) {
+			case -1:
+				text =
+					"NPC들은 성별을 파악할 때 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다. <span class='purple inline-colour'>몇몇 플레이어 설정보다 우선합니다.</span> <span class='red inline-colour'>크로스드레싱 경고를 비활성합니다.</span>";
+				break;
 			case 0:
 				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다.";
 				break;
@@ -436,11 +453,10 @@ window.settingsNamedNpcBreastSize = settingsNamedNpcBreastSize;
 // Run only when settings tab is changed (probably in "displaySettings" widget)
 // data-target is the target element that needs to be clicked for the value to be updated
 // data-disabledif is the conditional statement (e.g. data-disabledif="V.per_npc[T.pNPCId].gender==='f'")
-// Conditional statement uses V and T instead of $ and _
 
 function settingsDisableElement() {
 	$(() => {
-		$("[data-target]").each(function () {
+		$("[data-disabledif]").each(function () {
 			const updateButtonsActive = () => {
 				$(() => {
 					try {
@@ -456,17 +472,10 @@ function settingsDisableElement() {
 				});
 			};
 			const orig = $(this);
-			const target = orig.data("target");
 			const disabledif = orig.data("disabledif");
-			if (orig.data("target") && disabledif) {
+			[orig.data("target")].flat().forEach(e => $("[name$='" + Util.slugify(e) + "']").on("click", updateButtonsActive));
+			if (disabledif) {
 				updateButtonsActive();
-				$(document).on(
-					"click.evt",
-					"[name*='" + (Array.isArray(target) ? target.map(x => Util.slugify(x)).join("'], [name*='") : Util.slugify(target)) + "']",
-					function () {
-						updateButtonsActive();
-					}
-				);
 			}
 		});
 	});
@@ -478,7 +487,7 @@ window.settingsDisableElement = settingsDisableElement;
 function onInputChanged(func) {
 	if (!func || typeof func !== "function") return;
 	$(() => {
-		$("input").on("change", function () {
+		$("input, select").on("change", function () {
 			func();
 		});
 	});
@@ -524,14 +533,16 @@ function updatehistorycontrols() {
 			);
 			jQuery("#history-backward")
 				.ariaDisabled(State.length < 2)
-				.ariaClick({
+				.ariaClick(
+					{
 						label: L10n.get("uiBarBackward"),
 					},
 					() => Engine.backward()
 				);
 			jQuery("#history-forward")
 				.ariaDisabled(State.length === State.size)
-				.ariaClick({
+				.ariaClick(
+					{
 						label: L10n.get("uiBarForward"),
 					},
 					() => Engine.forward()
@@ -543,6 +554,10 @@ function updatehistorycontrols() {
 window.updatehistorycontrols = updatehistorycontrols;
 DefineMacro("updatehistorycontrols", updatehistorycontrols);
 
+/*
+	Refreshes the game when exiting options menu - applying the options object after State has been restored.
+	It is done this way to prevent exploits by re-rendering the same passage
+*/
 function updateOptions() {
 	if (T.currentOverlay === "options" && T.optionsRefresh && V.passage !== "Start") {
 		updatehistorycontrols();
@@ -552,6 +567,7 @@ function updateOptions() {
 
 		State.restore();
 		V.options = optionsData;
+		tanned(0, "ignoreCoverage");
 		State.show();
 
 		T.key = tmpKey;
@@ -572,3 +588,34 @@ function elementExists(selector) {
 	return document.querySelector(selector) !== null;
 }
 window.elementExists = elementExists;
+
+window.getCharacterViewerDate = () => {
+	const textArea = document.getElementById("characterViewerDataInput");
+	textArea.value = JSON.stringify(V.characterViewer);
+};
+
+window.loadCharacterViewerDate = () => {
+	const textArea = document.getElementById("characterViewerDataInput");
+	let data;
+	try {
+		data = JSON.parse(textArea.value);
+	} catch (e) {
+		textArea.value = "Invalid JSON";
+	}
+	const original = clone(V.characterViewer);
+
+	if (typeof data === "object" && !Array.isArray(data) && data !== null) {
+		V.characterViewer = {
+			...original,
+			...data.clothesEquipped,
+			...data.clothesIntegrity,
+			...data.bodyState,
+			...data.colours,
+			...data.skinColour,
+			...data.controls,
+		};
+		State.display(V.passage);
+	} else {
+		textArea.value = "Invalid Import";
+	}
+};

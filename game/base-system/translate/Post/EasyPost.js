@@ -70,6 +70,8 @@ const EasyPostMacroList = [
 	// <<breasts_ rul>> = <<breasts>>를 
 	{ name: "breasts_", orig_name: "breastsPost", is_print: 0},
 
+	{ name: "bellyDescription_", orig_name: "bellyDescriptionPost", is_print: 0},
+
 	// <<nipple_ ul>> = <<nipple>>을 
 	// <<nipples_ rul>> = <<nipples>>를 
 	{ name: "nipple_", orig_name: "nipplePost", is_print: 0},
@@ -236,6 +238,8 @@ const EasyPostMacroList = [
 	// <<He_ nun>> = <<He>>는, <<He_ nun 1>> = <<He 1>>는 
 	{ name: "He_", orig_name: "HePost", is_print: 0},
 
+	{ name: "He_Short_", orig_name: "He_ShortPost", is_print: 0},
+
 	// <<he_ nun>> = <<he>>는, <<he_ nun 1>> = <<he 1>>는 
 	{ name: "he_", orig_name: "simpleHePost", is_print: 0},
 
@@ -307,9 +311,7 @@ const EasyPostMacroList = [
 	{ name: "pHerself_", orig_name: "pHerselfPost", is_print: 0},
 	{ name: "pherself_", orig_name: "pHerselfPost", is_print: 0},
 
-	// <<psir_ rul>> = <<psir>>를 
-	{ name: "psir_", orig_name: "psirPost", is_print: 0},
-	{ name: "pSir_", orig_name: "psirPost", is_print: 0},
+	{ name: "phers_", orig_name: "phersPost", is_print: 0},
 
 	// <<phim_ ul>> = <<phim>>을 
 	{ name: "phim_", orig_name: "pShePost", is_print: 0},
@@ -474,6 +476,13 @@ const EasyPostMacroList = [
 	// <<sir_ nun>> = <<sir>>는 
 	{ name: "sir_", orig_name: "sirPost", is_print: 0},
 
+	// <<psir_ rul>> = <<psir>>를 
+	{ name: "psir_", orig_name: "psirPost", is_print: 0},
+	{ name: "pSir_", orig_name: "psirPost", is_print: 0},
+
+	{ name: "pmother_", orig_name: "pmotherPost", is_print: 0},
+	{ name: "pMother_", orig_name: "pmotherPost", is_print: 0},
+
 	// <<monk_ nun>> = <<monk>>는 
 	{ name: "monk_", orig_name: "monkPost", is_print: 0},
 
@@ -562,6 +571,8 @@ const EasyPostMacroList = [
 
 	// <<getfluidsfromgroup_ un>> = <<getfluidsfromgroupPost>>는 
 	{ name: "getfluidsfromgroup_", orig_name: "getfluidsfromgroupPost", is_print: 0},
+
+	{ name: "condomDesc_", orig_name: "condomDescPost", is_print: 0},
 
 	// personPost 
 	// <<person_ ul>> = <<person>>을 

@@ -1,7 +1,7 @@
 :: School Infirmary
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
-<<if $schoolday is 1 and !["early","late"].includes($schoolstate)>>
+<<if Time.schoolDay and !["early","late"].includes($schoolstate)>>
 	<<if $per_npc.school_nurse>>
 		당신은 학교 양호실에 있다. 캐비닛들은 의료 용품과 약들로 가득하다. 침대는 모두 비어 있다.
 		<br><br>
@@ -29,9 +29,9 @@
 	침대는 모두 비어 있지만, 지금 침대에서 잠을 청하는 것은 좋지 않은 생각일지도 모른다. 들킨다면 곤란해질 것이다.
 	<br><br>
 
-	<<if $infirmarydrugstheft is "stolen">>
+	<<if $weekly.theft.infirmaryDrugs is "stolen">>
 		<span class="blue">당신은 이미 약을 훔쳤다. 더 가져가려면 약이 다시 채워지길 기다려야 한다.</span>
-	<<elseif $infirmarydrugstheft is "failed">>
+	<<elseif $weekly.theft.infirmaryDrugs is "failed">>
 		<span class="purple">캐비닛에 달린 자물쇠가 고장나 있다. 자물쇠가 고쳐질 때까진 자물쇠를 딸 수 없다.</span>
 	<<else>>
 		<<link [[캐비닛을 뒤진다|School Infirmary Drugs]]>><</link>>
@@ -152,7 +152,7 @@
 	<<He_ nun>> 당신에게 훈계를 늘어놓기 시작하지만, 얼마 못 가 <<He_ nun>> 한숨을 내쉬며 그만둔다. <<He_ nun>> <<his_ yi>> 시계를 흘끗 쳐다본다.
 	<br><br>
 
-	<<if $hour is 8 and $minute gte 30>>
+	<<if Time.hour is 8 and Time.minute gte 30>>
 		"수업이 곧 시작하지, 그렇지 않니? 수업 끝나고 나서도 피곤하면 들려라. 하지만 내가 학교 일과가 시작하기도 전에 수업을 빼먹고 자게 해주리라고 믿지는 않는 게 좋을 거다, 젊은 <<if $player.gender_appearance is "m">>총각<<else>>아가씨<</if>>."
 		<br><br>
 
@@ -172,7 +172,7 @@
 	<</if>>
 <<elseif $schoolstate is "lunch">>
 	양호 선생님은 <<his_ yi>> 시계를 보더니,
-	<<if $minute gte 30>>
+	<<if Time.minute gte 30>>
 		얼굴을 찌푸린다. "수업에 늦겠구나."
 		<<if $daily.infirmaryBed is 1>>
 			<<He_ nun>> 당신을 엄격하게 바라본다. "오늘 이미 나는 너를 위해 규칙을 한 번 어겨 줬어. 이제는 그냥 참는 수밖에 없겠구나, <<girl_ a>>."
@@ -253,18 +253,18 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 당신은 유리 캐비닛 중 하나로 걸어간다. 온갖 약과 알약으로 들어찬 수많은 병들이 선반에 나란히 줄세워져 있다.
-<<if $skulduggery gte 100 and !$infirmarydrugstheft>>
+<<if $skulduggery gte 100 and !$weekly.theft.infirmaryDrugs>>
 	<span class="blue">만약 혼자 있었다면, 당신이 쓸 약을 좀 슬쩍할 수 있을지도 모른다.</span>
 <</if>>
 <br><br>
 
-<<if $delinquency gte 200 or $infirmarydrugstheft>>
+<<if $delinquency gte 200 or $weekly.theft.infirmaryDrugs>>
 	당신의 뒤편에서 양호 선생님이 <<his_ yi>> 목을 가다듬는 소리가 당신을 현실로 되돌려 놓는다. <<He_ nun>> 팔짱을 낀 채, 당신을 쳐다본다. 당신은 소심하게 캐비닛에서 물러선다.
 	<br><br>
 
-	<<if $infirmarydrugstheft is "failed">>
+	<<if $weekly.theft.infirmaryDrugs is "failed">>
 		"몇몇 불량아들이 캐비닛을 털려고 시도했더구나. 자물쇠도 망가뜨렸고." <<he_ ga>> 설명한다. "내가 너무 과민반응한 거라면 미안하다."<<stress 2>><<gstress>>
-	<<elseif $infirmarydrugstheft is "stolen">>
+	<<elseif $weekly.theft.infirmaryDrugs is "stolen">>
 		"몇몇 불량아들이 캐비닛을 열어 약을 몇 개 훔쳐갔더구나." <<he_ ga>> 씩씩거린다. "나는 <<nnpc_titlePost "Leighton">> 선생님의 잔소리를 한바탕 더 듣고 싶진 않으니, 캐비닛에서 손 떼고 있는 게 좋을 거야."
 	<<else>>
 		"생각도 하지 마." <<he_ ga>> 진지한 어조로 경고한다. "다 이유가 있어서 잠가 둔 거니까."
@@ -302,13 +302,13 @@
 	<<if ($sciencetrait gte 3 and random(1, 5) is 5) or random(1, 10) is 10>>
 		선반 뒤편에 숨겨져 있는 분홍색 유리병이 당신의 눈에 들어온다. 라벨은 붙어있지 않다. 병에 담긴 알약들은 당신이 이전에 본 적 없는 것들이다.
 		<<set $blackmoney += 300>><<crimeup 300>>
-	<<elseif $scienetrait gte 2 and random(1, 10) gte 6>>
+	<<elseif $sciencetrait gte 2 and random(1, 10) gte 6>>
 		가장 꼭대기 선반에 있는 병이 당신의 눈에 들어온다. 특별할 것 없는 약이지만, 당신은 이 약에 환각 효과가 있다는 것을 알아차린다. 암시장의 누군가는 이것들에 관심을 보일 것이다.
 		<<set $blackmoney += 300>><<crimeup 300>>
 	<<elseif $sciencetrait gte 1 and random(1, 10) gte 6>>
 		당신은 알레르기에 특화된 약 한 상자를 잡는다. 약국에서는 얻을 수 없는 약들이다. 누군가는 이것들에 돈을 낼 것이다.
 		<<set $blackmoney += 200>><<crimeup 200>>
-	<<elseif $scienetrait gte 1>>
+	<<elseif $sciencetrait gte 1>>
 		당신은 유명한 상표가 붙은 고품질 진통제가 든 병을 발견한다. 누군가는 이것들에 돈을 낼 것이다.
 		<<set $blackmoney += 150>><<crimeup 150>>
 	<<else>>
@@ -318,10 +318,10 @@
 	<br><br>
 
 	당신의 수확에 만족하며, 당신은 캐비닛 문을 닫는다. 찰칵 하고 닫히는 소리가 난다.
-	<<set $infirmarydrugstheft to "stolen">>
+	<<set $weekly.theft.infirmaryDrugs to "stolen">>
 <<else>>
 	당신은 캐비닛을 억지로 열려 시도하지만, <span class="red">이 자물쇠는 당신이 따기엔 너무 복잡하다.</span> 심지어, 당신은 자물쇠 안에서 뭔가 철컥 하는 소리를 들었다. 분명 뭔가 망가뜨린 게 틀림없다.<<stress 2>><<gstress>><<crimeup 50>><<crime>>
-	<<set $infirmarydrugstheft to "failed">>
+	<<set $weekly.theft.infirmaryDrugs to "failed">>
 <</if>>
 <br><br>
 
@@ -375,7 +375,7 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 /* overrides random outcome if it's too late for anyone else to be at school, or if the pc meets conditions for unlocking Harper's therapy but hasn't yet done so */
-<<if $hour gte 17 or ($trauma gt ($traumamax / 10) * 2 and $psych is 0 and !$schoolPsych)>>
+<<if Time.hour gte 17 or ($trauma gt ($traumamax / 10) * 2 and $psych is 0 and !$schoolPsych)>>
 	<<set _infirmaryVisitor to "nurse">>
 <<else>>
 	<<set _possibleVisitors to []>>
@@ -438,13 +438,13 @@
 				<<He_ nun>> <<his_ yi>> 책상 서랍을 뒤지더니, 작은 카드 한 장을 건넨다. "의사 하퍼 - 전문 정신의"라는 글자가 빳빳한 명함의 맨 위에 새겨져 있다. 그 아래엔 나이팅게일 가에 있는 병원으로 가는 주소가 적혀 있다.
 				<br><br>
 
-				"<span class="gold"><<nnpc_He_ ga "Harper">> 매주 금요일마다 개인 진료 세션을 열고 있단다.</span>" 양호 선생님이 설명한다. "네 자신을 생각해서 <<if $weekday is 6>>이따가<<else>>언제<</if>> 한 번 <<nnpc_himPost "Harper" "에게">> 들러 봐라. 알겠니?"
+				"<span class="gold"><<nnpc_He "Harper">> holds private therapy sessions every Friday</span>," the nurse explains. "Do yourself a favour and give <<nnpc_him "Harper">> a visit <<if Time.weekDay is 6>>later<<else>>sometime<</if>>, okay?"
 			<<else>>
 				<<He_ nun>> 한숨을 쉰다. "내 생각으론 도와줄 방법이 없구나. 스스로를 너무 밀어붙이지만 마라, 알겠지?"
 			<</if>>
 		<</if>>
 		<br><br>
-		<<if $hour gte 17>>
+		<<if Time.hour gte 17>>
 			<<He_ ga>> <<his_ yi>> 시계를 쳐다본다. "좋아, 집에 가려면 서둘러야 하겠구나." <<He_ nun>> 당신을 돌아본다. "아팠던 사람을 혼자 내보내면 안 된단다. 집까지 태워줄까?"
 			<br><br>
 
@@ -978,7 +978,7 @@
 	<br><br>
 <</if>>
 
-<<if $hour gte 17>>
+<<if Time.hour gte 17>>
 	당신은 학교에서 멀리 벗어나지 않고, 조용히 옥스포드 가를 따라 거닐기로 한다. 조금 시간이 지나자, 카일라가 <<his_ yi>> 시계를 확인한다.
 	<br><br>
 
@@ -1031,7 +1031,7 @@
 	정문을 넘어 사라진다.
 	<br><br>
 
-	<<link [[다음|School Front Playground]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<link [[Next|School Front Courtyard]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<br>
 <</if>>
 

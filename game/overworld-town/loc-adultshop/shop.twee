@@ -11,7 +11,7 @@
 	<<if $stress gte $stressmax>>
 	<<passoutadultshop>>
 	<<else>>
-		<<if $hour is 21 and $minute lt 10>>
+		<<if Time.hour is 21 and Time.minute lt 10>>
 			문을 닫을 시간이다. 시리스가 사람들을 밖으로 내쫓는다. <<if $exposed gte 1>>시리스가 이렇게 노출된 옷차림을 하고 있는 당신을 발견한다면 어떻게 될지 생각하니 당신 안에서 공포가 부풀어오른다.<</if>>
 			<br><br>
 
@@ -20,7 +20,7 @@
 				<<link [[밖으로 나간다|Elk Street]]>><<adultShopClear>><</link>>
 				<br>
 			<<else>>
-				<<link [[끝까지 숨어있는다 (1:00)|Adult Shop]]>><<pass 1 hour>><</link>>
+				<<link [["Hide until it's over (1:00)"|Adult Shop]]>><<pass 1 hour>><</link>>
 			<</if>>
 		<<else>>
 			<div id="tryonstats-div"><<tryOnStats>></div>
@@ -28,7 +28,7 @@
 			<<unset $clothes_choice>>
 			<<set $shopPage = 0>>
 
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				당신은 어둠 속에 혼자 있다.
 				<br><br>
 			<<elseif $exposed gte 1>>
@@ -100,15 +100,15 @@
 				<br>
 			<</if>>*/
 
-			<<if $daystate is "night" and $hour isnot $closinghour and $adultshoptheft isnot 1>>
+			<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.adultShop>>
 				<<link [[금전등록기를 살펴본다|Adult Shop Register]]>><</link>>
 				<br>
 			<</if>>
 
 			<br>
 
-			<<if $daystate is "night" or $tryOn.value is 0>>
-				<<if $daystate is "night" and $adultShop.spotted is true and $adultShop.stolenClothes gt 0>>
+			<<if Time.dayState is "night" or $tryOn.value is 0>>
+				<<if Time.dayState is "night" and $adultShop.spotted is true and $adultShop.stolenClothes gt 0>>
 					<<link [[나간다|Adult Shop Night Guard Found]]>>
 						<<shopClothingFilterReset>>
 						<<ShowUnderEquip "normal">>
@@ -356,7 +356,7 @@
 :: Adult Shop Register Sneak
 
 <<set $outside to 0>><<effects>><<set $lock to 200>>
-<<set $adultshoptheft to 1>>
+<<set $weekly.theft.adultShop to true>>
 <<set $tip to random(4000, 10000)>>
 당신은 능숙하게 금전 등록기를 열고 안에 있는 돈을 세어 본다.
 거기에는 <<printmoney $tip>>만큼 돈이 있다.

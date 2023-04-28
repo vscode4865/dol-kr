@@ -1,15 +1,15 @@
 :: Widgets managePill [widget]
 <<widget "managePill">>
-<<if _args[0] and _args[1] and _args[2]>>
-	<<if _args[3] isnot true or $sexStats.pills[_args[0]].owned[_args[1]] gt 0>>
-		<<set $sexStats.pills[_args[0]].owned[_args[1]] += _args[2]>>
-		<<if _args[3] is true>>
-			<<set $sexStats.pills[_args[0]].type to _args[1]>>
-			<<set $sexStats.pills[_args[0]].doseTaken++>>
-			<<set $pillsconsumed++>>
+	<<if _args[0] and _args[1] and _args[2]>>
+		<<if _args[3] isnot true or $sexStats.pills[_args[0]].owned[_args[1]] gt 0>>
+			<<set $sexStats.pills[_args[0]].owned[_args[1]] += _args[2]>>
+			<<if _args[3] is true>>
+				<<set $sexStats.pills[_args[0]].type to _args[1]>>
+				<<set $sexStats.pills[_args[0]].doseTaken++>>
+				<<set $pillsconsumed++>>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 :: Take Pill From Medicine Drawer
@@ -151,6 +151,7 @@
 <<cleareventpool>>
 <<set _pills to $sexStats.pills>>
 <<set _menstruation to $sexStats.vagina.menstruation>>
+/*If this passage has no links, double check the widget 'autoTakePillCheck' for the $location variable */
 <<if _pills.lastTaken.pregnancy is "fertility booster">>
 	<<set _fertilityPillName to "fertility booster">>
 	당신은 라벨을 무시하고, 두번째 배란약을 먹었다.
@@ -163,10 +164,10 @@
 	<<addinlineevent "simple fertility overdose" 5>>
 		경고에도 불구하고, 당신은 몇분간 약간 따뜻함을 느꼈고 이후 괜찮아진다. <<garousal>><<arousal 100>>
 		<br><br>
-		<<link [[다음 (0:02)|PillCollection]]>><<pass 2>><</link>>
+		<<link [[Next (0:03)|PillCollection]]>><<pass 3>><</link>>
 	<</addinlineevent>>
 	<<addinlineevent "simple fertility overdose 2" 4>>
-		당신은 몇분간 당신의 질에서 이상한 따뜻함을 느꼈으나 이후 괜찮아진다. 그것은 이상하게 편안했다. <<garousal>><<arousal 200>>
+		You start to feel a strange warmth around your <<genitals 2>> for a few minutes but feel fine afterwards. It was oddly soothing. <<garousal>><<arousal 200>>
 		<<if _pills.pills[_fertilityPillName].doseTaken lt 3>>
 			<<set _pills.pills[_fertilityPillName].doseTaken to 3>>
 		<</if>>
@@ -174,54 +175,58 @@
 		<<link [[다음 (0:05)|PillCollection]]>><<pass 5>><</link>>
 	<</addinlineevent>>
 	<<addinlineevent "advanced fertility overdose" 2>>
-		당신은 당신의 질에서 이상한 따뜻함을 느끼기 시작한다, 그러나, 그것은 한 순간 당신은 타는 듯한 느낌이 들 때까지 멈추지 않는다. 그 뜨거움은 당신의 몸의 다른 부분으로 퍼져나가기 시작하는 것 같았으나 이후 진정되기 시작한다. <<garousal>><<arousal 1000>><<gpain>><<pain 10>>
+		You start feeling a strange warmth around your <<genitals 2>>, however, it doesn't seem to stop until at one point you feel like it's burning you. The heat seems to start expanding to other areas of your body but then begins to subside. <<garousal>><<arousal 1000>><<gpain>><<pain 10>>
 		<<if _pills.pills[_fertilityPillName].doseTaken lt 4>>
 			<<set _pills.pills[_fertilityPillName].doseTaken to 4>>
 		<</if>>
-		<<if _menstruation.currentState is "normal">>
+		<<if !_menstruation.running>>
+		<<elseif _menstruation.currentState is "normal">>
 			<<for _i to 0; _i lt 2; _i++>>
 				<<if _menstruation.currentDay lt _menstruation.stages[3] - 1.5>>
 					<<set _menstruation.currentDay += 1>>
 				<</if>>
 			<</for>>
-		<</if>>
-		<<if _menstruation.baseDays gte 28>>
-			<<set _menstruation.baseDays-->>
+			<<if _menstruation.baseDays gte 28>>
+				<<set _menstruation.baseDays-->>
+			<</if>>
 		<</if>>
 		<br><br>
 		<<link [[다음 (0:15)|PillCollection]]>><<pass 15>><</link>>
 	<</addinlineevent>>
 	<<addinlineevent "advanced fertility overdose" 2>>
-		당신은 당신의 질 주위에서 이상한 따뜻함과 가려움을 느끼기 시작한다, 그러나, 그것은 한 순간 당신은 타는 듯한 느낌이 들 때까지 멈추지 않는다. 그 뜨거움은 당신의 몸의 다른 부분으로 퍼져나가 머리까지 도달하며, 당신을 옆으로 쪼그리고 쓰러지게 한다. 시간이 좀 지났지만, 당신은 약의 과용으로 인한 부작용에서 회복할 수 있었다. <<garousal>><<arousal 1000>><<ggpain>><<pain 100>>
+		You feel a strange warmth around your <<genitals 2>>, intensifying until it practically burns. It quickly spreads through the rest of your body, and you collapse from the pain. You remain that way until the heat finally dies down. <<garousal>><<arousal 1000>><<ggpain>><<pain 100>>
 		<<if _pills.pills[_fertilityPillName].doseTaken lt 4>>
 			<<set _pills.pills[_fertilityPillName].doseTaken to 4>>
 		<</if>>
-		<<if _menstruation.currentState is "normal">>
+		<<if !_menstruation.running>>
+		<<elseif _menstruation.currentState is "normal">>
 			<<for _i to 0; _i lt 6; _i++>>
 				<<if _menstruation.currentDay lt _menstruation.stages[3] - 1.5>>
 					<<set _menstruation.currentDay += 1>>
 				<</if>>
 			<</for>>
-		<</if>>
-		<<if _menstruation.baseDays gte 24>>
-			<<set _menstruation.baseDays-->>
+			<<if _menstruation.baseDays gte 24>>
+				<<set _menstruation.baseDays-->>
+			<</if>>
 		<</if>>
 		<br><br>
 		<<link [[다음 (1:00)|PillCollection]]>><<pass 60>><</link>>
 	<</addinlineevent>>
 	<<addinlineevent "advanced fertility overdose 2" 2>>
-		당신은 당신의 질 주위에서 이상한 따뜻함과 가려움을 느끼기 시작한다, 그러나, 그것은 한 순간 당신은 타는 듯한 느낌이 들 때까지 멈추지 않는다. 그 뜨거움은 당신의 몸의 다른 부분으로 퍼져나가 머리까지 도달하며, 당신을 옆으로 쪼그리고 쓰러지게 한다. 그 고통으로 당신은 정신을 잃는다. <<garousal>><<arousal 1000>><<ggpain>><<pain 100>>
+		You feel a strange warmth around your <<genitals 2>>, intensifying until it practically burns. It quickly spreads through the rest of your body, and you collapse from the pain. The sheer intensity overwhelms your senses, and your vision fades to black... <<garousal>><<arousal 1000>><<ggpain>><<pain 100>>
 		<<if _pills.pills[_fertilityPillName].doseTaken lt 4>>
 			<<set _pills.pills[_fertilityPillName].doseTaken to 4>>
 		<</if>>
-		<<if _menstruation.currentState is "normal">>
+		<<if !_menstruation.running>>
+		<<elseif _menstruation.currentState is "normal">>
 			<<set _menstruation.currentDay to _menstruation.stages[3] - 0.5>>
-			<<menstruationCycle>>
+			<<menstruationCycle "overdose">>
 			<<set _menstruation.currentDay to _menstruation.stages[3] - 0.5>>
+			<<if _menstruation.baseDays gte 18>>
+				<<set _menstruation.baseDays-->>
+			<</if>>
 		<</if>>
-		<<if _menstruation.baseDays gte 18>>
-			<<set _menstruation.baseDays-->>
-		<</if>>
+		<<rutCycle true>>
 		<br><br>
 		<<link [[다음 (3:00)|PillCollectionFertilityPassOut]]>><<pass 3 hours>><</link>>
 	<</addinlineevent>>
@@ -229,14 +234,25 @@
 	당신은 라벨을 무시하고, 두번째 피임약을 먹었다.
 	<br><br>
 	<<addinlineevent "no contraceptive overdose" 10>>
-		경고에도 불구하고, 아무 문제가 없는 것 같다.
+		Despite it, nothing wrong seems to happen.
 		<br><br>
 		<<link [[다음 (0:02)|PillCollection]]>><<pass 2>><</link>>
 	<</addinlineevent>>
 	<<addinlineevent "simple contraceptive overdose" 5>>
-		경고에도 불구하고, 당신은 몇분간 약간 차가움을 느꼈고 이후 괜찮아진다. <<garousal>><<arousal -100>>
+		Despite it, you only feel a little chilly for a few minutes but feel fine afterwards. <<larousal>><<arousal -100>>
 		<br><br>
-		<<link [[다음 (0:02)|PillCollection]]>><<pass 2>><</link>>
+		<<link [[Next (0:03)|PillCollection]]>><<pass 3>><</link>>
+	<</addinlineevent>>
+	<<addinlineevent "contraceptive overdose" 3>>
+		After a few minutes, an odd, chilly sensation hits you. It spreads through your <<genitals 2>>, leaving a slight numbness in its wake that quickly dissipates on its own.<<llarousal>><<arousal -200>>
+		<br><br>
+		<<if $genitalsensitivity gt 2>>
+			<<set $genitalsensitivity -= 0.25>>
+		<</if>>
+		<<if $bottomsensitivity gt 2>>
+			<<set $bottomsensitivity -= 0.25>>
+		<</if>>
+		<<link [[Next (0:30)|PillCollection]]>><<pass 30>><</link>>
 	<</addinlineevent>>
 <</if>>
 
@@ -245,7 +261,7 @@
 :: PillCollectionFertilityPassOut
 <<set $outside to 0>><<effects>>
 
-당신은 결국 당신의 질에서 따뜻함을 느끼며 깨어났다. 최소한 당신이 이전에 기절했던 것에 비교하면, 그것은 이상한 편안함을 동반했고, 약 두 알을 먹을 때의 효과가 무엇인지에 대해 당신이 궁금해하게 만든다.
+You end up waking in with your <<genitals 2>> feeling rather warm. At least compared to before you passed out, it contains an oddly comfort, making you wonder what effect the two pills had on you was.
 
 <br><br>
 <<link [[다음 (0:02)|PillCollection]]>><<pass 2>><</link>>

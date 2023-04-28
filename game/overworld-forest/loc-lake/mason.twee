@@ -252,7 +252,7 @@
 
 호수에 흐르는 물줄기를 따라 올라가면 메이슨이 쉬기 좋아하는 연못으로 갈 수 있다. 그 밑에 있는 샘에서 거품이 일어난다.
 <br><br>
-<<if $schoolday isnot 1 and $weather is "rain" and $daystate is "dusk">>
+<<if !Time.schoolDay and $weather is "rain" and Time.dayState is "dusk">>
 	<<npc Mason>><<person1>>메이슨이 수영복을 입고 그 안에 앉아있다. <<his_ yi>> 팔은 바위 둑에 얹혀 있고, <<his_ yi>> 눈은 감겨 있다.
 	<br><br>
 
@@ -497,72 +497,72 @@
 
 :: Widgets Mason [widget]
 <<widget "mason_actions">>
-<<if $mason_pond is undefined and $NPCName[$NPCNameList.indexOf("Mason")].love gte 30>>
-	<<set $mason_pond to 1>>
-	"이 주변은 지하에 물이 많이 흐른단다." 메이슨이 말한다. "도무스 거리 아래 쪽에 개울이 있는데, 난 항상 거기에 집을 갖고 싶었어. 나만의 샘을 만들 수 있을 것 같아서."
-	<br><br>
-	<<he_ ga>> 물을 튀기며 앉고서, 당신을 쳐다본다. "너 도무스거리에 살지 않니?" <<he_ ga>> 물었다. <<He_ nun>> 물 속에 몸을 담궜다. "비싸겠지. 그리고 넌 네 고아원장님께도 허락을 받아야 할거야. 그냥 상상해보는 것도 재밌네."
-	<br><br>
-<</if>>
-<<if $daystate is "night">>
-	어렴풋하던 태양빛의 끝자락이 잎사귀 사이에서 희미하게 사라진다. 메이슨이 일어났다. "여기 너무 오래 있으면 감기에 걸릴 거야." <<he_ ga>> 말한다. "어두워지면 숲은 위험할 수 있으니 내가 데려다주마."
-	<br><br>
+	<<if $mason_pond is undefined and $NPCName[$NPCNameList.indexOf("Mason")].love gte 30>>
+		<<set $mason_pond to 1>>
+		"이 주변은 지하에 물이 많이 흐른단다." 메이슨이 말한다. "도무스 거리 아래 쪽에 개울이 있는데, 난 항상 거기에 집을 갖고 싶었어. 나만의 샘을 만들 수 있을 것 같아서."
+		<br><br>
+		<<he_ ga>> 물을 튀기며 앉고서, 당신을 쳐다본다. "너 도무스거리에 살지 않니?" <<he_ ga>> 물었다. <<He_ nun>> 물 속에 몸을 담궜다. "비싸겠지. 그리고 넌 네 고아원장님께도 허락을 받아야 할거야. 그냥 상상해보는 것도 재밌네."
+		<br><br>
+	<</if>>
+	<<if Time.dayState is "night">>
+		어렴풋하던 태양빛의 끝자락이 잎사귀 사이에서 희미하게 사라진다. 메이슨이 일어났다. "여기 너무 오래 있으면 감기에 걸릴 거야." <<he_ ga>> 말한다. "어두워지면 숲은 위험할 수 있으니 내가 데려다주마."
+		<br><br>
 
-	<<for _active_clothes range Object.keys($store)>>
-		<<for _i to 0; _i lt $store[_active_clothes].length; _i++>>
-			<<if $store[_active_clothes][_i].location is "lakeshore">>
-				<<set _temp_clothes_present to 1>>
-				<<break>>
-			<</if>>
+		<<for _active_clothes range Object.keys($store)>>
+			<<for _i to 0; _i lt $store[_active_clothes].length; _i++>>
+				<<if $store[_active_clothes][_i].location is "lakeshore">>
+					<<set _temp_clothes_present to 1>>
+					<<break>>
+				<</if>>
+			<</for>>
 		<</for>>
-	<</for>>
 
-	<<if _temp_clothes_present is 1>>
-		<<link [[옷을 갈아입고, 메이슨과 집으로 간다 (0:40)|Mason Walk]]>><<pass 40>><<storeon "lakeshore">><<set $masonDressed to true>><</link>>
+		<<if _temp_clothes_present is 1>>
+			<<link [[옷을 갈아입고, 메이슨과 집으로 간다 (0:40)|Mason Walk]]>><<pass 40>><<storeon "lakeshore">><<set $masonDressed to true>><</link>>
+			<br>
+		<</if>>
+
+		<<link [[메이슨과 집으로 간다 (0:30)|Mason Walk]]>><<pass 30>><</link>>
+		<br>
+		<<link [[혼자 가겠다고 말한다|Mason Walk Refuse]]>><</link>>
+		<br>
+
+	<<else>>
+		<<link [[잡담한다 (0:30)|Mason Pond Chat]]>><<npcincr Mason love 1>><<pass 30>><<stress -6>><</link>><<glove>><<lstress>>
+		<br>
+		<<link [[추파를 던진다 (0:30)|Mason Pond Flirt]]>><<pass 30>><<npcincr Mason love -1>><<npcincr Mason lust 1>><</link>><<promiscuous1>><<llove>><<glust>>
+		<br>
+		<<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
 		<br>
 	<</if>>
-
-	<<link [[메이슨과 집으로 간다 (0:30)|Mason Walk]]>><<pass 30>><</link>>
-	<br>
-	<<link [[혼자 가겠다고 말한다|Mason Walk Refuse]]>><</link>>
-	<br>
-
-<<else>>
-	<<link [[잡담한다 (0:30)|Mason Pond Chat]]>><<npcincr Mason love 1>><<pass 30>><<stress -6>><</link>><<glove>><<lstress>>
-	<br>
-	<<link [[추파를 던진다 (0:30)|Mason Pond Flirt]]>><<pass 30>><<npcincr Mason love -1>><<npcincr Mason lust 1>><</link>><<promiscuous1>><<llove>><<glust>>
-	<br>
-	<<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
-	<br>
-<</if>>
 <</widget>>
 
 <<widget "mason_greet">>
-<<if $NPCName[$NPCNameList.indexOf("Mason")].love gte 30>>
-	"널 보니 좋구나." <<he_ ga>> 웃으며 말한다. "난 손님을 좋아하는 편이지."
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte 10>>
-	"널 만나길 바랐는데!" <<he_ ga>> 말한다.
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte -10>>
-	"이봐." <<he_ ga>> 말한다.
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte -30>>
-	"무슨 일이니?" <<he_ ga>> 묻는다.
-<<else>>
-	"제발 날 방해하지 마렴." <<he_ ga>> 말한다.
-<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Mason")].love gte 30>>
+		"널 보니 좋구나." <<he_ ga>> 웃으며 말한다. "난 손님을 좋아하는 편이지."
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte 10>>
+		"널 만나길 바랐는데!" <<he_ ga>> 말한다.
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte -10>>
+		"이봐." <<he_ ga>> 말한다.
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].love gte -30>>
+		"무슨 일이니?" <<he_ ga>> 묻는다.
+	<<else>>
+		"제발 날 방해하지 마렴." <<he_ ga>> 말한다.
+	<</if>>
 <</widget>>
 
 <<widget "mason_greet_lust">>
-<<if $NPCName[$NPCNameList.indexOf("Mason")].lust gte 30>>
-	"제, 제발 옷 좀 입으렴." <<he_ ga>> 말한다. 메이슨이 뭔가 감추듯 움직인다.
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte 10>>
-	"옷을 챙겨입는게 어떠니?" <<he_ ga>> 말한다. "우리가 잡히면 사람들이 오해할지도 몰라."
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte -10>>
-	"넌 옷을 잘 챙겨입어야겠구나." <<he_ ga>> 말한다.
-<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte -30>>
-	"선생님에게 널 소개할 올바른 방법이 아니지 않니," <<he_ ga>> 말한다.
-<<else>>
-	<<he_ ga>> 체념하곤 한숨을 쉰다.
-<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Mason")].lust gte 30>>
+		"제, 제발 옷 좀 입으렴." <<he_ ga>> 말한다. 메이슨이 뭔가 감추듯 움직인다.
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte 10>>
+		"옷을 챙겨입는게 어떠니?" <<he_ ga>> 말한다. "우리가 잡히면 사람들이 오해할지도 몰라."
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte -10>>
+		"넌 옷을 잘 챙겨입어야겠구나." <<he_ ga>> 말한다.
+	<<elseif $NPCName[$NPCNameList.indexOf("Mason")].lust gte -30>>
+		"선생님에게 널 소개할 올바른 방법이 아니지 않니," <<he_ ga>> 말한다.
+	<<else>>
+		<<he_ ga>> 체념하곤 한숨을 쉰다.
+	<</if>>
 <</widget>>
 
 :: Lake Mason Reassure

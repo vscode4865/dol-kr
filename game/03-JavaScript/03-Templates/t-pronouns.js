@@ -11,11 +11,7 @@ function getHe() {
 		case "t":
 			T.postNum=2;return "그들";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			T.postNum=2;return "그들";
 	}
 }
@@ -40,11 +36,7 @@ function getHim() {
 		case "t":
 			T.postNum=2;return "그들";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			T.postNum=2;return "그들";
 	}
 }
@@ -70,11 +62,7 @@ function getHis() {
 		case "t":
 			T.postNum=2;return "그들";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			T.postNum=2;return "그들";
 	}
 }
@@ -97,11 +85,7 @@ function getHeIs() {
 		case "t":
 			return getHe.call(this);
 		default:
-			DOL.Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			DOL.Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			T.postNum=2;return "그들";
 	}
 }
@@ -127,11 +111,7 @@ function getHers() {
 		case "t":
 			T.postNum=0;return "그들의 것";
 		default:
-			Errors.report(
-				`Used ?${
-					this.name
-				} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`
-			);
+			Errors.report(`Used ?${this.name} without selecting the NPC. Typically requires <<person1>>. ${Utils.GetStack()}`);
 			T.postNum=0;return "그들의 것";
 	}
 }
@@ -191,7 +171,5 @@ function getPeopleYoung() {
  */
 /** ?Peopley - Capitalised version of above. */
 Template.add(["peopley", "Peopley"], function () {
-	return this.name === "Peopley"
-		? getPeopleYoung.call(this).toUpperFirst()
-		: getPeopleYoung.call(this);
+	return this.name === "Peopley" ? getPeopleYoung.call(this).toUpperFirst() : getPeopleYoung.call(this);
 });

@@ -344,6 +344,36 @@
     ```
 
     ```
+    <<bellyDescriptionPost>>
+        <<bellyDescriptionPost *["pc"|npc|size] [force] post "sep">>
+
+        <<bellyDescription>>의 대체 위젯. 배의 상태를 표시한다. 조사를 붙일 수 있다.
+		
+		필수사항
+		    - *["pc"|npc|size]: 배의 소유자. 원본 매크로에 사용되는 인수값. pc 혹은 npc명 혹은 크기(숫자).
+        
+        선택사항
+		    - force: 임신 상태에 상관없이 강제로 임신한 배 상태로 표시한다. 원본 매크로에 사용되는 인수값.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+
+        <<bellyDescriptionPost "pc" "을">>               // 임신한 배를
+    ```
+
+    ```
+    <<chestPost>>
+	     <<chest>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<chestsimplePost>>
+	     <<chestsimple>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<nipplePost>>
 	     <<nipple>>의 대체 위젯.
         + <<breastsPost>>와 용도 및 방식 같음. 생략
@@ -839,8 +869,8 @@
     ```
 
     ```
-    <<simpleHePost>>
-        <<simpleHe>>의 대체 위젯.
+    <<He_ShortPost>>
+        <<He_Short>>의 대체 위젯.
         + <<HePost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -901,8 +931,20 @@
     ```
 
    ```
+    <<phersPost>>
+        <<phers>>의 대체 위젯. <<hersPost>>의 플레이어 버전.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
     <<psirPost>>
         <<psir>>의 대체 위젯. <<pSirPost>> 도 사용할 수 있음. <<sirPost>>의 플레이어 버전.
+        + <<HePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<pmotherPost>>
+        <<pmother>>의 대체 위젯. <<pMotherPost>> 도 사용할 수 있음. <<FatherPost>>의 플레이어 버전.
         + <<HePost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1128,6 +1170,12 @@
     ```
 
     ```
+    <<actorPost>>
+        <<actor>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<girlPost>>
         <<girl>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
@@ -1172,6 +1220,12 @@
     ```
     <<genderPost>>
         <<gender>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<gender_posturePost>>
+        <<gender_posture>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1490,6 +1544,7 @@
         virgin을 처녀/동정으로 나누어 번역하기 위해 추가. 성별에 따라 달리 표현해야 할 때만 사용할것.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
+
    ```
     <<getfluidsfromgroupPost>>
         <<getfluidsfromgroupPost *sexID post "sep">>
@@ -1506,6 +1561,30 @@
         e.g.
         <<getfluidsfromgroupPost _sexID "을">>               // 정액을
     ```
+
+     ```
+    <<bastardPost>>
+        + <<bastard>>의 대체 위젯. <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<condomDescPost>>
+        <<condomDescPost *["player"|npcID] [article] post "sep">>
+
+       <<condomDesc>>의 대체 위젯. 조사를 붙일 수 있다. 
+        
+		필수사항
+			- npcID: 사용하는 NPC의 ID, 혹은 player. 원본 매크로의 인수.
+		
+        선택사항
+            - article: 관사(a, the) 혹은 it. 원본 매크로의 인수.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<condomDescPost _npcID "을">>               // 노란색 콘돔을
+    ```
+
 
 * personPost
     ```
@@ -1876,7 +1955,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trBreastsdesc "budding breasts" "을">>_trResult              //"약간 솟아오른 가슴을"
+        <<trBreastsdesc "budding breasts" "을">>_trResult              //"약간 솟아오른 유방을"
     ```
 
 * trColour
@@ -2584,7 +2663,7 @@
 		```
 	- bodyPost 계열
 		```
-		<<breasts_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
+		<<breasts_ (조사)>>, <<bellyDescription_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
 		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, <<mouth_ (조사)>>,  
 		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
@@ -2602,9 +2681,9 @@
 		```
 	- HePost 계열
 		```
-		<<He_ (조사)>>, <<he_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Hers_ (조사)>>, <<hers_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
+		<<He_ (조사)>>, <<He_Short_ (조사)>>, <<he_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Hers_ (조사)>>, <<hers_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
 		<<bHe_ (조사)>>, <<bhe_ (조사)>>, <<bHimself_ (조사)>>, <<bhimself_ (조사)>>, <<bHim_ (조사)>>, <<bhim_ (조사)>>, <<bHers_ (조사)>>, <<bhers_ (조사)>>, 
-		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
+		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<phers_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
 		<<farm_He_ (조사)>>, <<farm_he_ (조사)>>, <<nnpc_He_ (조사)>>, <<nnpc_he_ (조사)>>, <<nnpc_Him_ (조사)>>, <<nnpc_him_ (조사)>>, <<nnpc_himself_ (조사)>>, 
 		<<nnpc_wife_ (조사)>>, <<nnpc_lass_ (조사)>>, <<nnpc_gender_ (조사)>>, <<nnpc_gendery_ (조사)>>, <<nnpc_genitals_ (조사)>>, <<nnpc_girlfriend_ (조사)>>,
 		<<nnpc_brother_ (조사)>>, <<nnpc_Brother_ (조사)>>, <<nnpc_title_ (조사)>>, <<nnpc_Title_ (조사)>>, 
@@ -2616,12 +2695,13 @@
 		<<charles_ (조사)>>, <<theowner_ (조사)>>, <<someone_ (조사)>>, <<spouse_ (조사)>>, <<father_ (조사)>>, <<Father_ (조사)>>, <<mummy_ (조사)>>, <<Mummy_ (조사)>>, 
 		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>,
 		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
-		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, <<priest_ (조사)>>, <<priests_ (조사)>>,
+		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<pmother_ (조사)>>, <<pMother_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, 
+		<<priest_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
-		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>
+		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
 	- personPost 계열

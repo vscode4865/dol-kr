@@ -1,15 +1,15 @@
 :: Widgets Actions Left Hand [widget]
 <<widget "leftdefault">>
-<<if $lefttarget isnot "self">>
-	<<set _leftaction["쓰다듬는다"] to "leftchest">>
-	<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($lefttarget))>>
-		<<set _leftaction["때린다"] to "lefthit">>
+	<<if $lefttarget isnot "self" and $punishmentposition isnot "gloryhole">>
+		<<set _leftaction["쓰다듬는다"] to "leftchest">>
+		<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($lefttarget))>>
+			<<set _leftaction["때린다"] to "lefthit">>
+		<</if>>
 	<</if>>
-<</if>>
-<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<set _leftaction["등 뒤로 둔다"] to "behind">>
-	<<leftcoverface>>
-<</if>>
+	<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<set _leftaction["등 뒤로 둔다"] to "behind">>
+		<<leftcoverface>>
+	<</if>>
 <</widget>>
 
 <<widget "leftcoverface">>
@@ -41,460 +41,332 @@
 	<</if>>
 <</widget>>
 
-<!-- Deprecated, not in use. See "leftgrabnew"-->
-<<widget "leftgrab">>
-
-<<if $combattype is "train">>
-	<<set _end to $enemyno-1>>
-<<else>>
-	<<set _end to 0>>
-<</if>>
-
-<<for _j = $enemyno-1; _j gte _end; _j-->>
-	<<if $NPCList[_j].penis is 0>>
-		<<if $consensual is 1 and $promiscuity lte 34 and $enemytype is "man" or $consensual is 1 and $deviancy lte 34 and $enemytype isnot "man">>
-		<!-- Do Nothing -->
-		<<else>>
-			<<if $leftactiondefault is "leftgrab">>
-				| <label><span class="sub"><<hisPost "의">> 자지를 잡는다</span> <<radiobutton "$leftaction" "leftgrab" checked>><<handdifficulty>> <<combatpromiscuous3>></label>
-			<<else>>
-				| <label><span class="sub"><<hisPost "의">> 자지를 잡는다</span> <<radiobutton "$leftaction" "leftgrab">><<handdifficulty>> <<combatpromiscuous3>></label>
-			<</if>>
-		<</if>>
-		<<if $leftactiondefault is "leftstroke">>
-			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$leftaction" "leftstroke" checked>></label>
-			<<break>>
-		<<else>>
-			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$leftaction" "leftstroke">></label>
-			<<break>>
-		<</if>>
-	<</if>>
-<</for>>
-
-<</widget>>
-
 <<widget "leftgrabnew">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.penis is 0>>
-		<<set $_penis to (npcHasStrapon($lefttarget) ? "페니스 밴드 자지" : "자지")>>
-		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
-		<!-- Do Nothing -->
-		<<else>>
-			<<if $_target.chastity.penis.includes("chastity")>>
-				<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 희롱한다"] to "leftgrab">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.penis is 0>>
+			<<set $_penis to (npcHasStrapon($lefttarget) ? "페니스 밴드 자지" : "자지")>>
+			<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
+			<!-- Do Nothing -->
 			<<else>>
-				<<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 잡는다"] to "leftgrab">>
+				<<if $_target.chastity.penis.includes("chastity")>>
+					<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 희롱한다"] to "leftgrab">>
+				<<else>>
+					<<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 잡는다"] to "leftgrab">>
+				<</if>>
 			<</if>>
-		<</if>>
-		<<if $_target.chastity.penis.includes("chastity")>>
-			<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 쓰다듬는다"] to "leftstroke">>
-		<<else>>
-			<<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 쓰다듬는다"] to "leftstroke">>
+			<<if $_target.chastity.penis.includes("chastity")>>
+				<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 쓰다듬는다"] to "leftstroke">>
+			<<else>>
+				<<set _leftaction[$_target.pronouns.his + " " + $_penis + "를 쓰다듬는다"] to "leftstroke">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "leftplaynew"-->
-<<widget "leftplay">>
-
-<<if $combattype is "train">>
-	<<set _end to $enemyno-1>>
-<<else>>
-	<<set _end to 0>>
-<</if>>
-
-<<if $consensual is 1 and $promiscuity lte 34 and $enemytype is "man" or $consensual is 1 and $deviancy lte 34 and $enemytype isnot "man">>
-	<!-- Do Nothing -->
-<<else>>
-	<<for _j = $enemyno-1; _j gte _end; _j-->>
-		<<if $NPCList[_j].vagina is 0>>
-			<<if $leftactiondefault is "leftplay">>
-				| <label><span class="sub"><<hisPost "의">> 보지를 만지작거린다</span> <<radiobutton "$leftaction" "leftplay" checked>><<handdifficulty>> <<combatpromiscuous3>></label>
-			<<else>>
-				| <label><span class="sub"><<hisPost "의">> 보지를 만지작거린다</span> <<radiobutton "$leftaction" "leftplay">><<handdifficulty>> <<combatpromiscuous3>></label>
-			<</if>>
-			<<break>>
-		<</if>>
-	<</for>>
-<</if>>
-
 <</widget>>
 
 <<widget "leftplaynew">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
-		<!-- Do Nothing -->
-	<<else>>
-		<<if $_target.vagina is 0>>
-			<<if $_target.chastity.vagina.includes("chastity")>>
-				<<trClothes "genitals" $_target.chastity.vagina "name" "을">><<set _leftaction[$_target.pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "leftplay">>
-			<<else>>
-				<<set _leftaction[$_target.pronouns.his + " 보지를 만지작거린다"] to "leftplay">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
+			<!-- Do Nothing -->
+		<<else>>
+			<<if $_target.vagina is 0>>
+				<<if $_target.chastity.vagina.includes("chastity")>>
+					<<trClothes "genitals" $_target.chastity.vagina "name" "을">><<set _leftaction[$_target.pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "leftplay">>
+				<<else>>
+					<<set _leftaction[$_target.pronouns.his + " 보지를 만지작거린다"] to "leftplay">>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
-
-<!-- Deprecated, not in use. See "leftclothesnew"-->
-/*
-<<widget "leftclothes">>
-
-<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
-	<<if $leftactiondefault is "upper">>
-	| <label><<trClothes "upper" $worn.upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "upper" checked>></label>
-	<<else>>
-	| <label><<trClothes "upper" $worn.upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "upper">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
-	<<if $leftactiondefault is "under_upper">>
-	| <label><<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "under_upper" checked>></label>
-	<<else>>
-	| <label><<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "under_upper">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
-	<<if $leftactiondefault is "lower">>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "lower" checked>></label>
-	<<else>>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "lower">></label>
-	<</if>>
-<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
-	<<if $leftactiondefault is "lower">>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "lower" checked>></label>
-	<<else>>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "lower">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked")>>
-	<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
-		<<if $leftactiondefault is "under">>
-		| <label><<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "under" checked>></label>
-		<<else>>
-		| <label><<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$leftaction" "under">></label>
-		<</if>>
-	<</if>>
-<</if>>
-
-<</widget>>
-*/
 
 <<widget "leftclothesnew">>
-<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base and !$worn.over_upper.type.includes("naked")>>
-		<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_upper">>
-	<</if>>
+	<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base and !$worn.over_upper.type.includes("naked")>>
+			<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_upper">>
+		<</if>>
 
-	<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
-		<<trClothes "upper" $worn.upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "upper">>
-	<</if>>
+		<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
+			<<trClothes "upper" $worn.upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "upper">>
+		<</if>>
 
-	<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
-		<<trClothes "under_upper" $worn.under_upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "under_upper">>
-	<</if>>
+		<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
+			<<trClothes "under_upper" $worn.under_upper.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "under_upper">>
+		<</if>>
 
-	<<if $worn.over_lower.state is setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt isnot 1 and !$worn.over_lower.type.includes("naked")>>
-		<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_lower">>
-	<<elseif setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1>>
-		<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_lower">>
-	<</if>>
+		<<if $worn.over_lower.state is setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt isnot 1 and !$worn.over_lower.type.includes("naked")>>
+			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_lower">>
+		<<elseif setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1>>
+			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "over_lower">>
+		<</if>>
 
-	<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
-		<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "lower">>
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
-		<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "lower">>
-	<</if>>
+		<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
+			<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "lower">>
+		<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
+			<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "lower">>
+		<</if>>
 
-	<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked") and !($penisstate isnot 0 and playerHasStrapon())>>
-		<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
-			<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "under_lower">>
+		<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked") and !($penisstate isnot 0 and playerHasStrapon())>>
+			<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
+				<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "under_lower">>
+			<</if>>
+		<</if>>
+
+		<<if $worn.face.state is setup.clothes.face[clothesIndex('face', $worn.face)].state_base and !$worn.face.type.includes("naked") and $worn.face.type.includes("mask")>>
+				<<trClothes "face" $worn.face.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "mask">>
 		<</if>>
 	<</if>>
-
-	<<if $worn.face.state is setup.clothes.face[clothesIndex('face', $worn.face)].state_base and !$worn.face.type.includes("naked") and $worn.face.type.includes("mask")>>
-			<<trClothes "face" $worn.face.name "name" "을">><<set _leftaction[_trResult+" 벗는다"] to "mask">>
-	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "leftspraynew"-->
-<<widget "leftspray">>
-<<if $consensual isnot 1 and $spray gte 1>>
-	<<if $leftactiondefault is "spray">>
-	| <label><span class="def">페퍼 스프레이</span> <span class="black">남은 용량:</span> $spray / $spraymax <<radiobutton "$leftaction" "spray" checked>></label>
-	<<else>>
-	| <label><span class="def">페퍼 스프레이</span> <span class="black">남은 용량:</span> $spray / $spraymax <<radiobutton "$leftaction" "spray">></label>
-	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftspraynew">>
-<<if $lefttarget isnot "self">>
-	<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
-		<<set _leftaction["페퍼 스프레이"] to "spray">>
+	<<if $lefttarget isnot "self">>
+		<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
+			<<set _leftaction["후추 스프레이"] to "spray">>
+		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "leftstealnew"-->
-<<widget "leftsteal">>
-<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) gte 200 and $stealstateleft isnot 3 and $enemytype is "man" and $abomination isnot 1 and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
-	<<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
-	<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
-	<<if $leftactiondefault is "steal">>
-	| <label><span class="brat">훔치기</span> <<radiobutton "$leftaction" "steal" checked>> <<skulduggerydifficulty>><<combatcrime>></label>
-	<<else>>
-	| <label><span class="brat">훔치기</span> <<radiobutton "$leftaction" "steal">> <<skulduggerydifficulty>><<combatcrime>></label>
-	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftstealnew">>
-<<if $lefttarget isnot "self" and !($stealtarget.includes($lefttarget))>>
-	<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) and $enemytype is "man" and $abomination isnot 1 and !($npcrow.includes($lefttarget)) and $water isnot 1 and $punishmentposition isnot "gloryhole">>
-		<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
-		<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
-		/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
-		<<if $stealstateleft is undefined>>
-			<<set _leftaction["훔치기"] to "steal">>
-		<<elseif $stealstateleft is 2>>
-			<<set _leftaction[$NPCList[$lefttarget].pronouns.his + " 소유물을 가져간다"] to "steal">>
-		<<else>>
-			<<set _leftaction["계속 훔치려고 한다"] to "steal">>
+	<<if $lefttarget isnot "self" and !($stealtarget.includes($lefttarget))>>
+		<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) and $enemytype is "man" and $abomination isnot 1 and !($npcrow.includes($lefttarget)) and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+			<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
+			<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
+			/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
+			<<if $stealstateleft is undefined>>
+				<<set _leftaction["훔치기"] to "steal">>
+			<<elseif $stealstateleft is 2>>
+				<<set _leftaction[$NPCList[$lefttarget].pronouns.his + " 소유물을 가져간다"] to "steal">>
+			<<else>>
+				<<set _leftaction["계속 훔치려고 한다"] to "steal">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "leftpenwhacknew"-->
-<<widget "leftpenwhack">>
-<<if $NPCList[0].lefthand is "pen" or $NPCList[0].righthand is "pen" or
-$NPCList[1].lefthand is "pen" or $NPCList[1].righthand is "pen" or
-$NPCList[2].lefthand is "pen" or $NPCList[2].righthand is "pen" or
-$NPCList[3].lefthand is "pen" or $NPCList[3].righthand is "pen" or
-$NPCList[4].lefthand is "pen" or $NPCList[4].righthand is "pen" or
-$NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
-	<<if $leftactiondefault is "penwhack">>
-	| <label><span class="brat">필기도구를 친다</span> <<radiobutton "$leftaction" "penwhack" checked>></label>
-	<<else>>
-	| <label><span class="brat">필기도구를 친다</span> <<radiobutton "$leftaction" "penwhack">></label>
-	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftpenwhacknew">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_")) or $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
-		<<set _leftaction["필기도구를 친다"] to "penwhack">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_")) or $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
+			<<set _leftaction["필기도구를 친다"] to "penwhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftshacklewhack">>
-<<if $lefttarget isnot "self">>
-	<<if $NPCList[$lefttarget].lefthand is "shackle_entrance" or $NPCList[$lefttarget].lefthand is "shackle_imminent" or $NPCList[$lefttarget].righthand is "shackle_entrance" or $NPCList[$lefttarget].righthand is "shackle_imminent">>
-		<<set _leftaction["족쇄를 친다"] to "shacklewhack">>
+	<<if $lefttarget isnot "self">>
+		<<if $NPCList[$lefttarget].lefthand is "shackle_entrance" or $NPCList[$lefttarget].lefthand is "shackle_imminent" or $NPCList[$lefttarget].righthand is "shackle_entrance" or $NPCList[$lefttarget].righthand is "shackle_imminent">>
+			<<set _leftaction["족쇄를 친다"] to "shacklewhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "lefthypnosiswhack">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand and ($_target.lefthand is "hypnosis" or $_target.lefthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
-		<<set _leftaction["최면도구를 친다"] to "hypnosiswhack">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand and ($_target.lefthand is "hypnosis" or $_target.lefthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
+			<<set _leftaction["최면도구를 친다"] to "hypnosiswhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftdildowhack">>
-<<if $lefttarget isnot "self">>
-	<<if $NPCList[$lefttarget].lefthand is "dildo" or $NPCList[$lefttarget].righthand is "dildo">>
-		<<if getSexToysofType("all").includes($NPCList[$lefttarget].lefttool)>>
-			<<silently>><<lefttoolPost $lefttarget "을">><</silently>><<set _leftaction[_trResult +" 친다"] to "dildowhack">>
-		<<elseif getSexToysofType("all").includes($NPCList[$lefttarget].righttool)>>
-			<<silently>><<righttoolPost $lefttarget "을">><</silently>><<set _leftaction[_trResult +" 친다"] to "dildowhack">>
+	<<if $lefttarget isnot "self">>
+		<<if $NPCList[$lefttarget].lefthand is "dildo" or $NPCList[$lefttarget].righthand is "dildo">>
+			<<if getSexToysofType("all").includes($NPCList[$lefttarget].lefttool)>>
+				<<silently>><<lefttoolPost $lefttarget "을">><</silently>><<set _leftaction[_trResult +" 친다"] to "dildowhack">>
+			<<elseif getSexToysofType("all").includes($NPCList[$lefttarget].righttool)>>
+				<<silently>><<righttoolPost $lefttarget "을">><</silently>><<set _leftaction[_trResult +" 친다"] to "dildowhack">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftFixAndCoverActions">>
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $vaginause is "cover">>
-			<<set _leftaction["계속 보지를 가린다"] to "leftcovervaginameek">>
-		<<elseif $vaginause is 0>>
-			<<set _leftaction["보지를 가린다"] to "leftcovervaginameek">>
-		<</if>>
-	<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $vaginause is "cover">>
-			<<set _leftaction["계속 보지를 가린다"] to "leftcovervagina">>
-		<<elseif $vaginause is 0>>
-			<<set _leftaction["보지를 가린다"] to "leftcovervagina">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
-	<<set _penis to playerHasStrapon() ? '페니스 밴드 자지' : '자지'>>
-	<<set _straponDisplaced to (!playerHasStrapon() && $worn.under_lower.type.includes("strap-on"))>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $penisuse is "cover">>
-			<<set _leftaction["계속 " + _penis + "를 가린다"] to "leftcoverpenismeek">>
-		<<elseif $penisuse is 0>>
-			<<if !_straponDisplaced>>
-				<<set _leftaction[_penis + "를 가린다"] to "leftcoverpenismeek">>
+	<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $vaginause is "cover">>
+				<<set _leftaction["계속 보지를 가린다"] to "leftcovervaginameek">>
+			<<elseif $vaginause is 0>>
+				<<set _leftaction["보지를 가린다"] to "leftcovervaginameek">>
 			<</if>>
-		<</if>>
-	<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $penisuse is "cover">>
-			<<set _leftaction["계속 " + _penis + "를 가린다"] to "leftcoverpenis">>
-		<<elseif $penisuse is 0>>
-			<<if !_straponDisplaced>>
-				<<set _leftaction[_penis + "를 가린다"] to "leftcoverpenis">>
-			<</if>>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $anususe is "cover">>
-			<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranusmeek">>
-		<<else>>
-			<<set _leftaction["엉덩이를 가린다"] to "leftcoveranusmeek">>
-		<</if>>
-	<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $anususe is "cover">>
-			<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranus">>
-		<<else>>
-			<<set _leftaction["엉덩이를 가린다"] to "leftcoveranus">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if $worn.under_lower.name isnot "naked">>
-		<<if $worn.under_lower.state is "thighs" or $worn.under_lower.state is "knees" or $worn.under_lower.state is "ankles">>
-			<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _leftaction[_trResult+" 올린다"] to "leftunderpull">>
-		<</if>>
-	<</if>>
-
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<if $worn.lower.skirt_down is 0>>
-			<<if $worn.lower.state is "waist">>
-				<<trClothes "lower" $worn.lower.name "name" "으로">><<set _leftaction["가랑이를 " + _trResult + " 가린다"] to "leftskirtpull">>
+		<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $vaginause is "cover">>
+				<<set _leftaction["계속 보지를 가린다"] to "leftcovervagina">>
+			<<elseif $vaginause is 0>>
+				<<set _leftaction["보지를 가린다"] to "leftcovervagina">>
 			<</if>>
 		<</if>>
 	<</if>>
 
-	<<if $worn.lower.name isnot "naked">>
-		<<if $worn.upper.set is $worn.lower.set>>
-			<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+	<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+		<<set _penis to playerHasStrapon() ? '페니스 밴드 자지' : '자지'>>
+		<<set _straponDisplaced to (!playerHasStrapon() && $worn.under_lower.type.includes("strap-on"))>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $penisuse is "cover">>
+				<<set _leftaction["계속 " + _penis + "를 가린다"] to "leftcoverpenismeek">>
+			<<elseif $penisuse is 0>>
+				<<if !_straponDisplaced>>
+					<<set _leftaction[_penis + "를 가린다"] to "leftcoverpenismeek">>
+				<</if>>
+			<</if>>
+		<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $penisuse is "cover">>
+				<<set _leftaction["계속 " + _penis + "를 가린다"] to "leftcoverpenis">>
+			<<elseif $penisuse is 0>>
+				<<if !_straponDisplaced>>
+					<<set _leftaction[_penis + "를 가린다"] to "leftcoverpenis">>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $anususe is "cover">>
+				<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranusmeek">>
+			<<else>>
+				<<set _leftaction["엉덩이를 가린다"] to "leftcoveranusmeek">>
+			<</if>>
+		<<elseif $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $anususe is "cover">>
+				<<set _leftaction["계속 엉덩이를 가린다"] to "leftcoveranus">>
+			<<else>>
+				<<set _leftaction["엉덩이를 가린다"] to "leftcoveranus">>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if $worn.under_lower.name isnot "naked">>
+			<<if $worn.under_lower.state is "thighs" or $worn.under_lower.state is "knees" or $worn.under_lower.state is "ankles">>
+				<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _leftaction[_trResult+" 올린다"] to "leftunderpull">>
+			<</if>>
+		<</if>>
+
+		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<if $worn.lower.skirt_down is 0>>
+				<<if $worn.lower.state is "waist">>
+					<<trClothes "lower" $worn.lower.name "name" "으로">><<set _leftaction["가랑이를 " + _trResult + " 가린다"] to "leftskirtpull">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $worn.lower.name isnot "naked">>
+			<<if $worn.upper.set is $worn.lower.set>>
+				<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+					<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+ " 고쳐입는다"] to "leftlowerpull">>
+				<</if>>
+			<<elseif $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
 				<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+ " 고쳐입는다"] to "leftlowerpull">>
 			<</if>>
-		<<elseif $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
-			<<trClothes "lower" $worn.lower.name "name" "을">><<set _leftaction[_trResult+ " 고쳐입는다"] to "leftlowerpull">>
 		<</if>>
-	<</if>>
 
-	<<if $worn.over_lower.name isnot "naked">>
-		<<if $worn.over_upper.set is $worn.over_lower.set>>
-			<<if $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+		<<if $worn.over_lower.name isnot "naked">>
+			<<if $worn.over_upper.set is $worn.over_lower.set>>
+				<<if $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+					<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftoverlowerpull">>
+				<</if>>
+			<<elseif $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base>>
 				<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftoverlowerpull">>
 			<</if>>
-		<<elseif $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base>>
-			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftoverlowerpull">>
 		<</if>>
-	<</if>>
 
 
-	<<if $worn.upper.name isnot "naked">>
-		<<if $worn.upper.state isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base or $worn.upper.state_top isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
-			<<trClothes "upper" $worn.upper.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftlowerpull">>
+		<<if $worn.upper.name isnot "naked">>
+			<<if $worn.upper.state isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base or $worn.upper.state_top isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+				<<trClothes "upper" $worn.upper.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftlowerpull">>
+			<</if>>
 		<</if>>
-	<</if>>
 
-	<<if $worn.over_upper.name isnot "naked">>
-		<<if $worn.over_upper.state isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base or $worn.over_upper.state_top isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
-			<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftoverupperpull">>
+		<<if $worn.over_upper.name isnot "naked">>
+			<<if $worn.over_upper.state isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base or $worn.over_upper.state_top isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+				<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _leftaction[_trResult+" 고쳐입는다"] to "leftoverupperpull">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftchoke">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand is "throat" or $_target.righthand is "throat">>
-		<<if $consensual == 1>>
-			<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에 누른다"] to "keepchoke">>
-			<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에서 떼어낸다"] to "stopchoke">>
-		<<else>>
-			<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에서 밀쳐낸다"] to "stopchokenoncon">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand is "throat" or $_target.righthand is "throat">>
+			<<if $consensual == 1>>
+				<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에 누른다"] to "keepchoke">>
+				<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에서 떼어낸다"] to "stopchoke">>
+			<<else>>
+				<<set _leftaction[$_target.pronouns.his + " 손을 당신의 목에서 밀쳐낸다"] to "stopchokenoncon">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "leftCondom">>
-<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $player.penisExist>>
-		<<if !$player.condom and $condoms gt 0 and $parasite.penis.name is undefined>>
-			<<set _leftaction["콘돔을 씌운다 (" + $condoms + ")"] to "peniscondom">>
-		<</if>>
-		<<if $player.condom>>
-			<<set _leftaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+	<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if !["othermouthentrance","othermouthimminent","othermouth","penetrated","otheranus"].includes($penisstate) and $player.penisExist and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1 and !playerChastity("penis")>>
+			<<if !$player.condom and $condoms gt 0 and $parasite.penis.name is undefined>>
+				<<set _leftaction["콘돔을 씌운다 (" + $condoms + "개 남음)"] to "peniscondom">>
+			<</if>>
+			<<if $player.condom>>
+				<<set _leftaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
+<</widget>>
+
+<<widget "leftNPCCondom">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if wearingCondom($lefttarget)>>
+			<<if ($consensual is 0 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 94) and playerPregnancyPossibleWith($_target)>>
+				<!-- Do Nothing -->
+			<<else>>
+				<<set _leftaction[$_target.pronouns.his + " 콘돔을 제거한다"] to "npcremovecondom">>
+			<</if>>
+		<<elseif $prayerRoom or $NPCList[$lefttarget].fullDescription is "Ivory Wraith">>
+			<!-- Do Nothing -->
+		<<elseif !$_target.condom and $condoms gte 1 and ($_target.condomCanGive or $condomlvl is 1)>>
+			<<set _leftaction[$_target.pronouns.him + " 향해 콘돔을 건넨다 (" + $condoms + "개 남음)"] to "npcgivecondom">>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "leftUndressOther">>
-<<if $lefttarget isnot "self">>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.penis is "clothed" or $_target.vagina is "clothed" or $_target.chest is "clothed">>
-		<<if ($consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 14 and !$promiscuityIgnore)>>
-			<!-- Do Nothing -->
-		<<else>>
-			<<set _leftaction["벗긴다:"] to "leftUndressOther">>
-			<<set _undressLeftTargets to {"하지 않는다":"rest"}>>
-			<<set $_doText to ($consensual isnot 1 ? "어떻게든" : "")>>
-			<<if $_target.penis is "clothed" or $_target.vagina is "clothed">>
-				<<silently>><<npcUndressText $NPCList[$lefttarget] "lower">><</silently>><<set _trResult to _text_output.substring(6)>>
-				<<set _undressLeftTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "lower">>
-			<</if>>
-			<<if $_target.chest is "clothed">>
-				<<silently>><<npcUndressText $NPCList[$lefttarget] "upper">><</silently>><<set _trResult to _text_output.substring(6)>>
-				<<set _undressLeftTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "upper">>
+	<<if $lefttarget isnot "self">>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.penis is "clothed" or $_target.vagina is "clothed" or $_target.chest is "clothed">>
+			<<if ($consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 14 and !$promiscuityIgnore) or $punishmentposition is "gloryhole">>
+				<!-- Do Nothing -->
+			<<else>>
+				<<set _leftaction["벗긴다:"] to "leftUndressOther">>
+				<<set _undressLeftTargets to {"하지 않는다":"rest"}>>
+				<<set $_doText to ($consensual isnot 1 ? "어떻게든" : "")>>
+				<<if $_target.penis is "clothed" or $_target.vagina is "clothed">>
+					<<silently>><<npcUndressText $NPCList[$lefttarget] "lower">><</silently>><<set _trResult to _text_output.substring(6)>>
+					<<set _undressLeftTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "lower">>
+				<</if>>
+				<<if $_target.chest is "clothed">>
+					<<silently>><<npcUndressText $NPCList[$lefttarget] "upper">><</silently>><<set _trResult to _text_output.substring(6)>>
+					<<set _undressLeftTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "upper">>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 :: Widgets Actions Right Hand [widget]
 
 <<widget "rightdefault">>
-<<if $righttarget isnot "self">>
-	<<set _rightaction["쓰다듬는다"] to "rightchest">>
-	<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($righttarget))>>
-		<<set _rightaction["때린다"] to "righthit">>
+	<<if $righttarget isnot "self" and $punishmentposition isnot "gloryhole">>
+		<<set _rightaction["쓰다듬는다"] to "rightchest">>
+		<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($righttarget))>>
+			<<set _rightaction["때린다"] to "righthit">>
+		<</if>>
 	<</if>>
-<</if>>
-<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<set _rightaction["등 뒤로 둔다"] to "behind">>
-	<<rightcoverface>>
-<</if>>
+	<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<set _rightaction["등 뒤로 둔다"] to "behind">>
+		<<rightcoverface>>
+	<</if>>
 <</widget>>
 
 <<widget "rightcoverface">>
@@ -502,9 +374,9 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</widget>>
 
 <<widget "rightcamerapose">>
-<<if $audiencecamera1 isnot 0>>
-	<<set _rightaction["카메라에 포즈를 취한다"] to "rightcamerapose">>
-<</if>>
+	<<if $audiencecamera1 isnot 0>>
+		<<set _rightaction["카메라에 포즈를 취한다"] to "rightcamerapose">>
+	<</if>>
 <</widget>>
 
 <<widget "righthandpull">>
@@ -526,441 +398,315 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<</if>>
 <</widget>>
 
-<!-- Deprecated, not in use. See "rightgrabnew"-->
-<<widget "rightgrab">>
-<<for _j = $enemyno-1; _j gte _end; _j-->>
-	<<if $NPCList[_j].penis is 0>>
-		<<if $consensual is 1 and $promiscuity lte 34 and $enemytype is "man" or $consensual is 1 and $deviancy lte 34 and $enemytype isnot "man">>
-			<!-- Do Nothing -->
-		<<else>>
-			<<if $rightactiondefault is "rightgrab">>
-				| <label><span class="sub"><<hisPost "의">> 자지를 잡는다</span> <<radiobutton "$rightaction" "rightgrab" checked>><<handdifficulty>> <<combatpromiscuous3>></label>
-			<<else>>
-				| <label><span class="sub"><<hisPost "의">> 자지를 잡는다</span> <<radiobutton "$rightaction" "rightgrab">><<handdifficulty>> <<combatpromiscuous3>></label>
-			<</if>>
-		<</if>>
-		<<if $rightactiondefault is "rightstroke">>
-			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$rightaction" "rightstroke" checked>></label>
-			<<break>>
-		<<else>>
-			| <label><span class="sub"><<hisPost "의">> 자지를 쓰다듬는다</span> <<radiobutton "$rightaction" "rightstroke">></label>
-			<<break>>
-		<</if>>
-	<</if>>
-<</for>>
-
-<</widget>>
-
 <<widget "rightgrabnew">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.penis is 0>>
-		<<set $_penis to (npcHasStrapon($righttarget) ? "페니스 밴드 자지" : "자지")>>
-		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
-		<!-- Do Nothing -->
-		<<else>>
-			<<if $_target.chastity.penis.includes("chastity")>>
-				<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 희롱한다"] to "rightgrab">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.penis is 0>>
+			<<set $_penis to (npcHasStrapon($righttarget) ? "페니스 밴드 자지" : "자지")>>
+			<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
+			<!-- Do Nothing -->
 			<<else>>
-				<<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 잡는다"] to "rightgrab">>
+				<<if $_target.chastity.penis.includes("chastity")>>
+					<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 희롱한다"] to "rightgrab">>
+				<<else>>
+					<<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 잡는다"] to "rightgrab">>
+				<</if>>
 			<</if>>
-		<</if>>
-		<<if $_target.chastity.penis.includes("chastity")>>
-			<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 쓰다듬는다"] to "rightstroke">>
-		<<else>>
-			<<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 쓰다듬는다"] to "rightstroke">>
+			<<if $_target.chastity.penis.includes("chastity")>>
+				<<trClothes "genitals" $_target.chastity.penis "name" "을">><<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 " + _trResult + " 통해서 쓰다듬는다"] to "rightstroke">>
+			<<else>>
+				<<set _rightaction[$_target.pronouns.his + " " + $_penis + "를 쓰다듬는다"] to "rightstroke">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "rightplaynew"-->
-<<widget "rightplay">>
-
-<<if $combattype is "train">>
-	<<set _end to $enemyno-1>>
-<<else>>
-	<<set _end to 0>>
-<</if>>
-
-<<if $consensual is 1 and $promiscuity lte 34 and $enemytype is "man" or $consensual is 1 and $deviancy lte 34 and $enemytype isnot "man">>
-<!-- Do Nothing -->
-<<else>>
-	<<for _j = $enemyno-1; _j gte _end; _j-->>
-		<<if $NPCList[_j].vagina is 0>>
-			<<if $rightactiondefault is "rightplay">>
-				| <label><span class="sub"><<hisPost "의">> 보지를 만지작거린다</span> <<radiobutton "$rightaction" "rightplay" checked>><<handdifficulty>> <<combatpromiscuous3>></label>
-				<<break>>
-			<<else>>
-				| <label><span class="sub"><<hisPost "의">> 보지를 만지작거린다</span> <<radiobutton "$rightaction" "rightplay">><<handdifficulty>> <<combatpromiscuous3>></label>
-				<<break>>
-			<</if>>
-		<</if>>
-	<</for>>
-<</if>>
-
 <</widget>>
 
 <<widget "rightplaynew">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
-		<!-- Do Nothing -->
-	<<else>>
-		<<if $_target.vagina is 0>>
-			<<if $_target.chastity.vagina.includes("chastity")>>
-				<<trClothes "genitals" $_target.chastity.vagina "name" "을">><<set _rightaction[$_target.pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "rightplay">>
-			<<else>>
-				<<set _rightaction[$_target.pronouns.his + " 보지를 만지작거린다"] to "rightplay">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 34 and !$promiscuityIgnore>>
+			<!-- Do Nothing -->
+		<<else>>
+			<<if $_target.vagina is 0>>
+				<<if $_target.chastity.vagina.includes("chastity")>>
+					<<trClothes "genitals" $_target.chastity.vagina "name" "을">><<set _rightaction[$_target.pronouns.his + " 보지를 " + _trResult + " 통해서 만지작거린다"] to "rightplay">>
+				<<else>>
+					<<set _rightaction[$_target.pronouns.his + " 보지를 만지작거린다"] to "rightplay">>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
-
-<!-- Deprecated, not in use. See "rightclothesnew"-->
-/*
-<<widget "rightclothes">>
-
-<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
-	<<if $rightactiondefault is "upper">>
-	| <label><<trClothes "upper" $worn.upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "upper" checked>></label>
-	<<else>>
-	| <label><<trClothes "upper" $worn.upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "upper">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
-	<<if $rightactiondefault is "under_upper">>
-	| <label><<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "under_upper" checked>></label>
-	<<else>>
-	| <label><<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "under_upper">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
-	<<if $rightactiondefault is "lower">>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "lower" checked>></label>
-	<<else>>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "lower">></label>
-	<</if>>
-<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
-	<<if $rightactiondefault is "lower">>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "lower" checked>></label>
-	<<else>>
-	| <label><<trClothes "lower" $worn.lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "lower">></label>
-	<</if>>
-<</if>>
-
-<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked")>>
-	<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
-		<<if $rightactiondefault is "under">>
-		| <label><<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "under" checked>></label>
-		<<else>>
-		| <label><<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 벗는다. <<radiobutton "$rightaction" "under">></label>
-		<</if>>
-	<</if>>
-<</if>>
-
-<</widget>>
-*/
 
 <<widget "rightclothesnew">>
-<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base and !$worn.over_upper.type.includes("naked")>>
-		<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_upper">>
-	<</if>>
+	<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base and !$worn.over_upper.type.includes("naked")>>
+			<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_upper">>
+		<</if>>
 
-	<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
-		<<trClothes "upper" $worn.upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "upper">>
-	<</if>>
+		<<if $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base and !$worn.upper.type.includes("naked")>>
+			<<trClothes "upper" $worn.upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "upper">>
+		<</if>>
 
-	<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
-		<<trClothes "under_upper" $worn.under_upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "under_upper">>
-	<</if>>
+		<<if $worn.under_upper.state is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base and $worn.under_upper.state_top is setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_top_base and !$worn.under_upper.type.includes("naked")>>
+			<<trClothes "under_upper" $worn.under_upper.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "under_upper">>
+		<</if>>
 
-	<<if $worn.over_lower.state is setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt isnot 1 and !$worn.over_lower.type.includes("naked")>>
-		<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_lower">>
-	<<elseif setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1>>
-		<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_lower">>
-	<</if>>
+		<<if $worn.over_lower.state is setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt isnot 1 and !$worn.over_lower.type.includes("naked")>>
+			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_lower">>
+		<<elseif setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.over_lower.skirt_down is 1>>
+			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "over_lower">>
+		<</if>>
 
-	<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
-		<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "lower">>
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
-		<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "lower">>
-	<</if>>
+		<<if $worn.lower.state is setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1 and !$worn.lower.type.includes("naked")>>
+			<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "lower">>
+		<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.skirt_down is 1>>
+			<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "lower">>
+		<</if>>
 
-	<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked") and !($penisstate isnot 0 and playerHasStrapon())>>
-		<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
-			<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "under_lower">>
+		<<if $worn.under_lower.state is setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base and !$worn.under_lower.type.includes("naked") and !($penisstate isnot 0 and playerHasStrapon())>>
+			<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
+				<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "under_lower">>
+			<</if>>
+		<</if>>
+
+		<<if $worn.face.state is setup.clothes.face[clothesIndex('face', $worn.face)].state_base and !$worn.face.type.includes("naked") and $worn.face.type.includes("mask")>>
+				<<trClothes "face" $worn.face.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "mask">>
 		<</if>>
 	<</if>>
-
-	<<if $worn.face.state is setup.clothes.face[clothesIndex('face', $worn.face)].state_base and !$worn.face.type.includes("naked") and $worn.face.type.includes("mask")>>
-			<<trClothes "face" $worn.face.name "name" "을">><<set _rightaction[_trResult+" 벗는다"] to "mask">>
-	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "rightspraynew"-->
-<<widget "rightspray">>
-
-<<if $consensual isnot 1 and $spray gte 1>>
-	<<if $rightactiondefault is "spray">>
-	| <label><span class="def">페퍼 스프레이</span> <span class="black">남은 용량:</span> $spray / $spraymax <<radiobutton "$rightaction" "spray" checked>></label>
-	<<else>>
-	| <label><span class="def">페퍼 스프레이</span> <span class="black">남은 용량:</span> $spray / $spraymax <<radiobutton "$rightaction" "spray">></label>
-	<</if>>
-<</if>>
-
 <</widget>>
 
 <<widget "rightspraynew">>
-<<if $righttarget isnot "self">>
-	<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
-		<<set _rightaction["페퍼 스프레이"] to "spray">>
+	<<if $righttarget isnot "self">>
+		<<if $consensual isnot 1 and $spray gte 1 and $NPCList.some(npc => npc.health >= 0 && (!$fightTargets || $fightTargets.includes(npc.index)))>>
+			<<set _rightaction["후추 스프레이"] to "spray">>
+		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "rightstealnew"-->
-<<widget "rightsteal">>
-<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) and $stealstateright isnot 3 and $enemytype is "man" and $abomination isnot 1 and $npc.length is 0 and $water isnot 1 and $punishmentposition isnot "gloryhole">>
-	<<set $skulduggerydifficulty to 1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger>>
-	<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
-	<<if $rightactiondefault is "steal">>
-	| <label><span class="brat">훔치기</span> <<radiobutton "$rightaction" "steal" checked>> <<skulduggerydifficulty>><<combatcrime>></label>
-	<<else>>
-	| <label><span class="brat">훔치기</span> <<radiobutton "$rightaction" "steal">> <<skulduggerydifficulty>><<combatcrime>></label>
-	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightstealnew">>
-<<if $righttarget isnot "self" and !($stealtarget.includes($righttarget))>>
-	<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) and $enemytype is "man" and $abomination isnot 1 and !($npcrow.includes($righttarget)) and $water isnot 1 and $punishmentposition isnot "gloryhole">>
-		<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
-		<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
-		/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
-		<<if $stealstateright is undefined>>
-			<<set _rightaction["훔치기"] to "steal">>
-		<<elseif $stealstateright is 2>>
-			<<set _rightaction[$NPCList[$lefttarget].pronouns.his + " 소유물을 가져간다"] to "steal">>
-		<<else>>
-			<<set _rightaction["계속 훔치려고 한다"] to "steal">>
+	<<if $righttarget isnot "self" and !($stealtarget.includes($righttarget))>>
+		<<if (currentSkillValue('skulduggery') gte 200 or $easySteal is 1) and $enemytype is "man" and $abomination isnot 1 and !($npcrow.includes($righttarget)) and $water isnot 1 and $punishmentposition isnot "gloryhole">>
+			<<set $skulduggerydifficulty to (1000 - ($enemyarousal / $enemyarousalmax * 400) - $skulduggery - $enemytrust + $enemyanger) * $stealdifficulty>>
+			<<if $easySteal is 1>><<set $skulduggerydifficulty to 0>><</if>>
+			/*Missing <<skulduggerydifficulty>><<combatcrime>>*/
+			<<if $stealstateright is undefined>>
+				<<set _rightaction["훔치기"] to "steal">>
+			<<elseif $stealstateright is 2>>
+				<<set _rightaction[$NPCList[$lefttarget].pronouns.his + " 소유물을 가져간다"] to "steal">>
+			<<else>>
+				<<set _rightaction["계속 훔치려고 한다"] to "steal">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
-<</widget>>
-
-<!-- Deprecated, not in use. See "rightpenwhacknew"-->
-<<widget "rightpenwhack">>
-<<if $NPCList[0].lefthand is "pen" or $NPCList[0].righthand is "pen" or
-$NPCList[1].lefthand is "pen" or $NPCList[1].righthand is "pen" or
-$NPCList[2].lefthand is "pen" or $NPCList[2].righthand is "pen" or
-$NPCList[3].lefthand is "pen" or $NPCList[3].righthand is "pen" or
-$NPCList[4].lefthand is "pen" or $NPCList[4].righthand is "pen" or
-$NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
-	<<if $rightactiondefault is "penwhack">>
-	| <label><span class="brat">필기도구를 친다</span> <<radiobutton "$rightaction" "penwhack" checked>></label>
-	<<else>>
-	| <label><span class="brat">필기도구를 친다</span> <<radiobutton "$rightaction" "penwhack">></label>
-	<</if>>
-<</if>>
-
 <</widget>>
 
 <<widget "rightpenwhacknew">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_")) or $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
-		<<set _rightaction["필기도구를 친다"] to "penwhack">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_")) or $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
+			<<set _rightaction["필기도구를 친다"] to "penwhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightshacklewhack">>
-<<if $righttarget isnot "self">>
-	<<if $NPCList[$righttarget].lefthand is "shackle_entrance" or $NPCList[$righttarget].lefthand is "shackle_imminent" or $NPCList[$righttarget].righthand is "shackle_entrance" or $NPCList[$righttarget].righthand is "shackle_imminent">>
-		<<set _rightaction["족쇄를 친다"] to "shacklewhack">>
+	<<if $righttarget isnot "self">>
+		<<if $NPCList[$righttarget].lefthand is "shackle_entrance" or $NPCList[$righttarget].lefthand is "shackle_imminent" or $NPCList[$righttarget].righthand is "shackle_entrance" or $NPCList[$righttarget].righthand is "shackle_imminent">>
+			<<set _rightaction["족쇄를 친다"] to "shacklewhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "righthypnosiswhack">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
-		<<set _rightaction["최면도구를 친다"] to "hypnosiswhack">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_")) or $_target.righthand and ($_target.righthand is "hypnosis" or $_target.righthand.startsWith("hypnosis_"))>>
+			<<set _rightaction["최면도구를 친다"] to "hypnosiswhack">>
+		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightdildowhack">>
-<<if $righttarget isnot "self">>
-	<<if $NPCList[$righttarget].lefthand is "dildo" or $NPCList[$righttarget].righthand is "dildo">>
-		<<if getSexToysofType("all").includes($NPCList[$righttarget].lefttool)>>
-			<<silently>><<lefttoolPost $righttarget "을">><</silently>><<set _rightaction[_trResult +" 친다"] to "dildowhack">>
-		<<elseif getSexToysofType("all").includes($NPCList[$righttarget].righttool)>>
-			<<silently>><<righttoolPost $righttarget "을">><</silently>><<set _rightaction[_trResult +" 친다"] to "dildowhack">>
+	<<if $righttarget isnot "self">>
+		<<if $NPCList[$righttarget].lefthand is "dildo" or $NPCList[$righttarget].righthand is "dildo">>
+			<<if getSexToysofType("all").includes($NPCList[$righttarget].lefttool)>>
+				<<silently>><<lefttoolPost $righttarget "을">><</silently>><<set _rightaction[_trResult +" 친다"] to "dildowhack">>
+			<<elseif getSexToysofType("all").includes($NPCList[$righttarget].righttool)>>
+				<<silently>><<righttoolPost $righttarget "을">><</silently>><<set _rightaction[_trResult +" 친다"] to "dildowhack">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightFixAndCoverActions">>
-
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $vaginause is "cover">>
-			<<set _rightaction["계속 보지를 가린다"] to "rightcovervaginameek">>
-		<<elseif $vaginause is 0>>
-			<<set _rightaction["보지를 가린다"] to "rightcovervaginameek">>
-		<</if>>
-	<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $vaginause is "cover">>
-			<<set _rightaction["계속 보지를 가린다"] to "rightcovervagina">>
-		<<elseif $vaginause is 0>>
-			<<set _rightaction["보지를 가린다"] to "rightcovervagina">>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
-	<<set _penis to playerHasStrapon() ? '페니스 밴드 자지' : '자지'>>
-	<<set _straponDisplaced to (!playerHasStrapon() && $worn.under_lower.type.includes("strap-on"))>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $penisuse is "cover">>
-			<<set _rightaction["계속 " + _penis + "를 가린다"] to "rightcoverpenismeek">>
-		<<elseif $penisuse is 0>>
-			<<if !_straponDisplaced>>
-				<<set _rightaction[_penis + "를 가린다"] to "rightcoverpenismeek">>
+	<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $vaginause is "cover">>
+				<<set _rightaction["계속 보지를 가린다"] to "rightcovervaginameek">>
+			<<elseif $vaginause is 0>>
+				<<set _rightaction["보지를 가린다"] to "rightcovervaginameek">>
 			<</if>>
-		<</if>>
-	<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $penisuse is "cover">>
-			<<set _rightaction["계속 " + _penis + "를 가린다"] to "rightcoverpenis">>
-		<<elseif $penisuse is 0>>
-			<<if !_straponDisplaced>>
-				<<set _rightaction[_penis + "를 가린다"] to "rightcoverpenis">>
-			<</if>>
-		<</if>>
-	<</if>>
-<</if>>
-
-<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
-	<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
-		<<if $anususe is "cover">>
-			<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranusmeek">>
-		<<else>>
-			<<set _rightaction["엉덩이를 가린다"] to "rightcoveranusmeek">>
-		<</if>>
-	<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
-		<<if $anususe is "cover">>
-			<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranus">>
-		<<else>>
-			<<set _rightaction["엉덩이를 가린다"] to "rightcoveranus">>
-		<</if>>
-	<</if>>
-<</if>>
-<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if $worn.under_lower.name isnot "naked">>
-		<<if $worn.under_lower.state is "thighs" or $worn.under_lower.state is "knees" or $worn.under_lower.state is "ankles">>
-			<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _rightaction[_trResult+" 올린다"] to "rightunderpull">>
-		<</if>>
-	<</if>>
-
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<if $worn.lower.skirt_down is 0>>
-			<<if $worn.lower.state is "waist">>
-				<<trClothes "lower" $worn.lower.name "name" "으로">><<set _rightaction["가랑이를 " + _trResult + " 가린다"] to "rightskirtpull">>
+		<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $vaginause is "cover">>
+				<<set _rightaction["계속 보지를 가린다"] to "rightcovervagina">>
+			<<elseif $vaginause is 0>>
+				<<set _rightaction["보지를 가린다"] to "rightcovervagina">>
 			<</if>>
 		<</if>>
 	<</if>>
 
-	<<if $worn.lower.name isnot "naked">>
-		<<if $worn.upper.set is $worn.lower.set>>
-			<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+	<<if $worn.lower.vagina_exposed is 1 and $worn.under_lower.vagina_exposed is 1>>
+		<<set _penis to playerHasStrapon() ? '페니스 밴드 자지' : '자지'>>
+		<<set _straponDisplaced to (!playerHasStrapon() && $worn.under_lower.type.includes("strap-on"))>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $penisuse is "cover">>
+				<<set _rightaction["계속 " + _penis + "를 가린다"] to "rightcoverpenismeek">>
+			<<elseif $penisuse is 0>>
+				<<if !_straponDisplaced>>
+					<<set _rightaction[_penis + "를 가린다"] to "rightcoverpenismeek">>
+				<</if>>
+			<</if>>
+		<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $penisuse is "cover">>
+				<<set _rightaction["계속 " + _penis + "를 가린다"] to "rightcoverpenis">>
+			<<elseif $penisuse is 0>>
+				<<if !_straponDisplaced>>
+					<<set _rightaction[_penis + "를 가린다"] to "rightcoverpenis">>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $worn.lower.anus_exposed is 1 and $worn.under_lower.anus_exposed is 1>>
+		<<if $NPCList[0].state is "stalk" and $NPCList[0].legs isnot "run">>
+			<<if $anususe is "cover">>
+				<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranusmeek">>
+			<<else>>
+				<<set _rightaction["엉덩이를 가린다"] to "rightcoveranusmeek">>
+			<</if>>
+		<<elseif $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1 or $NPCList[0].state is "stalk">>
+			<<if $anususe is "cover">>
+				<<set _rightaction["계속 엉덩이를 가린다"] to "rightcoveranus">>
+			<<else>>
+				<<set _rightaction["엉덩이를 가린다"] to "rightcoveranus">>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if $worn.under_lower.name isnot "naked">>
+			<<if $worn.under_lower.state is "thighs" or $worn.under_lower.state is "knees" or $worn.under_lower.state is "ankles">>
+				<<trClothes "under_lower" $worn.under_lower.name "name" "을">><<set _rightaction[_trResult+" 올린다"] to "rightunderpull">>
+			<</if>>
+		<</if>>
+
+		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<if $worn.lower.skirt_down is 0>>
+				<<if $worn.lower.state is "waist">>
+					<<trClothes "lower" $worn.lower.name "name" "으로">><<set _rightaction["가랑이를 " + _trResult + " 가린다"] to "rightskirtpull">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $worn.lower.name isnot "naked">>
+			<<if $worn.upper.set is $worn.lower.set>>
+				<<if $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base and $worn.upper.state is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base and $worn.upper.state_top is setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+					<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+ " 고쳐입는다"] to "rightlowerpull">>
+				<</if>>
+			<<elseif $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
 				<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+ " 고쳐입는다"] to "rightlowerpull">>
 			<</if>>
-		<<elseif $worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base>>
-			<<trClothes "lower" $worn.lower.name "name" "을">><<set _rightaction[_trResult+ " 고쳐입는다"] to "rightlowerpull">>
 		<</if>>
-	<</if>>
 
-	<<if $worn.over_lower.name isnot "naked">>
-		<<if $worn.over_upper.set is $worn.over_lower.set>>
-			<<if $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+		<<if $worn.over_lower.name isnot "naked">>
+			<<if $worn.over_upper.set is $worn.over_lower.set>>
+				<<if $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base and $worn.over_upper.state is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base and $worn.over_upper.state_top is setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+					<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightoverlowerpull">>
+				<</if>>
+			<<elseif $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base>>
 				<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightoverlowerpull">>
 			<</if>>
-		<<elseif $worn.over_lower.state isnot setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].state_base>>
-			<<trClothes "over_lower" $worn.over_lower.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightoverlowerpull">>
 		<</if>>
-	<</if>>
 
-	<<if $worn.upper.name isnot "naked">>
-		<<if $worn.upper.state isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base or $worn.upper.state_top isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
-			<<trClothes "upper" $worn.upper.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightlowerpull">>
+		<<if $worn.upper.name isnot "naked">>
+			<<if $worn.upper.state isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_base or $worn.upper.state_top isnot setup.clothes.upper[clothesIndex('upper', $worn.upper)].state_top_base>>
+				<<trClothes "upper" $worn.upper.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightlowerpull">>
+			<</if>>
 		<</if>>
-	<</if>>
 
-	<<if $worn.over_upper.name isnot "naked">>
-		<<if $worn.over_upper.state isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base or $worn.over_upper.state_top isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
-			<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightoverupperpull">>
+		<<if $worn.over_upper.name isnot "naked">>
+			<<if $worn.over_upper.state isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_base or $worn.over_upper.state_top isnot setup.clothes.over_upper[clothesIndex('over_upper', $worn.over_upper)].state_top_base>>
+				<<trClothes "over_upper" $worn.over_upper.name "name" "을">><<set _rightaction[_trResult+" 고쳐입는다"] to "rightoverupperpull">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightchoke">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.lefthand is "throat" or $_target.righthand is "throat">>
-		<<if $consensual == 1>>
-			<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에 누른다"] to "keepchoke">>
-			<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에서 떼어낸다"] to "stopchoke">>
-		<<else>>
-			<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에서 밀쳐낸다"] to "stopchokenoncon">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.lefthand is "throat" or $_target.righthand is "throat">>
+			<<if $consensual == 1>>
+				<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에 누른다"] to "keepchoke">>
+				<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에서 떼어낸다"] to "stopchoke">>
+			<<else>>
+				<<set _rightaction[$_target.pronouns.his + " 손을 당신의 목에서 밀쳐낸다"] to "stopchokenoncon">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "rightCondom">>
-<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-	<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $player.penisExist>>
-		<<if !$player.condom and $condoms gt 0>>
-			<<set _rightaction["콘돔을 씌운다 (" + $condoms + ")"] to "peniscondom">>
-		<</if>>
-		<<if $player.condom>>
-			<<set _rightaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+	<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
+		<<if !["othermouthentrance","othermouthimminent","othermouth","penetrated","otheranus"].includes($penisstate) and $player.penisExist and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1 and !playerChastity("penis")>>
+			<<if !$player.condom and $condoms gt 0 and $parasite.penis.name is undefined>>
+				<<set _rightaction["콘돔을 씌운다 (" + $condoms + "개 남음)"] to "peniscondom">>
+			<</if>>
+			<<if $player.condom>>
+				<<set _rightaction["당신의 콘돔을 제거한다"] to "penisremovecondom">>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
+<</widget>>
+
+<<widget "rightNPCCondom">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if wearingCondom($righttarget)>>
+			<<if ($consensual is 0 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 94) and playerPregnancyPossibleWith($_target)>>
+				<!-- Do Nothing -->
+			<<else>>
+				<<set _rightaction[$_target.pronouns.his + " 콘돔을 제거한다"] to "npcremovecondom">>
+			<</if>>
+		<<elseif $prayerRoom or $NPCList[$righttarget].fullDescription is "Ivory Wraith">>
+			<!-- Do Nothing -->
+		<<elseif !$_target.condom and $condoms gte 1 and ($_target.condomCanGive or $condomlvl lte 1)>>
+			<<set _rightaction[$_target.pronouns.him + " 향해 콘돔을 건넨다 (" + $condoms + "개 남음)"] to "npcgivecondom">>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "rightUndressOther">>
-<<if $righttarget isnot "self">>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.penis is "clothed" or $_target.vagina is "clothed" or $_target.chest is "clothed">>
-		<<if ($consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 14 and !$promiscuityIgnore)>>
-			<!-- Do Nothing -->
-		<<else>>
-			<<set _rightaction["벗긴다:"] to "rightUndressOther">>
-			<<set _undressRightTargets to {"하지 않는다":"rest"}>>
-			<<set $_doText to ($consensual isnot 1 ? "어떻게든" : "")>>
-			<<if $_target.penis is "clothed" or $_target.vagina is "clothed">>
-				<<silently>><<npcUndressText $NPCList[$righttarget] "lower">><</silently>><<set _trResult to _text_output.substring(6)>>
-				<<set _undressRightTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "lower">>
-			<</if>>
-			<<if $_target.chest is "clothed">>
-				<<silently>><<npcUndressText $NPCList[$righttarget] "upper">><</silently>><<set _trResult to _text_output.substring(6)>>
-				<<set _undressRightTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "upper">>
+	<<if $righttarget isnot "self">>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.penis is "clothed" or $_target.vagina is "clothed" or $_target.chest is "clothed">>
+			<<if ($consensual is 1 and ($enemytype is "man" ? $promiscuity : $deviancy) lte 14 and !$promiscuityIgnore) or $punishmentposition is "gloryhole">>
+				<!-- Do Nothing -->
+			<<else>>
+				<<set _rightaction["벗긴다:"] to "rightUndressOther">>
+				<<set _undressRightTargets to {"하지 않는다":"rest"}>>
+				<<set $_doText to ($consensual isnot 1 ? "어떻게든" : "")>>
+				<<if $_target.penis is "clothed" or $_target.vagina is "clothed">>
+					<<silently>><<npcUndressText $NPCList[$righttarget] "lower">><</silently>><<set _trResult to _text_output.substring(6)>>
+					<<set _undressRightTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "lower">>
+				<</if>>
+				<<if $_target.chest is "clothed">>
+					<<silently>><<npcUndressText $NPCList[$righttarget] "upper">><</silently>><<set _trResult to _text_output.substring(6)>>
+					<<set _undressRightTargets[$_doText + " " + $_target.pronouns.his + " " + _trResult] to "upper">>
+				<</if>>
 			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 <</widget>>
 
 :: Widgets Actions Either Hand [widget]
@@ -1012,8 +758,8 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 	<<else>>
 		<<set _handGuideOptions to {}>>
 
-		<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
-		<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+		<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+		<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
 
 		<<if $_genitals_exposed>>
 			<<if $penisuse is 0>>
@@ -1040,19 +786,15 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <</widget>>
 
 <<widget "removeButtplug">>
-	<<if _args[0]>>
+	<<if _args[0] and $options.targetYourself and ($lefttarget is "self" or $enemyno is 1) and playerHasButtPlug() and !playerChastity("anus")>>
 		<<if _args[0] is "left">>
-			<<if $lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-				<<if $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate) and playerHasButtPlug()>>
-					<<trClothes "butt_plug" $worn.butt_plug.name "name" "을">><<set _leftaction[_trResult + "뺀다"] to "removebuttplug">>
-				<</if>>
+			<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked") and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate)>>
+				<<trClothes "butt_plug" $worn.butt_plug.name "name" "을">><<set _leftaction[_trResult + "뺀다"] to "removebuttplug">>
 			<</if>>
 		<</if>>
 		<<if _args[0] is "right">>
-			<<if $righttarget is "self" or $options.targetYourself is false or _targetnumber is 1>>
-				<<if $worn.lower.anus_exposed gte 1 and $worn.under_lower.anus_exposed gte 1 and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate) and playerHasButtPlug()>>
-					<<trClothes "butt_plug" $worn.butt_plug.name "name" "을">><<set _rightaction[_trResult + "뺀다"] to "removebuttplug">>
-				<</if>>
+			<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked") and !["othermouthImminent","othermouth","imminent","doubleimminent","penetrated","doublepenetrated"].includes($anusstate)>>
+				<<trClothes "butt_plug" $worn.butt_plug.name "name" "을">><<set _rightaction[_trResult + "뺀다"] to "removebuttplug">>
 			<</if>>
 		<</if>>
 	<</if>>
@@ -1060,24 +802,30 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 <<widget "combatMasturbate">>
 	<<if _args[0] isnot undefined>>
-		<<if ($worn.lower.state isnot setup.clothes.lower[clothesIndex('lower', $worn.lower)].state_base or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")) and !$worn.genitals.type.includes('hidden')>>
+		<<if ($worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1) or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 or $worn.lower.type.includes("naked")>>
 			<<if _args[0] is "left">>
-				<<if $promiscuity gt 14 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
-					<<if $player.vaginaExist>>
+				<<if $promiscuity gte 15 and $options.targetYourself and ($lefttarget is "self" or $enemyno is 1)>>
+					<<if $player.penisExist and $penisuse is 0 and !playerChastity("penis")>>
+						<<set _leftaction["당신의 자지를 쓰다듬는다"] to "leftmasturbatepenis">>
+					<</if>>
+					<<if $player.vaginaExist and $vaginause is 0 and !playerChastity("vagina")>>
 						<<set _leftaction["당신의 보지를 애무한다"] to "leftmasturbatepussy">>
 					<</if>>
-					<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes('cage')>>
-						<<set _leftaction["당신의 자지를 쓰다듬는다"] to "leftmasturbatepenis">>
+					<<if $promiscuity gte 35 and $awareness gte 200 and $anususe is 0 and !playerChastity("anus")>>
+						<<set _leftaction["Play with your anus"] to "leftmasturbateanus">>
 					<</if>>
 				<</if>>
 			<</if>>
 			<<if _args[0] is "right">>
-				<<if $promiscuity gt 14 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
-					<<if $player.vaginaExist>>
+				<<if $promiscuity gte 15 and $options.targetYourself and ($righttarget is "self" or $enemyno is 1)>>
+					<<if $player.penisExist and $penisuse is 0 and !playerChastity("penis")>>
+						<<set _rightaction["당신의 자지를 쓰다듬는다"] to "rightmasturbatepenis">>
+					<</if>>
+					<<if $player.vaginaExist and $vaginause is 0 and !playerChastity("vagina")>>
 						<<set _rightaction["당신의 보지를 애무한다"] to "rightmasturbatepussy">>
 					<</if>>
-					<<if $player.penisExist and $penisuse is 0 and !$worn.genitals.type.includes('cage')>>
-						<<set _rightaction["당신의 자지를 쓰다듬는다"] to "rightmasturbatepenis">>
+					<<if $promiscuity gte 35 and $awareness gte 200 and $anususe is 0 and !playerChastity("anus")>>
+						<<set _rightaction["Play with your anus"] to "rightmasturbateanus">>
 					<</if>>
 				<</if>>
 			<</if>>
@@ -1099,7 +847,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 		<<if _hasLube is true>>
 			<<if $worn.over_lower.vagina_exposed isnot 0 and $worn.lower.vagina_exposed isnot 0 and $worn.under_lower.vagina_exposed isnot 0 and $worn.genitals.vagina_exposed isnot 0>>
-				<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $player.penisExist>>
+				<<if !["othermouthentrance","othermouthimminent","othermouth","penetrated","otheranus"].includes($penisstate) and $player.penisExist>>
 					<<set $_penis to (!playerHasStrapon() ? "자지" : "페니스 밴드 자지")>>
 					<<set _leftaction["당신의 " + $_penis + "에 윤활액을 바른다"] to "lubepenis">>
 				<</if>>
@@ -1126,7 +874,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<</for>>
 		<<if _hasLube is true>>
 			<<if $worn.over_lower.vagina_exposed isnot 0 and $worn.lower.vagina_exposed isnot 0 and $worn.under_lower.vagina_exposed isnot 0 and $worn.genitals.vagina_exposed isnot 0>>
-				<<if !["mouthEntrance","mouthImminent","mouthPenetration","pussyPenetration","anusPenetration"].includes($penisstate) and $player.penisExist>>
+				<<if !["othermouthentrance","othermouthimminent","othermouth","penetrated","otheranus"].includes($penisstate) and $player.penisExist>>
 					<<set _rightaction["당신의 자지에 윤활액을 바른다"] to "lubepenis">>
 				<</if>>
 				<<if !["othermouthimminent","othermouth","imminent","penetrated","doubleimminent","doublepenetrated"].includes($vaginastate) and $player.vaginaExist>>
@@ -1230,7 +978,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<widget "dildoSelfPussyEntrance">>
 	<<if _args[0] isnot undefined>>
 		<<if _args[0] is "left">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_genitals_exposed and $vaginause is 0>>
 					<<silently>><<sextoyPost $currentSexToyLeft.name "name" "을">><<set $_trLeftToy to _trResult>><</silently>><<set _leftaction[$_trLeftToy + " 밀어넣는다"] to "dildoSelfPussy">>
@@ -1244,7 +992,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			<<silently>><<sextoyPost $currentSexToyLeft.name "name" "을">><<set $_trLeftToy to _trResult>><</silently>><<set _leftaction[$_trLeftToy + " 내려놓는다"] to "dildoDrop">>
 		<</if>>
 		<<if _args[0] is "right">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_genitals_exposed and $vaginause is 0>>
 					<<silently>><<sextoyPost $currentSexToyRight.name "name" "을">><<set $_trRightToy to _trResult>><</silently>><<set _rightaction[$_trRightToy + " 밀어넣는다"] to "dildoSelfPussy">>
@@ -1263,8 +1011,8 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<widget "dildoSelfAnusEntrance">>
 	<<if _args[0] isnot undefined>>
 		<<if _args[0] is "left">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
-			<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_anus_exposed and $anususe is 0>>
 					<<silently>><<sextoyPost $currentSexToyLeft.name "name" "을">><<set $_trLeftToy to _trResult>><</silently>><<set _leftaction[$_trLeftToy + " 밀어넣는다"] to "dildoSelfAnus">>
@@ -1278,8 +1026,8 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			<<silently>><<sextoyPost $currentSexToyLeft.name "name" "을">><<set $_trLeftToy to _trResult>><</silently>><<set _leftaction[$_trLeftToy + " 내려놓는다"] to "dildoDrop">>
 		<</if>>
 		<<if _args[0] is "right">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
-			<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_anus_exposed to $worn.over_lower.anus_exposed gte 1 and ($worn.lower.anus_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.anus_exposed gte 1 and $worn.genitals.anus_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_anus_exposed and $anususe is 0>>
 					<<silently>><<sextoyPost $currentSexToyRight.name "name" "을">><<set $_trRightToy to _trResult>><</silently>><<set _rightaction[$_trRightToy + " 밀어넣는다"] to "dildoSelfAnus">>
@@ -1298,7 +1046,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 <<widget "strokerSelfPenisEntrance">>
 	<<if _args[0] isnot undefined>>
 		<<if _args[0] is "left">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_genitals_exposed and $penisuse is 0>>
 					<<silently>><<sextoyPost $currentSexToyLeft.name "name" "에">><<set $_trLeftToy to _trResult>><</silently>><<set _leftaction[$_trLeftToy + " 삽입한다"] to "strokerSelfPenis">>
@@ -1310,7 +1058,7 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<</if>>
 
 		<<if _args[0] is "right">>
-			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or $worn.lower.skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
+			<<set $_genitals_exposed to $worn.over_lower.vagina_exposed gte 1 and ($worn.lower.vagina_exposed gte 1 or setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt gte 1) and $worn.under_lower.vagina_exposed gte 1 and $worn.genitals.vagina_exposed gte 1>>
 			<<if $promiscuity gt 34 and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
 				<<if $_genitals_exposed and $penisuse is 0>>
 					<<silently>><<sextoyPost $currentSexToyRight.name "name" "에">><<set $_trRightToy to _trResult>><</silently>><<set _rightaction[$_trRightToy + " 삽입한다"] to "strokerSelfPenis">>
@@ -1325,525 +1073,520 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 
 :: Widgets Effects Hands [widget]
 <<widget "effectshandsclothes">>
+	/* Unified each clothing action for both hands. To add conditionals for both hands, use: if $leftaction is $rightaction as a block inside */
 
-/* Unified each clothing action for both hands. To add conditionals for both hands, use: if $leftaction is $rightaction as a block inside */
-
-<<if $leftaction is "over_upper" or $rightaction is "over_upper">>
-	<<if $leftaction is "over_upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "over_upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	<<if $worn.over_upper.name is "naked">>
-		당신은 너덜너덜한 옷 조각을 움켜잡는다.
-	<<elseif $worn.over_upper.open is 1>>
-		<<set $worn.over_upper.exposed to 2>><<set $worn.over_upper.state_top to "midriff">>
-		<<if $worn.upper.exposed lt 2>>
-			당신은 <<worn_over_upper_name_ ul>> 밀어내린다.
-		<<elseif $player.breastsize gte 3>>
-			당신은 <<worn_over_upper_name_ ul>> 내리자 <span class="lewd"><<breasts_ ga>> 출렁 튀어나온다.</span>
+	<<if $leftaction is "over_upper" or $rightaction is "over_upper">>
+		<<if $leftaction is "over_upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "over_upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+		<<if $worn.over_upper.name is "naked">>
+			당신은 너덜너덜한 옷 조각을 움켜잡는다.
+		<<elseif $worn.over_upper.open is 1>>
+			<<set $worn.over_upper.exposed to 2>><<set $worn.over_upper.state_top to "midriff">>
+			<<if $worn.upper.exposed lt 2>>
+				당신은 <<worn_over_upper_name_ ul>> 밀어내린다.
+			<<elseif $player.breastsize gte 3>>
+				당신은 <<worn_over_upper_name_ ul>> 내리자 <span class="lewd"><<breasts_ ga>> 출렁 튀어나온다.</span>
+			<<else>>
+				당신은 <<worn_over_upper_name_ ul>> 내리자, <span class="lewd"><<breasts_ ga>> 노출된다.</span>
+			<</if>>
 		<<else>>
-			당신은 <<worn_over_upper_name_ ul>> 내리자, <span class="lewd"><<breasts_ ga>> 노출된다.</span>
+			<<set $worn.over_upper.exposed to 2>><<set $worn.over_upper.state to "chest">>
+			<<if $worn.upper.exposed lt 2>>
+				당신은 <<worn_over_upper_name_ ul>> 밀어올린다.
+			<<elseif $player.breastsize gte 3>>
+				당신은 <<worn_over_upper_name_ ul>> 들추자 <span class="lewd"><<breasts_ ga>> 출렁 튀어나온다.</span>
+			<<else>>
+				당신은 <<worn_over_upper_name_ ul>> 들추자, <span class="lewd"><<breasts_ ga>> 노출된다.</span>
+			<</if>>
 		<</if>>
-	<<else>>
-		<<set $worn.over_upper.exposed to 2>><<set $worn.over_upper.state to "chest">>
-		<<if $worn.upper.exposed lt 2>>
-			당신은 <<worn_over_upper_name_ ul>> 밀어올린다.
-		<<elseif $player.breastsize gte 3>>
-			당신은 <<worn_over_upper_name_ ul>> 들추자 <span class="lewd"><<breasts_ ga>> 출렁 튀어나온다.</span>
+	<</if>>
+
+	<<if $leftaction is "upper" or $rightaction is "upper">>
+		<<if $leftaction is "upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+		<<if $worn.upper.name is "naked">>
+			당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
+		<<elseif $worn.upper.open is 1>>
+			<<set $worn.upper.exposed to 2>><<set $worn.upper.state_top to "midriff">>
+			<<if $player.breastsize gte 3>>
+				당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+			<<else>>
+				당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<</if>>
 		<<else>>
-			당신은 <<worn_over_upper_name_ ul>> 들추자, <span class="lewd"><<breasts_ ga>> 노출된다.</span>
+			<<set $worn.upper.exposed to 2>><<set $worn.upper.state to "chest">>
+			<<if $player.breastsize gte 3>>
+				당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+			<<else>>
+				당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<</if>>
 		<</if>>
 	<</if>>
-<</if>>
 
-<<if $leftaction is "upper" or $rightaction is "upper">>
-	<<if $leftaction is "upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	<<if $worn.upper.name is "naked">>
-		당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
-	<<elseif $worn.upper.open is 1>>
-		<<set $worn.upper.exposed to 2>><<set $worn.upper.state_top to "midriff">>
-		<<if $player.breastsize gte 3>>
-			당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+	<<if $leftaction is "under_upper" or $rightaction is "under_upper">>
+		<<if $leftaction is "under_upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "under_upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+		<<if $worn.under_upper.name is "naked">>
+			당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
+		<<elseif $worn.under_upper.open is 1>>
+			<<set $worn.under_upper.exposed to 2>><<set $worn.under_upper.state_top to "midriff">>
+			<<if $player.breastsize gte 3>>
+				당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+			<<else>>
+				당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<</if>>
 		<<else>>
-			당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<<set $worn.under_upper.exposed to 2>><<set $worn.under_upper.state to "chest">>
+			<<if $player.breastsize gte 3>>
+				당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+			<<else>>
+				당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<</if>>
 		<</if>>
-	<<else>>
-		<<set $worn.upper.exposed to 2>><<set $worn.upper.state to "chest">>
-		<<if $player.breastsize gte 3>>
-			당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+	<</if>>
+
+	/* Todo: over_lower here, but I don't know what the conditions should be. Please remove this comment when it's been fixed. */
+
+	<<if $leftaction is "lower" or $rightaction is "lower">>
+		<<if $leftaction is "lower">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "lower">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+		<<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>>
+		<<if $worn.lower.name is "naked">>
+			당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
+		<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<set $worn.lower.skirt_down to 0>>
+			당신이 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 들추자, <span class="lewd"><<undiesPost "이">> 노출된다.</span>
 		<<else>>
-			당신이 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			<<set $worn.lower.state to "thighs">>
+			당신이 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 내리자, <span class="lewd"><<undiesPost "이">> 노출된다.</span>
 		<</if>>
 	<</if>>
-<</if>>
 
-<<if $leftaction is "under_upper" or $rightaction is "under_upper">>
-	<<if $leftaction is "under_upper">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "under_upper">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	<<if $worn.under_upper.name is "naked">>
-		당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
-	<<elseif $worn.under_upper.open is 1>>
-		<<set $worn.under_upper.exposed to 2>><<set $worn.under_upper.state_top to "midriff">>
-		<<if $player.breastsize gte 3>>
-			당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+	<<if $leftaction is "under_lower" or $rightaction is "under_lower">>
+		<<if $leftaction is "under_lower">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "under_lower">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+
+		<<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.exposed to 2>>
+		<<set $worn.under_lower.state to "thighs">>
+		/* Strapon code is here, if needed to move to the genital-clothing section */
+		/*<<if playerHasStrapon()>>
+			<<if $playerPenisSizeBackup isnot undefined>>
+				<<set $player.penissize to $playerPenisSizeBackup>>
+			<</if>>
+		<</if>>*/
+		<<if $worn.under_lower.name is "naked">>
+			당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
+		<<elseif $worn.lower.exposed gte 2>>
+			당신이 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 내리자, <span class="lewd"><<genitalsPost "이">> 노출된다.</span>
 		<<else>>
-			당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 내리자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			당신은 <<worn_under_lower_name_ ul>> <<worn_lower_name>> 아래로 잡아내린다.
 		<</if>>
-	<<else>>
-		<<set $worn.under_upper.exposed to 2>><<set $worn.under_upper.state to "chest">>
-		<<if $player.breastsize gte 3>>
-			당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 출렁 튀어나온다.</span>
+	<</if>>
+
+	<<if $leftaction is "mask" or $rightaction is "mask">>
+		<<if $leftaction is "mask">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
+		<<if $rightaction is "mask">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
+		<<if $worn.face.name is "naked">>
+			당신은 너덜너덜한 마스크 조각을 꽉 잡는다.
 		<<else>>
-			당신이 <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 들추자, <span class="lewd"> <<breastsPost "이">> 노출된다.</span>
+			당신은 <<worn_face_name_ ul>> 잡아내려, <span class="lewd">당신의 얼굴을 드러낸다.</span>
 		<</if>>
+		<<facestrip>>
 	<</if>>
-<</if>>
-
-/* Todo: over_lower here, but I don't know what the conditions should be. Please remove this comment when it's been fixed. */
-
-<<if $leftaction is "lower" or $rightaction is "lower">>
-	<<if $leftaction is "lower">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "lower">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	<<set $worn.lower.vagina_exposed to 1>><<set $worn.lower.anus_exposed to 1>><<set $worn.lower.exposed to 2>>
-	<<if $worn.lower.name is "naked">>
-		당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<set $worn.lower.skirt_down to 0>>
-		당신이 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 들추자, <span class="lewd"><<undiesPost "이">> 노출된다.</span>
-	<<else>>
-		<<set $worn.lower.state to "thighs">>
-		당신이 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 내리자, <span class="lewd"><<undiesPost "이">> 노출된다.</span>
-	<</if>>
-<</if>>
-
-<<if $leftaction is "under_lower" or $rightaction is "under_lower">>
-	<<if $leftaction is "under_lower">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "under_lower">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-
-	<<set $worn.under_lower.anus_exposed to 1>><<set $worn.under_lower.vagina_exposed to 1>><<set $worn.under_lower.exposed to 2>>
-	<<set $worn.under_lower.state to "thighs">>
-	/* Strapon code is here, if needed to move to the genital-clothing section */
-	<<if playerHasStrapon()>>
-		<<if $playerPenisSizeBackup isnot undefined>>
-			<<set $player.penissize to $playerPenisSizeBackup>>
-		<</if>>
-	<</if>>
-	<<if $worn.under_lower.name is "naked">>
-		당신은 입고 있던 옷의 너덜너덜한 잔해를 움켜쥔다.
-	<<elseif $worn.lower.exposed gte 2>>
-		당신이 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 내리자, <span class="lewd"><<genitalsPost "이">> 노출된다.</span>
-	<<else>>
-		당신은 <<worn_under_lower_name_ ul>> <<worn_lower_name>> 아래로 잡아내린다.
-	<</if>>
-<</if>>
-
-<<if $leftaction is "mask" or $rightaction is "mask">>
-	<<if $leftaction is "mask">><<set $leftaction to 0>><<set $leftactiondefault to "rest">><</if>>
-	<<if $rightaction is "mask">><<set $rightaction to 0>><<set $rightactiondefault to "rest">><</if>>
-	<<if $worn.face.name is "naked">>
-		당신은 너덜너덜한 마스크 조각을 꽉 잡는다.
-	<<else>>
-		당신은 <<worn_face_name_ ul>> 잡아내려, <span class="lewd">당신의 얼굴을 드러낸다.</span>
-	<</if>>
-	<<facestrip>>
-<</if>>
-
 <</widget>>
 
 <<widget "effectsspray">>
-
-<<if $leftaction is "spray" and $rightaction is "spray">>
-	<<set $leftactiondefault to "lefthit">><<set $rightactiondefault to "righthit">><<set $leftaction to 0>><<set $rightaction to 0>>
-	<<if $spray gte 2>>
-		<<set _baseDamage to 400>>
-		<<set $spraystat += 2>><<spray -2>><<set $speechspray to 1>>
-		<<if $enemytype is "beast">>
-			당신은 양손에 스프레이를 들고는 <<beasttypePost "의">> 얼굴에 전부 뿌려버린다. 녀석은 낑낑거린다.
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			당신은 양손에 스프레이를 들고는 그 형체의 얼굴에 전부 뿌려버린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
-		<<elseif $enemyno gte 2>>
-			당신은 양손에 스프레이를 들고는, <<groupPost>>에게 전부 뿌려버린다. 그들은 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
+	<<if $leftaction is "spray" and $rightaction is "spray">>
+		<<set $leftactiondefault to "lefthit">><<set $rightactiondefault to "righthit">><<set $leftaction to 0>><<set $rightaction to 0>>
+		<<if $spray gte 2>>
+			<<set _baseDamage to 400>>
+			<<set $spraystat += 2>><<spray -2>><<set $speechspray to 1>>
+			<<if $enemytype is "beast">>
+				당신은 양손에 스프레이를 들고는 <<beasttypePost "의">> 얼굴에 전부 뿌려버린다. 녀석은 낑낑거린다.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				당신은 양손에 스프레이를 들고는 그 형체의 얼굴에 전부 뿌려버린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
+			<<elseif $enemyno gte 2>>
+				당신은 양손에 스프레이를 들고는, <<groupPost>>에게 전부 뿌려버린다. 그들은 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<<else>>
+				당신은 양손에 스프레이를 들고는 공격자에게 전부 뿌려버린다. <<HePost "은">> 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<</if>>
+		<<elseif $spray gte 1>>
+			<<set _baseDamage to 200>>
+			<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
 			<</if>>
 		<<else>>
-			당신은 양손에 스프레이를 들고는 공격자에게 전부 뿌려버린다. <<HePost "은">> 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 			<</if>>
 		<</if>>
-	<<elseif $spray gte 1>>
-		<<set _baseDamage to 200>>
-		<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
+	<<elseif $leftaction is "spray">>
+		<<set $leftactiondefault to "lefthit">><<set $leftaction to 0>>
+		<<if $spray gte 1>>
+			<<set _baseDamage to 200>>
+			<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
 			<</if>>
 		<<else>>
-			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
 			<</if>>
 		<</if>>
-	<<else>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+	<<elseif $rightaction is "spray">>
+		<<set $rightactiondefault to "righthit">><<set $rightaction to 0>>
+		<<if $spray gte 1>>
+			<<set _baseDamage to 200>>
+			<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
+			<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
+				당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
+				<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
+					<<ggcrime>><<crimeup 500>>
+				<</if>>
+			<</if>>
 		<<else>>
-			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<if $enemytype is "beast">>
+				당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<elseif $enemyno gte 2>>
+				당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<<else>>
+				당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
+			<</if>>
 		<</if>>
 	<</if>>
-<<elseif $leftaction is "spray">>
-	<<set $leftactiondefault to "lefthit">><<set $leftaction to 0>>
-	<<if $spray gte 1>>
-		<<set _baseDamage to 200>>
-		<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
-			<</if>>
-		<<else>>
-			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
-			<</if>>
-		<</if>>
-	<<else>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<<else>>
-			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<</if>>
-	<</if>>
-<<elseif $rightaction is "spray">>
-	<<set $rightactiondefault to "righthit">><<set $rightaction to 0>>
-	<<if $spray gte 1>>
-		<<set _baseDamage to 200>>
-		<<set $spraystat += 1>><<spray -1>><<set $speechspray to 1>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌린다. 녀석은 낑낑거린다.
-		<<elseif $NPCList[0].fullDescription is "Ivory Wraith">>
-			당신은 그 형체의 얼굴에 스프레이를 뿌린다. <span class="red">그것은 눈을 깜박이려고 하지도 않는다.</span>
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌린다. 그들은 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
-			<</if>>
-		<<else>>
-			당신은 공격자에게 스프레이를 뿌린다. <<HePost "은">> 얼굴을 움켜잡는다.
-			<<if !$npc.includes("Eden") and !$npc.includes("Morgan") and !$npc.includes("Kylar") and !$abomination>>
-				<<ggcrime>><<crimeup 500>>
-			<</if>>
-		<</if>>
-	<<else>>
-		<<if $enemytype is "beast">>
-			당신은 <<beasttypePost "의">> 얼굴에 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<<elseif $enemyno gte 2>>
-			당신은 <<groupPost>>에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<<else>>
-			당신은 공격자에게 스프레이를 뿌리려 한다. 아무 것도 나오지 않는다.
-		<</if>>
-	<</if>>
-<</if>>
 
-<<if _baseDamage>>
-	<<set _totalDamage to 0>>
-	<<set _npctodefeat to []>>
-	<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
-		<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
-			<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
-			<<set _thedamage to _baseDamage/_enemydivide>>
-			<<if $NPCList[_npctodamage].fullDescription is "Ivory Wraith">>
-				<<set _thedamage to (_thedamage / 4)>>
+	<<if _baseDamage>>
+		<<set _totalDamage to 0>>
+		<<set _npctodefeat to []>>
+		<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
+			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+				<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>> /* Divide damage by all current active enemies. */
+				<<set _thedamage to _baseDamage/_enemydivide>>
+				<<if $NPCList[_npctodamage].fullDescription is "Ivory Wraith">>
+					<<set _thedamage to (_thedamage / 4)>>
+				<</if>>
+				<<set $NPCList[_npctodamage].health -= _thedamage>>
+				<<set _totalDamage += _thedamage>>
+				<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
+					<<set _npctodefeat.push(_npctodamage)>>
+				<</if>>
 			<</if>>
-			<<set $NPCList[_npctodamage].health -= _thedamage>>
-			<<set _totalDamage += _thedamage>>
-			<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
-				<<set _npctodefeat.push(_npctodamage)>>
+		<</for>>
+		<<for $_defeatcontroller to 0; $_defeatcontroller lt _npctodefeat.length; $_defeatcontroller++>>
+			<<if $enemyno gte 2>>
+			<<defeatnpc _npctodefeat[$_defeatcontroller]>>
 			<</if>>
-		<</if>>
-	<</for>>
-	<<for $_defeatcontroller to 0; $_defeatcontroller lt _npctodefeat.length; $_defeatcontroller++>>
-		<<if $enemyno gte 2>>
-		<<defeatnpc _npctodefeat[$_defeatcontroller]>>
-		<</if>>
-	<</for>>
-	<<set $enemyhealth -= _totalDamage>>
-<</if>>
-
+		<</for>>
+		<<set $enemyhealth -= _totalDamage>>
+	<</if>>
 <</widget>>
 
 <<widget "effectssteal">>
-
-<<if $leftaction is "steal" and $rightaction is "steal" and $lefttarget is $righttarget>>
-	<<set $leftaction to 0>><<set $rightaction to 0>>
-	<<set $leftactiondefault to "steal">><<set $rightactiondefault to "steal">>
-	<<if $easySteal isnot 1>><<set $skulduggerydifficulty += 400>><</if>><<skulduggerycheck>>
-	<<unset $stealstateleft>><<unset $stealstateright>>
-	<<personselect $lefttarget>>
-	<<if $skulduggerysuccess is 1>>
-		<<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
-		당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<encountersteal>>
-		<<set $leftactiondefault to "rest">><<set $rightactiondefault to "rest">>
-	<<else>>
-		<<brat 30 $lefttarget>><<set $speechsteal to 1>>
-		당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<He_ nun>> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+	<<if $leftaction is "steal" and $rightaction is "steal" and $lefttarget is $righttarget>>
+		<<set $leftaction to 0>><<set $rightaction to 0>>
+		<<set $leftactiondefault to "steal">><<set $rightactiondefault to "steal">>
+		<<if $easySteal isnot 1>><<set $skulduggerydifficulty += 400>><</if>><<skulduggerycheck>>
+		<<unset $stealstateleft>><<unset $stealstateright>>
+		<<personselect $lefttarget>>
+		<<if $skulduggerysuccess is 1>>
+			<<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
+			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<encountersteal>>
+			<<set $leftactiondefault to "rest">><<set $rightactiondefault to "rest">>
+		<<else>>
+			<<brat 30 $lefttarget>><<set $speechsteal to 1>>
+			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<He_ nun>> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+		<</if>>
 	<</if>>
-<</if>>
 
-<<if $leftaction is "steal">>
-	<<set $leftactiondefault to "steal">><<set $leftaction to 0>><<skulduggerycheck>>
-	<<personselect $lefttarget>>
-	<<if $skulduggerysuccess is 1>>
-		<<if $stealstateleft is undefined>>
-			<<set $stealstateleft to 0>>
-			당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다.
-		<<elseif $stealstateleft is 0>>
-			<<set $stealstateleft to 1>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 연다.
-		<<elseif $stealstateleft is 1>>
-			<<set $stealstateleft to 2>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다.
+	<<if $leftaction is "steal">>
+		<<set $leftactiondefault to "steal">><<set $leftaction to 0>><<skulduggerycheck>>
+		<<personselect $lefttarget>>
+		<<if $skulduggerysuccess is 1>>
+			<<if $stealstateleft is undefined>>
+				<<set $stealstateleft to 0>>
+				당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다.
+			<<elseif $stealstateleft is 0>>
+				<<set $stealstateleft to 1>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 연다.
+			<<elseif $stealstateleft is 1>>
+				<<set $stealstateleft to 2>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다.
+			<<else>>
+				<<unset $stealstateleft>><<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
+				당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $leftactiondefault to "rest">>
+			<</if>>
 		<<else>>
-			<<unset $stealstateleft>><<set $stealtarget += $lefttarget>><<set $stealdifficulty += 0.2>>
-			당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $leftactiondefault to "rest">>
+			<<brat 30 $lefttarget>><<set $speechsteal to 1>>
+			<<if $stealstateleft is undefined>>
+				당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다. <<HePost "은">> 속지 않는다. <<HePost "은">> <<hisPost "의">> 귀중품들을 치운다.
+			<<elseif $stealstateleft is 0>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 열려 한다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<<elseif $stealstateleft is 1>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<<else>>
+				당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<</if>>
+			<<unset $stealstateleft>>
 		<</if>>
-	<<else>>
-		<<brat 30 $lefttarget>><<set $speechsteal to 1>>
-		<<if $stealstateleft is undefined>>
-			당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다. <<HePost "은">> 속지 않는다. <<HePost "은">> <<hisPost "의">> 귀중품들을 치운다.
-		<<elseif $stealstateleft is 0>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 열려 한다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<<elseif $stealstateleft is 1>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<<else>>
-			당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<</if>>
-		<<unset $stealstateleft>>
 	<</if>>
-<</if>>
 
-<<if $rightaction is "steal">>
-	<<set $rightaction to 0>><<set $rightactiondefault to "steal">><<skulduggerycheck>>
-	<<personselect $righttarget>>
-	<<if $skulduggerysuccess is 1>>
-		<<if $stealstateright is undefined>>
-			<<set $stealstateright to 0>>
-			당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다.
-		<<elseif $stealstateright is 0>>
-			<<set $stealstateright to 1>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 연다. 
-		<<elseif $stealstateright is 1>>
-			<<set $stealstateright to 2>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. 
+	<<if $rightaction is "steal">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "steal">><<skulduggerycheck>>
+		<<personselect $righttarget>>
+		<<if $skulduggerysuccess is 1>>
+			<<if $stealstateright is undefined>>
+				<<set $stealstateright to 0>>
+				당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다.
+			<<elseif $stealstateright is 0>>
+				<<set $stealstateright to 1>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 연다. 
+			<<elseif $stealstateright is 1>>
+				<<set $stealstateright to 2>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. 
+			<<else>>
+				<<unset $stealstateright>><<set $stealtarget += $righttarget>><<set $stealdifficulty += 0.2>>
+				당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $rightactiondefault to "rest">>
+			<</if>>
 		<<else>>
-			<<unset $stealstateright>><<set $stealtarget += $righttarget>><<set $stealdifficulty += 0.2>>
-			당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<encountersteal>><<set $rightactiondefault to "rest">>
+			<<brat 30 $righttarget>><<set $speechsteal to 1>>
+			<<if $stealstateright is undefined>>
+				당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다. <<HePost "은">> 속지 않는다. <<HePost "은">> <<hisPost "의">> 귀중품들을 치운다.
+			<<elseif $stealstateright is 0>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 열려 한다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<<elseif $stealstateright is 1>>
+				당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<<else>>
+				당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
+			<</if>>
+			<<unset $stealstateright>>
 		<</if>>
-	<<else>>
-		<<brat 30 $righttarget>><<set $speechsteal to 1>>
-		<<if $stealstateright is undefined>>
-			당신은 <<personPost "의">> 살갗을 손으로 더듬다가, 곧 <<hisPost "의">> <<wallet_ ul>> 만진다. <<HePost "은">> 속지 않는다. <<HePost "은">> <<hisPost "의">> 귀중품들을 치운다.
-		<<elseif $stealstateright is 0>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 열려 한다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<<elseif $stealstateright is 1>>
-			당신은 <<personPost "의">> <<wallet_ ul>> 샅샅이 뒤진다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<<else>>
-			당신은 <<personPost "의">> <<walletPost>> 안에 몰래 손을 집어넣는다. <<HePost "은">> 그걸 눈치채고는 <<hisPost "의">> 귀중품들을 치운다.
-		<</if>>
-		<<unset $stealstateright>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "effectspenwhack">>
-<!--todo: maybe add some botched tattoos if pen is too close -->
-<<if $leftaction is "penwhack">>
-	<<set $leftaction to 0>>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_"))>>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $lefttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $lefttarget>>
+	<!--todo: maybe add some botched tattoos if pen is too close -->
+	<<if $leftaction is "penwhack">>
+		<<set $leftaction to 0>>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_"))>>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $lefttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $lefttarget>>
+			<</if>>
+			<<brat 5 $lefttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
+		<<elseif $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $lefttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $lefttarget>>
+			<</if>>
+			<<brat 5 $lefttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 		<</if>>
-		<<brat 5 $lefttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
-	<<elseif $_target.righthand and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $lefttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $lefttarget>>
-		<</if>>
-		<<brat 5 $lefttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 	<</if>>
-<</if>>
 
-<<if $rightaction is "penwhack">>
-	<<set $rightaction to 0>>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_"))>>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $righttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $righttarget>>
+	<<if $rightaction is "penwhack">>
+		<<set $rightaction to 0>>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.lefthand and ($_target.lefthand is "pen" or $_target.lefthand.startsWith("pen_"))>>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $righttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $righttarget>>
+			<</if>>
+			<<brat 5 $righttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
+		<<elseif typeof($_target.righthand) is "string" and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $righttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $righttarget>>
+			<</if>>
+			<<brat 5 $righttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 		<</if>>
-		<<brat 5 $righttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
-	<<elseif typeof($_target.righthand) is "string" and ($_target.righthand is "pen" or $_target.righthand.startsWith("pen_"))>>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $righttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $righttarget>>
-		<</if>>
-		<<brat 5 $righttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "effectsshacklewhack">>
-<<if $leftaction is "shacklewhack">>
-	<<set $leftaction to 0>>
-	<<personselect $lefttarget>>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand is "shackle_entrance" or $_target.lefthand is "shackle_imminent">>
-		<<combat-reset-hand "left">>
-	<<elseif $_target.righthand is "shackle_entrance" or $_target.righthand is "shackle_imminent">>
-		<<combat-reset-hand "right">>
+	<<if $leftaction is "shacklewhack">>
+		<<set $leftaction to 0>>
+		<<personselect $lefttarget>>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand is "shackle_entrance" or $_target.lefthand is "shackle_imminent">>
+			<<combat-reset-hand "left">>
+		<<elseif $_target.righthand is "shackle_entrance" or $_target.righthand is "shackle_imminent">>
+			<<combat-reset-hand "right">>
+		<</if>>
+		당신은 그 <<persons_ yi>> 손에서 족쇄를 쳐낸다. <<He_ nun>> <<his_ yi>> 주먹을 꽉 쥔다.
+		<<brat 10 $lefttarget>>
 	<</if>>
-	당신은 그 <<persons_ yi>> 손에서 족쇄를 쳐낸다. <<He_ nun>> <<his_ yi>> 주먹을 꽉 쥔다.
-	<<brat 10 $lefttarget>>
-<</if>>
 
-<<if $rightaction is "shacklewhack">>
-	<<set $rightaction to 0>>
-	<<personselect $righttarget>>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.lefthand is "shackle_entrance" or $_target.lefthand is "shackle_imminent">>
-		<<combat-reset-hand "left">>
-	<<elseif $_target.righthand is "shackle_entrance" or $_target.righthand is "shackle_imminent">>
-		<<combat-reset-hand "right">>
+	<<if $rightaction is "shacklewhack">>
+		<<set $rightaction to 0>>
+		<<personselect $righttarget>>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.lefthand is "shackle_entrance" or $_target.lefthand is "shackle_imminent">>
+			<<combat-reset-hand "left">>
+		<<elseif $_target.righthand is "shackle_entrance" or $_target.righthand is "shackle_imminent">>
+			<<combat-reset-hand "right">>
+		<</if>>
+		당신은 그 <<persons_ yi>> 손에서 족쇄를 쳐낸다. <<He_ nun>> <<his_ yi>> 주먹을 꽉 쥔다.
+		<<brat 10 $righttarget>>
 	<</if>>
-	당신은 그 <<persons_ yi>> 손에서 족쇄를 쳐낸다. <<He_ nun>> <<his_ yi>> 주먹을 꽉 쥔다.
-	<<brat 10 $righttarget>>
-<</if>>
 <</widget>>
 
 <<widget "effectshypnosiswhack">>
-<<if $leftaction is "hypnosiswhack">>
-	<<set $leftaction to 0>>
-	<<personselect $lefttarget>>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_cover" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
-	<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_cover" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+	<<if $leftaction is "hypnosiswhack">>
+		<<set $leftaction to 0>>
+		<<personselect $lefttarget>>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_cover" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
+		<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_cover" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+		<</if>>
+		<<brat 10 $lefttarget>>
 	<</if>>
-	<<brat 10 $lefttarget>>
-<</if>>
 
-<<if $rightaction is "hypnosiswhack">>
-	<<set $rightaction to 0>>
-	<<personselect $righttarget>>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_cover" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
-	<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_cover" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+	<<if $rightaction is "hypnosiswhack">>
+		<<set $rightaction to 0>>
+		<<personselect $righttarget>>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if $_target.lefthand is "hypnosis" or $_target.lefthand is "hypnosis_scream" or $_target.lefthand is "hypnosis_cover" or $_target.lefthand is "hypnosis_orgasm" or $_target.lefthand is "hypnosis_masochism">>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<combat-reset-hand "left">><<set $_target.lefttool to 0>>
+		<<elseif $_target.righthand is "hypnosis" or $_target.righthand is "hypnosis_scream" or $_target.righthand is "hypnosis_cover" or $_target.righthand is "hypnosis_orgasm" or $_target.righthand is "hypnosis_masochism">>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<combat-reset-hand "right">><<set $_target.righttool to 0>>
+		<</if>>
+		<<brat 10 $righttarget>>
 	<</if>>
-	<<brat 10 $righttarget>>
-<</if>>
 <</widget>>
 
 <<widget "effectsdildowhack">>
-<<if $leftaction is "dildowhack">>
-	<<set $leftaction to 0>>
-	<<set $_target to $NPCList[$lefttarget]>>
-	<<if typeof($_target.lefthand) is "string" and $_target.lefthand.includes("dildo")>>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $lefttarget>>
-		<<elseif $consensual is 1>>
-			<<his_ yi>> 얼굴에 실망감이 스친다.
-			<<brat 2 $lefttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $lefttarget>>
+	<<if $leftaction is "dildowhack">>
+		<<set $leftaction to 0>>
+		<<set $_target to $NPCList[$lefttarget]>>
+		<<if typeof($_target.lefthand) is "string" and $_target.lefthand.includes("dildo")>>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Kylar" and $NPCName[$NPCNameList.indexOf("Kylar")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $lefttarget>>
+			<<elseif $consensual is 1>>
+				<<his_ yi>> 얼굴에 실망감이 스친다.
+				<<brat 2 $lefttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $lefttarget>>
+			<</if>>
+			<<brat 5 $lefttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
+		<<elseif typeof($_target.righthand) is "string" and $_target.righthand.includes("dildo")>>
+			당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $lefttarget>>
+			<<elseif $consensual is 1>>
+				<<his_ yi>> 얼굴에 실망감이 스친다.
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $lefttarget>>
+			<</if>>
+			<<brat 5 $lefttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 		<</if>>
-		<<brat 5 $lefttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
-	<<elseif typeof($_target.righthand) is "string" and $_target.righthand.includes("dildo")>>
-		당신은 <<personselect $lefttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $lefttarget>>
-		<<elseif $consensual is 1>>
-			<<his_ yi>> 얼굴에 실망감이 스친다.
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $lefttarget>>
-		<</if>>
-		<<brat 5 $lefttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 	<</if>>
-<</if>>
 
-<<if $rightaction is "dildowhack">>
-	<<set $rightaction to 0>>
-	<<set $_target to $NPCList[$righttarget]>>
-	<<if typeof($_target.lefthand) is "string" and $_target.lefthand.includes("dildo")>>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $righttarget>>
-		<<elseif $consensual is 1>>
-			<<his_ yi>> 얼굴에 실망감이 스친다.
-			<<brat 2 $righttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $righttarget>>
+	<<if $rightaction is "dildowhack">>
+		<<set $rightaction to 0>>
+		<<set $_target to $NPCList[$righttarget]>>
+		<<if typeof($_target.lefthand) is "string" and $_target.lefthand.includes("dildo")>>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.lefttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $righttarget>>
+			<<elseif $consensual is 1>>
+				<<his_ yi>> 얼굴에 실망감이 스친다.
+				<<brat 2 $righttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $righttarget>>
+			<</if>>
+			<<brat 5 $righttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
+		<<elseif typeof($_target.righthand) is "string" and $_target.righthand.includes("dildo")>>
+			당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
+			<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
+				<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
+				<<brat 2 $righttarget>>
+			<<elseif $consensual is 1>>
+				<<his_ yi>> 얼굴에 실망감이 스친다.
+				<<brat 2 $righttarget>>
+			<<else>>
+				<<HePost "의">> 얼굴에 분노가 번진다.
+				<<brat 5 $righttarget>>
+			<</if>>
+			<<brat 5 $righttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 		<</if>>
-		<<brat 5 $righttarget>><<set $_target.lefthand to 0>><<set $_target.lefttool to 0>>
-	<<elseif typeof($_target.righthand) is "string" and $_target.righthand.includes("dildo")>>
-		당신은 <<personselect $righttarget>><<personPost "의">> 손에서 <<handtoolPost $_target.righttool "을">> 쳐낸다.
-		<<if $_target.fullDescription is "Sydney" or ($_target.fullDescription is "Robin" and $NPCName[$NPCNameList.indexOf("Robin")].rage lte 35) or $_target.type is "plant">>
-			<<He_ nun>> 뿌루퉁하게 당신에게 입술을 내민다.
-			<<brat 2 $righttarget>>
-		<<elseif $consensual is 1>>
-			<<his_ yi>> 얼굴에 실망감이 스친다.
-			<<brat 2 $righttarget>>
-		<<else>>
-			<<HePost "의">> 얼굴에 분노가 번진다.
-			<<brat 5 $righttarget>>
-		<</if>>
-		<<brat 5 $righttarget>><<set $_target.righthand to 0>><<set $_target.righttool to 0>>
 	<</if>>
-<</if>>
 <</widget>>
 
 <<widget "effectshandsfreeface">>
@@ -2246,16 +1989,14 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 		<<case 0>> <<combat-set-hand-start $_hand>>
 		<<default>> <<run console.error("NPC hand action unaccounted for! Hand: " + $_hand + " Value: " + $_npcHand)>> <<run throw new Error("NPC hand action unaccounted for! Hand: " + $_hand + " Value: " + $_npcHand)>>
 	<</switch>>
-
 <</widget>>
 
 <<widget "effectsremovebuttplug">>
-	<<if ($worn.genitals.anal_shield is undefined or $worn.genitals.anal_shield is 0)>>
+	<<if !playerChastity("anus")>>
 		<<if $leftaction is "removebuttplug" and playerHasButtPlug()>>
 			<<set $leftaction to 0>>
 			당신은 <<worn_butt_plug_name_ ul>> 빼내어, 당신의 항문을 드러낸다.
 			<<set $worn.butt_plug.state to "removed">>
-
 		<<elseif $rightaction is "removebuttplug" and playerHasButtPlug()>>
 			<<set $rightaction to 0>>
 			당신은 <<worn_butt_plug_name_ ul>> 빼내어, 당신의 항문을 드러낸다.
@@ -2283,7 +2024,6 @@ $NPCList[5].lefthand is "pen" or $NPCList[5].righthand is "pen">>
 			당신은 <<sextoy_ rul $currentSexToyRight.name>> 오른손으로 꺼낸다.
 		<</if>>
 	<</if>>
-
 <</widget>>
 
 <<widget "effectsDropSexToy">>

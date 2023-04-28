@@ -1,6 +1,5 @@
 :: Widgets Outfits [widget]
 <<widget "listoutfits">>
-
 	<label><<radiobutton "$delete_outfit" "none" checked>> 입기</label> |
 	<label><<radiobutton "$delete_outfit" 1>> 제거</label> |
 	<label><<radiobutton "$delete_outfit" 2>> 덮어쓰기</label> |
@@ -142,7 +141,7 @@
 					<<link [[_outfit.name+" 입기"|$passage]]>>
 						<<if clothingInStorage(_store_location).length is 0>>
 							<<storesave _store_location>>
-							<<set $wearoutfittext to 1>>
+							<<set $wearoutfittext to _outfit.name>>
 						<</if>>
 						<<set $eventskip to 1>>
 						<<set _item_index to $wardrobe[_slot].indexOf(_outfit)>>
@@ -277,6 +276,15 @@
 								<<continue>>
 							<</if>>
 						<</if>>
+						/*Check for preggy restriction*/
+						<<if playerBellySize() gte 12 and $_wardrobeItem.type.includes("constricting")>>
+							<<if $_wardrobeItem.type.includes("chest_bind")>>
+								<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "constrictingChest"}>>
+							<<else>>
+								<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "constricting"}>>
+							<</if>>
+							<<break>>
+						<</if>>
 						/*Check for slime corruption*/
 						<<if _corruptionEquipSkip.includes($_slot)>>
 							<<if $corruption_slime gte 80 and currentSkillValue('willpower') lt 800 and $_wardrobeItem.reveal lt 500 and !$_wardrobeItem.type.includesAny("school", "event")>>
@@ -388,7 +396,9 @@
 						<</if>>
 					<<else>>
 						<<if $worn[$_slot].name is $_incomingItemName>>
-							<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "not found replacement"}>>
+							<<if !_notEquipped[$_slot]>>
+								<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "not found replacement"}>>
+							<</if>>
 							/*If the worn item was a hoodie, make sure the hood is in the correct position*/
 							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
 								<<toggleHood>>
@@ -398,7 +408,9 @@
 								<<storeItem $wardrobe_location $_slot>>
 							<</if>>
 						<<else>>
-							<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "not found"}>>
+							<<if !_notEquipped[$_slot]>>
+								<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "not found"}>>
+							<</if>>
 							<<if $wardrobe_location isnot "wardrobe" and $worn[$_slot].name isnot "naked">>
 								<<set _makeTempClothing to 1>>
 								<<storeItem $wardrobe_location $_slot>>
@@ -447,6 +459,31 @@
 							}
 						}
 						_resultStrings.notFoundReplacement.names.push(notEquippedItem.name);
+						break;
+					case "constricting":
+						if (_resultStrings.constricting === undefined) {
+							_resultStrings.constricting = {
+								"start": "당신의 <<bellyDescription_ i 'pc'>> 너무 커서 ",
+								"joiner": "그리고",
+								"end": "착용할 수 없었다.",
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.constricting.names.push(notEquippedItem.name);
+						break;
+					case "constrictingChest":
+						if (_resultStrings.constrictingChest === undefined) {
+							_resultStrings.constrictingChest = {
+								"start": "Your pregnant body is too sensitive to wear your ",
+								"start": "당신의 임신한 몸이 너무 민감해서 ",
+								"joiner": "그리고",
+								"end": "착용할 수 없었다.",
+								"names": [],
+								"color": "red"
+							}
+						}
+						_resultStrings.constrictingChest.names.push(notEquippedItem.name);
 						break;
 					case "corruption_slime_deny":
 						if (_resultStrings.corruption_slime_deny === undefined) {
@@ -532,346 +569,346 @@
 <</widget>>
 
 <<widget "outfitEditor">>
-<<link "필터 설정">><<toggleclass "#outfitEditorFilter" "hidden">><</link>> |
-<<link "도움말">><<toggleclass "#outfitEditorHelp" "hidden">><</link>>
+	<<link "필터 설정">><<toggleclass "#outfitEditorFilter" "hidden">><</link>> |
+	<<link "도움말">><<toggleclass "#outfitEditorHelp" "hidden">><</link>>
 
-<div id="outfitEditorHelp" class="hidden">
-	여기에서 변경하는 복장의 모든 설정들은 바로 변경되지만, 당신이 경로(passage)를 변경해야 변경점이 저장됩니다 (옷장에서 나오거나 이 화면 아래의 '옷장 갱신'을 누르면 됩니다).
-	<br><br>
-	복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 색상 지정이 가능한 옷을 색상 지정이 불가능한 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
-	<br><br>
-	위치는 그 복장이 특별하며 그 옷장에서만 보인다는 것을 의미합니다. '접근 불가'라는 표시가 있다면, 이것은 여러 개의 옷장 설정이 되어있거나 게임이 더 진행된 후에 사용이 가능하다는 것을 의미합니다. 대부분의 경우 '고아원' 옷장은 여러 개의 옷장 설정이 '격리된 장소에서는 사용' 이나 하나의 옷장만 사용하는 경우 공유됩니다.
-	<br><br>
-</div>
-<<if _outfitEditorFilter is undefined>>
-	<<outfitEditorDefaultFilter>>
-<</if>>
-<<outfitEditorUpdateFilter>>
-<<set _subState to {}>>
+	<div id="outfitEditorHelp" class="hidden">
+		여기에서 변경하는 복장의 모든 설정들은 바로 변경되지만, 당신이 경로(passage)를 변경해야 변경점이 저장됩니다 (옷장에서 나오거나 이 화면 아래의 '옷장 갱신'을 누르면 됩니다).
+		<br><br>
+		복장 구성을 변경하면 그 부분의 지정된 색상도 초기화되는 결과가 있을 수 있습니다. 이것은 색상 지정이 가능한 옷을 색상 지정이 불가능한 옷으로 바꿀 경우 일어납니다. 당신이 리스트에서 옷을 변경할 수 있다고 해도 당신이 모든 옷을 사용할 수 있다는 의미는 아닙니다.
+		<br><br>
+		위치는 그 복장이 특별하며 그 옷장에서만 보인다는 것을 의미합니다. '접근 불가'라는 표시가 있다면, 이것은 여러 개의 옷장 설정이 되어있거나 게임이 더 진행된 후에 사용이 가능하다는 것을 의미합니다. 대부분의 경우 '고아원' 옷장은 여러 개의 옷장 설정이 '격리된 장소에서는 사용' 이나 하나의 옷장만 사용하는 경우 공유됩니다.
+		<br><br>
+	</div>
+	<<if _outfitEditorFilter is undefined>>
+		<<outfitEditorDefaultFilter>>
+	<</if>>
+	<<outfitEditorUpdateFilter>>
+	<<set _subState to {}>>
 
-<div id="outfitEditorFilter" class="hidden">
-	<<outfitEditorFilter>>
-</div>
-<div id="outfitEditor">
-	<<outfitEditorList>>
-</div>
-<<link [[옷장 갱신|$passage]]>><</link>>
+	<div id="outfitEditorFilter" class="hidden">
+		<<outfitEditorFilter>>
+	</div>
+	<div id="outfitEditor">
+		<<outfitEditorList>>
+	</div>
+	<<link [[옷장 갱신|$passage]]>><</link>>
 <</widget>>
 
 <<widget "outfitEditorFilter">>
-<h4>필터</h4>
-<label>페이지당 복장 수: <<numberslider "$outfitEditorPerPage" $outfitEditorPerPage 5 20 1>></label>
-<br><br>
-종류:
-<label><<checkbox "_outfitEditorFilter.type.normal" false true autocheck>> 평상복</label> |
-<label><<checkbox "_outfitEditorFilter.type.sleep" false true autocheck>> 잠옷</label> |
-<label><<checkbox "_outfitEditorFilter.type.swim" false true autocheck>> 수영복</label> |
-<label><<checkbox "_outfitEditorFilter.type.school" false true autocheck>> 교복 (시작시의 복장에서만 사용되며, 나중에 추가될 수 있음)</label> |
-<br><br>
-위치:
-<<for $_label, $_value range _outfitEditorFilter.location>>
-	<<set $_name to $wardrobes[$_label] ? $wardrobes[$_label].name : $_label>>
-	<<set $_var to "_outfitEditorFilter.location." + $_label>>
-	<<capture $_var>>
-		<label>
-			<<checkbox $_var false true autocheck>> <<trWardrobeName $_name>><<print _trResult>>
-			<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
-				(접근 불가)
-			<</if>>
-		</label> |
-	<</capture>>
-<</for>>
-<br><br>
-복장에 저장된 색상:
-<label><<checkbox "_outfitEditorFilter.colors.notSaved" false true autocheck>> 아니오</label> |
-<label><<checkbox "_outfitEditorFilter.colors.saved" false true autocheck>> 네</label> |
-<br><br>
-<<link "필터 갱신">>
-	<<outfitEditorUpdateFilter>>
-	<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
-<</link>> |
-<<link "필터 초기화">>
-	<<outfitEditorDefaultFilter>>
-	<<outfitEditorPageSetup>>
-	<<replace "#outfitEditorFilter">><<outfitEditorFilter>><</replace>>
-	<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
-<</link>>
-<br><br>
+	<h4>필터</h4>
+	<label>페이지당 복장 수: <<numberslider "$outfitEditorPerPage" $outfitEditorPerPage 5 20 1>></label>
+	<br><br>
+	종류:
+	<label><<checkbox "_outfitEditorFilter.type.normal" false true autocheck>> 평상복</label> |
+	<label><<checkbox "_outfitEditorFilter.type.sleep" false true autocheck>> 잠옷</label> |
+	<label><<checkbox "_outfitEditorFilter.type.swim" false true autocheck>> 수영복</label> |
+	<label><<checkbox "_outfitEditorFilter.type.school" false true autocheck>> 교복 (시작시의 복장에서만 사용되며, 나중에 추가될 수 있음)</label> |
+	<br><br>
+	위치:
+	<<for $_label, $_value range _outfitEditorFilter.location>>
+		<<set $_name to $wardrobes[$_label] ? $wardrobes[$_label].name : $_label>>
+		<<set $_var to "_outfitEditorFilter.location." + $_label>>
+		<<capture $_var>>
+			<label>
+				<<checkbox $_var false true autocheck>> <<trWardrobeName $_name>><<print _trResult>>
+				<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
+					(접근 불가)
+				<</if>>
+			</label> |
+		<</capture>>
+	<</for>>
+	<br><br>
+	복장에 저장된 색상:
+	<label><<checkbox "_outfitEditorFilter.colors.notSaved" false true autocheck>> 아니오</label> |
+	<label><<checkbox "_outfitEditorFilter.colors.saved" false true autocheck>> 네</label> |
+	<br><br>
+	<<link "필터 갱신">>
+		<<outfitEditorUpdateFilter>>
+		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
+	<</link>> |
+	<<link "필터 초기화">>
+		<<outfitEditorDefaultFilter>>
+		<<outfitEditorPageSetup>>
+		<<replace "#outfitEditorFilter">><<outfitEditorFilter>><</replace>>
+		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
+	<</link>>
+	<br><br>
 <</widget>>
 
 <<widget "outfitEditorDefaultFilter">>
-<<if $outfitEditorPerPage is undefined>>
-	<<set $outfitEditorPerPage to 10>>
-<</if>>
-<<set _outfitEditorFilter to {
-	type:{
-		normal: true,
-		sleep: true,
-		swim: true,
-		school: true,
-	},
-	location:{
-		All: true,
-		disabled: true,
-	},
-	colors:{
-		notSaved: true,
-		saved: true
-	},
-	outfitIndex:[],
-}>>
-<<for $_label, $_value range $wardrobes>>
-	<<if $_value.unlocked>>
-		<<set _outfitEditorFilter.location[$_label] to true>>
+	<<if $outfitEditorPerPage is undefined>>
+		<<set $outfitEditorPerPage to 10>>
 	<</if>>
-<</for>>
-<<set _outfitEditorFilter.outfitIndex to []>>
-<<run $outfit.forEach((item, index) => {T.outfitEditorFilter.outfitIndex.push(index);})>>
+	<<set _outfitEditorFilter to {
+		type:{
+			normal: true,
+			sleep: true,
+			swim: true,
+			school: true,
+		},
+		location:{
+			All: true,
+			disabled: true,
+		},
+		colors:{
+			notSaved: true,
+			saved: true
+		},
+		outfitIndex:[],
+	}>>
+	<<for $_label, $_value range $wardrobes>>
+		<<if $_value.unlocked>>
+			<<set _outfitEditorFilter.location[$_label] to true>>
+		<</if>>
+	<</for>>
+	<<set _outfitEditorFilter.outfitIndex to []>>
+	<<run $outfit.forEach((item, index) => {T.outfitEditorFilter.outfitIndex.push(index);})>>
 <</widget>>
 
 <<widget "outfitEditorUpdateFilter">>
-<<set _outfitEditorFilter.outfitIndex to []>>
-<<run $outfit.forEach((item, index) => {
-	if(T.outfitEditorFilter.type[item.type[0]]){
-		if((T.outfitEditorFilter.location.All && item.type[0].location === undefined) || T.outfitEditorFilter.location[item.type[0].location]){
-			if((!item.colors && T.outfitEditorFilter.colors.notSaved) || (item.colors && T.outfitEditorFilter.colors.saved)){
-				T.outfitEditorFilter.outfitIndex.push(index);
+	<<set _outfitEditorFilter.outfitIndex to []>>
+	<<run $outfit.forEach((item, index) => {
+		if(T.outfitEditorFilter.type[item.type[0]]){
+			if((T.outfitEditorFilter.location.All && item.type[0].location === undefined) || T.outfitEditorFilter.location[item.type[0].location]){
+				if((!item.colors && T.outfitEditorFilter.colors.notSaved) || (item.colors && T.outfitEditorFilter.colors.saved)){
+					T.outfitEditorFilter.outfitIndex.push(index);
+				}
 			}
 		}
-	}
-})>>
-<<outfitEditorPageSetup>>
+	})>>
+	<<outfitEditorPageSetup>>
 <</widget>>
 
 <<widget "outfitEditorPageSetup">>
-<<set _outfitEditorPages to {
-	page:1,
-	perPage:$outfitEditorPerPage
-}>>
-<<set _outfitEditorPages.maxPages to Math.ceil(_outfitEditorFilter.outfitIndex.length / _outfitEditorPages.perPage)>>
+	<<set _outfitEditorPages to {
+		page:1,
+		perPage:$outfitEditorPerPage
+	}>>
+	<<set _outfitEditorPages.maxPages to Math.ceil(_outfitEditorFilter.outfitIndex.length / _outfitEditorPages.perPage)>>
 <</widget>>
 
 <<widget "outfitEditorList">>
-<<outfitEditorPageControls>>
-<div id="outfitEditorList">
-<<set $_start to (_outfitEditorPages.page - 1) * _outfitEditorPages.perPage>>
-<<for $_i to $_start; $_i lt $_start + _outfitEditorPages.perPage; $_i++>>
-	<<set _index to _outfitEditorFilter.outfitIndex[$_i]>>
-	<<if !$outfit[_index]>>
-		<<break>>
-	<</if>>
-	<div @id="'outfitItem-' + _index" class="outfitEditorItem">
-		<<outfitEditorItem _index>>
+	<<outfitEditorPageControls>>
+	<div id="outfitEditorList">
+	<<set $_start to (_outfitEditorPages.page - 1) * _outfitEditorPages.perPage>>
+	<<for $_i to $_start; $_i lt $_start + _outfitEditorPages.perPage; $_i++>>
+		<<set _index to _outfitEditorFilter.outfitIndex[$_i]>>
+		<<if !$outfit[_index]>>
+			<<break>>
+		<</if>>
+		<div @id="'outfitItem-' + _index" class="outfitEditorItem">
+			<<outfitEditorItem _index>>
+		</div>
+	<</for>>
 	</div>
-<</for>>
-</div>
-<<outfitEditorPageControls>>
+	<<outfitEditorPageControls>>
 <</widget>>
 
 <<widget "outfitEditorPageControls">>
-<<if _outfitEditorPages.page gt 1>>
-	<<link "이전">>
-		<<set _outfitEditorPages.page-->>
-		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
-	<</link>> |
-<<else>>
-	이전 |
-<</if>>
-페이지 <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
-<<if _outfitEditorPages.page lt _outfitEditorPages.maxPages and _outfitEditorPages.maxPages gt 1>>
-	<<link "다음">>
-		<<set _outfitEditorPages.page++>>
-		<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
-	<</link>>
-<<else>>
-	다음
-<</if>>
+	<<if _outfitEditorPages.page gt 1>>
+		<<link "이전">>
+			<<set _outfitEditorPages.page-->>
+			<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
+		<</link>> |
+	<<else>>
+		이전 |
+	<</if>>
+	페이지 <<print _outfitEditorPages.page>>/<<print _outfitEditorPages.maxPages>> |
+	<<if _outfitEditorPages.page lt _outfitEditorPages.maxPages and _outfitEditorPages.maxPages gt 1>>
+		<<link "다음">>
+			<<set _outfitEditorPages.page++>>
+			<<replace "#outfitEditor">><<outfitEditorList>><</replace>>
+		<</link>>
+	<<else>>
+		다음
+	<</if>>
 <</widget>>
 
 <<widget "outfitEditorItem">>
-<<capture _args[0]>>
-	<<set _subState[_args[0]] to "">>
-	<div class="name">
-		<<set $_name to "$outfit["+_args[0]+"].name">>
-		<label>이름: <<textbox $_name $outfit[_args[0]].name>></label>
-		<!--Runs too many times for some reason, needs to be improved-->
-		<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
-			let index = e.target.name.replace(/\D/g,'');
-			V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"").substr(0,30);
-		}).trigger('input change') })>>
-	</div>
-	<div>
-		<<set $_type to "$outfit["+_args[0]+"].type[0]">>
-		<label>
-			종류:
-			<<listbox $_type autoselect>>
-				<<option "평상복" "normal">>
-				<<option "잠옷" "sleep">>
-				<<option "수영복" "swim">>
-				<<option "교복" "school">>
-			<</listbox>>
-		</label>
-	</div>
-	<div>
-		<<set $_location to "$outfit["+_args[0]+"].location">>
-		<<set $_locations to {}>>
-		<<for $_label, $_value range $wardrobes>>
-			<<if $_value.unlocked>>
-				<<set _warning to "">>
-				<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
-					<<set _warning to " (접근 불가)">>
+	<<capture _args[0]>>
+		<<set _subState[_args[0]] to "">>
+		<div class="name">
+			<<set $_name to "$outfit["+_args[0]+"].name">>
+			<label>이름: <<textbox $_name $outfit[_args[0]].name>></label>
+			<!--Runs too many times for some reason, needs to be improved-->
+			<<run $(() => { $('.outfitEditorItem .name .macro-textbox').on('input change', e => {
+				let index = e.target.name.replace(/\D/g,'');
+				V.outfit[index].name = V.outfit[index].name.replace(/[^a-zA-Z가-힣 0-9.!()]+/g,"").substr(0,30);
+			}).trigger('input change') })>>
+		</div>
+		<div>
+			<<set $_type to "$outfit["+_args[0]+"].type[0]">>
+			<label>
+				종류:
+				<<listbox $_type autoselect>>
+					<<option "평상복" "normal">>
+					<<option "잠옷" "sleep">>
+					<<option "수영복" "swim">>
+					<<option "교복" "school">>
+				<</listbox>>
+			</label>
+		</div>
+		<div>
+			<<set $_location to "$outfit["+_args[0]+"].location">>
+			<<set $_locations to {}>>
+			<<for $_label, $_value range $wardrobes>>
+				<<if $_value.unlocked>>
+					<<set _warning to "">>
+					<<if (!$multipleWardrobes or ($multipleWardrobes is "isolated" and !$_value.isolated)) and $_label isnot "wardrobe">>
+						<<set _warning to " (접근 불가)">>
+					<</if>>
+					<<trWardrobeName $_value.name>><<set $_locations[_trResult + _warning] to $_label>>
 				<</if>>
-				<<trWardrobeName $_value.name>><<set $_locations[_trResult + _warning] to $_label>>
-			<</if>>
-		<</for>>
-		<label>
-			위치:
-			<<listbox $_location autoselect>>
-				<<option "전부" undefined>>
-				<<option "사용않음" "disabled">>
-				<<optionsfrom $_locations>>
-			<</listbox>>
-		</label>
-	</div>
-	<div>
-		구성:
-		<<link "보기">>
-			<<set _subId to "#outfitItemSub-" + _args[0]>>
-			<<if _subState[_args[0]] is "itemEdit">>
-				<<set _subState[_args[0]] to "">>
-				<<replace _subId>><</replace>>
-			<<else>>
-				<<set _subState[_args[0]] to "itemEdit">>
-				<<replace _subId>><<outfitEditorItemClothes _args[0]>><</replace>>
-			<</if>>
-		<</link>>
-	</div>
-	<div>
-		색상 지정: <<print $outfit[_args[0]].colors ? "사용" : "사용않음">> |
-		<<if $outfit[_args[0]].colors>>
-			<<link "사용않음">>
-				<<set $outfit[_args[0]].colors to false>>
-				<<set _id to "#outfitItem-" + _args[0]>>
-				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
-			<</link>> |
-			<<link "편집">>
+			<</for>>
+			<label>
+				위치:
+				<<listbox $_location autoselect>>
+					<<option "전부" undefined>>
+					<<option "사용않음" "disabled">>
+					<<optionsfrom $_locations>>
+				<</listbox>>
+			</label>
+		</div>
+		<div>
+			구성:
+			<<link "보기">>
 				<<set _subId to "#outfitItemSub-" + _args[0]>>
-				<<if _subState[_args[0]] is "colourView">>
+				<<if _subState[_args[0]] is "itemEdit">>
 					<<set _subState[_args[0]] to "">>
 					<<replace _subId>><</replace>>
 				<<else>>
-					<<set _subState[_args[0]] to "colourView">>
-					<<replace _subId>><<outfitEditorItemColour _args[0]>><</replace>>
+					<<set _subState[_args[0]] to "itemEdit">>
+					<<replace _subId>><<outfitEditorItemClothes _args[0]>><</replace>>
 				<</if>>
 			<</link>>
-		<<else>>
-			<<link "사용">>
-				<<set $outfit[_args[0]].colors to {}>>
-				<<set _outfitIndex to _args[0]>>
-				<<for _label, _value range setup.clothes>>
-					<<set _item to setup.clothes[_label].filter((item) => item.name === $outfit[_outfitIndex][_label])[0]>>
-					<<set _colors to [0,0]>>
-					<<if _item>>
-						<<if _item.colour_options.length gt 0>>
-							<<set _colors[0] to _item.colour_options[0]>>
-						<</if>>
-						<<if _item.accessory_colour_options.length gt 0>>
-							<<set _colors[1] to _item.accessory_colour_options[0]>>
-						<</if>>
+		</div>
+		<div>
+			색상 지정: <<print $outfit[_args[0]].colors ? "사용" : "사용않음">> |
+			<<if $outfit[_args[0]].colors>>
+				<<link "사용않음">>
+					<<set $outfit[_args[0]].colors to false>>
+					<<set _id to "#outfitItem-" + _args[0]>>
+					<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
+				<</link>> |
+				<<link "편집">>
+					<<set _subId to "#outfitItemSub-" + _args[0]>>
+					<<if _subState[_args[0]] is "colourView">>
+						<<set _subState[_args[0]] to "">>
+						<<replace _subId>><</replace>>
+					<<else>>
+						<<set _subState[_args[0]] to "colourView">>
+						<<replace _subId>><<outfitEditorItemColour _args[0]>><</replace>>
 					<</if>>
-					<<set $outfit[_args[0]].colors[_label] to clone(_colors)>>
-				<</for>>
-				<<set _id to "#outfitItem-" + _args[0]>>
-				<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
-			<</link>>
+				<</link>>
+			<<else>>
+				<<link "사용">>
+					<<set $outfit[_args[0]].colors to {}>>
+					<<set _outfitIndex to _args[0]>>
+					<<for _label, _value range setup.clothes>>
+						<<set _item to setup.clothes[_label].filter((item) => item.name === $outfit[_outfitIndex][_label])[0]>>
+						<<set _colors to [0,0]>>
+						<<if _item>>
+							<<if _item.colour_options.length gt 0>>
+								<<set _colors[0] to _item.colour_options[0]>>
+							<</if>>
+							<<if _item.accessory_colour_options.length gt 0>>
+								<<set _colors[1] to _item.accessory_colour_options[0]>>
+							<</if>>
+						<</if>>
+						<<set $outfit[_args[0]].colors[_label] to clone(_colors)>>
+					<</for>>
+					<<set _id to "#outfitItem-" + _args[0]>>
+					<<replace `_id`>><<outfitEditorItem _args[0]>><</replace>>
+				<</link>>
+			<</if>>
+		</div>
+		<<if $savedHairStyles>>
+			<div>
+				<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+				머리모양:
+				<<set $_hairStyle to "$outfit["+_args[0]+"].hairStyle">>
+				<<listbox $_hairStyle autoselect>>
+					<<option "설정 않음" undefined>>
+					<<optionsfrom _savedHairStylesKeys>>
+				<</listbox>>
+			</div>
+		<<else>>
+			<div>
+				머리모양: 저장된 설정이 없습니다 (거울을 확인하세요)
+			</div>
 		<</if>>
-	</div>
-	<<if $savedHairStyles>>
-		<div>
-			<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
-			머리모양:
-			<<set $_hairStyle to "$outfit["+_args[0]+"].hairStyle">>
-			<<listbox $_hairStyle autoselect>>
-				<<option "설정 않음" undefined>>
-				<<optionsfrom _savedHairStylesKeys>>
-			<</listbox>>
-		</div>
-	<<else>>
-		<div>
-			머리모양: 저장된 설정이 없습니다 (거울을 확인하세요)
-		</div>
-	<</if>>
-	<div @id="'outfitItemSub-' + _args[0]"></div>
-<</capture>>
+		<div @id="'outfitItemSub-' + _args[0]"></div>
+	<</capture>>
 <</widget>>
 
 <<widget "outfitEditorItemClothes">>
-<<capture _args[0]>>
-	<<for $_label, $_value range setup.clothes>>
-		<<set $_itemName to $outfit[_args[0]][$_label]>>
-		<<if $_itemName and !setup.clothingLayer.over.includes($_label)>>
-			<label class="outfitEditorItemClothes">
-				<<set $_options to {}>>
-				<<for $_value2 range $_value>>
-					<<trClothes $_label $_value2.name "name">><<set $_options[_trResult] to $_value2.name>>
-				<</for>>
-				<<trClothesType $_label>><<print _trResult>> -
-				<<set $_var to "$outfit[" + _args[0] + "]['" + $_label + "']">>
-				<<listbox `$_var` autoselect>>
-					<<optionsfrom $_options>>
-				<</listbox>>
-				<!--Runs too many times for some reason, needs to be improved-->
-				<<run $(() => { $('.outfitEditorItemClothes select').on('input change', e => {
-					let outfitIndex = e.target.name.replace(/\D/g,'');
-					if(!V.outfit[outfitIndex].colors) return;
+	<<capture _args[0]>>
+		<<for $_label, $_value range setup.clothes>>
+			<<set $_itemName to $outfit[_args[0]][$_label]>>
+			<<if $_itemName and !setup.clothingLayer.over.includes($_label)>>
+				<label class="outfitEditorItemClothes">
+					<<set $_options to {}>>
+					<<for $_value2 range $_value>>
+						<<trClothes $_label $_value2.name "name">><<set $_options[_trResult] to $_value2.name>>
+					<</for>>
+					<<trClothesType $_label>><<print _trResult>> -
+					<<set $_var to "$outfit[" + _args[0] + "]['" + $_label + "']">>
+					<<listbox `$_var` autoselect>>
+						<<optionsfrom $_options>>
+					<</listbox>>
+					<!--Runs too many times for some reason, needs to be improved-->
+					<<run $(() => { $('.outfitEditorItemClothes select').on('input change', e => {
+						let outfitIndex = e.target.name.replace(/\D/g,'');
+						if(!V.outfit[outfitIndex].colors) return;
 
-					let target = e.target.name.match(/[a-zA-Z]+/g);
-					let slot = target[2] + (target[3] !== undefined ? '_' + target[3] : '');
-					let item = setup.clothes[slot].filter((item) => item.name === V.outfit[outfitIndex][slot])[0];
-					if(item !== undefined){
-						if(item.colour_options.length > 0 && V.outfit[outfitIndex].colors[slot][0] === 0){
-							V.outfit[outfitIndex].colors[slot][0] = item.colour_options[0];
-						} else if(item.colour_options.length === 0 && V.outfit[outfitIndex].colors[slot][0] !== 0) {
-							V.outfit[outfitIndex].colors[slot][0] = 0;
+						let target = e.target.name.match(/[a-zA-Z]+/g);
+						let slot = target[2] + (target[3] !== undefined ? '_' + target[3] : '');
+						let item = setup.clothes[slot].filter((item) => item.name === V.outfit[outfitIndex][slot])[0];
+						if(item !== undefined){
+							if(item.colour_options.length > 0 && V.outfit[outfitIndex].colors[slot][0] === 0){
+								V.outfit[outfitIndex].colors[slot][0] = item.colour_options[0];
+							} else if(item.colour_options.length === 0 && V.outfit[outfitIndex].colors[slot][0] !== 0) {
+								V.outfit[outfitIndex].colors[slot][0] = 0;
+							}
+							if(item.accessory_colour_options.length > 0 && V.outfit[outfitIndex].colors[slot][1] === 0){
+								V.outfit[outfitIndex].colors[slot][0] = item.accessory_colour_options[0];
+							} else if(item.accessory_colour_options.length === 0 && V.outfit[outfitIndex].colors[slot][1] !== 0) {
+								V.outfit[outfitIndex].colors[slot][1] = 0;
+							}
 						}
-						if(item.accessory_colour_options.length > 0 && V.outfit[outfitIndex].colors[slot][1] === 0){
-							V.outfit[outfitIndex].colors[slot][0] = item.accessory_colour_options[0];
-						} else if(item.accessory_colour_options.length === 0 && V.outfit[outfitIndex].colors[slot][1] !== 0) {
-							V.outfit[outfitIndex].colors[slot][1] = 0;
-						}
-					}
-				}).trigger('input change') })>>
-			</label>
-			<br>
-		<</if>>
-	<</for>>
-<</capture>>
+					}).trigger('input change') })>>
+				</label>
+				<br>
+			<</if>>
+		<</for>>
+	<</capture>>
 <</widget>>
 
 <<widget "outfitEditorItemColour">>
-<<capture _args[0]>>
-	<<for $_label, $_value range setup.clothes>>
-		<<set _colourLabel to $_label>>
-		<<set _colourOutfit to _args[0]>>
-		<<set $_item to setup.clothes[$_label].filter((item) => item.name === $outfit[_colourOutfit][_colourLabel])[0]>>
-		<<if $_item>>
-			<<if $_item.colour_options.length gt 0 or $_item.accessory_colour_options.length gt 0>>
-				<<trClothesType $_label>><<print _trResult>> - <<trClothes $_label $_item.name "name">><<print _trResult>>:
-				<<if $_item.colour_options.length gt 0>>
-					<<set $_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][0]">>
-					<<set _trTempColours to $_item.colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_colour_options` autoselect>>
-						<<optionsfrom _trListboxItems>>
-					<</listbox>>
+	<<capture _args[0]>>
+		<<for $_label, $_value range setup.clothes>>
+			<<set _colourLabel to $_label>>
+			<<set _colourOutfit to _args[0]>>
+			<<set $_item to setup.clothes[$_label].filter((item) => item.name === $outfit[_colourOutfit][_colourLabel])[0]>>
+			<<if $_item>>
+				<<if $_item.colour_options.length gt 0 or $_item.accessory_colour_options.length gt 0>>
+					<<trClothesType $_label>><<print _trResult>> - <<trClothes $_label $_item.name "name">><<print _trResult>>:
+					<<if $_item.colour_options.length gt 0>>
+						<<set $_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][0]">>
+						<<set _trTempColours to $_item.colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_colour_options` autoselect>>
+							<<optionsfrom _trListboxItems>>
+						<</listbox>>
+					<</if>>
+					<<if $_item.accessory_colour_options.length gt 0>>
+						<<set $_accessory_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][1]">>
+						<<set _trTempColours to $_item.accessory_colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_accessory_colour_options` autoselect>>
+							<<optionsfrom _trListboxItems>>
+						<</listbox>>
+					<</if>>
+					<br>
 				<</if>>
-				<<if $_item.accessory_colour_options.length gt 0>>
-					<<set $_accessory_colour_options to "$outfit["+_args[0]+"].colors['"+$_label+"'][1]">>
-					<<set _trTempColours to $_item.accessory_colour_options>><<trListboxItemsFromArray "_trTempColours">><<listbox `$_accessory_colour_options` autoselect>>
-						<<optionsfrom _trListboxItems>>
-					<</listbox>>
-				<</if>>
-				<br>
 			<</if>>
-		<</if>>
-	<</for>>
-<</capture>>
+		<</for>>
+	<</capture>>
 <</widget>>

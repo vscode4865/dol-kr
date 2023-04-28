@@ -354,7 +354,8 @@ setup.pills = [
 		description:
 			"1정 당 50mg의 에스트로겐 유사물질인, 클로미펜 시트르산염을 함유하고 있습니다. 이 약은 또한 시상하부에 작용하여 배란을 촉진하는 데 필요한 호르몬을 분비시킵니다. 대부분의 경우 효과적으로 난소에서 난자생성을 유도시킵니다.",
 		onTakeMessage: "당신은 당신의 생식력을 늘리기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
-		warning_label: "주의사항: 적정용량을 복용하는 동안, 임신 초기와 비슷한 증상을 포함한 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
+		warning_label:
+			"주의사항: 적정용량을 복용하는 동안, 임신 초기와 비슷한 증상을 포함한 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -364,13 +365,25 @@ setup.pills = [
 		owned() {
 			return V.sexStats.pills["pills"][this.name].owned;
 		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					V.sexStats.pills["pills"][this.name].doseTaken + "일 동안" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "" : "") + " 유효"
+				);
+			} else {
+				return "해당사항 없음";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "필요시에 먹는다" : "먹지 않는다";
+		},
 		type: "pregnancy",
 		subtype: "fertility booster",
 		shape: "pill",
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/pregnancyFertility.png",
+		icon: "img/misc/icon/fertility_booster.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
@@ -384,7 +397,8 @@ setup.pills = [
 		description:
 			"24mg의 에치닐에스트라디올(합성 에스트로겐)과 31mg의 합성 프로게스토겐이 복합된 에스트로프로게스트라피츠가 거의-완벽한 피임 효과를 발휘합니다.",
 		onTakeMessage: "당신은 피임약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
-		warning_label: "주의사항: 적정용량을 복용하는 동안 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
+		warning_label:
+			"주의사항: 적정용량을 복용하는 동안 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -394,18 +408,76 @@ setup.pills = [
 		owned() {
 			return V.sexStats.pills["pills"][this.name].owned;
 		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					V.sexStats.pills["pills"][this.name].doseTaken + "일 동안" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "" : "") + " 유효"
+				);
+			} else {
+				return "해당사항 없음";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "필요시에 먹는다" : "먹지 않는다";
+		},
 		type: "pregnancy",
 		subtype: "contraceptive",
 		shape: "galenic",
 		overdose() {
 			return V.sexStats.pills["pills"][this.name].overdose;
 		},
-		icon: "img/misc/icon/pregnancyContraceptive.png",
+		icon: "img/misc/icon/contraceptive_pills.png",
 		display_condition() {
 			return this.owned() > 0 ? 1 : 0;
 		},
 		take_condition() {
 			return this.doseTaken() < 2 && V.sexStats.pills["pills"]["fertility booster"].doseTaken === 0 ? 1 : 0;
+		},
+		effects: [],
+	},
+	{
+		name: "Anti-Parasite Cream",
+		description:
+			"퍼메트린을 함유한 기생충 기피제입니다. 바르는 경우, 새로운 기생충 감염을 막을 수 있지만, 이미 감염된 기생충에는 효과가 없습니다. 바른 후 14일 동안 효과가 지속됩니다.",
+		onTakeMessage: "당신은 크림을 당신의 성기 주위에 바른다. 당신은 이것이 기생충이 새끼를 낳는 것을 막아주기를 바란다.",
+		warning_label:
+			"주의사항: 바를 곳에 손이 닿지 않거나 바른 후 알레르기 반응이 일어나는 경우 의사와 상의하십시오. 크림이 입이나 눈에 들어갔을 경우 즉시 의사에게 가십시오.",
+		autoTake() {
+			return false;
+		},
+		doseTaken() {
+			return V.sexStats.pills["pills"][this.name].doseTaken;
+		},
+		owned() {
+			return V.sexStats.pills["pills"][this.name].owned;
+		},
+		hpi_take_pills() {
+			return "피부에 바른다";
+		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					V.sexStats.pills["pills"][this.name].doseTaken + "일 동안" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "" : "") + " 유효"
+				);
+			} else {
+				return "해당사항 없음";
+			}
+		},
+		hpi_take_every_morning() {
+			return "";
+		},
+		type: "parasite",
+		subtype: "Anti-Parasite Cream",
+		shape: "cream",
+		overdose() {
+			return V.sexStats.pills["pills"][this.name].overdose;
+		},
+		icon: "img/misc/icon/antiParasiteCream.png",
+		display_condition() {
+			return this.owned() > 0 ? 1 : 0;
+		},
+		take_condition() {
+			return this.doseTaken() === 0 ? 1 : 0;
 		},
 		effects: [],
 	},
@@ -566,7 +638,11 @@ window.addIndicators = addIndicators;
 
 function initPillContextButtons(item) {
 	// create button to "Take everyone morning" / "Stop taking them" (every morning)
-	document.getElementById("hpi_take_every_morning").innerHTML = item.autoTake() ? "매일 먹지 않는다" : "매일 아침 먹는다";
+	if (item.hpi_take_every_morning) {
+		document.getElementById("hpi_take_every_morning").innerHTML = item.hpi_take_every_morning();
+	} else {
+		document.getElementById("hpi_take_every_morning").innerHTML = item.autoTake() ? "매일 먹지 않는다" : "매일 아침 먹는다";
+	}
 
 	// special case if pill type is "asylum" or "harper"
 	if (item.type === "asylum" || item.type === "harper") {
@@ -574,18 +650,28 @@ function initPillContextButtons(item) {
 		document.getElementById("hpi_take_pills").classList.add("hpi_take_me_single"); // readapt css since there's only one button now
 	}
 	//  Add 'Take pill' button
-	document.getElementById("hpi_take_pills").innerHTML = "약을 먹는다";
+	document.getElementById("hpi_take_pills").innerHTML = item.hpi_take_pills ? item.hpi_take_pills() : "약을 먹는다";
 
 	// If the button doesnt exist, create it. If it exists, display the right dose Taken for that pill
-	if (document.getElementById("hpi_doseTaken") != null)
-		// todo: replace style with a proper css class
-		document.getElementById("hpi_doseTaken").outerHTML =
-			"<span id='hpi_doseTaken' style='font-size: 0.88em;color: #979797;'> [" + item.doseTaken() + " 알 먹었다]</span>";
-	// Display today taken doses for specific pill
-	else
-		document.getElementById("hpi_take_pills").outerHTML +=
-			`<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` 알 먹었다]</span>`; // Display today taken doses for specific pill
-
+	if (document.getElementById("hpi_doseTaken") != null) {
+		if (item.hpi_doseTaken) {
+			document.getElementById("hpi_doseTaken").outerHTML =
+				"<span id='hpi_doseTaken' style='font-size: 0.88em;color: #979797;'> [" + item.hpi_doseTaken() + "]</span>";
+		} else {
+			// todo: replace style with a proper css class
+			document.getElementById("hpi_doseTaken").outerHTML =
+				"<span id='hpi_doseTaken' style='font-size: 0.88em;color: #979797;'> [" + item.doseTaken() + " 알 먹었다]</span>";
+		}
+		// Display today taken doses for specific pill
+	} else {
+		if (item.hpi_doseTaken) {
+			document.getElementById("hpi_take_pills").outerHTML +=
+				`<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.hpi_doseTaken() + `]</span>`; // Display today taken doses for specific pill
+		} else {
+			document.getElementById("hpi_take_pills").outerHTML +=
+				`<span id="hpi_doseTaken" style="font-size: 0.88em;color: #979797;"> [` + item.doseTaken() + ` 알 먹었다]</span>`; // Display today taken doses for specific pill
+		}
+	}
 	// Check if the player meets the criteria to take the pill.
 	if (item.take_condition() === 0) {
 		document.getElementById("hpi_take_pills").classList.add("hpi_greyed_out"); // grey the "Take Pill" button out
@@ -635,22 +721,27 @@ function redetermineMostTaken(type, subtype, fullname = null) {
 		// we enter here when there's unbalance between growth/reduction
 		if (ret < 0)
 			// if reduction won
-			return ret + result.blocker >= 0
-				? (V.sexStats.pills.mostTaken[type] = "blocker")
-				: (V.sexStats.pills.mostTaken[type] = "reduction");
+			return ret + result.blocker >= 0 ? (V.sexStats.pills.mostTaken[type] = "blocker") : (V.sexStats.pills.mostTaken[type] = "reduction");
 		// determine if blocker win
 		else if (ret > 0)
 			// if growth won
-			return ret - result.blocker <= 0
-				? (V.sexStats.pills.mostTaken[type] = "blocker")
-				: (V.sexStats.pills.mostTaken[type] = "growth"); // determine if blocker win
+			return ret - result.blocker <= 0 ? (V.sexStats.pills.mostTaken[type] = "blocker") : (V.sexStats.pills.mostTaken[type] = "growth"); // determine if blocker win
 	}
 }
 window.redetermineMostTaken = redetermineMostTaken;
 
 function onTakeClick(itemName) {
 	V.sexStats.pills["pills"][itemName].owned -= 1;
-	V.sexStats.pills["pills"][itemName].doseTaken += 1; // Stat for specific pill consumption
+
+	switch (itemName) {
+		case "Anti-Parasite Cream":
+			V.sexStats.pills["pills"][itemName].doseTaken += 14;
+			break;
+		default:
+			V.sexStats.pills["pills"][itemName].doseTaken += 1;
+			break; // Stat for specific pill consumptionbreak;
+	}
+
 	V.pillsConsumed = typeof V.pillsConsumed === "undefined" || V.pillsConsumed == null ? 1 : V.pillsConsumed + 1; // Stat for total pills consumption
 	for (const item of setup.pills) {
 		if (item.name === itemName) {
@@ -659,12 +750,15 @@ function onTakeClick(itemName) {
 			V.sexStats.pills.lastTaken[item.type] = item.subtype; // keep track of the category of pill we last took
 			V.sexStats.pills.mostTaken[item.type] = window.redetermineMostTaken(item.type, item.subtype);
 			if (item.doseTaken() > 1 && item.name.contains("blocker") === false) {
-				if (item.type === "pregnancy") {
-					Engine.play("PillCollectionSecondDosePregnancy");
-					return;
-				} else {
-					Engine.play("PillCollectionSecondDose");
-					return;
+				switch (item.type) {
+					case "parasite":
+						break;
+					case "pregnancy":
+						Engine.play("PillCollectionSecondDosePregnancy");
+						return;
+					default:
+						Engine.play("PillCollectionSecondDose");
+						return;
 				}
 			}
 			V.lastPillTakenDescription = item.onTakeMessage;
@@ -692,8 +786,7 @@ function syncAutoTakeDisplayedState() {
 		const capitalisedName = item.name[0].toUpperCase() + item.name.slice(1); Wikifier.wikifyEval('<<trPill "' + item.name + '">>' ); const item_koname = T.trResult;
 		if (document.getElementById("hpi_name_" + capitalisedName) != null) {
 			document.getElementById("hpi_name_" + capitalisedName).innerHTML = item_koname;
-			document.getElementById("hpi_name_" + capitalisedName).innerHTML +=
-				item.autoTake() === true ? "<span class='hpi_auto_label'> [자동]</span>" : "";
+			document.getElementById("hpi_name_" + capitalisedName).innerHTML += item.autoTake() === true ? "<span class='hpi_auto_label'> [자동]</span>" : "";
 		}
 	}
 }
@@ -748,7 +841,8 @@ function backCompPillsInventory() {
 	const pills = {};
 	if (typeof oPills === "object") {
 		/* If our $sexStats.pills is an object and has this property, it is ready for production. */
-		if (oPills.hasOwnProperty("mostTaken")) return;
+		/* Man on the internet said this is right */
+		if (typeof oPills.mostTaken === "object") return;
 		try {
 			pillsObjectRepair(oPills, pills);
 		} catch (error) {
@@ -765,10 +859,12 @@ function backCompPillsInventory() {
 		"penis reduction": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		"penis growth": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		"penis blocker": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"anti-parasite": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		"fertility booster": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		contraceptive: { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		"asylum's prescription": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 		"Dr Harper's prescription": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
+		"Anti-Parasite Cream": { autoTake: false, doseTaken: 0, owned: 0, overdose: 0 },
 	});
 	if (typeof oPills === "undefined") {
 		/* If our $sexStats.pills was empty, simply set the object in preparation to assign. */
@@ -836,7 +932,20 @@ function determineAutoTakePill(category) {
 window.determineAutoTakePill = determineAutoTakePill;
 
 function resetAllDoseTaken() {
-	for (const pill in V.sexStats.pills["pills"]) V.sexStats.pills["pills"][pill].doseTaken = 0;
+	for (const pill in V.sexStats.pills["pills"]) {
+		switch (pill) {
+			case "Anti-Parasite Cream":
+			case "fertility booster":
+			case "contraceptive":
+				if (V.sexStats.pills["pills"][pill].doseTaken > 0) {
+					V.sexStats.pills["pills"][pill].doseTaken--;
+				}
+				break;
+			default:
+				V.sexStats.pills["pills"][pill].doseTaken = 0;
+				break;
+		}
+	}
 }
 window.resetAllDoseTaken = resetAllDoseTaken;
 

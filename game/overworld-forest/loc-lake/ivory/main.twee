@@ -364,6 +364,8 @@
 	"<span class="wraith">이 자는 그들을 구할 수 없었어,</span>" <<he_ ga>> 숨죽여 말한다. "<span class="wraith">넌 그들을 죽게 내버려 뒀어.</span>" 반투명한 팔이 당신에게 모여든다.
 <<elseif $wraith.offspring is "sold">>
 	"<span class="wraith">이 자는 그들을 구할 수 없었어,</span>" <<he_ ga>> 숨죽여 말한다. "<span class="wraith">넌 그들을 버렸어.</span>" 반투명한 팔이 당신에게 모여든다.
+<<elseif $wraith.state is "despair">>
+	"<span class="wraith">Where is it? Have you seen it? My necklace...</span>" <<he>> pleads. The translucent limbs converge on you.
 <<else>>
 	"<span class="wraith">넌 그것을 내게서 훔쳤어,</span>" <<he_ ga>> 숨죽여 말한다. "<span class="wraith">돌려줘.</span>" 반투명한 팔이 당신에게 모여든다.
 <</if>>
@@ -554,6 +556,12 @@
 		"<span class="wraith">우린 모두 지켜야 할 게 있어.</span>"
 	<<else>>
 		"<span class="wraith">그걸 돌려줘.</span>"
+	<</if>>
+<<elseif $wraith.state is "despair">>
+	<<if C.npc["Ivory Wraith"].lust gte 12>>
+		"<span class="wraith"><<pcPetname "Wraith">>. It's so cold without it... keep me warm.</span>"
+	<<else>>
+		"<span class="wraith">Where is it? Have you seen it? My necklace...</span>"
 	<</if>>
 <<elseif $wraith.offspring is "dead" and $tentacledisable is "f">>
 	"<span class="wraith">넌 그들을 죽게 내버려 뒀어. 우리는 더 많이 만들 거야.</span>"
@@ -796,6 +804,8 @@
 <br><br>
 당신은 공포가 엄습하는 것을 느끼며, 당신을 사냥하는 것이 당신이 지금 어디에 있는지 정확히 알 것이란 생각을 떨칠 수 없다.
 <<set $wraith.hunt++>>
+<br><br>
+
 <<exitWraith>>
 
 :: Wraith Sewers Struggle
@@ -1049,7 +1059,7 @@
 	<<if $wraithCount gte $wraithMax>>
 		<<kissWraith "stress">>
 		<br><br>
-		<<if $moonstate is "morning" and $hour gte 6>>
+		<<if $moonstate is "morning" and Time.hour gte 6>>
 			<<He_ nun>> 태양이 떠오르는 하늘을 바라보며, 당신에게서 떨어진다. <<He_ ga>> 비웃는다. "<span class="wraith">아아, 시간은 순식간에 지나가지. 걱정하지 마, <<pcpetnamePost "Wraith">>, 우린 곧 다시 만날 거야.</span>"
 			<br><br>
 			<<His_ yi>> 빛이 희미해지기 시작하고, <<he_ nun>> 급류 속으로 서서히 녹아내린다.
@@ -1178,7 +1188,7 @@
 "<span class="wraith">우리는 영원히 바닥에 도달하지 못할 수도 있어. 그저 희망할 뿐이야.</span>"
 <br><br>
 창백한 형체가 당신을 가까이 끌어안는다.
-<<if $wraith.state is "haunt">>
+<<if ["haunt", "despair"].includes($wraith.state)>>
 	<<His_ yi>> 눈이 잠시 붉게 깜박이다가, 고요한 푸른색으로 돌아온다.
 <<else>>
 	<<His_ yi>> 깊고 푸른 눈이 당신을 내면의 평화로 가득 채운다.
@@ -1327,6 +1337,8 @@
 	<<destinationeventend>>
 	<br>
 <<elseif $stalk_end is "confront">>
+	<<silently>><<endcombat>><</silently>>
+	<<generateWraith 1 true>><<person1>>
 	<<initWraith>><<set $wraith.exit to "town">>
 
 	창백한 형체가 웃으며, 부자연스러운 각도로 앞으로 몸을 숙인다. <<rainWraith true>>
