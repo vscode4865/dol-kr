@@ -18,14 +18,18 @@
 <<elseif $phase is 0>>
 	당신은 계란 요리를 <<he_ ga>> 좋아하는 방식으로 만든다. <<He_ ga>> 탁자에 앉자, 당신은 음식을 <<him_ yi>> 앞에 내려놓는다.
 
-	<<if $month is "november" and !$edenprepare>>
+	<<if Time.monthName is "November" and !$edenprepare>>
 		<<set $edenprepare to 1>>
 		<<set $edenwall to 0>>
 		<<set $edenchimney to 0>>
 		<<set $edenroof to 0>>
-		<<he_ nun>> 접시로 손을 뻗다가, 당신을 돌아본다. "나는 오두막에 겨울을 나기 위한 준비를 할 거야." 어쩌면 당신이 도와줄 수 있을지도 모른다.
+		<<he_ nun>> 접시로 손을 뻗다가, 당신을 돌아본다. "나는 오두막에 겨울을 나기 위한 준비를 할 거야." 어쩌면 당신이 도와줄 수 있을지도 모른다.<<glove>><<npcincr Eden love 1>>
 	<<else>>
-		<<He_ nun>> 아무 말 없이 먹는다.
+		<<if $housekeepingSuccess>>
+			<span class="green"><<He_ nun>> 아무 말 없이 먹는다.</span><<glove>><<npcincr Eden love 1>>
+		<<else>>
+			<<He_nun>> 첫 입에 잠시 <span class="red">인상을 찌푸렸다가,</span> 아무 말 없이 먹어 치운다.<<ghousekeeping 100>><<housekeeping 1 100>>
+		<</if>>
 	<</if>>
 	<br><br>
 
@@ -62,7 +66,7 @@
 
 	<<He_ ga>> 탁자에 앉자, 당신은 음식을 <<him_ yi>> 앞에 내려놓는다.
 
-	<<if $month is "november" and !$edenprepare>>
+	<<if Time.monthName is "November" and !$edenprepare>>
 		<<set $edenprepare to 1>>
 		<<set $edenwall to 0>>
 		<<set $edenchimney to 0>>
@@ -94,7 +98,7 @@
 <<elseif $phase is 2>>
 	<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 1>>
 		"좋아," <<he_ ga>> 말한다. "난 배가 고파지겠지. 내가 굶주리면 그건 네 잘못이 될 거야."
-		<<if $month is "november" and !$edenprepare>>
+		<<if Time.monthName is "November" and !$edenprepare>>
 			<<set $edenprepare to 1>>
 			<<set $edenwall to 0>>
 			<<set $edenchimney to 0>>
@@ -125,7 +129,7 @@
 <<elseif $phase is 3>>
 	정원의 잡초를 정리하며, 당신은 맛있어 보이는 채소들을 수확할 수 있었다. <<He_ ga>> 탁자에 앉자, 당신은 음식을 <<him_ yi>> 앞에 내려놓는다.
 
-	<<if $month is "november" and !$edenprepare>>
+	<<if Time.monthName is "November" and !$edenprepare>>
 		<<set $edenprepare to 1>>
 		<<set $edenwall to 0>>
 		<<set $edenchimney to 0>>
@@ -158,7 +162,7 @@
 <<elseif $phase is 4>>
 	많은 버섯들이 저장되어 있기 때문에, 당신은 아침 식사로 조금 먹어도 괜찮을 것 같다고 생각한다. 당신은 그것들을 오믈렛으로 요리한다. <<He_ ga>> 탁자에 앉자, 당신은 음식을 <<him_ yi>> 앞에 내려놓는다.
 
-	<<if $month is "november" and !$edenprepare>>
+	<<if Time.monthName is "November" and !$edenprepare>>
 		<<set $edenprepare to 1>>
 		<<set $edenwall to 0>>
 		<<set $edenchimney to 0>>
@@ -220,7 +224,7 @@
 <<else>>
 	당신은 <<his_ yi>> 어깨에 머리를 기댄다. <<He_ ga>> 눈치를 채고 머리를 쓰다듬기 시작한다.
 
-	<<if $wolfgirl gte 4>>
+	<<if $wolfgirl gte 4 and $transformationParts.wolf.ears isnot "hidden">>
 		<<His_ yi>> 손가락이 당신의 늑대 귀를 쓸자, 당신의 입술에서 작은 신음 소리가 새어 나온다. 당신의 약한 부분에 이끌려, <<he_ ga>> 당신의 귀 뒤를 긁는다. 쾌락의 물결이 두피를 타고, 목 아래로 내려와 척추를 뚫는 듯한 충격을 준다. 당신의 다리가 경련을 일으킨다. "거기가 좋구나, 그렇지?"
 		<<garousal>><<lstress>><<arousal 600>><<stress -12>><<arousal 1000>>
 		<br><br>
@@ -867,7 +871,7 @@
 <</if>>
 <br><br>
 
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<if $trauma gte 500 and $edentraumaagree is 1>>
 		<<link [[당신의 트라우마에 대해 말한다 (0:30)|Eden Cuddle Trauma Talk]]>><<trauma -6>><<stress -6>><<pass 30>><<npcincr Eden dom 1>><</link>><<ltrauma>><<lstress>><<gdom>>
 		<br>
@@ -876,7 +880,7 @@
 	<br>
 	<<link [[계속 껴안고 있는다 (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -6>><<pass 30>><<npcincr Eden love 1>><</link>><<glove>><<ltrauma>><<lstress>>
 	<br>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
@@ -904,7 +908,7 @@
 당신은 에덴에게 당신이 마주했던 충격적인 사건들을 이야기한다. <<He_ nun>> 이야기하는 내내 <<his_ yi>> 팔로 당신을 품에 안고 있는다.
 <br><br>
 
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<if $trauma gte 500 and $edentraumaagree is 1>>
 		<<link [[당신의 트라우마에 대해 말한다. (0:30)|Eden Cuddle Trauma Talk]]>><<trauma -6>><<stress -6>><<pass 30>><<npcincr Eden dom 1>><</link>><<ltrauma>><<lstress>>
 		<br>
@@ -913,7 +917,7 @@
 	<br>
 	<<link [[껴안는다 (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -6>><<pass 30>><<npcincr Eden love 1>><</link>><<glove>><<ltrauma>><<lstress>>
 	<br>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
@@ -1091,10 +1095,10 @@
 <</if>>
 <br><br>
 
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 껴안고 있는다 (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -6>><<pass 30>><<npcincr Eden love 1>><</link>><<glove>><<ltrauma>><<lstress>>
 	<br>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
@@ -1139,7 +1143,7 @@
 	빅토리아 시대 소설을 읽어준다. 이야기가 늘어지지만, 에덴은 좋아하는 것 처럼 보인다. 당신은 깜빡 졸았을지도 모른다.<<genglish>><<englishskill>><<ltiredness>><<tiredness -3>>
 <</if>>
 <br><br>
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<if _eden_romance_novel is true>>
 		<<link [[희롱한다|Eden Read Tease]]>><<npcincr Eden lust 1>><<npcincr Eden love 1>><</link>><<glust>><<glove>>
 		<br>
@@ -1167,7 +1171,7 @@
 
 "난 이 책들이 이렇게 추잡한지 몰랐다고," <<he_ ga>> 항의한다.
 <br><br>
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 듣는다 (0:30)|Eden Read]]>><<pass 30>><<set $phase to 1>><</link>><<glove>><<ltrauma>>
 	<br>
 	<<link [[일어난다|Cabin Eden Actions]]>><</link>>
@@ -1195,7 +1199,7 @@
 에덴은 동의하지만, 마치 너무 음탕하지 않은지 확인하는 것 처럼, 외설적인 구절마다 망설인다. 아니면 아마 <<hes_ ga>> 용기를 높이는 중일 지도 모른다. <<His_ ga>> 읽을수록 <<he_ yi>> 얼굴이 붉어진다.
 <br><br>
 
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 듣는다 (0:30)|Eden Read]]>><<pass 30>><<trauma -3>><<npcincr Eden love 1>><<set $phase to 1>><</link>><<glove>><<ltrauma>>
 	<br>
 	<<link [[일어난다|Cabin Eden Actions]]>><</link>>
@@ -1228,12 +1232,12 @@
 	<<he_ ga>> 당신의 주위를 빙글빙글 돌자 당신은 낄낄 웃는다. <<Hes_ nun>> 아직 서투르지만, 미소 짓는다.
 <</if>>
 <br><br>
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 춘다 (0:30)|Eden Dance]]>><<trauma -3>><<stress -3>><<danceskill 5>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden lust 1>><<set $phase to 1>><</link>><<glove>><<glust>><<ltrauma>><<lstress>><<gdanceskill>>
 	<br>
 		<<link [[에덴을 유혹한다|Eden Dance Seduce]]>><<npcincr Eden lust 5>><<arousal 600>><</link>><<glust>><<garousal>>
 	<br>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
@@ -1347,7 +1351,7 @@
 /* eden is already generated on passages that lead here
 <<npc Eden>><<person1>>*/
 
-<<if !$daily.eden.salveUse and $salve gte 1 and $hour isnot 0>>
+<<if !$daily.eden.salveUse and $salve gte 1 and Time.hour isnot 0>>
 	<<set $daily.eden.salveUse to 1>>
 	<<set $salve -= 1>>
 	당신은 연고 한 병을 벽난로에 가지고 와 당신의 손에 문지른다.
@@ -1369,21 +1373,21 @@
 		당신의 손가락이 깊이 파고들어 <<his_ yi>> 근육이 가볍게 툭 풀어지는 소리가 들릴 때까지 문지르고, 에덴은 이에 만족하며 낮고 탁한 신음을 내뱉는다.
 	<<default>>
 		/* something went wrong, probably the var got unset in the middle of event, happens at midnight */
-		당신이 뭔가를 하기 전에, <<if $handsskill gte 800>>당신의 놀라운 기술에도 불구하고,<</if>> 당신의 손이 피곤해지는 것을 느낀다. <<tiredness 12>><<gtiredness>>
+		당신이 뭔가를 하기 전에, <<if $handskill gte 800>>당신의 놀라운 기술에도 불구하고,<</if>> 당신의 손이 피곤해지는 것을 느낀다. <<tiredness 12>><<gtiredness>>
 		<<set $daily.eden.massage to 5>>
 <</switch>>
 <br><br>
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<if $daily.eden.massage isnot 5>>
 		<<link [[계속 마사지한다 (0:30)|Eden Massage]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden lust 3>><<set $daily.eden.massage += 1>><</link>><<glove>><<gglust>>
 	<</if>>
 	<br>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
 		<<else>>
-			<<link [[어떻게 쏘아야 하는지 배우고 싶다고 한다 (0:30)|Eden Shoot Ask]]>><<pass 5>><</link>>
+			<<link [[어떻게 쏘아야 하는지 배우고 싶다고 한다 (0:05)|Eden Shoot Ask]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
 	<<else>>
@@ -1454,22 +1458,22 @@
 <<npc Eden>><<person1>>
 <<effects>>
 
-<<if $hour gte 0 and $hour lte 6>>
+<<if Time.hour gte 0 and Time.hour lte 6>>
 	당신은 식탁에 앉아, 에덴이 이불 속에서 코를 골고 자는 것을 지켜본다. 타들어가는 불씨가 <<hisPost "에게">> 멀리 빛을 드리운다.
 	<br><br>
 
 	<<link [[다음|Cabin House Actions]]>><<endevent>><</link>>
-<<elseif $hour lte 8>>
+<<elseif Time.hour lte 8>>
 	당신은 식탁에 앉아, 에덴이 하루를 준비하는 것을 지켜본다. <<He_ nun>> 한동안 싱크대에서 설겆이를 한다.
 	<br><br>
 
 	<<link [[다음|Cabin House Actions]]>><<endevent>><</link>>
-<<elseif $hour lte 16>>
+<<elseif Time.hour lte 16>>
 	당신은 식탁에 앉아, 창밖을 바라본다. 숲의 나무들이 부드럽게 흔들린다.
 	<br><br>
 
 	<<link [[다음|Cabin House Actions]]>><<endevent>><</link>>
-<<elseif $hour lte 17>>
+<<elseif Time.hour lte 17>>
 	<<if $daily.eden.bath isnot 1>>
 		당신은 식탁에 앉아, 에덴이 현관으로 들어오는 것을 지켜본다. <<He_ nun>> 욕실로 걸어가며, 목욕할 준비를 한다.
 		<br><br>
@@ -1481,13 +1485,13 @@
 
 		<<link [[다음|Cabin House Actions]]>><<endevent>><</link>>
 	<</if>>
-<<elseif $hour lte 18 and $daily.eden.dinner isnot 1 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 100>>
+<<elseif Time.hour lte 18 and $daily.eden.dinner isnot 1 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 100>>
 	당신은 창가에서 쉬면서, 에덴이 저녁 준비하는 것을 바라본다. <<he_ ga>> 저녁을 다 만들자, 식탁으로 음식을 가져온다.
 	<br><br>
 
 	<<link [[다음|Eden Cabin]]>><<endevent>><</link>>
 <<else>>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		당신은 식탁에 앉아, 에덴이 불 옆에서 <<his_ yi>> 총을 닦는 것을 지켜본다. 그 광경은 이상하게도 차분해 보인다.<<stress -1>><<lstress>>
 	<<else>>
 		당신은 식탁에 앉아, 에덴이 불 옆에서 책을 읽는 것을 지켜본다. 그 광경은 이상하게도 차분해 보인다.<<stress -1>><<lstress>>
@@ -1500,11 +1504,11 @@
 :: Eden Porch
 <<effects>>
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 	당신은 베란다 아래에서 쉬며, 에덴이 작물을 가꾸는 것을 지켜본다. 이따금씩, <<him_ ga>> 얼굴로 흘러내린 잔머리 몇 가닥을 쓸어낸다.
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 	당신은 에덴의 옆에 자리 잡고, <<he_ ga>> 사냥감의 가죽을 벗겨내는 것을 지켜본다. 당신이 가까이 다가가니 냄새가 훨씬 더 강해졌고, 당신은 그 냄새를 신경쓰지 않으려고 에덴에게 주의를 돌린다.
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 	당신은 베란다 아래에서 쉬며, 에덴이 장작을 패는 것을 바라본다. <<his_ yi>> 땀방울이 <<he_ yi>> 탄탄한 몸을 타고 뚝뚝 떨어진다.
 <<else>>
 	당신은 베란다 아래에서 쉬며, 숲의 부드러운 소리를 듣는다. 마음이 차분해진다.<<stress -1>><<lstress>>
@@ -1561,7 +1565,7 @@
 		<br>
 		<<link [[달랜다|Clearing Weeding Soothe]]>><</link>><<tendingdifficulty 1 1200>>
 		<br>
-	<<elseif ($hour gt 6 and $hour lt 11) or $hour gt 14>>
+	<<elseif (Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14>>
 		<!-- eden is already generated on passages that lead here <<npc Eden>><<person1>> -->에덴이 당신의 뒤로 살금살금 다가와, 당신을 놀라게 한다. <<He_ nun>> 당신의 뒤에 기대어, 일어서지 못하게 한다. "거기 그대로 있는 건 어때?" 당신의 <<groinPost "를">> 애무하며, <<he_ ga>> 말한다.
 		<br><br>
 		<<link [[에덴이 계속하게 둔다|Clearing Fondle]]>><<npcincr Eden love 1>><<sub 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom>><<garousal>>
@@ -1644,21 +1648,21 @@
 
 <<if !$worn.lower.type.includes("naked")>>
 	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		<<if $worn.genitals.type.includes("chastity")>>
+		<<if playerChastity()>>
 		<<He_ ga>> 당신의 <<worn_lower_name>> 아래로 손을 뻗어 <<worn_genitals_name_ rul>> 조사하기 시작한다. "너는 정말 추잡한 <<slut_ iya>>, 네가 이걸 입고 있다 해도 싸게 만들 수 있어."
 		<<else>>
 			<<He_ nun>> <<worn_lower_name>> 아래로 손을 뻗어 당신을 직접 만지기 시작한다.
 		<</if>>
 	<<else>>
-		<<if $worn.genitals.type.includes("chastity")>>
+		<<if playerChastity()>>
 		<<He_ ga>> 당신의 <<worn_lower_name>> 안으로 손을 뻗어 <<worn_genitals_name_ rul>> 조사하기 시작한다. "너는 정말 추잡한 <<slut_ iya>>, 네가 이걸 입고 있다 해도 싸게 만들 수 있어."
 		<<else>>
 	<<He_ nun>> <<worn_lower_name>> 안으로 손을 뻗어 당신을 직접 만지기 시작한다.
 		<</if>>
 	<</if>>
-<<elseif !$worn.under_lower.type.includes("naked") and !$worn.genitals.type.includes("chastity")>>
+<<elseif !$worn.under_lower.type.includes("naked") and !playerChastity()>>
 <<He_ nun>> <<worn_genitals_name>> 안으로 손을 뻗어 당신을 직접 만지기 시작한다.
-<<elseif $worn.genitals.type.includes("chastity")>>
+<<elseif playerChastity()>>
 <<He_ ga>> 당신의 <<worn_genitals_name_ ul>> 조사하기 시작한다. "너는 정말 추잡한 <<slut_ iya>>, 네가 이걸 입고 있다 해도 싸게 만들 수 있어."
 <<else>>
 <<He_ nun>> 계속해서 당신의 <<genitalsPost "를">> 쓰다듬고 애무한다.
@@ -1747,7 +1751,7 @@
 <<set $edenwall += 1>>
 
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and (($hour gt 6 and $hour lt 11) or $hour gt 14)>>
+	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and ((Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14)>>
 		당신이 당신의 작업물을 확인하기 위해 뒤로 물러서자, 양손이 당신의 어깨를 잡는 걸 느끼고, 뒤돌아보기도 전에 당신은 벽으로 밀어붙여진다.
 		에덴은 당신의 허벅지 사이에 <<him_ yi>> 몸을 밀어붙이며, 당신의 목을 따라 키스한다.
 		<br><br>
@@ -1867,7 +1871,7 @@
 
 <<set $edenchimney += 1>>
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and (($hour gt 6 and $hour lt 11) or $hour gt 14)>>
+	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and ((Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14)>>
 		굴뚝에서 비집고 나오려다, 당신의 팔이 옆구리에 끼여, 꼼짝 못 하게 된다. 당황하며, 당신은 에덴에게 소리쳐 도움을 청한다.
 		발소리가 다가오는 것이 들리고, 힘센 두 손이 당신의 허리를 잡고 당긴다. 몸부림치다, 당신은 무심코 에덴에게 여러 번 몸을 비비게 되고,
 		<<if $NPCList[0].penis isnot "none">>
@@ -1992,7 +1996,7 @@
 
 <<set $edenroof += 1>>
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and (($hour gt 6 and $hour lt 11) or $hour gt 14)>>
+	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and ((Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14)>>
 		당신이 사다리 아래로 내려가기 시작할 때, 사다리가 살짝 흔들리는 것을 느낀다. 아래를 내려다보자, 에덴이 사다리를 잡고 고정시켜주고 있다. <<He_ nun>> 당신이 내려오는 것을 보며, 고개를 끄덕인다.
 		당신의 발이 땅에 닿자, 에덴은 <<his_ yi>> 팔을 당신의 허리에 감고, <<his_ yi>> 가슴으로 당신을 끌어당긴다. "잠시 쉬는 게 어때?" <<he_ ga>> 묻는다.
 		<br><br>
@@ -2164,7 +2168,7 @@
 <</if>>
 
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and (($hour gt 6 and $hour lt 11) or $hour gt 14)>>
+	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and ((Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14)>>
 	<<npc Eden>><<person1>>
 	당신은 휘파람 소리에 놀라 눈을 뜬다. 에덴이 샘 가장자리에 서 있다.<<covered>>"난 더 이상 이곳을 깨끗하게 유지하려고 애쓰지 않아," <<he_ ga>> 옷을 벗으면서 말한다. "그러기에는 손이 너무 많이 가거든. 네가 그렇지 않다고 생각해줘서 기뻐." <<He_ ga>> 샘에 뛰어들어, 당신에게 물을 튀긴다.
 	<<npcexpose>>
@@ -2361,11 +2365,11 @@
 
 뒤에서 들려오는 소리가 당신의 주의를 끈다. 당신은 고개를 돌려, 당신의 시선을 에덴에게 향한다. <<He_ nun>>
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 	작물을 가꾸고 있으며,
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 	사냥감의 가죽을 벗기고 있으며,
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 	장작을 패고 있으며,
 <</if>>
 
@@ -2384,11 +2388,11 @@
 당신은 손을 흔들며 에덴을 부른다. <<He_ nun>> 의아한 표정을 지으며, 당신에게 고개를 돌린다. 멀리서, 당신은 <<hePost "에게">> 샘에 들어오지 않겠냐고 물어본다.
 잠시 동안, <<his_ yi>> 시선이 빠르게
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 	작물을 쳐다보지만,
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 	<<his_ yi>> 사냥감을 쳐다보지만,
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 	<<his_ yi>> 도끼를 쳐다보지만,
 <</if>>
 
@@ -2420,11 +2424,11 @@
 당신과 에덴은 서로 껴안고 웅크린 채, 물 속에서 시간을 보낸다. 잠시 후, 에덴은 전보다 훨씬 덜 지친 모습으로 몸을 일으킨다.
 <<he_ nun>> 당신과 함께 있고 싶어하는 것은 분명하지만, <<he_ nun>> 다시 공터를 힐끗 돌아본다. "나는 다시 일하러 가야겠어," <<he_ ga>> 말하며,
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 	작물을 바라본다.
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 	<<his_ yi>> 사냥감을 바라본다.
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 	<<his_ yi>> 도끼를 바라본다.
 <</if>>
 
@@ -2536,11 +2540,11 @@
 당신의 헐떡이는 소리가 메아리처럼 울려 퍼지며, 둘 다 잠시 숨을 고른다. 잠시 후, 에덴은 전보다 훨씬 덜 지친 모습으로 몸을 일으킨다.
 <<he_ nun>> 당신과 함께 있고 싶어하는 것은 분명하지만, <<he_ nun>> 다시 공터를 힐끗 돌아본다. "나는 다시 일하러 가야겠어," <<he_ ga>> 말하며,
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 	작물을 바라본다.
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 	<<his_ yi>> 사냥감을 바라본다.
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 	<<his_ yi>> 도끼를 바라본다.
 <</if>>
 
@@ -2685,7 +2689,7 @@
 당신은 샘에서 에덴의 옷을 세탁하며, 먼지와 때를 모두 제거한다.
 <br><br>
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and (($hour gt 6 and $hour lt 11) or $hour gt 14)>>
+	<<if $danger gte (9900 - $allure) and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and ((Time.hour gt 6 and Time.hour lt 11) or Time.hour gt 14)>>
 
 	/* eden is already generated on passages that lead here <<npc Eden>><<person1>>*/당신은 한 쌍의 팔이 뒤에서 당신을 감싸는 것을 느낀다. 에덴은 <<his_ yi>> 머리를 당신의 목에 묻고 키스한다.
 	<br><br>
@@ -2813,7 +2817,7 @@
 	<<set $stat_shoot += random(20, 40)>>
 	당신은 에덴의 지시에 따라 밖에서 사격 연습을 한다. 끝나기 전에 사슴 모양의 과녁에는 새로운 구멍이 몇 개 생겼다.
 	<br><br>
-	<<if $hour isnot 0>>
+	<<if Time.hour isnot 0>>
 		<<link [[계속 연습한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -6>><</link>><<lstress>>
 		<br>
 	<</if>>
@@ -2828,7 +2832,7 @@
 <br><br>
 당신은 에덴의 조언을 들으며 계속 연습한다. 당신은 많은 것을 배우고, 과녁을 빗맞추는 것보다 맞출 때가 많다는 걸 느낀다.
 <br><br>
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 연습한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -6>><</link>><<lstress>>
 	<br>
 <</if>>
@@ -2844,7 +2848,7 @@
 에덴이 지켜보는 가운데 계속 연습한다. 당신은 <<he_ ga>> 괜찮아 한다고 생각한다.
 <br><br>
 
-<<if $hour isnot 0>>
+<<if Time.hour isnot 0>>
 	<<link [[계속 연습한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -6>><</link>><<lstress>>
 	<br>
 <</if>>
@@ -2878,7 +2882,7 @@
 	<<He_ nun>> 당신을 막기 위해 아무 행동도 하지 않지만, 마치 아무 일도 없었던 것 처럼 수업을 계속한다. <<Hes_ nun>> 아무렇지 않은 척 하지만, <<he_ yi>> 주의가 산만하다.
 	<br><br>
 
-	<<if $hour isnot 0>>
+	<<if Time.hour isnot 0>>
 		<<link [[계속 연습한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -6>><</link>><<lstress>>
 		<br>
 	<</if>>
@@ -3109,10 +3113,10 @@
 :: Eden Raft Intro 2
 <<set $outside to 1>><<effects>>
 
-<<if $season is "autumn">>
+<<if Time.season is "autumn">>
 	보트가 호수 위를 떠다니자, 당신은 풍경을 감상하는 시간을 보낸다. 잔잔하게 흐르는 물소리에 마음이 편안해지고, 단풍이 떨어지며 주위를 둘러싸자 당신은 넋을 놓고 바라본다.
 	주위를 둘러보니, 단풍잎 하나가 당신의 머리카락으로 떨어진다. 당신은 키득키득 웃으며 단풍을 털어낸다.
-<<elseif $hour gte 6 and $hour lte 8>>
+<<elseif Time.hour gte 6 and Time.hour lte 8>>
 	보트가 호수 위를 떠다니자, 당신은 풍경을 감상하는 시간을 보낸다. 잔잔하게 흐르는 물소리에 마음이 편안해지고, 주황빛의 태양에 넋을 놓고 바라본다.
 	주위를 둘러보니, 근처에서 헤엄치는 백조가 보인다. 자세히 보면, 백조 한 쌍이 서로 마주 보고, 하트 모양을 하고 있는 것을 알아챈다. 당신은 그 광경을 보고 웃는다.
 <<else>>
@@ -3127,7 +3131,7 @@
 <<set $outside to 1>><<effects>>
 
 갑자기, 당신은 먼 곳에서 들리던 수다 소리가 사라졌다는 것을 알아차린다. 주위를 둘러보니, 나무 외에는 아무것도 보이지 않고 에덴이 두 사람을 호수의 은밀한 곳으로 데려온 것이라고 추측한다.
-당신은 <<himPost "에게">> 관심을 돌리고, 이 순간, 당신과 에덴, 그리고 아름다운 <<if $season is "autumn">>낙엽<<elseif $hour gte 6 and $hour lte 8>>저녁노을<<else>>하늘<</if>>뿐이라는 사실을 깨닫는다.
+당신은 <<himPost "에게">> 관심을 돌리고, 이 순간, 당신과 에덴, 그리고 아름다운 <<if Time.season is "autumn">>낙엽<<elseif Time.hour gte 6 and Time.hour lte 8>>저녁노을<<else>>하늘<</if>>뿐이라는 사실을 깨닫는다.
 <br><br>
 
 <<link [[에덴에게 키스한다|Eden Raft Intro Kiss]]>><<npcincr Eden love 1>><</link>><<glove>>
@@ -3138,7 +3142,7 @@
 <<set $outside to 1>><<effects>>
 
 천천히, 당신은 에덴에게 가까이 다가간다. <<He_ nun>> 혼란스러워 보였지만, 당신은 <<him_ ul>> 기습적으로 잡아 달콤한 키스로 <<his_ yi>> 입술을 포획한다. 잠시동안, <<he_ nun>> 당신의 대담한 행동에 충격을 받고 뻣뻣해졌다가, 당신이 했던 것과 같은 기세로 <<he_ ga>> 당신에게 마주 키스한다.
-두 사람이 떨어지자, <<he_ ga>> 웃으며, <<his_ yi>> 머리를 가로젓다가 고개를 돌려 <<if $season is "autumn">>떨어지는 단풍을<<elseif $hour gte 6 and $hour lte 8>>저녁노을을<<else>>하늘을<</if>> 바라본다. 정말 멋진 광경이고, 당신은 에덴도 동의할 거라고 생각한다.
+두 사람이 떨어지자, <<he_ ga>> 웃으며, <<his_ yi>> 머리를 가로젓다가 고개를 돌려 <<if Time.season is "autumn">>떨어지는 단풍을<<elseif Time.hour gte 6 and Time.hour lte 8>>저녁노을을<<else>>하늘을<</if>> 바라본다. 정말 멋진 광경이고, 당신은 에덴도 동의할 거라고 생각한다.
 <br><br>
 
 <<link [[다음|Eden Raft Intro 4]]>><</link>>
@@ -3146,7 +3150,7 @@
 :: Eden Raft Intro Admire
 <<set $outside to 1>><<effects>>
 
-당신은 시선을 <<if $season is "autumn">>떨어지는 단풍으로<<elseif $hour gte 6 and $hour lte 8>>저녁노을로<<else>>하늘로<</if>> 돌려, 그 아름다움을 감탄하며 바라본다. 당신은 에덴을 힐끗 쳐다보며, <<hePost>>도 동의할 거라고 생각한다.
+당신은 시선을 <<if Time.season is "autumn">>떨어지는 단풍으로<<elseif Time.hour gte 6 and Time.hour lte 8>>저녁노을로<<else>>하늘로<</if>> 돌려, 그 아름다움을 감탄하며 바라본다. 당신은 에덴을 힐끗 쳐다보며, <<hePost>>도 동의할 거라고 생각한다.
 <br><br>
 
 <<link [[다음|Eden Raft Intro 4]]>><</link>>
@@ -3183,14 +3187,14 @@
 <<takeHandholdingVirginity "Eden" "romantic">>
 <br><br>
 <</if>>
-얼마 지나지 않아, 두 사람은 호수에 도착한다. <<if $daystate is "night">>달빛<<else>>햇빛<</if>>이 <<if $season is "winter">>얼음<<else>>물<</if>> 위에서 희미하게 빛난다.
+얼마 지나지 않아, 두 사람은 호수에 도착한다. <<if Time.dayState is "night">>달빛<<else>>햇빛<</if>>이 <<if Time.season is "winter">>얼음<<else>>물<</if>> 위에서 희미하게 빛난다.
 <br><br>
 
 <<link [[호수 주변을 산책한다|Eden Lake Walk]]>><</link>>
 <br>
 <<link [[그냥 경치를 본다|Eden View]]>><</link>>
 <br>
-<<if $edenraftintro is 2 and $season isnot "winter">>
+<<if $edenraftintro is 2 and Time.season isnot "winter">>
 	<<link [[보트를 탄다|Eden Lake Raft]]>><</link>>
 <</if>>
 <br><br>
@@ -3202,7 +3206,7 @@
 <br><br>
 
 <<if _wraithEvent>>
-	당신은 호수 한가운데에 누군가가 서 있는 것을 본다. 은빛 머리카락이 바람에 휘날리고 있으며,<<if $wraith.state is "haunt">> 한 쌍의 빨간 눈이 당신을 응시한다<<else>> 화려한 상아 목걸이가 그 자의 목에 걸려 있다<</if>>. 그 자가 당신을 향해 천천히 돌아서자 귀가 울리기 시작한다.
+	당신은 호수 한가운데에 누군가가 서 있는 것을 본다. 은빛 머리카락이 바람에 휘날리고 있으며,<<if ["haunt", "despair"].includes($wraith.state)>> 한 쌍의 빨간 눈이 당신을 응시한다<<else>> 화려한 상아 목걸이가 그 자의 목에 걸려 있다<</if>>. 그 자가 당신을 향해 천천히 돌아서자 귀가 울리기 시작한다.
 	<br><br>
 
 	당신은 에덴을 바라보지만, <<nnpc_hePost "Eden" "은">> 반응이 없다. 당신은 다시 돌아보았고, 그 모습은 사라졌다. <<stress 12>><<ggstress>><<trauma 4>><<gtrauma>>

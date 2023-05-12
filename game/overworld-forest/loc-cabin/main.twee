@@ -16,24 +16,21 @@
 <</if>>
 <<if $edencoat is 2>>
 	코트 스탠드가 구석에 놓여져 있다.
-	<<if $edencoatjacket is 1 and $edenscarf is 1 and !($hour gte 11 and $hour lte 14 and $daily.eden.hunting is 1)>>
+	<<if $edencoatjacket is 1 and $edenscarf is 1 and !(Time.hour gte 11 and Time.hour lte 14 and $daily.eden.hunting is 1)>>
 		사냥 코트와 스카프가 걸려 있다,
-	<<elseif ($edenscarf is 1 and !($hour gte 11 and $hour lte 14 and $season is "winter" and $daily.eden.hunting is 1))>>
+	<<elseif ($edenscarf is 1 and !(Time.hour gte 11 and Time.hour lte 14 and Time.season is "winter" and $daily.eden.hunting is 1))>>
 		스카프가 걸려 있다.
-	<<elseif $edencoatjacket is 1 and !($hour gte 11 and $hour lte 14 and $daily.eden.hunting is 1)>>
+	<<elseif $edencoatjacket is 1 and !(Time.hour gte 11 and Time.hour lte 14 and $daily.eden.hunting is 1)>>
 		사냥 코트가 걸려 있다.
 	<</if>>
 <</if>>
 
-<<if $stress gte $stressmax and !$possessed>>
+<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+	<<pregnancyWatersBrokenPassout "edencabin">>
+<<elseif $stress gte $stressmax and !$possessed>>
 	<br><br>
-	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-	<<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
-		<<pregnancyWatersBrokenPassout "edencabin">>
-	<<else>>
-		<<link [[모든 게 깜깜해진다...|Eden Cabin Passout]]>><</link>>
-	<</if>>
-<<elseif $edenCagedEscape and $hour gte 0 and $hour lte 6 and !$possessed>>
+	<<link [[모든 게 깜깜해진다...|Eden Cabin Passout]]>><</link>>
+<<elseif $edenCagedEscape and Time.hour gte 0 and Time.hour lte 6 and !$possessed>>
 	당신은 오두막 문을 통해 안으로 걸어들어가며, 다음에 일어날 일을 예상하면서 숨을 멈춘다.. 에덴은 곧바로 <<his_ yi>> 침대에서 일어나며, 격노에 차서 이불을 던져버린다. "그래서 이제 다시 여기로 기어들어오시겠다, 그거야? 이런 좆같은 시간에."
 	<br><br>
 
@@ -42,7 +39,7 @@
 
 	<<link [[다음|Eden Caged Intro]]>><<set $phase to 2>><</link>>
 	<br>
-<<elseif ($edenfreedom is 2 and $edendays gte 8 and $hour gte 0 and $hour lte 6) or ($edenfreedom is 1 and $edendays gte 2 and $hour gte 0 and $hour lte 6) and !$possessed>>
+<<elseif ($edenfreedom is 2 and $edendays gte 8 and Time.hour gte 0 and Time.hour lte 6) or ($edenfreedom is 1 and $edendays gte 2 and Time.hour gte 0 and Time.hour lte 6) and !$possessed>>
 	<<set $edendays to 0>>
 	<<npcincr Eden love -2>>
 	당신은 안으로 들어가 에덴이 잠들어 있는 걸 확인한다. <<He_ nun>> 잠자는 도중 문여는 소리에 재빨리 침대에서 일어났으나, 이내 <<he_ ga>> 당신을 보고 살짝 안심한다.
@@ -57,7 +54,7 @@
 	<<link [[사과한다|Eden Return Apologize]]>><<npcincr Eden love 1>><<set $phase to 0>><</link>>
 	<br>
 	<<link [[설명한다|Eden Return Apologize]]>><<set $phase to 1>><</link>>
-<<elseif $edenPreyEscaped and $hour gte 0 and $hour lte 6 and !$possessed>><<unset $edenPreyEscaped>>
+<<elseif $edenPreyEscaped and Time.hour gte 0 and Time.hour lte 6 and !$possessed>><<unset $edenPreyEscaped>>
 	당신은 안으로 들어가 에덴이 잠들어 있는 걸 확인한다. <<he_ nun>> 문여는 소리에 깨어나, 눈을 비비며 재빨리 일어선다. <<he_ ga>> 당신을 보자 <<his_ yi>> 눈빛이 변한다.
 	<br><br>
 	"넌 내게서 탈출하면 안되었어." <<he_ ga>> 위아래를 훑어보며 말한다. "해야 한다면 널 생으로 마음껏 따먹어주지, 그 다음은 넌 내거야."
@@ -82,7 +79,7 @@
 		<<link [[다음|Eden Cabin]]>><<endevent>><</link>>
 		<br>
 	<</if>>
-<<elseif $worn.neck.collared isnot 1 and $edenaskcollar isnot 1 and $hour gte 0 and $hour lte 6 and !$possessed>>
+<<elseif $worn.neck.collared isnot 1 and $edenaskcollar isnot 1 and Time.hour gte 0 and Time.hour lte 6 and !$possessed>>
 	당신은 안으로 들어가 에덴이 잠들어 있는 걸 확인한다. <<he_ nun>> 문여는 소리에 깨어나, 눈을 비비며 재빨리 일어선다. <<he_ ga>> 이내 당신을 보고 살짝 안심한다.
 	<<He_ ga>> 뒤돌아 누우려던 찰나, <<his_ yi>> 눈이 당신의 목에 고정된다.
 	<br><br>
@@ -95,8 +92,9 @@
 	<</if>>
 	<br>
 	<<link [[그냥 벗어버렸다고 말한다|Eden Collar Remove]]>><</link>>
+	<br>
 <<elseif ($exposed gte 2 and $exhibitionism lte 74 or $exposed gte 1 and $exhibitionism lte 54) and !isLoveInterest("Eden")>>
-	당신은 이런 모습을 보이고 싶어하지 않습니다! 당신은 서둘러 옷을 입습니다.
+	당신은 이런 모습을 보이고 싶어하지 않는다! 당신은 서둘러 옷을 입는다.
 	<br><br>
 
 	<<link [[다음|Eden Wardrobe]]>><<endevent>><</link>>
@@ -109,11 +107,11 @@
 		<span class="lewd">당신의 <<lewdness_ ga>> 당신을 부끄럽게 하지만, 여기엔 에덴 말고 볼 사람이 없다.</span>
 	<</if>>
 
-	<<if $daystate is "night">>
+	<<if Time.dayState is "night">>
 		난로에서 불씨가 타오른다.
-	<<elseif $daystate is "dawn">>
+	<<elseif Time.dayState is "dawn">>
 
-	<<elseif $daystate is "dusk">>
+	<<elseif Time.dayState is "dusk">>
 
 	<<else>>
 
@@ -152,7 +150,7 @@
 	<</if>>
 	<br><br>
 
-	<<if $month is "november" and $edenprepare is 1>>
+	<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -166,9 +164,9 @@
 	<br><br>
 	<<cabinothers>>
 
-<<elseif $hour gte 0 and $hour lte 6>>
+<<elseif Time.hour gte 0 and Time.hour lte 6>>
 
-	<<if $edenbed isnot 1 and $hour lte 2>><<set $edenbed to 1>>
+	<<if $edenbed isnot 1 and Time.hour lte 2>><<set $edenbed to 1>>
 
 		에덴은 당신에게서 떨어져, 스트레칭을 한다. "시간이 늦었어." <<he_ ga>> 침대로 걸어가며 말한다. <<He_ nun>> 기대에 찬 눈으로 당신을 본다.
 		<br><br>
@@ -185,7 +183,7 @@
 		에덴은 깊이 잠들어 있다.
 		<br><br>
 
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -197,9 +195,9 @@
 
 	<</if>>
 
-<<elseif $hour lte 8>>
+<<elseif Time.hour lte 8>>
 
-	<<if $valentines is 1 and $monthday is 14 and $daily.eden.breakfast isnot 1>>
+	<<if $valentines is 1 and Time.monthDay is 14 and $daily.eden.breakfast isnot 1>>
 
 		<<if $daily.eden.breakfast isnot 1>>
 			<<set $daily.eden.breakfast to 1>>
@@ -238,20 +236,24 @@
 		에덴은 침대에 누워있다. "아침 식사 만들어줘." <<he_ ga>> 말한다.
 		<br><br>
 
-		<<link [[평소대로 아침식사를 만든다 (0:20)|Eden Breakfast]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<pass 20>><<set $phase to 0>><</link>><<glove>><<gdom>>
+		<<link [[평소대로 아침식사를 만든다 (0:20)|Eden Breakfast]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<pass 20>><<set $phase to 0>><<housekeeping 1 100>><</link>><<housekeepingdifficulty 1 100>><<gdom>>
 		<br>
-		<<link [[뭔가 새로운 걸 도전한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 1>><</link>>
-		<br>
-		<<if $edengarden gte 3>>
-			<<link [[밭에 있는 채소를 사용한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 3>><<npcincr Eden love 3>><</link>><<gglove>>
+		<<if $housekeeping gte 100>>
+			<<link [[뭔가 새로운 걸 도전한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 1>><</link>>
 			<br>
-		<</if>>
-		<<if $edenshrooms gte 3>>
-			<<link [[통에 있는 버섯을 사용한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 4>><<npcincr Eden lust 30>><</link>><<ggglust>>
+			<<if $edengarden gte 3>>
+				<<link [[밭에 있는 채소를 사용한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 3>><<npcincr Eden love 3>><</link>><<gglove>>
+				<br>
+			<</if>>
+			<<if $edenshrooms gte 3>>
+				<<link [[통에 있는 버섯을 사용한다 (0:20)|Eden Breakfast]]>><<pass 20>><<set $phase to 4>><<npcincr Eden lust 30>><</link>><<ggglust>>
+				<br>
+			<</if>>
+			<<link [[거절한다|Eden Breakfast]]>><<npcincr Eden love -1>><<npcincr Eden dom -1>><<set $phase to 2>><</link>><<ldom>><<llove>>
 			<br>
+		<<else>>
+			<span class="blue">당신은 상상력을 발휘해 볼만큼 가사일에 숙련되어 있지 않다.</span>
 		<</if>>
-		<<link [[거절한다|Eden Breakfast]]>><<npcincr Eden love -1>><<npcincr Eden dom -1>><<set $phase to 2>><</link>><<ldom>><<llove>>
-		<br>
 
 	<<else>>
 
@@ -259,7 +261,7 @@
 		<br><br>
 
 		<<edenlust>>
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -273,18 +275,23 @@
 
 	<</if>>
 
-<<elseif $hour lte 16>>
+<<elseif Time.hour lte 16>>
 
 	에덴은 밖에서 열심히 일하고 있다.
 	<br><br>
 
-	<<if $hour is 15 and $daily.eden.lunch isnot 1>>
-		에덴은 사냥 때문에 배고플 것이다. 아마 점심을 차리면 <<he_ ga>> 고마워할 것 같다.
-		<br>
-		<<link [[에덴을 위해 점심을 차린다 (0:30)|Eden Lunch]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $daily.eden.lunch to 1>><</link>>
-		<br><br>
+	<<if Time.hour is 15 and $daily.eden.lunch isnot 1>>
+		<<if $housekeeping gte 100>>
+			에덴은 사냥 때문에 배고플 것이다. 아마 점심을 차리면 <<he_ ga>> 고마워할 것 같다.
+			<br>
+			<<link [[에덴을 위해 점심을 차린다 (0:30)|Eden Lunch]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $daily.eden.lunch to 1>><</link>>
+			<br><br>
+		<<else>>
+			에덴은 사냥 때문에 배고플 것이다. <<HePost>>에게 점심을 차려주고 싶지만, <span class="blue">뭐든 요리할 자신이 없다.</span>
+			<br><br>
+		<</if>>
 	<</if>>
-	<<if $month is "november" and $edenprepare is 1>>
+	<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -294,9 +301,9 @@
 	<br><br>
 	<<cabinothers>>
 
-<<elseif $hour lte 17>>
+<<elseif Time.hour lte 17>>
 
-	<<if $valentines is 1 and $monthday is 14 and $valentines_eden_bought is 1 and $daily.eden.bath isnot 1 and $valentines_eden_bath isnot 1>>
+	<<if $valentines is 1 and Time.monthDay is 14 and $valentines_eden_bought is 1 and $daily.eden.bath isnot 1 and $valentines_eden_bath isnot 1>>
 
 		에덴은 여전히 밖에서 바빠보인다. 지금이 <<him_ ul>> 위해 목욕물을 준비할 기회다.
 		<br><br>
@@ -305,7 +312,7 @@
 		<br>
 		<<link [[목욕물을 준비한지 않는다|Eden Cabin]]>><<endevent>><<set $valentines_eden_bath to 1>><</link>>
 
-	<<elseif ($valentines isnot 1 and $daily.eden.bath isnot 1) or ($valentines is 1 and $monthday isnot 14 and $daily.eden.bath isnot 1) or ($valentines is 1 and $monthday is 14 and !$valentines_eden_bought and $daily.eden.bath isnot 1) or ($valentines is 1 and $monthday is 14 and $valentines_eden_bath is 1 and $daily.eden.bath isnot 1)>>
+	<<elseif ($valentines isnot 1 and $daily.eden.bath isnot 1) or ($valentines is 1 and Time.monthDay isnot 14 and $daily.eden.bath isnot 1) or ($valentines is 1 and Time.monthDay is 14 and !$valentines_eden_bought and $daily.eden.bath isnot 1) or ($valentines is 1 and Time.monthDay is 14 and $valentines_eden_bath is 1 and $daily.eden.bath isnot 1)>>
 
 		<<if $daily.eden.bath isnot 1>>
 			<<set $daily.eden.bath to 1>>
@@ -329,7 +336,7 @@
 		<br><br>
 
 		<<edenlust>>
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -343,15 +350,15 @@
 
 	<</if>>
 
-<<elseif $hour lte 18 and $monthday is 25 and $christmas_gift_eden_given is 1 and $eden_christmas_dinner isnot 1>>
+<<elseif Time.hour lte 18 and Time.monthDay is 25 and $christmas_gift_eden_given is 1 and $eden_christmas_dinner isnot 1>>
 
 	에덴은 무언가를 준비하기 위해, 재료를 모으느라 바빠보인다. 당신은 오두막을 돌아다니며, <<his_ yi>> 어깨 너머로 엿보거나 도와주려고 한다. 하지만 당신의 노력은 소용이 없어진다. 오늘 밤 모든 일을 자신에게 맡기라고 고집을 부리기 때문이다. <<he_ ga>> 요리를 시작하자, 군침이 도는 냄새가 오두막을 메우며, 기대감을 채운다.
 	<br><br>
 	오랜 시간이 지나고 <<He_ nun>> 당신을 식탁으로 부른다. 눈에도 보기 좋고 냄새도 좋은 아름다운 두 개의 음식이 나온다. 당신이 에덴을 보니 <<he_ nun>> 살짝 지치지만 스스로 자랑스워하는 것 같다. 당신은 에덴이 지금까지 요리한 것 중에 가장 정성을 쏟아 부은 것이라 생각한다.
 	<br><br>
-	<<link [[다음|Eden Christmas Meal 2]]>><<pass 20>><<set $eden_christmas_dinner to 1>><<set $daily.eden.dinner to 1>><</link>>
+	<<link [[다음|Eden Christmas Meal 2]]>><<pass 20>><</link>>
 
-<<elseif $hour lte 18 and $daily.eden.dinner isnot 1 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 100>>
+<<elseif Time.hour lte 18 and $daily.eden.dinner isnot 1 and $NPCName[$NPCNameList.indexOf("Eden")].love gte 100>>
 
 	<<set $daily.eden.dinner to 1>>
 
@@ -365,13 +372,13 @@
 
 <<else>>
 
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 
 		에덴은 <<his_ yi>> 총을 손질하고 있다. <span class="blue"> <<He_ nun>> 살짝 외로워 보인다.</span>
 		<br><br>
 
 		<<edenlust>>
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -392,7 +399,7 @@
 		<br><br>
 
 		<<edenlust>>
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -414,23 +421,23 @@
 
 :: Cabin Eden Prepare
 <<effects>>
-<<if $hour lte 20>>/* if hour >= 21 and it's the last day of october, passing 3h will make it november, which unsets the variables, making nans */
+<<if Time.hour lte 20>>/* if hour >= 21 and it's the last day of october, passing 3h will make it november, which unsets the variables, making nans */
 	<<if $edenwall lt 5>>
-		<<link [[벽들의 금 간 곳을 고친다 (3:00)|Eden Wall]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[벽들의 금 간 곳을 고친다 (3:00)|Eden Wall]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">벽들은 완전히 고쳐져 있다.</span>
 	<</if>>
 	<br><br>
 
 	<<if $edenchimney lt 5>>
-		<<link [[굴뚝을 청소한다 (3:00)|Eden Chimney]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[굴뚝을 청소한다 (3:00)|Eden Chimney]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">굴뚝은 깨끗하다.</span>
 	<</if>>
 	<br><br>
 
 	<<if $edenroof lt 5>>
-		<<link [[옥상을 고친다 (3:00)|Eden Roof]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
+		<<link [[옥상을 고친다 (3:00)|Eden Roof]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">옥상은 고쳐져 있다.</span>
 	<</if>>
@@ -440,15 +447,15 @@
 	<br><br>
 <</if>>
 
-	<<link [[돌아간다|Eden Clearing]]>><<endevent>><</link>>
-	<br><br>
+<<link [[돌아간다|Eden Clearing]]>><<endevent>><</link>>
+<br><br>
 
 :: Cabin Eden Actions
 <<effects>>
 에덴이 당신을 쳐다본다.
 <br><br>
 
-<<if $hour gte 18 and $hour lte 23>>
+<<if Time.hour gte 18 and Time.hour lte 23>>
 	<<if $edencushions is 2 and $edenloveseat is 9>>
 		<<link [[안락의자 위에서 껴안는다 (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -3>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden lust 1>><</link>><<glove>><<glust>><<ltrauma>><<lstress>>
 		<br>
@@ -456,7 +463,7 @@
 		<<link [[껴안는다 (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -3>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden lust 1>><</link>><<glove>><<glust>><<ltrauma>><<lstress>>
 		<br>
 	<</if>>
-	<<if $days % 2 is 0>>
+	<<if Time.days % 2 is 0>>
 		<<if $eden_shoot gte 1>>
 			<<link [[사격 연습을 한다 (0:30)|Eden Shoot]]>><<pass 30>><<stress -3>><</link>><<lstress>>
 			<br>
@@ -511,7 +518,7 @@
 	<<link [[안락의자를 만든다 (3:00)|Eden Loveseat Work]]>><<pass 3 hours>><</link>>
 	<br>
 <</if>>
-<<if $hour is 17 and $edenjoin is 1>>
+<<if Time.hour is 17 and $edenjoin is 1>>
 	<<link [[에덴에게 같이 목욕해도 되는지 묻는다 (0:30)|Eden Bath Join]]>><<npcincr Eden love 1>><<pass 30>><</link>><<glove>>
 	<br>
 <</if>>
@@ -519,7 +526,7 @@
 	<<link [[에덴에게 개목걸이를 줄 수 있는지 묻는다|Eden Collar]]>><<npcincr Eden love 5>><<npcincr Eden lust 5>><<npcincr Eden dom 5>><</link>><<gglove>><<gglust>><<ggdom>>
 	<br>
 <</if>>
-<<if $edenwalk isnot 1>>
+<<if $daily.eden.walk isnot 1>>
 	<<link [[에덴에게 함께 호수에 가자고 한다|Eden Lake]]>><</link>>
 	<br>
 <</if>>
@@ -528,12 +535,12 @@
 	<br>
 <</if>>
 
-<<if $monthday is 31 and $halloween_eden is 1 and $halloween_eden_bought is 1 and !$halloween_eden_candy_given>>
+<<if Time.monthDay is 31 and $halloween_eden is 1 and $halloween_eden_bought is 1 and !$halloween_eden_candy_given>>
 	<<link [[에덴에게 바구니를 건넨다|Eden Halloween]]>><<npcincr Eden love 5>><<npcincr Eden dom 1>><<set $halloween_eden_candy_given to 1>><</link>>
 	<br>
 <</if>>
 
-<<if $monthday is 25 and $christmas_gift_eden is 1 and $christmas_gift_eden_given isnot 1>>
+<<if Time.monthDay is 25 and $christmas_gift_eden is 1 and $christmas_gift_eden_given isnot 1>>
 	<<link [[에덴에게 사냥용 조끼를 선물한다|Eden Jacket]]>><<npcincr Eden love 5>><<npcincr Eden dom 1>><<set $christmas_gift_eden_given to 1>><<set $edencoatjacket to 1>><</link>>
 	<br>
 <</if>>
@@ -586,7 +593,7 @@
 	<<link [[커튼을 걷는다|Eden Curtains Set]]>><<set $edencurtains to 2>><<npcincr Eden love 1>><<npcincr Eden dom 1>><</link>><<glove>><<gdom "Eden">>
 	<br><br>
 <</if>>
-<<if $daily.eden.sew isnot 1 or $edencushions is 1 or $edendesign lt 9 or ($season is "winter" and !$edenscarf and $edencoat is 2)>>
+<<if $daily.eden.sew isnot 1 or $edencushions is 1 or $edendesign lt 9 or (Time.season is "winter" and !$edenscarf and $edencoat is 2)>>
 	반짇고리가 찬장 꼭대기에 놓여 있다.
 	<br>
 <</if>>
@@ -618,7 +625,7 @@
 	<<link [[베개에 자수를 놓는다 (0:30)|Eden Design]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $edendesign += 1>><</link>><<glove>><<gdom "Eden">>
 	<br>
 <</if>>
-<<if $season is "winter" and !$edenscarf and $edencoat is 2>>
+<<if Time.season is "winter" and !$edenscarf and $edencoat is 2>>
 	<<link [[에덴을 위해 목도리를 짠다 (0:30)|Eden Scarf]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $edenscarf to 1>><</link>><<glove>><<gdom "Eden">>
 	<br>
 <</if>>
@@ -657,7 +664,7 @@
 <<roomoptions>>
 
 동물 가죽이 덮인 커다란 매트리스가 있다.
-<<if $hour gte 0 and $hour lte 6>>
+<<if Time.hour gte 0 and Time.hour lte 6>>
 	에덴이 침대 시트 사이에서 자고 있다.
 <</if>>
 <br>
@@ -757,8 +764,8 @@
 <<endevent>>
 <<effects>>
 
-<<if $hour gte 0 and $hour lte 6>>
-	당신은 에덴 옆에 있다.
+<<if Time.hour gte 0 and Time.hour lte 6>>
+	당신은 에덴 곁에 안겨있다. <<set $bedGuest to "Eden">>
 <<else>>
 	당신은 이불을 덮고 있다.
 <</if>>
@@ -817,13 +824,13 @@
 
 	<<wakingEffects $sleepHoursTotal>>
 	<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
-	당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다. <<stress 5>><<gstress>>
+		당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다.
 	<br><br>
 <<elseif $nightmares gte 1 and $controlled is 0>>
-		당신은 뭔가 <<if $wraith.state is "haunt" and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다.
+		당신은 뭔가 <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 쫓기는 꿈을 <<if _wakingEffect>>꿨다<<else>>꾼다<</if>>.
 	<<else>>
 		<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
-			당신은 자는 동안 추잡한 꿈 때문에 괴로워한다.
+			당신은 자는 동안 <<if _wakingEffect>>꿨던<<else>>꾼<</if>> 추잡한 꿈 때문에 괴로워한다.
 			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
 			<<arousal `100 * $sleepHoursTotal`>>
 			<<if $arousal gte $arousalmax>>
@@ -832,8 +839,11 @@
 			<<else>>
 				<br><br>
 			<</if>>
-		<<else>>
+		<<elseif !_wakingEffect>>
 			당신은 편안히 잠을 잤고, 상쾌한 기분으로 일어난다.
+			<br><br>
+		<<else>>
+			<br><br>
 		<</if>>
 	<</if>>
 
@@ -1086,11 +1096,11 @@
 		<br><br>
 
 		<<if $submissive gte 1150>>
-			"마-맞아요. 우린 이걸 호수에서 쓸 수 있어요. 물 위<<if $season is "autumn">>로 낙엽이 지는<<elseif $hour gte 6 and $hour lte 8>>로 해가 지는<<else>>의 하늘<</if>> 풍경이 아름다울 거에요."
+			"마-맞아요. 우린 이걸 호수에서 쓸 수 있어요. 물 위<<if Time.season is "autumn">>로 낙엽이 지는<<elseif Time.hour gte 6 and Time.hour lte 8>>로 해가 지는<<else>>의 하늘<</if>> 풍경이 아름다울 거에요."
 		<<elseif $submissive lte 850>>
-			"넵. 아마 호수에서 쓸 수 있을 것 같아요. 한편으로는 우린 물 위<<if $season is "autumn">>로 떨어지는 낙엽을<<elseif $hour gte 6 and $hour lte 8>>로 일몰을<<else>>의 하늘을<</if>> 감상할 수 있어요."
+			"넵. 아마 호수에서 쓸 수 있을 것 같아요. 한편으로는 우린 물 위<<if Time.season is "autumn">>로 떨어지는 낙엽을<<elseif Time.hour gte 6 and Time.hour lte 8>>로 일몰을<<else>>의 하늘을<</if>> 감상할 수 있어요."
 		<<else>>
-			"예. 아마 호수에서 쓸 수 있을 것 같아요. 한편으로는 우린 물 위<<if $season is "autumn">>로 떨어지는 낙엽을<<elseif $hour gte 6 and $hour lte 8>>로 일몰을<<else>>의 하늘을<</if>> 감상할 수 있어요."
+			"예. 아마 호수에서 쓸 수 있을 것 같아요. 한편으로는 우린 물 위<<if Time.season is "autumn">>로 떨어지는 낙엽을<<elseif Time.hour gte 6 and Time.hour lte 8>>로 일몰을<<else>>의 하늘을<</if>> 감상할 수 있어요."
 		<</if>>
 
 		<<He_ nun>> 몇 초동안 상자를 바라보다 고개를 대신 끄덕여 대답을 대신한다. 당신은 <<himPost>>에게 감사의 미소를 지으며 호수로 걸어가기 시작한다.
@@ -1138,7 +1148,7 @@
 	<<set $foresthunt to 0>>
 <</if>>
 
-<<if $edenCagedEscape and $hour gte 7>>
+<<if $edenCagedEscape and Time.hour gte 7>>
 	에덴은 당신이 오두막에 다가가자 당신을 올려다본다. <<He_ nun>> 당신을 멍하니 쳐다보다가 갑자기 깜짝 놀란다. "거기 너!" <<he_ ga>> 소리치며, 빠르게 당신에게 다가온다. "너 엄청 큰 일 난 거야, 말 안 듣는 <<whorePost>> 같으니."
 	<br><br>
 
@@ -1147,7 +1157,7 @@
 
 	<<link [[다음|Eden Caged Intro]]>><<set $phase to 2>><</link>>
 	<br>
-<<elseif ($edenfreedom is 2 and $edendays gte 8 and $hour gte 6) or ($edenfreedom is 1 and $edendays gte 2 and $hour gte 6)>>
+<<elseif ($edenfreedom is 2 and $edendays gte 8 and Time.hour gte 6) or ($edenfreedom is 1 and $edendays gte 2 and Time.hour gte 6)>>
 	<<set $edendays to 0>>
 	<<npcincr Eden love -1>>
 	당신이 오두막에 다가가자 에덴이 당신을 올려다 본다. <<He_ nun>> 하던 일을 멈추고 당신에게로 달려온다.
@@ -1161,7 +1171,7 @@
 	<<link [[사과한다|Eden Return Apologize]]>><<npcincr Eden love 1>><<set $phase to 0>><</link>>
 	<br>
 	<<link [[설명한다|Eden Return Apologize]]>><<set $phase to 1>><</link>>
-<<elseif $edenPreyEscaped and $hour gte 6>><<unset $edenPreyEscaped>>
+<<elseif $edenPreyEscaped and Time.hour gte 6>><<unset $edenPreyEscaped>>
 	당신은 에덴이 총을 닦고 있는걸 본다. 당신이 도착하자 <<him_ un>> 눈을 부릅뜬다.
 	<br>
 	"넌 내게서 탈출하면 안되었어." <<he_ ga>> 위아래를 훑어보며 말한다. "해야 한다면 널 생으로 마음껏 따먹어주지, 그 다음은 넌 내거야."
@@ -1186,7 +1196,7 @@
 		<<link [[다음|Eden Clearing]]>><<endevent>><</link>>
 		<br>
 	<</if>>
-<<elseif $worn.neck.collared isnot 1 and $edenaskcollar isnot 1 and $hour gte 6>>
+<<elseif $worn.neck.collared isnot 1 and $edenaskcollar isnot 1 and Time.hour gte 6>>
 	당신이 에덴을 지나치자, 그는 잠시 일을 멈추고 당신을 쳐다본다. 그의 시선이 당신의 목을 향한다.
 	<br><br>
 	"목걸이는 어디갔어?" <<he_ ga>> 묻는다.
@@ -1199,20 +1209,19 @@
 	<br>
 	<<link [[그냥 벗어버렸다고 말한다|Eden Collar Remove]]>><</link>>
 <<elseif $stress gte $stressmax>>
-	/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-	<<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
+	<<if isPlayerNonparasitePregnancyEnding()>>
 		<<pregnancyWatersBrokenPassout "edencabin">>
 	<<else>>
 		<<link [[모든 게 깜깜해진다...|Eden Cabin Passout]]>><</link>>
 	<</if>>
-<<elseif $hour is 17 and $exposed gte 1 and !$daily.eden.exposed>>
+<<elseif Time.hour is 17 and $exposed gte 1 and !$daily.eden.exposed>>
 	에덴은 오두막 문에 걸어가, 들어가기 전에 당신을 향해 돌아선다. <<He_ nun>> 당신의 <<lewdness_ rul>> 바라본다. "넌 안으로 들어가야해."
 	<br><br>
 
 	<<link [[에덴을 따라간다|Eden Cabin]]>><<endevent>><</link>>
 	<br>
 	<<link [[계속 바깥에 있는다|Eden Clearing]]>><<set $daily.eden.exposed to 1>><<endevent>><</link>>
-<<elseif ($exposed gte 2 and $exhibitionism lte 74 or $exposed gte 1 and $exhibitionism lte 54) and isLoveInterest("Eden") and ($hour lte 8 or $daily.eden.hunting is 1 or $hour gte 17)>>
+<<elseif ($exposed gte 2 and $exhibitionism lte 74 or $exposed gte 1 and $exhibitionism lte 54) and isLoveInterest("Eden") and (Time.hour lte 8 or $daily.eden.hunting is 1 or Time.hour gte 17)>>
 	당신은 에덴이 없을 때 이런 모습을 보이고 싶어하지 않습니다! 당신은 서둘러 옷을 입습니다.
 	<br><br>
 
@@ -1225,7 +1234,7 @@
 	<br><br>
 <<elseif $exposed gte 1>>
 	<span class="lewd">당신의 <<lewdness_ ga>> 당신을 부끄럽게 하지만,
-		<<if $hour lte 10 or ($hour gte 11 and $hour lte 14 and $daily.eden.hunting isnot 1) or $hour gte 15>>
+		<<if Time.hour lte 10 or (Time.hour gte 11 and Time.hour lte 14 and $daily.eden.hunting isnot 1) or Time.hour gte 15>>
 			에덴이 여기 있으니 괜찮다.
 		<<else>>
 			혼자 있으니 괜찮다.
@@ -1246,13 +1255,13 @@
 	<<set $edendays to 0>>
 <</if>>
 
-<<if $hour gte 9 and $hour lte 10>>
+<<if Time.hour gte 9 and Time.hour lte 10>>
 
 	에덴은 농작물을 손질하고 있다.
 	<br><br>
 
 	<<edenlust>>
-	<<if $month is "november" and $edenprepare is 1>>
+	<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -1260,7 +1269,7 @@
 	<br><br>
 	<<clearingactions>>
 
-<<elseif $hour gte 11 and $hour lte 14>>
+<<elseif Time.hour gte 11 and Time.hour lte 14>>
 
 	<<if $daily.eden.hunting isnot 1>><<set $daily.eden.hunting to 1>>
 		<<edenpreystart>>
@@ -1289,7 +1298,7 @@
 			<<link [[저항한다|Eden Prey No]]>><<set $phase to 1>><<npcincr Eden love -1>><<npcincr Eden dom -1>><</link>><<llove>><<ldom>>
 			<br>
 		<<else>>
-			<<if $season is "winter" and $edenscarf is 1>>
+			<<if Time.season is "winter" and $edenscarf is 1>>
 				에덴은 <<his_ yi>> 목에 목도리를 두르고, 손에 총을 들고 오두막을 나간다. "난 사냥하러 갈 거야. 내가 없는 동안 오두막 근처에 있어."
 			<<else>>
 				에덴은 손에 총을 들고, 오두막을 나간다. "난 사냥하러 갈 거야. 내가 없는 동안 오두막 근처에 있어."
@@ -1308,7 +1317,7 @@
 	에덴은 사냥하러 나가 있다.
 	<br><br>
 
-	<<if $month is "november" and $edenprepare is 1>>
+	<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -1316,7 +1325,7 @@
 
 	<</if>>
 
-<<elseif $hour is 15>>
+<<elseif Time.hour is 15>>
 
 	<<if $rng gte 91 and !$edenhurt>>
 		<<set $edenhurt to 1>>
@@ -1349,13 +1358,13 @@
 		<br><br>
 
 		<<edenlust>>
-		<<if $hour is 15 and $daily.eden.lunch isnot 1>>
+		<<if Time.hour is 15 and $daily.eden.lunch isnot 1>>
 			에덴은 사냥 때문에 배고플 것이다. 아마 점심을 차리면 <<he_ ga>> 고마워할 것 같다.
 			<br>
 			<<link [[에덴을 위해 점심을 차린다 (0:30)|Eden Lunch]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $daily.eden.lunch to 1>><</link>>
 			<br><br>
 		<</if>>
-		<<if $month is "november" and $edenprepare is 1>>
+		<<if Time.monthName is "November" and $edenprepare is 1>>
 			<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 			<br><br>
 		<</if>>
@@ -1365,7 +1374,7 @@
 
 	<</if>>
 
-<<elseif $hour is 16>>
+<<elseif Time.hour is 16>>
 
 	<<if $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $daily.eden.chopLust isnot 1>><<set $daily.eden.chopLust to 1>>
 	<!-- <<npc Eden>><<person1>> -->에덴은 장작을 패고 있다. <<He_ ga>> 뒤로 몸을 쭉 뻗을 때 당신이 <<him_ ul>> 보고 있는 것을 발견한다. "휴식이 필요해." <<he_ ga>> 말한다. <<He_ nun>> 아직도 손에 땀에 뒤덮인 채, 도끼를 들고 당신을 향해 다가온다. <<He_ nun>> 그것이 얼마나 위협적으로 보이는 지 모르는 것 같다.
@@ -1387,7 +1396,7 @@
 	<br><br>
 
 	<<edenlust>>
-	<<if $month is "november" and $edenprepare is 1>>
+	<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -1402,7 +1411,7 @@
 	에덴은 실내에 있다.
 	<br><br>
 
-<<if $month is "november" and $edenprepare is 1>>
+<<if Time.monthName is "November" and $edenprepare is 1>>
 		<<link [[오두막을 고친다|Cabin Eden Prepare]]>><</link>>
 		<br><br>
 	<</if>>
@@ -2422,9 +2431,9 @@
 <<effects>>
 <<npc Eden>><<person1>>
 당신은 <<his_ yi>> 사냥 여행에서, 찢어지고 구멍이 뚫린 에덴의 옷을 고쳐준다.
-<<if $hour lte 6>>
+<<if Time.hour lte 6>>
 당신은 <<his_ yi>> 잠을 방해하지 않기 위해 탁자 위에 놓아두기로 결정한다.
-<<elseif $hour gte 11 and $hour lte 14 and $daily.eden.hunting is 1>>
+<<elseif Time.hour gte 11 and Time.hour lte 14 and $daily.eden.hunting is 1>>
 당신은 <<he_ ga>> 돌아올 때까지 그들을 탁자 위에 놓아두기로 결정한다.
 <<else>>
 당신이 <<himPost>>에게 옷을 돌려주자 <<He_ ga>> 고마워하는 듯 하다.
@@ -2642,7 +2651,6 @@
 
 :: Eden Recaptured 2
 <<effects>>
-
 <<if !$pronoun>><<npc Eden>><<person1>><!-- 버그가 고쳐지면 원상복구할것 <<npc Eden>><<person1>>--><</if>>
 
 <<if $rng gte 51>>
