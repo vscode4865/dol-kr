@@ -1457,6 +1457,12 @@
         e.g.
         <<pcpetnamePost "Wraith" "을">>               // <<pcpetname "Wraith">>을
     ```
+     
+    ```
+    <<foxnicknamePost>>
+       <<foxnickname>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
     
     ```
     <<tattooPost>>
