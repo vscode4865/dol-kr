@@ -3,7 +3,8 @@
 <<set $forest to 40>><<set $bus to "lakewaterfall">>
 
 <<if $phase is 1>>
-당신은 호수 주변을 산책한다.
+	<<set $phase to 0>>
+	당신은 호수 주변을 산책한다.
 
 	<<if $weather is "rain">>
 		비가 수면을 치면서 물은 생동감 있게 움직인다.
@@ -13,7 +14,7 @@
 
 	<<if $laketeenspresent is 1>>
 		학생들이 폭포에서 놀면서 물이 내려오는 상류에 앉아있는 것이 보인다.
-	<<elseif $daystate is "night">>
+	<<elseif Time.dayState is "night">>
 		달빛이 당신 주변을 밝히고 폭포수를 은의 장막으로 만든다.
 	<<else>>
 		잔잔한 바람이 당신을 부드럽게 어루만진다.
@@ -583,6 +584,44 @@
 	<</if>>
 <</if>>
 
+:: Lake Journey Road
+<<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
+<<if $cool gte 160>>
+	They're eager to have you along. They form around you and vie for your attention. You stick to the road, safe from the dangers of the forest.
+	<<status 1>><<gcool>>
+	<br><br>
+	당신은 별 일 없이 호수에 도착했다.
+	<br><br>
+	<<link [[Dare them to take a wild path|Lake Journey Road Dare]]>><<status 1>><</link>><<gcool>>
+	<br>
+	<<link [[Stick to the road|Lake Shore]]>><</link>>
+	<br>
+<<elseif $cool gte 40>>
+	They're happy to have you along. You chat as you travel, making sure to stay close. You stick to the road, safe from the dangers of the forest.
+	<<status 1>><<gcool>>
+	<br><br>
+	<<link [[Dare them to take a wild path|Lake Journey Road Dare]]>><<status 1>><</link>><<gcool>>
+	<br>
+	<<link [[Stick to the road|Lake Shore]]>><</link>>
+	<br>
+<<else>>
+	They look at each other and smirk at your request, but they don't turn you down. You stick to the road, safe from the dangers of the forest.
+	<<status 1>><<gcool>>
+	<br><br>
+	호수에 가까워졌을 때 누군가 당신을 밀친다. 당신은 땅바닥에 넘어진다. 아이들은 웃으며, 당신을 숲 속에 홀로 남겨둔다.
+	<<gtrauma>><<gstress>><<trauma 3>><<stress 3>>
+	<br><br>
+	<<link [[Next|Forest]]>><<set $forest to 15>><</link>>
+	<br>
+<</if>>
+
+:: Lake Journey Road Dare
+<<effects>>
+
+You goad the students into leaving the safety of the road. It's easy to do, no one wants to be seen as a coward.
+<br><br>
+<<lakejourney>>
+
 :: Lake Wolf Run
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
@@ -687,7 +726,7 @@
 	<</if>>
 <</if>>
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-<<if $hour is 20>>
+<<if Time.hour is 20>>
 	날이 늦어지고, 숲의 그림자가 길어지고 있다. 사람들은 마을로 돌아갈 준비를 하고 있다. 혼자 남길 바라는 사람은 없다.
 	<br><br>
 	<<if $exposed lte 0>>
@@ -859,7 +898,7 @@
 당신은 <<personPost>>에게 손을 흔든다. <<HePost>>도 당신에게 손을 흔들어 준다. <<HesPost "은">> 멀리 떨어져 있지만, 당신은 <<hesPost "이">> 미소 짓고 있을 것이라고 생각한다.
 <br><br>
 <<if _wraithEvent>>
-	<<if $wraith.state is "haunt">>
+	<<if ["haunt", "despair"].includes($wraith.state)>>
 		<<His>> head tilts to the side, and <<his>> smile falters as <<he>> turns pale. For a brief moment, you see <<him>> clutching at <<his>> neck and reaching for you. You blink, and <<hes>> gone. <<trauma 6>><<gtrauma>>
 	<<else>>
 		Upon closer inspection, you see a necklace of ivory wrapped around <<his>> neck. You blink, and <<hes>> suddenly gone. <<trauma 3>><<gtrauma>>
@@ -973,7 +1012,7 @@
 	<<if isLoveInterest("Eden") and !$edenCagedEscape and (random(1, 2) is 2 or $eden_rescue isnot 1)>>
 		<<enable_rescue>>
 		<<set $phase2 to 1>>
-	<<elseif $wraith.state and $hallucinations gte 2>>
+	<<elseif $wraith.state and $wraithIntro and $hallucinations gte 2>>
 		<<enable_rescue>>
 		<<set $phase2 to 2>>
 	<</if>>
@@ -1087,7 +1126,7 @@
 <<set $outside to 1>><<effects>><<lakeeffects>>
 당신은 굳건히 선다. <<beasttypePost "은">> 곧 당신에게 달려든다.
 <<if $rng gte 51>>
-	<<if $season is "winter">>
+	<<if Time.season is "winter">>
 		하지만 당신에게까지 다다르기도 전에, <<bhePost "은">> 반원을 그리더니 숲으로 되돌아간다. 당신의 뒤에서 얼음이 부서지는 소리가 나지만, 뒤를 돌아봤을 땐 아무것도 없다.
 	<<else>>
 		하지만 당신에게까지 다다르기도 전에, <<bhePost "은">> 반원을 그리더니 숲으로 되돌아간다. 당신의 뒤에서 물이 첨벙이는 소리가 나지만, 뒤를 돌아봤을 땐 아무것도 없다.
@@ -1205,15 +1244,17 @@
 <</if>>
 <<masturbationeffects>>
 <<masturbationactions>>
-<<link [[계속한다|Lake Masturbation]]>><</link>><<nexttext>>
-<br>
-<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-	<<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>>
-<<elseif $corruptionMasturbation isnot true>>
-	<<link [[그만둔다|Lake Masturbation Finish]]>><<set $finish to 1>><</link>>
-<<else>>
-	귓 속의 기생충이 당신이 그만두지 못하게 한다.
-<</if>>
+
+<div id="masturbationButtons">
+	<div><<link [[계속한다|Lake Masturbation]]>><</link>><<nexttext>></div>
+	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
+		<div><<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
+	<<elseif $corruptionMasturbation isnot true>>
+		<div><<link [[그만둔다|Lake Masturbation Finish]]>><<set $finish to 1>><</link>></div>
+	<<else>>
+		<div class="red">귓 속의 기생충이 당신을 그만두지 못하게 한다.</div>
+	<</if>>
+</div>
 <br>
 
 :: Lake Masturbation Finish
@@ -1286,7 +1327,11 @@
 :: Lake Ice Careful
 <<effects>>
 
-당신은 배로 누워 무게를 분산시킨다. 당신은 더 안전한 부분을 찾아 움직인다.
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	You lie on your belly as best as you can, given your <<bellyDescription "pc">>, and spread out your weight. You shuffle to a safer part of the lake.
+<<else>>
+	당신은 배로 누워 무게를 분산시킨다. 당신은 더 안전한 부분을 찾아 움직인다.
+<</if>>
 <br><br>
 
 <<destination_lake_ice>>
