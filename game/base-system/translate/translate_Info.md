@@ -1412,23 +1412,6 @@
 
         NOTE: NPC 가 들고 있는 섹스 장난감만을 번역한다. 플레이어용은 <<sextoyPost>> 참조.
     ```
-
-    ```
-    <<struggle_appendagePost>>
-        <<struggle_appendagePost *[num] post "sep">>
-
-       <<struggle_appendage>> 대체 위젯. 조사를 붙일 수 있다.
-		
-		필수사항
-		- *num: <<struggle_appendage>> 의 인수
-        
-        선택사항
-            - post: 번역결과의 뒤에 조사를 붙인다.
-            - sep: 조사를 분리하여 저장한다.
-
-        e.g.
-        <<struggle_appendagePost 0 "을">>               // <<struggle_appendage 0>>을
-    ```
     
     ```
     <<underworld_nicknamePost>>
@@ -2488,6 +2471,37 @@
     <<struggle_bodypart>>
         + <<trBodypart>>와 비슷하지만 Post 시리즈처럼 바로 출력한다. 용도 및 방식 같음. 생략
     ```
+
+    ```
+    <<struggle_appendage>>
+        <<struggle_appendage *[num] post "sep">>
+		
+		struggle 크리쳐의 부속지를 번역한다. 
+
+		필수사항
+		- *num: <<struggle_appendage>> 의 인수
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+    ```
+
+    ```
+    <<struggle_skin>>
+        <<struggle_skin *[num] post "sep">>
+		
+		struggle 크리쳐의 피부를 번역한다. 
+
+		필수사항
+		- *num: <<struggle_skin>> 의 인수
+        
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+    ```
+
 
 * base-system/text.twee
     ```
