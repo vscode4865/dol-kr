@@ -24,17 +24,10 @@
 	<<wolfcavestate>>
 <</if>>
 <br><br>
-<<if $sexStats.vagina.pregnancy.waterBreaking and !$possessed>>
-	/*ToDo: Pregnancy - Add event to get the wolves to help with your pregnancy, ensure that the none wolf version matches with the next passage*/
-	<<if $sexStats.vagina.pregnancy.type is "wolf">>
-		Wolves (Black wolf?) notice the player's water has broken, leads the player to their bed to give birth to the wolves.
-		<br><br>
-		<<link [[Next|Pregnancy Birth Hospital Wolf 5]]>><</link>>
-	<<else>>
-		Wolves (Black wolf?) notice the player's water has broken, leads the player in the direction of the hospital.
-		<br><br>
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><</link>>
-	<</if>>
+<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+	<<pregnancyBirthWolfCave>>
+<<elseif npcPregnancyEnding("Black Wolf") and !$possessed and $wolfstate is "cave">>
+	<<pregnancyBirthBlackWolf>>
 <<elseif $wolfevent gte 1 and !$possessed>>
 	<<set $wolfevent to 0>>
 	<<wolfcaveselect>>
@@ -59,7 +52,7 @@
 	<<elseif $wolfcavedig gte 1>>
 		<<link [[동굴 뒤쪽을 파낸다 (1:00)|Forest Wolf Cave Dig]]>><<pass 1 hour>><<set $wolfcavedig += 1>><</link>>
 	<<else>>
-		<<link [[동굴 뒤쪽을 살펴본다|Forest Wolf Cave Examine]]>><<set $wolfcavedig to 1>><</link>>
+		<<ind>><<link [[동굴 뒤쪽을 살펴본다|Forest Wolf Cave Examine]]>><<set $wolfcavedig to 1>><</link>>
 	<</if>>
 	<br>
 	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
@@ -77,15 +70,15 @@
 	<</if>>
 	<<getChildrenIds $location>>
 	<<if _childrenIds.length gt 0>>
-		<<link [[아이들을 확인한다|Childrens Home]]>><<set $exitPassage to $passage>><</link>>
+		<<wolfpup>><<link [[아이들을 확인한다|Pups Den]]>><</link>>
 		<br>
 	<</if>>
-	<<link [[잔다|Wolf Cave Bed]]>><</link>>
+	<<wolfsleep>><<link [[잔다|Wolf Cave Bed]]>><</link>>
 	<br>
 	<<if $nextPassageCheck is "Wolf Cave Clearing">>
 		<span class="nextLink"><<link [[밖으로 나간다|Wolf Cave Clearing]]>><</link>></span>
 	<<else>>
-		<<link [[밖으로 나간다|Wolf Cave Clearing]]>><</link>>
+		<<ind>><<link [[밖으로 나간다|Wolf Cave Clearing]]>><</link>>
 	<</if>>
 	<br><br>
 	<<link [[설정|Wolf Cave Settings]]>><</link>>
@@ -96,7 +89,7 @@
 	<<else>>
 		<<link [[태도|Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
 	<</if>>
-	<br><br><br>
+	<br><br>
 <</if>>
 <<storecleanup>>
 
@@ -147,18 +140,8 @@
 	<<bHe>> seems almost disappointed.
 	<<endevent>>
 <</if>>
-<<if $sexStats.vagina.pregnancy.waterBreaking and !$possessed>>
-	/*ToDo: Pregnancy - Add event to get the wolves to help with your pregnancy, ensure that the none wolf version matches with the next passage*/
-	<<set $sexStats.vagina.pregnancy.waterBreaking to null>>
-	<<if $sexStats.vagina.pregnancy.type is "wolf">>
-		Wolves (Black wolf?) notice the player's water has broken, is guided to the inside of the cave to give birth. Clothes are removed.
-		<br><br>
-		<<link [[Next|Pregnancy Birth Hospital Wolf 5]]>><</link>>
-	<<else>>
-		Wolves (Black wolf?) notice the player's water has broken, leads the player in the direction of the hospital.
-		<br><br>
-		<<link [[Next|Pregnancy Birth Hospital Passout]]>><</link>>
-	<</if>>
+<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+	<<pregnancyBirthWolfCave>>
 <<elseif $wolfevent gte 1 and !$possessed>><<set $wolfevent to 0>>
 	<<wolfcaveselect>>
 <<else>>
@@ -173,7 +156,7 @@
 	<<if $pound and $pound.progress is 5>>
 		<<link [[Approach the dark shape|Wolf Cave Dog Intro]]>><<set $pound.progress to 6>><<stress 6>><<trauma -6>><<control 25>><</link>><<gstress>><<ggcontrol>><<ltrauma>>
 		<br>
-	<<elseif $pound and $pound.progress is 6 and $daystate is "day" and $daily.wolfCaveDog is undefined>>
+	<<elseif $pound and $pound.progress is 6 and Time.dayState is "day" and $daily.wolfCaveDog is undefined>>
 		<<link [[Approach the black dog|Wolf Cave Dog]]>><</link>>
 		<br>
 	<</if>>
@@ -201,11 +184,11 @@
 	개울은 당신의 반영을 비추며,
 	<<if isBloodmoon()>>
 		핏빛으로 물들어 잔물결이 일고 있다.
-	<<elseif $daystate is 'dawn'>>
+	<<elseif Time.dayState is 'dawn'>>
 		새벽의 호박색 잔광으로 물들어 잔물결이 일고 있다.
-	<<elseif $daystate is 'day'>>
+	<<elseif Time.dayState is 'day'>>
 		그 모습에 어떤 불순물도 없이 잔물결이 일고 있다.
-	<<elseif $daystate is 'dusk'>>
+	<<elseif Time.dayState is 'dusk'>>
 		황혼의 호박색 잔광으로 물들어 잔물결이 일고 있다.
 	<<else>>
 		그 표면을 달빛이 비추며 잔물결이 일고 있다.
@@ -220,18 +203,19 @@
 	<br>
 	<<pregnancyTest "Wolf Cave Clearing">>
 	<br>
-	<<if $wolfstate is "cave" and $daystate isnot "night">>
+	<<if $wolfstate is "cave" and npcPregnancyEnding("Black Wolf")>>
+	<<elseif $wolfstate is "cave" and Time.dayState isnot "night">>
 		You see the Black Wolf resting by a rock, overlooking the cave and its surroundings.
 		<br>
 		<<link [[Approach|Wolf Relax]]>><<npc "Black Wolf">><<set $phase to 1>><</link>>
 		<br><br>
-	<<elseif $wolfstate is "cave" and $wolfcavepatrol is 1 and $wolfcavepatrolchance is 1 and $daystate is "night">>
+	<<elseif $wolfstate is "cave" and $wolfcavepatrol is 1 and $wolfcavepatrolchance is 1 and Time.dayState is "night">>
 		The Black Wolf rests away from the pack, occasionally surveying passing members before <<nnpc_his "Black Wolf">> attention returns to the treeline. <span class="blue"><<nnpc_He "Black Wolf">> looks agitated.</span>
 		<br>
 		<<link [[Approach|Wolf Patrol Intro]]>><<npc "Black Wolf">><</link>>
 		<br><br>
 	<</if>>
-	<<if $wolfstate is "cave" and $daystate isnot "night" and !["rain","snow"].includes($weather)>>
+	<<if $wolfstate is "cave" and Time.dayState isnot "night" and !["rain","snow"].includes($weather)>>
 		Some of the stronger <<wolf_cave_plural>> lie around the clearing, waiting for a hunt. They look bored.
 		<br>
 		<<link [[Challenge the hunters (0:20)|Wolf Cave Spar]]>><</link>><<gtiredness>><<gphysique>><<lstress>>
@@ -453,13 +437,13 @@ The <<beasttype>> huffs, and prowls from <<bhis>> hiding place, towards the play
 <<else>>
 	<<wakingEffects $sleepHoursTotal>>
 	<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
-		당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다. <<stress 5>><<gstress>>
+		당신은 깊이 잠들었으나, 지금은 약간 몸이 좋지 않은 기분이 든다.
 		<br><br>
 	<<elseif $nightmares gte 1 and $controlled is 0>>
-		당신은 뭔가 <<if $wraith.state is "haunt" and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다.
+		당신은 <<if _wakingEffect>>뭔가<<else>>자신이 뭔가<</if>> <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다.
 	<<else>>
 		<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
-			당신은 저속한 꿈에 시달린다.
+			당신은 자는 동안 <<if _wakingEffect>>꿨던<<else>>계속 해서<</if>> 추잡한 꿈 때문에 괴로워한다.
 			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
 			<<arousal `100 * $sleepHoursTotal`>>
 			<<if $arousal gte $arousalmax>>
@@ -468,8 +452,11 @@ The <<beasttype>> huffs, and prowls from <<bhis>> hiding place, towards the play
 			<<else>>
 				<br><br>
 			<</if>>
-		<<else>>
+		<<elseif !_wakingEffect>>
 			당신은 숙면을 취한다.
+			<br><br>
+		<<else>>
+			<br><br>
 		<</if>>
 	<</if>>
 	<<sleepeffects>>
@@ -593,6 +580,7 @@ The <<beasttype>> huffs, and prowls from <<bhis>> hiding place, towards the play
 :: Wolf Cave Play
 <<beastNEWinit 1 wolf>>
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+
 <<if $rng gte 51>>
 	당신은 어린 <<beastspluralPost>> 하나와 싸움을 한다. <<bHePost "이">> 점프해서 입으로 <<bhisPost "을">> 입으로 팔을 잡지만, <<bhePost "이">> 당신을 땅으로 끌어 당길 때까지 세게 물지 않는다. <<bHePost "이">> 사타구니의 냄새를 맡는다.
 	<br><br>
@@ -600,6 +588,37 @@ The <<beasttype>> huffs, and prowls from <<bhis>> hiding place, towards the play
 	<br>
 	<<link [[밀어낸다|Wolf Cave Clearing]]>><<endevent>><</link>>
 	<br>
+
+<<elseif !$weekly.watchingForest and $wolfpackharmony gte 20 and Time.dayState is "day" and $rng gte 80 and $wolfstate is "cave">>
+	<<set $weekly.watchingForest to true>>
+	<<npc "Black Wolf">>
+
+	<<if $monster is 1>>
+
+		You're playing with younger wolves when you feel something warm touch your lower back. You look behind your shoulder and see the Black Wolf resting <<bhis>> hand on your waist.
+		<br><br>
+
+		"Need you," <<bhe>> says.
+		<br><br>
+
+	<<else>>
+
+		You're playing with younger wolves when you feel something moist touch your back. You look behind and see the Black Wolf poking <<bhis>> nose at you. 
+		<br><br>
+
+	<</if>>
+
+	<<bHe>> doesn't seek your attention often, so you excuse yourself and follow the black canine giant.
+	<br><br>
+
+	The Black Wolf treads towards the edge of the forest all the while waggling <<bhis>> tail and looking back at you, as if inviting to come along.
+	<br><br>
+
+	<<link [[Follow Black Wolf|Watching the Forest Follow]]>><</link>>
+	<br>
+	<<link [[Stay at the cave|Watching the Forest Stay]]>><</link>><<lharmony>>
+
+
 <<else>>
 	당신은 젊은 <<beastspluralPost "과">> 숨바꼭질을 한다. 그들은 너무 멀리 떨어져 나가는 것을 주저하지만, 근처에 숨을 곳이 많이 있다. 후각은 그들에게 이점을 주고 그들은 당신을 빨리 찾아내지만, 그래도 재미있다.
 	<br><br>
