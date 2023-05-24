@@ -2,9 +2,9 @@
 
 <<set $outside to 1>><<set $location to "park">><<effects>><<set $bus to "park">><<getTarget true>>
 당신은 공원에 있다.
-<<if $daystate is "dawn">>
+<<if Time.dayState is "dawn">>
 	산책이나 조깅을 하고 있는 사람들이 있습니다. 어떤 사람들은 개를 데리고 있다.
-<<elseif $daystate is "day">>
+<<elseif Time.dayState is "day">>
 	<<if $weather is "rain">>
 		몇몇 사람들이 밖에 나와, 길에 생긴 물웅덩이들을 지나쳐 걷고 있다.
 	<<elseif $weather is "snow">>
@@ -12,9 +12,9 @@
 	<<else>>
 		사람들이 많이 밖에 나와, 그들의 개와 산책하거나 조깅하고 있다. 당신은 놀이터에서 노는 아이들의 목소리를 듣는다.
 	<</if>>
-<<elseif $daystate is "dusk">>
+<<elseif Time.dayState is "dusk">>
 	주변에 사람들이 많다. 학생들이 놀이터에서 놀고 있다.
-<<elseif $daystate is "night">>
+<<elseif Time.dayState is "night">>
 	<<if $park_fame gte 60>>
 		<span class="pink">그림자에 섬뜩한 형상이 숨어 있다.</span> <i>당신의 음란한 달리기 소식이 퍼졌다. 진정시키려면 며칠 동안은 노출한 상태로 뛰지 말아야 한다.</i>
 	<<elseif $park_fame gte 20>>
@@ -30,7 +30,7 @@
 <br><br>
 <<if $exposed gte 1>>
 	<<exhibitionismpark>>
-	<<if $daystate isnot "night">>
+	<<if Time.dayState isnot "night">>
 		당신은 하이 가로부터 소란스러운 소리를 듣는다. 이 모습으로는 건너갈 수 없다. 하지만, 길 건너편에 상자들을 운반하는 창고가 있다. 어쩌면, 당신은 그것들 중 하나에 숨을 수도 있다.
 		<br><br>
 	<</if>>
@@ -43,7 +43,7 @@
 <<else>>
 	<<run statusCheck("Robin")>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($halloween_kylar is 1 or $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60) and $halloween_kylar_proposed isnot 1 and $daystate is "night" and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($halloween is 1 and $monthday is 31 and $hour gte 21 or $month is "november" and $monthday is 1 and $hour lte 6) and !$possessed>>
+	<<if ($halloween_kylar is 1 or $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60) and $halloween_kylar_proposed isnot 1 and Time.dayState is "night" and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and (($halloween is 1 and Time.monthDay is 31 and Time.hour gte 21) or (Time.monthName is "November" and Time.monthDay is 1 and Time.hour lte 6)) and !$possessed>>
 		<<halloweenkylar>>
 	<<elseif ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
 		<<eventsstreet>>
@@ -127,7 +127,7 @@
 			<<link [[다음|Park]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and $season is "winter" and ($weekday is 7 or $weekday is 1) and between($hour, 9, 16) and $exposed lte 0 and !$possessed>>
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and Time.season is "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0 and !$possessed>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>당신은 공원 가판대에서 친숙한 누군가가 일하고 있는 것을 봤다. <<He_ nun>> 거의 동시에 당신의 존재를 알아차린다. "어이!" 로빈이다. <<He_ nun>> 고아원에서 함께 사는 아이다. <<He_ nun>> 당신과 같은 나이임에도, 당신을 항상 동경해왔다. <<He_ nun>> 머그컵을 닦으면서, 당신에게 손을 흔든다. <<He_ ga>> 머그컵을 내려놓고, 당신이 다가오자 당신을 껴안아 준다.
 		<br><br>
@@ -164,8 +164,8 @@
 				<<link [[로빈의 핫초코 가판대|Robin Chocolate]]>><</link>>
 				<br>
 			<</if>>
-			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and $daystate is "day" and $kylarwatched isnot 1>>
-				<<if $schoolday isnot 1 or $hour lte 8 or $hour gte 15>>
+			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and Time.dayState is "day" and $kylarwatched isnot 1 and !($englishPlay is "ongoing" and $englishPlayRoles.Kylar and $schoolstate is "afternoon")>>
+				<<if !Time.schoolDay or Time.hour lte 8 or Time.hour gte 15>>
 					<<if $kylar.fountain is 1>>
 						<br>
 						카일라는 분수대에 앉아 가끔 동전을 던진다.
@@ -179,7 +179,7 @@
 					<br><br>
 				<</if>>
 			<</if>>
-			<<if ["active", "rescued"].includes($NPCName[$NPCNameList.indexOf("Whitney")].state) and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and ["snow", "rain"].includes($weather) and $daystate is "day" and ($schoolday isnot 1 or $hour lte 8 or $hour gte 15) and $daily.whitney.park is undefined and $pillory_tenant.special.name isnot "Whitney">>
+			<<if isInPark("whitney")>>
 				<br>
 				당신은 우산 아래에서 연기가 올라오는 것을 본다. 휘트니가 틀림없다. <<nnpc_He_ ga "Whitney">> 공원 분수 근처의 나무 아래에 서 있다.
 				<br>
@@ -194,10 +194,10 @@
 		<<if $leftleg is "bound" or $rightleg is "bound">>
 			<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "양 다리" : "왼쪽 다리") : "오른쪽 다리")>>
 			당신의 $_boundType가 묶인 채로는 달릴 수 없다.
-		<<elseif $worn.feet.type.includes("heels") and ($exposed is 0 or $daystate is "night")>>
+		<<elseif $worn.feet.type.includes("heels") and ($exposed is 0 or Time.dayState is "night")>>
 			<<link [[힐을 신고 운동한다 (0:30)|Park Exercise Heels]]>><<pass 30>><<tiredness 3>><<stress -1>><<athletics 2>><<slimeEventEnd>><</link>><<ggtiredness>><<gathletics>><<lstress>><br>
 		<<else>>
-			<<if $daystate is "night">>
+			<<if Time.dayState is "night">>
 				<<if $exposed gte 2 and $exhibitionism gte 35>>
 					<<runicon>><<link [[달린다 (0:30)|Park Run Exposed]]>><<pass 30>><<set $phase to 0>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd>><</link>><<exhibitionist3>><<gtiredness>><<gathletics>><<lstress>>
 				<<elseif $exposed is 1>>
@@ -210,11 +210,11 @@
 			<</if>>
 		<</if>>
 		<br><<customRest "park">><br>
-		<<if $daystate is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
+		<<if Time.dayState is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
 			<<ind>><<link [[분수에서 목욕한다 (0:10)|Park Fountain]]>><<set $daily.ex.fountain to 1>><</link>><<exhibitionist4>>
 			<br>
 		<</if>>
-		<<if $exposed gte 1 and $daystate isnot "night">>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
 			<<link [[상자 안에 숨는다 (0:10)|Crate Ex]]>><<pass 10>><</link>>
 			<br>
 			<<if $exposed gte 2 and $exhibitionism gte 75>>
@@ -234,14 +234,14 @@
 			<<loiter>>
 		<</if>>
 		<<add_link "<br>다른 경로<br>">>
-		<<if $exposed gte 1 and $daystate isnot "night">><<hideDisplay>>
+		<<if $exposed gte 1 and Time.dayState isnot "night">><<hideDisplay>>
 		<<else>>
 			<<commercial>>
 			<<industrial>>
 		<</if>>
 		<<stormdrain>>
 		<<if $historytrait gte 1 and $parktunnelintro gte 1>>
-			<<add_link "<<link [[학교 비밀 통로 (0:05)|School Rear Playground]]>><<pass 5>><</link>>">>
+			<<add_link "<<link [[학교 비밀 통로 (0:05)|School Rear Courtyard]]>><<pass 5>><</link>>">>
 			<br>
 		<</if>>
 		<<displayLinks>>
