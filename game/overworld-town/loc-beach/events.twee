@@ -7,7 +7,7 @@
 	<<neutral 1>>
 	<<molested>>
 	<<maninit>><<npcstrip>>
-	<<if $daystate isnot "night">>
+	<<if Time.dayState isnot "night">>
 		<<enable_rescue>>
 	<</if>>
 <</if>>
@@ -68,7 +68,7 @@
 :: Beach Day Molestation Escape
 
 <<effects>>
-<<if $daystate isnot "night">>
+<<if Time.dayState isnot "night">>
 	<<He_ nun>> 고통에 움찔하며, 당신이 도망칠 기회를 준다. <<tearful>> 당신은 도망친다.
 	<br><br>
 <<else>>
@@ -91,62 +91,73 @@
 <<link [[다음|Beach]]>><<set $eventskip to 1>><</link>>
 
 :: Beach Day Encounter
-
 <<location "beach">><<effects>>
 
 <<if $phase is 0>>
-
-당신은 당신을 못 본 척하는 <<person_>>에게 <<him_ yi>> 앞까지 걸어간다. <<He_ nun>> 당신을 보고 있지만 아무 말도 하지 않는다.
-<br><br>
-
-<<link [[친근하게 대화한다 (0:10)|Beach Day Encounter]]>><<set $phase to 1>><<pass 10>><<stress -2>><<trauma -1>><</link>><<lstress>><<ltrauma>>
-<br>
-
-<<link [[추파를 던진다 (0:05)|Beach Day Encounter]]>><<pass 5>><<set $phase to 2>><</link>><<promiscuous1>>
-<br>
-
-<<link [[떠난다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
-
-<<elseif $phase is 1>>
-당신은 <<him_>>에게 악의없는 대화를 해봄으로써 <<his_ yi>> 마음을 터놓도록 해본다. <<he_ nun>> 정중하게 답하지만 당신의 말이 대화의 대부분을 차지한다. 당신은 당신이 보지 않는다고 <<he_ ga>> 생각할 때마다 당신을 유심히 쳐다본다는 것을 알아챈다.
-<br><br>
-
-<<link [[작별한다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
-<br>
-
-<<link [[추파를 던진다 (0:05)|Beach Day Encounter]]>><<pass 5>><<set $phase to 2>><</link>><<promiscuous1>>
-<br>
-
-<<elseif $phase is 2>>
-당신은 비치타월 위에 앉아 <<him_ yi>> 옆에 가까이 기댄다. 당신은 <<him_>>에게 <<he_ nun>> 훌륭한 부모지만 때로는 스트레스 해소를 해야 할 필요가 있다고 말한다.
-	<<if $NPCList[0].penis is "clothed">>
-	<<he_ nun>> 무언가를 감추려는 듯 <<his_ yi>> 다리를 움직인다.
+	당신은 당신을 못 본 척하는 <<person_>>에게 <<him_ yi>> 앞까지 걸어간다.
+	<<if pregnancyBellyVisible()>>
+		<<He>> notices your pregnant belly once you've gotten close enough. "My my!" <<he>> exclaims with glee. "Ready to be a mom already?"
 	<<else>>
-	<<he_ nun>> 당신이 강도를 높이며 계속 추파를 던지자 얼굴을 붉힌다.
+		<<He>> looks at you but doesn't speak.
 	<</if>>
-<<promiscuity1>>
+	<br><br>
 
-<<link [[그만둔다|Beach Day Encounter]]>><<set $phase to 3>><</link>>
-<br>
-<<if $promiscuity gte 15>>
-<<link [[유혹한다|Beach Day Encounter]]>><<set $phase to 4>><</link>> <<seductiondifficulty>><<promiscuous2>>
-<</if>>
+	<<link [[친근하게 대화한다 (0:10)|Beach Day Encounter]]>><<set $phase to 1>><<pass 10>><<stress -2>><<trauma -1>><</link>><<lstress>><<ltrauma>>
+	<br>
+	<<link [[추파를 던진다 (0:05)|Beach Day Encounter]]>><<pass 5>><<set $phase to 2>><</link>><<promiscuous1>>
+	<br>
+	<<link [[떠난다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $phase is 1>>
+	<<if pregnancyBellyVisible()>>
+		You manage to strike an engaging conversation with <<him>>. It becomes clear to you that the stress of parenthood is really getting to <<him>>. "Kid's got a father too, I imagine?"
+		<br><br>
 
+		<<link [[Say you are single|Beach Day Encounter Pregnancy Talk]]>><<set $phase to 0>><</link>>
+		<br>
+		<<link [[Say you know the father|Beach Day Encounter Pregnancy Talk]]>><<set $phase to 1>><</link>>
+		<br>		
+	<<else>>
+		당신은 <<him_>>에게 악의없는 대화를 해봄으로써 <<his_ yi>> 마음을 터놓도록 해본다. <<he_ nun>> 정중하게 답하지만 당신의 말이 대화의 대부분을 차지한다. 당신은 당신이 보지 않는다고 <<he_ ga>> 생각할 때마다 당신을 유심히 쳐다본다는 것을 알아챈다.
+		<br><br>
+
+		<<link [[작별한다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+		<<link [[추파를 던진다 (0:05)|Beach Day Encounter]]>><<pass 5>><<set $phase to 2>><</link>><<promiscuous1>>
+		<br>
+	<</if>>
+<<elseif $phase is 2>>
+	당신은 비치타월 위에 앉아 <<him_ yi>> 옆에 가까이 기댄다. 당신은 <<him_>>에게 <<he_ nun>> 훌륭한 부모지만 때로는 스트레스 해소를 해야 할 필요가 있다고 말한다.
+	<<if $NPCList[0].penis is "clothed">>
+		<<he_ nun>> 무언가를 감추려는 듯 <<his_ yi>> 다리를 움직인다.
+	<<else>>
+		<<he_ nun>> 당신이 강도를 높이며 계속 추파를 던지자 얼굴을 붉힌다.
+	<</if>>
+	<<promiscuity1>>
+
+	<<link [[그만둔다|Beach Day Encounter]]>><<set $phase to 3>><</link>>
+	<br>
+	<<if $promiscuity gte 15>>
+		<<link [[유혹한다|Beach Day Encounter]]>><<set $phase to 4>><</link>> <<seductiondifficulty>><<promiscuous2>>
+		<br>
+	<</if>>
 <<elseif $phase is 3>>
-당신은 결과에 만족하고 자리를 떠난다.
-<br><br>
-<<link [[다음|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
-
+	당신은 결과에 만족하고 자리를 떠난다.
+	<br><br>
+	
+	<<link [[다음|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
 <<elseif $phase is 4>><<if $seductionskill lt 1000>><span class="gold">당신은 유혹하는 데 좀 더 자신감이 붙었다.</span><</if>><<seductionskilluse>><<promiscuity2>>
 	<<if 1000 - ($rng * 10) - $seductionskill - ($attractiveness / 10) lte -100>>
-<<his_ yi>> 눈을 응시하며, 당신은 몸으로 <<his_ yi>> 몸을 밀어붙이고 당신의 의도가 무엇인지 확실하게 한다. <<He_ nun>> <<his_ yi>> 아이들을 슬쩍 본다. 아이들의 정신이 다른 데에 팔려 있는 것을 확인하고, <<he_ nun>> 돌아서서 당신을 품는다, <<his_ yi>> 심장이 맹렬하게 뛴다.
-<br><br>
-<<link [[다음|Beach Day Encounter Sex]]>><<set $sexstart to 1>><</link>>
-	<<else>>
-<<his_ yi>> 눈을 응시하며, 당신은 몸으로 <<his_ yi>> 몸을 밀어붙이고 당신의 의도가 무엇인지 확실하게 한다. 변명을 더듬거리면서, <<he_ nun>> 당신이 다가오자 뭄을 움찔하며 피하고는 <<his_ yi>> 아이들을 확인하러 떠난다.
-<br><br>
+		<<his_ yi>> 눈을 응시하며, 당신은 몸으로 <<his_ yi>> 몸을 밀어붙이고 당신의 의도가 무엇인지 확실하게 한다. <<He_ nun>> <<his_ yi>> 아이들을 슬쩍 본다. 아이들의 정신이 다른 데에 팔려 있는 것을 확인하고, <<he_ nun>> 돌아서서 당신을 품는다, <<his_ yi>> 심장이 맹렬하게 뛴다.
+		<br><br>
 
-<<link [[포기한다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<link [[다음|Beach Day Encounter Sex]]>><<set $sexstart to 1>><</link>>
+	<<else>>
+		<<his_ yi>> 눈을 응시하며, 당신은 몸으로 <<his_ yi>> 몸을 밀어붙이고 당신의 의도가 무엇인지 확실하게 한다. 변명을 더듬거리면서, <<he_ nun>> 당신이 다가오자 뭄을 움찔하며 피하고는 <<his_ yi>> 아이들을 확인하러 떠난다.
+		<br><br>
+
+		<<link [[포기한다|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
 	<</if>>
 <</if>>
 
@@ -218,7 +229,7 @@
 :: Beach Day Encounter Sex Escape
 <<effects>>
 
-<<if $daystate isnot "night">>
+<<if Time.dayState isnot "night">>
 <<He_ nun>> 고통에 움찔하며, 당신이 도망칠 기회를 준다. <<tearful>> 당신은 어둠 속으로 도망친다.
 <br><br>
 <<else>>
@@ -362,7 +373,7 @@
 :: Beach Night Molestation Escape
 
 <<effects>>
-<<if $daystate isnot "night">>
+<<if Time.dayState isnot "night">>
 <<He_ nun>> 고통에 움찔하며, 당신이 도망칠 기회를 준다. <<tearful>> 당신은 어둠 속으로 도망친다.
 <br><br>
 <<else>>
@@ -583,7 +594,7 @@
 :: Beach Exhibit Molestation Escape
 <<effects>><<person1>>
 
-<<if $daystate isnot "night">>
+<<if Time.dayState isnot "night">>
 <<He_ nun>> 고통에 움찔하며, 당신이 도망칠 기회를 준다. <<tearful>> 당신은 군중 속으로 도망친다.
 <br><br>
 <<else>>
@@ -623,8 +634,7 @@
 <<link [[다음|Beach]]>><</link>>
 
 :: Passout Beach
-/*ToDo: Pregnancy, remove $pregnancyTesting to properly enable*/
-<<if $sexStats.vagina.pregnancy.waterBreaking is true and $pregnancyTesting>>
+<<if isPlayerNonparasitePregnancyEnding()>>
 	<<pregnancyWatersBrokenPassout "beach">>
 <<else>>
 	당신은 스스로를 너무 혹사시켰다.
@@ -767,7 +777,7 @@
 :: Beach Abduction Molestation Escape
 
 <<effects>>
-<<if $daystate isnot "night">>
+<<if Time.dayState isnot "night">>
 	그들은 고통에 움찔하며, 당신이 도망칠 기회를 준다. <<tearful>> 당신은 벌거벗은 채 모래언덕으로 도망친다.
 	<br><br>
 <<else>>
@@ -834,7 +844,7 @@
 	<<else>>
 		<<generatey3>><<generatey4>><<generatey5>><<generatey6>>당신은 사방이 모래언덕들로 둘러싸여 바깥 시선이 차단되는, 비교적 평평한 구역에 도착한다. 4명의 학생들이 중앙에 앉아서 담배를 피고 있다. 당신의 수치스러운 모습에 새로운 시선들이 꽂히자 당신의 굴욕감이 고조된다. 그들의 첫 충격은 빠르게 가라앉고, 노골적이고 원초적인 욕망만이 남는다.
 		<br><br>
-		<<person2>><<person_ un>> 당신 몸의 모든 부위를 눈으로 맛보며 즐기고 있는, 그들의 중앙으로 당신을 옮긴다. "우리가 이 쓰레기를 해변 근처에서 찾았지. 누군가 이걸 아무 손도 대지 않고, 그냥 내버려두고 갔다는게 믿을 수 없어," <<person1>><<person_ i>> 모두의 앞에 있는 당신의 <<genitals_ rul>> <<if $worn.genitals.type.includes("chastity")>>부숴버리려 시도하자<<else>>애무하기 시작하자<<<set $worn.genitals.integrity -= 50>><</if>>, 당신은 숨이 턱 막힌다. 나머지 사람들도 그것을 신호로 삼아 움직이기 시작한다. 온 주위에서 팔들이 뻗어오며, 그들의 몫을 챙기려 한다.
+		<<person2>><<person_ un>> 당신 몸의 모든 부위를 눈으로 맛보며 즐기고 있는, 그들의 중앙으로 당신을 옮긴다. "우리가 이 쓰레기를 해변 근처에서 찾았지. 누군가 이걸 아무 손도 대지 않고, 그냥 내버려두고 갔다는게 믿을 수 없어," <<person1>><<person_ i>> 모두의 앞에 있는 당신의 <<genitals_ rul>> <<if playerChastity()>>부숴버리려 시도하자<<else>>애무하기 시작하자<<set $worn.genitals.integrity -= 50>><</if>>, 당신은 숨이 턱 막힌다. 나머지 사람들도 그것을 신호로 삼아 움직이기 시작한다. 온 주위에서 팔들이 뻗어오며, 그들의 몫을 챙기려 한다.
 		<br><br>
 		<<link [[다음|Beach Abduction Molestation]]>><<set $molestationstart to 1>><</link>>
 	<</if>>
@@ -983,4 +993,20 @@
 	<<exhibitionism4>>
 <</if>>
 <<link [[다음|Beach]]>><<set $eventskip to 1>><</link>>
+
+:: Beach Day Encounter Pregnancy Talk
+<<effects>>
+<<if $phase is 0>>
+	You tell the <<person>> that the father left you. <<He>> pats your shoulder to comfort you.
+	"You should just focus on your studies for now," <<he>> says. "After that, try to find a good job, something to keep you afloat. You can pull through on your own, you'll see." <<He>> keeps on giving you advice, and asks you to remain strong for your child. <<His>> words fill you with relief. <<stress -5>><<lstress>>
+<<else>>
+	You nod, telling <<him>> that you do keep in touch. "Want some advice?" <<he>> asks. "Get out of this place. This town, this is no place to raise a kid. You're better off leaving now that you're still young and have the means." <<He>> keeps on talking about the degeneracy in the town, and you feel a very clear sense of bitterness in <<his>> words as <<he>> elaborates.
+<</if>>
+<br><br>
+
+<<He>> notices one of <<his>> kids causing a scene off in the distance, <<he>> calls out to them. You decide it's best to leave <<him>> alone for now.
+<br><br>
+
+<<link [[다음|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
 
