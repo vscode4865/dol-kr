@@ -1,19 +1,19 @@
 :: Widgets Journal [widget]
 <<widget "journal">>
 	<br>
-	<<print "It is the " + ordinalSuffixOf(Time.monthDay) + " of " + Time.monthName + ", " + Time.year + "." >>
+	<<trMonth `Time.monthName`>><<print "오늘은 " + Time.year + "년 " + _trResult + " " + Time.monthDay + "일 이다." >>
 	<br>
-	It has been <<print Time.days>> days since the game started.
+	게임이 시작된지 <<print Time.days>>일이 지났다.
 	<br>
 	게임이 시작된 계절은 <<trSeason $startingseason "이다">>_trResult.
 	<br>
 	<<if $hardmodedays isnot undefined>>
-		당신은 하드모드에서 <span class="gold">$hardmodedays</span>일동안 생존했다.
+		당신은 하드모드에서 <span class="gold">$hardmodedays</span>일 동안 생존했다.
 		<br>
 	<</if>>
 	<<schoolterm>>
 	<br>
-	It is <<print Time.season>>.
+	지금은 <<trSeason `Time.season` "이다">>_trResult.
 	<br><br>
 	<<if $antiquemoney gt 0>>
 		당신은 £<<print $antiquemoney>> 어치의 골동품을 갖고 있다.
@@ -31,7 +31,7 @@
 				<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[_plant_keys[_t]].icon">
 			<</if>>
 			<<if setup.plants[$plants[_plant_keys[_t]].name].singular and $plants[_plant_keys[_t]].amount === 1>>
-				<<print setup.plants[$plants[_plant_keys[_t]].name].singular>>. |
+				<<trPlants $plants[_plant_keys[_t]].singular "name" "을">>_trResult 가지고 있다. |
 			<<else>>
 				<<trPlants $plants[_plant_keys[_t]].plural "name" "을">>_trResult 가지고 있다. |
 			<</if>>
@@ -62,14 +62,14 @@
 
 	<<if $rentday isnot undefined>>
 		<<if $renttime lte 0>>
-			Bailey is looking for you, and wants <<printmoney $rentmoney>><<babyRentDisplay " plus " " for not looking after your children" "gold">>.
+			베일리가 당신을 찾고 있으며, <<printmoney $rentmoney>>를 원한다.<<babyRentDisplay " 그리고 당신이 아이를 돌보지 않았기 때문에 " "를 추가로 더 원한다" "gold">>.
 			<br>
 		<<else>>
-			Bailey wants <<printmoney $rentmoney>> on <<rentday>><<babyRentDisplay " plus " " for not looking after your children" "gold">>.
+			베일리는 <<rentday>>까지 <<printmoney $rentmoney>>를 원한다.<<babyRentDisplay " 그리고 당신이 아이를 돌보지 않았기 때문에 " "를 추가로 더 원한다" "gold">>.
 			<br>
 		<</if>>
 	<<elseif $rentmoney isnot undefined>>
-		Bailey wants <<printmoney $rentmoney>><<babyRentDisplay " plus " " for not looking after your children" "gold">>.
+		베일리는 <<printmoney $rentmoney>>를 원한다.<<babyRentDisplay " 그리고 당신이 아이를 돌보지 않았기 때문에 " "를 추가로 더 원한다" "gold">>.
 		<br>
 	<</if>>
 
@@ -460,7 +460,7 @@
 			과학 전람회가 클리프 가의 시청에서 오늘 <<ampm 9 00>>부터 <<ampm 18 00>>까지 열릴 예정이다.
 			<br>
 		<<else>>
-			$scienceprojectdays일 뒤에 클리프 가의 시청에서 과학전람회가 열릴 예정이다.
+			과학 전람회가 클리프 가의 시청에서 $scienceprojectdays일 뒤에 열릴 예정이다.
 			<br>
 		<</if>>
 		다음과 같은 과학 프로젝트를 진행하고 있다. 전람회에 출품할 주제를 하나 골라야 한다.
@@ -580,7 +580,7 @@
 			수학 경시대회가 클리프 가의 시청에서 오늘 <<ampm 9 00>>부터 <<ampm 18 00>>까지 열릴 예정이다.
 			<br>
 		<<else>>
-			$mathsprojectdays일 뒤에 클리프 가의 시청에서 수학 경시대회가 열릴 예정이다. 그 전에 해답을 완성해야 한다. 고아원이나 학교 도서관에서 프로젝트에 대한 작업을 할 수 있다.
+			수학 경시대회가 클리프 가의 시청에서 $mathsprojectdays일 뒤에 열릴 예정이다. 그 전에 해답을 완성해야 한다. 고아원이나 학교 도서관에서 프로젝트에 대한 작업을 할 수 있다.
 			<br>
 		<</if>>
 		<<if $mathschance is 0>>
@@ -612,39 +612,39 @@
 
 	<<if $englishPlay is "ongoing">>
 		<<if $englishPlayDays is 0>>
-			The school plays are being held at the town hall on Cliff street tonight from <<ampm 17 00>> until <<ampm 21 00>>.
+			학교 연극이 클리프 가의 시청에서 오늘 밤 <<ampm 17 00>>부터 <<ampm 21 00>>까지 열릴 예정이다.
 		<<else>>
-			The school plays will be performed at the town hall on Cliff street in $englishPlayDays <<if $englishPlayDays is 1>>day<<else>>days<</if>>.
+			학교 연극이 클리프 가의 시청에서 $englishPlayDays일 뒤에 열릴 예정이다.
 		<</if>>
 		<<if $englishPlayRoles.Player isnot "none">>
 			<br>
-			You have taken the role of $englishPlayRoles.Player. You can rehearse alone at the orphanage.
+			당신은 <<trNamedNPC "name" $englishPlayRoles.Player>>_trResult 역을 맡았다. 당신은 고아원에서 혼자 예행연습을 할 수 있다.
 			<<if $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown>>
 				<br>
-				Kylar is playing as $englishPlayRoles.Kylar. You can rehearse with <<nnpc_him "Kylar">> in <<if $weather is "rain" or $weather is "snow">>the school library<<else>>the school's rear courtyard<</if>> after school.
+				카일라는 <<trNamedNPC "name" $englishPlayRoles.Kylar "을">>_trResult 연기한다. 당신은 방과 후에 <<nnpc_him_ gwa "Kylar">> <<if $weather is "rain" or $weather is "snow">>학교 도서실<<else>>학교 뒷마당<</if>>에서 예행연습을 할 수 있다.
 			<<elseif $englishPlayKylarReplace>>
 				<br>
-				Kylar's part in the play will have to be taken over by another student.
+				연극에서 카일라의 배역은 다른 학생에게로 넘어갔다.
 			<</if>>
 			<<if $englishPlayRoles.SydneyKnown>>
 				<br>
-				Sydney is playing as $englishPlayRoles.Sydney. You can rehearse with <<nnpc_him "Sydney">> in the English classroom after school.
+				시드니는 <<trNamedNPC "name" $englishPlayRoles.Sydney "을">>_trResult 연기한다. 당신은 방과 후에 <<nnpc_him_ gwa "Sydney">> 영어 교실에서 예행연습을 할 수 있다.
 			<</if>>
 			<<if !$englishPlayRoles.SydneyKnown and !$englishPlayRoles.KylarKnown>>
 				<br>
-				You can meet your partners in the English classroom after school.
+				당신은 방과 후에 영어 교실에서 당신의 연극 동료들과 만날 수 있다.
 			<<elseif !$englishPlayRoles.SydneyKnown or (!$englishPlayRoles.KylarKnown and !$englishPlayKylarReplace)>>
 				<br>
-				You can meet your other partner in the English classroom after school.
+				당신은 방과 후에 영어 교실에서 당신의 다른 연극 동료와 만날 수 있다.
 			<</if>>
 			<br>
 			<<playReadiness>>
-			Performing well will spread social fame and give a large boost to school status.
+			연기를 잘 하면 사교 명성을 퍼트리고 학교 평판에 큰 도움이 될 것이다.
 		<<else>>
 			<<if $englishPlayLate>>
-				You have <<number $englishPlayLate>> <<if $englishPlayLate is 1>>day<<else>>days<</if>> to choose a role. You can sign up in the English classroom after school, or just help other students rehearse.
+				당신이 배역을 맡으려면 <<trNumber $englishPlayLate>> <<if $englishPlayLate is 1>>일<<else>>일<</if>> 내에 신청해야 한다. 당신은 방과 후에 영어 교실에서 신청할 수 있고, 또는 그냥 다른 학생들이 예행연습을 하는 것을 도와줄 수도 있다.
 			<<else>>
-				It's too late for you to take a role, but you can still help other students rehearse and watch the plays with the audience.
+				당신이 배역을 맡기에는 너무 늦었지만, 아직 당신은 다른 학생들이 예행연습을 하는 것을 도와주고 관객들과 연극을 관람할 수 있다.
 			<</if>>
 		<</if>>
 		<br>

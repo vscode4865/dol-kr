@@ -58,6 +58,7 @@ function trPost(postNum, post, sep)
 	
 	return T.trPost;
 }
+window.trPost = trPost;
 DefineMacro("trPost", trPost);
 
 /* getPostNum : 문자열에서 조사 번호를 찾아 _postNum에 넣는다 (0: 종성 있음 1: 종성 없음 2: 종성 ㄹ) */

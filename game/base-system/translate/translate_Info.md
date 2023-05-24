@@ -2357,6 +2357,63 @@
         <<trRole "guard" '이' >>_trResult             //  간수가
     ```
 
+* trTime
+	__주의: 만약 인수가 Time.day 처럼 일반 sugarcube 변수가 아닌 경우 역따옴표( ` ` )를 사용하여 처리하여야 함 __
+
+    ```
+    <<trMonth>>
+        <<trMonth *monthName post "sep">>
+
+        월 이름을 번역한다.
+
+        필수사항
+        - *monthName: 번역할 월 이름
+
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trMonth "July">>                //  7월
+    ```
+
+    ```
+    <<trDaysOfWeek>>
+        <<trDaysOfWeek *daysOfWeekName [isHanja | post "sep"]>>
+
+        요일명을 번역한다.
+
+        필수사항
+        - *daysOfWeekName: 번역할 요일명
+
+        선택사항
+			- isHanja: 문자열이 아닌 인수를 넣으면 한자로 표시한다. 일자 간이 표시로 사용할 경우에만 사용하기에 이 경우 조사처리는 하지 않는다.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trDaysOfWeek "Sunday">>                //  일요일
+		<<trDaysOfWeek "Mon" 1>>                //  月
+    ```
+
+    ```
+    <<trSeason>>
+        <<trSeason *season post "sep">>
+
+        계절을 번역한다.
+
+        필수사항
+        - *season: 계절 혹은 계절 배열. 배열인 경우 쉼표로 붙여서 표시한다.
+
+        선택사항
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trSeason "spring">>                //  봄
+        <<trSeason ["autumn", "winter"] "과">>                //  가을, 겨울과
+    ```
+
 * trToyName
     ```
     <<trToyName>>
@@ -2413,24 +2470,6 @@
 
         e.g.
         <<trWeather "rain">>                //  "비"
-    ```
-
-    ```
-    <<trSeason>>
-        <<trSeason *season post "sep">>
-
-        계절을 번역한다.
-
-        필수사항
-        - *season: 계절 혹은 계절 배열. 배열인 경우 쉼표로 붙여서 표시한다.
-
-        선택사항
-            - post: 번역결과의 뒤에 조사를 붙인다.
-            - sep: 조사를 분리하여 저장한다.
-
-        e.g.
-        <<trSeason "spring">>                //  봄
-        <<trSeason ["autumn", "winter"] "과">>                //  가을, 겨울과
     ```
 
 -----------------

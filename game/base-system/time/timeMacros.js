@@ -15,10 +15,10 @@ function ampm(hour, minute) {
 		minute = Time.minute;
 	}
 	if (V.options.timestyle === "ampm") {
-		ampm = hour >= 12 ? " pm" : " am";
+		ampm = hour >= 12 ? "오후 " : "오전 ";
 		hour = ((hour + 11) % 12) + 1;
 	}
-	return !ampm ? ("0" + getTimeString(hour, minute)).slice(-5) : getTimeString(hour, minute) + ampm;
+	return !ampm ? ("0" + getTimeString(hour, minute)).slice(-5) :  ampm + getTimeString(hour, minute);
 }
 DefineMacroS("ampm", ampm);
 
@@ -109,11 +109,11 @@ Macro.add("clock", {
 
 function schoolTerm() {
 	if (Time.schoolTerm) {
-		const date = Time.nextSchoolTermEndDate;
-		return "School term finishes on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
+		const date = Time.nextSchoolTermEndDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
+		return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  끝난다";
 	} else {
-		const date = Time.nextSchoolTermStartDate;
-		return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
+		const date = Time.nextSchoolTermStartDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
+		return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  시작한다";
 	}
 }
 DefineMacroS("schoolterm", schoolTerm);
