@@ -2474,7 +2474,17 @@
 
 -----------------
 # 기타 명사 매크로
-   - 사용 횟수가 너무 적어 새로 만들지 않고 기존 매크로를 변경시켜 사용하는 매크로들. 조사를 받는 것만 기재한다.
+   - 사용 횟수가 너무 적어 새로 만들지 않고 기존 매크로를 변경시켜 사용하는 매크로들. 조사를 받거나 조사 표현이 가능한 것만 기재한다.
+   
+* 03-JavaScript/04-Pregnancy/storyFunctions.js
+    ```
+    pregnancyNameCorrection()
+        <<print pregnancyNameCorrection(...)>>(조사 매크로)
+		임신시킨 자의 이름을 표시한다. _postNum에 조사 번호를 넣기 때문에 조사 매크로로 조사를 표현할 수 있다.
+		
+		e.g.
+		<<print pregnancyNameCorrection("Avery")>>?ga	// 에이버리가
+    ```
 
 * base-combat/audience.twee
     ```

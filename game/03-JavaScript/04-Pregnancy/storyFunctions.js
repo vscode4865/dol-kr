@@ -339,13 +339,13 @@ function pregnancyNameCorrection(name, caps = false) {
 		case "Great Hawk":
 		case "Ivory Wraith":
 		case "cum bucket":
-			name = (caps ? "The " : "the ") + name;
+			Wikifier.wikifyEval('<<trNamedNPC "' + name + '" "name">>'); name = T.trResult; getPostNum(T.trResult);
 			break;
 		case "pc":
-			name = caps ? "Yourself" : "yourself";
+			name = "당신 자신"; T.postNum = 0;
 			break;
 		default:
-			name = name[0] === name[0].toLowerCase() ? (caps ? "A" : "a") + (["a", "e", "i", "o", "u"].includes(name[0]) ? "n " : " ") + name : name;
+			Wikifier.wikifyEval('<<trNPCdesc "' + name + '">>'); name = name[0] === name[0].toLowerCase() ? "어떤 " + T.trResult : T.trResult; getPostNum(T.trResult);
 			break;
 	}
 	return name;
