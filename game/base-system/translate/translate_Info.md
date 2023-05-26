@@ -600,6 +600,12 @@
     ```
 
    ```
+    <<childherselfPost>>
+        <<childherself>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
     <<childhandPost>>
         <<childhand>>의 대체 위젯.
         + <<childnamePost>>와 용도 및 방식 같음. 생략
@@ -1362,6 +1368,20 @@
     <<wolf_cave_pluralPost>>
         <<wolf_cave_plural>>의 대체 위젯.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<wolf_cave_singularPost>>
+		<<wolf_cave_singularPost [pronoun] post "sep">>
+        <<wolf_cave_singular>>의 대체 위젯. 조사를 붙일 수 있다.
+        
+        선택사항
+            - pronoun: 원본 매크로에 사용되는 인수값.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<wolf_cave_singular "f" "을">>               // 늑대 소녀를
     ```
 
     ```
@@ -2739,7 +2759,7 @@
 	- childPost 계열
 		```
 		<<childname_ (조사)>>, <<childrenNames_ (조사)>>, <<childHe_ (조사)>>, <<childhe_ (조사)>>, <<childHis_ (조사)>>, <<childhis_ (조사)>>, <<childHim_ (조사)>>, <<childhim_ (조사)>>,
-		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
+		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childherself_ (조사)>>, <<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
 		```
 	- clothesPost 계열
 		```
@@ -2768,7 +2788,7 @@
 		<<priest_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
-		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
+		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<wolf_cave_singular_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
 		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 

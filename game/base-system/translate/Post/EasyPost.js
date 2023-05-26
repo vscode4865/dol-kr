@@ -147,6 +147,8 @@ const EasyPostMacroList = [
 	{ name: "childHers_", orig_name: "childHersPost", is_print: 0},
 	{ name: "childhers_", orig_name: "childHersPost", is_print: 0},
 
+	{ name: "childherself_", orig_name: "childherselfPost", is_print: 0},
+
 	{ name: "childhand_", orig_name: "childhandPost", is_print: 0},
 	
 	{ name: "childhands_", orig_name: "childhandsPost", is_print: 0},
@@ -531,6 +533,8 @@ const EasyPostMacroList = [
 
 	// <<wolf_cave_plural_ ul>> = <<wolf_cave_plural>>을 
 	{ name: "wolf_cave_plural_", orig_name: "wolf_cave_pluralPost", is_print: 0},
+
+	{ name: "wolf_cave_singular_", orig_name: "wolf_cave_singularPost", is_print: 0},
 
 	// <<beast_jaws_text_ nun>> = <<beast_jaws_text>>는 
 	// <<beast_Jaws_text_ nun>> = <<beast_Jaws_text>>는 
