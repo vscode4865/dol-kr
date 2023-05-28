@@ -25,12 +25,12 @@
 		<<link [[지불한다 (£1000)|Brothel Pay]]>><<npcincr Briar dom 1>><<set $money -= 100000>><<sub 1>><</link>>
 		<br>
 	<</if>>
-	<<link [[그럴 돈이 없다고 한다|Brothel Pay Refuse]]>><</link>>
+	<<link [["그럴 돈이 없다고 한다"|Brothel Pay Refuse]]>><</link>>
 	<br>
 	<<link [[거절한다|Brothel Pay Refuse]]>><<npcincr Briar dom -1>><<def 1>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Leighton")].init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and $weekday gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
+<<elseif $NPCName[$NPCNameList.indexOf("Leighton")].init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
 	<<npc Leighton>><<person1>>
 	"내 학생 중 하나같은데," 당신의 오른쪽에서 흥미로운 듯한 목소리가 들린다. 레이턴이다.
 	<<if pregnancyBellyVisible()>>
@@ -73,8 +73,8 @@
 		<<link [[무대 뒤로 간다|Brothel Stage]]>><</link>>
 		<br>
 	<</if>>
-	<<if $leightondancerefused is 1 and $headblackmailed is 1 and $pillory_tenant.special.name isnot "Leighton">>
-		<<link [[분장실 (0:01)|Leighton Club Ignore]]>><<pass 1>><<set $leightondancerefused to 0>><</link>>
+	<<if $weekly.leightonDanceRefused and $headblackmailed is 1 and $pillory_tenant.special.name isnot "Leighton">>
+		<<link [[분장실 (0:01)|Leighton Club Ignore]]>><<pass 1>><<set $weekly.leightonDanceRefused to false>><</link>>
 		<br>
 	<<else>>
 		<<link [[분장실 (0:01)|Brothel Dressing Room]]>><<pass 1>><</link>>
@@ -91,16 +91,16 @@
 	<<if $exposed lte 0>>
 		<<link [[떠난다 (0:01)|Harvest Street]]>><<pass 1>><</link>>
 		<br>
-	<<elseif $exposed gte 2 and $exhibitionism gte 75 and $daystate isnot "night">>
+	<<elseif $exposed gte 2 and $exhibitionism gte 75 and Time.dayState isnot "night">>
 		<<link [[떠난다 (0:01)|Brothel Leave Naked Day]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist5>><</if>>
 		<br>
-	<<elseif $exposed gte 2 and $exhibitionism gte 55 and $daystate is "night">>
+	<<elseif $exposed gte 2 and $exhibitionism gte 55 and Time.dayState is "night">>
 		<<link [[떠난다 (0:01)|Brothel Leave Naked]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist4>><</if>>
 		<br>
-	<<elseif $exposed is 1 and $exhibitionism gte 35 and $daystate isnot "night">>
+	<<elseif $exposed is 1 and $exhibitionism gte 35 and Time.dayState isnot "night">>
 		<<link [[떠난다 (0:01)|Brothel Leave Undies Day]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist3>><</if>>
 		<br>
-	<<elseif $exposed is 1 and $exhibitionism gte 15 and $daystate is "night">>
+	<<elseif $exposed is 1 and $exhibitionism gte 15 and Time.dayState is "night">>
 		<<link [[떠난다 (0:01)|Brothel Leave Undies]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist2>><</if>>
 		<br>
 	<</if>>
@@ -113,6 +113,11 @@
 
 당신은 창관의 분장실에 있다. 몇 개의 거울이 있고, 머리와 화장을 고치는 직원들이 앉아있다.
 <br><br>
+
+<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+    <<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+    <br><br>
+<</if>>
 
 <<wardrobeicon>><<link [[옷장|Brothel Wardrobe]]>><</link>>
 <br>
@@ -298,9 +303,9 @@
 	<<He_ nun>> 눈을 깜빡이더니, 웃는다. "내숭 떨지 마. 아랫층에서 무슨 일이 일어나는지 봤잖아, 자기야. 나머지는 네가 스스로 해결할 수 있을거야."
 	<br><br>
 
-<<link [[관심이 있어요|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+<<link [["관심이 있어요"|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 <br>
-<<link [[관심이 없어요|Brothel Intro2]]>><<set $phase to 2>><</link>>
+<<link [["관심이 없어요"|Brothel Intro2]]>><<set $phase to 2>><</link>>
 <br>
 
 <</if>>
@@ -398,10 +403,10 @@
 	브라이어는 와인잔을 들고 소파에 누워 있다. <<He_ nun>> 당신이 들어오자 고개를 든다. "내 제안을 생각해봤니?"
 	<br><br>
 
-	<<link [[네|Briar's Office]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+	<<link [[네|"Briar's Office"]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 	<br>
 	<<if $id is 0>>
-		<<link [[신분증에 대해 문의한다|Briar's Office ID]]>><</link>>
+		<<link [[신분증에 대해 문의한다|"Briar's Office ID"]]>><</link>>
 		<br>
 	<</if>>
 	<<link [[떠난다|Brothel]]>><<endevent>><</link>>
@@ -433,7 +438,7 @@
 		<<else>>
 			<span class="pink">no escape route planned</span>.
 		<</if>>
-		<<if !$pubfame.briar.notice>>
+		<<if !$pubfame.briar.notice and $pubfame.briar.distract isnot 2>>
 			<<set $pubfame.briar.notice to true>>
 			<<if $cat gte 6>>
 				You could probably find a distraction by looking around the brothel.
@@ -446,11 +451,11 @@
 		<br><br>
 	<</if>>
 	<<if $brothelshowdata.intro and $brothelshowdata.type is "none">>
-		<<link [[쇼를 준비한다|Briar's Office Show]]>><</link>>
+		<<link [[쇼를 준비한다|"Briar's Office Show"]]>><</link>>
 		<br>
 	<</if>>
 	<<if $id is 0>>
-		<<link [[신분증에 대해 문의한다|Briar's Office ID]]>><</link>>
+		<<link [[신분증에 대해 문의한다|"Briar's Office ID"]]>><</link>>
 		<br>
 	<</if>>
 	<<if $brothel_machine_repair is 1>>
@@ -796,7 +801,7 @@
 
 <<set _chance to random(1, 200)>>
 /* 0.5% (1/200) chance per turn, only when crime is non-zero, when over 6 weeks into game, and gte 3 weeks from last raid*/
-<<if _chance is 13 and $crime gte 500 and $days gte 42 and (($days - $brothel_raid_day) gte 21)>>
+<<if _chance is 13 and $crime gte 500 and Time.days gte 42 and ((Time.days - $brothel_raid_day) gte 21)>>
 	<span id="next"><<link [[다음|Brothel Raid]]>><</link>></span><<nexttext>>
 <<elseif $enemyarousal lte $enemyarousalmax and $enemyhealth gte 0 and $finish is 0>>
 	<span id="next"><<link [[다음|Brothel Private Sex]]>><</link>></span><<nexttext>>
@@ -916,7 +921,7 @@
 
 <<effects>>
 <<if $enemyhealth lte 0>>
-	<<if $daystate isnot "night">>
+	<<if Time.dayState isnot "night">>
 		<<He_ ga>> 고통에 움츠러들고, 당신은 도망칠 기회를 잡는다. <<tearful>> 당신은 분장실로 달아난다.
 		<br><br>
 	<<else>>
@@ -1176,7 +1181,7 @@
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 
 "좋아," <<he_ ga>> 말한다.
-<<if $weekday is 6>>
+<<if Time.weekDay is 6>>
 	"오늘은 쇼를 준비할 시간이 충분하지 않지만, 다음 주라면 가능해."
 <<else>>
 <</if>>
@@ -1221,36 +1226,36 @@
 <</if>>
 
 <<if $promiscuity gte 55>>
-	<<link [[추파를 던지고 섹스하기|Briar's Office Show 2]]>><<acceptbrothelshow "flirt">><</link>><<promiscuous4>>
+	<<link [[추파를 던지고 섹스하기|"Briar's Office Show 2"]]>><<acceptbrothelshow "flirt">><</link>><<promiscuous4>>
 	<br>
 <</if>>
 <<if $promiscuity gte 75>>
-	<<link [[집단 강간 역할극|Briar's Office Show 2]]>><<acceptbrothelshow "gangbang">><</link>><<promiscuous5>>
+	<<link [[집단 강간 역할극|"Briar's Office Show 2"]]>><<acceptbrothelshow "gangbang">><</link>><<promiscuous5>>
 	<br>
 <</if>>
 <<if $demon gte 6>>
-	<<link [[Bukkake game (variable cash)|Briar's Office Show 2]]>><<acceptbrothelshow "bukkake">><</link>><<demon>>
+	<<link [[Bukkake game (variable cash)|"Briar's Office Show 2"]]>><<acceptbrothelshow "bukkake">><</link>><<demon>>
 	<br>
 <</if>>
 <<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and ($player.vaginaExist or $analdisable is "f")>>
-	<<link [[섹스 기계|Briar's Office Show 2]]>><<acceptbrothelshow "machine">><</link>><<promiscuous5>>
+	<<link [[섹스 기계|"Briar's Office Show 2"]]>><<acceptbrothelshow "machine">><</link>><<promiscuous5>>
 	<br>
 <</if>>
 <<if $brothel_machine_repair gte 4 and $promiscuity gte 75 and $tentacledisable is "f">>
-	<<link [[Sex machine, tentacle mode|Briar's Office Show 2]]>><<acceptbrothelshow "tentacles">><</link>><<promiscuous5>>
+	<<link [[Sex machine, tentacle mode|"Briar's Office Show 2"]]>><<acceptbrothelshow "tentacles">><</link>><<promiscuous5>>
 	<br>
 <</if>>
 <!-- Modified for Monster People -->
 <<if $deviancy gte 75 and ($bestialitydisable is "f" or $monsterchance gte 1 and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
-	<<link [[돼지|Briar's Office Show 2]]>><<acceptbrothelshow "pig">><</link>><<deviant5>>
+	<<link [[돼지|"Briar's Office Show 2"]]>><<acceptbrothelshow "pig">><</link>><<deviant5>>
 	<br>
 	<<if $farm_stage gte 7 and $farm.steed and ($bestialitydisable is "f" or $per_npc.saddled_steed.monster is "monster")>>
-		<<link [[말과 하는 것을 제안한다 (pays £2000)|Briar's Office Show 2]]>><<acceptbrothelshow "horse">><</link>><<deviant5>>
+		<<link [[말과 하는 것을 제안한다 (pays £2000)|"Briar's Office Show 2"]]>><<acceptbrothelshow "horse">><</link>><<deviant5>>
 		<br>
 	<</if>>
 <</if>>
 <<if $swarmdisable is "f" and $deviancy gte 75>>
-	<<link [[생물들|Briar's Office Show 2]]>><<acceptbrothelshow "swarm">><</link>><<deviant5>>
+	<<link [[생물들|"Briar's Office Show 2"]]>><<acceptbrothelshow "swarm">><</link>><<deviant5>>
 	<br>
 <</if>>
 
@@ -1287,7 +1292,7 @@
 
 나는 모든 것을 훌륭하게 세팅해놓도록 하지.
 
-<<if $weekday is 6>>
+<<if Time.weekDay is 6>>
 	오늘 준비하기에는 무리야. <span class="gold">다음 주 금요일까지 준비해 두도록 하지.</span>
 <</if>>
 
@@ -1317,7 +1322,7 @@
 	<br><br>
 <</if>>
 
-<<if $brothelshowdata.type isnot "none" and $weekday is 6 and not $brothelshowdata.done>>
+<<if $brothelshowdata.type isnot "none" and Time.weekDay is 6 and not $brothelshowdata.done>>
 	당신은 브라이어가 가장 큰 무대 옆에서 누군가와 이야기하는 것을 본다. 당신은 오늘 공연하기로 동의했었다.
 	<br><br>
 
@@ -1625,16 +1630,19 @@
 :: Brothel Shower
 <<effects>><<set $location to "brothel">><<set $outside to 0>>
 
-<<if $daystate isnot "day" and $daystate isnot "dawn" and $rng % 3>>창관은 바쁘고 샤워장도 마찬가지다. 샤워기는 당신의 숨결을 날려버릴 정도로 차가운 물을 뿜어낸다. 당신은 샤워하지 않는 것보다 찬물 샤워가 낫다고 생각하고, 견딘다.
+<<if Time.dayState isnot "day" and Time.dayState isnot "dawn" and $rng % 3>>창관은 바쁘고 샤워장도 마찬가지다. 샤워기는 당신의 숨결을 날려버릴 정도로 차가운 물을 뿜어낸다. 당신은 샤워하지 않는 것보다 찬물 샤워가 낫다고 생각하고, 견딘다.
 <<larousal>>
 <br><br>
-<<elseif $daystate isnot "night" and $rng % 2>>샤워기는 당신의 숨결을 날려버릴 정도로 차가운 물을 뿜어낸다. 누군가가 온수를 다 써버린 것 같다. 당신은 샤워하지 않는 것보다 찬물 샤워가 낫다고 생각하고, 견딘다.
+<<elseif Time.dayState isnot "night" and $rng % 2>>샤워기는 당신의 숨결을 날려버릴 정도로 차가운 물을 뿜어낸다. 누군가가 온수를 다 써버린 것 같다. 당신은 샤워하지 않는 것보다 찬물 샤워가 낫다고 생각하고, 견딘다.
 <<larousal>>
 <br><br>
 <<else>>당신은 아직 따뜻한 물이 남아있는 것에 안심한다.<</if>>
 
 당신은 깨끗해질 때까지 씻는다.<<wash>>
 <br><br>
+
+<<link [[Masturbate|Brothel Shower Masturbation]]>><<set $masturbationstart to 2>><</link>>
+<br>
 
 <<link [[나간다->Brothel Bathroom]]>><<clotheson>><</link>>
 <br>
@@ -1643,7 +1651,7 @@
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 /* Police raid in the middle of action */
 <<set $brothel_raid += 1>>
-<<set $brothel_raid_day to $days>>
+<<set $brothel_raid_day to Time.days>>
 <span class="red">밖에서 쿵 하는 소리가 들리고, 뒤이어 고함과 비명소리가 들린다.</span> <<person_ i>> 얼어붙는다.
 <<set $enemyarousal to 0>><<set $enemytrust to -200>>
 <<set $enemyhealth to ($enemyhealthmax / 5) * 4>><<set $enemyanger to ($enemyangermax / 5) * 2>>
