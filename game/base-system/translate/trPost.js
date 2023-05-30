@@ -33,6 +33,7 @@ function trPost(postNum, post, sep)
 	{
 		if (typeof(postNum) === "number")
 		{
+			T.postNum = postNum;
 			let trPostData = trPostsList[post];
 			if (trPostData)
 				T.trPost = trPostData[postNum];
@@ -42,7 +43,7 @@ function trPost(postNum, post, sep)
 		else if (typeof(postNum) === "string")
 		{
 			getPostNum(T.trResult);
-			T.trPost = trPostsList[postNum][T.postNum];
+			T.trPost = trPostsList[post][T.postNum];
 		}
 		else
 			delete T.trPost;
@@ -51,7 +52,13 @@ function trPost(postNum, post, sep)
 			T.trPost = "<span class='red'>에러: trPost: postNum= "+ postNum + ", post= " + post + ", sep = " + sep + "</span>";		
 	}
 	else
+	{
+		if (typeof(postNum) === "number")
+			T.postNum = postNum;
+		else
+			getPostNum(T.trResult);
 		T.trPost = "";
+	}
 	
 	if (!sep)
 		T.trResult += T.trPost;

@@ -648,6 +648,22 @@
         <<childtoyPost _location _id "을">>               //<<childtoy _location _id>>을
     ```
 
+    ```
+    <<pregnancyBabyTextPost>>
+        <<pregnancyBabyTextPost [id] post "sep">>
+
+        <<pregnancyBabyText>>의 대체 위젯. 조사를 붙일 수 있다.
+
+
+        선택사항
+		- id: 아이를 임신한 주체의 id. 원본 매크로에 사용되는 인수값.
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<pregnancyBabyTextPost 'pc' "을">>               // 아기를
+    ```
+
 * clothesPost
     ```
     <<undertopPost>>
@@ -2760,6 +2776,7 @@
 		```
 		<<childname_ (조사)>>, <<childrenNames_ (조사)>>, <<childHe_ (조사)>>, <<childhe_ (조사)>>, <<childHis_ (조사)>>, <<childhis_ (조사)>>, <<childHim_ (조사)>>, <<childhim_ (조사)>>,
 		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childherself_ (조사)>>, <<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
+		<<pregnancyBabyText_ (조사)>>
 		```
 	- clothesPost 계열
 		```

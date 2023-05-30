@@ -159,6 +159,8 @@ const EasyPostMacroList = [
 
 	{ name: "childtoy_", orig_name: "childtoyPost", is_print: 0},
 
+	{ name: "pregnancyBabyText_", orig_name: "pregnancyBabyTextPost", is_print: 0},
+
 
 	// clothesPost 
 	// <<undertop_ ul>> = <<undertop>>을 
