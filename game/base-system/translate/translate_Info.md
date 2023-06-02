@@ -2639,6 +2639,11 @@
         + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
+    ```
+    <<pillory_type>>
+        + 공개굴욕형. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 * overworld-plains/loc-livestock/widget.twee
     ```
     <<livestock_cows>>

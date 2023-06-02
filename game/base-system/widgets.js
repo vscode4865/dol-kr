@@ -30,8 +30,8 @@ function addfemininityfromfactor(femininityBoost, factorDescription, noOverwearC
 DefineMacro("addfemininityfromfactor", addfemininityfromfactor);
 
 function addfemininityofclothingarticle(slot, clothingArticle, noOverwearCheck) {
-	if (setup.clothes[slot][clothesIndex(slot, clothingArticle)].femininity) {
-		Wikifier.wikifyEval("<<trClothes \""+slot+"\" \""+setup.clothes[slot][clothesIndex(slot, clothingArticle)].name+"\" 'name'>>");addfemininityfromfactor(
+	if (setup.clothes[slot][clothesIndex(slot, clothingArticle)].femininity) {	Wikifier.wikifyEval("<<trClothes \""+slot+"\" \""+setup.clothes[slot][clothesIndex(slot, clothingArticle)].name+"\" 'name'>>");
+		addfemininityfromfactor(
 			setup.clothes[slot][clothesIndex(slot, clothingArticle)].femininity,
 			T.trResult,
 			noOverwearCheck
@@ -153,10 +153,10 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "아이섀도우");
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "마스카라");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
+	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "체형");
-	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "Toned muscles");
+	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "탄탄한 근육");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
 	T.acting_multiplier = V.englishtrait + 1;
@@ -180,9 +180,9 @@ function genderappearancecheck() {
 	addfemininityfromfactor(Math.max(T.over_lower_femininity, T.lower_femininity, T.under_lower_femininity), "아래옷", "noow");
 	/* bulge and genitals checks for topless gender */
 	if (T.under_lower_protected && V.NudeGenderDC > 0) {
-		addfemininityfromfactor(T.bulge_size * -60, "Bulge visible through underwear", "noow");
+		addfemininityfromfactor(T.bulge_size * -60, "속옷 너머로 발기한 것이 보임", "noow");
 	} else if ((T.over_lower_protected || T.lower_protected) && V.NudeGenderDC > 0) {
-		addfemininityfromfactor(Math.clamp((T.bulge_size - 6) * -60, 0, Infinity), "Bulge visible through clothing", "noow");
+		addfemininityfromfactor(Math.clamp((T.bulge_size - 6) * -60, 0, Infinity), "옷 너머로 발기한 것이 보임", "noow");
 	} else if (V.worn.genitals.exposed && V.NudeGenderDC === 1) {
 		if (V.player.penisExist) {
 			addfemininityfromfactor((V.player.penissize + 2.5) * -150, "노출된 자지", "noow");
@@ -229,7 +229,7 @@ function genderappearancecheck() {
 			T.bottom_visibility *= 0.75;
 			/* Bulge visible through underwear */
 			if (V.NudeGenderDC > 0) {
-				addfemininityfromfactor(T.bulge_size * -60, "Bulge visible through underwear");
+				addfemininityfromfactor(T.bulge_size * -60, "속옷 너머로 발기한 것이 보임");
 			}
 		}
 	} else {
@@ -237,7 +237,7 @@ function genderappearancecheck() {
 		T.bottom_visibility *= 0.75;
 		/* Bulge covered by lower clothes */
 		if (V.NudeGenderDC > 0) {
-			addfemininityfromfactor(-Math.clamp((T.bulge_size - 6) * 60, 0, Infinity), "Bulge visible through clothing");
+			addfemininityfromfactor(-Math.clamp((T.bulge_size - 6) * 60, 0, Infinity), "옷 너머로 발기한 것이 보임");
 		}
 	}
 	/* Upper clothing and breasts */
@@ -264,11 +264,11 @@ function genderappearancecheck() {
 	if (V.sexStats === undefined || !pregnancyBellyVisible()) {
 		// do glorious nothing
 	} else if (playerBellySize() >= 18) {
-		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly");
+		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "임신한 배" : "임신한 것처럼 보이는 배");
 	} else if (playerBellySize() >= 8) {
-		Wikifier.wikifyEval("<<trClothes \""+slot+"\" \""+setup.clothes[slot][clothesIndex(slot, clothingArticle)].name+"\" 'name'>>");addfemininityfromfactor(
+		addfemininityfromfactor(
 			Math.clamp((playerBellySize() - 7) * 250, 0, Infinity),
-			playerAwareTheyArePregnant() ? "Pregnant Belly" : "Pregnant Looking Belly"
+			playerAwareTheyArePregnant() ? "임신한 배" : "임신한 것처럼 보이는 배"
 		);
 	}
 	/* Body writing */
