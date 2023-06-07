@@ -580,6 +580,8 @@ const EasyPostMacroList = [
 
 	{ name: "condomDesc_", orig_name: "condomDescPost", is_print: 0},
 
+	{ name: "office_manager_", orig_name: "office_managerPost", is_print: 0},
+
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},

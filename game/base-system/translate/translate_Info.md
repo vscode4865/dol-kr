@@ -1610,6 +1610,11 @@
         <<condomDescPost _npcID "을">>               // 노란색 콘돔을
     ```
 
+   ```
+    <<office_managerPost>>
+       + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 * personPost
     ```
@@ -2812,7 +2817,7 @@
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<wolf_cave_singular_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
-		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>
+		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>,
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
 	- personPost 계열
