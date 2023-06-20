@@ -282,7 +282,7 @@ setup.pills = [
 	{
 		name: "penis growth",
 		description:
-			"1정 당 780mg의 컴닉톤딜, 240mg의 엘포폴과 149mg의 운데카노산 테스토스테론을 함유하고 있습니다. 이 두 성분은 안드로겐의 작용을 가능하게 하고 활성화시켜, 남성기의 자연적 성장을 촉진합니다.",
+			"1정 당 780mg의 컴닉톤딜, 240mg의 이포폴과 149mg의 운데카노산 테스토스테론을 함유하고 있습니다. 이 두 성분은 안드로겐의 작용을 가능하게 하고 활성화시켜, 남성기의 자연적 성장을 촉진합니다.",
 		onTakeMessage: "당신은 당신의 자지 크기를 늘리기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
 		warning_label:
 			"주의사항: 일일 최대용량을 초과해 복용할 경우 심각한 부작용을 일으킬 수 있습니다. 확신이 들지 않을 시에는 의사와 상의하십시오. 다른 호르몬 치료와 병행해 투여하지 마십시오.",
@@ -375,7 +375,7 @@ setup.pills = [
 			}
 		},
 		hpi_take_every_morning() {
-			return this.autoTake() ? "필요시에 먹는다" : "먹지 않는다";
+			return this.autoTake() ? "필요시에 먹는다" : "그만 먹는다";
 		},
 		type: "pregnancy",
 		subtype: "fertility booster",
@@ -418,7 +418,7 @@ setup.pills = [
 			}
 		},
 		hpi_take_every_morning() {
-			return this.autoTake() ? "필요시에 먹는다" : "먹지 않는다";
+			return this.autoTake() ? "필요시에 먹는다" : "그만 먹는다";
 		},
 		type: "pregnancy",
 		subtype: "contraceptive",

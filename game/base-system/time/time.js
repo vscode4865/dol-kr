@@ -470,7 +470,7 @@ function dayPassed() {
 
 	if (V.pubfame) {
 		if (V.pubfame.timer >= 1) V.pubfame.timer--;
-		else if (V.pubfame.timer <= 0) {
+		if (V.pubfame.timer <= 0) {
 			if (V.pubfame.status === "hiding") V.pubfame.detail = "hiding";
 			if (V.pubfame.target) V.pubfame.status = "accepted";
 			else V.pubfame.status = "ready";
@@ -629,9 +629,11 @@ function hourPassed(hours) {
 function minutePassed(minutes) {
 	const fragment = document.createDocumentFragment();
 	// Stress
-	const stressMultiplier = V.backgroundTraits.includes("crossdresser") && V.player.gender !== V.player.gender_appearance && V.player.gender !== "h" ? 2 : 1;
-	if (V.controlled === 0 && V.anxiety >= 2) V.stress += minutes * stressMultiplier;
-	else if (!((V.controlled === 0 && V.anxiety >= 1) || V.stress >= V.stressmax)) V.stress -= minutes * stressMultiplier;
+	// decay/rise and crossdresser trait
+	const isCrossdresser = V.backgroundTraits.includes("crossdresser");
+	const isCrossdressing = V.player.gender !== V.player.gender_appearance && V.player.gender !== "h";
+	if (V.controlled === 0 && V.anxiety >= 2) V.stress += minutes * ((isCrossdresser && !isCrossdressing) + 1);
+	else if (V.stress < V.stressmax && (V.controlled === 1 || V.anxiety === 0)) V.stress -= minutes * ((isCrossdresser && isCrossdressing) + 1);
 
 	parasiteProgressTime(minutes);
 	parasiteProgressTime(minutes, "vagina");
@@ -1024,10 +1026,11 @@ function dailyTransformationEffects() {
 	const fragment = document.createDocumentFragment();
 
 	if (V.purity <= 0) {
-		if (V.fallenangel >= 2) fragment.append(wikifier("fallenDescend"));
 		if (V.fallenangel >= 4) {
 			V.fallenangelmessage = 1;
 			V.effectsmessage = 1;
+		} else if (V.fallenangel >= 2) {
+			fragment.append(wikifier("fallenDescend"));
 		} else {
 			fragment.append(wikifier("transform", "demon", 1));
 		}

@@ -3576,9 +3576,14 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 37 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 38 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
-		<<set $objectVersion.updateClothes to 37>>
+		<<if $objectVersion.updateClothes lt 38>>
+			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
+			<<run for (const slot in V.store) V.store[slot].forEach(i => { if (i.location === 0) i.location = "getBack" })>>
+			<<storeon "getBack" "return">>
+		<</if>>
+		<<set $objectVersion.updateClothes to 38>>
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
 	<</if>>
@@ -3921,14 +3926,6 @@
 		<<set $real_fallenangel to $fallenangel>>
 		<<set $real_transformationParts to clone($transformationParts)>>
 		<<set $real_purity to $purity>>
-	<</if>>
-
-	<!-- v0.3.13.5 Fix for virgin fallen angels -->
-	<<if $fallenangel is 2 and (($player.vaginaExist and $player.virginity.vaginal is true) or ($player.penisExist and $player.virginity.penile is true))>>
-		<<set $fallenangel to 0>>
-		<<angelTransform>>
-		<<set $transformationParts.fallenAngel.halo to "disabled">>
-		<<set $transformationParts.fallenAngel.wings to "disabled">>
 	<</if>>
 
 	<!-- v0.3.13.5 Pregnancy Utilities -->
@@ -4382,34 +4379,61 @@
 		<</script>>
 	<</if>>
 
-	<!-- V0.4.0.5 repair transformationParts object after damage from mid-prayer room or nightmare saves -->
-	<<if $transformationParts.fox is undefined and $tfFIX is undefined>>
-		<<set $tfFIX to 1>>
-		<<set $transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
-		<<if $transformationParts.traits.mateForLife is undefined or $transformationParts.traits.flaunting is undefined>>
-			<<set $transformationParts.traits to {fangs:"disabled", sharpEyes:"disabled", mateForLife:"disabled", flaunting:"disabled"}>>
-			<<if $wolfgirl gte 2 or $cat gte 2 or $fox gte 2>>
-				<<set $transformationParts.traits.fangs to "default">>
+	<!-- Fixing broken transformation stuff -->
+	<<if $tfFIX is undefined or $tfFIX lte 1>>
+		<<if $tfFIX is undefined>>
+			<!-- V0.4.0.5 repair transformationParts object after damage from mid-prayer room or nightmare saves -->
+			<<if $transformationParts.fox is undefined>>
+				<<set $transformationParts.fox to {ears:"disabled", tail:"disabled", cheeks:"disabled"}>>
+				<<if $transformationParts.traits.mateForLife is undefined or $transformationParts.traits.flaunting is undefined>>
+					<<set $transformationParts.traits to {fangs:"disabled", sharpEyes:"disabled", mateForLife:"disabled", flaunting:"disabled"}>>
+					<<if $wolfgirl gte 2 or $cat gte 2 or $fox gte 2>>
+						<<set $transformationParts.traits.fangs to "default">>
+					<</if>>
+					<<if $cat gte 2 or $harpy gte 2 or $fox gte 2>>
+						<<set $transformationParts.traits.sharpEyes to "default">>
+					<</if>>
+					<<if $fox gte 3 or $harpy gte 3>>
+						<<set $transformationParts.traits.mateForLife to "default">>
+					<<else>>
+						<<set $transformationParts.traits.mateForLife to "disabled">>
+					<</if>>
+					<<set $transformationParts.traits.flaunting to "disabled">>
+				<</if>>
+				<<if $fox gte 4>>
+					<<set $transformationParts.fox.ears to "default">>
+				<</if>>
+				<<if $fox gte 5>>
+					<<set $transformationParts.fox.cheeks to "default">>
+				<</if>>
+				<<if $fox gte 6>>
+					<<set $transformationParts.fox.tail to "default">>
+				<</if>>
 			<</if>>
-			<<if $cat gte 2 or $harpy gte 2 or $fox gte 2>>
-				<<set $transformationParts.traits.sharpEyes to "default">>
+		<</if>>
+
+		<<if $tfFIX is undefined or $tfFIX is 1>>
+			<!-- v0.3.13.5 - v0.4.0.8 Fix for virgin fallen angels, moved and fixed from earlier part of versionupdate -->
+			<<if $fallenangel is 2>>
+				<<set $_isHerm to $player.gender is "h">>
+				<<set $_hasVaginalVirginity to $player.vaginaExist and $player.virginity.vaginal is true>>
+				<<set $_hasPenileVirginity to $player.penisExist and $player.virginity.penile is true>>
+				<<if !$_isHerm and ($_hasVaginalVirginity or $_hasPenileVirginity)
+				or $_isHerm and $_hasVaginalVirginity and $_hasPenileVirginity>>
+					<<set $fallenangel to 0>>
+					<<angelTransform>>
+					<<set $transformationParts.fallenAngel.halo to "disabled">>
+					<<set $transformationParts.fallenAngel.wings to "disabled">>
+				<</if>>
 			<</if>>
-			<<if $fox gte 3 or $harpy gte 3>>
-				<<set $transformationParts.traits.mateForLife to "default">>
-			<<else>>
-				<<set $transformationParts.traits.mateForLife to "disabled">>
+
+			<!-- V0.4.0.8 Fix for non-virgin herm angels from bad fix earlier that didn't take herms into account -->
+			<<if $angel gte 6 and $player.gender is "h" and !$virginityProtected and ($player.virginity.vaginal isnot true or $player.virginity.penile isnot true)>>
+				<<fallenTransform>>
 			<</if>>
-			<<set $transformationParts.traits.flaunting to "disabled">>
 		<</if>>
-		<<if $fox gte 4>>
-			<<set $transformationParts.fox.ears to "default">>
-		<</if>>
-		<<if $fox gte 5>>
-			<<set $transformationParts.fox.cheeks to "default">>
-		<</if>>
-		<<if $fox gte 6>>
-			<<set $transformationParts.fox.tail to "default">>
-		<</if>>
+
+		<<set $tfFIX to 2>>
 	<</if>>
 
 	<!-- V0.4.0.5 Stop any saves in the above situation from being broke upon leaving -->
@@ -4444,6 +4468,20 @@
 	<!-- V0.4.0.6 Separating tentacle forest lurker from daily object to prevent midnight errors in tentacle forest -->
 	<<if $daily and $daily.tentacle_forest_lurker>>
 		<<set $tentacle_forest_lurker to $daily.tentacle_forest_lurker>>
+	<</if>>
+
+	<!-- To fix issue where Dr Harper failed to remove both hermaphrodite parasites -->
+	<<if $sexStats.vagina.pregnancy.type is "parasite" and $sexStats.vagina.pregnancy.fetus.find(parasite => parasite.stats.gender === "Hermaphrodite")>>
+		<<set $sexStats.vagina.pregnancy.motherStatus to 2>>
+	<</if>>
+
+	<<if !$objectVersion.wardForceUnlock>>
+		<<if !$objectVersion.wardForceUnlock and !$ward_unlocked and Object.values($children).find(child => child.location is "home" and child.birthLocation isnot "hospital")>>
+			<<set $_childrenToIntro to Object.values($children).filter(child => child.location is "home" and child.birthLocation isnot "hospital")>>
+			<<run console.log($_childrenToIntro)>>
+			<<run $_childrenToIntro.forEach(child => wikifier("setBabyIntro", child.mother, "Bailey", child.birthId))>>
+		<</if>>
+		<<set $objectVersion.wardForceUnlock to 1>>
 	<</if>>
 
 <<init_customSetting>><</widget>>

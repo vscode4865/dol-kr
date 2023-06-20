@@ -387,24 +387,38 @@
 
     ```
     <<bottomPost>>
+        <<bottomPost [pluck] post "sep">>
+
 	     <<bottom>>의 대체 위젯. <<bottomsPost>> 와는 다르므로 주의.
-        + <<breastsPost>>와 용도 및 방식 같음. 생략
+
+        선택사항
+        - pluck: 원본 매크로에 사용되는 인수값.
+        - post: 조사
+        - sep: 조사를 분리하여 저장한다.
     ```
 
     ```
     <<pussyPost>>
+        <<pussyPost [nosens] [pluck] post "sep">>
+
 	     <<pussy>>의 대체 위젯.
-        + <<breastsPost>>와 용도 및 방식 같음. 생략
+
+        선택사항
+        - nosens: 원본 매크로에 사용되는 인수값.
+        - pluck: 원본 매크로에 사용되는 인수값.
+        - post: 조사
+        - sep: 조사를 분리하여 저장한다.
     ```
 
     ```
     <<genitalsPost>>
-        <<genitalsPost [num] post "sep">>
+        <<genitalsPost [num] [pluck] post "sep">>
 
         <<genitals>>의 대체 위젯. 조사를 붙일 수 있다.
 
         선택사항
         - num: 원본 매크로에 사용되는 인수값.
+		- pluck: 원본 매크로에 사용되는 인수값.
         - post: 조사
         - sep: 조사를 분리하여 저장한다.
 

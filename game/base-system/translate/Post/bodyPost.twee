@@ -91,42 +91,57 @@
 <<widget "nipplesPost">><<nipplePost _args[0] _args[1]>><</widget>>
 
 <<widget "bottomPost">><<silently>>
+	<<if _args[0] isnot undefined and typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_pluck to false>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<else>>
+		<<set $_pluck to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<</if>>
 	<<set _trResult to ["호리호리한", "날씬한", "평범한", "푹신한", "부드러운", "둥근", "포동포동한", "큰", "거대한"][Math.clamp(0, 8, $player.bottomsize)]>>
-    <<set _trResult to _trResult + [" 엉덩이", " 궁둥이", " 엉덩이"].pluck()>>
-    <<if _args[0] isnot undefined>>
-        <<trPost 1 _args[0] _args[1]>>
-    <</if>>
+    <<set _trResult to _trResult + [" 엉덩이", " 궁둥이", " 엉덩이"].pluck($_pluck)>>
+	<<trPost 1 $_post $_sep>>
 <</silently>><<bottomsensitivity>><<print _trResult>><</widget>>
 
 
 <<widget "pussyPost">><<silently>>
-	<<if _args[0] isnot undefined and typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
-		<<unset $_arg>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<if _args[0] isnot undefined>>
+		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+			<<unset $_nosens>><<unset $_pluck>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+		<<elseif _args[1] isnot undefined and typeof _args[1] is "string" and _args[1].substring(0,1).search("[가-힣]") gte 0>>
+			<<set $_nosens to _args[0]>><<unset $_pluck>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+		<<else>>
+			<<set $_nosens to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+		<</if>>
 	<<else>>
-		<<set $_arg to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+		<<set $_nosens to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
 	<</if>>
 
 	<<genitalstate>><<set _genital_state_text to _text_output>>
 	<<set _trResult to "">>
-	<<if !$_arg>>
+	<<if !$_nosens>>
 		<<genitalsensitivity>><<set _trResult += _text_output>>
 	<</if>>
-	<<set _trResult += _genital_state_text + ["보지","보지","보지","씹"].pluck()>>
+	<<set _trResult += _genital_state_text + ["보지","보지","보지","씹"].pluck($_pluck)>>
     <<if $_post isnot undefined>>
         <<getPostNum _trResult>><<trPost _postNum $_post $_sep>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "genitalsPost">><<silently>>
-	<<if _args[0] isnot undefined and typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
-		<<unset $_arg>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<if _args[0] isnot undefined>>
+		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+			<<unset $_num>><<unset $_pluck>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+		<<elseif _args[1] isnot undefined and typeof _args[1] is "string" and _args[1].substring(0,1).search("[가-힣]") gte 0>>
+			<<set $_num to _args[0]>><<unset $_pluck>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+		<<else>>
+			<<set $_num to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+		<</if>>
 	<<else>>
-		<<set $_arg to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+		<<set $_num to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
 	<</if>>
 
 	<<set $_virgin to "">>
 	
-	<<if playerChastity("hidden") and !$_arg and _chastityBreak isnot 1>>
+	<<if playerChastity("hidden") and !$_num and _chastityBreak isnot 1>>
 		<<trClothes "genitals" $worn.genitals.name "name" $_post $_sep>>
 	<<else>>
 		<<genitalsensitivity>><<set _trResult to _text_output>>
@@ -134,7 +149,7 @@
 			<<if playerChastity("cage")>>
 				<<set _trResult += "갇혀있는 ">>
 			<</if>>
-			<<if $player.virginity.penile is true and $_arg isnot 2>>
+			<<if $player.virginity.penile is true and $_num isnot 2>>
 				<<set _trResult += "동정 ">>
 			<</if>>
 			<<set _trResult += "자지">>
@@ -143,7 +158,7 @@
 			<<if $player.penisExist>>
 				<<set _trResult += "와 ">>
 			<</if>>
-			<<if $player.virginity.vaginal is true and $_arg isnot 2>>
+			<<if $player.virginity.vaginal is true and $_num isnot 2>>
 				<<set $_virgin to "처녀 ">>
 			<</if>>
 			<<if $vaginaWetness gte 75 and $pbdisable is "f" and $pblevel gte 8>>
@@ -153,7 +168,7 @@
 			<<elseif $pbdisable is "f" and $pblevel gte 8>>
 				<<set _trResult += "털이 무성한 ">>
 			<</if>>
-			<<set _trResult += $_virgin + ["보지", "보지", "보지", "씹"].pluck()>>
+			<<set _trResult += $_virgin + ["보지", "보지", "보지", "씹"].pluck($_pluck)>>
 		<</if>>
 	<</if>>
 

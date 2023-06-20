@@ -547,7 +547,7 @@ function shuffle(o) {
 	for (
 		let j, x, i = o.length;
 		i;
-		j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x
+		j = parseInt(State.random() * i), x = o[--i], o[i] = o[j], o[j] = x
 	);
 	return o;
 }
@@ -1359,7 +1359,7 @@ function npcClothes(npc, type) {
 window.npcClothes = npcClothes;
 
 function waterproofCheck(clothing) {
-	return clothing.type.includes("swim") || clothing.type.includes("stealthy");
+	return clothing.type.includesAny("swim", "stealthy", "rainproof");
 }
 window.waterproofCheck = waterproofCheck;
 
