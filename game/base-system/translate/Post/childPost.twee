@@ -179,45 +179,44 @@
 <</silently>><<if _trResult>><<print _trResult>><</if>><</widget>>
 
 <<widget "childtoyPost">><<silently>>
-<<unset _trResult>>
-<<set _toys to $storedToys[_args[0]]>>
-<<if _toys>>
-	<<if between(_args[1], 0, _toys.length - 1)>>
-		<<set _toy to _toys[_args[1]]>>
-	<<elseif _args[1]>>
-		<<set _toySelect to []>>
-		<<for $_i to 0; $_i lt _toys.length; $_i++>>
-			<<if _toys[$_i].set is _args[1] or _toys[$_i].name is _args[1]>>
-				<<run _toySelect.push($_i)>>
+	<<unset _trResult>>
+	<<if _args[2] isnot undefined and typeof _args[2] is "string" and _args[2].substring(0,1).search("[가-힣]") gte 0>>
+		<<unset $_option>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+	<<else>>
+		<<set $_option to _args[2]>><<set $_post to _args[3]>><<set $_sep to _args[4]>>
+	<</if>>
+
+	<<set _toys to $storedChildrenToys[_args[0]]>>
+	<<if _toys>>
+		<<if between(_args[1], 0, _toys.length - 1)>>
+			<<set _toy to _toys[_args[1]]>>
+		<<elseif _args[1]>>
+			<<set _toySelect to []>>
+			<<for $_i to 0; $_i lt _toys.length; $_i++>>
+				<<if _toys[$_i].set is _args[1] or _toys[$_i].name is _args[1]>>
+					<<run _toySelect.push($_i)>>
+				<</if>>
+			<</for>>
+			<<if _toySelect.length gt 0>>
+				<<set _toyid to _toySelect[random(0,_toySelect.length - 1)]>>
+				<<set _toy to _toys[_toyid]>>
 			<</if>>
-		<</for>>
-		<<if _toySelect.length gt 0>>
-			<<set _toyid to _toySelect[random(0,_toySelect.length - 1)]>>
+		<<else>>
+			<<set _toyid to random(0,_toys.length - 1)>>
 			<<set _toy to _toys[_toyid]>>
 		<</if>>
-	<<else>>
-		<<set _toyid to random(0,_toys.length - 1)>>
-		<<set _toy to _toys[_toyid]>>
-	<</if>>
-	<<if _toy>>
-	
-		<<if _args[2] isnot undefined and typeof _args[2] is "string" and _args[2].substring(0,1).search("[가-힣]") gte 0>>
-			<<unset $_option>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
-		<<else>>
-			<<set $_option to _args[2]>><<set $_post to _args[3]>><<set $_sep to _args[4]>>
+		<<if _toy>>
+			<<switch $_option>>
+				<<case "notext">>
+				<<case "lowercase">>
+					<<trToyName _toy.name_lower $_post $sep>>
+					<<set _toyName to clone(_toy.name_lower)>>
+				<<default>>
+					<<trToyName _toy.name $_post $sep>>
+					<<set _toyName to clone(_toy.name)>>
+			<</switch>>
 		<</if>>
-		
-		<<switch $_option>>
-			<<case "notext">>
-			<<case "lowercase">>
-				<<trToyName _toy.name_lower $_post $sep>>
-				<<set _toyName to clone(_toy.name_lower)>>
-			<<default>>
-				<<trToyName _toy.name $_post $sep>>
-				<<set _toyName to clone(_toy.name)>>
-		<</switch>>
 	<</if>>
-<</if>>
 <</silently>><<if _trResult>><<print _trResult>><</if>><</widget>>
 
 /* base-system/pregnancy/pregnancy.twee */
