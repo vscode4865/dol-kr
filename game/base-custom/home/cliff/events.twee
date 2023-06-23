@@ -44,13 +44,34 @@
 	당신은 불안을 느끼고, 당신의 눈이 거울로 향한다.
 <</if>>
 <br><br>
-<<nightmareCheck "custom home cliff sleep">>
+<<if $nightmares gt 0 and $controlled is 0 and !$nightmareTimer>>
+		<<set $_possibleNightmares to []>>
+
+		<<if $location isnot "asylum" and $asylumstatus isnot undefined>>
+        			<<set $_possibleNightmares.push("Nightmare Harper")>>
+   		<</if>>
+
+		<<if $wraithPrison and $wraithPrison.vision>>
+			<<set $_possibleNightmares.push("Nightmare Wraith")>>
+		<</if>>
+
+		<<if $_possibleNightmares.length gte 1>>
+			<<set $nightmareNext to $_possibleNightmares.random()>>
+			<<set $nightmareRedirect to 'custom home cliff sleep'>>
+			<<set $nightmareExit to $passage>>
+
+			<<reroute {
+				[$nightmareRedirect] : $nightmareNext
+            }>>
+        <</if>>
+<</if>>
 <<if $sleeptrouble is 1 and $controlled is 0>>
 	<<link [[10시간 잔다|custom home cliff sleep]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
 	<br>
 	<<link [[9시간 잔다|custom home cliff sleep]]>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
-	<br>
+<br>
 <</if>>
+
 
 <<link [[8시간 잔다|custom home cliff sleep]]>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
 <br>
@@ -71,7 +92,7 @@
 <<link [[그냥 잔다|custom home cliff sleep]]>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
 <br><br>
 
-<<link [[침대에서 나온다|custom home cliff sleep]]>><<endevent>><<loadTempHairStyle>><</link>>
+<<link [[침대에서 나온다|custom home cliff bedroom]]>><<endevent>>><<loadTempHairStyle>><</link>>
 <br><br>
 
 :: custom home cliff sleep
@@ -119,7 +140,7 @@
 		<<wardrobeSelection true>>
 		<<radiooutfits>>
 		<br><br>
-		<<link [[침대에서 나온다|custom home cliff]]>><</link>>
+	<<link [[침대에서 나온다|custom home cliff bedroom]]>><</link>>
 <</if>>
 <<set $phase to 0>>
 
@@ -405,3 +426,11 @@
 <<custompassout>>
 정신을 차리고 보니 복도에 쓰러져 있었다.
 <<link [[custom home cliff]]>><</link>>
+
+
+
+::custom home cliff expand house
+<<if $farm.build_timer gte 1>>
+    <<set $custom.home.build_timer -= 1>>
+<</if>>
+
