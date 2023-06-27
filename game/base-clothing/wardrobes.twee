@@ -1013,17 +1013,17 @@
 		<<case "name">>
 			<<set _itemNames to []>>
 			<<for _i to 0; _i lt _wardrobeItems.length; _i++>>
-				<<trClothes _slot _wardrobeItems[_i].name "name">><<run _itemNames.pushUnique({"name":_wardrobeItems[_i].name, "koname":_trResult})>>
+				<<trClothes _slot _wardrobeItems[_i].name "name">><<run _itemNames.pushUnique(JSON.stringify({"name":_wardrobeItems[_i].name, "koname":_trResult}))>>
 			<</for>>
 			<<if _descending>>
-				<<set _sortedItemNames to _itemNames.sort(function(a, b){return b.koname.localeCompare(a.koname)})>>
+				<<set _sortedItemNames to _itemNames.sort(function(a, b){return JSON.parse(b).koname.localeCompare(JSON.parse(a).koname)})>>
 			<<else>>
-				<<set _sortedItemNames to _itemNames.sort(function(a, b){return a.koname.localeCompare(b.koname)})>>
+				<<set _sortedItemNames to _itemNames.sort(function(a, b){return JSON.parse(a).koname.localeCompare(JSON.parse(b).koname)})>>
 			<</if>>
 
-			<<for _i to 0; _i lt _sortedItemNames.length; _i++>>
+			<<for _i to 0; _i lt _sortedItemNames.length; _i++>><<set $_name to JSON.parse(_sortedItemNames[_i]).name>>
 				<<for _j to 0; _j lt _wardrobeItems.length; _j++>>
-					<<if _wardrobeItems[_j].name is _sortedItemNames[_i].name>>
+					<<if _wardrobeItems[_j].name is $_name>>
 						<<run _newWardrobeItems.push(clone(_wardrobeItems[_j]))>>
 					<</if>>
 				<</for>>
