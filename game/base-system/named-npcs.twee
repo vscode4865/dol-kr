@@ -206,6 +206,22 @@ Zephyr
 Zia
 Zohar
 */
+<<widget "initnpcskin">>
+    <<for _i to 0; _i lt $NPCName.length; _i++>>
+        <<initnpcskinsingle _i _args[0]>>
+    <</for>>
+<</widget>>
+
+<<widget "initnpcskinsingle">>
+    <<set _i to _args[0]>>
+    <<if !$NPCName[_i].skincolour or $NPCName[_i].skincolour is "none" or _args[1] is "skincolour">>
+        <<if random(0, 99) lte $blackchance>>
+            <<set $NPCName[_i].skincolour to "black">>
+        <<else>>
+            <<set $NPCName[_i].skincolour to "white">>
+        <</if>>
+    <</if>>
+<</widget>>
 
 <<widget "initnpcgender">>
 	<<for _i to 0; _i lt $NPCName.length; _i++>>
@@ -218,7 +234,7 @@ Zohar
 
 	<!-- Set Pronoun -->
 	<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
-		<<if $malechance lt random(1, 100)>>
+		<<if maleChance() lt random(1, 100)>>
 			<<set $NPCName[_i].pronoun to "f">>
 		<<else>>
 			<<set $NPCName[_i].pronoun to "m">>
@@ -581,7 +597,7 @@ Zohar
 						<<npcClothesType $NPCName[_i] "cold">>
 					<<case "halloween">>
 						<<if $halloween_robin_costume>>
-							<<npcClothesType $NPCName[_i] "halloween">>
+							<<npcClothesName $NPCName[_i] $halloween_robin_costume>>
 						<<else>>
 							<<generateNPCClothes $NPCName[_i]>>
 						<</if>>
@@ -1028,10 +1044,10 @@ Zohar
 	<</if>>
 
 	/*Run pregnancy Checks*/
-	<<if playerIsPregnant() and pregnancyBellyVisible(true) and _nam isnot "Robin">>
+	<<if playerIsPregnant() and playerBellyVisible(true) and _nam isnot "Robin">>
 		<<setKnowsAboutPregnancy "pc" _args[0]>>
 	<</if>>
-	<<if npcIsPregnant(_args[0]) and npcPregnancyBellyVisible(_args[0])>>
+	<<if npcIsPregnant(_args[0]) and npcBellyVisible(_args[0])>>
 		<<setKnowsAboutPregnancy _args[0] "pc">>
 	<</if>>
 
@@ -1286,29 +1302,55 @@ Zohar
 			휘트니는
 			<<if $NPCName[_i].state is "dungeon">>
 				<span class="red">이제 학교에 없다.</span>
-			<<elseif $NPCName[_i].love gte $npclovehigh>>
-				<<if $NPCName[_i].dom gte $npcdomhigh>>
-					당신이 <span class="green">사랑스럽다</span>고 생각한다.
-				<<elseif $NPCName[_i].dom lte $npcdomlow>>
-					당신이 <span class="green">격려해 준다</span>고 생각한다.
-				<<else>>
-					당신이 <span class="green">마음에 든다</span>고 생각한다.
+			 <<elseif $whitneyRescueStatus isnot undefined>>
+				<<if $whitneyRescueStatus is "humiliated" and !$whitneyRescueTimer>>
+					<span class="red">취약한 상태다.</span>
+				<<elseif $whitneyRescueStatus is "humiliated">>
+					<span class="red">굴욕을 당했다.</span>
+				<<elseif $whitneyRescueStatus is "shaken">>
+					<span class="pink">불안하게 동요하고 있다.</span>
+				<<elseif $whitneyRescueStatus is "grateful">>
+					is <span class="green">고마워하고 있다.</span>
 				<</if>>
-			<<elseif $NPCName[_i].love lte $npclovelow>>
-				<<if $NPCName[_i].dom gte $npcdomhigh>>
-					당신이 <span class="red">한심하다</span>고 생각한다.
-				<<elseif $NPCName[_i].dom lte $npcdomlow>>
-					당신이 <span class="red">짜증난다</span>고 생각한다.
+			<<elseif $NPCName[_i].love gte 20>>
+				<<if $NPCName[_i].lust gte 60>>
+					<span class="lewd">뭔가 재미있는 것을 하고 싶어한다.</span>
 				<<else>>
-					당신이 <span class="red">끔찍하다</span>고 생각한다.
+					<<if $NPCName[_i].dom gte 20>>
+						<span class="lewd">당신을 소유하고 있다.</span>
+					<<elseif $NPCName[_i].dom lte 8>>
+						당신이 <span class="green"><<nnpc_his_ yi "Whitney">> <<girlfriendPost "이라" "sep">></span>_trPost고 생각하고 있다.
+					<<else>>
+						<span class="lewd">당신이 <<nnpc_his_ yi "Whitney">> 애완동물이라고 생각하고 있다.</span>
+					<</if>>
+				<</if>>
+			<<elseif $NPCName[_i].love lte 5>>
+				<<if $NPCName[_i].lust gte 60>>
+					<<if $NPCName[_i].dom gte 18>>
+						<span class="pink">당신이 애원하도록 만들고 싶어한다.</span>
+					<<else>>
+						<span class="pink">당신이 애원하는 소리를 듣고 싶어한다.</span>
+					<</if>>
+				<<else>>
+					<<if $NPCName[_i].dom gte 20>>
+						당신이 <span class="red">한심하다</span>고 생각한다.
+					<<elseif $NPCName[_i].dom lte 7>>
+						<<if $NPCName[_i].dom lte 2 and $NPCName[_i].love lte 2>>
+							<span class="red">당신에게 복수를 하려고 한다.</span>
+						<<else>>
+							당신이 <span class="red"><<nnpc_his_ yi "Whitney">> 평판에 위협</span>이 된다고 생각하고 있다.
+						<</if>>
+					<<else>>
+						당신이 <span class="red">괴짜</span>라고 생각한다.
+					<</if>>
 				<</if>>
 			<<else>>
-				<<if $NPCName[_i].dom gte $npcdomhigh>>
-					당신이 <span class="pink">귀엽다</span>고 생각한다.
-				<<elseif $NPCName[_i].dom lte $npcdomlow>>
-					<span class="teal">당신을 우러러보고 있다.</span>
+				<<if $NPCName[_i].dom gte 20>>
+					당신을 <span class="teal">괴롭히는게 재미있다</span>고 생각하고 있다.
+				<<elseif $NPCName[_i].dom lte 8>>
+					당신이 <span class="purple">짜증난다</span>고 생각한다.
 				<<else>>
-					당신에 대한 확고한 의견이 없다.
+					당신이 <span class="pink">쉬운 목표물</span>이라고 생각한다.
 				<</if>>
 			<</if>>
 		<<case Sydney>>
@@ -1478,7 +1520,7 @@ Zohar
 							<span class="pink">비통해 하고 있다.</span>
 						<<else>>
 							<span class="purple">우울해 하고 있다.</span>
-						<</if>>						
+						<</if>>
 					<<else>>
 						<<if $NPCName[_i].lust gte 15>>
 							<span class="purple">당신에게 집착하고 있다.</span>
@@ -1490,6 +1532,93 @@ Zohar
 					<</if>>
 				<</if>>
 			<</if>>
+			<<case "Great Hawk">>
+				거대 매는
+			<<if $syndromebird is 1>>
+				<<if $NPCName[_i].love gte $npclovehigh>>
+					<<if $NPCName[_i].dom gte $npcdomhigh>>
+						당신이 <span class="lewd"><<nnpc_his_ yi "Great Hawk">> <<wife_ ra>>고 주장했다.</span>
+					<<elseif $NPCName[_i].dom lte $npcdomlow>>
+						<span class="lewd">당신이 좋은 <<wife_ ra>>고 생각한다.</span>
+					<<else>>
+						<span class="lewd">당신이 <<nnpc_his_ yi "Great Hawk">> <<wife_ ra>>고 생각한다.</span>
+					<</if>>
+				<<elseif $NPCName[_i].love lte $npclovelow>>
+					<<if $NPCName[_i].dom gte $npcdomhigh>>
+						<span class="red">당신이 <<nnpc_his_ yi "Great Hawk">> 보살핌 안으로 돌아오기를 원한다.</span>
+					<<elseif $NPCName[_i].dom lte $npcdomlow>>
+						<span class="red">당신의 보살핌을 간절히 바라고 있다.</span>
+					<<else>>
+						<span class="red">곤혹스러워하고 있다.</span>
+					<</if>>
+				<<else>>
+					<<if $NPCName[_i].dom gte $npcdomhigh>>
+						<span class="teal">당신을 짝짓기 상대로 원한다.</span>
+					<<elseif $NPCName[_i].dom lte $npcdomlow>>
+						<span class="teal">당신에게 홀딱 반해 있다.</span>
+					<<else>>
+						is lonely.
+					<</if>>
+				<</if>>
+			<<else>>
+				<span class="red">당신이 영원히 머무르기를 원하고 있다.</span>
+			<</if>>
+				<<case "Black Wolf">>
+					검은 늑대는
+				<<if $syndromewolves is 1>>
+					<<if $NPCName[_i].love gte $npclovehigh>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							<span class="lewd">당신이 <<nnpc_his_ yi "Black Wolf">> 짝짓기 상대라는 것을 자랑스러워 <<print $blackwolfmonster gte 1 ? "하고 있다" : "하는 듯 보인다">>.</span>
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							<span class="lewd">당신이 <<nnpc_his_ yi "Black Wolf">> 짝짓기 상대라는 것을 기뻐<<print $blackwolfmonster gte 1 ? "하고 있다" : "하는 듯 보인다">>.</span>
+						<<else>>
+							<span class="lewd">당신을 <<nnpc_his_ yi "Black Wolf">> 짝짓기 상대라고 생각한다.</span>
+						<</if>>
+					<<elseif $NPCName[_i].love lte $npclovelow>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							<span class="red">당신이 무리 밖으로 나가기를 원한다.</span>
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							<span class="red">당신을 경계하고 있다.</span>
+						<<else>>
+							<span class="red">당신이 끔찍한 무리 동료라고 생각한다.</span>
+						<</if>>
+					<<else>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							<span class="pink">당신이 강한 무리 동료라고 생각한다.</span>
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							<span class="teal">당신이 훌륭한 무리 동료라고 생각한다.</span>
+						<<else>>
+							<span class="teal">당신의 무리 안에서의 위치를 높이 평가한다.</span>
+						<</if>>
+					<</if>>
+				<<else>>
+					<<if $NPCName[_i].love gte $npclovehigh>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							당신이 <span class="green">강한</span> 무리 동료가 될 것이라고 생각한다.
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							당신이 <span class="green">훌륭한</span> 무리 동료가 될 것이라고 생각한다.
+						<<else>>
+							당신이 <span class="green">좋은</span> 무리 동료가 될 것이라고 생각한다.
+						<</if>>
+					<<elseif $NPCName[_i].love lte $npclovelow>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							당신이 <span class="red">약한</span> 무리 동료가 될 것이라고 생각한다.
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							당신이 <span class="red">쓸모없는</span> 무리 동료가 될 것이라고 생각한다.
+						<<else>>
+							당신이 <span class="red">좋지 못한</span> 무리 동료가 될 것이라고 생각한다.
+						<</if>>
+					<<else>>
+						<<if $wolfpackferocity gt $wolfpackharmony>>
+							<span class="pink">당신과 힘겨루기를 하고 싶어한다.</span>
+						<<elseif $wolfpackharmony gt $wolfpackferocity>>
+							<span class="teal">당신과 더 많은 시간을 보내고 싶어한다.</span>
+						<<else>>
+							당신에 대한 확고한 의견이 없다.
+						<</if>>
+					<</if>>
+				<</if>>
+
 		<!-- Default cases for all other NNPCs -->
 		<<default>>
 			<<trNamedNPC _npc 'name' '은'>>_trResult

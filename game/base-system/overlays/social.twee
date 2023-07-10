@@ -4,6 +4,8 @@
 	<div id="relation-display">
 		<<silently>>
 			<<script>>
+				if (V.wolfpackharmony) C.npc["Black Wolf"].harmony = V.wolfpackharmony;
+				if (V.wolfpackferocity) C.npc["Black Wolf"].ferocity = V.wolfpackferocity;
 				/*data config for non-standard NPCs boxes, allows for different stat configs, custom display data, and dynamic requirements*/
 				T.npcConfig = {
 					"Robin" : {
@@ -30,6 +32,12 @@
 					},
 					"Great Hawk" : {
 						important : true,
+					},
+					"Black Wolf" : {
+						important : true,
+						love : { maxValue : 30 },
+						harmony : { name : "늑대 무리 화합", maxValue: 20, activeIcon : "img/ui/wolfharmony.png" },
+						ferocity : { name : "늑대 무리 흉폭성", maxValue: 20, activeIcon : "img/ui/wolfferocity.png" }
 					},
 					"Sydney" : {
 						important : true,
@@ -61,7 +69,7 @@
 				};
 
 				/* This list dictates the order that the important NPCs will show up in on the social menu screen */
-				T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Alex"];
+				T.importantNpcOrder = ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Black Wolf", "Alex"];
 				T.specialNPCs = ["Ivory Wraith"];
 
 				/* this list is sorted */
@@ -284,6 +292,17 @@
 					<<set _guardBoxConfig = { name : "교도소 간수들", icon : "img/misc/icon/police.png", description: "<<relation-text _guardRepConfig>>"}>>
 					<<set _inmateBoxConfig = { name : "교도소 수감자들", icon : "img/misc/icon/police.png", description: "<<relation-text _inmateRepConfig>>"}>>
 				<</if>>
+				/*Docks */
+				<<if $dockwork gte 2>>
+					<<set _dockRepConfig = { currentValue: $dockstatus, preText: '다른 일꾼들은 ', states : [
+						{ requiredValue: 0,	    color: 'purple',	description: '당신을 경멸하는 눈으로 본다.'},
+						{ requiredValue: 10,	color: 'blue',		description: '당신을 의심스런 눈으로 본다.'},
+						{ requiredValue: 30,	color: 'lblue',		description: '당신을 용인하고 있다.'},
+						{ requiredValue: 80,	color: 'teal',		description: '당신을 받아들이고 있다.'},
+						{ requiredValue: 100,	color: 'green',		description: '당신을 존중해주고 있다.'}
+					]}>>
+					<<set _dockBoxConfig = { name : "부두", icon : "img/misc/icon/mer.png", description : '<<relation-text _dockRepConfig>>'}>>
+				<</if>>
 			<</silently>>
 			<<relation-box-simple _policeBoxConfig>>
 			<<relation-box-simple _orphanageBoxConfig>>
@@ -300,6 +319,11 @@
 				<<relation-box-simple _inmateBoxConfig>>
 				<<relation-box-simple _prisonBoxConfig>>
 			<</if>>
+			<<if $dockwork gte 2>>
+				<<relation-box-simple _dockBoxConfig>>
+			<</if>>
+				<<relation-box-wolves>>
+
 		</div>
 		<<if $farm_stage gte 2>>
 			<<silently>>
@@ -463,52 +487,16 @@
 			<<relation-box-simple _businessFameBoxConfig>>
 			<<relation-box-simple _socialFameBoxConfig>>
 			<<relation-box-simple _overallFameBoxConfig>>
+
+			<div class="relation-box" @style="(_boxConfig.style || '')">
+				<div class="relation-description">
+				도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost 부른다.
+				</div>
+			</div>
+
 		</div>
 
 		<br>
-		도시 사람들은 당신을 <span class="teal"><<overworld_nicknamePost "이라고" "sep">></span>_trPost 알고 있다. 지하 세계의 범죄자들은 당신을 <span class="pink"><<underworld_nicknamePost "이라고" "sep">></span>_trPost 부른다.
-
-		<<if $syndromewolves is 1 or $dockwork gte 2>>
-
-			<br>
-			<span class="gold">기타</span>
-		<</if>>
-		<<if $syndromewolves is 1>>
-			<div id="other-relation-blocks">
-					<b>늑대 무리 화합:</b> <img id="statbar" src="img/ui/wolfharmony.png">
-					<div class="meter">
-						<<set $percent=Math.floor((Math.min(20, $wolfpackharmony)/20)*100)>>
-						<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
-					</div>
-
-					<b>늑대 무리 흉폭성:</b> <img id="statbar" src="img/ui/wolfferocity.png">
-					<div class="meter">
-						<<set $percent=Math.floor((Math.min(20, $wolfpackferocity)/20)*100)>>
-						<<print '<div class="goldbar" style="width:' + $percent + '%"></div>'>>
-					</div>
-			</div>
-			<br>
-		<</if>>
-
-		<<if $dockwork gte 2>>
-			<div id="other-relation-blocks">
-					<b>부두:</b>
-					<<set $dockstatus = Math.clamp($dockstatus, 0, 100)>>
-					<<if $dockstatus gte 100>>
-						<span class="green">다른 일꾼들은 당신을 존중한다.</span>
-					<<elseif $dockstatus gte 80>>
-						<span class="teal">다른 일꾼들은 당신을 받아들여주고 있다.</span>
-					<<elseif $dockstatus gte 30>>
-						<span class="lblue">다른 일꾼들은 당신을 용인해주고 있다.</span>
-					<<elseif $dockstatus gte 10>>
-						<span class="blue">다른 일꾼들은 당신을 의심에 찬 눈으로 보고 있다.</span>
-					<<else>>
-						<span class="purple">다른 일꾼들은 당신을 경멸에 찬 눈으로 보고 있다.</span>
-					<</if>>
-			</div>
-			<br>
-		<</if>>
-
 	</div>
 	<br>
 <</widget>>

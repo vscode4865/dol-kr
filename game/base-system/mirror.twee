@@ -37,10 +37,22 @@
 	</div>
 <</widget>>
 
+<<widget "preMirror">>
+	<<if (Browser.isMobile).any()>>
+		<<set $showMannequins to 0>>
+	<<else>>
+		<<set $showMannequins to 1>>
+	<</if>>
+<</widget>>
+
+<<widget "postMirror">>
+	<<shopClothingFilterReset>> /* Due to the reusing of shop code */
+<</widget>>
+
 <<widget "mirrorDisplay">>
 	<<switch $mirrorMenu>>
 		<<case "appearance">>
-			<<if pregnancyBellyVisible(true) and !playerAwareTheyArePregnant()>>
+			<<if playerBellyVisible(true) and !playerAwareTheyArePregnant()>>
 				<<mirrorAppearancePregnancy>>
 			<<else>>
 				<<mirrorAppearance>>
@@ -187,7 +199,7 @@
 	<<link "뒤로">><<replace #mirror>><<mirrorMenu>><</replace>><<numberify "#passages > .passage">><<unset $mirrorMenu>><</link>>
 	<br><br>
 	<<settextcolorfromgender $player.gender_appearance>>
-	당신은 <span @class="_text_color"><<if pregnancyBellyVisible(true)>>임신한 <</if>><<girlPost>></span>처럼 보인다.
+	당신은 <span @class="_text_color"><<if playerBellyVisible(true)>>임신한 <</if>><<girlPost>>처럼 보인다.</span>
 	<br>
 	아래의 요인들이 그런 인상에 기여하고 있다:
 	<br>
@@ -792,7 +804,8 @@
 	<br><br>
 
 	<<if getPregnancyObject().potentialFathers.length is 1>>
-		<span class="lewd">아기 아빠는 <<print pregnancyNameCorrection(getPregnancyObject().potentialFathers[0].source)>>?i 확실하다.</span>
+		<<set $_fatherName to pregnancyNameCorrection(getPregnancyObject().potentialFathers[0].source)>><<set _trResult to $_fatherName>><<trPost _postNum "이">>
+		<span class="lewd">아기 아빠는 <<print $_fatherName === "yourself" ? "당신이" : _trResult>> 확실하다.</span>
 	<<else>>
 		<span class="red">당신은 누가 아기 아빠일지 궁금해한다.</span>
 	<</if>>
@@ -1181,91 +1194,524 @@
 	<</if>>
 <</widget>>
 
+<<widget "hairDescription">>
+	당신은 거울 속의 머리모양을 확인한다.
+	<<if $hairtype is "default" and $fringetype is "default">>
+	당신은 아직 머리 스타일을 정돈하지 않았다.
+		<div class="no-numberify">
+			<<link [[머리 스타일을 임의로 정돈한다|$passage]]>>
+				<<set _hairType to Object.values(_hairTypeByName)>>
+				<<set $hairtype to _hairType[random(0,_hairType.length - 1)]>>
+				<<set _fringeType to Object.values(_fringeTypeByName)>>
+				<<set $fringetype to _fringeType[random(0,_fringeType.length - 1)]>>
+				<<set $hairposition to ["front","back"][random(0,1)]>>
+			<</link>> |
+			<<switch $hairposition>>
+				<<case "front">>
+					<<link "옆머리를 몸 뒤로 위치시킨다">>
+						<<run State.setVar("$hairposition", "back")>>
+						<<run Engine.show()>>
+					<</link>>
+				<<case "back">>
+					<<link "옆머리를 몸 앞으로 위치시킨다">>
+						<<run State.setVar("$hairposition", "front")>>
+						<<run Engine.show()>>
+					<</link>>
+				<<default>>
+					<<link "옆머리를 몸 앞으로 위치시킨다">>
+						<<run State.setVar("$hairposition", "front")>>
+						<<run Engine.show()>>
+					<</link>>
+			<</switch>>
+			<br><br>
+		</div>
+	<<else>>
+		<<if $hairtype is "default">>
+			현재, 당신의 앞머리는 <span class="gold"><<trHairtype $fringetype>>_trResult</span> 스타일이다. 당신의 옆머리는 <span class="gold">자연스럽게</span> 두고 있고 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해 있다.
+		<<elseif $fringetype is "default">>
+			현재, 당신의 앞머리는 <span class="gold">자연스럽게</span> 두고 있다. 당신의 옆머리는 <span class="gold"><<trHairtype $hairtype>>_trResult</span> 스타일이며 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해 있다.
+		<<else>>
+			현재, 당신의 앞머리는 <span class="gold"><<trHairtype $fringetype>>_trResult</span> 스타일이다. 당신의 옆머리는 <span class="gold"><<trHairtype $hairtype>>_trResult</span> 스타일이며 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해 있다.
+		<</if>>
+			당신의 머리는
+			<<if $hairgelBottles is undefined>><<set $hairgelBottles to 0>><</if>>
+			<<if $ruffledisable is "t">>
+				<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+					제 자리에 고정되어 있다.
+					<span class="black">당신의 머리 스타일은 헝클어질 수 없습니다. <br> <i class="red">새 머리 스타일을 선택하면 다시 머리가 헝클어질 수 있습니다. <<print ($hairgelBottles is 0 ? "헤어 젤은 가게에서 구할 수 있습니다." : "헤어 젤을 다시 바를 필요가 있을 것입니다.")>></i></span>
+				</mouse>
+			<<else>>
+				<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+					제 자리에 고정되어 있지 않다.
+					<span class="black">특정한 상황에서는 당신의 머리가 더 헝클어진 모습으로 바뀔 수 있습니다. <br> <i class="teal">헤어 젤을 사용하면 머리가 헝클어지는 것을 방지할 수 있습니다.<<print ($hairgelBottles is 0 ? " 헤어 젤은 가게에서 구할 수 있습니다." : "")>></i> </span>
+				</mouse>
+			<</if>>
+		<div class="no-numberify">
+			<<link [[머리 스타일을 임의로 정돈한다|$passage]]>>
+				<<set _hairType to Object.values(_hairTypeByName)>>
+				<<set $hairtype to _hairType[random(0,_hairType.length - 1)]>>
+				<<set _fringeType to Object.values(_fringeTypeByName)>>
+				<<set $fringetype to _fringeType[random(0,_fringeType.length - 1)]>>
+				<<set $hairposition to ["front","back"][random(0,1)]>>
+			<</link>> |
+			<<switch $hairposition>>
+				<<case "front">>
+					<<link "옆머리를 몸 뒤로 위치시킨다">>
+						<<run State.setVar("$hairposition", "back")>>
+						<<run Engine.show()>>
+					<</link>>
+				<<case "back">>
+					<<link "옆머리를 몸 앞으로 위치시킨다">>
+						<<run State.setVar("$hairposition", "front")>>
+						<<run Engine.show()>>
+					<</link>>
+				<<default>>
+					<<link "옆머리를 몸 앞으로 위치시킨다">>
+						<<run State.setVar("$hairposition", "front")>>
+						<<run Engine.show()>>
+					<</link>>
+			<</switch>>
+		<br><br>
+		</div>
+	<</if>>
+<</widget>>
+
 <<widget "mirrorHair">>
 	<<link "뒤로">><<replace #mirror>><<mirrorMenu>><</replace>><<numberify "#passages > .passage">><<unset $mirrorMenu>><</link>>
+	<<shopClothingFilterSettingsDefault>> /* Due to reusing the traits filtering */
 	<br><br>
-	__머리 모양__
-	<br>
-	<<if !$savedHairStyles>>
-		<<set $savedHairStyles to {
-			기본: { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }
-		}>>
-	<</if>>
-	<<set _hairTypeByName to {"왼쪽으로 땋은": "braid left", "오른쪽으로 땋은": "braid right", "플랫 포니테일": "flat ponytail", "루즈": "loose", "지저분한": "messy", "피그테일": "pigtails", "포니테일": "ponytail", "짧은": "short", "왼쪽 사이드테일": "side tail left", "오른쪽 사이드테일": "side tail right", "스트레이트": "straight", "왼쪽으로 쏠린": "swept left", "양쪽으로 땋은": "twin braids", "트윈테일": "twintails", "곱슬머리": "curl", "디파인드 컬": "defined curl", "니트": "neat", "곱슬머리 피그테일": "curly pigtails", "경단머리": "sailor buns", "레게머리": "dreads", "짧은 뾰족머리": "short spiky", "버블테일": "bubble tails", "옆을 올린 곱슬머리": "curly side up", "하트모양 땋은머리": "heart braid", "도넛모양 땋은머리": "loop braid", "헝클어진": "ruffled", "짧게 깎은": "shaved", "두꺼운 트윈테일": "thick twintails", "사이드컷": "sidecut", "스페이스 번": "space buns", "드릴 링렛": "drill ringlets", "복슬복슬한 포니테일": "fluffy ponytail", "두꺼운 사이드테일": "side thicktail"}>>
-	<<set _fringeTypeByName to {"얇게 휘날리는": "thin flaps", "넓게 휘날리는": "wide flaps", "히메": "hime", "루즈": "loose", "지저분한": "messy", "너무 자란": "overgrown", "링렛": "ringlets", "반씩 가른": "split", "스트레이트": "straight", "왼쪽으로 쏠린": "swept left", "뒤로 넘긴": "back", "가르마": "parted", "납작한": "flat", "고수머리": "quiff", "스트레이트 컬": "straight curl", "링렛 컬": "ringlet curl", "커튼": "curtain", "삼지창": "trident", "빡빡머리": "buzzcut", "모히칸": "mohawk", "테두리": "framed", "사이드컷": "sidecut", "드릴 링렛": "drill ringlets", "앞으로 땋은" : "front braids", "블런트 사이드록": "blunt sidelocks", "헝클어진" : "ruffled"}>>
-
-	<div class="no-numberify">
-		<<link [[자연스럽게|$passage]]>>
-			<<set $hairtype to "default">>
-			<<set $fringetype to "default">>
-		<</link>> |
-		<<link [[무작위로|$passage]]>>
-			<<set _hairType to Object.values(_hairTypeByName)>>
-			<<set $hairtype to _hairType[random(0,_hairType.length - 1)]>>
-			<<set _fringeType to Object.values(_fringeTypeByName)>>
-			<<set $fringetype to _fringeType[random(0,_fringeType.length - 1)]>>
-			<<set $hairposition to ["front","back"][random(0,1)]>>
-		<</link>> | (옆머리와 앞머리 모두 변경합니다)
+	<div id="hairDescription">
+	<<hairDescription>>
 	</div>
+
+	<div id="hairgelLinks">
+		<<hairgelLinks>>
+	</div>
+
 	<br>
-	<<trHairtype $hairtype>>당신의 옆머리는 "_trResult" 스타일이고, 몸 <<if $hairposition is "front">>앞에<<else>>뒤에<</if>> 위치해있다.
-	<br>
 
-	<<linkradiogroup "$hairtype" _hairTypeByName>>
+	<<set _hairTypeByName to {}>>
+	<<run setup.hairstyles.sides.forEach(style => {
+		if (!V.shopClothingFilter.active || !V.shopClothingFilter.traits.length || style.type.find(type => V.shopClothingFilter.traits.includes(type))) {Wikifier.wikifyEval("<<trHairtype '"+ style.name +"'>>");T.hairTypeByName[T.trResult] = style.variable;}
+	})>>
 
+	<<set _fringeTypeByName to {}>>
+	<<run setup.hairstyles.fringe.forEach(style => {
+		if (!V.shopClothingFilter.active || !V.shopClothingFilter.traits.length || style.type.find(type => V.shopClothingFilter.traits.includes(type))) {Wikifier.wikifyEval("<<trHairtype '"+ style.name +"'>>");T.fringeTypeByName[T.trResult] = style.variable;}
+	})>>
+
+	<div id="hairContainer">
+		<div id="hairContainerHeader" class="no-numberify">
+			<<mirrorhairdisplayLinks "hair">>
+		</div>
+		<<mirrorhairdisplay "$hairtype" "sides">>
+	</div>
 	<br><br>
+<</widget>>
 
-	<<linkradiogroup "$hairposition" `{
-		"몸 앞으로 배치": "front",
-		"몸 뒤로 배치": "back",
-	}`>>
-	<br><br>
-	<<trHairtype $fringetype>>앞머리는 "_trResult" 스타일이다.
-	<br>
-	/*<<if $fringetype is "default">>
-	*	앞머리 스타일을 자연스럽게 바꾼다면 옆머리가 지저분한 머리로 설정된다.
-	*<</if>>
-	*/
-	<<linkradiogroup "$fringetype" _fringeTypeByName>>
-	<br><br>
-
+<<widget "hairgelLinks">>
 	<div class="no-numberify">
-		<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
-		<<if _savedHairStylesKeys.length gt 0>>
-			<<listbox '_selectedSavedHairStyle'>>
-				<<optionsfrom _savedHairStylesKeys>>
-			<</listbox>> |
-			<<link [[현재 스타일로 설정|$passage]]>>
-				<<set $hairtype to $savedHairStyles[_selectedSavedHairStyle].hairtype>>
-				<<set $fringetype to $savedHairStyles[_selectedSavedHairStyle].fringetype>>
-				<<set $hairposition to $savedHairStyles[_selectedSavedHairStyle].hairposition>>
-			<</link>> |
-			<<link [[저장된 스타일을 갱신|$passage]]>>
-				<<set $savedHairStyles[_selectedSavedHairStyle].hairtype to $hairtype>>
-				<<set $savedHairStyles[_selectedSavedHairStyle].fringetype to $fringetype>>
-				<<set $savedHairStyles[_selectedSavedHairStyle].hairposition to $hairposition>>
-			<</link>> |
-			<<link [[삭제|$passage]]>>
-				<<if _selectedSavedHairStyle isnot "기본">>
-					<<run $outfit.forEach((o) => {
-						if(o.hairStyle === T.selectedSavedHairStyle){
-							o.hairStyle = undefined;
-						}
-					})>>
-					<<run delete $savedHairStyles[_selectedSavedHairStyle]>>
-				<</if>>
-			<</link>> |
-			<br><br>
+	<<link [["마네킹을 " + ($showMannequins ? "숨긴다" : "보이게 한다")|$passage]]>><<set $showMannequins to 1 - ($showMannequins or 0)>><</link>>
+	<mouse class="tooltip-small linkBlue">(?)<span>머리 스타일 미리보기를 비활성화합니다. <i class="red">마네킹을 보이게 하면 몇몇 기기에서 성능 문제가 발생할 수 있습니다.</i></span></mouse>
+	<<if $hairgelBottles isnot undefined and $hairgelBottles gte 1>>
+		| <<hairgelicon>>
+		<<if $ruffledisable is "f">>
+			<<link "헤어 젤을 바른다">><<replace #hairDescription>><<hairgelApply>><</replace>><<replace #hairgelDesc>><<hairgelDesc>><</replace>><<replace#hairgelLinks>><<hairgelLinks>><</replace>><</link>>
+		|
 		<</if>>
-		<label>이름: <<textbox "_hairStyleName" "">></label>
-		<mouse class="tooltip linkBlue">(?)<span>중복된 이름은 항목을 덮어씌울 것입니다. 최대 30자, 글자, 숫자, 대시와 밑줄기호만 사용 가능합니다</span></mouse>
-		<br>
-		<<link [[현재 스타일 저장|$passage]]>>
-			<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z가-힣0-9_-]+/g,"").substring(0,30)>>
-			<<set $savedHairStyles[_hairStyleName] to { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }>>
-		<</link>>
+		<div id="hairgelDesc" style="display:inline"><<hairgelDesc>></div>
+	<</if>>
 	</div>
 <</widget>>
+
+<<widget "hairgelApply">>
+	<<if $leftarm isnot "bound" and $rightarm isnot "bound">>
+		<<set $ruffledisable to "t">>
+		<<set $hairgelBottles += -1>>
+	<</if>>
+	<<hairDescription>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">양팔이 묶여 있어서</span>, 당신은 이 상태로는 머리에 무언가를 하기에는 너무 힘들다는 것을 알아차린다.
+		<br>
+	<<else>>
+		당신은 헤어 젤을 손 위에 한 뭉텅이 짜서 머리 전체에 매끈하게 바른다. 당신이 일을 마쳤을 때에는, 당신의 머리 스타일은 제 자리에 고정되었고, 작은 병은 텅 비었다. <span class="pink">만약 당신이 머리 스타일을 바꾸기로 결심한다면, 더 많이 <<print ($hairgelBottles is 0) ? "구해올" : "바를">> 필요가 있을 것이다.</span>
+		<hr>
+	<</if>>
+<</widget>>
+
+<<widget "hairgelDesc">>
+	당신에게는 <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "병" : "병">>의 헤어 젤이 남아있다.
+<</widget>>
+
+<<widget "mirrormodel">>
+	<<set _modeloptions.skin_type = $skinColor.natural || "light">>
+	<<set _modeloptions.freckles = $player.freckles == true and $makeup.concealer != 1>>
+	<<set _modeloptions.left_eye = $makeup.eyelenses.left != 0 ? $makeup.eyelenses.left : $leftEyeColour>>
+	<<set _modeloptions.right_eye = $makeup.eyelenses.right != 0 ? $makeup.eyelenses.right : $rightEyeColour>>
+	<<set _modeloptions.mouth to 'neutral'>>
+	<<set _modeloptions.hair_colour = $haircolour>>
+	<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
+	<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
+	<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
+	<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
+	<<set _modeloptions.hair_colour_style = $hairColourStyle>>
+	<<set _modeloptions.hair_sides_length to $hairlengthstage>>
+	<<set _modeloptions.hair_sides_position to $hairposition>>
+	<<set _modeloptions.hair_fringe_length to $fringelengthstage>>
+<</widget>>
+
+<<widget "mirrorhairdisplay">>
+	<<if _hairCategory isnot _args[0]>>
+		<<set _perPage to $showMannequins ? 14 : 100>>
+		<<set _page to 0>>
+	<</if>>
+	<<set _hairCategory to _args[0]>>
+	<<mirrorhairOptions _args[1]>>
+
+	<div id="hairContainerElements">
+		<<mirrorhairdisplayElements _hairOptions>>
+	</div>
+	<div id="hairContainerPages" class="no-numberify">
+		<<mirrorhairControls _args[1]>>
+	</div>
+<</widget>>
+
+<<widget "mirrorhairControls">>
+	<<set _pagereal to _page + 1>>
+	<<set _pagemaxreal to _pageMax + 1>>
+	<<if $showMannequins>>
+		<div id="hairContainerFooter">
+			<div class="tab">
+			<<if _page gt 0>>
+				<<button '<span class="fa-icon fa-left"></span> 이전'>>
+					<<if _page gt 0>><<set _page-->><</if>>
+					<<mirrorhairOptions _args[0]>>
+					<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
+					<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
+				<</button>>
+			<</if>>
+			</div>
+			<div class="tab">
+			<<if _page lt _pageMax>>
+				<<button '다음 <span class="fa-icon fa-right"></span>'>>
+					<<if _page lt _pageMax>><<set _page++>><</if>>
+					<<mirrorhairOptions _args[0]>>
+					<<replace "#hairContainerElements">><<mirrorhairdisplayElements _hairOptions>><</replace>>
+					<<replace "#hairContainerPages">><<mirrorhairControls _args[0]>><</replace>>
+				<</button>>
+			<</if>>
+			</div>
+			<div class="tab">
+				<div id="buttonpage">
+					<<button '_pagereal/_pagemaxreal'>>
+					<</button>>
+				</div>
+			</div>
+		</div>
+	<</if>>
+<</widget>>
+
+<<widget "mirrorhairTraits">>
+	<div id="hairContainerFilter">
+		<div class="tab">
+				<<button "<span class='fa-icon fa-check'></span> 적용">>
+					<<set $shopClothingFilter.active = true>>
+					<<run updateMoment()>>
+				<</button>>
+				<<button "<span class='fa-icon fa-reset'></span> 필터 초기화">>
+					<<shopClothingFilterReset>>
+					<<replace "#hairContainerTraits">><<mirrorHairTraitList>><</replace>>
+					<<run updateMoment()>>
+				<</button>>
+				<<button "<span class='fa-icon fa-selected'></span> 전부 선택/해제">>
+					<<run toggleAllHairTraitsFilter()>>
+				<</button>>
+		</div>
+    </div>
+<</widget>>
+
+<<widget "mirrorhairOptions">>
+	<<set _hairOptions to {}>>
+	<<run setup.hairstyles[_args[0]].forEach(style => {
+		if (!V.shopClothingFilter.active || !V.shopClothingFilter.traits.length || style.type.find(type => V.shopClothingFilter.traits.includes(type))) {Wikifier.wikifyEval("<<trHairtype '"+ style.name +"'>>");T.hairOptions[T.trResult] = style.variable;}
+	})>>
+	<<set _pageMax to Math.floor(Object.keys(_hairOptions).length / (_perPage + 1))>>
+
+	<<run Object.keys(clone(_hairOptions)).forEach((key, index) => {
+        if (!between(index, T.perPage * T.page, (T.perPage * (T.page + 1)) - 1)) {
+            delete T.hairOptions[key];
+        }
+    })>>
+<</widget>>
+
+<<widget "mirrorhairdisplayLinks">>
+	<div class="tab">
+		<span @class="_args[0] is 'hair' ? 'tab-selected' : 'tab'">
+			<<button "옆머리">>
+				<<replace "#hairContainer">>
+					<div id="hairContainerHeader" class="no-numberify">
+						<<mirrorhairdisplayLinks "hair">>
+					</div>
+					<<mirrorhairdisplay "$hairtype" "sides">>
+				<</replace>>
+			<</button>>
+		</span>
+	</div>
+	<div class="tab">
+		<span @class="_args[0] is 'fringe' ? 'tab-selected' : ''">
+			<<button "앞머리">>
+				<<replace "#hairContainer">>
+					<div id="hairContainerHeader" class="no-numberify">
+						<<mirrorhairdisplayLinks "fringe">>
+					</div>
+					<<mirrorhairdisplay "$fringetype" "fringe">>
+				<</replace>>
+			<</button>>
+		</span>
+	</div>
+	<div class="tab">
+		<span @class="_args[0] is 'style' ? 'tab-selected' : ''">
+			<<button "세이브/로드">>
+				<<replace "#hairContainer">>
+					<div id="hairContainerHeader" class="no-numberify">
+						<<mirrorhairdisplayLinks "style">>
+					</div>
+					<<mirrorhairdisplaySave>>
+				<</replace>>
+			<</button>>
+			<div id="hairContainerSave" class="no-numberify">
+			</div>
+		</span>
+	</div>
+	<div class="tab">
+		<span @class="_args[0] is 'filter' ? 'tab-selected' : ''">
+			<<button "필터">>
+				<<replace "#hairContainer">>
+					<div id="hairContainerHeader" class="no-numberify">
+						<<mirrorhairdisplayLinks "filter">>
+					</div>
+					<<mirrorhairdisplayFilter>>
+				<</replace>>
+			<</button>>
+		</span>
+	</div>
+<</widget>>
+
+<<widget "mirrorhairdisplayElements">>
+	<div id="hairGridSides" class="no-numberify hairGrid">
+		<<for _label, _hairName range _args[0]>>
+			<<capture _hairCategory, _hairName>>
+				<div @id="'hairGrid-' + _hairCategory.replace('$','') + '-' + _hairName.replace(/ /g,'')" @class="'gridItem' + (_hairName is V[_hairCategory.replace('$','')] ? ' selectedHair' : '')" @onclick="`wikifier('mirrorhairdisplayClick', '${T.hairCategory.replace('$','')}', '${T.hairName.replace(/ /g,'_')}');`">
+					<<if $options.images is 1 and $sidebarRenderer isnot "img" and $showMannequins is 1>>
+						<<selectmodel "main">>
+						<<mirrormodel>>
+						<<if _hairCategory is "$hairtype">>
+							<<set _modeloptions.hair_sides_type to _hairName>>
+							<<set _modeloptions.hair_fringe_type to $fringetype>>
+						<<else>>
+							<<set _modeloptions.hair_fringe_type to _hairName>>
+							<<set _modeloptions.hair_sides_type to $hairtype>>
+						<</if>>
+						<<rendermodel "hairstyleMannequin">>
+						<br>
+					<</if>>
+					<<print _label>>
+				</div>
+			<</capture>>
+		<</for>>
+	</div>
+<</widget>>
+
+<<widget "mirrorhairdisplayClick">>
+	<<if _args[0] and _args[1]>>
+		<<if Object.values(_hairOptions).includes(V[_args[0]])>>
+			<<set _id to "#hairGrid-" + _args[0] + "-" + V[_args[0]].replace(/ /g,"")>>
+			<<removeclass _id "selectedHair">>
+		<</if>>
+		<<set V[_args[0]] to _args[1].replace(/_/g," ")>>
+		<<set _id2 to "#hairGrid-" + _args[0] + "-" + _args[1].replace(/_/g,"")>>
+		<<set $ruffledisable to "f">>
+		<<addclass _id2 "selectedHair">>
+		<<updatesidebarimg>>
+		<<replace #hairDescription>><<hairDescription>><</replace>>
+		<<replace #hairgelLinks>><<hairgelLinks>><</replace>>
+	<</if>>
+<</widget>>
+
+<<widget "mirrorhairdisplaySave">>
+	<div id="hairContainerHairstyle">
+		<<mirrorHairSaveOptions>>
+	</div>
+	<div id="hairContainerSave" class="no-numberify">
+		<<mirrorHairSave>>
+	</div>
+<</widget>>
+
+<<widget "mirrorHairSaveOptions">>
+		<<if !$savedHairStyles>>
+			<<set $savedHairStyles to {
+				기본: { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }
+			}>>
+		<</if>>
+		<div class="no-numberify saveHair">
+		<span class="bold">저장된 머리 스타일 선택:</span>
+			<hr style="border:none;margin:.25em 0">
+			<<set _savedHairStylesKeys to Object.keys($savedHairStyles)>>
+			<<if _savedHairStylesKeys.length gt 0>>
+				<<listbox '_selectedSavedHairStyle'>>
+					<<optionsfrom _savedHairStylesKeys>>
+				<</listbox>>
+			<</if>>
+			<br>
+		</div>
+		<div class="no-numberify saveHair">
+			<span class="bold" style="margin:.25em 0">새 머리 스타일을 만든다:</span>
+			<hr style="border:none;margin:.25em 0">
+			<label>이름: <<textbox "_hairStyleName" "">></label>
+			<mouse class="tooltip linkBlue"> (?)<span>당신의 현재 머리 스타일을 저장해서, 나중에 다시 사용할 수 있게 합니다. 중복된 이름은 이미 존재하는 스타일을 덮어씌울 것입니다.</span></mouse>
+			<span id="textbox-error"></span>
+		</div>
+<</widget>>
+
+
+<<widget "mirrorhairdisplayFilter">>
+	<div id="hairContainerTraits" class="no-numberify">
+		<<mirrorHairTraitList>>
+	</div>
+	<div id="hairContainerFilter">
+		<<mirrorhairTraits>>
+	</div>
+<</widget>>
+
+<<widget "mirrorHairTraitList">>
+	<<set _shopLocation to "mirrorhair">>
+	<div class="hairGridTraits">
+		<div class="traitCategory">
+			<<set _textureTraits to ["curly", "sleek", "wavy"]>>
+			<span class="gold" style="padding-left:5px">질감:</span>
+				<<for _trait range _textureTraits.sort()>>
+					<<silently>><< _trait>><</silently>>
+					<div class="filters-trait-row">
+						<label>
+							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
+							<<clothingtrait _trait 'display_normal'>>
+							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
+							<<if $noTraitDescription>>
+								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<else>>
+								<mouse class = "tooltip-small">
+									<<trClothingTrait _clothesTrait>><<print _trResult>>
+									<span class="black"><<print _clothesDesc>></span>
+								</mouse>
+							<</if>>
+						</label>
+					</div>
+				<</for>>
+		</div>
+		<div class="traitCategory">
+			<span class="gold" style="padding-left:5px">스타일:</span>
+			<<set _styleTraits to ["braids", "buns", "pigtails", "ponytail"]>>
+				<<for _trait range _styleTraits.sort()>>
+					<<silently>><< _trait>><</silently>>
+					<div class="filters-trait-row">
+						<label>
+							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
+							<<clothingtrait _trait 'display_normal'>>
+							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
+							<<if $noTraitDescription>>
+								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<else>>
+								<mouse class = "tooltip-small">
+									<<trClothingTrait _clothesTrait>><<print _trResult>>
+									<span class="black"><<print _clothesDesc>></span>
+								</mouse>
+							<</if>>
+						</label>
+					</div>
+				<</for>>
+		</div>
+		<div class="traitCategory">
+			<span class="gold" style="padding-left:5px">기타</span>
+			<<set _otherTraits to ["loose","short"]>>
+				<<for _trait range _otherTraits.sort()>>
+					<<silently>><< _trait>><</silently>>
+					<div class="filters-trait-row">
+						<label>
+							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
+							<<clothingtrait _trait 'display_normal'>>
+							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
+							<<if $noTraitDescription>>
+								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<else>>
+								<mouse class = "tooltip-small">
+									<<trClothingTrait _clothesTrait>><<print _trResult>>
+									<span class="black"><<print _clothesDesc>></span>
+								</mouse>
+							<</if>>
+						</label>
+					</div>
+				<</for>>
+		</div>
+	</div>
+<</widget>>
+
+<<widget "mirrorHairSave">>
+	<div class="hairContainerSave">
+	<<if _savedHairStylesKeys.length gt 0>>
+	<div class="tab">
+		<<button '<span class="fa-icon fa-check"></span> 사용'>>
+			<<set $hairtype to $savedHairStyles[_selectedSavedHairStyle].hairtype>>
+			<<set $fringetype to $savedHairStyles[_selectedSavedHairStyle].fringetype>>
+			<<set $hairposition to $savedHairStyles[_selectedSavedHairStyle].hairposition>>
+			<<set $ruffledisable to "f">>
+			<<updatesidebarimg>>
+		<</button>>
+		<<button '<span class="fa-icon fa-overwrite"></span> 덮어쓰기'>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairtype to $hairtype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].fringetype to $fringetype>>
+			<<set $savedHairStyles[_selectedSavedHairStyle].hairposition to $hairposition>>
+			<<updatesidebarimg>>
+		<</button>>
+		<<button '<span class="fa-icon fa-delete"></span> 삭제'>>
+			<<if _selectedSavedHairStyle isnot "기본">>
+				<<run $outfit.forEach((o) => {
+					if(o.hairStyle === T.selectedSavedHairStyle){
+						o.hairStyle = undefined;
+					}
+				})>>
+				<<run delete $savedHairStyles[_selectedSavedHairStyle]>>
+				<<updatesidebarimg>>
+				<<replace #hairContainerHairstyle>><<mirrorHairSaveOptions>><</replace>>
+			<</if>>
+		<</button>>
+		<<button '<span class="fa-icon fa-save"></span> 세이브'>>
+			<<if _hairStyleName is "">>
+				<<replace "#textbox-error">><br> <span class="red">이름을 입력해 주세요.</span><</replace>>
+			<<else>>
+				<<replace "#textbox-error">><</replace>>
+				<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z가-힣0-9_-]+/g,"").substring(0,30)>>
+				<<set $savedHairStyles[_hairStyleName] to { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }>>
+				<<replace #hairContainerHairstyle>><<mirrorHairSaveOptions>><</replace>>
+			<</if>>
+		<</button>>
+	</div>
+	<<else>>
+	<div class="tab">
+		<<button '<span class="fa-icon fa-save"></span> 세이브'>>
+			<<if _hairStyleName is "">>
+				<<replace "#textbox-error">><br> <span class="red">이름을 입력해 주세요.</span><</replace>>
+			<<else>>
+				<<replace "#textbox-error">><</replace>>
+				<<set _hairStyleName to _hairStyleName.replace(/[^a-zA-Z가-힣0-9_-]+/g,"").substring(0,30)>>
+				<<set $savedHairStyles[_hairStyleName] to { hairtype:$hairtype, fringetype:$fringetype, hairposition:$hairposition }>>
+				<<replace #hairContainerHairstyle>><<mirrorHairSaveOptions>><</replace>>
+			<</if>>
+		<</button>>
+	</div>
+	<</if>>
+	</div>
+<</widget>>
+
 
 <<widget "mirrorMakeupPart">>
 	<<set _itemType = _args[0]>>
@@ -2091,4 +2537,3 @@
 	<<link "하루를 건너뛴다">><<pass 23 hours>><<effects>><<goto "Mirror">><</link>>
 	<br>
 <</widget>>
-

@@ -72,6 +72,7 @@ const hairStyleCap = {
 };
 
 window.calculatePenisBulge = () => {
+	if (V.worn.under_lower.type.includes("strap-on")) return (V.worn.under_lower.size || 0) * 3;
 	const compressed = V.player.penisExist && V.worn.genitals.type.includes("hidden");
 	if (!V.player.penisExist || compressed) return 0;
 
@@ -153,7 +154,6 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "아이섀도우");
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "마스카라");
 	/* Body structure */
-	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "체형");
 	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "탄탄한 근육");
@@ -260,8 +260,10 @@ function genderappearancecheck() {
 		/* Breast fully covered */
 		addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 4) * 100, 0, Infinity), "옷 너머로 가슴 크기 확인 가능");
 	}
+	/* Bottom */
+	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "엉덩이 크기 (" + Math.trunc(T.bottom_visibility * 100) + "% 확인 가능)");
 	/* Pregnant Belly */
-	if (V.sexStats === undefined || !pregnancyBellyVisible()) {
+	if (V.sexStats === undefined || !playerBellyVisible()) {
 		// do glorious nothing
 	} else if (playerBellySize() >= 18) {
 		addfemininityfromfactor(Math.clamp(10000, 0, Infinity), playerAwareTheyArePregnant() ? "임신한 배" : "임신한 것처럼 보이는 배");

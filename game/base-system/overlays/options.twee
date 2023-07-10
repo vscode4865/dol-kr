@@ -426,19 +426,22 @@ IMPORTANT:
 			</div>
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-		<br>
-		<span class="gold">이력 깊이</span>
-		<br>
-		<div class="description">이력에서 N-1 경로(passage)까지 뒤로 갈 수 있습니다. 변경은 설정창을 나간 후 적용됩니다.<br>
-		<span class="red"><b>주의:</b> 속도저하를 일으킬 수 있습니다. 그리고, 5 이상의 숫자는 당신의 로컬 스토리지 용량을 넘어 <br>
-		<b>세이브 문제를 일으킬 수 있습니다</b>. 사용시 일어날 수 있는 불상사는 자신의 책임입니다.</span>
-		</div>
-		<<numberslider "$options.maxStates" $options.maxStates 1 20 1 $ironmanmode>>
-		<br><br>
 	<<else>>
 		<br>
 		이미지가 비활성화되었습니다(Images disabled)
 	<</if>>
+	<br>
+	<span class="gold">이력 깊이</span>
+	<br>
+	<div class="description">이력에서 N-1 경로(passage)까지 뒤로 갈 수 있도록 합니다.</div>
+	<div class="settingsToggle">
+		<<numberslider "$options.maxStates" $options.maxStates 1 20 1 $ironmanmode>>
+		<label>
+			<<ind>><<checkbox "$options.sessionHistory" false true autocheck>> 페이지를 새로고침할 때 이력을 보존합니다.
+			<mouse class="tooltip-small linkBlue">(?)<span>성능에 악영향을 줍니다. F5를 누른 후에 이력 전체가 필요할 때에만 유용합니다.</span></mouse>
+		</label>
+	</div>
+	<br><br>
 <</widget>>
 
 <<widget "optionsadvanced">>
@@ -472,7 +475,17 @@ IMPORTANT:
 		</div>
 		<div class="settingsToggle">
 			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> 렌더러 디버거 사용</label>
-		</div>		
+		</div>
+		<div class="settingsToggle">
+			<label id="idbToggle">
+				/* checkbox macro doesn't allow changing variables that do not start with "$" or "_". this is a bypass hack. */
+				<<run setTimeout(() => jQuery(document.createElement("input"))
+					.attr({ id: "checkbox-idbactive", name: "checkbox-idbactive", type: "checkbox", checked: idb.active, disabled: idb.lock })
+					.addClass("macro-checkbox")
+					.on("change.macros", () => idb.active = document.getElementById("checkbox-idbactive").checked)
+					.prependTo("#idbToggle"))>> indexedDB 활성화
+			</label>
+		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 	<br>

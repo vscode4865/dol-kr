@@ -1658,6 +1658,12 @@
     ```
 
     ```
+    <<personnamePost>>
+        <<personname>>의 대체 위젯.
+        + <<personPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<combatpersonPost>>
         <<combatperson>>의 대체 위젯. <<combatpersonsPost>>, <<combatPersonPost>>로도 사용가능.
         + <<personPost>>와 용도 및 방식 같음. 생략
@@ -2784,6 +2790,7 @@
 		```
 		<<worn_(착용부위)_name_ (조사)>> 시리즈. 옵션으로 "sep" 인자를 받도록 함
 		<<worn_(착용부위)_name>> 시리즈. 조사 없이 이름만 가져오게 함
+		<<worn_under_lower_name_simple>>, <<worn_under_lower_name_simple_ (조사)>>. <<worn_under_lower_name>> 과 기본적으로 같음
 		NOTE: 플레이어가 착용중인 buttplug 는 butt_plug, 플레이어가 착용중인 strap-on 은 under_lower 부위
 		```
 	- beasttypePost 계열
@@ -2836,7 +2843,7 @@
 		```
 	- personPost 계열
 		```
-		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<persony_ (조사)>>, <<group_ (조사)>>,
+		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<personname_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<persony_ (조사)>>, <<group_ (조사)>>,
 		<<fullGroup_ (조사)>>,<<enumeratedGroup_ (조사)>>,
 		<<persons_ (조사)>>, <<combatpersons_ (조사)>>, <<combatPersons_ (조사)>>
 		```

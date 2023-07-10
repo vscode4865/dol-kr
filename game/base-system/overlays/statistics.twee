@@ -92,7 +92,12 @@
 		야생 식물 채집: $wild_plant_stat회
 		<br>
 		판매한 미약: $stat_aphrodisiacs_sold병
-		<br><br>
+		<br>
+		<<if $brothelVending and $brothelVending.total>>
+			창관에서 판매한 제품 수: $brothelVending.total개
+			<br>
+		<</if>>
+		<br>
 	<</foldout>>
 
 	<<foldout false "_sexFoldout">>
@@ -791,7 +796,13 @@
 					<</if>>
 				<</for>>
 			<<else>>
-				다른 종류의 항문 임신을 하고 있어 기생충의 숙주가 될 수가 없다.
+				<<if getPregnancyObject().awareOf>>
+					다른 종류의 항문 임신을 하고 있어 기생충의 숙주가 될 수가 없다.
+				<<else>>
+					<<for _i to 0; _i lt maxParasites("anus"); _i++>>
+						항문 슬롯 <<=_i+1>>에는 현재 아무것도 없다.<br>
+					<</for>>
+				<</if>>
 			<</if>>
 			<<set $_vPregnancy to $sexStats.vagina.pregnancy>>
 			<<if $player.vaginaExist>>
@@ -824,12 +835,18 @@
 						<</if>>
 					<</for>>
 				<<else>>
-					다른 종류의 질 임신을 하고 있어 기생충의 숙주가 될 수가 없다.
+					<<if getPregnancyObject().awareOf>>
+						다른 종류의 질 임신을 하고 있어 기생충의 숙주가 될 수가 없다.
+					<<else>>
+						<<for _i to 0; _i lt maxParasites("vagina"); _i++>>
+							질 슬롯 <<=_i+1>>에는 현재 아무것도 없다.<br>
+						<</for>>
+					<</if>>
 				<</if>>
 			<</if>>
 		<</foldout>>
+		<<set $_menstruation to $sexStats.vagina.menstruation>>
 		<<if $cycledisable is "f">>
-			<<set $_menstruation to $sexStats.vagina.menstruation>>
 			<<foldout false "_menstruationFoldout">>
 				<span class="gold">월경 주기</span>
 				진행중: <<print $_menstruation.running ? "네" : "아니오">>
@@ -846,18 +863,19 @@
 		<</if>>
 		<<foldout false "_pregnancyFoldout">>
 			<span class="gold">임신</span>
-			/* commented out for being a major spoil, leave as is for now
+			/* Previously commented out for being a major spoil, but caused players to think a bug had occured */
 			임신중이었던 총 일수: <<print Math.floor($pregnancyStats.totalDaysPregnant)>>일
 			<br>
-			*/
 			임신 사실을 알고 있던 총 일수: <<print Math.floor($pregnancyStats.totalDaysPregnancyKnown)>>일
 			<br>
 			<<if canBeMPregnant()>>
-			<<elseif !$player.vaginaExist>>
+			<<elseif !$player.vaginaExist or !$_menstruation.running>>
 				현재는 임신할 수 없다.
 			<<elseif $_vPregnancy.type is "parasite">>
 				자궁 내의 기생충 때문에 일반적인 임신을 할 수 없다.
-			<<elseif $_vPregnancy.type isnot null and playerAwareTheyArePregnant()>>
+			<<elseif $_menstruation.currentState is "recovering">>
+				마지막 임신한 후로 이렇게 금방 새로 임신할 수 없다.
+			<<elseif $_vPregnancy.type isnot null>>
 				현재 임신한 아기: <<print $_vPregnancy.fetus.length>>명
 					<<extraStatisticsPregnancyType $_vPregnancy.type>>
 				<br>
@@ -879,7 +897,13 @@
 						현재 당신 안에 있는 정액의 출처:
 						<ul>
 							<<for _name range _trackedNPCs>>
-								<li><<print pregnancyNameCorrection(_name.source)>></li>
+								<<set $_count to _spermArray.filter(s => s.source === T.name.source).length>>
+								<li>
+									<<print pregnancyNameCorrection(_name.source)>>
+									<<if $_count gt 1>>
+										(x<<print $_count>>)
+									<</if>>
+								</li>
 							<</for>>
 						</ul>
 					<</if>>
@@ -888,7 +912,11 @@
 			<<if canBeMPregnant()>>
 				<<if $_aPregnancy.type is "parasite">>
 					자궁 내의 기생충 때문에 일반적인 임신을 할 수 없다.
-				<<elseif $_aPregnancy.type isnot null and playerAwareTheyArePregnant()>>
+				<<elseif !$_menstruation.running>>
+					현재는 임신할 수 없다.
+				<<elseif $_menstruation.currentState is "recovering">>
+					마지막 임신한 후로 이렇게 금방 새로 임신할 수 없다.
+				<<elseif $_aPregnancy.type isnot null>>
 					현재 임신한 아기: <<print $_aPregnancy.fetus.length>>명
 					<<extraStatisticsPregnancyType $_aPregnancy.type>>
 					<br>
@@ -910,7 +938,13 @@
 							현재 당신 안에 있는 정액의 출처:
 							<ul>
 								<<for _name range _trackedNPCs>>
-									<li><<print pregnancyNameCorrection(_name.source)>></li>
+									<<set $_count to _spermArray.filter(s => s.source === T.name.source).length>>
+									<li>
+										<<print pregnancyNameCorrection(_name.source)>>
+										<<if $_count gt 1>>
+											(x<<print $_count>>)
+										<</if>>
+									</li>
 								<</for>>
 							</ul>
 						<</if>>

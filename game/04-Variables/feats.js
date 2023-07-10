@@ -671,7 +671,7 @@ setup.feats = {
 		filter: ["All", "Special"],
 	},
 	"Broodmother Host": {
-		title: "산모 숙주",
+		title: "번식엄마 숙주",
 		desc: "수없이 많은 작은 생물들의 숙주가 되었다.",
 		difficulty: 2,
 		series: "",
@@ -679,7 +679,7 @@ setup.feats = {
 		hint: "Hint: 무언가를 남긴다.",
 	},
 	"Top Broodmother Host": {
-		title: "최고 산모 숙주",
+		title: "최고 번식엄마 숙주",
 		desc: "완벽히 생물들의 숙주가 되었다.",
 		difficulty: 3,
 		series: "",
@@ -687,7 +687,7 @@ setup.feats = {
 		hint: "Hint: 무언가 엄청난 것을 남긴다.",
 	},
 	"Broodmother Zoologist": {
-		title: "산모 동물학자",
+		title: "번식엄마 동물학자",
 		desc: "기생충 노트를 전부 채웠다.",
 		difficulty: 3,
 		series: "",
@@ -717,6 +717,7 @@ setup.feats = {
 		filter: ["All", "Pregnancy"],
 		hint: "Hint: 무언가를 얻지만 무언가 다른 것의 결과로 얻지 않는다.",
 		pregnancyLockable: true,
+		pregnancySillyLockable: true,
 	},
 	"Bicycle Mother": {
 		title: "자전거 엄마",
@@ -1547,6 +1548,14 @@ setup.feats = {
 		series: "Adult Shop",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: 장난감 상자를 열 필요가 있을까?",
+	},
+	"Brothel Provider": {
+		title: "창관 공급자",
+		desc: "성인용품을 팔기 위한 자동판매기를 설치하였다.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: 장사를 할 수 있도록 브라이어를 설득한다.",
 	},
 	"Opened Pandoras Cocks": {
 		title: "열린 판도라의 꼭지",

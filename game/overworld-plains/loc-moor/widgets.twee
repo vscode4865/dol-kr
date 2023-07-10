@@ -45,7 +45,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 7>>
+		<<rng 8>>
 		<<switch $rng>>
 		<<case 1>>
 			<<generate1>><<person1>>
@@ -173,12 +173,17 @@
 				<br><br>
 				그들은 가까워질 때 까지 기다리더니, 당신을 보며 걸음을 멈춘다. "한 잔 마실래?"
 				<br><br>
-				<<link [[마신다 (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><</link>><<lstress>>
+				<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+					<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
+				<<else>>
+					<<link [[마신다 (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><</link>><<lstress>>
+				<</if>>
 				<br>
 				<<link [[거절한다|Moor Youths Decline]]>><</link>>
 				<br>
-
 			<</if>>
+		<<case 8>>
+			<<moor_fox>>
 		<</switch>>
 	<<else>>
 		<<rng 6>>
@@ -201,11 +206,24 @@
 			<br>
 		<<case 3>>
 			<<beastNEWinit 1 fox>>
-			관목숲에서 <<beasttype_ i>> 나타나, 당신의 길을 가로막는다. <<bHe_ nun>> 귀를 씰룩거리며 잠시 당신을 응시하다가, 덤불 속으로 돌진한다.
-			<br><br>
+			<<if $NPCList[0].traits.includesAny("territorial", "clever")>>
+				A hare darts out of a nearby shrub. A <<beasttype>> pounces after it, narrowly missing you.
+				<<if $monster is 1>>
+					<<bHe>> cocks <<bhis>> head at you. "You made me lose my catch," <<bhe>> snickers. "Next time, you'll be my catch instead." <<bHe>> steps away. "Run along, <<foxnickname>>."
+				<<else>>
+					<<bHe>> stares at you a moment before stepping away and growling.
+				<</if>>
+				<br><br>
 
-			<<link [[다음|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
-			<br>
+				<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<br>
+			<<else>>
+				관목숲에서 <<beasttype_ i>> 나타나, 당신의 길을 가로막는다. <<bHe_ nun>> 귀를 씰룩거리며 잠시 당신을 응시하다가, 덤불 속으로 돌진한다.
+				<br><br>
+
+				<<link [[다음|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<br>
+			<</if>>
 		<<case 4>>
 			당신은 타이어 자국을 발견해서 좀 더 쉽게 길을 갈 수 있다.<<lstress>><<stress -6>>
 			<br><br>
@@ -261,7 +279,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 9>>
+		<<rng 10>>
 		<<switch $rng>>
 		<<case 1>>
 			<<beastNEWinit 1 cat>>
@@ -389,6 +407,8 @@
 			<br>
 		<<case 9>>
 			<<moor_hunt_start>>
+		<<case 10>>
+			<<moor_fox>>
 		<</switch>>
 	<<else>>
 		<<rng 7>>
@@ -545,7 +565,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 8>>
+		<<rng 9>>
 		<<switch $rng>>
 		<<case 1>>
 			땅이 흔들려서, 당신은 비틀거린다. 아래쪽에 균열이 생기며, 엄청난 속도로 넓어진다.
@@ -670,6 +690,8 @@
 			<</if>>
 		<<case 8>>
 			<<moor_hunt_start>>
+		<<case 9>>
+			<<moor_fox>>
 		<</switch>>
 	<<else>>
 		<<rng 6>>
@@ -949,5 +971,18 @@
 	<<link [[가만히 있는다|Moor Bird Still]]>><</link>>
 	<br>
 	<<link [[저항한다|Moor Bird Resist]]>><</link>><<willpowerdifficulty 1 300>>
+	<br>
+<</widget>>
+
+<<widget "moor_fox">>
+	<<beastNEWinit 1 fox>>
+	Your hear rustling from somewhere behind you. It sounds like it's getting closer.
+	<br><br>
+
+	<<link [[Dodge|Moor Fox Dodge]]>><</link>><<dancedifficulty 1 $NPCList[0].skills.athletics>>
+	<br>
+	<<link [[Stand your ground|Moor Fox Stand]]>><</link>><<physiquedifficulty $NPCList[0].skills.athletics $physiquemax>>
+	<br>
+	<<link [[Call out|Moor Fox Call]]>><</link>>
 	<br>
 <</widget>>

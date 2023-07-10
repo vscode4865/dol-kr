@@ -1,33 +1,15 @@
 :: Widgets trHairtype [widget nobr]
-<<widget "trinit_hairtype">>
-	/* _hairTypeByName과 _fringeTypeByName 을 참고하여 리스트를 만든다 */
-	<<if setup.trHairtypeList is undefined>>
-		<<if !_hairTypeByName>>	/* 거울을 보지 않아 _hairTypeByName이 초기화되어 있지 않은 경우 강제로 초기화한다 */
-			<<silently>><<mirrorHair>><</silently>>
-		<</if>>
-		<<set setup.trHairtypeList to { "default" : "자연스러운" }>>
-		<<set $_trHairList to {}>>
-		<<run Object.assign($_trHairList, _hairTypeByName, _fringeTypeByName)>>
-		<<set $_trNameArray to Object.keys($_trHairList)>>
-		<<for $_i, $_trName range $_trNameArray>>
-			<<set $_name to $_trHairList[$_trName]>>
-			<<set setup.trHairtypeList[$_name] to $_trName>>
-		<</for>>
-	<</if>>
-<</widget>>
 
 <<widget "trHairtype">><<silently>>
 	<<if setup.trHairtypeList is undefined>>
 		<<trinit_hairtype>>
 	<</if>>
 
-    <<set _trResult to setup.trHairtypeList[_args[0]]>>
-	<<if _trResult isnot undefined>>
-		<<if _args[1] isnot undefined>>
-			<<getPostNum _trResult>>
-			<<trPost _postNum _args[1] _args[2]>>
-		<</if>>
-	<<else>>
+	<<if typeof _args[0] is "string">>
+		<<set $_hair to _args[0].toLowerCase()>>
+	<</if>>
+    <<set _trResult to setup.trHairtypeList[$_hair]>>
+	<<if ndef _trResult>>
 		<<set _trResult to "<span class='red'>에러: trHairtype: 정의되어 있지 않음: " + _args[0] + "</span>">>
 	<</if>>
 <</silently>><</widget>>

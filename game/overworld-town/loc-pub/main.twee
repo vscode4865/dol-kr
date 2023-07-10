@@ -126,8 +126,8 @@
 	<<else>>
 		<<ind>><<link [[랜드리에게 부탁한다|Pub Landry]]>><<endevent>><</link>>
 		<br>
-		<<if playerAwareTheyArePregnant()>>
-			당신의 배 속에 아이가 있다는 걸 알면서도 술을 마실 수는 없다.
+		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+			<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
 			<br>
 		<<else>>
 			<<if $money gte 1000>>
@@ -140,7 +140,7 @@
 			<</if>>
 		<</if>>
 		<<if $farm>>
-			<<if $farm.tower gte 1 and !$farm.tower_guard>>
+			<<if $farm.tower gte 1 and !$farm.tower_guard and $farm.tower_guard_can_hire>>
 				<<ind>><<link [[농장에서 일할 경비원을 찾는다 (0:30)|Pub Guard]]>><<endevent>><<pass 30>><</link>>
 				<br>
 			<</if>>
@@ -259,7 +259,7 @@
 	당신이 물건들을 테이블 위에 올려놓는다. 랜드리는 익숙한 일인 듯 느긋한 태도로 물건의 가치를 매겼다. "이거 상당히 많은 양이군. 네가 감당할 수 없는 만큼은 아니었길 바래. 혹시 네 기록을 지우고 싶다면 어디서 날 찾아야할 지는 알고 있겠지?"
 	<br><br>
 <</if>>
-당신은 £<<print $blackmoney>>를 얻었다.
+당신은 <span class="gold">£<<print $blackmoney>>를 얻었다.</span>
 <<set $money += $blackmoney * 100>><<set $blackmoney to 0>>
 <br><br>
 <<link [[떠난다|Pub]]>><<endevent>><</link>>
@@ -270,7 +270,7 @@
 <<set $outside to 0>><<set $location to "pub">><<effects>><<set $bus to "harvest">>
 
 <<if $pubstage is undefined>>
-	"내가 좀 도와줄 수 있어." 랜드리가 비스듬히 기대어, 누운 채로 말한다. "단, 네가 날 위해 해줘야 할 일이 있어. 돈과 관련된 건 아니야. 내가 지금 기다리고 있는 물건이 오지않고 있는데. 네가 찾아줬으면 좋겠어. 다행히도 GPS 추적기가 달려 있어서 그게 어디 있는진 정확히 알고 있어. 마을 옆에 있는 숲의 깊은 곳에 있지."
+	"내가 좀 도와줄 수 있어," 랜드리가 비스듬히 기대어, 누운 채로 말한다. "하지만 네가 날 위해 해줘야 할 일이 있어. 그리고 아냐, 돈과 관련된 건 아니야. 내가 지금 기다리고 있는 물건이 오지않고 있는데, 네가 찾아줬으면 좋겠어. 다행히도 GPS 추적기가 달려 있어서, 그게 어디 있는진 정확히 알고 있어. <span class="gold">마을 옆에 있는 숲의 깊은 곳에 있지."</span>
 	<br><br>
 	"나에게 그걸 가져와 준다면 네가 저지른 범죄의 댓가를 치르는 걸 막아주지. 작은 검은 상자야. 다른 바위나 나뭇 가지와 헷갈리지마. 아아, 그리고 조심하는게 좋아. 거긴 늘 실종되는 사람들이 있으니까."
 	<br><br>
@@ -279,7 +279,7 @@
 	<<link [[떠난다|Pub]]>><<endevent>><</link>>
 	<br>
 <<elseif $pubstage is 1>>
-	"내가 또 도와줄 수 있어." 랜드리가 비스듬히 기대어, 누운 채로 말한다. "단, 네가 날 위해 해줘야 할 일이 있어. 도착하지 않은 다른 물건에 관한 거야. 이번엔 마을에서 좀 떨어진 황무지에서 잃어버린듯 해. 거길 가려면 하베스트 가를 벗어나야 할 거야."
+	"내가 또 도와줄 수 있어," 랜드리가 비스듬히 기대어, 누운 채로 말한다. "하지만 네가 날 위해 해줘야 할 일이 또 있어. 도착하지 않은 다른 물건에 관한 거야. 이번엔 마을에서 좀 떨어진, <span class="gold">황무지에서 잃어버린듯 해</span>. 거길 가려면 하베스트 가의 길을 따라 마을을 벗어나야 할 거야."
 	<br><br>
 	"나에게 그걸 가져와 준다면 네가 저지른 범죄의 댓가를 치르는 걸 막아주지. 작은 검은 상자 알지? 아아, 그리고 조심하는 게 좋아. 괴물이니 뭐니 하는 이야기는 믿지 않지만 어떤 괴담들은 그럴싸해 보이거든."
 	<br><br>
@@ -459,9 +459,9 @@
 	<<he_ nun>> 혼자 앉아, 창가에 기대어 있다. 당신이 다가가자 <<he_ ga>> 당신을 올려다본다. "뭘 도와드릴까요?" <<he_ ga>> 맞은편 의자에 손짓하며 묻는다.
 	<br><br>
 
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		"저, 저는 농장을 지킬 경비원이 필요해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		"농장을 지킬 보안 요원을 구하고 있어." 당신이 말한다. "야간 업무야. 관심 있어?"
 	<<else>>
 		"제 농장의 안전을 살펴줄 사람을 원해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
@@ -477,9 +477,9 @@
 	<<he_ ga>> 다른 테이블로 당신을 데려간다. "그래서, 뭐죠?" <<he_ ga>> 묻는다.
 	<br><br>
 
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		"저, 저는 농장을 지킬 경비원이 필요해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		"농장을 지킬 보안 요원을 구하고 있어." 당신이 말한다. "야간 업무야. 관심 있어?"
 	<<else>>
 		"제 농장의 안전을 살펴줄 사람을 원해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
@@ -494,9 +494,9 @@
 	<br><br>
 
 	당신은 <<his_ yi>> 맞은 편에 자리잡았다.
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		"저, 저한테 필요한 건-,"
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		"구하고 있는게 있는데-,"
 	<<else>>
 		"제가 원하는 건-,"
@@ -506,21 +506,15 @@
 	<br><br>
 
 <<else>>
-	<<he_ nun>> 바에서 한
-	<<if random(1, 100) lte $homochance>>
-		<<print ($pronoun is "m" ? "소년과" : "소녀와")>>
-	<<else>>
-		<<print ($pronoun is "m" ? "소녀와" : "소년과")>>
-	<</if>>
-	대화를 시도하고 있다. <<His_ yi>> 사냥감이 떠나가버려 <<he_ nun>> 카운터에 홀로 기대고 있다. 당신이 비어있는 자리를 차지한다.
+	<<he_ nun>> 바에서 한 <<print maleChance($pronoun) gte random(1, 100) ? "소년과" : "소녀와">> 대화를 시도하고 있다. <<His_ yi>> 사냥감이 떠나가 버리고, <<he_ nun>> 카운터에 홀로 기대고 있다. 당신이 비어있는 자리를 차지한다.
 	<br><br>
 
 	"너도 아주 나쁘진 않네." <<person_ un>> 당신을 위 아래로 훑어보며 말한다.
 	<br><br>
 
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		"저, 저는 농장을 지킬 경비원이 필요해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		"농장을 지킬 보안 요원을 구하고 있어." 당신이 말한다. "야간 업무야. 관심 있어?"
 	<<else>>
 		"제 농장의 안전을 살펴줄 사람을 원해요." 당신이 말한다. "밤 늦게 일해도 괜찮은 사람을요."
@@ -627,7 +621,7 @@ You scan the room for anything you can cover up with.
 
 		<<link [[Go for the towels|Pub Exposed Bar]]>><<endevent>><</link>>
 		<br>
-		<<link [[Keeping looking|Pub Exposed No Towels]]>><</link>>
+		<<link [[Keep looking|Pub Exposed No Towels]]>><</link>>
 		<br>
 <</switch>>
 
@@ -721,9 +715,9 @@ Three drinks in, the <<person>> excuses <<himself>> to use the restroom. Seizing
 <<set $outside to 0>><<set $location to "pub">><<effects>>
 
 You crouch low behind the bar.
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"S-sorry," you say. "I'm a bit busy."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"I'm on break," you lie. "Piss off."
 <<else>>
 	"I can't," you say. "Ask someone else."

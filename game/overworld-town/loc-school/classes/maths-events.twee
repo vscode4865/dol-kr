@@ -3,9 +3,9 @@
 <<widget "mathsWhitneyGropeOrgasm">>
 	<<set $_accident to _args[0] is "accident">>
 	<span class="lewd">You <<if $_accident>>accidentally<</if>>
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		moan into your hand as you orgasm,
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		hiss through your teeth as you orgasm,
 	<<else>>
 		groan as you orgasm,
@@ -17,14 +17,18 @@
 	Whitney pulls <<person1>><<his>> hand out of your $worn.lower.name a split second before every other head in the room turns towards you.
 	<<if $exhibitionism gte 35>>Spurred on by the attention, your<<else>>Your<</if>>
 	<<if $player.penisExist>>
-		cock flexes <<if $semen_volume isnot 0 and $semen_amount isnot 0>>and fires several ropes of cum<</if>> against
+		<<if $semen_volume is 0 or $semen_amount lt 0.1 or $femaleclimax>>
+			<<penis>> flexes against
+		<<else>>
+			<<penis>> fires several ropes of cum against
+		<</if>>
 	<<else>>
-		pussy soaks
+		<<pussy>> soaks
 	<</if>>
 	the front of your $worn.lower.name
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		while you <<if $_accident>>pointlessly<</if>> cover your face with both hands. Peeking through your fingers,
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		while you try to ignore the other students. Cursing under your breath,
 	<<else>>
 		and you shut your eyes. Quickly reopening them,
@@ -721,7 +725,7 @@
 :: Maths Event4 Take
 <<effects>>
 
-당신이 <<hePost "을">> 반대편 벽으로 밀어 혀를 밀어넣자 휘트니의 눈이 놀라서 크게 떠진다. 충격도 잠시, <<hePost "은">> 당신의 옷을 더듬으며 화답하듯 키스한다.
+당신이 <<hePost "을">> 반대편 벽으로 밀어 <<himPost>>에게 혀를 밀어넣자 휘트니의 눈이 놀라서 크게 떠진다. <<His_ yi>> 충격도 잠시, <<hePost "은">> 당신의 옷을 더듬으며 화답하듯 키스한다. <<takeKissVirginity "Whitney" `($whitneyromance is 1?"loveInterest":"romantic")`>>
 <<promiscuity1>>
 
 <<link [[다음|Maths Event4 Sex]]>><<set $sexstart to 1>><</link>>
@@ -925,20 +929,21 @@
 <<if $rng gte 51>>
 	<<if $whitneypantiescheck is 1>>
 		<i>"<<if $player.gender_appearance is "f">>팬티<<else>>속옷<</if>> 안 입고 있지? 보여줘봐."</i>
+	<<elseif $whitneypantiescheck is 2>>
+		<i>"팬티 입고 있지, 그렇지? 보여줘봐."</i>
 	<<else>>
 		<i>"<<if $player.gender_appearance is "f">>팬티<<else>>속옷<</if>> 보여줘봐, 걸레야."</i>
 	<</if>>
 	<br><br>
 
-	<<if $whitneypantiescheck is 1>>
-		<<if !$worn.under_lower.type.includes("naked")>>
+	<<if $whitneypantiescheck gte 1>>
+		<<if !$worn.under_lower.type.includes("naked") and ($whitneypantiescheck is 1 or $worn.under_lower.gender isnot "f")>>
 			<span class="pink">당신이 <<hisPost "의">> 요구를 무시했다는 걸 알면 휘트니의 기분이 언짢아질 것이다.</span>
 			<br><br>
 
 			<<set $skulduggerydifficulty to 300>>
 			<<link [[휘트니를 속이려 든다|Maths Whitney Undies Trick]]>><</link>><<skulduggerydifficulty>>
 			<br>
-		<<else>>
 		<</if>>
 	<</if>>
 
@@ -974,12 +979,18 @@
 
 		"멋진걸." 휘트니는 그렇게 말하고, 그걸 들은 리버가 고개를 돌려 노려본다.
 		<br><br>
+		<<if $whitneyskirtcheck is 1 and $worn.lower.reveal lte 200 and $forcedcrossdressingdisable is "f">>
+			<<set $whitneyskirtmaths to true>>
+		<</if>>
 		<<unset $whitneypantiesmaths>>
 	<<else>>
 		당신은 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 조금 내려, 그 밑에 속옷을 입고 있지 않다는 것을 보인다. 그러고는 재빨리 다시 올린다.<<exhibitionism1>>
 
 		"멋진걸." 휘트니는 그렇게 말하고, 그걸 들은 리버가 고개를 돌려 노려본다.
 		<br><br>
+		<<if $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f">>
+			<<set $whitneyskirtmaths to true>>
+		<</if>>
 		<<unset $whitneypantiesmaths>>
 	<</if>>
 <<elseif $whitneypantiescheck is 1>>
@@ -995,9 +1006,33 @@
 
 		휘트니는 당신을 노려보나, 별다른 말은 하지 않는다. 이걸로 끝나진 않을 것이다.
 		<br><br>
-
+		<<unset $whitneypantiesmaths>>
+	<</if>>
+<<elseif $whitneypantiescheck is 2>>
+	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		당신은 넓적다리까지 치마를 올려, 허리선을 보여 그 밑에 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있는 걸 보인다. 그러고는 재빨리 다시 덮는다.<<exhibitionism1>>
+		<<if $whitneyskirtcheck is 1 and $worn.lower.reveal lte 200 and $forcedcrossdressingdisable is "f">>
+			<<set $whitneyskirtmaths to true>>
+		<</if>>
+	<<else>>
+		당신은 <<trClothes "lower" $worn.lower.name "name" "을">>_trResult 조금 내려, 그 밑에 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 입고 있는 걸 보인다. 그러고는 재빨리 다시 덮는다.<<exhibitionism1>>
+		<<if $whitneyskirtcheck is 1 and $forcedcrossdressingdisable is "f">>
+			<<set $whitneyskirtmaths to true>>
+		<</if>>
+	<</if>>
+	<<if $whitneyskirtmaths>>
+		휘트니는 당신을 노려보나, 별다른 말은 하지 않는다. 이걸로 끝나진 않을 것이다.
+		<<if $worn.under_lower.gender is "f">>
+			<<unset $whitneypantiesmaths>>
+		<</if>>
+	<<elseif $worn.under_lower.gender is "f">>
+		"Nice and cosy," Whitney says, prompting River to turn and glare.
+		<<unset $whitneypantiesmaths>>
+	<<else>>
+		휘트니는 당신을 노려보나, 별다른 말은 하지 않는다. 이걸로 끝나진 않을 것이다.
 		<<set $whitneypantiesmaths to "seen">>
 	<</if>>
+	<br><br>
 <<else>>
 	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
 		당신은 넓적다리까지 치마를 올려, <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 보일 정도로 올린다. 그러고는 재빨리 다시 덮는다.<<exhibitionism1>>
@@ -1038,7 +1073,9 @@
 
 	<<link [[다음|Maths Lesson]]>><<endevent>><</link>>
 	<br>
-	<<unset $whitneypantiesmaths>>
+	<<if $whitneypantiesmaths is "refused">>
+		<<unset $whitneypantiesmaths>>
+	<</if>>
 <<else>>
 
 <span class="red">휘트니가 당신을 노려본다.</span> 당신의 속임수를 간파한 모양이다. <<HePost "은">> 아무런 말도 하지 않지만, 이걸로 끝나진 않을 것이다.
@@ -1058,7 +1095,7 @@
 당신은 휘트니의 요구를 무시하고는 교실 앞쪽으로 시선을 돌린다. <<HePost "은">> 구긴 종이를 계속 던지더니, 곧 펜까지 던지기 시작한다. 당신은 최선을 다해서 <<hePost "을">> 무시한다.
 <br><br>
 
-<<if $whitneypantiescheck is 1>>
+<<if $whitneypantiescheck gte 1>>
 	<<set $whitneypantiesmaths to "refused">>
 <</if>>
 
@@ -1143,9 +1180,9 @@
 당신은 손을 든다. "무슨 일이지?" 리버가 당신을 보고는 말한다.<<endevent>><<npc River>><<person1>>
 <br><br>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"휘-휘트니가 자꾸 괴롭혀요." 당신이 말한다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"휘트니 때문에 집중이 안돼요." 당신이 말한다.
 <<else>>
 	"휘트니가 자꾸 펜을 던져요." 당신이 말한다.
@@ -1177,9 +1214,9 @@
 :: Maths Whitney Oral Refuse
 <<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"그-그치만." 당신이 더듬거린다. "문제가 생길지도 몰라."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"네가 꼴려있다고 같이 손 잡고 벌 받으러 가진 않을 거야." 당신이 말한다. "알아서 해결해."
 <<else>>
 	"수업 중에는 안돼." 당신이 말한다. "걸리면 큰일날 거야."
@@ -1403,9 +1440,9 @@
 
 당신은 휘트니의 손을 밀어내고는 자리로 올라온다.
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"페-펜을 떨궈서요." 당신은 말을 더듬는다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"펜을 줍고 있었어요." 당신이 말한다. "그게 교칙에 어긋나진 않겠죠."
 <<else>>
 	"펜을 떨궜어요." 당신이 말한다.
@@ -1488,9 +1525,9 @@
 :: Maths Whitney Protractor Tell
 <<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"죄-죄송합니다만." 당신이 손을 들며 말한다. 리버가 돌아본다. "휘트니가 계속 찔러요."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"저기 선생님." 당신이 말한다. 리버가 돌아본다. "휘트니 좀 내보내주시면 안될까요? 자꾸 각도기로 찌르는데요."
 <<else>>
 	"선생님." 당신은 손을 들며 말한다. 리버가 돌아본다. "휘트니까 계속 찔러요."
@@ -1564,9 +1601,9 @@
 :: Maths Whitney Intervene
 <<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"머-멈춰." 당신이 말한다. "걜 그만 괴롭혀."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"내 앞가림 정도는 할 수 있어." 당신이 말한다. "걜 내려놔."
 <<else>>
 	"걜 내려놔." 당신이 말한다. "다치게 하지 말고."
@@ -1603,9 +1640,9 @@
 :: Maths Whitney Encourage
 <<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"네가 쟤한테 누가 위인지 알려준다면 더 안전하다고 느낄 것 같아." 당신이 말한다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"뭘 기다리고 있어?" 당신이 말한다. "쟤한테 봐주면서 할 건 아니지, 그치?"
 <<else>>
 	"나한테 무례하게 구는 사람이 어떻게 되는지 쟤한테 알려줘." 당신이 말한다.
@@ -1833,9 +1870,9 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 당신은 목을 가다듬는다. 당신의 <<worn_upper_name_ ul>> 만지작대는 데 열중하느라 <<himself_ i>> 노출되었는지도 알아차리지 못하던 휘트니가, 정신을 차리고 당신에게 주의를 기울인다.
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	당신은 아무 말도 하지 않은 채, 조용히 <<his_ yi>> <<if $pronoun is "m">>사타구니를<<else>>가슴을<</if>> 가리킨다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	당신은 <<his_ yi>> <<if $pronoun is "m">>벨트<<else>>브래지어<</if>>를 한 손가락에 대롱대롱 매달고 히죽거린다. "아직도 더워?"
 <<else>>
 	"내 생각에는 네 걱정부터 하는 편이 좋을 것 같은데," 당신이 낄낄댄다.
@@ -1951,54 +1988,67 @@
 :: Maths Whitney Grope Allow
 <<person1>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"O-okay," you whisper back, blushing.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"I'd like to see you try," you whisper back, thrusting gently against <<his>> hand.
 <<else>>
 	"You're on," you whisper back, parting your legs slightly.
 <</if>>
 <br><br>
 
-<<He>> slides <<his>> hand beneath your $worn.lower.name and <<print ($player.penisExist ? "grabs your penis" : "thrusts two fingers into your pussy")>>.
-<<if $submissive gte 1150>>
-	You clasp a hand over your mouth to stop yourself from crying out.
-<<elseif $submissive lte 850>>
-	You clench your jaw to stop yourself from crying out.
+<<if !playerChastity()>>
+	<<He>> slides <<his>> hand beneath your $worn.lower.name and <<print ($player.penisExist ? "grabs your penis" : "thrusts two fingers into your pussy")>>.
+	<<if $speech_attitude is "meek">>
+		You clasp a hand over your mouth to stop yourself from crying out.
+	<<elseif $speech_attitude is "bratty">>
+		You clench your jaw to stop yourself from crying out.
+	<<else>>
+		You bite your lip to stop yourself from crying out.
+	<</if>>
+	<br><br>
+
+	<<if $player.penisExist>>
+		Your thighs twitch a little as <<he>> begins to <<if $cow gte 6>>milk<<else>>stroke<</if>> you beneath the desk. <<He>> keeps <<his>> grip tight and moves <<his>> hand up and down your shaft as quickly as <<he>> can without drawing attention to <<himself>><<if $player.vaginaExist>>, pausing occasionally at the bottom of <<his>> strokes to thrust a couple fingers into your <<pussy>><</if>>.
+	<<else>>
+		Your thighs twitch a little as <<he>> begins to finger you beneath the desk. <<He>> pistons two fingers in and out of your quim as quickly as <<he>> can without drawing attention to <<himself>>, pausing occasionally to grind <<his>> thumb against your clit.
+	<</if>>
+	You struggle to control your breathing as <<he>> looks back and forth between River's back and your face, clearly savoring the effect <<hes>> having on you.
+	<<ggarousal>>
+	<br><br>
+
+	It doesn't take <<him>> long to bring you to the edge. As <<he>> does, <<he>> leans even closer, <<his>> breath warm against your ear. "Cum for me, bitch," <<he>> whispers. "Let me hear it."
+	<br><br>
+
+	<<arousal 10000>>
+
+	<<link [[Keep quiet|Maths Whitney Grope Stifle]]>><<stress 6>><</link>><<gstress>><<willpowerdifficulty 1 550>>
+	<br>
+	<<link [[Let it out|Maths Whitney Grope Moan]]>><<stress -3>><</link>><<lstress>>
+	<br>
 <<else>>
-	You bite your lip to stop yourself from crying out.
+	<<He>> slides <<his>> hand beneath your <<print $worn.lower.name>>... and makes contact with your <<print $worn.genitals.name>>. "Is that a..." <<he>> whispers, gently rapping <<his>> knuckles against it. "Tch. You're no fun."
+	<br><br>
+	<<He>> leans back in <<his>> seat with a shrug. "Your loss, slut. I'll just have to work it out of you later." <<npcincr Whitney lust 5>><<glust>>
+	<br><br>
+	<<link [[다음|Maths Lesson]]>><<endevent>><</link>>
 <</if>>
-<br><br>
-
-<<if $player.penisExist>>
-	Your thighs twitch a little as <<he>> begins to <<if $cow gte 6>>milk<<else>>stroke<</if>> you beneath the desk. <<He>> keeps <<his>> grip tight and moves <<his>> hand up and down your shaft as quickly as <<he>> can without drawing attention to <<himself>><<if $player.vaginaExist>>, pausing occasionally at the bottom of <<his>> strokes to thrust a couple fingers into your <<pussy>><</if>>.
-<<else>>
-	Your thighs twitch a little as <<he>> begins to finger you beneath the desk. <<He>> pistons two fingers in and out of your quim as quickly as <<he>> can without drawing attention to <<himself>>, pausing occasionally to grind <<his>> thumb against your clit.
-<</if>>
-You struggle to control your breathing as <<he>> looks back and forth between River's back and your face, clearly savoring the effect <<hes>> having on you.
-<<ggarousal>>
-<br><br>
-
-It doesn't take <<him>> long to bring you to the edge. As <<he>> does, <<he>> leans even closer, <<his>> breath warm against your ear. "Cum for me, bitch," <<he>> whispers. "Let me hear it."
-<br><br>
-
-<<arousal 10000>>
-
-<<link [[Keep quiet|Maths Whitney Grope Stifle]]>><<stress 6>><</link>><<gstress>><<willpowerdifficulty 1 550>>
-<br>
-<<link [[Let it out|Maths Whitney Grope Moan]]>><<stress -3>><</link>><<lstress>>
-<br>
 
 :: Maths Whitney Grope Stifle
 
 <<if $willpowerSuccess>>
 	<span class="green">You manage to restrain yourself</span>, <span class="lewd">silently
+	<<silently>><<orgasm>><</silently>>
 	<<if $player.penisExist>>
-		flexing against <<if $semen_volume isnot 0 and $semen_amount isnot 0>>and firing several ropes of cum onto<</if>> Whitney's hand.
+		<<if $semen_volume is 0 or $semen_amount lt 0.1 or $femaleclimax>>
+			flexing against
+		<<else>>
+			firing several ropes of cum onto
+		<</if>>
+		Whitney's hand.
 	<<else>>
 		squirting all over Whitney's hand.
 	<</if>></span>
-	<<silently>><<orgasm>><</silently>>
 	<br><br>
 
 	<<person1>><<He>> continues to <<print ($player.penisExist ? ($player.vaginaExist ? "stroke and finger" : "stroke") : "finger")>> you until you're spent. With a smirk, <<he>> wipes <<his>> hand on your $worn.lower.name, then grabs your hair and forces your mouth against <<hers>>.
@@ -2040,9 +2090,9 @@ Whitney rests <<person1>><<his>> head on <<his>> hand, occasionally throwing smu
 
 :: Maths Whitney Grope Deny
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"N-no... Please stop..." you whisper back.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	You glare at <<him>>.
 <<else>>
 	"Please don't," you whisper back.

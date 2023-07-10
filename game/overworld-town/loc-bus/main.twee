@@ -51,11 +51,11 @@
 <<harvesticon>><<link [[하베스트 가(술집)로 가는 티켓을 구입한다|Bus seat]]>><<set $bus to "harvest">><<set $money -= 100>><</link>>
 <br><br>
 
-Forest
-<br>
 <<if $town_projects.road gte 4>>
-	<<lakeicon>><<link [[호수로 가는 티켓을 구입한다|Bus seat]]>><<set $bus to "lakebus">><<set $money -= 100>><</link>>
+	숲
 	<br>
+	<<lakeicon>><<link [[호수로 가는 티켓을 구입한다|Bus seat]]>><<set $bus to "lakebus">><<set $money -= 100>><</link>>
+	<br><br>
 <</if>>
 
 <<else>>
@@ -65,7 +65,6 @@ Forest
 
 <</if>>
 
-<br><br>
 내린다.
 <br>
 <<destination>>
@@ -81,7 +80,7 @@ Forest
 <<if $weather is "rain">>
 	빗방울이 차창에 후두둑 떨어진다.
 <</if>>
-<<if pregnancyBellyVisible()>>
+<<if playerBellyVisible()>>
 	<<generate1>>당신의 배를 보고, 버스의 맨 앞에 있던 어떤 <<person1>><<person_ i>> 재빨리 일어나 <<his_ yi>> 자리를 당신에게 양보한다. <<if !$daily.pregnancyBus>><<set $daily.pregnancyBus to true>><<trauma -3>><<ltrauma>><</if>>
 	<<endevent>>
 <<else>>
@@ -90,7 +89,7 @@ Forest
 <br><br>
 <<if $stress gte $stressmax>>
 	<<passoutbus>>
-<<elseif pregnancyBellyVisible() and $rng gte 75 and getPregnancyObject().awareOf is true>>
+<<elseif playerBellyVisible() and $rng gte 75 and getPregnancyObject().awareOf is true>>
 	/* event is only possible if the player knows they are pregnant, and their belly is visible */
 	당신 옆에 앉은 어떤 <<generate1>><<person1>><<person_ i>> 당신의 배를 계속 흘끗 쳐다본다.
 	<br><br>
@@ -115,15 +114,15 @@ Forest
 		<<elseif $dangerbus is 1>>
 			<<generate1>><<person1>><<person_ i>> 당신 옆에 앉아 손을 당신의 다리 위에 올린다.
 			<br><br>
-			<<if $rng gte 61>>
+			<<if $rng gte 71 - ($allure/100)>>
 				<<link [[자리를 옮긴다|Bus move]]>><<set $molestationstart to 1>><</link>><<gharass>>
 				<br>
 			<<else>>
 				<<link [[자리를 옮긴다|Bus move Safe]]>><</link>><<gharass>>
 				<br>
 			<</if>>
-			<<if $rng gte 81>>
-				<<link [[자리를 옮기지 않는다|Bus endure]]>><<set $molestationstart to 1>><</link>><<gtrauma>><<gstress>>
+			<<if $rng gte 91 - ($allure/100)>>
+				<<link [[자리를 옮기지 않는다|Bus Chikan Start]]>><</link>><<gtrauma>><<gstress>>
 				<br><br>
 			<<else>>
 				<<link [[자리를 옮기지 않는다|Bus endure safe]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
@@ -145,10 +144,10 @@ Forest
 						<br>
 						"아니면 아마도 <<pshe_ nun>> 옷을 입고 다니는 것을 싫어하는 지도 모르지. 어쩌면 <<pshe_ ga>> 그것들을 벗는 데 우리 도움이 필요한지도 모르겠어."
 						<br><br>
-						<<if $submissive lte 850>>
+						<<if $speech_attitude is "bratty">>
 							"꺼져," 당신은 말하며, 괴롭힘 당하지 않겠다고 결심한다.
 							<br><br>
-						<<elseif $submissive gte 1150>>
+						<<elseif $speech_attitude is "meek">>
 							당신은 무릎을 쳐다보며 머리를 좌우로 흔든다.
 							<br><br>
 						<<else>>
@@ -187,10 +186,10 @@ Forest
 						"아니면 아마도 <<pshe_ nun>> 옷을 입고 다니는 것을 싫어하는 지도 모르지. 어쩌면 <<pshe_ ga>> 그것들을 벗는 데 우리 도움이 필요한지도 모르겠어."
 						<br><br>
 
-						<<if $submissive lte 850>>
+						<<if $speech_attitude is "bratty">>
 							"꺼져," 당신은 말하며, 괴롭힘 당하지 않겠다고 결심한다.
 							<br><br>
-						<<elseif $submissive gte 1150>>
+						<<elseif $speech_attitude is "meek">>
 							당신은 무릎을 쳐다보며 머리를 좌우로 흔든다.
 							<br><br>
 						<<else>>
@@ -347,6 +346,14 @@ Forest
 	<span id="next"><<link [[다음->Bus move]]>><</link>></span><<nexttext>>
 <</if>>
 
+:: Bus chikan safe
+<<set $outside to 0>><<effects>>
+You stand up and shuffle past the crowd, which doesn't stop you.
+<br><br>
+The bus soon stops at your destination.
+<<endevent>>
+<<destination5>>
+
 :: Bus move Safe
 
 <<set $outside to 0>><<effects>>
@@ -393,10 +400,10 @@ Forest
 :: Bus Refuse
 
 <<set $outside to 0>><<effects>>
-<<if $submissive lte 850>>
+<<if $speech_attitude is "bratty">>
 	"꺼져," 당신은 말하며, 괴롭힘 당하지 않겠다고 결심한다.
 	<br><br>
-<<elseif $submissive gte 1150>>
+<<elseif $speech_attitude is "meek">>
 	당신은 무릎을 쳐다보며 머리를 좌우로 흔든다.
 	<br><br>
 <<else>>
@@ -507,9 +514,9 @@ Forest
 
 <<set $outside to 0>><<effects>>
 몸을 숙인 채로, 당신은 통로로 어색하게 다가가 <<generatey1>><<person1>><<persons_ yi>> 팔을 쿡 찌르고 당신 자리로 돌아온다. <<He_ ga>> <<his_ yi>> 어깨 너머로 쳐다본다.
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"수-수건이 필요해. 제발 도와줘," 눈을 마주치지 못하면서, 당신은 말한다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"수건 좀 줘. 빨리," 당신은 요구한다.
 <<else>>
 	"내가 몸을 가릴 수건 혹시 있니?" 당신은 묻는다.
@@ -518,9 +525,9 @@ Forest
 <<if $rng gte 81>>
 	"왜 너는-" <<he_ ga>> 말하다가 당신의 곤경을 알아차리고 미소 짓는다. "도와주지, 하지만 네 모습을 먼저 봐야겠어."
 	<br><br>
-	<<if $submissive gte 1150>>
+	<<if $speech_attitude is "meek">>
 		"제발 그러지 말아줘,"
-	<<elseif $submissive lte 850>>
+	<<elseif $speech_attitude is "bratty">>
 		"꺼져,"
 	<<else>>
 		"변태짓 하지 말아줘,"
@@ -612,9 +619,9 @@ Forest
 
 <<if $enemyhealth lte 0>>
 	당신은 <<person1>><<person_ ul>> 쓰러뜨려, 나갈 길을 만든다. <<tearful>> 당신은 버스 앞으로 달려간다.
-	<<if $submissive lte 850>>
+	<<if $speech_attitude is "bratty">>
 		"나를 내려주지 않으면 당신도 뭉개줄 거야," 당신은 말하며,
-	<<elseif $submissive gte 1150>>
+	<<elseif $speech_attitude is "meek">>
 		"제발 버스 좀 멈춰주세요," 당신은 말하며,
 	<<else>>
 		"내려줘요!" 당신은 말하며,
@@ -753,6 +760,76 @@ Forest
 	<<set $bus to "cliff">>
 <</switch>>
 <<destination>>
+
+:: Bus orgasm
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	Before you can recover from your orgasm and compose yourself, <<he>> grabs you by the waist and forces you onto your back.
+	<br>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate "<span class='red'>No one comes to your aid. They don't want to take the side of a nasty pervert such as yourself.</span>" 1>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $alarm is 1>>
+	<<if $rescue is 1>>
+		<span id="next"><<link [[다음->Bus orgasm Alarm]]>><</link>></span><<nexttext>>
+	<<else>>
+		<<set $alarm to 0>>
+		<br><br>
+		<<if $enemyarousal gte $enemyarousalmax>>
+			<span id="next"><<link [[다음->Bus orgasm Ejaculation]]>><</link>></span><<nexttext>>
+		<<elseif $enemyhealth lte 0>>
+			<span id="next"><<link [[다음->Bus orgasm Escape]]>><</link>></span><<nexttext>>
+		<<else>>
+			<span id="next"><<link [[다음->Bus orgasm]]>><</link>></span><<nexttext>>
+		<</if>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[다음->Bus orgasm Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[다음->Bus orgasm Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[다음->Bus orgasm]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bus orgasm Alarm
+
+<<effects>>
+Your aggressors notice several heads turning in response to your cry, and relent their assaults. They leave at the next stop, and you soon arrive at your own. <<tearful>> you leave the bus.
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<destination5>>
+
+:: Bus orgasm Ejaculation
+
+<<effects>>
+<<ejaculation>>
+They tense during their climax, apparently just in time for their stop. They leave abruptly, and you soon arrive at your own stop. <<tearful>> you leave the bus.
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<destination5>>
+
+:: Bus orgasm Escape
+
+<<effects>>
+They recoil in pain as you arrive at your destination. <<tearful>> you seize the opportunity and dart out the vehicle.
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<destination5>>
 
 :: Bus endure
 
@@ -937,9 +1014,9 @@ Forest
 :: Bus Pregnancy Touch
 <<effects>>
 You give the <<person>> a patient smile and pat your baby bump.
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"It's okay, y-you can touch," you say.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"I know you want to feel it. Go ahead," you say.
 <<else>>
 	"It's okay, you can feel it," you say.
@@ -959,7 +1036,7 @@ You give the <<person>> a patient smile and pat your baby bump.
 	<<trauma -3>><<ltrauma>>
 	<br><br>
 	You spend some time engaging in small talk.
-	<<if $homochance isnot 100 and $npcPregnancyDisable is "f" and $rng gte 65>>
+	<<if (($Pronoun is "m" and maleChance($Pronoun) is 100) or ($Pronoun is "f" and maleChance($Pronoun) is 0)) isnot 100 and $npcPregnancyDisable is "f" and $rng gte 65>>
 		"My <<if $NPCList[0].pronoun is "f">>husband<<else>>wife<</if>> and I are trying for a baby, too. You've given me a little hope today."
 	<<else>>
 		<<switch random(1,5)>>

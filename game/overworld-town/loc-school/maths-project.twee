@@ -2,36 +2,38 @@
 
 <<effects>>
 <<if $mathschance is 0>>
-	수학 경시대회 책자가 책상 위에 놓여있다. 남은 작업량을 생각해보면 주눅부터 든다.
+	수학 경시대회 책자가 책상 위에 놓여있다. 남은 작업량을 생각해보면 주눅부터 든다. 당신이 경시대회에서 우승할 확률은 <span class="red">$mathschance%</span>이다.
 <<elseif $mathschance lte 20>>
-	수학 경시대회 책자와 약간의 성과가 책상 위에 놓여있다.
+	수학 경시대회 책자와 약간의 성과가 책상 위에 놓여있다. 당신이 경시대회에서 우승할 확률은 <span class="pink">$mathschance%</span>이다.
 <<elseif $mathschance lte 40>>
-	수학 경시대회 해답의 기초 작업이 책상 위에 놓여있다.
+	당신의 수학 경시대회 해답의 기초 작업이 책상 위에 놓여있다. 당신이 경시대회에서 우승할 확률은 <span class="purple">$mathschance%</span>이다.
 <<elseif $mathschance lte 60>>
-	수학 경시대회 해답이 책상 위에 놓여있다. 아직 발전의 여지는 많다.
+	당신의 수학 경시대회 해답이 책상 위에 놓여있다. 아직 발전의 여지는 많다. 당신이 경시대회에서 우승할 확률은 <span class="blue">$mathschance%</span>이다.
 <<elseif $mathschance lte 80>>
-	수학 경시대회 해답이 책상 위에 놓여있다. 완성된 것은 아니나, 인상적일 만큼의 노력이 들어갔다는 것은 알 수 있다.
-<<elseif $mathschancestart lte 99>>
-	수학 경시대회 해답이 책상 위에 놓여있다. 틀렸다는 것은 알고 있으나, 여전히 인상적이다.
+	당신의 수학 경시대회 해답이 책상 위에 놓여있다. 완성된 것은 아니나, 인상적일 만큼의 노력이 들어갔다는 것은 알 수 있다. 당신이 경시대회에서 우승할 확률은 <span class="lblue">$mathschance%</span>이다.
+<<elseif $mathschance lte 99>>
+	당신의 수학 경시대회 해답이 책상 위에 놓여있다. 틀렸다는 것은 알고 있으나, 여전히 인상적이다. 당신이 경시대회에서 우승할 확률은 <span class="teal">$mathschance%</span>이다.
 <<else>>
-	수학 경시대회 해답이 책상 위에 놓여있다. 해결하라고 낸 문제가 아니었다. 하지만 당신은 해결했음을 확신한다.
+	당신의 수학 경시대회 해답이 책상 위에 놓여있다. 해결하라고 낸 문제가 아니었다. 하지만 당신은 해결했음을 확신한다. 당신이 경시대회에서 우승할 확률은 <span class="green">$mathschance%</span>이다.
 <</if>>
+
 <br><br>
-<span class="gold">$mathsinfo</span>번의 영감을 얻었다.
+<span class="gold">$mathsinfo</span>가지의 영감을 얻었다.
 <br>
 <<if $stimdealerknown is 1>>
 	<span class="gold">$mathsstim</span>개의 각성제를 갖고 있다.
 	<br>
 <</if>>
 <br>
-<<link [[해답에 열중한다 (2:00)|Maths Project Work]]>><<set $mathschance += 1>><<mathsskill 2>><<pass 120>><<stress 12>><</link>><<gstress>><<gmaths>>
+<<set _chair to Furniture.get('chair')>>
+<<link [[해답을 찾는 데 열중한다 (2:00)|Maths Project Work]]>><<if $location is "home" and _chair.type.includes("comfy")>><<set $mathschance += 5>><<else>><<set $mathschance += 1>><</if>><<mathsskill 2>><<pass 120>><<stress 12>><</link>><<gstress>><<gmaths>>
 <br>
 <<if $mathsstim gte 1>>
-	<<link [[각성제를 사용한다 (2:00)|Maths Project Stim]]>><<set $mathschance += 20>><<set $mathsstim -= 1>><<set $mathsstimused += 1>><<mathsskill 40>><<pass 120>><</link>><<gggmaths>>
+	<<link [[각성제를 사용한다 (2:00)|Maths Project Stim]]>><<if $location is "home" and _chair.type.includes("comfy")>><<set $mathschance += 20>><<else>><<set $mathschance += 16>><</if>><<set $mathsstim -= 1>><<set $mathsstimused += 1>><<mathsskill 40>><<pass 120>><</link>><<gggmaths>>
 	<br>
 <</if>>
 <<if $mathsinfo gte 1>>
-	<<link [[수학적 영감을 이용한다 (2:00)|Maths Project Work]]>><<set $mathsinfo -= 1>><<set $mathschance += 10>><<mathsskill 40>><<pass 120>><</link>><<ggmaths>>
+	<<link [[수학적 영감을 이용한다 (2:00)|Maths Project Work]]>><<set $mathsinfo -= 1>><<if $location is "home" and _chair.type.includes("comfy")>><<set $mathschance += 12>><<else>><<set $mathschance += 8>><</if>><<mathsskill 40>><<pass 120>><</link>><<ggmaths>>
 	<br>
 <</if>>
 <br>
@@ -47,6 +49,12 @@
 
 <<effects>>
 당신은 자리에 앉아 작업에 착수한다.
+<<set _chair to Furniture.get('chair')>>
+<<if $location is "home" and _chair.type.includes("comfy")>>
+	당신의 <span class="green">편안한</span> 의자가 프로젝트에 집중하기 쉽게 해 준다.
+<<else>>
+	당신의 <span class="red">불편한</span> 의자 때문에 프로젝트에 집중하기 어렵지만, 당신은 그럭저럭 해 낸다.
+<</if>>
 <<if $mathschance lte 9>>
 	어디서부터 시작해야 할지 감이 안 잡힌다. 수학적 기호는 완전히 새로운 언어나 다름 없다. <span class="gold">더 쉬운 길이 있을 것이다.</span>
 <<elseif $mathschance lte 24>>
@@ -128,28 +136,37 @@
 	<<else>>
 		<<if Time.hour lte 6>>
 			당신은 밤새도록 작업을 계속하며, 이따금 경비원을 피하기 위해 책상 밑에 숨는다.
+			<br><br>
 		<<elseif Time.hour lte 7>>
 			작업하는 동안 도서관 창문으로 아침 햇살이 새어들어온다.
+			<br><br>
 		<<elseif Time.hour lte 8>>
 			작업하는 동안 도서관 창문으로 아침 햇살이 새어들어온다.
+			<br><br>
 		<<elseif Time.hour lte 11>>
 			작업하는 동안 바깥에서 부산스러운 도시의 소리가 들려온다.
+			<br><br>
 		<<elseif Time.hour lte 12>>
 			작업하는 동안 바깥에서 부산스러운 도시의 소리가 들려온다.
+			<br><br>
 		<<elseif Time.hour lte 14>>
 			작업하는 동안 바깥에서 부산스러운 도시의 소리가 들려온다.
+			<br><br>
 		<<elseif Time.hour lte 16>>
 			작업하는 동안 바깥에서 부산스러운 도시의 소리가 들려온다.
+			<br><br>
 		<<elseif Time.hour lte 18>>
 			작업하는 동안 바깥에서 부산스러운 도시의 소리가 들려온다.
+			<br><br>
 		<<elseif Time.hour lte 21>>
 			작업하는 동안 들어오던 햇빛이 서서히 사라진다.
+			<br><br>
 		<<else>>
 			당신은 밤새도록 작업을 계속하며, 이따금 경비원을 피하기 위해 책상 밑에 숨는다.
+			<br><br>
 		<</if>>
 	<</if>>
 <</if>>
-<br><br>
 <<if $mathsproject is "ongoing">>
 	<<link [[다음|Maths Project]]>><</link>>
 	<br>
@@ -171,8 +188,14 @@
 
 <<effects>>
 당신은 각성제를 복용하고, 자리에 앉아 작업에 착수한다.
+<<set _chair to Furniture.get('chair')>>
+<<if $location is "home" and _chair.type.includes("comfy")>>
+	각성제와 당신의 <span class="green">편안한</span> 의자로 인해, 프로젝트에 집중하기가 훨씬 더 쉽다.
+<<else>>
+	당신의 집중력은 향상되었지만, 당신의 <span class="red">불편한</span> 의자 때문에 생기는 자잘한 아픔과 통증이 각성제의 효과를 미미하게 방해하고 있다.
+<</if>>
 <<if $mathschance lte 9>>
-	완전히 처음 보는 수학 내용이나, 각성제로 날카로워진 정신이 기본 원리를 파악해나간다.
+	완전히 처음 보는 수학 내용이나, 각성제로 날카로워진 정신으로, 당신은 기본 원리를 파악해나간다.
 <<elseif $mathschance lte 24>>
 	각성제의 도움으로 인해, 당신은 프로젝트를 완료할 모든 단계들을 파악한다.
 <<elseif $mathschance lte 44>>
@@ -1338,9 +1361,9 @@
 당신은 느긋하게 <<personPost "에게로">> 다가가, <<his_ yi>> 책상 위로 몸을 기울인다. <<if $worn.upper.type.includes("naked")>><<HisPost "의">> 눈이 당신의 맨가슴을 향한다<<else>><<HePost "은">> 당신이 일부러 단정치 못하게 입은 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 제대로 쳐다본다<</if>>. 당신은 <<trClothes "lower" $worn.lower.name "name" "을" "sep">>_trResult<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt>>의 옆을 살짝 들어올려<<else>>_trPost 살짝 잡아내려<</if>> <<if $worn.under_lower.type.includes("naked")>>속옷을 입고 있지 않다는 걸 암시한다<<else>><<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 얼핏 보여준다<</if>>.
 <<exhibitionism1>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"계속 보고 싶어?" 당신이 묻는다. "난 괜찮은데."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"계속 보게 해줄게." 당신이 말한다. "이번 한 번 뿐이야."
 <<else>>
 	"여기 너무 덥다." 당신이 말한다.
@@ -1497,9 +1520,9 @@
 :: Maths Competition Angry
 <<set $outside to 0>><<set $location to "town">><<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"그러지 마." 당신이 말한다. "정말 열심히 했단 말이야."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"그러지 마." 당신이 말한다. "하기만 해봐."
 <<else>>
 	"돌려줘." 당신이 말한다. "안 그러면 후회하게 만들어줄 거야."
@@ -1517,9 +1540,9 @@
 :: Maths Competition Beg
 <<set $outside to 0>><<set $location to "town">><<effects>>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"제-제발, 그러지 마." 당신이 말한다. "정말 열심히 했단 말이야."
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"그러기만 해봐." 당신이 말한다. "정말 열심히 했단 말이야."
 <<else>>
 	"제발 그러지 말아줘." 당신이 말한다. "정말 열심히 했단 말이야."
@@ -1738,9 +1761,9 @@
 <<endevent>><<npc Leighton>><<person1>>"그 정도면 됐어." 레이턴이 말한다. "끝낼 시간이야."
 <br><br>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"그-그치만 아직 안 끝났는 걸요." 당신이 말한다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"아직 안 끝났어요." 당신이 말한다.
 <<else>>
 	"그치만 아직 할게-" 당신은 항의하려 하나, 레이턴이 말을 끊는다.
@@ -1779,9 +1802,9 @@
 <<endevent>><<npc Leighton>><<person1>>"그 정도면 됐어." 레이턴이 말한다. "끝낼 시간이야."
 <br><br>
 
-<<if $submissive gte 1150>>
+<<if $speech_attitude is "meek">>
 	"그-그치만 아직 안 끝났는 걸요." 당신이 말한다.
-<<elseif $submissive lte 850>>
+<<elseif $speech_attitude is "bratty">>
 	"아직 안 끝났어요." 당신이 말한다.
 <<else>>
 	"그치만 아직 할게-" 당신은 항의하려 하나, 레이턴이 말을 끊는다.
@@ -1825,7 +1848,7 @@
 	<br>
 	"스스로 박고 박힐 수 있을까?"
 	<br>
-	<<if pregnancyBellyVisible()>>
+	<<if playerBellyVisible()>>
 		"그 배... <<pshe_ ga>> 말 그대로 <<pherself_ rul>> 임신시킨 거야?"
 		<br>
 		<<famepregnancy 1>>
@@ -1895,7 +1918,7 @@
 	<br>
 	"스스로 박고 박힐 수 있을까?"
 	<br>
-	<<if pregnancyBellyVisible()>>
+	<<if playerBellyVisible()>>
 		"그 배... <<pshe_ ga>> 말 그대로 <<pherself_ rul>> 임신시킨 거야?"
 		<br>
 		<<famepregnancy 1>>

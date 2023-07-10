@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 function timeAfterXHours(hours) {
 	const date = new DateTime(Time.date);
-	date.addSeconds(hours * DateTime.secondsPerHour);
+	date.addSeconds(hours * Time.secondsPerHour);
 	return ampm(date.hour, date.minute);
 }
 DefineMacroS("timeAfterXHours", timeAfterXHours);
@@ -49,16 +49,16 @@ Macro.add("passTimeUntil", {
 const secondsMapper = {
 	sec: 1,
 	seconds: 1,
-	min: DateTime.secondsPerMinute,
-	mins: DateTime.secondsPerMinute,
-	minute: DateTime.secondsPerMinute,
-	minutes: DateTime.secondsPerMinute,
-	hour: DateTime.secondsPerHour,
-	hours: DateTime.secondsPerHour,
-	day: DateTime.secondsPerDay,
-	days: DateTime.secondsPerDay,
-	week: DateTime.secondsPerDay * 7,
-	weeks: DateTime.secondsPerDay * 7,
+	min: Time.secondsPerMinute,
+	mins: Time.secondsPerMinute,
+	minute: Time.secondsPerMinute,
+	minutes: Time.secondsPerMinute,
+	hour: Time.secondsPerHour,
+	hours: Time.secondsPerHour,
+	day: Time.secondsPerDay,
+	days: Time.secondsPerDay,
+	week: Time.secondsPerDay * 7,
+	weeks: Time.secondsPerDay * 7,
 };
 
 /**
@@ -69,6 +69,7 @@ const secondsMapper = {
  * @returns {DocumentFragment} The fragment to render elements from.
  */
 function passTime(time = 0, type = "min") {
+	if (!Number.isInteger(time)) return Errors.report("Invalid time to pass: " + time, Utils.GetStack());
 	const multiplier = secondsMapper[type] || 1;
 	const fragment = Time.pass(time * multiplier);
 	return fragment;
@@ -110,10 +111,14 @@ Macro.add("clock", {
 function schoolTerm() {
 	if (Time.schoolTerm) {
 		const date = Time.nextSchoolTermEndDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
-		return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  끝난다";
-	} else {
-		const date = Time.nextSchoolTermStartDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
-		return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  시작한다";
+		if (date.year === Time.year && date.month === Time.month && date.day === Time.monthDay) {
+			if (date.timeStamp > Time.date.timeStamp) return "학기는 오늘 끝난다.";
+		} else {
+			return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  끝난다";
+		}
 	}
+	const date = Time.nextSchoolTermStartDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
+	return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  시작한다";
 }
+
 DefineMacroS("schoolterm", schoolTerm);

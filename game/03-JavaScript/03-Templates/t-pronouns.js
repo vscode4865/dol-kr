@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 function getHe() {
 	switch (V.pronoun) {
 		case "m":
@@ -137,7 +138,7 @@ Template.add(["himself", "Himself"], function () {
 });
 
 function getPeople() {
-	switch (V.malechance) {
+	switch (maleChance()) {
 		case 100:
 			T.postNum=2;return "남자들";
 		case 0:
@@ -156,7 +157,7 @@ Template.add(["people", "People"], function () {
 });
 
 function getPeopleYoung() {
-	switch (V.malechance) {
+	switch (maleChance()) {
 		case 100:
 			T.postNum=2;return "소년들";
 		case 0:

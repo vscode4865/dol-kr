@@ -17,13 +17,16 @@
 :: Hairdressers
 
 <<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
-당신은 미용실 안에 있다. 여기서 당신은 머리카락을 자르거나 염색을 할 수 있다.
+당신은 미용실 안에 있다. 여러가지 모발용 화장품들이 판매되고 있다. 또한 여기서 머리카락을 자르거나 염색을 할 수 있다.
 <<if Time.dayState is "night">>
 	당신은 어둠 속에 혼자 있다.
 <<elseif $exposed gte 1>>
 	당신은 존엄성을 지키기 위해 장롱 속에 숨어 있다.
 <<else>>
 	비어있는 의자가 있다.
+<</if>>
+<<if $hairgelBottles is undefined>>
+	<<set $hairgelBottles to 0>>
 <</if>>
 <br><br>
 <<if $stress gte $stressmax>>
@@ -42,18 +45,41 @@
 			<<link [["끝날때까지 숨어 있는다 (1:00)"|Hairdressers]]>><<pass 1 hour>><</link>>
 		<</if>>
 	<<else>>
-		<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.hairDressers>>
-			<<link [[금전등록기를 살펴본다|Hairdressers Register]]>><</link>>
+		<<if Time.dayState is "night" and Time.hour isnot $closinghour>>
+			<<hairgelicon>><<link [[헤어 젤 한 병을 훔친다|$passage]]>><<crimeup 8/100>><<crime>><<set $hairgelBottles += 1>><</link>>
+			<<if !$weekly.theft.hairDressers>>
 			<br>
+			<<ind>><<link [[금전등록기를 살펴본다|Hairdressers Register]]>><</link>>
+			<br><br>
+			<</if>>
 		<</if>>
 		<<if $exposed lte 1 and Time.dayState isnot "night" and Time.hour isnot 21>>
-			<<link [[의자에 앉는다|Hairdressers Seat]]>><</link>>
+			<<if $money gte 800>>
+				<<hairgelicon>> <<link [[헤어 젤을 구매한다 (£8)|Hairdressers Gel]]>><<set $money -= 800>><<set $hairgelBottles += 1>><</link>>
+				<br>
+			<<else>>
+				<<hairgelicon>> <span class="blue">당신은 헤어 젤을 구매할 돈이 없다.</span>
+				<br>
+			<</if>>
+			<<hairchairicon>><<link [[의자에 앉는다|Hairdressers Seat]]>><</link>>
 			<br><br>
 		<</if>>
-		<<link [[떠난다|Shopping Centre]]>><</link>>
+		<<ind>><<link [[떠난다|Shopping Centre]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
+
+:: Hairdressers Gel
+<<generate1>><<person1>>당신은 모발 화장품 판매대를 둘러본다. 당신은 "헝클어짐이 없으면, 불평도 없다!"라는 딱지가 붙어있는 작은 병을 고른다.
+<br><br>
+한 미용사가 당신이 구입한 것을 금전등록기에 등록하면서 잡담을 한다. "이 제품은 끝내주죠," <<he_ ga>> 말한다. "병이 작아서, <span class="teal">한 번 쓸 양</span>만큼만 들어 있지만, 돌처럼 단단하게 고정해 줄 거에요. 머리가 헝클어질 것에 대해 걱정할 필요가 없을 겁니다. 최소한, 당신이 머리 스타일을 바꾸기고 결정하기 전 까지는 말이죠."
+<br><br>
+<<He_ nun>> 미소지으며 당신에게 쇼핑백을 건넨다. "<<print either("구입해 주셔서 고마워요!","좋은 하루 되세요.","조심해 가세요.","당신과 거래해서 기쁩니다.","다시 오세요!")>>"
+<br><br>
+당신은 <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "병" : "병">>의 헤어 젤을 가지고 있다.
+<br><br>
+
+<<link [[다음|Hairdressers]]>><</link>>
 
 :: Hairdressers Seat
 

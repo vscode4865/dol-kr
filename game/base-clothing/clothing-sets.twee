@@ -1,9 +1,17 @@
 :: Widgets Outfits [widget]
 <<widget "listoutfits">>
+	<label class="no-numberify"><<link "현재 복장으로 새 세트를 만든다">><<toggleclass "#newClothingSetFromCurrent" "hidden">><</link>></label> |
+	<label class="no-numberify"><<link "모든 세트를 편집한다">><<overlayReplace "outfitEditor">><</link>></label>
+	<br>
+	<div id="newClothingSetFromCurrent" class="wardrobeSubSection hidden">
+		<<wardrobeNewOutfit>>
+		<br>
+	</div>
+	<br>
+
 	<label><<radiobutton "$delete_outfit" "none" checked>> 입기</label> |
 	<label><<radiobutton "$delete_outfit" 1>> 제거</label> |
-	<label><<radiobutton "$delete_outfit" 2>> 덮어쓰기</label> |
-	<label class="no-numberify"><<link "편집">><<overlayReplace "outfitEditor">><</link>></label>
+	<label><<radiobutton "$delete_outfit" 2>> 현재 옷으로 덮어쓰기</label>
 	<br>
 
 	<!-- List the currently saved outfits -->
@@ -299,7 +307,7 @@
 							<<set _outfitPrimaryWearOutfit to $_wardrobeItem.outfitPrimary>>
 							/*Check for damaged parts*/
 							<<for $_outfitSlot, $_outfitPieceName range _outfitPrimaryWearOutfit>>
-								<<if $_outfitPieceName is "broken">>
+								<<if $_outfitPieceName is "broken" or $_outfitPieceName is "split">>
 									<<set _damage += _equipDamageValue[$_outfitSlot]>>
 								<</if>>
 							<</for>>
@@ -341,7 +349,7 @@
 							<<set $_primaryAccColourIsCustom to ($_foundPrimary.accessory_colour is "custom")>>
 
 							<<for $_outfitSlot, $_outfitPieceName range $_foundPrimary.outfitPrimary>>
-								<<if $_outfitPieceName is "broken">>
+								<<if $_outfitPieceName is "broken" or $_outfitPieceName is "split">>
 									<<continue>>
 								<</if>>
 								<<if !_storeItemSkip[$_outfitSlot]>>
@@ -352,8 +360,8 @@
 									<<if $_outfitPieceName isnot $_possiblePiece.name>>
 										<<continue>>
 									<</if>>
-									/*Skip broken pieces*/
-									<<if $_possiblePiece.outfitSecondary[1] is "broken">>
+									/*Skip broken and split pieces*/
+									<<if $_possiblePiece.outfitSecondary[1] is "broken" or $_possiblePiece.outfitSecondary[1] is "split">>
 										<<continue>>
 									<</if>>
 									/*Skip items that don't have matching colours*/
@@ -388,7 +396,7 @@
 						<</for>>
 
 						/*If the worn item was a hoodie, make sure the hood is in the correct position*/
-						<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken">>
+						<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.outfitPrimary.head isnot "split">>
 							<<if $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
 								<<toggleHood>>
 								<<set _equipSkip["head"] to ($worn.upper.hoodposition is "up" ? true : false)>>
@@ -400,7 +408,7 @@
 								<<trClothes $_slot $_incomingItemName "name">><<set _notEquipped[$_slot] to {"name": _trResult, "reason": "not found replacement"}>>
 							<</if>>
 							/*If the worn item was a hoodie, make sure the hood is in the correct position*/
-							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
+							<<if $_slot is "upper" and $worn.upper.hoodposition and $worn.upper.outfitPrimary.head isnot "broken" and $worn.upper.outfitPrimary.head isnot "split" and $worn.upper.hoodposition isnot outfitHoodPosition($outfit[$wear_outfit])>>
 								<<toggleHood>>
 							<</if>>
 							<<if $wardrobe_location isnot "wardrobe">>

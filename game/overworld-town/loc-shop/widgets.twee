@@ -189,7 +189,7 @@ Forth argument - item index*/
 		<br><br>
 			<<shopBuyItemStatus _wardrobeSlots>>
 			<<if _spaceLeft lt 1>>
-				<span class="blue">당신의 옷장은 가득 찼다.</span>
+				<span class="red">당신의 옷장은 가득 찼다.</span>
 				<br>
 			<<elseif Time.dayState is "night">>
 				<<if $clothingShop.stolenClothes lte 20>>
@@ -525,6 +525,27 @@ Forth argument - item index*/
 		/*<<case "maternity">><<set _clothesDesc to "크고 편안하며, 배에 압박을 주지 않는다.">>*/
 		<<case "esoteric">>
 			<<set _clothesDesc to "드러내지 못하는 것을 드러내준다.">>
+		<<case "unstealthy">>
+			<<set _clothesDesc to "더 숨기 힘들어지게 한다.">>
+		/*Hairstyle Traits*/	
+		<<case "loose">>
+			<<set _clothesDesc to "얼굴 주위로 풀려 떨어져내린 머리모양. 자라면 길어진다.">>
+		<<case "short">>
+			<<set _clothesDesc to "머리카락이 길게 자랐다 하더라도, 정돈된 상태에서는 짧아 보이는 머리모양.">>
+		<<case "curly">>
+			<<set _clothesDesc to "곱슬곱슬한 머리모양.">>
+		<<case "sleek">>
+			<<set _clothesDesc to "반듯하게 뻗은 머리모양.">>
+		<<case "wavy">>
+			<<set _clothesDesc to "그렇게 곱슬거리지도, 그렇게 반듯이 뻗지도 않은 머리모양.">>
+		<<case "pigtails">>
+			<<set _clothesDesc to "두 묶음의 머리가 머리의 양쪽에 달려있는 머리모양.">>
+		<<case "buns">>
+			<<set _clothesDesc to "머리카락이 감겨서 고정되어 있는 머리모양.">>
+		<<case "braids">>
+			<<set _clothesDesc to "머리카락 가닥이 서로 짜여진 머리모양. 레게머리처럼, 엄밀하게는 땋은머리가 아닌 스타일도 포함한다.">>
+		<<case "ponytail">>
+			<<set _clothesDesc to "머리 뒤쪽으로 모은 머리모양.">>			
 		<<default>>
 			<<set $noTraitDescription to 1>>
 	<</switch>>
@@ -605,7 +626,7 @@ Forth argument - item index*/
 	<<addclass #shopDefault "hidden">>
 <</widget>>
 
-<<widget "shopClothingFilterSettings">>
+<<widget "shopClothingFilterSettingsDefault">>
 	<<if $shopClothingFilter is undefined>>
 		<<set $shopClothingFilter to {
 			gender: "none",
@@ -633,6 +654,9 @@ Forth argument - item index*/
 		<<unset $shopClothingFilterGender>>
 		<<unset $clothingTraitTypes>>
 	<</if>>
+<</widget>>
+
+<<widget "shopClothingFilterSettings">>
 	<br>
 	<b>성별:</b>
 	<<listbox "$shopClothingFilter.gender" autoselect>>
@@ -877,7 +901,7 @@ Forth argument - item index*/
 						<<set _undamagedCount++>>
 						<<if _returnWardrobe[_args[0][0]][_j].outfitPrimary isnot undefined>>
 							<<for _valueShop range _returnWardrobe[_args[0][0]][_j].outfitPrimary>>
-								<<if _valueShop is "broken">>
+								<<if _valueShop is "broken" or _valueShop is "split">>
 									<<set _damagedCount++>>
 									<<set _undamagedCount-->>
 									<<break>>

@@ -62,7 +62,7 @@
 	"강아지"		: "puppy"
 }>>
 
-<<set _posterCost to Furniture.get('poster', true).cost()>>
+<<set _posterCost to Furniture.setPrice(Furniture.get('poster', true).cost)>>
 <<if Time.dayState is "night" and Time.hour isnot 21 and !$weekly.theft.furnitureShop>>
 	<<listbox "_chosenPoster" autoselect>>
 		<<optionsfrom _availablePosters>>
@@ -126,7 +126,7 @@
 	"십자가"		: "crosses"
 }>>
 
-<<set _wallpaperCost to Furniture.get('wallpaper', true).cost()>>
+<<set _wallpaperCost to Furniture.setPrice(Furniture.get('wallpaper', true).cost)>>
 <<if Time.dayState is "night" and Time.hour isnot 21 and !$weekly.theft.furnitureShop>>
 	<<listbox "_chosenWallpaper" autoselect>>
 		<<optionsfrom _availableWallpapers>>
@@ -213,13 +213,15 @@
 		<<case "table">>
 			당신은 탁자들을 둘러본다. 그것들은 거대하지만, 몇몇 탁자들은 당신의 방에 놓을 수 있을 지도 모른다.
 		<<case "chair">>
-			당신은 의자들을 둘러본다. 당신이 충분히 작은 탁자를 찾는다면, 한 쌍 정도는 당신을 방에 놓을 수 있을 것이다.
+			당신은 의자들을 둘러본다. 당신의 책상 의자를 바꾸고, 작은 탁자와 함께 두번째 의자를 방 안에 우겨넣을 수 있을 것이다.
 		<<case "wardrobe">>
 			당신은 옷장들을 둘러본다. 몇몇은 당신의 오래된 옷장과 크기가 거의 동일하다.
 		<<case "decoration">>
 			당신은 장식품들을 둘러본다. 당신은 방에 둘 만한 것을 찾느라 고군분투한다.
 		<<case "windowsill">>
 			당신은 기타 물품들을 둘러본다. 수상쩍은 사용처가 있을 듯 한 잡동사니들이 페이지에 적혀 있다.
+		<<case "desk">>
+			당신은 책상을 둘러본다. 몇몇 책상들은 당신의 오래된 책상을 대체할 만큼 작아 보인다.
 		<<default>>
 			/* Do nothing */
 	<</switch>>
@@ -238,6 +240,7 @@
 		{ id: 'bed', label: '침대' },
 		{ id: 'table', label: '탁자' },
 		{ id: 'chair', label: '의자' },
+		{ id: 'desk', label: '책상'},
 		{ id: 'wardrobe', label: '옷장' },
 		{ id: 'decoration', label: '장식품' },
 		{ id: 'windowsill', label: '기타' }
@@ -254,19 +257,28 @@
 
 <<widget "furnitureList">>
 	<<set $currentFurnishing to Furniture.get($chosenFurnitureCategory)>>
-	현재 당신의 방에 설치되어 있는 가구:
+	<<if $chosenFurnitureCategory is "desk" and $currentFurnishing is null>>
+		<<set $currentFurnishing to Furniture.set('desk','desk')>>
+	<</if>>	
+현재 당신의 방에 설치되어 있는 가구:
 	<<if $currentFurnishing>>
 		<<furnitureicon $currentFurnishing.iconFile>>
 		<<trFurniture $currentFurnishing.name "name">>_trResult
 		<a onclick="document.getElementById('furnitureDetails').classList.toggle('hidden')">추가 정보</a>
 		<div id="furnitureDetails" class="hidden">
 			<<trFurniture $currentFurnishing.name "desc">>_trResult
-			<<if $currentFurnishing.type && $currentFurnishing.category.includes("wardrobe") && $currentFurnishing.type.includesAny('comfy','double','starter','spacious','organiser')>>
+			<<if $currentFurnishing.type && $currentFurnishing.type.includesAny('comfy','double','starter','spacious','organiser')>>
 				<br>
-				<<if $currentFurnishing.type.includes('starter')>><br>각 종류당 20개의 물건을 보관할 수 있다.<</if>>
+				<<if $currentFurnishing.type.includes('starter') and $chosenFurnitureCategory is 'wardrobe'>><br>각 종류당 20개의 물건을 보관할 수 있다.<</if>>
 				<<if $currentFurnishing.type.includes('spacious')>><br>각 종류당 30개의 물건을 보관할 수 있다.<</if>>
 				<<if $currentFurnishing.type.includes('organiser')>><br>각 종류당 40개의 물건을 보관할 수 있다.<</if>>
-				<<if $currentFurnishing.type.includes('comfy')>><br>수면의 질을 높여 준다.<</if>>
+				<<if $currentFurnishing.type.includes('comfy')>>
+					<<if $chosenFurnitureCategory is 'bed'>>
+						<br>수면의 질을 높여 준다.
+					<<else>>
+						<br>책상에서 프로젝트에 몰두할 때 더 효율적으로 할 수 있게 해 준다.
+					<</if>>
+				<</if>>	
 				<<if $currentFurnishing.type.includes('double')>><br>누군가 적절하게 자고 갈 정도의 충분한 공간이 있다.<</if>>
 			<</if>>
 		</div>
@@ -291,7 +303,7 @@
 		<<set $_isInCategory to $_furnishing.category.includes($chosenFurnitureCategory)>>
 		<<set $_isDefault to $_furnishing.type.includes('starter')>>
 		<<set $_isCurrent to !(!$currentFurnishing or $_key isnot $currentFurnishing.id)>>
-		<<set $_isShowing to $_furnishing.hasOwnProperty('showFn') ? $_furnishing.showFn() : true>>
+		<<set $_isShowing to $_furnishing.showCheck ? Furniture.showFn($_furnishing) : true>>
 		<<if $_isInCategory and !$_isDefault and !$_isCurrent and $_isShowing>>
 			<div class="furnitureBlock no-numberify">
 				<<furnitureicon $_furnishing.iconFile>> <<trFurniture $_furnishing.name "name">>_trResult |
@@ -302,18 +314,24 @@
 					<<if $_furnishing.type.includes('spacious')>> 널찍함 | <</if>>
 					<<if $_furnishing.type.includes('organiser')>> 오거나이저 | <</if>>
 				<</if>>
-				<<set $_cost to $_furnishing.cost()>>
+				<<set $_cost to Furniture.setPrice($_furnishing.cost)>>
 				<<set $_name to $_furnishing.name>>
 				<<if $_furnishing.description>>
 					<<capture $_name>>
 						<mouse class="tooltip linkBlue">(?)<span>
 							<<trFurniture $_furnishing.name "desc">>_trResult
-							<<if $_furnishing.type && $_furnishing.category.includes("wardrobe") && $_furnishing.type.includesAny('comfy','double','starter','spacious','organiser')>>
+							<<if $_furnishing.type && $_furnishing.type.includesAny('comfy','double','starter','spacious','organiser')>>
 								<br>
 								<<if $_furnishing.type.includes('starter')>><br>각 종류당 20개의 물건을 보관할 수 있다.<</if>>
 								<<if $_furnishing.type.includes('spacious')>><br>각 종류당 30개의 물건을 보관할 수 있다.<</if>>
 								<<if $_furnishing.type.includes('organiser')>><br>각 종류당 40개의 물건을 보관할 수 있다.<</if>>
-								<<if $_furnishing.type.includes('comfy')>><br>수면의 질을 높여 준다.<</if>>
+								<<if $_furnishing.type.includes('comfy')>>
+									<<if $chosenFurnitureCategory is 'bed'>>
+										<br>수면의 질을 높여 준다.
+									<<else>>
+										<br>책상에서 공부를 더 효율적으로 할 수 있게 해 준다.
+									<</if>>
+								<</if>>	
 								<<if $_furnishing.type.includes('double')>><br>누군가 적절하게 자고 갈 정도의 충분한 공간이 있다.<</if>>
 							<</if>>
 						</span></mouse> |
@@ -330,7 +348,6 @@
 									nameCap: $_furnishing.nameCap,
 									iconFile: $_furnishing.iconFile,
 									type: $_furnishing.type,
-									category: $_furnishing.category,
 								}>>
 							<<else>>
 								<<set $money -= $_cost>>
@@ -351,7 +368,7 @@
 <<widget "furnitureDowngrade">>
 	<<furnitureicon $furnitureDowngrade.iconFile>>
 	<<trFurniture $furnitureDowngrade.name "desc">>_trResult
-	<<if $furnitureDowngrade.type && $furnitureDowngrade.category.includes("wardrobe") && $furnitureDowngrade.type.includesAny('comfy','double','starter','spacious','organiser')>>
+	<<if $furnitureDowngrade.type && $furnitureDowngrade.type.includesAny('comfy','double','starter','spacious','organiser')>>
 		<<if $furnitureDowngrade.type.includes('starter')>><br>각 종류당 20개의 물건을 보관할 수 있다.<</if>>
 		<<if $furnitureDowngrade.type.includes('spacious')>><br>각 종류당 30개의 물건을 보관할 수 있다.<</if>>
 		<<if $furnitureDowngrade.type.includes('organiser')>><br>각 종류당 40개의 물건을 보관할 수 있다.<</if>>

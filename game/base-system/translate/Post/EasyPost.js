@@ -55,6 +55,7 @@ const EasyPostMacroList = [
 	{ name: "worn_over_lower_name_", orig_name: "worn_over_lower_name", is_print: 0},
 	{ name: "worn_over_upper_name_", orig_name: "worn_over_upper_name", is_print: 0},
 	{ name: "worn_under_lower_name_", orig_name: "worn_under_lower_name", is_print: 0},
+	{ name: "worn_under_lower_name_simple_", orig_name: "worn_under_lower_name_simple", is_print: 0},
 	{ name: "worn_under_upper_name_", orig_name: "worn_under_upper_name", is_print: 0},
 	{ name: "worn_upper_name_", orig_name: "worn_upper_name", is_print: 0},
 
@@ -589,6 +590,8 @@ const EasyPostMacroList = [
 
 	// <<personsimple_ ul>> = <<personsimple>>을 
 	{ name: "personsimple_", orig_name: "personsimplePost", is_print: 0},
+
+	{ name: "personname_", orig_name: "personnamePost", is_print: 0},
 
 	// <<combatperson_ ul>> = <<combatperson>>을 
 	// <<combatPerson_ ul>> = <<combatPerson>>을 

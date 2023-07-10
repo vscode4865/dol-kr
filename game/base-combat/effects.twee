@@ -132,9 +132,9 @@
 				<<set $leftarm to "handheld">><<set $leftactiondefault to "lefthandholdkeep">>
 				<<submission 1>>
 				<<if isLoveInterest($NPCList[$lefttarget].fullDescription)>>
-					<<takeHandholdingVirginity $NPCList[$lefttarget].fullDescription "romantic">>
+					<<takeHandholdingVirginity $NPCList[$lefttarget] "romantic">>
 				<<else>>
-					<<takeHandholdingVirginity $NPCList[$lefttarget].fullDescription>>
+					<<takeHandholdingVirginity $NPCList[$lefttarget]>>
 				<</if>>
 			<<else>>
 				당신은 <<someones_ yi $lefttarget>> 왼손으로 손을 뻗지만, <<he_ nun>> 손을 치운다.
@@ -168,9 +168,9 @@
 				<<set $rightarm to "handheld">><<set $leftactiondefault to "righthandholdkeep">>
 				<<submission 1>>
 				<<if isLoveInterest($NPCList[$righttarget].fullDescription)>>
-					<<takeHandholdingVirginity $NPCList[$righttarget].fullDescription "romantic">>
+					<<takeHandholdingVirginity $NPCList[$righttarget] "romantic">>
 				<<else>>
-					<<takeHandholdingVirginity $NPCList[$righttarget].fullDescription>>
+					<<takeHandholdingVirginity $NPCList[$righttarget]>>
 				<</if>>
 			<<else>>
 				당신은 <<someones_ yi $righttarget>> 오른손으로 손을 뻗지만, <<he_ nun>> 손을 치운다.
@@ -3764,7 +3764,7 @@
 
 		<<if $mouthaction is "peniskiss">>
 			<<set $mouthaction to 0>><<set $mouthactiondefault to "peniskiss">>
-			<<actionspeniskiss $mouthtarget>>
+			<<actionspeniskiss `($chestuse is "penis" ? $chesttarget : $mouthtarget)`>>
 			<<submission 3>><<oralskilluse>>
 		<</if>>
 
@@ -4332,10 +4332,17 @@
 			<<else>>
 				<<set $mouthactiondefault to "rest">><<sub 2>>
 				<<if $NPCList[$mouthtarget].condom and $NPCList[$mouthtarget].condom.willUse is true>><<set $_checkSkip to true>><</if>>
+				<<if $consensual is 0>>
+					<<set $_condomAskBaseDifficulty to 2000 + 10 * (100 - $NPCList[$mouthtarget].pregnancyAvoidance)>>
+					<<set $_condomAskDifficultyMultiplier to 200>>
+				<<else>>
+					<<set $_condomAskBaseDifficulty to 1500 + 5 * (100 - $NPCList[$mouthtarget].pregnancyAvoidance)>>
+					<<set $_condomAskDifficultyMultiplier to 100>>
+				<</if>>
 				<<if !$gloryhole and $gamemode isnot "soft" and !$npcrow.includes($mouthtarget) and !$_checkSkip>><<seductionskillusecombat>><</if>>
 				<<set $NPCList[$mouthtarget].condomAsk to true>>
 				당신은 <<combatpersonPost>>에게 콘돔을 사용해 달라고 말한다.
-				<<if combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole or $npcrow.includes($mouthtarget) or $_checkSkip>>
+				<<if combatSkillCheck("seduction", $mouthtarget, $_condomAskBaseDifficulty, $_condomAskDifficultyMultiplier) or $gamemode is "soft" or $gloryhole or $npcrow.includes($mouthtarget) or $_checkSkip>>
 					<<if !$npcrow.includes($mouthtarget)>>
 						<<if $condomLvl is 1 or !$NPCList[$mouthtarget].condom>>
 							<<set $NPCList[$mouthtarget].condomCanGive to true>>
@@ -4889,13 +4896,18 @@
 			<<else>>
 				<<set $pullOutAsk to true>>
 				<<set $_npcn to $npc[$npcrow.indexOf($mouthtarget)]>>
+				<<if $consensual is 0>>
+					<<set $_pullOutAskBaseDifficulty to 1500 + 10 * (100 - $NPCList[$mouthtarget].pregnancyAvoidance)>>
+				<<else>>
+					<<set $_pullOutAskBaseDifficulty to 1000 + 5 * (100 - $NPCList[$mouthtarget].pregnancyAvoidance)>>
+				<</if>>
 				<<if $NPCList[$mouthtarget].pregnancyAvoidance gte 90 or $_npcn is "Kylar">><<set $_checkSkip to true>><</if>>
 				<<set $mouthactiondefault to "rest">><<if !$gloryhole and $gamemode isnot "soft" and !$_checkSkip>><<seductionskillusecombat>><</if>>
 				<<brat `Math.floor((100 - $NPCList[$mouthtarget].pregnancyAvoidance) / 20)`>>
 				당신은 <<combatpersonPost>>에게 빼서 밖에다 사정해 달라고 부탁한다.
 				<<if $npc[$npcrow.indexOf($mouthtarget)] is "Kylar">>
 					<<He_Short_ nun>> 잠시동안 얼어붙는다. <span class="red">"안돼, 내 사랑."</span>
-				<<elseif combatSkillCheck("seduction", $mouthtarget) or $gamemode is "soft" or $gloryhole or $_checkSkip>>
+				<<elseif combatSkillCheck("seduction", $mouthtarget, $_pullOutAskBaseDifficulty) or $gamemode is "soft" or $gloryhole or $_checkSkip>>
 					<<set $pullOut to true>>
 					<<if $consensual is 0>>
 						<<He_Short_ un>> 잠시 멈칫하더니 대답한다.
@@ -4935,18 +4947,18 @@
 			<<set $mouthaction to 0>><<set $mouthactiondefault to "rest">>
 			<<if $money gte $rentmoney + ($babyRent or 0)>>
 				<<set $speechpay to 1>>
-				<<if $submissive gte 1150>>
+				<<if $speech_attitude is "meek">>
 					"머-멈춰요!" 당신은 소리친다. "제가 지불할테니... 그-그냥 로빈을 보내주세요."
-				<<elseif $submissive lte 850>>
+				<<elseif $speech_attitude is "bratty">>
 					"내가 낼게요," 당신은 꽉 다문 이빨 사이로 말한다. "그러니 <<nnpc_himPost "Robin">>에게서 당신 손을 떼어놓아요."
 				<<else>>
 					"<<nnpc_him_ ul "Robin">> 보내줘요!" 당신은 소리친다. "여기 돈이 있어요. 제가 지불할게요."
 				<</if>>
 			<<else>>
 				<<set $speechpay to -1>>
-				<<if $submissive gte 1150>>
+				<<if $speech_attitude is "meek">>
 					"머-멈춰요!" 당신은 소리친다. "저는 그만큼 돈이 없어요, 하-하지만... 그냥 <<nnpc_him_ ul "Robin">> 보내주세요, 제발요!"
-				<<elseif $submissive lte 850>>
+				<<elseif $speech_attitude is "bratty">>
 					"돈은 그만큼 없어요," 당신은 꽉 다문 이빨 사이로 말한다. "그러니 <<nnpc_himPost "Robin">>에게서 당신 손을 떼어놓아요."
 				<<else>>
 					"<<nnpc_him_ ul "Robin">> 보내줘요!" 당신은 소리친다. "돈은 그만큼 없어요. 제가 지불할 수는 없어요."

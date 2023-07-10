@@ -1217,7 +1217,7 @@
 				<</if>>
 			</div>
 
-			<<if $allure gte 8000>><<set $allure to 8000>><</if>>
+			<<if $allure gte 8000 * $alluremod>><<set $allure to 8000 * $alluremod>><</if>>
 			<<if $alluretest is 1>>
 				<<set $allure += 100000>>
 			<<elseif $alluretest is 2>>
@@ -1553,6 +1553,8 @@
 			<<switch $location>>
 				<<case "beach">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/beachday.gif'">
+				<<case "chalets">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/beachday.gif'">
 				<<case "sea">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/ocean_day.gif'">
 				<<case "home">>
@@ -1719,6 +1721,8 @@
 			<<switch $location>>
 				<<case "beach">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/beachnight.gif'">
+				<<case "chalets">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/beachnight.gif'">
 				<<case "sea">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/ocean_night.gif'">
 				<<case "home">>
@@ -1877,6 +1881,8 @@
 			<<switch $location>>
 				<<case "beach">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/beachdawn.gif'">
+				<<case "chalets">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/beachdawn.gif'">
 				<<case "sea">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/ocean_dawn.gif'">
 				<<case "home">>
@@ -2030,6 +2036,8 @@
 
 			<<switch $location>>
 				<<case "beach">>
+					<img id="location" @src="'img/misc/' + _weather_display + '/beachdusk.gif'">
+				<<case "chalets">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/beachdusk.gif'">
 				<<case "sea">>
 					<img id="location" @src="'img/misc/' + _weather_display + '/ocean_dusk.gif'">
@@ -3239,7 +3247,7 @@
 				<br>
 		<</switch>>
 		<<if $christmas_gift is "clothes_unwrapped">>
-			<<link [[고아들의 선물을 포장한다 (3:00)|Bedroom Orphans Clothes Wrap]]>><<pass 180>><<set $christmas_gift to "clothes">><</link>>
+			<<link [[고아들을 위한 선물을 포장한다 (3:00)|Bedroom Orphans Clothes Wrap]]>><<pass 180>><<set $christmas_gift to "clothes">><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -3549,6 +3557,30 @@
 	</div>
 <</widget>>
 
+<<widget "relation-box-wolves">>
+	<<if $wolfpackfear gte 1 || $wolfpacktrust gte 1 || $syndromewolves gte 1 || $wolfpackleader gte 1>>
+	<div class="relation-box" @style="(_boxConfig.style || '')">
+		<div class="relation-top-line">
+			<<if $options.images>>
+					<img class="relation-icon" src="img/misc/icon/wolfpup.png" />
+			<</if>>
+			<span class="relation-name">늑대 무리</span>
+		</div>
+		<div class="relation-description">
+			늑대들은
+			<<if $wolfpackleader gte 1>>당신을 <span class="green">무리 우두머리로 본다.</span>
+				<<elseif $syndromewolves gte 1>>당신을 <span class="green">그들의 <<ppackbrother_ ro>> 본다.</span>
+				<<elseif $wolfpacktrust gte 12>><span class="green">당신을 믿고 있다.</span>
+				<<elseif $wolfpacktrust gte 6>><span class="teal">당신을 받아들이기 시작했다.</span>
+				<<elseif $wolfpackfear gte 12>><span class="red">당신을 무서워하고 있다.</span>
+				<<elseif $wolfpackfear gte 6>><span class="purple">당신을 무서워하기 시작했다.</span>
+				<<else>><span class="pink">당신을 사냥감으로 본다.</span>
+			<</if>>
+		</div>
+	</div>
+	<</if>>
+<</widget>>
+
 <<widget "relation-box">>
 	<<silently>>
 		<<set _npcData = _args[0]>>
@@ -3566,7 +3598,7 @@
 					return true;
 			};
 
-			T.importantNpcStats = ["love", "lust", "dom", "trauma", "rage", "purity", "corruption"];
+			T.importantNpcStats = ["love", "lust", "dom", "trauma", "rage", "purity", "corruption", "harmony", "ferocity"];
 			T.otherNpcStats = ["love", "lust"];
 
 			let statDefaults = {
@@ -3614,6 +3646,20 @@
 					value: T.npcData.corruption,
 					iconOrientation : 'horizontal-inverted',
 					activeIcon: "img/ui/sym_demon_purity.png",
+					color: 'purple'
+				},
+				"harmony" : {
+					name: "화합",
+					value: V.wolfpackharmony,
+					iconOrientation : 'vertical',
+					activeIcon: "img/ui/wolfharmony.png",
+					color: 'purple'
+				},
+				"ferocity" : {
+					name: "흉폭성",
+					value: V.wolfpackferocity,
+					iconOrientation : 'vertical',
+					activeIcon: "img/ui/wolfferocity.png",
 					color: 'purple'
 				}
 			};
@@ -3679,7 +3725,7 @@
 						<<npcrelationship "Ivory Wraith">>
 					</div>
 					<div @class="'relation-stat-list' + ($options.images ? '' : ' no-images')">
-						<<for _j = 0; _j lt _importantNpcStats.length; _j++>>
+						<<for _j = 0; _j lt _importantNpcStats.length-2; _j++>>
 							<<if _npcData[_importantNpcStats[_j]] gt 0 and _checkRequirements(_importantNpcStats[_j])>>
 								<<relation-box-stat _getStatConfig(_importantNpcStats[_j]) true>>
 							<</if>>
@@ -3704,7 +3750,10 @@
 					<<npcrelationship _npcData.nam>>
 				</div>
 				<div @class="'relation-stat-list' + ($options.images ? '' : ' no-images')">
-					<<for _j = 0; _j lt _importantNpcStats.length; _j++>>
+					<<if _importantNPCs[_k].nam is "Black Wolf">><<set _npcStats to _importantNpcStats.length>>
+						<<else>><<set _npcStats to _importantNpcStats.length-2>>
+					<</if>>
+					<<for _j = 0; _j lt _npcStats; _j++>>
 						<<if _npcData[_importantNpcStats[_j]] gt 0 and _checkRequirements(_importantNpcStats[_j])>>
 							<<relation-box-stat _getStatConfig(_importantNpcStats[_j]) true>>
 						<</if>>
@@ -3807,6 +3856,10 @@
 	<<set $NPCName[_i].lust = Math.clamp($NPCName[_i].lust, 0, 100)>>
 	<<set $NPCName[_i].purity = Math.clamp($NPCName[_i].purity, 0, 100)>>
 	<<set $NPCName[_i].corruption = Math.clamp($NPCName[_i].corruption, 0, 50)>>
+	<<set _i to $NPCNameList.indexOf("Black Wolf")>>
+	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, 0, 150)>>
+	<<set $NPCName[_i].harmony = Math.clamp($wolfpackharmony || 0, 0, 100)>>
+	<<set $NPCName[_i].ferocity = Math.clamp($wolfpackferocity || 0, 0, 100)>>
 
 	<<set _i to $NPCNameList.indexOf("Darryl")>>
 	<<set $NPCName[_i].love = Math.clamp($NPCName[_i].love, -50, 50)>>
@@ -4537,11 +4590,11 @@
 				들개가 _ly <<the_pillory_person "을">> 강간하는 동안 군중은 그걸 지켜보며 사진을 찍는다. 어떤 <<person2>><<personPost "이">> 보상으로 <<print either("개에게 비스킷을 준다.","개의 머리를 쓰다듬어준다.","개에게 단 것을 준다.","개에게 크림빵을 준다.")>>
 				<br>
 				군중은 이 변태적인 구경거리를 즐긴다.
-			<<elseif $rng gte 6 and $malechance gt 0 and ($homochance gt 0 or $pillory_tenant.person.gender isnot "m")>> /* 5% - with men allowed */
+			<<elseif $rng gte 6 and maleChance() gt 0 and (maleChance() lt 100 or $pillory_tenant.person.gender isnot "m")>> /* 5% - with men allowed */
 				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
 				<<if $rng % 3 is 0>>비번인 남자 경찰 두 명이 다가온다. 그들은 어떤 <<personPost>> 에게 동영상을 찍게 하고 그들은<<else>>두 남자가 다가온다. 그들은 함께<</if>>
 				<<if $pillory_tenant.person.gender is "m">>항문을 써서 <<else>>_ly <</if>>위와 아래로 <<the_pillory_person "을">> 범한다. 군중들은 이 구경거리를 즐긴다.
-			<<elseif $rng gte 6 and $malechance lt 100 and ($homochance gt 0 or $pillory_tenant.person.gender isnot "f")>> /* 5% - with women allowed */
+			<<elseif $rng gte 6 and maleChance() lt 100 and (maleChance() gt 0 or $pillory_tenant.person.gender isnot "f")>> /* 5% - with women allowed */
 				<<set $pillory_tenant.ass += 1>><<set $pillory_tenant.face += 1>>
 				<<if $rng % 3 is 0>>비번인 여자 경찰 두 명이 다가온다. 그들은 어떤 <<personPost>> 에게 동영상을 찍게 하고 그들은<<else>>두 여자가 다가온다. 그들은 함께<</if>>
 				<<if $pillory_tenant.person.gender is "m">>항문을 써서 <<else>>_ly <</if>>위와 아래로 <<the_pillory_person "을">> 페니스 밴드를 찬 채로 범한다. 군중들은 이 구경거리를 즐긴다.
@@ -4676,6 +4729,70 @@
 			|
 		<</for>>
 	</span>
+<</widget>>
+
+<<widget "deskText">>
+<<if $studyBooks is undefined>>
+	<<set $studyBooks to {}>>
+	<<set $studyBooks.rented to "none">>
+	<<set $studyBooks.stolen to "none">>
+<</if>>
+<<set _desk to Furniture.get('desk')>>
+<<set _chair to Furniture.get('chair')>>
+<<set _projectOptions to [$scienceproject, $mathsproject].includes("ongoing")>>
+<<set _bookOptions to [$studyBooks.stolen, $studyBooks.rented].includesAny("Raul and Janet","Pinch")>>
+<<set _wardrobe to Furniture.get('wardrobe')>>
+<<set _playOptions to ($englishPlay is 'ongoing' and $englishPlayRoles.Player isnot 'none')>>
+
+<<if _projectOptions || _playOptions || _bookOptions || $christmas_gift is "clothes_unwrapped" || ($christmas_gift_robin and $christmas_gift_robin_wrapped isnot 1)>>
+	<<if _args[0] is "noicon">>
+		당신의 <<trFurniture _desk.name "name" "과">>_trResult <<trFurniture _chair.name "name" "이">>_trResult 옷장 옆에 끼워 넣어져 있다.
+		<br>
+		<<projectoptions>>
+		<<homeStudyOptions>>
+		<<christmas_options>>
+		<br>
+	<</if>>
+<<else>>
+	<<if _args[0] is "icon">>
+		<br>
+		<<deskchairicon>>당신의 <<trFurniture _desk.name "name" "과">>_trResult <<trFurniture _chair.name "name" "이">>_trResult 옷장 옆에 끼워 넣어져 있다.
+	<</if>>
+<</if>>
+<</widget>>
+
+
+<<widget "tableText">>
+<<set _table to Furniture.get('table')>>
+<<set _chair to Furniture.get('chair')>>
+<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
+	<<if _args[0] is "noicon">>
+		<<if _table>>
+			<br>
+			당신의 <<if _chair and _chair.name isnot "chair">><<trFurniture _table.name "name" "과">>_trResult <<trFurniture _chair.name "name">>_trResult 하나가<<else>><<trFurniture _table.name "name" "이">>_trResult<</if>> 벽 옆에 놓여 있다.
+			<br>
+		<<elseif _chair and _chair.name isnot "chair">>
+			<br>
+			당신의 <<trFurniture _chair.name "name">>_trResult 하나가 벽 옆에 놓여 있다.
+			<br>
+		<<else>>
+			<br>
+			당신의 수조가 바닥에 놓여 있다.
+			<br>
+		<</if>>
+		<<fishtankicon>><<containersLink>>
+	<</if>>
+<<else>>
+	<<if _args[0] is "icon">>
+		<<if _table>>
+			<br>
+			<<bedroomtablechairicon>> 당신의 <<if _chair and _chair.name isnot "chair">><<trFurniture _table.name "name" "과">>_trResult 또다른 <<trFurniture _chair.name "name" "이">>_trResult<<else>><<trFurniture _table.name "name" "이">>_trResult<</if>> 벽 옆에 놓여 있다.
+		<<elseif _chair and _chair.name isnot "chair">>
+			<br>
+			<<bedroomtablechairicon>> 두번째 <<trFurniture _chair.name "name" "이">>_trResult 벽 옆에 놓여 있다.
+		<</if>>
+	<</if>>
+<</if>>
 <</widget>>
 
 <<widget "radiogroup">>
@@ -4980,9 +5097,7 @@
 <</widget>>
 
 <<widget "enable_rescue">>
-	<<if $drugged lte 0>>
-		<<set $rescue to 1>>
-	<</if>>
+	<<set $rescue to 1>>
 <</widget>>
 
 <<widget "hypnotised">>
