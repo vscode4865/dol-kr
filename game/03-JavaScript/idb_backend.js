@@ -321,7 +321,7 @@ const idb = (() => {
 		const header = document.createElement("div");
 		header.className = "savesListRow";
 		header.innerHTML =
-			'<div class=saveGroup><div class="saveId">#</div><div class="saveButton">Save/Load</div><div class="saveName">ID/Name</div><div class="saveDetails">Details</div><div class="deleteButton"></div></div>';
+			'<div class=saveGroup><div class="saveId">#</div><div class="saveButton">세이브/로드</div><div class="saveName">ID/이름</div><div class="saveDetails">상세</div><div class="deleteButton"></div></div>';
 		listContainer.appendChild(header);
 
 		// request save details from indexedDB, then populate the list when request is fulfilled
@@ -390,13 +390,13 @@ const idb = (() => {
 			const footer = document.createElement("div");
 			footer.className = "savesListRow";
 			footer.innerHTML =
-				"<div class=saveGroup><span style='margin: 0'>Special thanks to all those who <a class='link-external' target='_blank' href='https://subscribestar.adult/vrelnir'>Support Degrees of Lewdity</span><div class='saveId'></div><div class='saveButton'></div><div class='saveName'></div><div class='saveDetails'></div></div>";
+				"<div class=saveGroup><span style='margin: 0'><a class='link-external' target='_blank' href='https://subscribestar.adult/vrelnir'>Degrees of Lewdity를 지지해 주시는 모든 분들께 특별히 감사드립니다</span><div class='saveId'></div><div class='saveButton'></div><div class='saveName'></div><div class='saveDetails'></div></div>";
 			listContainer.appendChild(footer);
 			const clearButton = document.createElement("input");
 			Object.assign(clearButton, {
 				type: "button",
 				className: "saveButton saveMenuButton right",
-				value: "Delete All",
+				value: "전부 삭제",
 				onclick: () => saveList("confirm clear"),
 			});
 			listContainer.lastChild.appendChild(clearButton);
@@ -436,7 +436,7 @@ const idb = (() => {
 		// save button
 		const saveButton = document.createElement("input");
 		saveButton.type = "button";
-		saveButton.value = "Save";
+		saveButton.value = "저장";
 		if (details.saveUnlock) {
 			saveButton.className = "saveMenuButton";
 			saveButton.onclick = () => saveList("confirm save", details);
@@ -447,7 +447,7 @@ const idb = (() => {
 		// load button
 		const loadButton = document.createElement("input");
 		loadButton.type = "button";
-		loadButton.value = "Load";
+		loadButton.value = "로드";
 		if (details.date) {
 			loadButton.className = "saveMenuButton";
 			loadButton.onclick = () => saveList("confirm load", details);
@@ -490,7 +490,7 @@ const idb = (() => {
 		Object.assign(deleteButton, {
 			className: "deleteButton right",
 			type: "button",
-			value: "Delete",
+			value: "삭제",
 		});
 		if (details.date) {
 			deleteButton.classList.add("saveMenuButton");
@@ -520,7 +520,7 @@ const idb = (() => {
 		Object.assign(cancelButton, {
 			type: "button",
 			className: "saveMenuButton saveMenuConfirm",
-			value: "Cancel",
+			value: "취소",
 			onclick: () => saveList("show saves"),
 		});
 
@@ -542,12 +542,12 @@ const idb = (() => {
 				if (V.replayScene || tags().includes("nosave")) {
 					list.appendChild(document.createElement("h3"));
 					list.lastChild.className = "red";
-					if (V.replayScene) list.lastChild.innerText = "The scene viewer is currently in use, preventing the use of the save system.";
-					else list.lastChild.innerText = "You can't save here!";
+					if (V.replayScene) list.lastChild.innerText = "리플레이 씬 뷰어가 현재 작동중이므로, 세이브를 할 수 없습니다.";
+					else list.lastChild.innerText = "여기에서는 저장할 수 없습니다!";
 				}
 				list.appendChild(document.createElement("p"));
 				list.lastChild.innerText =
-					"Saves here will be lost if your browser cache is cleared. Exporting is recommended to prevent the loss of saves from occurring.";
+					"여기에서의 세이브는 당신의 브라우저 캐시가 지워지면 사라집니다. 세이브가 사라지는 상황을 방지하기 위해 내보내기 기능을 사용하시기를 권장합니다.";
 
 				// THE SAVES LIST
 				list.appendChild(showSavesList());
@@ -611,7 +611,7 @@ const idb = (() => {
 				const jumpToLatest = document.createElement("input");
 				Object.assign(jumpToLatest, {
 					type: "button",
-					value: " Jump to most recent manual save ",
+					value: " 가장 최근의 수동 저장으로 이동 ",
 					onclick: () => {
 						// potentially exploitable to allow saving to slots way above the limit, but the limit is arbitrary to begin with, and idb doesn't actually suffer one bit from going beyond that limit
 						listPage = Math.floor((latestSave.slot - 1) / listLength + 1);
@@ -627,11 +627,11 @@ const idb = (() => {
 				});
 
 				const pager = document.createElement("div");
-				pager.append("Page: ");
+				pager.append("페이지: ");
 				pager.appendChild(prevPage);
 				pager.appendChild(pageNum);
 				pager.appendChild(nextPage);
-				pager.append(" Saves per page: ");
+				pager.append(" 페이지당 세이브 수: ");
 				pager.appendChild(pageLen);
 				pager.appendChild(jumpToLatest);
 
@@ -646,7 +646,7 @@ const idb = (() => {
 				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqSave);
-				list.lastChild.append(" Require confirmation on Save ");
+				list.lastChild.append(" 저장하기 전에 확인 요구 ");
 				list.append(document.createElement("br"));
 
 				const reqLoad = document.createElement("input");
@@ -657,7 +657,7 @@ const idb = (() => {
 				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqLoad);
-				list.lastChild.append(" Require confirmation on Load ");
+				list.lastChild.append(" 불러오기 전에 확인 요구 ");
 				list.append(document.createElement("br"));
 
 				const reqDelete = document.createElement("input");
@@ -668,7 +668,7 @@ const idb = (() => {
 				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(reqDelete);
-				list.lastChild.append(" Require confirmation on Delete ");
+				list.lastChild.append(" 삭제하기 전에 확인 요구 ");
 				list.append(document.createElement("br"));
 
 				// add instant idb switcher
@@ -683,7 +683,7 @@ const idb = (() => {
 				});
 				list.appendChild(document.createElement("label"));
 				list.lastChild.append(idbToggle);
-				list.lastChild.append(" Enable indexedDB ");
+				list.lastChild.append(" indexedDB 활성화 ");
 
 				setTimeout(() => {
 					savesDiv.innerHTML = "";
@@ -703,22 +703,22 @@ const idb = (() => {
 				confirmSave.appendChild(document.createElement("h3"));
 				confirmSave.lastChild.className = "red";
 				if (details.date === "") {
-					confirmSave.lastChild.innerText = "Save on slot " + details.slot;
+					confirmSave.lastChild.innerText = "슬롯 " + details.slot + "에 저장";
 				} else {
-					confirmSave.lastChild.innerText = "Overwrite save in slot " + details.slot;
+					confirmSave.lastChild.innerText = "슬롯 " + details.slot + "에 덮어쓰기";
 					confirmSave.appendChild(oldSaveDescription);
 				}
 				if (details.date && V.saveId !== details.metadata.saveId) {
 					confirmSave.appendChild(document.createElement("span"));
 					confirmSave.lastChild.className = "red";
-					confirmSave.lastChild.innerText = "Save ID does not match, continue with overwrite?";
+					confirmSave.lastChild.innerText = "세이브 ID가 일치하지 않습니다. 덮어쓰시겠습니까?";
 				}
 
 				const saveButton = document.createElement("input");
 				Object.assign(saveButton, {
 					type: "button",
 					className: "saveMenuButton saveMenuConfirm",
-					value: "Save",
+					value: "저장",
 					onclick: () => saveState(details.slot).then(() => window.closeOverlay()),
 				});
 				confirmSave.appendChild(document.createElement("div"));
@@ -739,14 +739,14 @@ const idb = (() => {
 				confirmDelete.className = "saveBorder";
 				confirmDelete.appendChild(document.createElement("h3"));
 				confirmDelete.lastChild.className = "red";
-				confirmDelete.lastChild.innerText = "Delete save in slot " + (details.slot === 0 ? "auto" : details.slot);
+				confirmDelete.lastChild.innerText = "슬롯 " + (details.slot === 0 ? "(자동)" : details.slot) + " 삭제";
 				confirmDelete.appendChild(oldSaveDescription);
 
 				const deleteButton = document.createElement("input");
 				Object.assign(deleteButton, {
 					type: "button",
 					className: "saveMenuButton saveMenuConfirm",
-					value: "Delete",
+					value: "삭제",
 					onclick: () => deleteItem(details.slot).then(() => saveList()),
 				});
 				confirmDelete.appendChild(document.createElement("div"));
@@ -767,14 +767,14 @@ const idb = (() => {
 				confirmLoad.className = "saveBorder";
 				confirmLoad.appendChild(document.createElement("h3"));
 				confirmLoad.lastChild.className = "red";
-				confirmLoad.lastChild.innerText = "Load slot " + (details.slot === 0 ? "auto" : details.slot);
+				confirmLoad.lastChild.innerText = "슬롯 " + (details.slot === 0 ? "(자동)" : details.slot) + "에서 로드";
 				confirmLoad.appendChild(oldSaveDescription);
 
 				const loadButton = document.createElement("input");
 				Object.assign(loadButton, {
 					type: "button",
 					className: "saveMenuButton saveMenuConfirm",
-					value: "Load",
+					value: "로드",
 					onclick: () => loadState(details.slot),
 				});
 				confirmLoad.appendChild(document.createElement("div"));
@@ -794,13 +794,13 @@ const idb = (() => {
 				confirmClear.className = "saveBorder";
 				confirmClear.appendChild(document.createElement("h2"));
 				confirmClear.lastChild.className = "red";
-				confirmClear.lastChild.innerText = "WARNING - Are you sure you would like to delete all saves?";
+				confirmClear.lastChild.innerText = "경고 - 모든 세이브를 삭제하시겠습니까?";
 
 				const clearButton = document.createElement("input");
 				Object.assign(clearButton, {
 					type: "button",
 					className: "saveMenuButton saveMenuConfirm",
-					value: "Clear All Saves",
+					value: "전부 삭제 확인",
 					onclick: () => clearAll().then(() => saveList()),
 				});
 				confirmClear.appendChild(document.createElement("div"));
