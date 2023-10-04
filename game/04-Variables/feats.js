@@ -579,7 +579,7 @@ setup.feats = {
 		desc: "한번 늦고, 영원히 창피당했다.",
 		difficulty: 2,
 		series: "",
-		hint: "Hint: 쓰여진 처벌을 영구적으로 만ㄷㄴ다.",
+		hint: "Hint: 쓰여진 처벌을 영구적으로 만든다.",
 		filter: ["All", "Social"],
 	},
 	Longing: {
