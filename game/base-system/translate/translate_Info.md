@@ -2266,12 +2266,16 @@
 * trPill
     ```
     <<trPill>>
-        <<trPill *PillType>>
+        <<trPill *PillType post "sep">>
 
         약의 타입을 번역합니다.
 
         필수사항
         - *PillType: 약의 타입
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
 
         e.g.
         <<trPill "Growth">>     // 성장약
