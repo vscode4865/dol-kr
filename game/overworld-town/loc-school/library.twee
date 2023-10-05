@@ -207,15 +207,15 @@
 			<<if _sydney_location is "library" and ($sydneySeen is undefined or !$sydneySeen.includes("library"))>>
 				<<if $sydneySeen>>시드니가<<else>>한 학생이<</if>> 대여 카운터에 앉아, 종이를 넘기며 카드에 도장을 찍고 있다.
 				<br>
-				<<ind>><<link [[카운터|Sydney Library Intro]]>><</link>>
+				<<libraryicon "desk">><<link [[Counter|Sydney Library Intro]]>><</link>>
 				<br><br>
 			<<elseif _sydney_location isnot "library">>
-				<<ind>><<link [[카운터|Library Rental Counter]]>><<set $counterApproach to 1>><</link>>
+				<<libraryicon "desk">><<link [[Counter|Library Rental Counter]]>><<set $counterApproach to 1>><</link>>
 				<br><br>
 			<<elseif _sydney_location is "library">>
 				시드니가 대여 카운터에 앉아, 종이를 넘기며 카드에 도장을 찍고 있다.
 				<br>
-				<<ind>><<link [[시드니에게 다가간다|Library Rental Counter]]>><<set $counterApproach to 1>><</link>>
+				<<libraryicon "desk">><<link [[Approach Sydney|Library Rental Counter]]>><<set $counterApproach to 1>><</link>>
 				<br><br>
 			<</if>>
 		<</if>>
@@ -224,13 +224,13 @@
 			한 학생이 수학 경시대회 답안에 열중하고 있는 것이 보인다.
 			<br>
 
-			<<ind>><<link [[다가간다|Maths Library Student]]>><</link>>
+			<<icon "projectMaths.png">><<link [[Approach|Maths Library Student]]>><</link>>
 			<br><br>
 		<</if>>
 		<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and $schoolstate is "lunch" and $daily.school.lunchEaten is 1>>
 			카일라가 책상에 앉아서, 뭔가를 끄적이고 있다.
 			<br>
-			<<ind>><<link [[카일라에게 다가간다|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
+			<<furnitureicon "deskAntique.png">><<link [[Approach Kylar|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
 			<br><br>
 		<<elseif $englishPlay is "ongoing" and $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown and $exposed lte 0 and ($weather is "rain" or $weather is "snow") and $schoolstate is "afternoon">>
 			<<if $englishPlayReadiness gte 56 and $englishPlayRoles.SydneyKnown and !$englishPlayDoubleRehearsal>>
@@ -239,7 +239,7 @@
 			<<else>>
 				카일라가 책상에 앉아서, 뭔가를 끄적이고 있다.
 				<br>
-				<<ind>><<link [[다가간다|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
+				<<furnitureicon "deskAntique.png">><<link [[Approach|Kylar Library]]>><<set $kylar_text_trigger to true>><</link>>
 				<br><br>
 			<</if>>
 		<</if>>
@@ -276,7 +276,7 @@
 		<</if>>
 	<br>
 	<</if>>
-<<link [[도서관에서 나온다 (0:01)|Hallways]]>><<pass 1>><</link>>
+<<getouticon>><<link [[Leave the library (0:01)|Hallways]]>><<pass 1>><</link>>
 <br>
 <</if>>
 
@@ -346,7 +346,7 @@
 <</if>>
 
 :: Library Study Exposed
-<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<rngWraith 1>>
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<rngWraith 1>><<slimeEventEnd "study">>
 
 <<if $phase is 1>>
 	당신은 과학 교과서를 가지고 책상에 앉아 읽어나간다. <<lewdnessPost "을">> 내보인 상태에서 학교 도서관이 이렇게 앉아있자, 주변에 아무도 없어도 무언가 짓궂은 느낌이 든다. 긴장하고 집중하게 된다.
@@ -368,19 +368,27 @@
 	<<if $rng gte 51>>
 		<<generate1>><<person1>>당신은 책장에 책을 돌려놓으려 하다가 그만 떨군다. 책은 쿵 하는 소리와 함께 바닥에 떨어진다. "또 고양이 녀석이 들어온 건 아니겠지." 도서관 밖의 복도에서 목소리가 들려온다. 당신은 책장 뒤에 숨어서는 책 사이로 훔쳐본다. 경비원 제복을 입은 <<personPost "이">> 들어온다. "거기 누구야?"
 		<br><br>
-
-		<<if $exposed gte 2>>
-			<<if $exhibitionism gte 75>>
-				<<link [[나온다|Library Study Show]]>><<set $phase to 0>><</link>><<exhibitionist5>>
-				<br>
+		<<if $earSlime.growth gte 150 and $exposed gte 1>>
+			<span class="lewd">You feel the slime in your head command you to expose yourself and ask <<him>> to rape you.</span> <span class="red">It expects to be obeyed.</span>
+			<br><br>
+			<<link [[Obey|Library Study Exposed Slime Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+			<br>
+			<<link [[Defy|Library Study Exposed Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<br>
+		<<else>>
+			<<if $exposed gte 2>>
+				<<if $exhibitionism gte 75>>
+					<<link [[나온다|Library Study Show]]>><<set $phase to 0>><</link>><<exhibitionist5>>
+					<br>
+				<</if>>
+			<<elseif $exposed is 1>>
+				<<if $exhibitionism gte 15>>
+					<<link [[나온다|Library Study Show]]>><<set $phase to 1>><</link>><<exhibitionist2>>
+					<br>
+				<</if>>
 			<</if>>
-		<<elseif $exposed is 1>>
-			<<if $exhibitionism gte 15>>
-				<<link [[나온다|Library Study Show]]>><<set $phase to 1>><</link>><<exhibitionist2>>
-				<br>
-			<</if>>
+			<<link [[숨어있는다 (0:10)|Library Study Hide]]>><<stress 3>><<pass 10>><</link>><<gstress>>
 		<</if>>
-		<<link [[숨어있는다 (0:10)|Library Study Hide]]>><<stress 3>><<pass 10>><</link>><<gstress>>
 		<br>
 	<<elseif _wraithEvent>>
 		약간의 시간이 지난 후, 당신은 불안감을 느끼기 시작한다. 당신은 교과서를 책꽂이에 돌려놓으려고 움직인다.
@@ -468,6 +476,28 @@
 	<br>
 <</if>>
 
+:: Library Study Exposed Slime Obey
+<<effects>>
+Following the slime's command, you step out from your hiding place. The <<persons>> jaw drops when <<he>> sees you.
+<br><br>
+"Rape Me," you say, causing <<him>> to briefly freeze.
+<br><br>
+"What a treat, I was already planning on doing so," <<he>> replies. <<He>> thumbs <<his>> baton as <<he>> steps closer, then lunges for you.
+<br><br>
+<<link [[Next|Library Exposed Molestation]]>><<set $molestationstart to 1>><<set $libraryStudyEarSlime to true>><</link>>
+
+:: Library Study Exposed Slime Defy
+<<effects>>
+<<set $earSlime.defyCooldown += 4>>
+
+당신은 계속 숨어있는다. <<HePost "은">> 도서관 내부를 순찰하나, 당신은 <<hePost "을">> 피해낸다. <<HePost "은">> 얼굴을 찌푸리고는 어깨 너머를 쳐다보고는 도서관을 나간다.
+
+You feel a jolt of pain as the slime punishes you for defiance, however, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+<br><br>
+<<endevent>>
+
+<<link [[다음|School Library]]>><</link>>
+
 :: Library Exposed Molestation
 <<if $molestationstart is 1>>
 	<<set $molestationstart to 0>>
@@ -476,6 +506,11 @@
 	<<neutral 1>>
 	<<molested>>
 	<<maninit>>
+	<<if $libraryStudyEarSlime>>
+		<<npc_attempt_sex>>
+		<<set $enemytrust -= 150>>
+		<<set $enemyanger += 150>>
+	<</if>>
 <</if>>
 
 <<effects>>
@@ -501,6 +536,10 @@
 
 	<<tearful>> 당신은 어떻게든 자리에서 일어난다.
 	<br><br>
+	<<if $libraryStudyEarSlime and $rapeavoid is 0 and $stress gte 1000>>
+		<span class="green">You feel the slime in your head help calm you.</span><<if $stress gte 5000>><<lllstress>><<else>><<llstress>><</if>><<stress `$stress / -200`>>
+		<br><br>
+	<</if>>
 
 	<<clotheson>>
 	<<endcombat>>
@@ -512,12 +551,18 @@
 
 	<<tearful>> 당신은 <<hisPost "의">> 발소리가 멀어져가는 걸 듣고 있는다.
 	<br><br>
+	<<if $libraryStudyEarSlime>>
+		<span class="red">You feel the slime in your head punish you for not doing as it asked.</span>
+		<<pain 12>><<stress 12>><<trauma 18>><<ggpain>><<ggtrauma>><<ggstress>><<set $earSlime.defyCooldown += 4>>
+		<br><br>
+	<</if>>
 
 	<<clotheson>>
 	<<endcombat>>
 
 	<<link [[다음|School Library]]>><</link>>
 <</if>>
+<<unset $libraryStudyEarSlime>>
 
 :: Library Study Comply
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
@@ -728,17 +773,17 @@
 	<<case "science">>
 		정면에 푯말이 걸려 있다. <span class="blue">"수업중"</span>.
 		<br><br>
-		<<link [[떠난다|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<getouticon>><<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<case "canteen">>
 		정면에 푯말이 걸려 있다. <span class="blue">"식사중"</span>.
 		<br><br>
-		<<link [[떠난다|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<getouticon>><<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<case "class">>
 		정면에 푯말이 걸려 있다. <span class="blue">"수업중"</span>.
 		<br><br>
-		<<link [[떠난다|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<getouticon>><<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<default>>
 		<<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late" and _counterApproach is 1>>
@@ -753,11 +798,11 @@
 		<</if>>
 		<<if !$weekly.theft.schoolLibraryMoney>>
 			<br><br>
-			<<link [[현금출납기를 살펴본다|School Library Register]]>><</link>>
+			<<registericon>><<link [[Examine the cash register|School Library Register]]>><</link>>
 			<br>
 		<</if>>
 		<br>
-		<<link [[떠난다|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<getouticon>><<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 <</switch>>
 
@@ -883,7 +928,7 @@
 		<br><br>
 		<<bookRentalOptions>>
 		<br>
-		<<link [[떠난다|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><<crimeUp 20 "thievery">><</link>><<crime "thievery">>
 		<br>
 	<<default>>
 <</switch>>

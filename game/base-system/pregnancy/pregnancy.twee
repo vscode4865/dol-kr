@@ -309,9 +309,9 @@
 <</widget>>
 
 /*args[0] - mother, args[1] - birth location, args[2] - location of where the clildren should go to, _args[3] - next passage, _args[4] - time passage*/
-/*args[0] - birth location, args[1] - location of where the clildren should go to, _args[2] - next passage, _args[3] - time passage*/
 <<widget "birthUi">>
 	<<if _args[0] is "pc">>
+		<<makeAwareOfDetails>>
 		<<set _pregnancyBirth to getPregnancyObject()>>
 	<<elseif C.npc[_args[0]]>>
 		<<set _pregnancyBirth to getPregnancyObject(_args[0])>>
@@ -359,9 +359,7 @@
 			<<earnFeat "Hail Mary">>
 		<</if>>
 		<<if !$player.vaginaExist>>
-			/* ToDo: Pregnancy: uncomment once MPreg is possable in-game
-				<<earnFeat "Life begins when you least expect">>
-			*/
+			<<earnFeat "Life begins when you least expect">>
 		<</if>>
 	<</if>>
 	<<if _args[0] isnot "pc">>
@@ -479,7 +477,7 @@
 				<<else>>
 					<<set $_text_output to "당신은 메스꺼운 느낌을 받으며 일어나, 재빨리 침대에서 근처 쓰레기통으로 뛰쳐나간다. 당신은 그 안에다 어쩔 수 없이 헛구역질을 한다.<<stress 10>><<gstress>><<pain 1>><<gpain>>">>
 				<</if>>
-				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1 and !$_pregnancy.awareOf>>
 					<<set $_text_output += " <span class='red'>어쩌면 임신테스트를 받아보는 것이 좋을 것 같다</span>.">>
 				<</if>>
 			<<case "lightBabyKick">>
@@ -503,7 +501,7 @@
 				<<set $_pregnancy.awareOf to true>>
 			<<case "missedPeriod">>
 				<<set $_text_output to "당신은 일어나 자각한다. 당신의 이번 생리 주기가 늦다.">>
-				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1>>
+				<<if $awareness gte 200 and $sciencetrait gte 4 and playerNormalPregnancyTotal() gte 1 and !$_pregnancy.awareOf>>
 					<<set $_text_output += "당신은 당신이 또다시 임신했는지 궁금해한다. <span class='red'>어쩌면 임신테스트를 받아보는 것이 좋을 것 같다</span>.">>
 				<</if>>
 				<<set $sexStats.vagina.awareOfPeriodDelay to true>>
@@ -1026,6 +1024,28 @@
 				/*Wake up while being put in an ambulance?*/
 			<<case "adultShop">>
 			<<case "office">>
+			<<case "island">>
+				<<endevent>>
+				You're going into labor.
+				<br><br>
+				A spasm of pain wracks your body, and you cry out.
+				<br><br>
+
+				Figures emerge from the trees, weapons held ready. They lower them when they see your state, and their motions become panicked.
+				<br><br>
+				<<if $islander_language gte 100>>
+					"I think <<pshe>> going into labor,"
+					<br>
+					"Fuck! You're right!"
+					<br>
+					"Get the druids, now!"
+				<<elseif $islander_language gte 50>>
+					They call for help. It's strange, but in your pain you can almost determine the meaning behind their words. It floats at the edge of awareness.<<gggcomprehension>><<islander_language 30>>
+				<<else>>
+					They shout something in their incomprehensible language. It's strange, but in your pain you feel the meaning behind them. They're calling for help.<<gggcomprehension>><<islander_language 30>>
+				<</if>>
+				<br><br>
+				The figures fade into fog as you pass out.
 			<<default>>
 				With your waters broken, you're too weak to continue.
 		<</switch>>
@@ -1136,6 +1156,8 @@
 				<<link [[다음|Pregnancy Birth Hospital Rescue]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<case "hospital">>
 				<<link [[다음|Pregnancy Birth Hospital]]>><<set $stress -= 5000>><<endevent>><</link>>
+			<<case "island">>
+				<<link [[Next|Pregnancy Island]]>><<set $stress -= 5000>><<endevent>><</link>>
 			<<default>>
 				<<link [[다음|Pregnancy Birth Hospital Passout]]>><<set $stress -= 5000>><<endevent>><</link>>
 		<</switch>>
@@ -1371,7 +1393,7 @@
 
 /*ToDo: Pregnancy Story Content: Not used in events at the moment, add to appropriate story passages, when the player gives birth to their children*/
 <<widget "earSlimePregnancy">>
-	<<if _args[0] and $corruption_slime gte 80>>
+	<<if _args[0] and $earSlime.corruption gte 80>>
 		<<switch _args[0]>>
 			<<case "human">><<set $_type to _args[1]? '아기들을' : '아기를'>>
 			<<case "wolf">><<set $_type to _args[1] ? '늑대 강아지들을' : '늑대 강아지를'>>
@@ -1381,12 +1403,12 @@
 		<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
 			<span class="green">충족받은 따뜻함이 당신을 채운다.</span>
 			당신은 세상의 근심걱정을 거의 다 잊어버린다. 당신은 이것이 당신 귓속의 슬라임들이, <<print $_babiesText>> 낳은 것에 대한 보상을 주는 것이라 확신한다.
-			<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($corruption_slime * -0.4)`>>
+			<<lllcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption `Math.floor($earSlime.corruption * -0.4)`>>
 			<br><br>
 		<<elseif $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
 			<span class="green">충족받은 따뜻함이 당신을 채운다.</span>
 			당신은 세상의 근심걱정을 거의 다 잊어버린다. 당신은 이것이 당신 귓속의 슬라임이, <<print $_babiesText>> 낳은 것에 대한 보상을 주는 것이라 확신한다.
-			<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($corruption_slime * -0.2)`>>
+			<<llcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption `Math.floor($earSlime.corruption * -0.2)`>>
 			<br><br>
 		<</if>>
 	<</if>>

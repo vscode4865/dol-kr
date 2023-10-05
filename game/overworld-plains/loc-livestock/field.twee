@@ -109,6 +109,7 @@
 <<else>>
 	<<if $livestock_grass is 1>>
 		<<unset $livestock_grass>>
+		<<set $daily.earSlimeGrassEating to true>>
 		당신은 주변을 둘러본다. 운동을 할 수 있을만한 넓은 공간이지만, 딱히 할 만한게 없다.
 		<br><br>
 		<<generate1>><<person1>><<set $hunger to 1200>>
@@ -150,39 +151,60 @@
 		<br>
 		<<link [[무시한다|Eden Fence Ignore]]>><<set $daily.eden.farmRescue to 1>><</link>>
 		<br>
-	<<else>>
-		<<link [[풀을 뜯는다 (1:00)|Livestock Field Grass]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>><<gobey>><<lhunger>>
-		<br>
-		<<link [[운동한다 (1:00)|Livestock Field Exercise]]>><<pass 60>><<tiredness 6>><<athletics 6>><</link>><<gtiredness>><<gathletics>>
-		<br>
-		<<if $livestock_fence is 1>>
-			<<link [[울타리를 조사한다|Livestock Field Fence]]>><<unset $livestock_fence>><</link>>
+	<<elseif !$daily.earSlimeGrassEating and random(0, 100) lte 15 - ($weekly.earSlimeGrassEating || 0) and ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and Time.hour lte 9>>
+		<<set $daily.earSlimeGrassEating to true>>
+		<<if $earSlime.growth gt 50 and $earSlime.growth gte (currentSkillValue('willpower') / 10)>>
+			<<set $weekly.earSlimeGrassEating to ($weekly.earSlimeGrassEating || 0) + 4>>
+			<span class="lewd">You feel the slime in your head command you to lose yourself eating the grass while crawling on all fours.</span> It doesn't promise anything now. It imposes its will, and expects to be obeyed.
+			<br><br>
+			
+			<<link [[Obey|Livestock Slime Field Grass Extreme Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>><<gobey>><<lhunger>>
 			<br>
-		<<elseif $livestock_dig gte 25>>
-			<<link [[울타리 아래의 통로에 접근한다|Livestock Tunnel]]>><</link>>
-			<br>
-		<<elseif $livestock_dig gte 24 and $physiquesize lte 12000>>
-			<<link [[울타리 아래의 통로에 접근한다|Livestock Tunnel]]>><</link>><<small_text>>
-			<br>
-		<<elseif $livestock_dig gte 23 and $physiquesize lte 10000>>
-			<<link [[울타리 아래의 통로에 접근한다|Livestock Tunnel]]>><</link>><<small_text>>
-			<br>
-		<<elseif $livestock_dig gte 22 and $physiquesize lte 6000>>
-			<<link [[울타리 아래의 통로에 접근한다|Livestock Tunnel]]>><</link>><<small_text>>
+			<<link [[Defy|Livestock Slime Field Grass Extreme Defy]]>><<corruption -3>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<llcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 			<br>
 		<<else>>
-			<<link [[울타리 밑을 판다 (1:00)|Livestock Field Dig]]>><<pass 60>><<tiredness 6>><<set $livestock_dig += 1>><</link>><<gtiredness>>
+			<span class="lewd">You feel the slime in your head command you to eat the grass while crawling on all fours.</span> It promises rewards if you comply, and threatens consequences if you do not.
+			<br><br>
+			
+			<<link [[Obey|Livestock Slime Field Grass Obey]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>><<gobey>><<lhunger>>
+			<br>
+			<<link [[Defy|Livestock Slime Field Grass Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<br>
+		<</if>>
+	<<else>>
+		<<set $daily.earSlimeGrassEating to true>>
+		<<farmicon "grass">><<link [[Eat grass (1:00)|Livestock Field Grass]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>><<gobey>><<lhunger>>
+		<br>
+		<<exerciseicon>><<link [[Exercise (1:00)|Livestock Field Exercise]]>><<pass 60>><<tiredness 6>><<athletics 6>><</link>><<gtiredness>><<gathletics>>
+		<br>
+		<<if $livestock_fence is 1>>
+			<<investigateicon>><<link [[Examine the fence|Livestock Field Fence]]>><<unset $livestock_fence>><</link>>
+			<br>
+		<<elseif $livestock_dig gte 25>>
+			<<getouticon "dig">><<link [[Approach the tunnel under the fence|Livestock Tunnel]]>><</link>>
+			<br>
+		<<elseif $livestock_dig gte 24 and $physiquesize lte 12000>>
+			<<getouticon "dig">><<link [[Approach the tunnel under the fence|Livestock Tunnel]]>><</link>><<small_text>>
+			<br>
+		<<elseif $livestock_dig gte 23 and $physiquesize lte 10000>>
+			<<getouticon "dig">><<link [[Approach the tunnel under the fence|Livestock Tunnel]]>><</link>><<small_text>>
+			<br>
+		<<elseif $livestock_dig gte 22 and $physiquesize lte 6000>>
+			<<getouticon "dig">><<link [[Approach the tunnel under the fence|Livestock Tunnel]]>><</link>><<small_text>>
+			<br>
+		<<else>>
+			<<getouticon "dig">><<link [[Dig beneath the fence (1:00)|Livestock Field Dig]]>><<pass 60>><<tiredness 6>><<set $livestock_dig += 1>><</link>><<gtiredness>>
 			<br>
 		<</if>>
 		<<if $livestock_river is 1>>
-			<<link [[강을 조사한다|Livestock Field River Examine]]>><<unset $livestock_river>><</link>>
+			<<wolfcaveicon "stream">><<link [[Examine the river|Livestock Field River Examine]]>><<unset $livestock_river>><</link>>
 			<br>
 		<<else>>
-			<<link [[강에 접근한다|Livestock Field River]]>><</link>>
+			<<wolfcaveicon "stream">><<link [[Approach the river|Livestock Field River]]>><</link>>
 			<br>
 		<</if>>
 		<<if Time.hour gte 12>>
-			<<link [[레미의 말들에게 접근한다|Livestock Field Horse]]>><</link>>
+			<<horseicon>><<link [[Approach Remy's horses|Livestock Field Horse]]>><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -276,36 +298,146 @@
 	당신은 풀을 조금 뜯어, 잎을 씹는다. 끔찍한 맛이다. 당신이 소화시킬 수 있을지도 모르겠다.
 <</if>>
 <br><br>
-
-<<if $rng gte 81>>
-	<!-- Modified for Monster People -->
-	<<if ($monsterchance gte 1 and ($hallucinations gte 1 or $monsterhallucinations is "f"))>>
-		<<if maleChance() lt random(1, 100)>>
-			젖소소녀가 당신의 냄새를 맡고, 음메 하고 운다. 당신은 그의 머리를 쓰다듬는다.
-			<<lstress>><<stress -6>>
-		<<else>>
-			황소소년이 당신의 냄새를 맡고, 음메 하고 운다. 당신은 그의 머리를 쓰다듬는다.
-			<<lstress>><<stress -6>>
-		<</if>>
-	<<else>>
-		소가 당신의 냄새를 맡고, 음메 하고 운다. 당신은 그의 머리를 쓰다듬는다.
-		<<lstress>><<stress -6>>
-	<</if>>
-	<br><br>
-<<elseif $rng gte 51>>
-	<<if $uncomfortable.nude is true>>
-		고개를 들자, <<generate1>><<person1>><<person_ i>> 당신을 음흉한 눈으로 보고 있는 것이 보인다. <<covered>><<gstress>><<stress 6>>
-	<<else>>
-		당신은 잠시 올려다 본다. 당신은 <<generate1>><<person1>><<person_ i>> 당신을 음흉한 눈으로 보고 있는 것을 알아채지만,
-		당신은 <<him_ ul>> 신경쓰지 않고 맛있는 풀다발을 찾는다.
-	<</if>>
-	<br><br>
-<<else>>
-	<<livestock_overhear>>
-<</if>>
+<<livestockFieldGrassEvents>>
 
 <<link [[다음|Livestock Field]]>><<endevent>><</link>>
 <br>
+
+:: Livestock Slime Field Grass Obey
+<<effects>>
+
+You follow the slime's urging and go down onto all fours. You crawl on your hands and knees just like the other cows on the field, pulling up tufts of grass with your teeth.
+<<if $cow gte 6>>
+	You find a particularly juicy one, and enjoy chewing it.
+	<<if $uncomfortable.nude is true or $uncomfortable.underwear is true>>
+		<br><br>
+		<span class="gold">한 때 걱정하던 당신의 노출은 더 이상 신경쓰이지 않는다. 자연스럽게 느껴진다.</span>
+		<<set $uncomfortable.underwear to false>>
+		<<set $uncomfortable.nude to false>>
+	<</if>>
+<<elseif $cow gte 5>>
+	You find a particularly tasty patch.
+<<elseif $cow gte 4>>
+	It tastes better this way.
+<<elseif $cow gte 3>>
+	It doesn't taste that bad.
+<<elseif $cow gte 2>>
+	It takes a long time to chew, but goes down easily enough.
+<<elseif $cow gte 1>>
+	It doesn't taste bad, but it's not great either.
+<<else>>
+	They taste awful. You're not even sure you can digest them.
+<</if>>
+<br><br>
+
+<<livestockFieldGrassEvents>>
+
+<<link [[다음|Livestock Field]]>><<endevent>><</link>>
+<br>
+
+:: Livestock Slime Field Grass Defy
+<<effects>>
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10) and !$earSlime.defyCooldown>>
+	<<set $earSlime.defyCooldown += 4>>
+	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">you fail</span> to resist its influence.<<ggwillpower>><<willpower 3>>
+	<br><br>
+	Following the slime's command, you go down onto all fours. You crawl on your hands and knees just like the other cows on the field, pulling up tufts of grass with your teeth.
+	<<set _cowTransform to 2>>
+	<<if $cow gte 6>>
+		You find a particularly juicy one, and enjoy chewing it.
+		<<if $uncomfortable.nude is true or $uncomfortable.underwear is true>>
+			<br><br>
+			<span class="gold">한 때 걱정하던 당신의 노출은 더 이상 신경쓰이지 않는다. 자연스럽게 느껴진다.</span>
+			<<set $uncomfortable.underwear to false>>
+			<<set $uncomfortable.nude to false>>
+		<</if>>
+		<<set _cowTransform to 1>>
+	<<elseif $cow gte 5>>
+		You find a particularly tasty patch.
+	<<elseif $cow gte 4>>
+		It tastes better this way.
+	<<elseif $cow gte 3>>
+		It doesn't taste that bad.
+	<<elseif $cow gte 2>>
+		It takes a long time to chew, but goes down easily enough.
+	<<elseif $cow gte 1>>
+		It doesn't taste bad, but it's not great either.
+	<<else>>
+		They taste awful. You're not even sure you can digest them.
+	<</if>>
+	<br><br>
+
+	<<livestockFieldGrassEvents>>
+
+	<<link [[Next|Livestock Field]]>><<pass 60>><<livestock_obey _cowTransform>><<transform cow _cowTransform>><<hunger -400>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to eat the grass the way it wants.<<gwillpower>><<willpower 1>>
+	<</if>>
+	<br><br>
+
+	<<link [[다음|Livestock Field]]>><<endevent>><</link>>
+<</if>>
+
+:: Livestock Slime Field Grass Extreme Obey
+<<effects>>
+You follow the slime's urging and go down onto all fours. As you pull up your first tuft of grass, you feel youself slip into a trance. <span class="green">You don't remember ever feeling so tranquil.</span> You have all the tasty grass you could want to eat.
+<br><br>
+<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+:: Livestock Slime Field Grass Extreme Defy
+<<effects>>
+
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<set $earSlime.defyCooldown += 8>>
+	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">you fail</span> to resist its influence.<<ggwillpower>><<willpower 3>>
+	<br><br>
+	You go down onto all fours. As you pull up your first tuft of grass, you feel youself slip into a trance. <span class="green">You don't remember ever feeling so tranquil.</span> You have all the tasty grass you could want to eat.
+	<br><br>
+	<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+<<else>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to eat the grass the way it wants.<<gwillpower>><<willpower 1>>
+	<</if>>
+	<br><br>
+
+	<<link [[다음|Livestock Field]]>><<endevent>><</link>>
+<</if>>
+
+:: Livestock Slime Field Grass Extreme Eat
+<<effects>>
+<<if Time.hour lt 19>>
+	You crawl on your hands and knees, searching for and pulling up <<if $cow gte 3>>tasty <</if>>tufts of grass with your teeth.
+
+	<<switch Time.hour>>
+		<<case 12>><<if $random(0,100) gte 50>>You briefy think something is trying to get your attention, but the thought disappears the moment you start chewing on some grass.<</if>>
+		<<case 10 14 17>>You moo.
+		<<case 18>>You yawn<<if $random(0,100) gte 50>>, wondering when you should get some sleep, but the thought disappears the moment you start chewing on some grass<</if>>.
+	<</switch>>
+
+	<br><br>
+	<<link [[Eat grass...|Livestock Slime Field Grass Extreme Eat]]>><<pass 60>><<livestock_obey 1>><<transform cow 1>><<hunger -400>><</link>>
+<<else>>
+	<<npc Remy>><<person1>>
+	You <span class="green">break out of the trance</span> as someone pulls hard on your leash, its Remy. "Finally!" <<He>> sighs, "had a job for you earlier <<girl>>, but I was unable to get your attention, you were completely focussed on eating."
+	<br><br>
+	<<if $cow gte 6>>
+		Still feeling out of it, you moo at <<him>>.
+	<<else>>
+		Still feeling out of it, you look at <<him>> with a confused expresson. You blush as you realise what you've been doing all day on your hands and knees.
+	<</if>>
+	<br><br>
+	"Well, no matter," <<he>> says, pulling you towards the barn, "It's getting late, let's go get you milked."
+	
+	<br><br>
+	<<link [[Next|Livestock Milking Obey]]>><</link>>
+<</if>>
 
 :: Livestock Field Exercise
 <<effects>>
@@ -542,14 +674,14 @@
 <br><br>
 
 <<if $livestock_dig gte 25>>
-	<<link [[탈출한다|Livestock Dig Escape]]>><</link>>
+	<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>>
 	<br>
-	<<link [[기다린다|Livestock Field]]>><</link>>
+	<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
 	<br>
 <<elseif $livestock_dig gte 24 and $physiquesize lte 12000 or $livestock_dig gte 23 and $physiquesize lte 10000 or $livestock_dig gte 22 and $physiquesize lte 6000>>
-	<<link [[탈출한다|Livestock Dig Escape]]>><</link>><<small_text>>
+	<<getouticon "hole">><<link [[Escape|Livestock Dig Escape]]>><</link>><<small_text>>
 	<br>
-	<<link [[기다린다|Livestock Field]]>><</link>>
+	<<refuseicon>><<link [[Wait|Livestock Field]]>><</link>>
 	<br>
 <<else>>
 	<<if $rng gte 51>>
@@ -1074,7 +1206,7 @@
 당신은 격렬한 움직임에도 불구하고 두 손으로 자지를 잡기 위해 최선을 다한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<<bodyliquid "face" "semen" 5>>
 	<<bodyliquid "chest" "semen" 5>>
@@ -1119,7 +1251,7 @@
 당신은 격렬한 움직임에도 불구하고 최선을 다해 보지를 자극한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 
 	<span class="green">당신은 버텨낸다.</span> 그녀의 거대한 몸이 절정으로 몸서리치고, 그녀는 풀밭에 쓰러진다. 다른 켄타우로스들이 주변에 몰려들어 순서를 기다린다.
@@ -1158,7 +1290,7 @@
 
 당신은 그것이 너무 커서 입에 들어갈 수 없을까봐 걱정하지만, 당신은 끄트머리를 핥고 빨아들일 수 있다. 어쨌든, 당신은 시도한다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<<bodyliquid "mouth" "semen" 5>>
 	<<bodyliquid "face" "semen" 5>>
@@ -1210,7 +1342,7 @@
 
 당신은 그녀의 격렬한 움직임에 안전할 수 있을지 걱정하지만, 멈추지 않는다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<span class="green">당신의 시도는 성공하여</span> 이따금씩 보지를 핥는다. 짠 맛이 난다. <<deviancy4>>
 
@@ -1603,7 +1735,7 @@
 당신은 격렬한 움직임에도 불구하고 두 손으로 자지를 잡기 위해 최선을 다한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<<bodyliquid "face" "semen" 5>>
 	<<bodyliquid "chest" "semen" 5>>
@@ -1648,7 +1780,7 @@
 당신은 격렬한 움직임에도 불구하고 최선을 다해 보지를 자극한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 
 	<span class="green">당신은 버텨낸다.</span> 그의 거대한 몸이 절정으로 몸서리치고, 그는 풀밭에 쓰러진다. 다른 켄타우로스들이 주변에 몰려들어 순서를 기다린다.
@@ -1688,7 +1820,7 @@
 
 당신은 그것이 너무 커서 입에 들어갈 수 없을까봐 걱정하지만, 당신은 끄트머리를 핥고 빨아들일 수 있다. 어쨌든, 당신은 시도한다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<<bodyliquid "mouth" "semen" 5>>
 	<<bodyliquid "face" "semen" 5>>
@@ -1741,7 +1873,7 @@
 
 당신은 그의 격렬한 움직임이 보이는 위험에도 불구하고, 당신은 앞으로 기대 맛을 보려고 시도한다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<span class="green">당신의 시도는 성공하여</span> 이따금씩 보지를 핥는다. 짠 맛이 난다. <<deviancy4>>
 
@@ -2119,7 +2251,7 @@
 당신은 격렬한 움직임에도 불구하고 두 손으로 자지를 잡기 위해 최선을 다한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<<bodyliquid "face" "semen" 5>>
 	<<bodyliquid "chest" "semen" 5>>
@@ -2157,7 +2289,7 @@
 당신은 격렬한 움직임에도 불구하고 최선을 다해 보지를 자극한다.
 <<deviancy3>>
 
-<<if $handskill gte 400>>
+<<if currentSkillValue("handskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	<span class="green">당신은 버텨낸다.</span> 말의 몸이 절정으로 몸서리친다. 다른 말들이 주변에 몰려든다. 그들은 순서를 기대하며 서로 다툰다.
 
@@ -2188,7 +2320,7 @@
 
 당신은 그것이 너무 커서 입에 들어갈 수 없을까봐 걱정하지만, 당신은 끄트머리를 핥고 빨아들일 수 있다. 어쨌든, 당신은 시도한다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<bodyliquid "mouth" "semen" 5>>
 	<<bodyliquid "face" "semen" 5>>
 	<<bodyliquid "chest" "semen" 5>>
@@ -2233,7 +2365,7 @@
 
 당신은 격렬한 움직임에도 불구하고 최선을 다해 보지를 자극한다.
 
-<<if $oralskill gte 400>>
+<<if currentSkillValue("oralskill") gte 400>>
 	<<set $livestock_horse to 2>>
 	말의 격렬한 움직임이 힘들게 하지만, <span class="green">당신의 시도는 성공하여</span> 이따금씩 핥는다. 짠 맛이 난다. <<deviancy4>>
 

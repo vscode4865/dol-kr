@@ -6,7 +6,7 @@
 	<span class="green">이 자물쇠는 아주 따기 쉬워 보인다.</span>
 	<br><br>
 
-	<<link [[자물쇠를 딴다 (0:10)|Tattoo Parlour]]>><<pass 10>><<crimeup 1>><</link>><<crime>>
+	<<lockpickicon>><<link [[Pick it (0:10)|Tattoo Parlour]]>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
 	<br>
 <<else>>
 	<span class="red">이 자물쇠는 당신의 자물쇠따기 능력 바깥의 물건이다.</span>
@@ -14,7 +14,7 @@
 	<br><br>
 <</if>>
 
-<<link [[떠난다|Shopping Centre]]>><</link>>
+<<getouticon>><<link [[Leave|Shopping Centre]]>><</link>>
 <br>
 
 :: Tattoo Parlour
@@ -40,7 +40,7 @@
 		<br><br>
 
 		<<if $exposed lte 0>>
-			<<link [[바깥으로 나간다|High Street]]>><</link>>
+			<<highicon>><<link [[Go outside|High Street]]>><</link>>
 			<br>
 		<<else>>
 			<<link [["끝날때까지 숨어 있는다 (1:00)"|Tattoo Parlour]]>><<pass 1 hour>><</link>>
@@ -48,7 +48,7 @@
 	<<else>>
 
 		<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.tattooParlour>>
-			<<link [[현금 계산대를 살펴본다|Tattoo Parlour Register]]>><</link>>
+			<<registericon>><<link [[Examine the cash register|Tattoo Parlour Register]]>><</link>>
 			<br>
 		<</if>>
 
@@ -57,14 +57,14 @@
 				문신을 새길 돈이 없다.
 				<br>
 			<<else>>
-				<<link [[문신을 새긴다|Tattoo Choice]]>><</link>>
+				<<tattooicon>><<link [[Get a tattoo|Tattoo Choice]]>><</link>>
 				<br>
-				<<link [[몸의 낙서를 문신으로 새긴다|Tattoo Bodywriting Choice]]>><</link>>
+				<<tattooicon>><<link [[Turn bodywriting into tattoo|Tattoo Bodywriting Choice]]>><</link>>
 				<br>
 			<</if>>
 		<</if>>
 		<br>
-		<<link [[떠난다|Shopping Centre]]>><</link>>
+		<<getouticon>><<link [[Leave|Shopping Centre]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -120,6 +120,10 @@
 	<br>
 <</for>>
 <br>
+<<if $promiscuity gte 35>>
+	<<link [[Think of a sentence to tattoo|Tattoo Bodywriting Write]]>><</link>>
+	<br>
+<</if>>
 <<link [[돌아간다|Tattoo Parlour]]>><</link>>
 <br>
 
@@ -221,3 +225,72 @@
 <<tattoo_parlour>>
 <<link [[다음|Tattoo Parlour]]>><</link>>
 <br>
+
+:: Tattoo Bodywriting Write
+
+<<effects>>
+
+<<if $bodyWritingSelected is null>>
+	<<unset $bodyWritingSelected>>
+<</if>>
+<<if $bodyWritingSelected isnot undefined>>
+	You tell the tattoo artist to write
+	<<if isLoveInterest($skin[$bodyPartSelected].special)>>
+		"<span class="lewd"><<print $bodyWritingSelected>></span>"
+	<<elseif $skin[$bodyPartSelected].special isnot "none">>
+		"<span class="red"><<print $bodyWritingSelected>></span>"
+	<<elseif $skin[$bodyPartSelected].lewd is 1>>
+		"<span class="pink"><<print $bodyWritingSelected>></span>"
+	<<else>>
+		"<span class="purple"><<print $bodyWritingSelected>></span>"
+	<</if>>
+	on your <<bodypart $bodyPartSelected>>, and examine the result.
+
+	<<set _part to $skin[$bodyPartSelected]>>
+	<<set _lewd to _part.lewd is 1>>
+	<<set _deviant to ["bestiality", "Black Wolf", "Great Hawk"].includes(_part.special)>>
+
+	<br><br>
+	<<link [[Turn into tattoo (£500 1:00)|Tattoo Bodywriting]]>>
+		<<pass 60>>
+		<<set $money -= 50000>>
+		<<pain 6>>
+		<<if _lewd or _deviant>>
+			<<control 50>>
+		<<else>>
+			<<control 25>>
+		<</if>>
+		<<set $tattoo_bodypart to $bodyPartSelected>>
+		<<set $tattoo_parlour to clone(_part)>>
+		<<set _part.pen to "tattoo">>
+		<<unset $bodyWritingSelected>>
+		<<unset $bodyPartSelected>>
+		<<unset $bodywritingSet>>
+	<</link>><<gpain>><<if _lewd or _deviant>><<gggcontrol>><<else>><<ggcontrol>><</if>>
+
+	<br>
+	<<link [[Write something else|Tattoo Bodywriting Write]]>>
+		<<bodywriting_clear $bodyPartSelected>>
+		<<unset $bodyWritingSelected>>
+		<<unset $bodyPartSelected>>
+		<<unset $bodywritingSet>>
+	<</link>>
+<<else>>
+	<<link [[Back|Tattoo Bodywriting Choice]]>><<unset $bodywritingSet>><</link>>
+	<br><br>
+
+	You think about what you'd like your tattoo to say.
+	<br><br>
+	__Body Writing__<br>
+
+	<<bodywriting>><br>
+
+	<<bodywritingOptions>>
+
+	<<set _bodyPartOptionsSkip to []>>
+	<<if $exhibitionism lte 34>>
+		<<set _bodyPartOptionsSkip to _bodyPartOptionsSkip.concat(["left_bottom","right_bottom","pubic","breasts"])>>
+	<</if>>
+
+	<<bodywritingMenuLinks _bodyPartOptionsSkip>>
+<</if>>

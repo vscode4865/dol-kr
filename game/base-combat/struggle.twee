@@ -1123,7 +1123,7 @@
 	<</if>>
 
 	<!-- FEET -->
-	<<set _grip_strength to currentSkillValue('physique') / 20 + $handskill>>
+	<<set _grip_strength to currentSkillValue('physique') / 20 + currentSkillValue("handskill")>>
 	<<if $feetaction is "rest">>
 		<<unset $dodging>>
 		당신은 다리를 가만히 둔다.
@@ -1136,7 +1136,7 @@
 		<</if>>
 	<<elseif $feetaction is "plant">>
 		<<unset $dodging>>
-		<<set _grip_strength += $feetskill>>
+		<<set _grip_strength += currentSkillValue("feetskill")>>
 		<<if $underwater is 1 or ["sea","lake"].includes($location)>>
 			당신은 물 속에 발을 묻어, 단단하게 잡을 수 있도록 한다.
 		<<else>>
@@ -1808,15 +1808,15 @@
 			<!-- lurkers attacc -->
 			<<rng>>
 			<<if $dodging gte 1>>
-				<<set _doge_chance to (($feetskill / 3) + (currentSkillValue('danceskill') / 3) - $drunk - (!!$worn.feet.type.includes("heels") * 200))>>
+				<<set _doge_chance to ((currentSkillValue("feetskill") / 3) + (currentSkillValue('danceskill') / 3) - $drunk - (!!$worn.feet.type.includes("heels") * 200))>>
 				<<feetskilluse>>
 			<</if>>
 			<<if $left_guard is 1>>
-				<<set _left_guard_chance to ($handskill / 3)>>
+				<<set _left_guard_chance to (currentSkillValue("handskill") / 3)>>
 				<<handskilluse>>
 			<</if>>
 			<<if $right_guard is 1>>
-				<<set _right_guard_chance to ($handskill / 3)>>
+				<<set _right_guard_chance to (currentSkillValue("handskill") / 3)>>
 				<<handskilluse>>
 			<</if>>
 			<<set _hit_chance to random(1, 1000)>>
@@ -1832,9 +1832,9 @@
 				<<set $dodging -= 1>>
 				<<if $drunk gte 60>>
 					당신은<<if !random(100)>> 취권의 달인처럼<</if>> 술취한 듯 비틀거리며 그 경로에서 벗어나,
-				<<elseif $feetskill gte 800 or currentSkillValue('danceskill') gte 400>>
+				<<elseif currentSkillValue("feetskill") gte 800 or currentSkillValue('danceskill') gte 400>>
 					당신은 옆으로 춤추듯 움직여,
-				<<elseif $feetskill gte 200>>
+				<<elseif currentSkillValue("feetskill") gte 200>>
 					당신은 옆으로 몇 발짝 움직여,
 				<<else>>
 					당신은 옆으로 휘청이며 움직여,
@@ -1865,9 +1865,9 @@
 				<<else>>
 					당신에게로 펄쩍 뛰어오지만,
 				<</if>>
-				<<if $handskill gte 800>>
+				<<if currentSkillValue("handskill") gte 800>>
 					당신은 그 움직임을 적절하게 쳐내 방향을 바꿔,
-				<<elseif $handskill gte 200>>
+				<<elseif currentSkillValue("handskill") gte 200>>
 					당신은 그것을 옆으로 쳐내,
 				<<else>>
 					당신은 팔을 휘둘러 그것을 옆으로 쳐내,
@@ -1997,7 +1997,7 @@
 			<<set _struggle_exposed to "main">>
 		<<elseif $worn.under_lower.vagina_exposed is 0 or (setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].skirt is 1 and $worn.under_lower.skirt_down is 1)>>
 			<<set _struggle_exposed to "under">>
-		<<elseif playerChastity()>>
+		<<elseif (playerChastity("penis") and _args[0] is "penis") or (playerChastity("vagina") and _args[0] is "vagina")>>
 			<<set _struggle_exposed to "genitals">>
 		<<else>>
 			<<set _struggle_exposed to "naked">>
@@ -2161,9 +2161,19 @@
 	<<elseif _struggle_exposed is "genitals">>
 		<<set $struggle[_args[0]].progress -= 1>>
 		<<if $struggle[_args[0]].legs is "tentacles">>
-			그 <<struggle_creature_ yi $struggle[_args[0]].creature>> 촉수들이 당신의 <<worn_genitals_name>> 뒤로 꿈틀대며 돌아가, 들어갈 곳을 찾으며 당신의 <<struggle_bodypart _args[0]>> 위를 쓸어대고 있다.<<neutral 2 "genitals">><<set $worn.genitals.integrity -= 10>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				The <<print $struggle[_args[0]].creature>>'s tentacles worm round your $worn.genitals.name, rubbing and squeezing it in the process. <span class="lewd">Your clearly aroused reaction, encourages it further.</span>
+				<<arousal 200 "genitals">><<neutral 2 "genitals">><<set $worn.genitals.integrity -= 5>>
+			<<else>>
+				그 <<struggle_creature_ yi $struggle[_args[0]].creature>> 촉수들이 당신의 <<worn_genitals_name>> 뒤로 꿈틀대며 돌아가, 들어갈 곳을 찾으며 당신의 <<struggle_bodypart _args[0]>> 위를 쓸어대고 있다.<<neutral 2 "genitals">><<set $worn.genitals.integrity -= 10>>
+			<</if>>
 		<<else>>
-			그 <<struggle_creature_ ga $struggle[_args[0]].creature>> 그 아래의 <<struggle_bodypart _args[0] "에">> 닿으려 시도하며, 당신의 <<worn_genitals_name_ ul>> 찢으려 한다.<<neutral 1 "genitals">><<set $worn.genitals.integrity -= 10>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				The <<print $struggle[_args[0]].creature>> attempts to tear at your $worn.genitals.name, but only succeed at squeezing it and <span>further arousing you.</span>
+				<<neutral 1 "genitals">><<arousal 100 "genitals">><<set $worn.genitals.integrity -= 5>>
+			<<else>>
+				그 <<struggle_creature_ ga $struggle[_args[0]].creature>> 그 아래의 <<struggle_bodypart _args[0] "에">> 닿으려 시도하며, 당신의 <<worn_genitals_name_ ul>> 찢으려 한다.<<neutral 1 "genitals">><<set $worn.genitals.integrity -= 10>>
+			<</if>>
 		<</if>>
 		<<if $struggle[_args[0]].creature is "slime">>
 			<span class="purple">그 소재가 슬라임 안에서 녹으며 쉬익 하는 소리가 난다.</span><<set $worn.genitals.integrity -= 30>>
@@ -2173,13 +2183,25 @@
 		<<if $worn.genitals.integrity lte 0>>
 			<<integritycheck no_text>><<exposure>>
 			<<if $struggle[_args[0]].legs is "tentacles">>
-				그것의 촉수들이 그 소재를 휘감아, 잡아당긴다. 그 소재가 끼익 하는 소리를 내더니 <span class="pink">그 <<struggle_creature_ ga $struggle[_args[0]].creature>> 휙 하고 움직이며 그것을 당신의 몸에서 뜯어내어, 당신의 <<genitals_ rul>> 노출시킨다.</span>
+				Its tentacles wrap around the material, and pull. The material
+				<<if $worn.genitals.name is "chastity parasite">>
+					pops
+				<<else>>
+					groans
+				<</if>>
+				<span class="pink">as the <<print $struggle[_args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
 			<<else>>
-				그것의 <<struggle_appendage _args[0] "이">> 그 소재를 뚫고, 잡아당긴다. 그 소재가 끼익 하는 소리를 내더니 <span class="pink">그 <<struggle_creature_ ga $struggle[_args[0]].creature>> 휙 하고 움직이며 그것을 당신의 몸에서 뜯어내어, 당신의 <<genitals_ rul>> 노출시킨다.</span>
+				Its appendage pierces the material, and pulls. The material 
+				<<if $worn.genitals.name is "chastity parasite">>
+					pops
+				<<else>>
+					groans
+				<</if>>
+				<span class="pink">as the <<print $struggle[_args[0]].creature>> tears it off your body with a flick, exposing your <<genitals>>.</span>
 			<</if>>
 		<<else>>
 			<<if $struggle[_args[0]].damage gte 10>>
-				그것은 그 소재 때문에 상처를 입어, <span class="green">뒤로 물러난다.</span>
+				It <<if $worn.genitals.name is "chastity parasite">>tired<<else>>hurt<</if>> itself against the material, <span class="green">and leaps away.</span>
 				<<if _args[0] is "vagina">>
 					<<set $vaginause to 0>>
 					<<set $vaginastate to 0>>
@@ -2200,7 +2222,7 @@
 					<<struggleClearActions "anus_">>
 				<</if>>
 			<<else>>
-				그것은 그 소재 때문에 상처를 입는다.
+				It <<if $worn.genitals.name is "chastity parasite">>tires<<else>>hurts<</if>> itself against the material.
 				<<set $struggle[_args[0]].damage += 1>>
 			<</if>>
 		<</if>>

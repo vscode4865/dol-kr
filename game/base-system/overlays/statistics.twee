@@ -104,6 +104,10 @@
 		<span class="gold">섹스</span>
 		절정을 느낀 횟수: $orgasmstat번
 		<br>
+		<<if $ruinedOrgasmStat>>
+			Number of ruined orgasms you've experienced: $ruinedOrgasmStat
+			<br>
+		<</if>>
 		<<if $asphyxiaLvl gte 2>>
 			목이 졸린 상태에서 절정을 느낀 횟수: $chokeorgasm번
 			<br>
@@ -405,8 +409,6 @@
 		<br>
 		기절함: $passoutstat번
 		<br>
-		범죄 이력: $crimehistory번
-		<br>
 		우수 성적: $distinction_stat회
 		<br>
 		수면 시간: $sleepStat시간
@@ -547,8 +549,12 @@
 			<br>
 			이상성욕: <<print Math.trunc($deviancy)>>
 			<br>
-			타락도: <<print Math.trunc($corruption_slime)>>
+			Corruption: <<print Math.trunc($earSlime.corruption)>>
 			<br>
+			<<if $earSlime.growth>>
+				Growth: <<print Math.trunc($earSlime.growth)>>
+				<br>
+			<</if>>
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
 				신앙심: <<print Math.trunc($grace)>>
 				<br>
@@ -566,6 +572,14 @@
 				0
 			<</if>>
 			<br><br>
+			Sensitivities:
+			<mouse class="tooltip linkBlue">(?)<span>These are arousal multipliers applied when that part of the body is stimulated.</span></mouse>
+			<ul style="margin-top:0px;margin-left:-5px;">
+				<li>Mouth: <<print $mouthsensitivity.toFixed(2)>></li>
+				<li>Breast: <<print $breastsensitivity.toFixed(2)>></li>
+				<li>Genital: <<print $genitalsensitivity.toFixed(2)>></li>
+				<li>Bottom: <<print $bottomsensitivity.toFixed(2)>></li>
+			</ul>
 			유방 성장 진행률: <<print Math.trunc(100 - ($breastgrowthtimer / 10))>>%
 			<mouse class="tooltip linkBlue">(?)<span>100%나 그 이상에 도달하면 성장하며, 0%나 그 이하에 도달하면 수축합니다.</span></mouse>
 			<br>
@@ -643,7 +657,7 @@
 			<<if $player.bottomsize is $bottomsizemin>>
 				<mouse class="tooltip linkBlue">(?)<span>최소 크기입니다.</span></mouse>
 			<</if>>
-			<br>
+			<br><br>
 		<</foldout>>
 
 		<<foldout false "_clothesFoldout">>
@@ -687,7 +701,7 @@
 			<br>
 			징계: <<print Math.trunc($detention)>>
 			<br>
-			범죄: <<print Math.trunc($crime)>>
+			Crime: <<print Math.trunc(crimeSumCurrent())>>
 			<br>
 			고아원 희망: <<print Math.trunc($orphan_hope)>>
 			<br>
@@ -725,6 +739,43 @@
 			<br>
 			모델 명성: <<print Math.trunc($fame.model)>>
 			<br><br>
+		<</foldout>>
+
+		<<foldout false "_crimeFoldout">>
+			<span class="gold">Crime</span>
+			<<for $_cr range Object.keys(setup.crimeNames)>>
+				<<foldout false $_cr>>
+					<span class="gold"><<print toTitleCase(setup.crimeNames[$_cr]) + ":">></span>
+					<<print "Current: " + Math.trunc($crime[$_cr].current)>>
+					<br>
+					<<print "History: " + Math.trunc($crime[$_cr].history)>>
+					<br>
+					<<print "Daily: " + Math.trunc($crime[$_cr].daily)>>
+					<br>
+					<<print "Count: " + Math.trunc($crime[$_cr].count)>>
+					<br>
+					<<print "Count History: " + Math.trunc($crime[$_cr].countHistory)>>
+					<br>
+				<</foldout>>
+			<</for>>
+			<<foldout false "_crimeTotalsFoldout">>
+				<span class="gold">Totals:</span>
+				<<print "Current: " + crimeSumCurrent()>>
+				<br>
+				<<print "History: " + crimeSumHistory()>>
+				<br>
+				<<print "Daily: " + crimeSumDaily()>>
+				<br>
+				<<print "Count: " + crimeSumCount()>>
+				<br>
+				<<print "Count History: " + crimeSumCountHistory()>>
+				<br>
+			<</foldout>>
+			<<foldout false "_crimeEventsFoldout">>
+				<span class="gold">Crime Events:</span>
+				<span id="statscrimeevents"><<listCrimeCheats>></span>
+				<br>
+			<</foldout>>
 		<</foldout>>
 
 		<<foldout false "_transformationFoldout">>

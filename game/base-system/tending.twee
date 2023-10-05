@@ -85,11 +85,11 @@
 	<<set _location to _args[0]>>
 	<<set $_plotsHere to $plots[_location]>>
 	<<set _water_needed to 0>>
-	경작할 수 있는 <<trNumber $_plotsHere.length>> 개의
+	There <<print $_plotsHere.length is 1 ? "is" : "are">> <<number $_plotsHere.length>> tillable
 	<<switch $_plotsHere[0].size>>
-		<<case "small">> <span class="lblue">모판</span>이
-		<<case "medium">> <span class="teal">터</span>가
-		<<default>> <span class="green">밭</span>이
+		<<case "small">> <span class="lblue"><<print $_plotsHere.length is 1 ? "bed" : "beds">></span>
+		<<case "medium">> <span class="teal"><<print $_plotsHere.length is 1 ? "plot" : "plots">></span>
+		<<default>> <span class="green"><<print $_plotsHere.length is 1 ? "field" : "fields">></span>
 	<</switch>>
 	있다.
 	<<if $fertiliser.current + $fertiliser.used gt 0>>
@@ -181,6 +181,7 @@
 			<span class="pink">당신은 레미가 오기 전에 모든 밭에 물을 줄 만한 충분한 시간이 없다.</span>
 		<<else>>
 			<<if !($leftarm is "bound" and $rightarm is "bound")>>
+				<<ind>>
 				<<link "모든 마른 모판에 물을 준다 ($_time)" $passage>>
 					<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
 				<</link>><<gtiredness>><<gtending>>
@@ -211,6 +212,7 @@
 	<<if $leftarm is "bound" and $rightarm is "bound">>
 		<span class="red">손이 묶인 상태로는 물을 줄 수가 없다.</span>
 	<<else>>
+		<<ind>>
 		<<link "물을 준다 ($_time)" $passage>>
 			<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
 			<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
@@ -305,6 +307,7 @@
 			<span class="pink">당신은 레미가 오기 전에 모든 밭을 경작할 만한 충분한 시간이 없다.</span>
 		<<else>>
 			<<capture _baseTiredness _baseTime _plantbed>>
+				<<gardenicon "till">>
 				<<link "경작한다 (_timeString)" $passage>>
 					<<set $tendingvars.plot_tilled to true>>
 					<<tiredness _baseTiredness>><<physique _baseTiredness>>
@@ -322,6 +325,7 @@
 			<<set _timeString to getTimeString(_baseTimeFert)>>
 			<<set _fertTiredness to Math.floor(_baseTiredness * 1.5)>>
 			<<capture _baseTimeFert _fertTiredness _plantbed>>
+				<<gardenicon "fertiliser">>
 				<<link "경작하고 비료를 뿌린다 (_timeString)" $passage>>
 					/* Till */
 					<<set $tendingvars.plot_tilled_fertiliser to true>>

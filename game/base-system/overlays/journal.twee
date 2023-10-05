@@ -34,6 +34,18 @@
 		<li>베일리는 <<printmoney $rentmoney>>를 원한다.<<babyRentDisplay " 그리고 당신이 아이를 돌보지 않았기 때문에 " "를 추가로 더 원한다." "gold">></li>
 	<</if>>
 
+	<<if $earSlime.event and !_tempEventHide>>
+		<<switch $earSlime.event>>
+			<<case "get sperm into your anus" "get sperm into your vagina" "get sperm into your anus completed" "get sperm into your vagina completed">>
+				<li class="lewd">The slime in your head commanded you to get sperm into your <<print $player.vaginaExist ? "vagina" : "anus">>.</li>
+			<<case "get your own sperm into your anus" "get your own sperm into your vagina" "get your own sperm into your anus completed" "get your own sperm into your vagina completed">>
+				<li class="lewd">The slime in your head commanded you to get your own sperm into your <<print $player.vaginaExist ? "vagina" : "anus">>.</li>
+			<<case "only sleep naked from now on" "only wear feminine clothes for a while" "only wear masculine clothes for a while">> /* Show nothing */
+			<<default>>
+				<li class="lewd">The slime in your head commanded you to <<print $earSlime.event>><<if $earSlime.noSleep>> before it allows you to sleep<</if>>.</li>
+		<</switch>>
+	<</if>>
+
 	<<if $psych is 1>>
 		<li>금요일에 의사 하퍼와 약속이 있다.</li>
 	<</if>>
@@ -63,9 +75,16 @@
 	<</if>>
 
 	<<if $brothel_escortjob isnot undefined>>
-		<<if $brothel_escortjob.accept is true and ($brothel_escortjob.done is undefined or $brothel_escortjob.escape is undefined)>>
+		<<if ($brothel_escortjob.done is undefined or $brothel_escortjob.escape is undefined) and $brothel_escortjob.accept is true and $brothel_escortjob.missed isnot true>>
 			<<set _date to new DateTime($brothel_escortjob.date)>>
-			<li>창관에서 당신에게 <span class="gold"><<trDaysOfWeek _date.weekDayName>>_trResult</span> <span class="gold"><<ampm _date.hour>>에</span> 창관 앞으로 오라고 했다.</li>
+			<li>You're expected to be in front of the brothel on
+			<<if Time.monthDay is _date.day>>
+                <span class="gold">today.</span>
+            <<elseif _date.addDays(-7).day gte Time.monthDay>>
+                next <span class="gold">_date.weekDayName.</span>
+            <<else>>
+                on <span class="gold">_date.weekDayName</span> at <span class="gold"><<ampm _date.hour>>.</span>
+            <</if>></li>
 		<</if>>
 	<</if>>
 
@@ -215,7 +234,7 @@
 				당신은 에덴과 할로윈을 기념하기 위해 사탕을 살 수 있다.
 			<</if>>
 			<<if $halloween_lake is 1>>
-				학생들은 <<ampm 15 00>>부터 자정까지 호수에서 파티를 열 것이다.
+				Students are throwing a party at the lake from <<ampm 18 00>> until midnight.
 				<<if $halloweenWolves>>
 					늑대 무리중 하나가 거기에서 다쳤다.
 				<</if>>
@@ -263,8 +282,13 @@
 
 	<<if $temple_rank is "prospective">>
 		<li>조던이 사원의 한 자리를 권해주었으나, 우선 순결의 시험부터 통과해야 한다.</li>
-	<<elseif $temple_rank is "initiate">>
-		<li>당신은 사원의 수련생이다.
+	<<elseif $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
+		<li>You are
+			<<if $temple_rank is "initiate">>
+				an initiate at the temple.
+			<<else>>
+				a <<temple_rank>> of the temple.
+			<</if>>
 			<<if $temple_chastity_timer lte 0>>
 				<span class="pink">정조 시험이 예정되어 있다.</span>
 			<<elseif $temple_chastity_timer is 1>>
@@ -416,6 +440,8 @@
 					닭장이 확장되고 있다.
 				<<case "irrigation">>
 					관개시설이 밭에 설치되고 있다.
+				<<case "nursery">>
+					A nursery is being built in the cottage.
 			<</switch>>
 			<<if $farm.build_timer is 1>>
 				그건 <span class="gold">내일</span> 완료될 것이다.

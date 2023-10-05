@@ -117,7 +117,13 @@ Forth argument - item index*/
 		<br><br>
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
-		<<if !_slimeSlots.includes($clothingShopSlot) or currentSkillValue('willpower') gte 800 or _temp_choice.reveal gte 500 or _temp_choice.type.includesAny("school", "event") or $corruption_slime lt 80>>
+		<<if $earSlime.event is "go commando" and $clothingShopSlot is "under_lower">>
+			<span class="red">The slime in your ear refuses to allow you to try on or buy the  _temp_choice.name as it is forcing you to go commando.</span>
+			<br>
+		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !(_temp_choice.type.includesAny("school") and Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
+			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않는다.</span>
+			<br>
+		<<else>>
 			<<if _temp_choice.colour_options.length gt 1>>
 				<<run _temp_choice.colour_options.pushUnique("random")>>
 				색상 선택:
@@ -207,20 +213,20 @@ Forth argument - item index*/
 						<<printpreggy _temp_choice>>
 					<<else>>
 						<<link [[훔쳐 입는다|$passage]]>>
-							<<shopbuy $clothingShopSlot "steal" "wear" $clothes_choice>><<crimeup `_cost / 100`>><<unset $clothes_choice>>
+							<<shopbuy $clothingShopSlot "steal" "wear" $clothes_choice>><<crimeUp `_cost / 100` "thievery">><<unset $clothes_choice>>
 							<<set $clothingShop.stolenClothes++>>
 							<<set $clothingShop.totalStolenClothes++>>
-						<</link>><<crime>>
+						<</link>><<crime "thievery">>
 						<br>
 					<</if>>
 					<<link [[훔쳐 집으로 가져간다|$passage]]>>
-						<<shopbuy $clothingShopSlot "steal" "send" $clothes_choice>><<crimeup `_cost / 100`>>
+						<<shopbuy $clothingShopSlot "steal" "send" $clothes_choice>><<crimeUp `_cost / 100` "thievery">>
 						<<set $clothingShop.stolenClothes++>>
 						<<set $clothingShop.totalStolenClothes++>>
 						<<if $shopDefaults.disableReturn is false>>
 							<<unset $clothes_choice>>
 						<</if>>
-					<</link>><<crime>>
+					<</link>><<crime "thievery">>
 					<br>
 				<<else>>
 					<span class="red">당신은 이 이상 옷을 가지고 다닐 수 없다.</span> 당신은 옷들을 옷장에 가져가야 한다.
@@ -280,9 +286,6 @@ Forth argument - item index*/
 				<br>
 				<</if>>
 			<</if>>
-		<<else>>
-			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않는다.</span>
-			<br>
 		<</if>>
 	<</if>>
 	<br>
@@ -527,7 +530,7 @@ Forth argument - item index*/
 			<<set _clothesDesc to "드러내지 못하는 것을 드러내준다.">>
 		<<case "unstealthy">>
 			<<set _clothesDesc to "더 숨기 힘들어지게 한다.">>
-		/*Hairstyle Traits*/	
+		/*Hairstyle Traits*/
 		<<case "loose">>
 			<<set _clothesDesc to "얼굴 주위로 풀려 떨어져내린 머리모양. 자라면 길어진다.">>
 		<<case "short">>
@@ -536,6 +539,8 @@ Forth argument - item index*/
 			<<set _clothesDesc to "곱슬곱슬한 머리모양.">>
 		<<case "sleek">>
 			<<set _clothesDesc to "반듯하게 뻗은 머리모양.">>
+		<<case "textured">>
+			<<set _clothesDesc to "Afro-textured hair.">>
 		<<case "wavy">>
 			<<set _clothesDesc to "그렇게 곱슬거리지도, 그렇게 반듯이 뻗지도 않은 머리모양.">>
 		<<case "pigtails">>
@@ -545,7 +550,7 @@ Forth argument - item index*/
 		<<case "braids">>
 			<<set _clothesDesc to "머리카락 가닥이 서로 짜여진 머리모양. 레게머리처럼, 엄밀하게는 땋은머리가 아닌 스타일도 포함한다.">>
 		<<case "ponytail">>
-			<<set _clothesDesc to "머리 뒤쪽으로 모은 머리모양.">>			
+			<<set _clothesDesc to "Hair gathered at the back of the head.">>
 		<<default>>
 			<<set $noTraitDescription to 1>>
 	<</switch>>
@@ -1052,6 +1057,13 @@ Forth argument - item index*/
 			"daisy":"locked",
 			"esotericspectacles":"locked",
 			"spiritmask":"locked",
+			"ragtop":"locked",
+			"ragskirt":"locked",
+			"minipumpkin":"locked",
+			"gakuran":"locked",
+			"classicserafuku":"locked",
+			"sailorribbon":"locked",
+			"islandermask":"locked",
 		}>>
 	<</if>>
 	<!-- the following lines are for backwards compatibility with older saves. if you want to add a new item, add it above as well. -->
@@ -1108,11 +1120,33 @@ Forth argument - item index*/
 	<<if $specialClothes.spiritmask is undefined>>
 		<<set $specialClothes.spiritmask to "locked">>
 	<</if>>
+	<<if $specialClothes.ragtop is undefined>>
+		<<set $specialClothes.ragtop to "locked">>
+	<</if>>
+	<<if $specialClothes.ragskirt is undefined>>
+		<<set $specialClothes.ragskirt to "locked">>
+	<</if>>
+	<<if $specialClothes.minipumpkin is undefined>>
+		<<set $specialClothes.minipumpkin to "locked">>
+	<</if>>
+	<<if $specialClothes.gakuran is undefined>>
+		<<set $specialClothes.gakuran to "locked">>
+	<</if>>
+	<<if $specialClothes.sailorribbon is undefined>>
+		<<set $specialClothes.sailorribbon to $specialClothes.serafuku is "unlocked" ? "unlocked" : "locked">>
+		<<set $specialClothes.classicserafuku to $specialClothes.serafuku is "unlocked" ? "unlocked" : "locked">>
+	<</if>>
+	<<if $specialClothes.islandermask is undefined>>
+		<<set $specialClothes.islandermask to "locked">>
+	<</if>>
 <</widget>>
 
 <<widget "specialClothesUpdate">>
 	<<if $headdrive is 1>>
+		<<set $specialClothes["classicserafuku"] to "unlocked">>
 		<<set $specialClothes["serafuku"] to "unlocked">>
+		<<set $specialClothes["gakuran"] to "unlocked">>
+		<<set $specialClothes["sailorribbon"] to "unlocked">>
 	<</if>>
 	<<if $undergroundbrothelescaped>>
 		<<set $specialClothes["slutshirt"] to "unlocked">>
@@ -1131,6 +1165,7 @@ Forth argument - item index*/
 		<<set $specialClothes["skeletonoutfit"] to "unlocked">>
 		<<set $specialClothes["classyvampirejacket"] to "unlocked">>
 		<<set $specialClothes["futuristicbodysuit"] to "unlocked">>
+		<<set $specialClothes["minipumpkin"] to "unlocked">>
 	<</if>>
 	<<if $christmas is 1>>
 		<<set $specialClothes["christmasdress"] to "unlocked">>
@@ -1192,6 +1227,13 @@ Forth argument - item index*/
 	<<if $fox gte 6>>
 		<<set $specialClothes["spiritmask"] to "unlocked">>
 	<</if>>
+	<<if ($feats.currentSave["Pain Rider"] isnot undefined) and ($feats.currentSave["Submerged"] isnot undefined)>>
+		<<set $specialClothes["ragtop"] to "unlocked">>
+		<<set $specialClothes["ragskirt"] to "unlocked">>
+	<</if>>
+	<<if $islander_mask gte 100>>
+		<<set $specialClothes["islandermask"] to "unlocked">>
+	<</if>>
 
 	<<if Object.values($specialClothes).every(item => item is "unlocked")>>
 		<<earnFeat "Curious Attire">>
@@ -1243,7 +1285,14 @@ Forth argument - item index*/
 			"futuristicbodysuit":"10월 21일부터 판매한다.",
 			"daisy":"데이지 씨를 찾는다.",
 			"esotericspectacles":"마스터를 물려받는다.",
-			"spiritmask":"충분히 여우가 된다."
+			"spiritmask":"Become sufficiently foxy.",
+			"ragtop":"Demonstrate historical torture devices to completion.",
+			"ragskirt":"Demonstrate historical torture devices to completion.",
+			"minipumpkin":"In stock from the 21st of October.",
+			"gakuran":"Discover the headteacher's secret.",
+			"classicserafuku":"Discover the headteacher's secret.",
+			"sailorribbon":"Discover the headteacher's secret.",
+			"islandermask":"Build with foreign wood."
 		}>>
 	<</if>>
 <</widget>>
@@ -1259,4 +1308,21 @@ Forth argument - item index*/
 			<</if>>
 		<</if>>
 	<</if>>
+<</widget>>
+
+<<widget "earSlimeShoppingExhibitionism">>
+	<<set $shoppingCentreExit to $passage>>
+	<<set $weekly.earSlimeShoppingCentre to 1>>
+	<span class="lewd">You feel the slime in your head command you to expose yourself to the whole mall.</span> It doesn't promise anything now. It imposes its will, and expects you to obey.
+	<br><br>
+
+	<<if $exhibitionism gte 75 and $submissive gte 1900>>
+		<<link [[Submit willingly|Shopping Centre Slime Exhibitionism Obey]]>><<corruption 5>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><<set $phase to 1>><</link>><<promiscuous5>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
+		<br>
+	<</if>>
+	<<link [[Obey|Shopping Centre Slime Exhibitionism Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+	<br>
+	/* Different than normal stat changes as the slime will never for the player to act */
+	<<link [[Defy|Shopping Centre Slime Exhibitionism Defy]]>><<corruption -1>><<pain 35>><<stress 18>><<trauma 12>><<def 1>><</link>><<llcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+	<br>
 <</widget>>

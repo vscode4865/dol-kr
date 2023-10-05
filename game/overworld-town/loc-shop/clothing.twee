@@ -21,7 +21,7 @@
 			<br><br>
 
 			<<if $exposed lte 0>>
-				<<link [[밖으로 나간다|High Street]]>><</link>>
+				<<highicon>><<link [[Go outside|High Street]]>><</link>>
 				<br>
 			<<else>>
 				<<link [["끝날때까지 숨어 있는다 (1:00)"|Clothing Shop]]>><<pass 1 hour>><</link>>
@@ -47,30 +47,30 @@
 			</div>
 			<br><br>
 			<<clothingcategoryicon "all">>
-			<<link "전부 보기">><<replace "#clothingShop-div">><<AllShop>><</replace>><</link>>
+			<<link "View All">><<replace "#clothingShop-div">><<AllShop>><</replace>><</link>>
 			<br><br>
 			<<if $debug is 1>>
 				<<clothingcategoryicon "overoutfit">>
-				<<link "원피스 외투 보기">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
+				<<link "View Over Outfits">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
 				<br><br>
 			<</if>>
 			<<clothingcategoryicon "outfit">>
-			<<link "원피스 겉옷 보기">><<replace "#clothingShop-div">><<OutfitShop>><</replace>><</link>>
+			<<link "View Outfits">><<replace "#clothingShop-div">><<OutfitShop>><</replace>><</link>>
 			<br>
 			<<clothingcategoryicon "upper">>
-			<<link "상의 보기">><<replace "#clothingShop-div">><<TopShop>><</replace>><</link>>
+			<<link "View Tops">><<replace "#clothingShop-div">><<TopShop>><</replace>><</link>>
 			<br>
 			<<clothingcategoryicon "lower">>
-			<<link "하의 보기">><<replace "#clothingShop-div">><<BottomShop>><</replace>><</link>>
+			<<link "View Bottoms">><<replace "#clothingShop-div">><<BottomShop>><</replace>><</link>>
 			<br><br>
 			<<clothingcategoryicon "underoutfit">>
-			<<link "원피스 속옷 보기">><<replace "#clothingShop-div">><<UnderOutfitShop>><</replace>><</link>>
+			<<link "View Under Outfits">><<replace "#clothingShop-div">><<UnderOutfitShop>><</replace>><</link>>
 			<br>
 			<<clothingcategoryicon "underupper">>
-			<<link "속옷 상의 보기">><<replace "#clothingShop-div">><<UnderTopShop>><</replace>><</link>>
+			<<link "View Under Tops">><<replace "#clothingShop-div">><<UnderTopShop>><</replace>><</link>>
 			<br>
 			<<clothingcategoryicon "underlower">>
-			<<link "속옷 하의 보기">><<replace "#clothingShop-div">><<UnderBottomShop>><</replace>><</link>>
+			<<link "View Under Bottoms">><<replace "#clothingShop-div">><<UnderBottomShop>><</replace>><</link>>
 			<br><br>
 			<<clothingcategoryicon "head">>
 			<<link "머리 악세서리 보기">><<replace "#clothingShop-div">><<HeadShop>><</replace>><</link>>
@@ -91,20 +91,20 @@
 			<<link "신발 보기">><<replace "#clothingShop-div">><<FeetShop>><</replace>><</link>>
 			/*<br>
 			*<<clothingcategoryicon "strapon">> <!-- disable for now-->
-			*<<link "View Genital wear">><<replace "#clothingShop-div">><<GenitalShop>><</replace>><</link>>*/
+			*<<link "View Genital Wear">><<replace "#clothingShop-div">><<GenitalShop>><</replace>><</link>>*/
 			<br><br>
 			<<run linkifyDivs('.button-back-to-shop')>>
 
 			<<if $clothingrebuy is 1>>
-				<<link [[의류 자동구입 비활성화|Rebuy Shop]]>><</link>>
+				<<rebuyicon "disable">><<link [[Disable automatic clothing rebuy|Rebuy Shop]]>><</link>>
 				<br>
 			<<else>>
-				<<link [[의류 자동구입 활성화|Rebuy Shop]]>><</link>>
+				<<rebuyicon "enable">><<link [[Enable automatic clothing rebuy|Rebuy Shop]]>><</link>>
 				<br>
 			<</if>>
 
 			<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.clothingShop>>
-				<<link [[금전등록기를 살펴본다|Clothing Shop Register]]>><</link>>
+				<<registericon>><<link [[Examine the cash register|Clothing Shop Register]]>><</link>>
 				<br>
 			<</if>>
 
@@ -112,30 +112,32 @@
 
 			<<if Time.dayState is "night" or $tryOn.value is 0>>
 				<<if Time.dayState is "night" and $clothingShop.spotted is true and $clothingShop.stolenClothes gt 0>>
+					<<getouticon>>
 					<<link [[나간다|Clothing Shop Night Guard Found]]>>
 						<<shopClothingFilterReset>>
 						<<ShowUnderEquip "normal">>
 						<<ShowUnderEquip "over">>
 						<<set $tryOn.autoReset to true>>
-						<<crimeup `$tryOn.value / 100`>>
+						<<crimeUp `$tryOn.value / 100` "thievery">>
 						<<shopHoodCheck>>
 					<</link>>
 				<<else>>
+					<<getouticon>>
 					<<link [[나간다|Shopping Centre Top]]>>
 						<<shopClothingFilterReset>>
 						<<ShowUnderEquip "normal">>
 						<<ShowUnderEquip "over">>
 						<<set $tryOn.autoReset to true>>
-						<<crimeup `$tryOn.value / 100`>>
+						<<crimeUp `$tryOn.value / 100` "thievery">>
 						<<shopHoodCheck>>
 					<</link>>
 				<</if>>
 				<<if $tryOn.value gt 0>>
-					<<crime>>
+					<<crime "thievery">>
 				<</if>>
 				<br><br>
 			<<elseif $tryOn.value gt 0>>
-				<<link "옷을 반납한다">><<clothingReset>>
+				<<ind>><<link "Return clothes">><<clothingReset>>
 					<<updatesidebarimg>>
 					<<updatesidebardescription>>
 					<<updateallure>>
@@ -147,9 +149,9 @@
 				<br>
 				<<if $tryOn.value lt $money>>
 					<<sendItemsToDropdown>>
-					<<link "옷을 산다">><<buyTryOnClothes "wear">><<updateclothingshop>><</link>>
+					<<ind>><<link "Buy clothes">><<buyTryOnClothes "wear">><<updateclothingshop>><</link>>
 					<br>
-					<<link "옷을 사서 옷장에 보낸다">>
+					<<ind>><<link "Buy clothes and send to wardrobe">>
 						<<buyTryOnClothes "wardrobe">>
 						<<updatesidebarmoney>>
 						<<updatesidebarimg>>
@@ -162,7 +164,7 @@
 					<</link>>
 					<br>
 				<</if>>
-				<<link [[옷을 훔쳐 떠난다|Stolen Clothing Shop Result]]>><<shopClothingFilterReset>><<shopHoodCheck>><</link>>
+				<<getouticon>><<link [[Leave with stolen clothes|Stolen Clothing Shop Result]]>><<shopClothingFilterReset>><<shopHoodCheck>><</link>>
 				<br>
 			<</if>>
 		<</if>>
@@ -179,14 +181,14 @@
 	<<if currentSkillValue('skulduggery') gte $lock>>
 	<span class="green">문을 따기 쉬워 보인다.</span>
 	<br><br>
-
+	<<lockpickicon>>
 	<<link [[잠금을 해제한다 (0:10)|Clothing Shop]]>>
-		<<pass 10>><<crimeup 1>>
-		<<if $clothingShop.ban gt 0 or $crime gte 50000 or $clothingShop.rng gte $skulduggery>>
+		<<pass 10>><<crimeUp 5 "trespassing">>
+		<<if $clothingShop.ban gt 0 or crimeSumCurrent() gte 50000 or $clothingShop.rng gte $skulduggery>>
 			<<set $clothingShop.spotted to true>>
 		<</if>>
 		<<set $clothingShop.rng to random(0,1000)>>
-	<</link>><<crime>>
+	<</link>><<crime "trespassing">>
 	<br>
 	<<else>>
 	<span class="red">잠금장치는 당신이 해제할 수 있는 능력 이상인 것 같다.</span>
@@ -194,7 +196,7 @@
 	<br><br>
 	<</if>>
 
-<<link [[떠난다|Shopping Centre Top]]>><</link>>
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><</link>>
 <br>
 
 :: Rebuy Shop

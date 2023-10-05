@@ -234,7 +234,23 @@ Zohar
 
 	<!-- Set Pronoun -->
 	<<if !$NPCName[_i].pronoun or $NPCName[_i].pronoun is "none" or _args[1] is "genders">>
-		<<if maleChance() lt random(1, 100)>>
+		<<if $passage is "Start">>
+			<<if $player.gender is "m">>
+				<<set _override to "m">>
+			<<elseif $player.gender is "h">>
+				<<if $player.gender_body is "m" or ($player.gender_body is "a" and $player.breastsize lte 3)>>
+					<<set _override to "m">>
+				<<else>> <!-- if $player.gender_body is "f" or ($player.gender_body is "a" and $player.breastsize gt 3)) -->
+					<<set _override to "f">>
+				<</if>>
+			<<else>> <!-- if $player.gender is "f" -->
+				<<set _override to "f">>
+			<</if>>
+			<<if $background is "crossdresser">>
+				<<set _override to (_override is "m" ? "f" : "m")>>
+			<</if>>
+		<</if>>
+		<<if ($NPCName[_i].type is "human" and maleChance(_override) lt random(1, 100)) or ($NPCName[_i].type isnot "human" and beastMaleChance(_override) lt random(1, 100))>>
 			<<set $NPCName[_i].pronoun to "f">>
 		<<else>>
 			<<set $NPCName[_i].pronoun to "m">>
@@ -432,6 +448,9 @@ Zohar
 				<<else>>
 					//메이슨은 지역 학교의 수영 선생이다. 그녀는 학교에서 가장 젊은 선생이며, 일부 학생보다 고작 몇 살 많은 정도이다. 그녀의 탄탄한 몸은 수업 중에 자연스럽게 과시되나, 학생들이 힐끔거리며 훔쳐보는 것을 그가 알고 있는지는 전혀 내색하지 않는다.//
 				<</if>>
+				<<set $NPCName[_i].chastityKeyCarried to 0>> /* Mason is carrying the key to unlock Winter's Chastity belt. 1 is carried, 2 player knows it is carried */
+				<<set $NPCName[_i].chastityRemoved to 0>> /* Number of chastity devices Mason has removed */
+				<<set $NPCName[_i].chastityRemovalDeclined to 0>> /* Whether you've declined Mason's offer to remove it (prompts more passive checking). Resets when a device is removed */
 			<<case Winter>>
 				<<if $NPCName[_i].pronoun is "m">>
 					//윈터는 지역 학교에서 역사를 가르친다. 그는 나이 지긋한 신사로, 차림새가 단정하며 세련되었다.//
@@ -1387,8 +1406,10 @@ Zohar
 				<<if $NPCName[_i].purity gte 50>>
 					<<if $purity lte 500 or $demon gte 6>>
 						<span class="blue">당신을 구원해주고 싶어한다.</span>
-					<<elseif $temple_rank is "initiate" or $angel gte 6>>
+					<<elseif $temple_rank is "monk" or $temple_rank is "priest" or $angel gte 6>>
 						<span class="green">천사가 강림했다고 여긴다.</span>
+					<<elseif $temple_rank is "initiate">>
+						<span class="green">considers you a prodigy.</span>
 					<<else>>
 						<span class="green">당신에게 매우 애정을 느낀다.</span>
 					<</if>>
@@ -1401,8 +1422,10 @@ Zohar
 				<<if $NPCName[_i].purity gte 50>>
 					<<if $purity lte 500 or $demon gte 6>>
 						당신이 <span class="blue">잘못 인도되었다고</span> 생각한다.
-					<<elseif $temple_rank is "initiate" or $angel gte 6>>
+					<<elseif $temple_rank is "monk" or $temple_rank is "priest" or $angel gte 6>>
 						<span class="teal">당신을 우러러보고 있다.</span>
+					<<elseif $temple_rank is "initiate">>
+						<span class="teal">sees you as an equal.</span>
 					<<else>>
 						<span class="teal">당신과 같이 있는 것을 즐긴다.</span>
 					<</if>>
@@ -1426,7 +1449,7 @@ Zohar
 					<<if $purity lte 500 or $demon gte 6>>
 						<span class="red">당신이 이교도라고 생각한다.</span>
 					<<else>>
-						<span class="blue">다른 수련생을 알게 되어서 기뻐하고 있다.</span>
+						<span class="blue">is happy to know another worshipper.</span>
 					<</if>>
 				<<else>>
 					당신에 대한 확고한 의견이 없다.
