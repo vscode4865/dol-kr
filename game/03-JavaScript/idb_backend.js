@@ -547,12 +547,12 @@ const idb = (() => {
 					"여기에서의 세이브는 당신의 브라우저 캐시가 지워지면 사라집니다. 세이브가 사라지는 상황을 방지하기 위해 내보내기 기능을 사용하시기를 권장합니다.";
 
 				const lostSaves = document.createElement("p");
-				lostSaves.innerHTML = '<i class="description"><u>Where are my saves?</u></i> ';
+				lostSaves.innerHTML = '<i class="description"><u>내 세이브는 어디에 있지?</u></i> ';
 				const lostSavesTooltip = document.createElement("mouse");
 				lostSavesTooltip.classList.add("tooltip", "linkBlue");
 				lostSavesTooltip.innerText = "(?)";
 				lostSavesTooltip.appendChild(document.createElement("span"));
-				lostSavesTooltip.lastChild.innerText = `If you can't find your saves, it's possible you saved them using a different storage method. Try toggling the "Enable IndexedDB" option below the list of saves.`;
+				lostSavesTooltip.lastChild.innerText = `만약 세이브한 것을 찾을 수 없다면, 다른 저장 방식을 사용하여 세이브했기 때문일 수 있습니다. 세이브 리스트 아래에 있는 "IndexedDB 활성화" 토글을 끄고 찾아 보세요.`;
 				lostSaves.appendChild(lostSavesTooltip);
 				list.appendChild(lostSaves);
 

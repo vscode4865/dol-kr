@@ -70,6 +70,7 @@ const EasyPostMacroList = [
 	// bodyPost 
 	// <<breasts_ rul>> = <<breasts>>를 
 	{ name: "breasts_", orig_name: "breastsPost", is_print: 0},
+	{ name: "breastssimple_", orig_name: "breastssimplePost", is_print: 0},
 
 	{ name: "bellyDescription_", orig_name: "bellyDescriptionPost", is_print: 0},
 
@@ -445,6 +446,12 @@ const EasyPostMacroList = [
 	// <<wife_ nun>> = <<wife>>는 
 	{ name: "wife_", orig_name: "wifePost", is_print: 0},
 
+	// <<Wife_ nun>> = <<Wife>>는 
+	{ name: "Wife_", orig_name: "wifePost", is_print: 0},
+
+	{ name: "sister_", orig_name: "sisterPost", is_print: 0},
+	{ name: "Sister_", orig_name: "sisterPost", is_print: 0},
+
 	// <<victimgirl_ ul>> = <<victimgirl>>을 
 	{ name: "victimgirl_", orig_name: "victimgirlPost", is_print: 0},
 
@@ -459,6 +466,7 @@ const EasyPostMacroList = [
 
 	// <<bitch_ nun>> = <<bitch>>는 
 	{ name: "bitch_", orig_name: "bitchPost", is_print: 0},
+	{ name: "bitch_pirate_", orig_name: "bitch_piratePost", is_print: 0},
 
 	// <<whore_ nun>> = <<whore>>는 
 	{ name: "whore_", orig_name: "whorePost", is_print: 0},

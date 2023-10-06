@@ -177,13 +177,13 @@ function integrityWord(worn, slot) {
 	if (alt === "parasite") {
 		switch (kw) {
 			case "너덜너덜한":
-				T.text_output = "shredded ";
+				T.text_output = "조각난 ";
 				break;
 			case "찢긴":
-				T.text_output = "patchy ";
+				T.text_output = "고르지 못한 ";
 				break;
 			case "해어진":
-				T.text_output = "hurt ";
+				T.text_output = "상처입은 ";
 				break;
 			case "full":
 			default:

@@ -344,6 +344,12 @@
     ```
 
     ```
+    <<breastssimplePost>>
+	     <<breastssimple>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<bellyDescriptionPost>>
         <<bellyDescriptionPost *["pc"|npc|size] [force] post "sep">>
 
@@ -1236,6 +1242,12 @@
     ```
 
     ```
+    <<sisterPost>>
+        <<sister>>의 대체 위젯. <<SisterPost>> 로도 사용가능.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<victimgirlPost>>
          <<victimgirl>>의 대체 위젯.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
@@ -1267,7 +1279,13 @@
 
     ```
     <<bitchPost>>
-        <<bitch>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        <<bitch>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<bitch_piratePost>>
+        <<bitch_pirate>>의 대체 위젯. <<whorePost>> 로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -2028,6 +2046,20 @@
         <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. TODO: 리팩토링될 수 있음.
     ```
 
+* trCrime
+    ```
+    <<trCrimeName>>
+        <<trCrimeName *name post sep>>, trCrimeName(name, post, sep)
+
+        범죄명을 번역한다. js 형식으로도 사용가능.
+
+        필수사항
+        - *name: 번역할 범죄명
+
+        e.g.
+        <<trCrimeName 'exposure'>>	// 과다노출
+    ```
+
 * trFurniture
     ```
     <<trFurniture>>
@@ -2537,6 +2569,7 @@
         <<trWeather "rain">>                //  "비"
     ```
 
+
 -----------------
 # 기타 명사 매크로
    - 사용 횟수가 너무 적어 새로 만들지 않고 기존 매크로를 변경시켜 사용하는 매크로들. 조사를 받거나 조사 표현이 가능한 것만 기재한다.
@@ -2810,7 +2843,7 @@
 		```
 	- bodyPost 계열
 		```
-		<<breasts_ (조사)>>, <<bellyDescription_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
+		<<breasts_ (조사)>>, <<breastssimple_ (조사)>>, <<bellyDescription_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
 		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, <<mouth_ (조사)>>,  
 		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
@@ -2841,8 +2874,8 @@
 	- otherPost 계열
 		```
 		<<charles_ (조사)>>, <<theowner_ (조사)>>, <<someone_ (조사)>>, <<spouse_ (조사)>>, <<father_ (조사)>>, <<Father_ (조사)>>, <<mummy_ (조사)>>, <<Mummy_ (조사)>>, 
-		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>,
-		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
+		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>, <<Wife_ (조사)>>, <<sister_ (조사)>>, <<Sister_ (조사)>>,
+		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<bitch_pirate_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
 		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<pmother_ (조사)>>, <<pMother_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, 
 		<<priest_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
