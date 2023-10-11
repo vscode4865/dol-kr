@@ -346,7 +346,7 @@ function pregnancyNameCorrection(name, caps = false) {
 			Wikifier.wikifyEval('<<trNamedNPC "' + name + '" "name">>'); name = T.trResult; getPostNum(T.trResult);
 			break;
 		case "pc":
-			name = "당신 자신"; T.postNum = 0;
+			name = "당신 자신"; T.trResult = name; T.postNum = 0;
 			break;
 		default:
 			Wikifier.wikifyEval('<<trNPCdesc "' + name + '">>'); name = name[0] === name[0].toLowerCase() ? "어떤 " + T.trResult : T.trResult; getPostNum(T.trResult);
