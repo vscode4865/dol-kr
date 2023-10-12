@@ -2266,12 +2266,16 @@
 * trPill
     ```
     <<trPill>>
-        <<trPill *PillType>>
+        <<trPill *PillType post "sep">>
 
         약의 타입을 번역합니다.
 
         필수사항
         - *PillType: 약의 타입
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
 
         e.g.
         <<trPill "Growth">>     // 성장약
@@ -2322,7 +2326,7 @@
 
         e.g.
         /* _trResult = "가나다" */
-        <<trPost 0 '은'>>                   //  '가다나은'
+        <<trPost 0 '은'>>                   //  '가나다은'
         /* _trResult = "abc" */
         <<trPost 1 '을'>>                   //  'abc를'
         /* _trResult = "123" */
@@ -2679,6 +2683,13 @@
     <<livestock_horse>>
         + 말. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
+
+* overworld-plains/loc-farm/widgets.twee
+    ```
+    <<fox_text>>
+        + 여우. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 
 -----------------
 # 기타

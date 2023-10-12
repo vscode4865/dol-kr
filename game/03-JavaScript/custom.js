@@ -1,6 +1,6 @@
 /*window*/
 window.Customconfig = {
-    "version" : "0.1.2023.0826"
+    "version" : "0.1.2023.1007"
 }
 
 l10nStrings.errorTitle = StartConfig.version + "-" + Customconfig.version + " Error";
