@@ -816,3 +816,29 @@
 <<widget "office_managerPost">><<silently>>	/* overworld-town/loc-office/main.twee */
 	<<trNPCname $per_npc.manager.name _args[0] _args[1]>>
 <</silently>><span class="manager"><<print _trResult>></span><</widget>>
+
+<<widget "temple_titlePost">><<silently>>	/* overworld-town/loc-temple/widgets.twee */
+	<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<else>>
+		<<set $_arg to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<</if>>
+
+	<<if $_arg is "dark">>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _trResult to "신생아">><<trPost 1 $_post $_sep>>
+			<<case "monk">><<set _trResult to "그릇">><<trPost 0 $_post $_sep>>
+			<<case "priest">><<set _trResult to "어둠의 사제">><<trPost 1 $_post $_sep>>
+			<<default>><<set _trResult to "신생아">><<trPost 1 $_post $_sep>>
+		<</switch>>
+	<<else>>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+			<<case "monk">><<set _trResult to ($player.gender_appearance is "m" ? "수도자" : "수녀")>><<trPost 1 $_post $_sep>>
+			<<case "priest">><<set _trResult to "사제">><<trPost 1 $_post $_sep>>
+			<<default>><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+		<</switch>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "temple_TitlePost">><<temple_titlePost _args[0] _args[1] _args[2]>><</widget>>
