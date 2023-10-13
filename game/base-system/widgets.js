@@ -158,7 +158,7 @@ function genderappearancecheck() {
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "마스카라");
 	/* Body structure */
 	setfemininitymultiplierfromgender(V.player.gender_body);
-	addfemininityfromfactor(T.femininity_multiplier * 200, "Body type");
+	addfemininityfromfactor(T.femininity_multiplier * 200, "체형");
 	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "탄탄한 근육");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
@@ -254,7 +254,7 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, (V.player.perceived_breastsize > 0 ? "Exposed breasts" : "Exposed flat chest"));
+			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, (V.player.perceived_breastsize > 0 ? "노출된 유방" : "노출된 평평한 가슴"));
 		} else {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 2) * 100, 0, Infinity), "속옷 너머로 가슴 크기 확인 가능");

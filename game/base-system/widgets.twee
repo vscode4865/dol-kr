@@ -724,11 +724,11 @@
 <<widget "listCrimeCheats">>
 	<<if Object.keys(V.crime.events).length isnot 0>>
 		<<for $_ce range Object.keys(V.crime.events)>>
-			<<print $_ce + ": " + setup.crimeDescs[$_ce].toUpperFirst() + ", " + $crime.events[$_ce].length + " count(s)">>
+			<<print $_ce + ": " + setup.crimeDescs[$_ce].toUpperFirst() + ", " + $crime.events[$_ce].length + " 번">>
 			<br>
 		<</for>>
 	<<else>>
-		<span class="red">No unique crime events</span>
+		<span class="red">특별한 범죄 이벤트가 없음</span>
 		<br>
 	<</if>>
 <</widget>>
@@ -737,30 +737,30 @@
 	<<for $_crimeType range Object.keys(setup.crimeNames)>>
 		<<if C.crime[$_crimeType + "Count"] gte 1>>
 			<<set $_crimes_output to "">>
-			<<number `C.crime[$_crimeType + "Count"]` "silent">>
-			<<set $_crimes_output += "- " + _text_output.toLocaleUpperFirst() + " count">>
+			<<trNumber `C.crime[$_crimeType + "Count"]` "silent">>
+			<<set $_crimes_output += "- " + _trResult + " 번의">>
 			<<if C.crime[$_crimeType + "Count"] isnot 1>>
-				<<set $_crimes_output += "s">>
+				<<set $_crimes_output += "">>
 			<</if>>
-			<<set $_crimes_output += " of " + toTitleCase(setup.crimeNames[$_crimeType])>>
-			<<unset _text_output>>
+			<<set $_crimes_output += " " + toTitleCase(trCrimeName(setup.crimeNames[$_crimeType]))>>
+			<<unset _trResult>>
 			<<set $_crimes_event_list to []>>
 			<<for $_ce range Object.keys($crime.events)>>
 				<<set $_crDescLen to $crime.events[$_ce].filter(e => e.type is $_crimeType).length>>
 				<<if $_crDescLen gte 1>>
-					<<number $_crDescLen "silent">>
-					<<set $_crDescStr to _text_output + " count">>
+					<<trNumber $_crDescLen "silent">>
+					<<set $_crDescStr to _trResult + " 번의">>
 					<<if $_crDescLen gt 1>>
-						<<set $_crDescStr += "s">>
+						<<set $_crDescStr += "">>
 					<</if>>
-					<<set $_crDescStr += " of " + setup.crimeDescs[$_ce]>>
-					<<unset _text_output>>
+					<<set $_crDescStr += " " + setup.crimeDescs[$_ce]>>
+					<<unset _trResult>>
 					<<set $_crimes_event_list.push($_crDescStr)>>
 				<</if>>
 			<</for>>
 			<<if $_crimes_event_list.length isnot 0>>
-				<<set $_crimes_output += ", including ">>
-				<<set $_crimes_output += formatList($_crimes_event_list, "and", true)>>
+				<<set $_crimes_output += ", ">>
+				<<set $_crimes_output += formatList($_crimes_event_list, "그리고", true)+ " 포함">>
 			<</if>>
 			<<set $_crimes_output += ".">><span class="red"><<print $_crimes_output>></span>
 			<br>
@@ -1547,7 +1547,7 @@
 		<div id="druggedcaption">
 			<div @class="($options.showCaptionText is true ? '' : 'rightMeterText')">
 				<<if $options.showCaptionText is true>>
-					<span class="pink">A lewd warmth fills you.</span>
+					<span class="pink">음란한 온기가 몸을 가득 채운다.</span>
 				<<else>>
 					약물:
 				<</if>>
@@ -3023,7 +3023,7 @@
 		<</if>>
 		<<switch Math.clamp(setup.bodyliquid.combined("anus"), 1, 5)>>
 			<<case 5>>
-				<span class="red">Your bowels overflow with _liquid.</span>
+				<span class="red">장에서 _liquid이 흘러넘친다.</span>
 				<br>
 			<<case 4>>
 				<span class="pink"><<bottomPost "에서">> _liquid이 흘러넘친다.</span>
@@ -3505,26 +3505,26 @@
 	<<if $christmas_wrap is 1>>
 		<<switch $christmas_gift_robin>>
 			<<case "shirt_unwrapped">>
-				<<gifticon "shirt">><<link [[Wrap Robin's shirt and shorts (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "shirt">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "shirt">><<link [[로빈의 셔츠와 치마를 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "shirt">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 			<<case "sundress_unwrapped">>
-				<<gifticon "sundress">><<link [[Wrap Robin's sundress (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "sundress">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "sundress">><<link [[로빈의 선드레스를 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "sundress">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 			<<case "kimono_unwrapped">>
-				<<gifticon "kimono">><<link [[Wrap Robin's kimono (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "kimono">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "kimono">><<link [[로빈의 기모노를 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "kimono">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 			<<case "tuxedo_set_unwrapped">>
-				<<gifticon "tuxedo">><<link [[Wrap Robin's tuxedo (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "tuxedo">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "tuxedo">><<link [[로빈의 턱시도를 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "tuxedo">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 			<<case "gothic_gown_unwrapped">>
-				<<gifticon "gothic">><<link [[Wrap Robin's gothic gown (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "gothic gown">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "gothic">><<link [[로빈의 고딕 드레스를 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "gothic gown">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 			<<case "christmas_unwrapped">>
-				<<gifticon "christmas hat">><<link [[Wrap Robin's Christmas outfit (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "christmas">><<set $christmas_gift_robin_wrapped to 1>><</link>>
+				<<gifticon "christmas hat">><<link [[로빈의 크리스마스 옷을 포장한다 (0:10)|Bedroom Robin Wrap]]>><<pass 10>><<set $christmas_gift_robin to "christmas">><<set $christmas_gift_robin_wrapped to 1>><</link>>
 				<br>
 		<</switch>>
 		<<if $christmas_gift is "clothes_unwrapped">>
-			<<gifticon "christmas">><<link [[Wrap the orphans' gifts (3:00)|Bedroom Orphans Clothes Wrap]]>><<pass 180>><<set $christmas_gift to "clothes">><</link>>
+			<<gifticon "christmas">><<link [[고아들을 위한 선물을 포장한다 (3:00)|Bedroom Orphans Clothes Wrap]]>><<pass 180>><<set $christmas_gift to "clothes">><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -3845,13 +3845,13 @@
 		</div>
 		<div class="relation-description">
 			늑대들은
-			<<if $wolfpackleader gte 1>> view you as <span class="green">the leader of the pack.</span>
-				<<elseif $syndromewolves gte 1>> view you as <span class="green">their <<ppackbrother>>.</span>
-				<<elseif $wolfpacktrust gte 12>> <span class="green">trust you.</span>
-				<<elseif $wolfpacktrust gte 6>> are <span class="teal">starting to accept you.</span>
-				<<elseif $wolfpackfear gte 12>> <span class="red">fear you.</span>
-				<<elseif $wolfpackfear gte 6>> are <span class="purple">starting to fear you.</span>
-				<<else>><span class="pink"> view you as prey.</span>
+			<<if $wolfpackleader gte 1>> 당신을 <span class="green">무리 우두머리로 본다.</span>
+				<<elseif $syndromewolves gte 1>> 당신을 <span class="green">그들의 <<ppackbrother_ ro>> 본다.</span>
+				<<elseif $wolfpacktrust gte 12>> <span class="green">당신을 믿고 있다.</span>
+				<<elseif $wolfpacktrust gte 6>> are <span class="teal">당신을 받아들이기 시작했다.</span>
+				<<elseif $wolfpackfear gte 12>> <span class="red">당신을 무서워하고 있다.</span>
+				<<elseif $wolfpackfear gte 6>> are <span class="purple">당신을 무서워하기 시작했다.</span>
+				<<else>><span class="pink"> 당신을 사냥감으로 본다.</span>
 			<</if>>
 		</div>
 	</div>
