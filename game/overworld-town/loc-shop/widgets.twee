@@ -105,23 +105,23 @@ Forth argument - item index*/
 		<<else>>
 			<<integrity $clothes_choice_integrity>>
 		<</if>>
-		<<reveal $clothes_choice_reveal>> <<trSearchClothes _temp_choice.name "name">><<print _trResult>>.
+		<<reveal $clothes_choice_reveal>> <<trClothes $clothingShopSlot _temp_choice.name "name">><<print _trResult>>.
 		<<if _temp_choice.gender is "m">>
 			<span class="lblue">남성용.</span>
 		<<elseif _temp_choice.gender is "f">>
 			<span class="pink">여성용.</span>
 		<</if>>
-		<<trSearchClothes _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
+		<<trClothes $clothingShopSlot _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
 		<br>
 		<<warmth _temp_choice.warmth>>
 		<br><br>
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
 		<<if $earSlime.event is "go commando" and $clothingShopSlot is "under_lower">>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the  _temp_choice.name as it is forcing you to go commando.</span>
+			<span class="red">귓속의 슬라임이 당신에게 속옷을 입지 말라고 했기 때문에 <<trClothes $clothingShopSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 			<br>
 		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !(_temp_choice.type.includesAny("school") and Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
-			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않는다.</span>
+			<span class="red">귓속의 슬라임이 <<trClothes $clothingShopSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 			<br>
 		<<else>>
 			<<if _temp_choice.colour_options.length gt 1>>
@@ -202,9 +202,9 @@ Forth argument - item index*/
 					<<if $worn[$clothingShopSlot].cursed is 1>>
 						<span class="blue">먼저 당신의
 						<<for _i to 0; _i lt _preventSlots.length; _i++>>
-							<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "과">>_trResult
+							<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trClothes _preventSlots[_i] $worn[_preventSlots[_i]].name "name" "과">>_trResult
 							<<elseif _preventSlots.length gte 2 and _i is _preventSlots.length - 1>>
-								<<trSearchClothes $worn[_preventSlots[_i]].name "name" "을">>_trResult
+								<<trClothes _preventSlots[_i] $worn[_preventSlots[_i]].name "name" "을">>_trResult
 							<</if>>
 						<</for>>
 						벗지 않으면 입을 수 없다.</span>
@@ -236,9 +236,9 @@ Forth argument - item index*/
 				<<if _cursedPrevent is true>>
 					<span class="blue">먼저 당신의
 					<<for _i to 0; _i lt _preventSlots.length; _i++>>
-						<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trSearchClothes $worn[_preventSlots[_i]].name "name" "과">>_trResult
+						<<if _preventSlots.length gt 2 and _i lt _preventSlots.length - 1>><<trClothes _preventSlots[_i] $worn[_preventSlots[_i]].name "name" "과">>_trResult
 						<<elseif _preventSlots.length gte 2 and _i is _preventSlots.length - 1>>
-							<<trSearchClothes $worn[_preventSlots[_i]].name "name" "을">>_trResult
+							<<trClothes _preventSlots[_i] $worn[_preventSlots[_i]].name "name" "을">>_trResult
 						<</if>>
 					<</for>>
 					벗지 않으면 입을 수 없다.</span>
@@ -246,7 +246,7 @@ Forth argument - item index*/
 				<<elseif playerBellySize() gte 12 and _temp_choice.type.includes("constricting")>>
 					<<printpreggy _temp_choice>>
 				<<else>>
-					<<link [[옷을 산다|$passage]]>>
+					<<link [[옷을 사서 입는다|$passage]]>>
 						<<clothingReset $clothingShopSlot>>
 						<<shopbuy $clothingShopSlot "buy" "wear" $clothes_choice>>
 						<<set $money -= _cost>>
@@ -359,10 +359,10 @@ Forth argument - item index*/
 			<</if>>
 			<<clothingicon _item $clothingShopSlot>>
 			<<if $specialClothes[_item.name.replace(/ /g,"")] is "locked">>
-				<span class="lblue"><<trSearchClothes _itemData.name "name">>_trResult</span>
+				<span class="lblue"><<trClothes $clothingShopSlot _itemData.name "name">>_trResult</span>
 			<<else>>
 				<<capture _item _itemData _i>>
-					<<trSearchClothes _itemData.name "name">><<link [[_trResult|$passage]]>>
+					<<trClothes $clothingShopSlot _itemData.name "name">><<link [[_trResult|$passage]]>>
 						<<set $clothes_choice to _i>>
 						<<set $clothes_choice_reveal to clone(_item.reveal)>>
 						<<set $clothes_choice_integrity to (_itemData.integrity_max)>>
@@ -540,7 +540,7 @@ Forth argument - item index*/
 		<<case "sleek">>
 			<<set _clothesDesc to "반듯하게 뻗은 머리모양.">>
 		<<case "textured">>
-			<<set _clothesDesc to "Afro-textured hair.">>
+			<<set _clothesDesc to "아프로 질감의 머리모양.">>
 		<<case "wavy">>
 			<<set _clothesDesc to "그렇게 곱슬거리지도, 그렇게 반듯이 뻗지도 않은 머리모양.">>
 		<<case "pigtails">>
@@ -550,7 +550,7 @@ Forth argument - item index*/
 		<<case "braids">>
 			<<set _clothesDesc to "머리카락 가닥이 서로 짜여진 머리모양. 레게머리처럼, 엄밀하게는 땋은머리가 아닌 스타일도 포함한다.">>
 		<<case "ponytail">>
-			<<set _clothesDesc to "Hair gathered at the back of the head.">>
+			<<set _clothesDesc to "머리 뒤쪽으로 모은 머리모양.">>
 		<<default>>
 			<<set $noTraitDescription to 1>>
 	<</switch>>
@@ -1285,14 +1285,14 @@ Forth argument - item index*/
 			"futuristicbodysuit":"10월 21일부터 판매한다.",
 			"daisy":"데이지 씨를 찾는다.",
 			"esotericspectacles":"마스터를 물려받는다.",
-			"spiritmask":"Become sufficiently foxy.",
-			"ragtop":"Demonstrate historical torture devices to completion.",
-			"ragskirt":"Demonstrate historical torture devices to completion.",
-			"minipumpkin":"In stock from the 21st of October.",
-			"gakuran":"Discover the headteacher's secret.",
-			"classicserafuku":"Discover the headteacher's secret.",
-			"sailorribbon":"Discover the headteacher's secret.",
-			"islandermask":"Build with foreign wood."
+			"spiritmask":"충분히 여우가 된다.",
+			"ragtop":"역사적인 고문도구들을 완벽하게 시연한다.",
+			"ragskirt":"역사적인 고문도구들을 완벽하게 시연한다.",
+			"minipumpkin":"10월 21일부터 판매한다.",
+			"gakuran":"교장 선생님의 비밀을 밝힌다.",
+			"classicserafuku":"교장 선생님의 비밀을 밝힌다.",
+			"sailorribbon":"교장 선생님의 비밀을 밝힌다.",
+			"islandermask":"외국의 나무로 만든다."
 		}>>
 	<</if>>
 <</widget>>

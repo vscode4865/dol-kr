@@ -65,7 +65,7 @@
 	<</if>>
 	<<set _unavailableItems to !!$daily.corruptionSlimeClothes or !!$earSlime.event is "go commando" or !!$earSlime.forcedDressing or playerBellySize() gte 12>>
 	<<if _unavailableItems>>
-		<label><<checkbox "$shopClothingFilter.availableOnly" false true autocheck>> Hide unavailable items</label>
+		<label><<checkbox "$shopClothingFilter.availableOnly" false true autocheck>> 사용하지 못하는 물건을 숨긴다</label>
 	<<else>>
 		<<set $shopClothingFilter.available to false>>
 	<</if>>
@@ -348,7 +348,7 @@
 					<<if !$shopDefaults.compactMode>>
 						<div class="pricetag-placeholder"></div>
 					<</if>>
-					<span class="clothing-name"><<trSearchClothes _itemData.name "name">>
+					<span class="clothing-name"><<trClothes $_realSlot _itemData.name "name">>
 						<<if _locked>>
 							<span class="lblue">_trResult</span><span class="black">&nbsp;| 잠김</span>
 						<<else>>
@@ -494,13 +494,13 @@
 		<<else>>
 			<<integrity $clothes_choice_integrity>>
 		<</if>>
-		<<reveal $clothes_choice_reveal>> <<trSearchClothes _temp_choice.name "name">><<print _trResult>>.
+		<<reveal $clothes_choice_reveal>> <<trClothes _realSlot _temp_choice.name "name">><<print _trResult>>.
 		<<if _temp_choice.gender is "m">>
 			<span class="lblue">남성용.</span>
 		<<elseif _temp_choice.gender is "f">>
 			<span class="pink">여성용.</span>
 		<</if>>
-		<<trSearchClothes _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
+		<<trClothes _realSlot _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
 		<br>
 		<<set _truewarmth = getTrueWarmth(_temp_choice)>>
 		<<warmth _truewarmth>>
@@ -508,16 +508,16 @@
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
 		<<if $earSlime.event is "go commando" and $clothingShopSlot is "under_lower">>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the  _temp_choice.name as it is forcing you to go commando.</span>
+			<span class="red">귓속의 슬라임이 당신에게 속옷을 입지 말라고 했기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 			<br>
 		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !_temp_choice.type.includesAny("school","event")>>
-			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않습니다.</span>
+			<span class="red">귓속의 슬라임이 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 			<br>
 		<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
-			<span class="red">The slime in your ear refuses to allow you to try on or buy the _temp_choice.name as is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+			<span class="red">귓속의 슬라임이 당신에게 더 <<print $earSlime.forcedDressing.type is "f" ? "여성스러운" : "남성스러운">> 옷만 입으라고 했기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 		<<else>>
 			<<if _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and (_temp_choice.type.includesAny("school") and !Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
-				<span class="red">The slime in your ear refuses to allow you to try on or wear the _temp_choice.name when you don't have school today.</span>
+				<span class="red">귓속의 슬라임이 오늘 당신이 수업이 없기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
 				<br>
 				<<set _wearingBlocked to true>>
 			<<else>>
@@ -647,9 +647,9 @@
 					<div class="buy-button">
 						<div @class="'buy-button-inner ' + _cantWear">
 							<<if _cursedPrevent or _preggyPrevent or _wearingBlocked>>
-								Buy and wear
+								옷을 사서 입는다
 							<<else>>
-								<<link "옷을 산다">>
+								<<link "옷을 사서 입는다">>
 									<<clothingReset _realSlot>>
 									<<shopbuyv2 _realSlot "buy" "wear" _realIndex>>
 									<<set $money -= getClothingCost(_temp_choice,$clothingShopSlot)>>
