@@ -3,14 +3,22 @@
 	<br>
 	<<trMonth `Time.monthName`>><<print "오늘은 " + Time.year + "년 " + _trResult + " " + Time.monthDay + "일 이다." >>
 	<ul style="margin-top:10px;margin-left:-5px;">
-	<li>게임이 시작된 지 <span class="gold"><<print Time.days>></span>일이 지났다.</li>
-	<<if $hardmodedays isnot undefined>>
-		<li>당신은 하드모드에서 <span class="gold">$hardmodedays</span>일 동안 생존했다.</li>
-		<br>
+	<<if Time.days lt 0>>
+		<<if Time.days lt -365>>
+			<li>게임이 시작된 지 약 <span class="gold"><<print Math.floor(Time.startDate.year - Time.year)>></span>년이 지났다.</li>
+		<<else>>
+			<li>게임이 시작된 지 <span class="gold"><<print Time.days * -1>></span>일이 지났다.</li>
+		<</if>>
+	<<else>>
+		<li>게임이 시작된 지 <span class="gold"><<print Time.days>></span>일이 지났다.</li>
+		<<if $hardmodedays isnot undefined>>
+			<li>당신은 하드모드에서 <span class="gold">$hardmodedays</span>일 동안 생존했다.</li>
+			<br>
+		<</if>>
+		<li>게임은 <<trSeason $startingseason>>_trResult에 시작했다.</li>
+		<li>지금은 <<trSeason `Time.season` "이다">>_trResult.</li>
+		<li><<schoolterm>></li>
 	<</if>>
-	<li>게임은 <<trSeason $startingseason>>_trResult에 시작했다.</li>
-	<li>지금은 <<trSeason `Time.season` "이다">>_trResult.</li>
-	<li><<schoolterm>></li>
 	</ul>
 
 	<<if $options.images is 1>>
@@ -496,7 +504,7 @@
 			<</if>>
 			<<if $sciencelichenpark is 1>>
 				<<if $sciencelichenparkready is 1>>
-					<<run $sciencechance.push("Lichen")>>
+					<<run $sciencechance.pushUnique("Lichen")>>
 					<span class='fa-icon fa-selected'></span> 공원에서 자라고 있던 이끼를 프로젝트에 포함시켰다.
 					<br>
 				<<else>>
@@ -509,7 +517,7 @@
 			<</if>>
 			<<if $sciencelichentemple is 1>>
 				<<if $sciencelichentempleready is 1>>
-					<<run $sciencechance.push("Temple")>>
+					<<run $sciencechance.pushUnique("Temple")>>
 					<span class='fa-icon fa-selected'></span> 사원에서 자라고 있던 이끼를 프로젝트에 포함시켰다.
 					<br>
 				<<else>>
@@ -522,7 +530,7 @@
 			<</if>>
 			<<if $sciencelichendrain is 1>>
 				<<if $sciencelichendrainready is 1>>
-					<<run $sciencechance.push("Drain")>>
+					<<run $sciencechance.pushUnique("Drain")>>
 					<span class='fa-icon fa-selected'></span> 빗물 배수관에서 자라고 있던 이끼를 프로젝트에 포함시켰다.
 					<br>
 				<<else>>
@@ -535,7 +543,7 @@
 			<</if>>
 			<<if $sciencelichenlake is 1>>
 				<<if $sciencelichenlakeready is 1>>
-					<<run $sciencechance.push("Ruin")>>
+					<<run $sciencechance.pushUnique("Ruin")>>
 					<span class='fa-icon fa-selected'></span> 호수 유적에서 자라고 있던 이끼를 프로젝트에 포함시켰다.
 					<br>
 				<<else>>
@@ -641,10 +649,11 @@
 
 	<<if $englishPlay is "ongoing">>
 		<hr>
+		<span class="gold bold">English Play</span><br>
 		<<if $englishPlayDays is 0>>
 			학교 연극이 클리프 가의 시청에서 오늘 밤 <<ampm 17 00>>부터 <<ampm 21 00>>까지 열릴 예정이다.
 		<<else>>
-			학교 연극이 클리프 가의 시청에서 $englishPlayDays일 뒤에 열릴 예정이다.
+			학교 연극이 클리프 가의 시청에서 <span class="gold">$englishPlayDays</span>일 뒤에 열릴 예정이다.
 		<</if>>
 		<<if $englishPlayRoles.Player isnot "none">>
 			<br>

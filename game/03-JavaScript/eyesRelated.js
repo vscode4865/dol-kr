@@ -10,7 +10,7 @@ function buildEyeDetails() {
 			sentence += trColourJS(setup.colours.eyes_map[lenses.left].name, "과", "sep");
 			concatFlag = true;
 		}
-		if (typeof lenses.right === "string") {
+		if (typeof lenses.right === "string" && lenses.left !== lenses.right) {
 			if (concatFlag) sentence += T.trPost + " ";
 			sentence += trColourJS(setup.colours.eyes_map[lenses.right].name);
 			concatFlag = true;

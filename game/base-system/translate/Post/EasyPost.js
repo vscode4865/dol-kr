@@ -451,6 +451,8 @@ const EasyPostMacroList = [
 
 	{ name: "sister_", orig_name: "sisterPost", is_print: 0},
 	{ name: "Sister_", orig_name: "sisterPost", is_print: 0},
+	{ name: "sister_npc_", orig_name: "sister_npcPost", is_print: 0},
+	{ name: "Sister_npc_", orig_name: "sister_npcPost", is_print: 0},
 
 	// <<victimgirl_ ul>> = <<victimgirl>>을 
 	{ name: "victimgirl_", orig_name: "victimgirlPost", is_print: 0},
@@ -504,12 +506,16 @@ const EasyPostMacroList = [
 
 	// <<monks_and_nuns_ nun>> = <<monks_and_nuns>>는 
 	{ name: "monks_and_nuns_", orig_name: "monks_and_nunsPost", is_print: 0},
+	{ name: "brothers_and_sisters_", orig_name: "brothers_and_sistersPost", is_print: 0},
 
 	// <<priest_ nun>> = <<priest>>는 
 	{ name: "priest_", orig_name: "priestPost", is_print: 0},
 
 	// <<priests_ nun>> = <<priests>>는 
 	{ name: "priests_", orig_name: "priestsPost", is_print: 0},
+
+	{ name: "bishop_", orig_name: "bishopPost", is_print: 0},
+	{ name: "bishop_hands_", orig_name: "bishop_handsPost", is_print: 0},
 
 	// <<farm_text_many_ nun dog>> = <<farm_text_many dog>>는 
 	{ name: "farm_text_many_", orig_name: "farm_text_manyPost", is_print: 0},
