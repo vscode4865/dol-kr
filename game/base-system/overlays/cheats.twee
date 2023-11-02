@@ -129,20 +129,24 @@
 		/*passage change is intentional to allow the players to quickly see the visual differences*/
 		현재 성별: <<genderPost>>
 		<br>
-		<<if $sexStats.vagina.menstruation.currentState is "normal">>
+		<<if $earSlime.growth gt 50>>
+			귓속 슬라임의 현재 성장도로 인해 현재 성별 변경이 비활성화 되어 있습니다. 귓속 슬라임을 제거하면 이 치트가 다시 활성화됩니다.
+		<<elseif $sexStats.vagina.menstruation.currentState is "normal">>
 			다음으로 변경:
-			<<link [[남자가 된다|$passage]]>>
-				<<set $vaginause to "none">>
-				<<set $vaginastate to "none">>
-				<<set $penisuse to 0>>
-				<<set $penisstate to 0>>
-				<<set $player.gender to "m">>
-				<<set $player.sex to "m">>
-				<<set $player.ballsExist to true>>
-				<<set $player.penisExist to true>>
-				<<set $player.vaginaExist to false>>
-				<<set $sexStats.vagina.menstruation.running = false>>
-			<</link>> |
+			<<if $player.gender isnot "m">>
+				<<link [[남자가 된다|$passage]]>>
+					<<set $vaginause to "none">>
+					<<set $vaginastate to "none">>
+					<<set $penisuse to 0>>
+					<<set $penisstate to 0>>
+					<<set $player.gender to "m">>
+					<<set $player.sex to "m">>
+					<<set $player.ballsExist to true>>
+					<<set $player.penisExist to true>>
+					<<set $player.vaginaExist to false>>
+					<<set $sexStats.vagina.menstruation.running = false>>
+				<</link>> |
+			<</if>>
 			<<if $player.gender isnot "f">>
 				<<link [[여자가 된다|$passage]]>>
 					<<set $vaginause to 0>>
@@ -185,54 +189,29 @@
 		혹시 모를 문제를 방지하기 위해 성별은 옷장에서만 바꿀 수 있습니다.
 	<</if>>
 	<br><br>
+	<<set _gender_body_words to {"m": "남성적", "f": "여성적", "a": "중성적"}>>
 	체형:
-	<span id="statsNaturalFeatures">
-		<<switch $player.gender_body>>
-			<<case "m">>남성적
-			<<case "f">>여성적
-			<<case "a">>중성적
-		<</switch>>
+	<span id="statsBodyType">
+		<<print _gender_body_words[$player.gender_body]>>
 	</span>
 	<br>
 	<<link "남성적">>
 		<<set $player.gender_body to "m">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>남성적
-				<<case "f">>여성적
-				<<case "a">>중성적
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<<link "여성적">>
 		<<set $player.gender_body to "f">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>남성적
-				<<case "f">>여성적
-				<<case "a">>중성적
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<<link "중성적">>
 		<<set $player.gender_body to "a">>
-		<<replace "#statsNaturalFeatures">>
-			<<switch $player.gender_body>>
-				<<case "m">>남성적
-				<<case "f">>여성적
-				<<case "a">>중성적
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
 	<</link>> |
 	<br><br>
+	<<set _bodysize_words to ["조그마함","작음","평범함","큼"]>>
 	신체 크기:
 	<span id="statsBodySize">
-		<<switch $bodysize>>
-			<<case 0>>조그마함
-			<<case 1>>작음
-			<<case 2>>평범함
-			<<case 3>>큼
-		<</switch>>
+		<<print _bodysize_words[$bodysize]>>
 	</span>
 	<br>
 	<<link "조그마함">>
@@ -240,56 +219,28 @@
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 6000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>조그마함
-				<<case 1>>작음
-				<<case 2>>평범함
-				<<case 3>>큼
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "작음">>
 		<<set $bodysize to 1>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 10000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>조그마함
-				<<case 1>>작음
-				<<case 2>>평범함
-				<<case 3>>큼
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "평범함">>
 		<<set $bodysize to 2>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 12000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>조그마함
-				<<case 1>>작음
-				<<case 2>>평범함
-				<<case 3>>큼
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<<link "큼">>
 		<<set $bodysize to 3>>
 		<<set _physique_max_old to $physiquesize>>
 		<<set $physiquesize to 16000>>
 		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">>
-			<<switch $bodysize>>
-				<<case 0>>조그마함
-				<<case 1>>작음
-				<<case 2>>평범함
-				<<case 3>>큼
-			<</switch>>
-		<</replace>>
+		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
 	<</link>> |
 	<br><br>
 
@@ -492,13 +443,13 @@
 
 	<<if $parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime">>
 
-	<<link "<<<">><<set $corruption_slime -= 100>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>> |
-	<<link "<<">><<set $corruption_slime -= 10>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $corruption_slime -= 1>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>> |
-	오염: <span id="statscorruption_slime"><<print Math.trunc($corruption_slime)>></span>
-	| <<link ">">><<set $corruption_slime += 1>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $corruption_slime += 10>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $corruption_slime += 100>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($corruption_slime)>><</replace>> <<updatesidebarimg>><</link>>
+	<<link "<<<">><<set $earSlime.corruption -= 100>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>> |
+	<<link "<<">><<set $earSlime.corruption -= 10>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>> |
+	<<link "<">><<set $earSlime.corruption -= 1>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>> |
+	오염: <span id="statscorruption_slime"><<print Math.trunc($earSlime.corruption)>></span>
+	| <<link ">">><<set $earSlime.corruption += 1>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>>
+	| <<link ">>">><<set $earSlime.corruption += 10>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>>
+	| <<link ">>>">><<set $earSlime.corruption += 100>><<clamp>><<replace "#statscorruption_slime">><<print Math.trunc($earSlime.corruption)>><</replace>> <<updatesidebarimg>><</link>>
 	<br>
 
 	<</if>>
@@ -543,8 +494,8 @@
 	| <<link ">>>">><<set $sadism += 1000>><<clamp>><<replace "#statssadism">><<print Math.trunc($sadism)>><</replace>> <<updatesidebarimg>><</link>>
 	<br><br>
 
-	젖 분비: <span id="statslactatingspray">$lactating</span> |
-	<<link "변경">><<if $lactating is 1>><<set $lactating to 0>><<set $lactation_pressure to 0>><<else>><<set $lactating to 1>><<set $lactation_pressure to 100>><</if>><<replace "#statslactatingspray">><<print $lactating>><</replace>> <<updatesidebarimg>><</link>>
+	젖 분비: <span id="statslactatingspray"><<print ($lactating is 1 ? "네" : "아니오")>></span> |
+	<<link "변경">><<set $lactating to ($lactating is 1 ? 0 : 1)>><<set $lactation_pressure to $lactating * 100>><<replace "#statslactatingspray">><<print ($lactating is 1 ? "네" : "아니오")>><</replace>><<updatesidebarimg>><</link>>
 	<br>
 
 	<<link "액체 리필">><<set $semen_amount to $semen_volume>><<set $milk_amount to $milk_volume>><</link>>
@@ -648,13 +599,13 @@
 	<</if>>
 
 	<<if $worn.under_lower.integrity gte 1>>
-		<<link "<<<">><<set $underlowerwet -= 100>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		<<link "<<">><<set $underlowerwet -= 10>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		<<link "<">><<set $underlowerwet -= 1>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		속옷 하의 젖음: <span id="statsunderwet"><<print Math.trunc($underlowerwet)>></span>
-		| <<link ">">><<set $underlowerwet += 1>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
-		| <<link ">>">><<set $underlowerwet += 10>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
-		| <<link ">>>">><<set $underlowerwet += 100>><<clamp>><<replace "#statsunderwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
+		<<link "<<<">><<set $underlowerwet -= 100>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $underlowerwet -= 10>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $underlowerwet -= 1>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		속옷 하의 젖음: <span id="statsunderlowerwet"><<print Math.trunc($underlowerwet)>></span>
+		| <<link ">">><<set $underlowerwet += 1>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $underlowerwet += 10>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $underlowerwet += 100>><<clamp>><<replace "#statsunderlowerwet">><<print Math.trunc($underlowerwet)>><</replace>> <<updatesidebarimg>><</link>>
 		<br>
 
 		<<link "<<<">><<set $worn.under_lower.integrity -= 100>><<clamp>><<replace "#statsunderlowerintegrity">><<print Math.trunc($worn.under_lower.integrity)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -671,13 +622,13 @@
 	<</if>>
 
 	<<if $worn.under_upper.integrity gte 1>>
-		<<link "<<<">><<set $underupperwet -= 100>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		<<link "<<">><<set $underupperwet -= 10>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		<<link "<">><<set $underupperwet -= 1>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
-		속옷 상의 젖음: <span id="statsundertopwet"><<print Math.trunc($underupperwet)>></span>
-		| <<link ">">><<set $underupperwet += 1>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
-		| <<link ">>">><<set $underupperwet += 10>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
-		| <<link ">>>">><<set $underupperwet += 100>><<clamp>><<replace "#statsundertopwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
+		<<link "<<<">><<set $underupperwet -= 100>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		<<link "<<">><<set $underupperwet -= 10>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		<<link "<">><<set $underupperwet -= 1>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>> |
+		속옷 상의 젖음: <span id="statsunderupperwet"><<print Math.trunc($underupperwet)>></span>
+		| <<link ">">><<set $underupperwet += 1>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
+		| <<link ">>">><<set $underupperwet += 10>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
+		| <<link ">>>">><<set $underupperwet += 100>><<clamp>><<replace "#statsunderupperwet">><<print Math.trunc($underupperwet)>><</replace>> <<updatesidebarimg>><</link>>
 		<br>
 
 		<<link "<<<">><<set $worn.under_upper.integrity -= 100>><<clamp>><<replace "#statsunderupperintegrity">><<print Math.trunc($worn.under_upper.integrity)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -720,7 +671,60 @@
 		<i>마스크나 재갈을 하고 있지 않다.</i>
 		<br>
 	<</if>>
-	<br>
+
+	<<set _cl_slots to ["over_upper", "over_lower", "upper", "lower", "under_upper", "under_lower", "face", "genitals"]>>
+	<<link "전부 수선한다">>
+		<<for _cl range _cl_slots>>
+			<<if $worn[_cl].name isnot 'naked'>>
+				<<set _cl_max to clothingData(_cl, $worn[_cl], 'integrity_max')>>
+				<<set $worn[_cl].integrity to _cl_max>>
+				<<unset _cl_max>>
+				<<replace `'#stats' + _cl.replace('_','') + 'integrity'`>><<print Math.trunc($worn[_cl].integrity)>><</replace>>
+			<</if>>
+		<</for>>
+		<<unset _cl>>
+		<<updatesidebarimg>>
+	<</link>> |
+	<<link "전부 파괴한다">>
+		/* not using ruined widgets to avoid side effects until confirmation */
+		<<for _cl range _cl_slots>>
+			<<if $worn[_cl].name isnot 'naked'>>
+				<<set _cl_min to 0>>
+				<<set $worn[_cl].integrity to _cl_min>>
+				<<unset _cl_min>>
+				<<replace `'#stats' + _cl.replace('_','') + 'integrity'`>><<print Math.trunc($worn[_cl].integrity)>><</replace>>
+			<</if>>
+		<</for>>
+		<<unset _cl>>
+		<<updatesidebarimg>>
+	<</link>> |
+	<<link "전부 말린다">>
+		<<dry_full>>
+		<<for _cl range _cl_slots.slice(2, -2)>>
+			<<if $worn[_cl].name isnot 'naked'>>
+				<<set _cl_wet to _cl.replace('_','') + "wet">>
+				<<replace `'#stats' + _cl_wet`>><<print Math.trunc(V[_cl_wet])>><</replace>>
+				<<unset _cl_wet>>
+			<</if>>
+		<</for>>
+		<<unset _cl>>
+		<<updatesidebarimg>>
+	<</link>> |
+	<<link "전부 흠뻑 적신다">>
+		<<for _cl range _cl_slots.slice(2, -2)>>
+			<<if $worn[_cl].name isnot 'naked'>>
+				<<set _cl_wet to _cl.replace('_','') + "wet">>
+				<<set V[_cl_wet] to 200>>
+				<<replace `'#stats' + _cl_wet`>><<print Math.trunc(V[_cl_wet])>><</replace>>
+				<<unset _cl_wet>>
+			<</if>>
+		<</for>>
+		<<unset _cl>>
+		<<clamp>>
+		<<updatesidebarimg>>
+	<</link>>
+	<br><br>
+
 
 	<span class="gold">일반 기술</span>
 	<br>
@@ -1149,23 +1153,23 @@
 
 	<span class="gold">주근깨</span>
 		<br>
-		<<if $player.freckles>>
-			<label>있음 <<radiobutton "$player.freckles" true checked>></label>
-			| <label>없음 <<radiobutton "$player.freckles" false>></label>
-		<<else>>
-			<label>있음 <<radiobutton "$player.freckles" true>></label>
-			| <label>없음 <<radiobutton "$player.freckles" false checked>></label>
-		<</if>>
+		<label>있음 <<radiobutton "$player.freckles" true autocheck>></label>
+		| <label>없음 <<radiobutton "$player.freckles" false autocheck>></label>
 	<br><br>
 
 	<span class="gold">신체 부위 크기 및 민감도</span>
+	<br><br>
+	<span class="gold">가슴 크기</span>
+	<<set _name to ["평평함", "약간 솟아오름", "조그마함", "작음", "앙증맞음", "평범함", "봉긋함", "큼", "풍만함", "커다람", "매우 큼", "엄청남", "거대함"]>>
+	<<numberslider "$player.breastsize" $player.breastsize 0 _name.length-1 1>>
+	<<run $(() => { $('#numberslider-input-playerbreastsize').on('input change', e => {
+		$('#numberslider-value-playerbreastsize').html(" "+_name[e.currentTarget.value]);
+		wikifier('<<updatesidebarimg>>');
+	}).trigger('change') })>>
 	<br>
-	<<link "<<">><<set $player.breastsize -= 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
-	<<link "<">><<set $player.breastsize -= 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>> |
-	가슴 크기: <span id="statsbreastsize"><<print Math.trunc($player.breastsize)>></span>
-	| <<link ">">><<set $player.breastsize += 1>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>">><<set $player.breastsize += 3>><<clamp>><<replace "#statsbreastsize">><<print Math.trunc($player.breastsize)>><</replace>><<replace "#statsbreasts">><<breastsPost>><</replace>> <<updatesidebarimg>><</link>>
-	<br>
+	벌거벗은 몸을 가린다 (부끄러운 경우에만): <<checkbox "$dontHide" true false autocheck>>
+	<<run $(() => $('#checkbox-donthide').on('change', e => wikifier('<<updatesidebarimg>>')))>>
+	<br><br>
 
 	<<link "<">><<set $player.bottomsize -= 1>><<clamp>><<replace "#statsbottomsize">><<print Math.trunc($player.bottomsize)>><</replace>> <<updatesidebarimg>><</link>> |
 	엉덩이 크기: <span id="statsbottomsize"><<print Math.trunc($player.bottomsize)>></span>
@@ -1425,7 +1429,31 @@
 	<span id="statsfoxbuild"><<print Math.trunc($foxbuild)>></span>
 	| <<link ">">><<set $foxbuild += 5>><<transformationAlteration>><<clamp>><<replace "#statsfoxbuild">><<print Math.trunc($foxbuild)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $foxbuild += 50>><<transformationAlteration>><<clamp>><<replace "#statsfoxbuild">><<print Math.trunc($foxbuild)>><</replace>> <<updatesidebarimg>><</link>>
-	<br>
+
+	<<if $debug is 1>>
+		<br><br>
+		<span class="gold">옷</span>
+		<br>
+		<span class="description">다음 ID를 가진 옷을 옷장으로 보냅니다다.</span>
+		<br>
+		<<listbox "_slot" autoselect>>
+			<<optionsfrom setup.clothingLayer.body>>
+		<</listbox>>
+		<<set _clothesID to "1">>
+		<<textbox "_clothesID" "1">>
+		<br>
+		<<link "보낸다">>
+			<<if !between(+_clothesID, 1, setup.clothes[_slot].length)>>
+				<<replace "#ClothesSendResult">>그렇게는 할 수 없습니다!<</replace>>
+			<<else>>
+				<<shopbuyv2 _slot "buy" "send" _clothesID 1>>
+				<<replace "#ClothesSendResult">><<trClothes _slot setup.clothes[_slot][_clothesID].name "name" "을">> 옷장으로 보냈습니다!<</replace>>
+			<</if>>
+		<</link>>
+		<br>
+		<span id="ClothesSendResult"></span>
+		<br>
+	<</if>>
 <</widget>>
 
 <<widget "cheatMenuEyesSelected">>
@@ -1709,6 +1737,24 @@
 	| <<link ">">><<npcincr Charlie love 1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
 	| <<link ">>">><<npcincr Charlie love 10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>>
 	| <<link ">>>">><<npcincr Charlie love 100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Charlie")].love)>><</replace>><</link>> (50 = full)
+	<br><br>
+
+	<<link "<<<">><<npcincr "Zephyr" love -100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Zephyr" love -10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Zephyr" love -1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> |
+	제퍼 사랑: <span id="statszephyrlove"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>></span>
+	| <<link ">">><<npcincr "Zephyr" love 1>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Zephyr" love 10>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Zephyr" love 100>><<clamp>><<replace "#statszephyrlove">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].love)>><</replace>><</link>> (100 = full)
+	<br>
+
+	<<link "<<<">><<npcincr "Zephyr" dom -100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
+	<<link "<<">><<npcincr "Zephyr" dom -10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
+	<<link "<">><<npcincr "Zephyr" dom -1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> |
+	제퍼 지배도: <span id="statszephyrdom"><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>></span>
+	| <<link ">">><<npcincr "Zephyr" dom 1>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>>
+	| <<link ">>">><<npcincr "Zephyr" dom 10>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr "Zephyr" dom 100>><<clamp>><<replace "#statszephyrdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Zephyr")].dom)>><</replace>><</link>> (50 = full)
 	<br>
 
 	<br>
@@ -1730,8 +1776,6 @@
 	| <<link ">>">><<npcincr "Great Hawk" dom 10>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>>
 	| <<link ">>>">><<npcincr "Great Hawk" dom 100>><<clamp>><<replace "#statsgreathawkdom">><<print Math.trunc($NPCName[$NPCNameList.indexOf("Great Hawk")].dom)>><</replace>><</link>> (100 = 최대)
 	<br><br>
-
-	<br>
 
 	<<link "<<<">><<set $wolfpacktrust -= 10>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |
 	<<link "<<">><<set $wolfpacktrust -= 5>><<set $wolfpacktrust = Math.clamp($wolfpacktrust, 0, 30)>><<replace "#statstrust">><<print Math.trunc($wolfpacktrust)>><</replace>><</link>> |
@@ -1789,7 +1833,7 @@
 	| <<link ">>">><<set $delinquency += 100>><<clamp>><<replace "#statsdelinquency">><<print Math.trunc($delinquency)>><</replace>><</link>>
 	| <<link ">>>">><<set $delinquency += 1000>><<clamp>><<replace "#statsdelinquency">><<print Math.trunc($delinquency)>><</replace>><</link>>
 	<br>
-	<<if $player.gender is "h">>
+	<<if $player.penisExist and $player.vaginaExist>>
 		<<link "<">><<set $schoolrep.herm -= 1>><<set $schoolrep.herm = Math.clamp($schoolrep.herm, 0, 5)>><<replace "#statsschoolrepherm">><<print Math.trunc($schoolrep.herm)>><</replace>><</link>> |
 		학교 후타나리 평판: <span id="statsschoolrepherm"><<print Math.trunc($schoolrep.herm)>></span>
 		| <<link ">">><<set $schoolrep.herm += 1>><<set $schoolrep.herm = Math.clamp($schoolrep.herm, 0, 5)>><<replace "#statsschoolrepherm">><<print Math.trunc($schoolrep.herm)>><</replace>><</link>>
@@ -1798,14 +1842,6 @@
 		학교 크로스드레서 평판: <span id="statsschoolrepcrossdress"><<print Math.trunc($schoolrep.crossdress)>></span>
 		| <<link ">">><<set $schoolrep.crossdress += 1>><<set $schoolrep.crossdress = Math.clamp($schoolrep.crossdress, 0, 5)>><<replace "#statsschoolrepcrossdress">><<print Math.trunc($schoolrep.crossdress)>><</replace>><</link>>
 	<</if>>
-	<br><br>
-	<<link "<<<">><<set $crime -= 1000>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>> |
-	<<link "<<">><<set $crime -= 100>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>> |
-	<<link "<">><<set $crime -= 10>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>> |
-	범죄: <span id="statscrime"><<print Math.trunc($crime)>></span>
-	| <<link ">">><<set $crime += 10>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>>
-	| <<link ">>">><<set $crime += 100>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>>
-	| <<link ">>>">><<set $crime += 1000>><<set $crime = Math.clamp($crime, C.crime.min, C.crime.max)>><<replace "#statscrime">><<print Math.trunc($crime)>><</replace>><</link>>
 	<br><br>
 
 	<<if $location is "asylum">>
@@ -1908,6 +1944,28 @@
 		| <<link ">>>">><<set $pound.status += 100>><<set $pound.status = Math.clamp($pound.status, 0, 100)>><<replace "#statpoundstatus">><<print Math.trunc($pound.status)>><</replace>><</link>>
 		<br><br>
 	<</if>>
+
+	<span class="gold">범죄</span>
+	<br>
+	<<for _cr range Object.keys(setup.crimeNames)>>
+		<<capture _cr>>
+			<<link "<<<">><<set C.crime[_cr] -= 1000>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>> |
+			<<link "<<">><<set C.crime[_cr] -= 100>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>> |
+			<<link "<">><<set C.crime[_cr] -= 10>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>> |
+			<<trCrimeName `setup.crimeNames[_cr]`>><<print toTitleCase(_trResult)>>: <span @id="'statscrime-'+_cr"><<print Math.trunc($crime[_cr].current)>></span> |
+			<<link ">">><<set C.crime[_cr] += 10>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>> |
+			<<link ">>">><<set C.crime[_cr] += 100>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>> |
+			<<link ">>>">><<set C.crime[_cr] += 1000>><<replace `"#statscrime-"+_cr`>><<print Math.trunc($crime[_cr].current)>><</replace>><</link>>
+			<br>
+		<</capture>>
+	<</for>>
+	<<unset _cr>>
+	<br>
+	<span class="gold">범죄 이벤트:</span>
+	<br>
+	<span id="statscrimeevents"><<listCrimeCheats>></span>
+	<<link "범죄 이벤트를 삭제한다">><<crimeClearEvent "all">><<replace #statscrimeevents>><<listCrimeCheats>><</replace>><</link>>
+	<br><br>
 
 	<span class="gold">명성</span>
 	<br>
@@ -2029,7 +2087,7 @@
 		<br>
 		<<domusicon>>[[도무스 가|Domus Street]]
 		<br>
-		<<domushouseicon>>[[고아원|Orphanage]]
+		<<homeicon>>[[고아원|Orphanage]]
 		<br>
 		<<barbicon>>[[바브 가|Barb Street]]
 		<br>
@@ -2063,7 +2121,7 @@
 		<br>
 		<<highicon>>[[하이 가|High Street]]
 		<br>
-		<<shoppingcentreicon>>[[쇼핑 센터|Shopping Centre]]
+		<<shopicon>>[[쇼핑 센터|Shopping Centre]]
 		<br>
 		<<elkicon>>[[엘크 가|Elk Street]]
 		<br>
@@ -2113,6 +2171,8 @@
 		<<foresticon>>[[숲|Forest]]
 		<br>
 		<<roadicon>>[[농장으로 향하는 길|Farm Road 1]]
+		<br>
+		<<farmicon "barn">>[[농장|Farmland]]
 		<br><br>
 
 		<span class="gold">지하</span>
@@ -2187,24 +2247,26 @@
 
 	<<if $parasitepregdisable is "f" && ($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
 		<div id="cheatsImpregOptions-anus"><<cheatsImpregOptions "anus">></div>
+		<br>
 	<<elseif !($sexStats.anus.pregnancy.type is "parasite" or $sexStats.anus.pregnancy.type is null)>>
 		당신은 현재 "<<trNPCdesc $sexStats.anus.pregnancy.type>>_trResult" 아이를 임신하고 있어 이 설정을 변경할 수 없습니다.
-		<br>
+		<br><br>
 	<<else>>
-		이 설정에 접근하려면 설정에서 항문 임신을 활성화 해야합니다.
-		<br>
+		이 설정에 접근하려면 설정에서 기생충 임신을 활성화해야 합니다.
+		<br><br>
 	<</if>>
-	<br>
-	<<if $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
+
+	<<if !$player.vaginaExist>>
+	<<elseif $parasitepregdisable is "f" && ($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		<div id="cheatsImpregOptions-vagina"><<cheatsImpregOptions "vagina">></div>
+		<br>
 	<<elseif !($sexStats.vagina.pregnancy.type is "parasite" or $sexStats.vagina.pregnancy.type is null)>>
 		당신은 현재 "<<trNPCdesc $sexStats.vagina.pregnancy.type>>_trResult" 아이를 임신하고 있어 이 설정을 변경할 수 없습니다.
-		<br>
+		<br><br>
 	<<else>>
-		이 설정에 접근하려면 설정에서 항문 임신을 활성화 해야합니다.
-		<br>
+		이 설정에 접근하려면 설정에서 기생충 임신을 활성화해야 합니다.
+		<br><br>
 	<</if>>
-	<br>
 
 	<<if ($playerPregnancyBeastDisable is "f" or $playerPregnancyHumanDisable is "f")>>
 		<span class="gold">임신 치트</span>
@@ -2227,8 +2289,10 @@
 			<<link "촉수">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "럴커">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "말벌">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "벌">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "오징어">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "식물 줄기">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
+			<<link "민달팽이">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<br>
 			<<if $_pregnancy.motherStatus lt 2>>
 				자웅동체 임신하기 |
@@ -2240,8 +2304,10 @@
 				<<link "촉수">><<impregnateParasite "tentacle" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "럴커">><<impregnateParasite "lurker" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "말벌">><<impregnateParasite "wasp" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "벌">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "오징어">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 				<<link "식물 줄기">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+				<<link "민달팽이">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
 			<<else>>
 				자웅동체는 한 번에 하나만 임신 가능합니다.
 			<</if>>
@@ -2287,7 +2353,7 @@
 	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney"]>>
 	<<set _impregnatableNPC to []>>
 	<<set _impregnatorNPC to []>>
-	<<set _pregnantNPC to []>>
+	<<set _pregnantNPC to {}>>
 	<<for _pregEnabled range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
 		<<if playerPregnancyPossibleWith(_pregEnabled)>>
 			<<set _impregnatorNPC.push($NPCName.indexOf(_pregEnabled))>>
@@ -2353,12 +2419,16 @@
 				<<set _menstruation.recoveryTime to null>>
 				<<set _menstruation.recoveryTimeStart to null>>
 				<<set _menstruation.recoveryStage to null>>
+				<<run delete C.npc.Alex.pregnancy.knowledge>>
+				<<run delete C.npc.Alex.pregnancy.test>>
+				<<run delete C.npc.Alex.pregnancy.sample>>
+				<<run delete C.npc.Alex.pregnancy.fee>>
 			<</link>>
 			<span class="description">이것은 치트이지, 유산시키는 것이 아닙니다.</span>
 			<br><br>
 		<<else>>
 			<<if ($playerPregnancyHumanDisable == "f" or $playerPregnancyBeastDisable == "f") and !playerIsPregnant()>>
-				다음 상대와 임신합니다: 
+				다음 상대와 임신합니다:
 				<<if $pregnancytype is "realistic">>
 					<span class="description">즉시 (페티쉬) 임신</span>
 				<</if>>
@@ -2380,7 +2450,7 @@
 				<</if>>
 				<<if $playerPregnancyBeastDisable == "f">>
 					<<if $playerPregnancyHumanDisable == "f">>
-						| 
+						|
 					<</if>>
 					<<link [[늑대|$passage]]>>
 					<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
@@ -2398,7 +2468,7 @@
 					<</if>>
 					<<set _spermType to (_actor.nam == "Black Wolf" ? "wolf" : "human")>>
 					<<capture _actor, _spermType, _womb>>
-					| <<trNamedNPC _actor.nam>><<link [[_trResult|$passage]]>> 
+					| <<trNamedNPC _actor.nam>><<link [[_trResult|$passage]]>>
 						<<playerPregnancy _actor.nam _spermType true _womb undefined true>>
 					<</link>>
 					<</capture>>
@@ -2433,7 +2503,7 @@
 					<</if>>
 					<<if $playerPregnancyBeastDisable == "f">>
 						<<if $playerPregnancyHumanDisable == "f">>
-							| 
+							|
 						<</if>>
 						<<link "늑대">>
 							<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf inseminates PC */
@@ -2452,7 +2522,7 @@
 						<</if>>
 						<<set _spermType to (_actor.nam === "Black Wolf" ? "wolf" : "human")>>
 						<<capture _actor, _spermType, _womb>>
-						| <<trNamedNPC _actor.nam>><<link _trResult>> 
+						| <<trNamedNPC _actor.nam>><<link _trResult>>
 							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: "human", genital: _womb}`>>
 							<<replace "#cheatSpermSources">>(당신 안에는 $sexStats[_womb].sperm.length 명/마리의 정액이 있습니다)<</replace>>
 						<</link>>
@@ -2473,7 +2543,7 @@
 		<br><br>
 	<</if>>
 	<<if $player.penisExist and _impregnatableNPC.length>>
-		NPC 임신:
+		<span class="gold">NPC 임신:</span>
 		<br>
 		<<set _fertileNPC to 0>>
 		<<for _pregEnabled range _impregnatableNPC>>
@@ -2485,10 +2555,10 @@
 			<<trNamedNPC _actor.nam>><<print _trResult>>:
 			<<capture _actor>>
 			<<set _linkText to _actor.pronouns.him + " 임신시킨다">>
-			<<link [[_linkText|$passage]]>> 
+			<<link [[_linkText|$passage]]>>
 				<<namedNpcPregnancy _actor.nam "pc" "human" true undefined true>>
 			<</link>>
-			<<if $pregnancytype is "realistic">> 
+			<<if $pregnancytype is "realistic">>
 				<<set _linkText to _actor.pronouns.him + " 수정시킨다">>
 				- <<link _linkText>>
 					<<recordSperm `{target: _actor.nam, spermOwner: "pc", spermType: "human", genital: "vagina"}`>>
@@ -2511,46 +2581,102 @@
 		당신은<<if !$player.penisExist>> 자지가 없기 때문에<</if>> 어떤 NPC도 임신시킬 수 없습니다.
 	<</if>>
 	<br>
+
 	<<for _pregEnabled range $NPCName>> /* Checks for any pregnant named NPC. Only elegible can be impregated by cheats, but maybe other NNPC are impregnated in game */
-		<<if npcIsPregnant(_pregEnabled.nam) and _pregEnabled.pregnancy.type != "parasite">>
-			<<set _pregnantNPC.push($NPCName.indexOf(_pregEnabled))>>
+		<<if npcIsPregnant(_pregEnabled.nam) and _pregEnabled.pregnancy.type isnot "parasite">>
+			<<trNamedNPC _pregEnabled.nam>><<set _pregnantNPC[_pregEnabled.nam] to $NPCName.indexOf(_pregEnabled)>>
 		<</if>>
 	<</for>>
-	<<if _pregnantNPC.length>>
-		임신한 NPC들:
+	<<run console.log(_pregnantNPC)>>
+
+	<<if Object.keys(_pregnantNPC).length>>
+		<span class="gold">임신한 NPC들:</span>
 		<br>
-		<<for _actress range _pregnantNPC>>
-			<<set _pregnancyNPC to $NPCName[_actress].pregnancy>>
-			<<trNamedNPC $NPCName[_actress].nam>><<print _trResult>>: 
-			<<capture _actress _pregnancyNPC>>
-			<<link [[임신 초기|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .05>>
-			<</link>> -
-			<<link [[임신 중기|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .35>>
-			<</link>> -
-			<<link [[임신 후기|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
-			<</link>> -
-			<<link [[출산 바로 전|$passage]]>>
-				<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .99>>
-			<</link>> -
-			<<link [[임신 상태를 없앤다|$passage]]>>
-				<<set _pregnancyNPC.type to null>>
-				<<set _pregnancyNPC.fetus to []>>
-				<<set _pregnancyNPC.waterBreaking to false>>
-				<<set _pregnancyNPC.timer to null>>
-				<<set _pregnancyNPC.timerEnd to null>>
-				<<set _pregnancyNPC.npcAwareOf to null>>
-				<<set _pregnancyNPC.pcAwareOf to null>>
-				<<set _pregnancyNPC.potentialFathers to []>>
-				<<set _pregnancyNPC.sperm to []>>
-				<<set _pregnancyNPC.cicleDay to 1>>
-			<</link>>
-			<</capture>>
-			<br>
-		<</for>>
+		<<listbox "_pregnantNPCId" autoselect>>
+			<<optionsfrom _pregnantNPC>>
+		<</listbox>>
+		<br><br>
+		<div id="cheatPregnancyNPC">
+			<<cheatPregnancyNPC _pregnantNPCId>>
+		</div>
+		<<cheatPregnancyNPCReset>>
 	<</if>>
+<</widget>>
+
+<<widget "cheatPregnancyNPC">>
+	<<set _pregnancyNPC to $NPCName[_args[0]].pregnancy>>
+	<<set $_fatherName to pregnancyNameCorrection(_pregnancyNPC.fetus[0].father)>>
+	<<print $_fatherName === "당신 자신" ? "당신" : $_fatherName>>에게서 <<childtype_ ul _pregnancyNPC.type>> 임신했다.
 	<br>
+	<<link "<<">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer - _pregnancyNPC.timerEnd * 0.05, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> |
+	<<link "<">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer - _pregnancyNPC.timerEnd * 0.01, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> |
+	임신 진행도: <span id="cheatNPCPregnancyProgress"><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%</span>
+	| <<link ">">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer + _pregnancyNPC.timerEnd * 0.01, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
+	| <<link ">>">>
+		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer + _pregnancyNPC.timerEnd * 0.05, 0, _pregnancyNPC.timerEnd)>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
 	<br>
+
+	<<link "임신 초기">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .05>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "임신 중기">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .35>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "임신 후기">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd * .7>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>> -
+	<<link "출산 바로 전">>
+		<<set _pregnancyNPC.timer to _pregnancyNPC.timerEnd>>
+		<<replace "#cheatNPCPregnancyProgress">><<print Math.round(Math.clamp(_pregnancyNPC.timer / _pregnancyNPC.timerEnd * 100, 0, 100))>>%<</replace>>
+	<</link>>
+	<br><br>
+
+	<<if _pregnantNPCId is 25>>
+		<<link [[임신 상태를 없앤다|$passage]]>>
+			<<set _pregnancyNPC.type to null>>
+			<<set _pregnancyNPC.fetus to []>>
+			<<set _pregnancyNPC.waterBreaking to false>>
+			<<set _pregnancyNPC.timer to null>>
+			<<set _pregnancyNPC.timerEnd to null>>
+			<<set _pregnancyNPC.npcAwareOf to null>>
+			<<set _pregnancyNPC.pcAwareOf to null>>
+			<<set _pregnancyNPC.potentialFathers to []>>
+			<<set _pregnancyNPC.sperm to []>>
+			<<set _pregnancyNPC.cicleDay to 1>>
+			<<run delete C.npc.Alex.pregnancy.knowledge>>
+			<<run delete C.npc.Alex.pregnancy.test>>
+			<<run delete C.npc.Alex.pregnancy.sample>>
+			<<run delete C.npc.Alex.pregnancy.fee>>
+		<</link>>
+
+	<<else>>
+		<<link [[임신 상태를 없앤다|$passage]]>>
+			<<set _pregnancyNPC.type to null>>
+			<<set _pregnancyNPC.fetus to []>>
+			<<set _pregnancyNPC.waterBreaking to false>>
+			<<set _pregnancyNPC.timer to null>>
+			<<set _pregnancyNPC.timerEnd to null>>
+			<<set _pregnancyNPC.npcAwareOf to null>>
+			<<set _pregnancyNPC.pcAwareOf to null>>
+			<<set _pregnancyNPC.potentialFathers to []>>
+			<<set _pregnancyNPC.sperm to []>>
+			<<set _pregnancyNPC.cicleDay to 1>>
+		<</link>>
+
+	<</if>>
+
 <</widget>>

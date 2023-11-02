@@ -34,6 +34,11 @@
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 <<if $forcedcrossdressingdisable is "t">><<unset $whitneyskirtmaths>><</if>>
 <<if $whitneypantiesmaths or $whitneyskirtmaths>>
+	<<if $whitneypantiesmaths is "seen" and ($worn.under_lower.type.includes("naked") or ($whitneypantiescheck is 2 and $worn.under_lower.gender is "f"))>>
+		<<unset $whitneypantiesmaths>>
+		<!-- Adding this as a failsafe; If the player triggered this scene but somehow invalidated its conditions, skip the branches where Whitney is blatantly incorrect.
+		Admittedly, this approach isn't perfect either, but it's better than being obviously wrong. Either way, this should only matter in very strange, non-recurring cases. -->
+	<</if>>
 	<<if $whitneypantiesmaths is "seen">>
 		복도에 한 걸음 내디디자 마자 <<npc Whitney>><<person1>>휘트니와 <<hisPost "의">> 친구들이 당신을 둘러싼다. "넌 참 나쁜 <<girl_ iya>>," <<hePost "이">> 씩 웃는다. 친구들은 흥분한 것처럼 보인다.
 		<<if $whitneypantiescheck is 1>>
@@ -41,11 +46,11 @@
 		<<elseif $whitneypantiescheck is 2>>
 			"내가 팬티를 입으라 했을 때, 진심이었어. 그러니 이제 전부 벗겨 가져가야겠어."
 		<</if>>
-		<<if $forcedcrossdressingdisable is "t">>
-		<<elseif $whitneyskirtcheck is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.reveal gt 200>>
-			<<He_ ga>> 조롱한다. "너는 짧은 스커트마저도 입을 수 없어."
-		<<elseif $whitneyskirtcheck is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
+		<<if $forcedcrossdressingdisable is "t" or $whitneyskirtcheck isnot 1>>
+		<<elseif clothingData('lower', $worn.lower, "skirt") isnot 1>>
 			<<He_ ga>> 조롱한다. "너는 스커트마저도 입을 수 없어."
+		<<elseif $worn.lower.reveal lt 200>>
+			<<He_ ga>> 조롱한다. "너는 짧은 스커트마저도 입을 수 없어."
 		<</if>>
 		<br><br>
 
@@ -90,7 +95,7 @@
 	<<unset $whitneypantiesmaths>>
 	<<unset $whitneyskirtmaths>>
 <<elseif $stress gte $stressmax>>
-<<link [[모든 것이 암흑 속으로 사라져간다...|School Passout]]>><</link>>
+	<<link [[모든 것이 암흑 속으로 사라져간다...|School Passout]]>><</link>>
 
 <<elseif !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate) and $danger gte (9900 - $allure) and $eventskip is 0>>
 	<<if $exposed gte 1>>
@@ -102,49 +107,51 @@
 	<<schoolperiod>>
 
 	<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate) and $exposed gte 1>>
-		<<schoolcourtyardicon>><<link [[학교 뒷마당에 숨어든다 (0:05)|School Rear Courtyard]]>><<pass 5>><</link>>
+		<<schoolicon "courtyard">><<link [[학교 뒷마당에 숨어든다 (0:05)|School Rear Courtyard]]>><<pass 5>><</link>>
 		<br>
 		<<swimmingicon>><<link [[수영장에 숨어든다 (0:03)|School Pool Entrance]]>><<pass 3>><</link>>
 		<br>
-		<<libraryicon>><<link [[도서관에 숨어든다 (0:05)|School Library]]>><<pass 5>><</link>>
+		<<schoolicon "library">><<link [[도서관에 숨어든다 (0:05)|School Library]]>><<pass 5>><</link>>
 		<br>
-		<<toileticon>><<link [[화장실에 숨어든다 (0:05)|School Toilets]]>><<pass 5>><</link>>
+		<<bathroomicon "toilet">><<link [[화장실에 숨어든다 (0:05)|School Toilets]]>><<pass 5>><</link>>
 		<br>
 	<<else>>
 		<<if $schoolstate is "afternoon" and $detention gte 1 and $daily.school.detentionAttended isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
-		<<headdeskicon>><<link [[징계 받으러 간다|School Detention]]>><</link>>
+		<<schoolicon "headdesk">><<link [[징계 받으러 간다|School Detention]]>><</link>>
 		<br>
 			<<if $headdrive gte 1 and $headnodetention isnot 1 and $headmoney isnot 1 and $headphotoshoot isnot 1>>
-			<<link [[레이턴을 협박한다|Head's Office Blackmail]]>><<npc Leighton>><<person1>><<set $phase to 1>><</link>><<crime>>
+			<<schoolicon "headdesk">><<link [[레이턴을 협박한다|Head's Office Blackmail]]>><<npc Leighton>><<person1>><<set $phase to 1>><</link>><<crime "coercion">>
 			<br>
 			<</if>>
 		<br>
 		<</if>>
 
+		복도
+		<br>
 		<<lockericon>><<link [[사물함|School Lockers]]>><</link>>
 		<br><br>
 		바깥
 		<br>
 		<<exiticon>><<link [[학교 앞마당 (0:02)|School Front Courtyard]]>><<pass 2>><</link>>
 		<br>
-		<<schoolcourtyardicon>><<link [[학교 뒷마당 (0:02)|School Rear Courtyard]]>><<pass 2>><</link>>
+		<<schoolicon "courtyard">><<link [[학교 뒷마당 (0:02)|School Rear Courtyard]]>><<pass 2>><</link>>
 		<br><br>
 		시설
 		<br>
-		<<eaticon>><<link [[식당 (0:01)|Canteen]]>><<pass 1>><</link>>
+		<<foodicon "eat">><<link [[식당 (0:01)|Canteen]]>><<pass 1>><</link>>
 		<br>
 		<<swimmingicon>><<link [[수영장 (0:01)|School Pool Entrance]]>><<pass 1>><</link>>
 		<br>
-		<<libraryicon>><<link [[도서관 (0:02)|School Library]]>><<pass 2>><</link>>
+		<<schoolicon "library">><<link [[도서관 (0:02)|School Library]]>><<pass 2>><</link>>
 		<br>
 		<<if $schoolstate is "afternoon" and $detention gte 1 and $daily.school.detentionAttended isnot 1>>
 		<<else>>
-			<<headdeskicon>><<link [[교장실 (0:02)|Head's Office]]>><<pass 2>><</link>>
+			<<schoolicon "headdesk">><<link [[교장실 (0:02)|Head's Office]]>><<pass 2>><</link>>
 			<br>
 		<</if>>
-		<<infirmaryicon>><<link [[양호실 (0:02)|School Infirmary]]>><<pass 2>><<set $phase to 0>><</link>>
+		<<schoolicon "infirmary">><<link [[양호실 (0:02)|School Infirmary]]>><<pass 2>><<set $phase to 0>><</link>>
 		<br>
-		<<toileticon>><<link [[화장실 (0:02)|School Toilets]]>><<pass 2>><</link>>
+		<<bathroomicon "toilet">><<link [[화장실 (0:02)|School Toilets]]>><<pass 2>><</link>>
 		<br><br>
 		교실
 		<br>
@@ -719,11 +726,47 @@
 :: Hallways Slime Breasts Defy
 <<effects>>
 
-슬라임이 통제권을 가져가려 하나, 당신은 거기에 맞서 싸워, 어떻게든 <<personPost "에게서">> 떨어진다.
-<br><br>
-<<endevent>>
-<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
-<br>
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You turn away from the <<person>>, and feel a jolt of pain as the slime punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You turn away from the <<person>>, and feel a jolt of pain as the slime punishes you for defiance, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force you to turn to the <<person>>.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<if $exhibitionism gte 55 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
+	<<else>>
+		<<set $earSlime.defyCooldown += 8>>
+	<</if>>
+	You turn away from the <<person>>, and feel a jolt of pain as the slime punishes you for defiance. It tries to force you to turn to the <<person>>, <span class="red">and you fail</span> to resist its influence.
+	<<ggwillpower>><<willpower 3>>
+	<<if !$worn.upper.type.includes("naked")>>
+		In one motion, <<pullup>> your $worn.upper.name. <<He>> gapes at you. "T-touch," you say. "Touch me."
+	<<else>>
+		You thrust out your chest. "T-touch," you say. "Touch me."
+	<</if>>
+	<br><br>
+
+	<<personPost "은">> 눈을 의심하듯 얼빠진 표정으로 쳐다본다. <<HePost "은">> 주변을 살피다가, 손을 뻗어서 양손으로 당신의 <<breastsPost "을">> 모아 쥔다. <<if !$worn.under_upper.type.includes("naked")>><<HePost "은">> <<trClothes "under_upper" $worn.under_upper.name "name" "을">>_trResult 천 너머로 더듬는다.<<else>><<HePost "은">> 당신의 맨살을 더듬는다.<</if>>
+	<br><br>
+
+	<<HePost "은">> 더욱 강압적으로 변한다.
+	<br><br>
+
+	<<link [[다음|Hallways Slime Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>>
+	슬라임이 통제권을 가져가려 하나, 당신은 거기에 맞서 싸워, 어떻게든 <<personPost "에게서">> 떨어진다.
+	<br><br>
+	<<endevent>>
+	<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
 
 :: Hallways Slime Strip Submit willingly
 <<effects>>
@@ -756,17 +799,22 @@
 :: Hallways Slime Strip Defy
 <<effects>>
 
-<<if $slimeDefyCooldown>>
-	슬라임은 통제권을 가지기 위해 노력하지만, <span class="teal">앞서 당신을 제압한 탓에 여전히 지쳐있다.</span> 당신은 그것이 당신의 옷을 벗기기 위해 노력했지만, <span class="green">실패했다는 것을 느낀다</span>.
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You move away from the <<person>>. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You move away from the <<person>>, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force you to strip.
+	<</if>>
 	<br><br>
 	<<endevent>>
 	<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
 	<br>
-<<elseif $corruption_slime gte (currentSkillValue('willpower') / 10)>>
-	<<if $exhibitionism gte 55>>
-		<<set $slimeDefyCooldown to 4>>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<if $exhibitionism gte 55 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
 	<<else>>
-		<<set $slimeDefyCooldown to 8>>
+		<<set $earSlime.defyCooldown += 8>>
 	<</if>>
 	슬라임이 통제권을 가져가려 한다. <span class="red">녀석은 당신의 의지를 압도하여,</span> 당신을 강제로 <<personPost>> 쪽으로 몸을 돌려 옷을 벗게 만든다.
 	<<ggwillpower>><<willpower 3>>
@@ -1790,7 +1838,7 @@
 
 	<<link [[도움을 받아들인다|Hallways Exposed Storeroom Help]]>><</link>>
 	<br>
-	<<link [[뺨을 때린다|Hallways Exposed Storeroom Slap]]>><<detention 20>><</link>><<gdelinquency>>
+	<<link [[뺨을 때린다|Hallways Exposed Storeroom Slap]]>><<detention 18>><</link>><<ggdelinquency>>
 	<br>
 <<else>>
 	당신은 두 명의 옆을 그냥 지나간다. 그들은 너무 충격받은 나머지 반응하지 못한다.
@@ -2106,7 +2154,7 @@ The <<person>> grasps your collar tightly. "My parents took me to see a doc beca
 
 <<link [[Pay up (£2000)|Hallways Pregnant Student Pay]]>><<set $money -= 200000>><</link>>
 <br>
-<<link [[Refuse|Hallways Pregnant Student Refuse]]>><<detention 50>><</link>><<gggdelinquency>>
+<<link [[거절한다|Hallways Pregnant Student Refuse]]>><<detention 50>><</link>><<gggdelinquency>>
 <br>
 <<if $submissive gte 1500>>
 	<<link [[Plead|Hallways PRegnant Student Plead]]>><<sub 1>><</link>><<submissivetext>>
@@ -2126,9 +2174,9 @@ The <<person>> grasps your collar tightly. "My parents took me to see a doc beca
 <<if $speech_attitude is "meek">>
 	"B-But... It's your baby!" you argue. "You should take care of it!"
 <<elseif $speech_attitude is "bratty">>
-	"Look, I'm very sorry for you," you explain. "It was my mistake, but I can't help you right now."
-<<else>>
 	"Tough shit," you tell <<him>>. "Guess it's time for you to learn to be a mommy, good luck."
+<<else>>
+	"Look, I'm very sorry for you," you explain. "It was my mistake, but I can't help you right now."
 <</if>>
 <br><br>
 
@@ -2495,109 +2543,45 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 :: Hallways Pantsed Reveal
 <<effects>><<generatey1>><<person1>><<underlowerstrip>><<lowerstrip>><<integritycheck no_text>>
 
-<<if $pantsed.lowerintegrity lte 0 and $pantsed.underlowerintegrity lte 0 and playerChastity()>>
+<<if $pantsed.lowerintegrity lte 0 and $pantsed.underlowerintegrity lte 0>>
+	/* both bottoms and underwear (if any) get destroyed */
+	<<if playerChastity()>>
+		One of the students pulls hard, ripping your $pantsed.lower <<if $pantsed.underlower isnot "naked">> and your $pantsed.underlower <</if>> entirely off your body, but your <<print $worn.genitals.name>> stays in place.
+		<br><br>
 
-	One of the students pulls hard, and your $pantsed.lower and $pantsed.underlower get ripped off your body, but your <<print $worn.genitals.name>> stays in place.
-	<br><br>
+		"Look, every..." your tormenter cuts off, your torn $pantsed.lower in <<his>> hand, when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it, a few laugh nervously.
+		<br><br>
 
-	"Look, every..." your tormenter cuts off, your torn $pantsed.lower in his hand, when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it, a few laugh nervously. 
-	<br><br>
+		Red-faced, you run off down the hallway while the other students look on in confusion.
+		<br><br>
 
-	Red-faced, you run off down the hallway while the other students look on in confusion.
-	<br><br>
+		<<link [[다음|Hallways]]>><<endevent>><<underlowerruined>><<lowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
+	<<else>>
+		One of the students pulls hard, ripping your $pantsed.lower <<if $pantsed.underlower isnot "naked">> and your $pantsed.underlower <</if>> entirely off your body, leaving you completely naked on the bottoms.
+		<br><br>
 
-	<<link [[다음|Hallways]]>><<endevent>><<underlowerruined>><<lowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
+		"Look, everyone!" your tormenter shouts.
+		<br><br>
 
-<<elseif $pantsed.lowerintegrity lte 0 and $pantsed.underlowerintegrity lte 0>>
+		Before you can do anything, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
+		<br><br>
 
-	One of the students pulls hard, and your $pantsed.lower and $pantsed.underlower get ripped off your body, leaving you completely naked on the bottoms.
-	<br><br>
+		The pantser holds your torn clothes in <<his>> hand. "I guess I don't know my own strength." <<he>> says, laughing.
+		<br><br>
 
-	"Look, everyone!" your tormenter shouts.
-	<br><br>
+		<<if $exhibitionism gte 75>>
+			<<link [[과시한다|Hallways Pantsed Flaunt]]>><<set $phase to 4>><</link>><<exhibitionist5>>
+			<br>
+		<</if>>
 
-	Before you can do anything, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
-	<br><br>
-
-	The pantser holds your torn clothes in <<his>> hand. "I guess I don't know my own strength." <<he>> says, laughing.
-	<br><br>
-
-	<<if $exhibitionism gte 75>>
-
-		<<link [[Flaunt|Hallways Pantsed Flaunt]]>><<set $phase to 2>><</link>><<exhibitionist5>>
-		<br>
-
+		<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 4>><</link>><<gstress>><<gtrauma>>
 	<</if>>
-
-	<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 4>><</link>><<gstress>><<gtrauma>>
-
-
-<<elseif $pantsed.underlowerintegrity lte 0 and playerChastity()>>
-
-	One of the students pulls hard, yanking your $pantsed.lower down to your feet and ripping your $pantsed.underlower to shreds.
-	<br><br>
-
-	"Look, every..." your tormenter cuts off when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it. A few laugh nervously.
-	<br><br>
-
-	You quickly pull your $pantsed.lower up, hiding your belt from the other students. You run off red-faced, the other students looking after you in confusion.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<lowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
 
 <<elseif $pantsed.underlowerintegrity lte 0 and $pantsed.underlower isnot "naked">>
-
-	One of the students pulls hard, yanking your $pantsed.lower down to your feet and ripping your $pantsed.underlower to shreds.
-	<br><br>
-
-	"Look, everyone!" your tormenter shouts.
-	<br><br>
-
-	Before you can do anything, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
-	<br><br>
-
-	The pantser holds your torn underwear in <<his>> hand. "I guess I don't know my own strength." <<he>> says, laughing.
-	<br><br>
-
-	<<if $exhibitionism gte 75>>
-
-		<<link [[Flaunt|Hallways Pantsed Flaunt]]>><<set $phase to 1>><</link>><<exhibitionist5>>
-		<br>
-
-	<</if>>
-
-	<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 1>><</link>><<gstress>><<gtrauma>>
-
-<<elseif $pantsed.lowerintegrity lte 0 and $pantsed.lower isnot "naked">>
-
-	One of the students pulls hard, ripping your $pantsed.lower and your $pantsed.underlower entirely off your body, leaving you completely naked below the waist.
-	<br><br> 
-
-	"Look, everyone!" your tormenter shouts.
-	<br><br>
-
-	Before you can react, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
-	<br><br>
-
-	The pantser holds your ripped bottoms in <<his>> hand. "I guess I don't know my own strength," <<he>> says, laughing.
-	<br><br>
-
-	With your bottoms ripped off, there's no way to cover yourself. Several students in the crowd are pulling out phones, taking videos and pictures of your bottomless ordeal.
-	<br><br>
-
-	<<if $exhibitionism gte 55>>
-
-		<<link [[Flaunt|Hallways Pantsed Flaunt]]>><<set $phase to 2>><</link>><<exhibitionist4>>
-		<br>
-
-	<</if>>
-
-	<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 2>><</link>><<gstress>><<gtrauma>>
-
-<<else>>
-	<<underlowerstrip>><<lowerstrip>>
-
+	/* only underwear got destroyed */
 	<<if playerChastity()>>
+		One of the students pulls hard, yanking your $pantsed.lower down to your feet and ripping your $pantsed.underlower to shreds.
+		<br><br>
 
 		"Look, every..." your tormenter cuts off when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it. A few laugh nervously.
 		<br><br>
@@ -2605,16 +2589,87 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 		You quickly pull your $pantsed.lower up, hiding your belt from the other students. You run off red-faced, the other students looking after you in confusion.
 		<br><br>
 
+		<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<underlowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
+	<<else>>
+		One of the students pulls hard, yanking your $pantsed.lower down to your feet and ripping your $pantsed.underlower to shreds.
+		<br><br>
+
+		"Look, everyone!" your tormenter shouts.
+		<br><br>
+
+		Before you can do anything, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
+		<br><br>
+
+		The pantser holds your torn underwear in <<his>> hand. "I guess I don't know my own strength." <<he>> says, laughing.
+		<br><br>
+
+		<<if $exhibitionism gte 75>>
+			<<link [[과시한다|Hallways Pantsed Flaunt]]>><<set $phase to 2>><</link>><<exhibitionist5>>
+			<br>
+		<</if>>
+
+		<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 2>><</link>><<gstress>><<gtrauma>>
+	<</if>>
+<<elseif $pantsed.lowerintegrity lte 0>>
+	/* only bottoms get destroyed and player is wearing underwear */
+	<<if playerChastity()>>
+		One of the students pulls hard, ripping your $pantsed.lower to shreds and yanking your $pantsed.underlower down to your feet, but your <<print $worn.genitals.name>> stays in place.
+		<br><br>
+
+		"Look, every..." your tormenter cuts off when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it. A few laugh nervously.
+		<br><br>
+
+		You quickly pull your $pantsed.underlower up, hiding your belt from the other students. You run off red-faced, the other students looking after you in confusion.
+		<br><br>
+
+		<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<lowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
+	<<else>>
+		One of the students pulls hard, ripping your $pantsed.lower to shreds and yanking your $pantsed.underlower down to your feet, leaving you completely naked below the waist.
+		<br><br>
+
+		"Look, everyone!" your tormenter shouts.
+		<br><br>
+
+		Before you can react, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
+		<br><br>
+
+		The pantser holds your ripped bottoms in <<his>> hand. "I guess I don't know my own strength," <<he>> says, laughing.
+		<br><br>
+
+		With your bottoms ripped off, there's no way to cover yourself. Several students in the crowd are pulling out phones, taking videos and pictures of your bottomless ordeal.
+		<br><br>
+
+		<<if $exhibitionism gte 55>>
+			<<link [[과시한다|Hallways Pantsed Flaunt]]>><<set $phase to 1>><</link>><<exhibitionist4>>
+			<br>
+		<</if>>
+
+		<<link [[Run|Hallways Pantsed Run]]>><<trauma 2>><<stress 6>><<set $phase to 1>><</link>><<gstress>><<gtrauma>>
+	<</if>>
+
+<<else>>
+	<<underlowerstrip>><<lowerstrip>>
+
+	<<if playerChastity()>>
+		One of the students pulls hard, yanking your $pantsed.lower <<if $pantsed.underlower isnot "naked">>and your $pantsed.underlower<</if>> down to your feet.
+
+		"Look, every..." your tormenter cuts off when <<he>> sees your <<print $worn.genitals.name>>. All the other students look curiously at it. A few laugh nervously.
+		<br><br>
+
+		You quickly pull your clothes back up, hiding your belt from the other students. You run off red-faced, the other students looking after you in confusion.
+		<br><br>
+
 		<<link [[다음|Hallways]]>><<endevent>><<unset $pantsed>><<clotheson>><<set $eventskip to 1>><</link>>
 
 	<<elseif $pantsed.underlower is "naked">>
+		One of the students pulls hard, yanking your $pantsed.lower down to your feet.
 
 		"Look, everyone!" your tormenter shouts. "<<pShes>> not wearing underwear!" Before you can do anything, the hallway erupts with cheers, screams, and laughter. You're surrounded by your classmates, who can all see your naked genitals and exposed ass.
 		<br><br>
 
 		<<if $exhibitionism gte 75>>
 
-			<<link [[Flaunt|Hallways Pantsed Flaunt]]>><</link>><<exhibitionist5>>
+			<<link [[과시한다|Hallways Pantsed Flaunt]]>><<set $phase to 3>><</link>><<exhibitionist5>>
 			<br>
 
 		<</if>>
@@ -2623,8 +2678,8 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 
 	<<else>>
 
-		One of the students pulls hard, ripping your $pantsed.lower and your $pantsed.underlower entirely off your body, leaving you completely naked below the waist.
-		<br><br> 
+		One of the students pulls hard, yanking your $pantsed.lower and your $pantsed.underlower down to your feet.
+		<br><br>
 
 		"Look, everyone!" your tormenter shouts.
 		<br><br>
@@ -2634,7 +2689,7 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 
 		<<if $exhibitionism gte 55>>
 
-			<<link [[Flaunt|Hallways Pantsed Flaunt]]>><<set $phase to 1>><</link>><<exhibitionist4>>
+			<<link [[과시한다|Hallways Pantsed Flaunt]]>><<set $phase to 3>><</link>><<exhibitionist4>>
 			<br>
 
 		<</if>>
@@ -2648,11 +2703,11 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 :: Hallways Pantsed Flaunt
 <<effects>>
 
-<<if $phase is 1>>
+<<if $phase lt 4>>
 
 	You put on your most casual face.
 	<br><br>
-		
+
 	"What? What's everyone looking at?" you say innocently. "Is there something on my face?"
 	<br><br>
 
@@ -2663,20 +2718,29 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 	Several students have their phones out, recording your whole display. You realize that most of the school will see this soon. You are surrounded by your peers, seeing you in this state of undress.
 	<br><br>
 
-	"What's going on?" you hear one of the teachers shout over the crowd. The crowd quickly begins to disperse. You quickly bend over, pull up your bottoms, fix your clothing and walk in the opposite direction.
-	<br><br>
 
-	<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><<clotheson>><</link>>
-
+	<<if $phase is 1>>
+		"What's going on?" you hear one of the teachers shout over the crowd. The crowd quickly begins to disperse. You quickly bend over, pull up your $pantsed.underlower and run in the opposite direction.
+		<br><br>
+		<<link [[다음|Hallways]]>><<endevent>><<unset $pantsed>><<set $eventskip to 1>><<clotheson>><<lowerruined>><</link>>
+	<<else>>
+		"What's going on?" you hear one of the teachers shout over the crowd. The crowd quickly begins to disperse. You quickly bend over, pull up your bottoms, fix your clothing and walk in the opposite direction.
+		<br><br>
+		<<if $phase is 2>>
+			<<link [[다음|Hallways]]>><<endevent>><<unset $pantsed>><<set $eventskip to 1>><<clotheson>><<underlowerruined>><</link>>
+		<<else>>
+			<<link [[다음|Hallways]]>><<endevent>><<unset $pantsed>><<set $eventskip to 1>><<clotheson>><</link>>
+		<</if>>
+	<</if>>
 <<else>>
 
 	You put on your most innocent face. "What? Is there something on my face?"  you say. The crowd laughs.
 	<br><br>
 
 	You spin around in mock confusion, showing everyone your fully exposed <<genitals>> and naked butt.<<ggarousal>><<arousal 1200>>
-	<br><br> 
+	<br><br>
 
-	You look down, pretending to notice your nudity for the first time. "Oh! Silly me, did I forget to wear pants my again?"
+	You look down, pretending to notice your nudity for the first time. "Oh! Silly me, did I forget to wear my pants again?"
 	<br><br>
 
 	The rest of the students are roaring with cheers and laughter. Most of them have their phones out, capturing your entire bottomless performance.
@@ -2685,7 +2749,7 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 	"What's going on?" you hear one of the teachers shout over the crowd. The crowd quickly begins to disperse. Left without a means to cover yourself, you run off in the opposite direction.
 	<br><br>
 
-	<<link [[다음|Hallways]]>><<endevent>><<lowerruined>><<unset $pantsed>><<set $eventskip to 1>><</link>>
+	<<link [[다음|Hallways]]>><<endevent>><<unset $pantsed>><<set $eventskip to 1>><<lowerruined>><<underlowerruined>><</link>>
 
 <</if>>
 
@@ -2694,21 +2758,21 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 
 <<if $phase is 1>>
 
-	You pull your $pantsed.underlower up, but that still leaves you pantless in front of all your peers. You run off down the hallway, the laughter and cheers following you all the way. 
+	You pull your $pantsed.underlower up, but that still leaves you pantless in front of all your peers. You run off down the hallway, the laughter and cheers following you all the way.
 	<br><br>
 
 	<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<unset $pantsed>><<lowerruined>><<set $eventskip to 1>><</link>>
 
 <<elseif $phase is 2>>
 
-	You pull your $pantsed.lower up, letting the pantser keep your underwear. You run off down the hallway, the laughter and cheers following you all the way. 
+	You pull your $pantsed.lower up, letting the pantser keep your underwear. You run off down the hallway, the laughter and cheers following you all the way.
 	<br><br>
 
 	<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<unset $pantsed>><<underlowerruined>><<set $eventskip to 1>><</link>>
 
 <<elseif $phase is 3>>
 
-	You pull your <<if $pantsed.underlower isnot "naked">>$pantsed.underlower and <</if>>$pantsed.lower up and run off down the hallway, the laughter and cheers following you all the way. 
+	You pull your <<if $pantsed.underlower isnot "naked">>$pantsed.underlower and <</if>>$pantsed.lower up and run off down the hallway, the laughter and cheers following you all the way.
 	<br><br>
 
 	<<link [[다음|Hallways]]>><<endevent>><<clotheson>><<unset $pantsed>><<set $eventskip to 1>><</link>>

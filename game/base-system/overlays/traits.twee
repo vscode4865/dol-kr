@@ -19,14 +19,14 @@
 				{
 					name: "깨어진 서약",
 					colour: "red",
-					has: $player.virginity.temple is false and $temple_rank isnot "prospective" and $temple_rank isnot undefined,
+					has: $player.virginity.temple isnot true and $temple_rank isnot "prospective" and $temple_rank isnot undefined,
 					text: "사원도 알게 될 것이다.",
 				},
 				{
 					name: "약속의 의식:  <<trNamedNPC $templePromised 'name'>>_trResult",
 					colour: "blue",
 					has: $templePromised isnot "" and $player.virginity.temple is true,
-					text: " 당신은 다른 수련생에게 얽매여 있다. 이 사람과 섹스하는 것은 서약을 깨지 않을 것이다.",
+					text: "당신은 사원의 다른 구성원에게 얽매여 있다. 이 사람과 섹스하는 것은 서약을 깨지 않을 것이다.",
 				},
 				{
 					name: "깨어진 약속: <<trNamedNPC $templePromised 'name'>>_trResult",
@@ -38,13 +38,28 @@
 					name: "일일 순결도 증가 보너스",
 					colour: "green",
 					has: $featsPurityBoost gt 0,
+					text: () => {
+						let dailyPurity = 1;
+						if (V.fallenangel >= 2) dailyPurity -= 10;
+						if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
+						if (dailyPurity + V.featsPurityBoost > 0) return "매일마다 순결도가 상승한다.";
+						if (dailyPurity + V.featsPurityBoost === 0) return "매일마다의 순결도 상승이 되지 않는다.";
+						return "매일마다 순결도가 감소한다.";
+					},
 					text: "매일마다 순결도가 상승한다.",
 				},
 				{
 					name: "일일 순결도 감소 보너스",
 					colour: "red",
 					has: $featsPurityBoost lt 0,
-					text: "매일마다 순결도가 감소한다.",
+					text: () => {
+						let dailyPurity = 1;
+						if (V.fallenangel >= 2) dailyPurity -= 10;
+						if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
+						if (dailyPurity + V.featsPurityBoost > 0) return "매일마다의 순결도 상승량이 적어진다.";
+						if (dailyPurity + V.featsPurityBoost === 0) return "매일마다의 순결도 상승이 되지 않는다.";
+						return "매일마다 순결도가 감소한다.";
+					},
 				},
 				{
 					name: "크로스드레서",
@@ -390,6 +405,12 @@
 					colour: "green",
 					has: $farm_stage gte 6,
 					text: "외양간에서 무엇을 해야 할지 알고 있다. 신체 능력을 유지하기 더 쉬워진다.",
+				},
+				{
+					name: "지식: 섬주민 언어",
+					colour: "",
+					has: $islander_language gte 100,
+					text: "당신은 섬주민의 언어를 이해하고 말할 수 있다.",
 				},
 				{
 					name: "지식: 유사",

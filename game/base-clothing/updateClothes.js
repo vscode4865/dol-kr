@@ -33,6 +33,12 @@ function updateClothingColours(item, itemRef) {
 		case "lace choker":
 			if (item.colour === 0) item.colour = "black";
 			break;
+		case "school shirt":
+			if (item.accessory_colour === 0) {
+				item.accessory_colour = "light blue";
+				item.accessory_colour_combat = "light blue";
+			}
+			break;
 		default:
 			// Catch-all case if people forget to adjust this widget for whatever clothing item is updated. Can make weird looking clothes if "custom" is selected.
 			if (item.colour === 0) item.colour = itemRef.colour_options.random();
@@ -305,6 +311,11 @@ function wardrobesUpdate() {
 		for (const w in V.wardrobes) {
 			if (w !== "wardrobe" && V.wardrobes[w].unlocked !== undefined && V.wardrobes[w].genitals === undefined) V.wardrobes[w].genitals = [];
 		}
+	}
+	if(!V.wardrobes["temple"]) {
+		V.wardrobes.temple = clone(defWardrobe);
+		V.wardrobes.temple.unlocked = V.temple_rank === "monk";
+		V.wardrobes.temple.space = 20;
 	}
 }
 DefineMacro("wardrobesUpdate", wardrobesUpdate);

@@ -30,6 +30,7 @@
 		</div>
 	<</if>>
 	<div id="storyCaptionContent">
+		
 		<<if $options.numpad is true>>
 			<style>
 				.mob-btn-group{
@@ -94,8 +95,8 @@
 				<span class="pink">어제 $lessonmissedtext개의 수업을 빼먹었다.</span>
 			<</if>>
 			<<if $lessonmissed gte 25>>
-				<span class="red">다량의 수업에 결석했다. 그 사실이 경찰에게 통보되었다.</span>
-				<<crimeup 25>>
+				<span class="red">지금까지 수업을 많이 빼먹었다. 당신의 평판이 나빠졌다.</span>
+				<<detention 50>><<gggdelinquency>><<status -5>><<lcool>>
 			<</if>>
 			<<set $lessonmissedtext to 0>>
 			<br>
@@ -172,7 +173,7 @@
 
 		<<if $parasite.left_ear.name and $parasite.left_ear.name eq $parasite.right_ear.name>>
 			<<if $parasite.left_ear.name is "slime">>
-				<span class="lewd">양쪽 귀의 <<trParasite $parasite.left_ear.name "이">>_trResult 당신의 사고에 영향을 주고 있다.</span>
+				<span class="lewd">양쪽 귀의 <<trParasite $parasite.left_ear.name "이">>_trResult 당신의 사고<<if $earSlime.growth gte 100>>와 움직임<</if>>에 영향을 주고 있다.</span>
 				<br>
 			<</if>>
 		<<else>>
@@ -432,21 +433,24 @@
 	<<if $makeup.eyeshadow != 0>><<set $allure += 100>><</if>>
 	<<if $makeup.mascara != 0>><<set $allure += 100>><</if>>
 
-	<<set $allure += ($fame.sex / 10)>>
-	<<set $allure += ($fame.prostitution / 10)>>
-	<<set $allure += ($fame.rape / 10)>>
-	<<set $allure += ($fame.bestiality / 10)>>
-	<<set $allure += ($fame.exhibitionism / 10)>>
-	<<set $allure += ($fame.pregnancy / 10)>>
-	<<set $allure += ($fame.impreg / 10)>>
+	<<if $earSlime.growth gt 50>><<set $allure += ($earSlime.growth - 50) * 10>><</if>>
+	<<if !["island"].includes($location)>>
+		<<set $allure += ($fame.sex / 10)>>
+		<<set $allure += ($fame.prostitution / 10)>>
+		<<set $allure += ($fame.rape / 10)>>
+		<<set $allure += ($fame.bestiality / 10)>>
+		<<set $allure += ($fame.exhibitionism / 10)>>
+		<<set $allure += ($fame.pregnancy / 10)>>
+		<<set $allure += ($fame.impreg / 10)>>
 
-	<<set $allure -= ($fame.scrap / 2)>>
-	<<set $allure -= ($fame.good / 2)>>
-	<<set $allure -= ($fame.business / 2)>>
-	<<set $allure -= ($fame.social / 2)>>
-	<<set $allure -= ($fame.model / 2)>>
-	<<if $debug is 1>>
-		<<set $allure -= ($fame.pimp / 2)>>
+		<<set $allure -= ($fame.scrap / 2)>>
+		<<set $allure -= ($fame.good / 2)>>
+		<<set $allure -= ($fame.business / 2)>>
+		<<set $allure -= ($fame.social / 2)>>
+		<<set $allure -= ($fame.model / 2)>>
+		<<if $debug is 1>>
+			<<set $allure -= ($fame.pimp / 2)>>
+		<</if>>
 	<</if>>
 	<<if $moonstate is "evening" and Time.hour gte 21 or $moonstate is "morning" and Time.hour lt 6>>
 		<<set $allure += 2000>>
@@ -940,8 +944,10 @@
 			<<set _breastSize to 3>>
 		<<case 3>>
 			<<set _breastSize to 2>>
-		<<case 0 1 2>>
+		<<case 1 2>>
 			<<set _breastSize to 1>>
+		<<default>>
+			<<set _breastSize to 0>>
 		<</switch>>
 		<<if $player.gender is "m" or $player.gender is "h">>
 			<<set _penisSize to $player.penissize>>
@@ -956,6 +962,7 @@
 		<<if $options.sidebarRenderer isnot 'img'>>
 			<<selectmodel "main" "sidebar">> <!-- reuse sidebar cache slot -->
 			<<twinescript>>
+				_modeloptions.body_type = $player.gender_body;
 				_modeloptions.breast_size = _breastSize;
 				_modeloptions.breasts = (!_showUnderwear && !_showClothes) ? "default" : "cleavage";
 				if (_penisSize isnot undefined) {

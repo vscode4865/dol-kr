@@ -36,12 +36,12 @@ IMPORTANT:
 				<<checkbox "$options.neverNudeMenus" false true autocheck>>
 				메뉴에서 플레이어 노출 숨기기
 			</label>
-		</div>		
+		</div>
 		<div class="settingsToggle">
 			<label data-disabledif="V.ironmanmode===true">
 				<<checkbox "$options.autosaveDisabled" false true autocheck>> 자는 동안 자동저장을 하지 않음
 			</label>
-		</div>		
+		</div>
 		<div class="settingsToggle">
 			<label data-disabledif="!StartConfig.enableLinkNumberify">
 				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> 숫자 링크 이동 활성화
@@ -80,7 +80,6 @@ IMPORTANT:
 		<div class="settingsToggle">
 			<label><<checkbox "$options.showCaptionText" false true autocheck>> 사이드바에서 캡션 텍스트 보기</label>
 		</div>
-
 		<!-- Old renderer should stop being supported very soon.
 		사이드바 캐릭터 렌더러:
 		<label><<radiovar "$options.sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> 구버전</label> |
@@ -100,6 +99,13 @@ IMPORTANT:
 				<<option "작게 (점으로)" "compact">>
 				<<option "표시하지 않음" "none">>
 			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
+			<label><<radiobutton "$options.genderBody" "default" autocheck>> 기본</label> |
+			<label><<radiobutton "$options.genderBody" "m" autocheck>> 남성적</label> |
+			<label><<radiobutton "$options.genderBody" "a" autocheck>> 중성적</label> |
+			<label><<radiobutton "$options.genderBody" "f" autocheck>> 여성적</label>
 		</div>
 		<div class="settingsToggle">
 			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> 사이드바에 힌트와 팁 활성화</label>
@@ -295,24 +301,26 @@ IMPORTANT:
 
 	<span class="gold">폰트 모양</span>
 	<br>
-	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> 기본</label> |
+	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> 시스템 기본 폰트 사용</label>
 	<br>
 	산세리프체(Sans-serif):
 	<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
-	<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label> |
+	<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
 	<br>
 	세리프체(Serif):
 	<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
 	<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
-	<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label> |
+	<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
 	<br>
 	고정폭(Monospace):
 	<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
 	<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
-	<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label> |
+	<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
 	<br>
-	필기체(Cursive):
-	<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label> |
+	접근성(Accessibility):
+	<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
+	<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
+
 
 	<br><br>
 <</widget>>
@@ -477,13 +485,9 @@ IMPORTANT:
 			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> 렌더러 디버거 사용</label>
 		</div>
 		<div class="settingsToggle">
-			<label id="idbToggle">
-				/* checkbox macro doesn't allow changing variables that do not start with "$" or "_". this is a bypass hack. */
-				<<run setTimeout(() => jQuery(document.createElement("input"))
-					.attr({ id: "checkbox-idbactive", name: "checkbox-idbactive", type: "checkbox", checked: idb.active, disabled: idb.lock })
-					.addClass("macro-checkbox")
-					.on("change.macros", () => idb.active = document.getElementById("checkbox-idbactive").checked)
-					.prependTo("#idbToggle"))>> indexedDB 활성화
+			<label onclick="setTimeout(() => {toggleConfirmDialogUponTabClose();}, 100)">
+				<<checkbox "$options.confirmDialogUponTabClose" false true autocheck>>
+				탭을 닫을 때 확인 창을 표시
 			</label>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
@@ -563,5 +567,6 @@ IMPORTANT:
 	<<removeclass "html" "LucidaConsole">>
 	<<removeclass "html" "Monaco">>
 	<<removeclass "html" "ComicSans">>
+	<<removeclass "html" "OpenDyslexicMono">>
 	<<if $options.font>><<addclass "html" $options.font>><</if>> <!--Adding to the body would remove it on changing passage-->
 <</widget>>

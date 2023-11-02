@@ -60,12 +60,24 @@
 			<<shopCategoryReplace `clothingSlotToIconName($clothingShopSlot, _outfits)`>>
 		<</button>>
 	</span>
-		<<run $(() => {
+	<<if $daily.corruptionSlimeClothes is undefined and $earSlime.corruption gte 10>>
+		<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+	<</if>>
+	<<set _unavailableItems to !!$daily.corruptionSlimeClothes or !!$earSlime.event is "go commando" or !!$earSlime.forcedDressing or playerBellySize() gte 12>>
+	<<if _unavailableItems>>
+		<label><<checkbox "$shopClothingFilter.availableOnly" false true autocheck>> 사용하지 못하는 물건을 숨긴다</label>
+	<<else>>
+		<<set $shopClothingFilter.available to false>>
+	<</if>>
+	<<run $(() => {
 		var shopTimer = null;
 		$('#textbox--shopnamefiltertextbox').on('input change', e => {
 			T.shopNameFilter = shopSearchReplacer(e.target.value);
 			clearTimeout(shopTimer);
 			shopTimer = setTimeout(updateShop, 300);
+		});
+		$('#checkbox-shopclothingfilteravailableonly').on('change', e => {
+			updateShop();
 		});
 		var updateShop = () => {
 			new Wikifier (null, "<<shopCategoryReplace `clothingSlotToIconName($clothingShopSlot, _outfits)`>>");
@@ -81,9 +93,15 @@
 			or
 			(!_outfits and (x.outfitPrimary is undefined or Object.keys(x.outfitPrimary).every(secSlot => !secSlot.includes("lower")))))
 		and (_shopNameFilter is '' or x.name.includes(_shopNameFilter.toLowerCase()))
+		and (!V.shopClothingFilter.availableOnly or !(
+			(setup.clothingLayer.torso.includes(V.clothingShopSlot) and x.reveal < Math.clamp(V.daily.corruptionSlimeClothes, 0, 500) and !x.type.includesAny("school", "event")) or
+			(V.earSlime.forcedDressing and x.gender isnot V.earSlime.forcedDressing.type and x.gender isnot "n" and !x.type.includesAny("event")) or
+			(playerBellySize() >= 12 and x.type.includes("constricting"))
+		))
 	)>>
 	<<set _items = applyClothingShopFilters(_items)>>
-	<<set _maxPage = Math.ceil(_items.length / $shopItemsPerPage)>>
+
+	<<set _maxPage = Math.ceil(filterShopGroup(_items).length / $shopItemsPerPage)>>
 	<!-- Makes sure $shopPage is never showing a blank page -->
 	<<if $shopPage gte _maxPage>>
 		<<set $shopPage to 0>>
@@ -255,7 +273,9 @@
 
 <<widget "generateshoppage">>
 	<<set _page = _args[0]>>
-	<<set _itemsOnPage = _items.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
+	<<set _itemGroups to []>>
+	<<set _itemsOnPage = filterShopGroup(_items)>>
+	<<set _itemsOnPage = _itemsOnPage.slice(_page * $shopItemsPerPage, (_page + 1) * $shopItemsPerPage)>>
 	<<set _hidden = _page == $shopPage ? "" : " hidden">>
 	<<set _compact = $shopDefaults.compactMode ? "compact" : "">>
 
@@ -272,27 +292,34 @@
 			<div class="clothing-item div-link">
 				<!-- Clothing icon -->
 				<div @class="'clothing-icon ' + _compact">
+					<<if $options.images is 1 and _itemData.shopGroup and _items.reduce((prev, curr) => {
+						if (!curr.shopGroup) return prev;
+						if (curr.shopGroup === _itemData.shopGroup) return prev + 1;
+						return prev;
+					},0) gt 1 and $options.images is 1>><div class='fa-icon fa-plus clothing-icon-plus'></div><</if>>
 					<<if _locked and $options.images is 1>>
 						<img src="img/misc/icon/lock.png" class="clothing-locked">
 					<<else>>
-						<<if _item.colour_options.length > 0>>
-							<<if $shopDefaults.colourItems == "random">>
-								<<set _item.colour = _item.colour_options[random(_item.colour_options.length - 1)]>>
-							<<elseif $shopDefaults.colourItems == "default" and _item.colour_options.includes($shopDefaults.color)>>
-								<<set _item.colour = $shopDefaults.color>>
-								<<if $shopDefaults.color == "custom">>
+						<<if _item.colour_options.length gt 0>>
+							<<if $shopDefaults.colourItems is "random">>
+								<<set _item.colour to _item.colour_options.random()>>
+							<<elseif $shopDefaults.colourItems is "default" and _item.colour_options.includes($shopDefaults.color)>>
+								<<set _item.colour to $shopDefaults.color>>
+								<<if $shopDefaults.color is "custom">>
 									<<set _item.colourCustom = _colCustomPrimary>>
 								<</if>>
 							<</if>>
 						<</if>>
-						<<if _item.accessory_colour_options.length > 0>>
-							<<if $shopDefaults.colourItems == "random">>
-								<<set _item.accessory_colour = _item.accessory_colour_options[random(_item.accessory_colour_options.length - 1)]>>
-							<<elseif $shopDefaults.colourItems == "default" and _item.accessory_colour_options.includes($shopDefaults.secColor)>>
-								<<set _item.accessory_colour = $shopDefaults.secColor>>
-								<<if $shopDefaults.secColor == "custom">>
-									<<set _item.accessory_colourCustom = _colCustomSecondary>>
+						<<if _item.accessory_colour_options.length gt 0>>
+							<<if $shopDefaults.colourItems is "random">>
+								<<set _item.accessory_colour to _item.accessory_colour_options.random()>>
+							<<elseif $shopDefaults.colourItems is "default" and _item.accessory_colour_options.includes($shopDefaults.secColor)>>
+								<<set _item.accessory_colour to $shopDefaults.secColor>>
+								<<if $shopDefaults.secColor is "custom">>
+									<<set _item.accessory_colourCustom to _colCustomSecondary>>
 								<</if>>
+							<<else>> /* clothing not available with selected acc colour */
+								<<set _item.accessory_colour to 0>>
 							<</if>>
 						<</if>>
 						<<clothingicon _item $_realSlot>>
@@ -329,7 +356,7 @@
 					<<if !$shopDefaults.compactMode>>
 						<div class="pricetag-placeholder"></div>
 					<</if>>
-					<span class="clothing-name"><<trSearchClothes _itemData.name "name">>
+					<span class="clothing-name"><<trClothes $_realSlot _itemData.name "name">>
 						<<if _locked>>
 							<span class="lblue">_trResult</span><span class="black">&nbsp;| 잠김</span>
 						<<else>>
@@ -475,20 +502,35 @@
 		<<else>>
 			<<integrity $clothes_choice_integrity>>
 		<</if>>
-		<<reveal $clothes_choice_reveal>> <<trSearchClothes _temp_choice.name "name">><<print _trResult>>.
+		<<reveal $clothes_choice_reveal>> <<trClothes _realSlot _temp_choice.name "name">><<print _trResult>>.
 		<<if _temp_choice.gender is "m">>
 			<span class="lblue">남성용.</span>
 		<<elseif _temp_choice.gender is "f">>
 			<span class="pink">여성용.</span>
 		<</if>>
-		<<trSearchClothes _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
+		<<trClothes _realSlot _temp_choice.name "desc">><<print _trResult>> 가격 <<printmoney `getClothingCost(_temp_choice,$clothingShopSlot)`>>.
 		<br>
 		<<set _truewarmth = getTrueWarmth(_temp_choice)>>
 		<<warmth _truewarmth>>
 		<br><br>
 		<<shoptraits>>
 		<<set _slimeSlots to setup.clothingLayer.torso>>
-		<<if !_slimeSlots.includes($clothingShopSlot) or currentSkillValue('willpower') gte 800 or _temp_choice.reveal gte 500 or _temp_choice.type.includesAny("school", "event") or $corruption_slime lt 80>>
+		<<if $earSlime.event is "go commando" and $clothingShopSlot is "under_lower">>
+			<span class="red">귓속의 슬라임이 당신에게 속옷을 입지 말라고 했기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
+			<br>
+		<<elseif _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and !_temp_choice.type.includesAny("school","event")>>
+			<span class="red">귓속의 슬라임이 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
+			<br>
+		<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
+			<span class="red">귓속의 슬라임이 당신에게 더 <<print $earSlime.forcedDressing.type is "f" ? "여성스러운" : "남성스러운">> 옷만 입으라고 했기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
+		<<else>>
+			<<if _slimeSlots.includes($clothingShopSlot) and $daily.corruptionSlimeClothes and _temp_choice.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500) and (_temp_choice.type.includesAny("school") and !Time.schoolDay) and !_temp_choice.type.includesAny("event")>>
+				<span class="red">귓속의 슬라임이 오늘 당신이 수업이 없기 때문에 <<trClothes _realSlot _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허락하지 않는다.</span>
+				<br>
+				<<set _wearingBlocked to true>>
+			<<else>>
+				<<set _wearingBlocked to false>>
+			<</if>>
 			<div class="clothing-colours-div">
 				<<set _hiddenMannequin = $options.images is 1 ? "" : "hidden">>
 				<!-- Item preview -->
@@ -564,9 +606,9 @@
 						<<printcursed>>
 					<<elseif _preggyPrevent>>
 						<<printpreggy _temp_choice>>
-					<<else>>
+					<<elseif !_wearingBlocked>>
 						<<link "훔쳐 입는다">>
-							<<shopbuyv2 _realSlot "steal" "wear" _realIndex>><<crimeup `getClothingCost(_temp_choice,$clothingShopSlot) / 100`>>
+							<<shopbuyv2 _realSlot "steal" "wear" _realIndex>><<crimeUp `getClothingCost(_temp_choice,$clothingShopSlot) / 100` "thievery">>
 							<<set $clothingShop.stolenClothes++>>
 							<<set $clothingShop.totalStolenClothes++>>
 							<<if $shopDefaults.disableReturn is false>>
@@ -582,11 +624,11 @@
 								<<updatewarmthdescription>>
 							<</if>>
 							<<run updateMoment()>>
-						<</link>><<crime>>
+						<</link>><<crime "thievery">>
 						<br>
 					<</if>>
 					<<link "훔쳐 집으로 가져간다">>
-						<<shopbuyv2 _realSlot "steal" "send" _realIndex>><<crimeup `getClothingCost(_temp_choice,$clothingShopSlot) / 100`>>
+						<<shopbuyv2 _realSlot "steal" "send" _realIndex>><<crimeUp `getClothingCost(_temp_choice,$clothingShopSlot) / 100` "thievery">>
 						<<set $clothingShop.stolenClothes++>>
 						<<set $clothingShop.totalStolenClothes++>>
 						<<if $shopDefaults.disableReturn is false>>
@@ -595,7 +637,7 @@
 						<<updateclotheslist>>
 						<<updatesidebarimg>>
 						<<run updateMoment()>>
-					<</link>><<crime>>
+					<</link>><<crime "thievery">>
 					<br>
 				<<else>>
 					<span class="red">당신은 이 이상 옷을 가지고 다닐 수 없다.</span> 당신은 옷들을 옷장에 가져가야 한다.
@@ -609,13 +651,13 @@
 				<</if>>
 
 				<div class="buy-buttons">
-					<<set _cantWear = (_cursedPrevent == true || _preggyPrevent == true ? "disabled" : "div-link")>>
+					<<set _cantWear = (_cursedPrevent == true || _preggyPrevent == true || _wearingBlocked ? "disabled" : "div-link")>>
 					<div class="buy-button">
 						<div @class="'buy-button-inner ' + _cantWear">
-							<<if _cursedPrevent or _preggyPrevent>>
-								Buy and wear
+							<<if _cursedPrevent or _preggyPrevent or _wearingBlocked>>
+								옷을 사서 입는다
 							<<else>>
-								<<link "옷을 산다">>
+								<<link "옷을 사서 입는다">>
 									<<clothingReset _realSlot>>
 									<<shopbuyv2 _realSlot "buy" "wear" _realIndex>>
 									<<set $money -= getClothingCost(_temp_choice,$clothingShopSlot)>>
@@ -651,7 +693,7 @@
 			<</if>>
 
 			<<if _spaceLeft < 1>>
-			<<elseif _cursedPrevent != true and _preggyPrevent != true and $tryOn.tryingOn>>
+			<<elseif _cursedPrevent != true and _preggyPrevent != true and !_wearingBlocked and $tryOn.tryingOn>>
 				<div class="try-buttons">
 					<div class="try-button div-link">
 						<<link "착용해 본다">>
@@ -686,15 +728,20 @@
 						<div class="try-button div-link"><<toggleHoodLink "shop">></div>
 						<br>
 					<</if>>
+					<<if ["upper"].includes($clothingShopSlot) and setup.clothes.upper[clothesIndex("upper",$worn.upper)].altposition>>
+						<div class="try-button div-link"><<toggleAltLink "upper" "shop">></div>
+						<br>
+					<</if>>
+					<<if ["neck"].includes($clothingShopSlot) and setup.clothes.neck[clothesIndex("neck",$worn.neck)].altposition>>
+						<div class="try-button div-link"><<toggleAltLink "neck" "shop">></div>
+						<br>
+					<</if>>
 					<<if ["upper","lower"].includes($clothingShopSlot) and $worn.lower.name isnot "naked" and $worn.upper.outfitPrimary is undefined and !setup.clothes.upper[clothesIndex("upper",$worn.upper)].notuck>>
 						<div class="try-button div-link"><<toggleUpperTuck>></div>
 						<br>
 					<</if>>
 				</div>
 			<</if>>
-		<<else>>
-			<span class="red">귀의 슬라임은 <<trSearchClothes _temp_choice.name "name" "을">>_trResult 입어보거나 구입하는 것을 허용하지 않습니다.</span>
-			<br>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -1143,6 +1190,27 @@
 						<<link "">><<toggleMannequinGender>><</link>>
 					</div>
 				</div>
+				<<if _temp_choice.shopGroup and Array.isArray(_items) and _items.reduce((prev, curr) => {
+						if (!curr.shopGroup) return prev;
+						if (curr.shopGroup === _itemData.shopGroup) return prev + 1;
+						return prev;
+					},0) gt 1>>
+					<div class="mannequin-buttons-right no-numberify">
+						<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+						<<link "<span class='fa-icon fa-left-arrow'></span>">>
+							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+							<<set _groupIndexMax to _itemGroups[_temp_choice.shopGroup].length - 1>>
+							<<set $clothes_choice to _groupIndex gt 0 ? _itemGroups[_temp_choice.shopGroup][_groupIndex - 1] : _itemGroups[_temp_choice.shopGroup][_groupIndexMax]>>
+							<<updateclotheslist>>
+						<</link>>
+						_groupIndex
+						<<link "<span class='fa-icon fa-right-arrow'></span>">>
+							<<set _groupIndex to _itemGroups[_temp_choice.shopGroup].indexOf($clothes_choice)>>
+							<<set $clothes_choice to _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] ? _itemGroups[_temp_choice.shopGroup][_groupIndex + 1] : _itemGroups[_temp_choice.shopGroup][0]>>
+							<<updateclotheslist>>
+						<</link>>
+					</div>
+				<</if>>
 
 				<<if $options.sidebarRenderer isnot "canvas">>
 				<div class="mannequin-clothes">
@@ -1220,7 +1288,7 @@
 	<<if _mannequinGender is "f">>
 		<<set _mannequinGenderOverride to "m">>
 	<<else>>
-		<<if $player.gender is "h" and _mannequinGender is "m">> /* if player is herm, toggle mannequin through herm gender */
+		<<if $player.penisExist and $player.vaginaExist and _mannequinGender is "m">> /* if player is herm, toggle mannequin through herm gender */
 			<<set _mannequinGenderOverride to "h">>
 		<<else>>
 			<<set _mannequinGenderOverride to "f">>

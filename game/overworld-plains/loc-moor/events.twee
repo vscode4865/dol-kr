@@ -1656,30 +1656,30 @@ You have to run to keep up,
 
 :: Moor Flower
 <<effects>>
-
+<<if !$moorFlowerMod>><<set $moorFlowerMod to 0>><</if>>
 You approach the pink flower. The scent is alluring. The petals brush your nose as you sniff.
 <br><br>
 
 A heat travels down your spine, resting in your loins. You're filled with a desperate yearning.
 <br><br>
 
-<<link [[자위한다|Moor Flower Masturbation]]>><<set $masturbationstart to 1>><</link>>
+<<link [[자위한다|Moor Flower Masturbation]]>><<unset $moorFlowerMod>><<set $masturbationstart to 1>><</link>>
 <br>
-<<link [[떠난다|Moor Flower Leave]]>><</link>><<willpowerdifficulty 1 1000>>
+<<link [[떠난다|Moor Flower Leave]]>><<unset $moorFlowerMod>><</link>><<willpowerdifficulty `1 + $moorFlowerMod` `1000 + $moorFlowerMod`>>
 <br>
 
 :: Moor Phallus Plant
 <<effects>>
-
+<<if !$moorFlowerMod>><<set $moorFlowerMod to 0>><</if>>
 You approach the odd phallus-shaped plant. The scent is alluring. You wonder why such a thing exists.
 <br><br>
 
 A heat travels down your spine, resting in your loins. You're filled with a desperate yearning.
 <br><br>
 
-<<link [[자위한다|Moor Phallus Plant Masturbation]]>><<set $masturbationstart to 1>><<set $moorPhallusPlant to 1>><</link>>
+<<link [[자위한다|Moor Phallus Plant Masturbation]]>><<unset $moorFlowerMod>><<set $masturbationstart to 1>><<set $moorPhallusPlant to 1>><</link>>
 <br>
-<<link [[떠난다|Moor Flower Leave]]>><</link>><<willpowerdifficulty 1 1000>>
+<<link [[떠난다|Moor Flower Leave]]>><<unset $moorFlowerMod>><</link>><<willpowerdifficulty `1 + $moorFlowerMod` `1000 + $moorFlowerMod`>>
 <br>
 
 :: Moor Flower Masturbation
@@ -1694,18 +1694,7 @@ A heat travels down your spine, resting in your loins. You're filled with a desp
 <</if>>
 <<masturbationeffects>>
 <<masturbationactions>>
-
-<div id="masturbationButtons">
-	<div id="next"><<link [[계속한다|Moor Flower Masturbation]]>><</link>><<nexttext>></div>
-	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-		<div><<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
-	<<elseif $corruptionMasturbation isnot true>>
-		<div><<link [[그만둔다|Moor Flower Masturbation Finish]]>><<set $finish to 1>><</link>></div>
-	<<else>>
-		<div class="red">귀 슬라임이 당신이 멈추는 것을 허락하지 않는다.</div>
-	<</if>>
-</div>
-<br>
+<<masturbationControls>>
 
 :: Moor Flower Masturbation Finish
 
@@ -1778,22 +1767,26 @@ A heat travels down your spine, resting in your loins. You're filled with a desp
 <<masturbationeffects>>
 <<masturbationactions>>
 
+<<if $corruptionMasturbation>>
+	<span class="red">귓속의 슬라임이 당신이 멈추는 것을 허락하지 않는다.</span>
+<</if>>
 <div id="masturbationButtons">
 	<<if $masturbationorgasm gte 3 and ($anususe is "mpenisflowerpenetrate" or $vaginause is "mpenisflowerpenetrate" or $mouth is "mpenisflowersuck")>>
-		<div id="next"><<link [[계속한다|Moor Phallus Plant Masturbation Finish]]>><<set $finish to 1>><</link>></div>
+		<div id="next"><<link [[계속한다|$passage + " Finish"]]>><</link>><<nexttext>></div>
 	<<else>>
-		<div id="next"><<link [[계속한다|Moor Phallus Plant Masturbation]]>><</link>><<nexttext>></div>
+		<div id="next"><<link [[계속한다|$passage]]>><</link>><<nexttext>></div>
 	<</if>>
 	<<if ($anususe is "mpenisflowerpenetrate" or $vaginause is "mpenisflowerpenetrate" or $mouth is "mpenisflowersuck")>>
 		<div class="red">당신은 멈출 수 없다.</div>
-	<<elseif $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-		<div><<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
+	<<elseif $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $earSlime.corruption gt (currentSkillValue('willpower') / 10)>>
+		<div id="stop"><<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
 	<<elseif $corruptionMasturbation isnot true>>
-		<div><<link [[그만둔다|Moor Phallus Plant Masturbation Finish]]>><<set $finish to 1>><</link>></div>
+		<div id="stop"><<link [[그만둔다|$passage + " Finish"]]>><<set $finish to 1>><</link>></div>
 	<<else>>
-		<div class="red">귀 슬라임이 당신이 멈추는 것을 허락하지 않는다.</div>
+		<div id="noStop">그만둘 수가 없다</div>
 	<</if>>
 </div>
+<br><br><br><br><br>
 
 :: Moor Phallus Plant Masturbation Finish
 
@@ -1875,7 +1868,7 @@ You try to ignore the sweet scent,
 <<if $willpowerSuccess>>
 	<span class="green">and manage to tear yourself away.</span> You continue your journey.
 	<br><br>
-	<<link [[다음|Moor]]>><<set $eventskip to 1>><</link>>
+	<<link [[다음|Moor]]>><<set $eventskip to 1>><<unset $moorFlowerMod>><</link>>
 	<br>
 <<else>>
 	<span class="red">but can't bring yourself to walk away.</span><<gwillpower>><<willpower 3>>
@@ -2775,9 +2768,9 @@ You lie in the crystal water, letting it wash over you. It's chilly, but you soo
 	<<He>> cocks <<his>> head. "How about you touch yourself for me? Go on. A body like that was made to be shown off."<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 	<br><br>
 
-	<<link [[Masturbate|Moor Low Wash Masturbate]]>><<set $masturbationstart to 1>><</link>>
+	<<link [[자위한다|Moor Low Wash Masturbate]]>><<set $masturbationstart to 1>><</link>>
 	<br>
-	<<link [[Refuse|Moor Low Wash Refuse]]>><</link>>
+	<<link [[거절한다|Moor Low Wash Refuse]]>><</link>>
 	<br>
 <<else>>
 	<<set $upperwet += 20>>
@@ -2837,7 +2830,7 @@ You lie in the crystal water, letting it wash over you. It's chilly, but you soo
 "Oh," the <<person>> says, unsurprised. <<He>> stands, <span class="pink">your clothes in <<his>> hand.</span> "I'll be taking these with me if you don't mind. And if you do. Unless you're willing to give me a show."
 <br><br>
 
-<<link [[Masturbate|Moor Low Wash Masturbate]]>><<set $masturbationstart to 1>><</link>>
+<<link [[자위한다|Moor Low Wash Masturbate]]>><<set $masturbationstart to 1>><</link>>
 <br>
 <<link [[Fight|Moor Low Wash Fight]]>><<set $fightstart to 1>><</link>>
 <br>
@@ -2999,21 +2992,18 @@ The <<person>> shrugs. "Have fun getting home." <<He>> walks to the top of the v
 <</if>>
 <br><br>
 
+<<if $corruptionMasturbation>>
+	<span class="red">귓속의 슬라임이 당신이 멈추는 것을 허락하지 않는다.</span>
+<</if>>
 <div id="masturbationButtons">
 	<<if $audience_lust gte 3>>
-		<div id="next"><<link [[계속한다|Moor Low Wash Masturbate Finish]]>><</link>><<nexttext>></div>
+		<div id="next"><<link [[계속한다|$passage + " Finish"]]>><</link>><<nexttext>></div>
 	<<else>>
-		<div id="next"><<link [[계속한다|Moor Low Wash Masturbate]]>><</link>><<nexttext>></div>
+		<div id="next"><<link [[계속한다|$passage]]>><</link>><<nexttext>></div>
 	<</if>>
-	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-		<div><<link [[그만둔다|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
-	<<elseif $corruptionMasturbation isnot true>>
-		<div><<link [[그만둔다|Moor Low Wash Masturbate Finish]]>><<set $finish to 1>><</link>></div>
-	<<else>>
-		<div class="red">귀 슬라임이 당신이 멈추는 것을 허락하지 않는다.</div>
-	<</if>>
+	<<masturbationStopControls>>
 </div>
-<br>
+<br><br><br><br><br>
 
 :: Moor Low Wash Masturbate Finish
 <<set $outside to 1>><<effects>>
@@ -3238,7 +3228,7 @@ They break into an argument, but the <<person1>><<person>> doesn't take <<his>> 
 	"Have a problem with that, slut?" the <<person2>><<person>> laughs. "Being gangbanged?"
 	<br><br>
 
-	<<link [[Refuse|Moor Youths Rape Refuse]]>><</link>><<willpowerdifficulty $drunk>>
+	<<link [[거절한다|Moor Youths Rape Refuse]]>><</link>><<willpowerdifficulty $drunk>>
 	<br>
 	<<link [[Shake your head|Moor Youths Rape Nod]]>><</link>>
 	<br>
@@ -3251,7 +3241,7 @@ They break into an argument, but the <<person1>><<person>> doesn't take <<his>> 
 
 	<<link [[Push away|Moor Youths Kiss]]>><</link>><<willpowerdifficulty 1 $drunk>>
 	<br>
-	<<link [[Kiss|Moor Youths Kiss Allow]]>><</link>><<kissvirginitywarning>>
+	<<link [[키스한다|Moor Youths Kiss Allow]]>><</link>><<kissvirginitywarning>>
 	<br>
 <<elseif $moor_youths gte 2>>
 	You drink from the bottle, and chat with the youths about their lives in the countryside.
