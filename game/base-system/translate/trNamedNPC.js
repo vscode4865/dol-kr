@@ -1,6 +1,7 @@
 function trNamedNPCInner(name, type)
 {
 	let found;
+	name = name.toLowerCase();
 	if (!type)
 	{
 		found = setup.trNamedNPCList.nameIndex[name];
