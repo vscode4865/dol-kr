@@ -1,7 +1,7 @@
 /* Korean translation information */
 
 window.koTrans = {
-	"version": "0.1.2023.1102",
+	"version": "0.1.2023.1103",
 	
 	"info": 
 		'한국어 번역판<span class="blue"><<link "(?)">><<run koTrans.legal()>><</link>></span><br>'+
