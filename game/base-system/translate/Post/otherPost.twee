@@ -135,7 +135,6 @@
 	<<trPost 1 _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
-
 <<widget "wifePost">><<silently>>
     <<if  $player.gender_appearance is "m">>
         <<set _trResult to "남편">><<trPost 0 _args[0] _args[1]>>
@@ -145,6 +144,18 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "WifePost">><<wifePost _args[0] _args[1]>><</widget>>
+
+<<widget "sisterPost">><<silently>>
+	<<set _trResult to ($player.gender_appearance is "m" ? "형제" : "자매")>><<trPost 1 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "SisterPost">><<sisterPost _args[0] _args[1]>><</widget>>
+
+<<widget "sister_npcPost">><<silently>>
+	<<set _trResult to ($pronoun is "m" ? "형제" : "자매")>><<trPost 1 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "Sister_npcPost">><<sister_npcPost _args[0] _args[1]>><</widget>>
 
 <<widget "victimgirlPost">><<silently>>
     <<if $malevictimchance is 0>>
@@ -221,19 +232,19 @@
 
 <<widget "bitchPost">><<silently>>
     <<if $player.gender_appearance is "m">>
-        <<set _trResult to "남창">>
+        <<set _trResult to "남창">><<trPost 0 _args[0] _args[1]>>
     <<else>>
-        <<set _trResult to "창녀">>
+        <<set _trResult to "창녀">><<trPost 1 _args[0] _args[1]>>
     <</if>>
-    <<set _trResult to _trResult>>
+<</silently>><<print _trResult>><</widget>>
 
-    <<if _args[0] isnot undefined>>
-        <<if $player.gender_appearance is "m">>
-            <<trPost 0 _args[0] _args[1]>>
-        <<else>>
-            <<trPost 1 _args[0] _args[1]>>
-        <</if>>
+<<widget "bitch_piratePost">><<silently>>
+    <<if $player.gender_appearance is "m">>
+        <<set _trResult to "개새끼">>
+    <<else>>
+        <<set _trResult to "암캐">>
     <</if>>
+	<<trPost 1 _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "whorePost">><<bitchPost _args[0] _args[1]>><</widget>>
@@ -277,8 +288,23 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "walletPost">><<silently>>
-    <<set _trResult to ($pronoun is "m" ? "지갑" : "핸드백")>>
-    <<trPost 0 _args[0] _args[1]>>
+	<<if !isNaN(_args[0]) and $NPCList[_args[0]] and $NPCList[_args[0]].clothes and $NPCList[_args[0]].clothes.set>>
+		<<set $_clothesSet to $NPCList[_args[0]].clothes.set>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<<else>>
+		<<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<</if>>
+	<<if $location is "island">>
+		<<set _trResult to "옷">>
+	<<elseif ["maleSchoolSwim", "maleSchoolSwimShirt", "femaleSchoolSwim", "maleSwim1", "maleSwim2", "femaleSwim1", "femaleSwim2", "neutralSwim", "divingSuit"].includes($_clothesSet)>>
+		<<set _trResult to "수영복">>
+		<<set $_clothesType to setup.npcClothesSets.find(set => set.name is $_clothesSet)>>
+		<<if $_clothesType>>
+			<<set _stealType to $_clothesType.type>>
+		<</if>>
+	<<else>>
+		<<set _trResult to ($pronoun is "m" ? "지갑" : "핸드백")>>
+	<</if>>
+    <<trPost 0 $_post $_sep>>
 <</silently>><<print _trResult>><</widget>>
 
 
@@ -303,12 +329,16 @@
 <<widget "pMotherPost">><<pmotherPost _args[0] _args[1]>><</widget>>
 
 <<widget "monkPost">><<silently>>
-	<<set _trResult to ($pronoun is "m" ? "수도자" : "수녀")>>
+	<<if _args[0] is "desc">>
+		<<trNPCdesc $description>><<set _trResult += " ">><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<<else>>
+		<<set _trResult to "">><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<</if>>
+	<<set _trResult += ($pronoun is "m" ? "수도자" : "수녀")>>
 	<<trPost 1 _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "monksPost">><<silently>><<monkPost>><<set _trResult += "들">><<trPost 2 _args[0] _args[1]>><</silently>><<print _trResult>><</widget>>
-
 
 <<widget "monks_and_nunsPost">><<silently>>
 <<if maleChance() is 100>>
@@ -321,6 +351,17 @@
 <<trPost 2 _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
+<<widget "brothers_and_sistersPost">><<silently>>
+	<<if maleChance() is 100>>
+		<<set _trResult to "형제들">>
+	<<elseif maleChance() is 0>>
+		<<set _trResult to "자매들">>
+	<<else>>
+		<<set _trResult to "형제자매들">>
+	<</if>>
+	<<trPost 2 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
 
 <<widget "priestPost">><<silently>>
 	<<set _trResult to ($pronoun is "m" ? "사제" : "여사제")>>
@@ -328,6 +369,30 @@
 <</silently>><<print _trResult>><</widget>>
 <<widget "priestsPost">><<silently>><<priestPost>><<set _trResult += "들">><<trPost 2 _args[0] _args[1]>><</silently>><</widget>>
 
+<<widget "bishopPost">><<silently>>
+	<<if $temple_confessor_intro>>
+		<<set _trResult to "주교">>
+	<<else>>
+		<<set _trResult to ($pronoun is "m" ? "사제" : "여사제")>>
+	<</if>>
+	<<trPost 1 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "bishop_handsPost">><<silently>>
+	<<if $temple_confessor_intro and _args[0] isnot "long">>
+		<<set _trResult to "주교의 양손">><<trPost 0 _args[0] _args[1]>>
+	<<elseif $per_npc.bishop_right_hand>>
+		<<if $per_npc.bishop_right_hand.pronoun is "m" and $per_npc.bishop_left_hand.pronoun is "m">>
+			<<set _trResult to "사제들">><<trPost 2 _args[0] _args[1]>>
+		<<elseif $per_npc.bishop_right_hand.pronoun is "f" and $per_npc.bishop_left_hand.pronoun is "f">>
+			<<set _trResult to "여사제들">><<trPost 2 _args[0] _args[1]>>
+		<<else>>
+			<<set _trResult to "사제와 여사제">><<trPost 1 _args[0] _args[1]>>
+		<</if>>
+	<<else>>
+		<<set _trResult to "어두운 예복을 입은 두 사람">><<trPost 0 _args[0] _args[1]>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
 
 <<widget "farm_text_manyPost">><<silently>>
 <<set $_bgender to $farm_work[_args[0]].gender_plural>>
@@ -433,7 +498,7 @@
 
 <<widget "malePost">><<silently>>
 	<<set _trResult to ($pronoun is "m" ? "남자" : "여자")>><<trPost 1 _args[0] _args[1]>>
-<</silently>><<print _text_output>><</widget>>
+<</silently>><<print _trResult>><</widget>>
 
 <<widget "daylightPost">><<silently>>
 <<if Time.dayState is "day">>
@@ -811,3 +876,41 @@
 <<widget "office_managerPost">><<silently>>	/* overworld-town/loc-office/main.twee */
 	<<trNPCname $per_npc.manager.name _args[0] _args[1]>>
 <</silently>><span class="manager"><<print _trResult>></span><</widget>>
+
+<<widget "temple_titlePost">><<silently>>	/* overworld-town/loc-temple/widgets.twee */
+	<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<else>>
+		<<set $_arg to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<</if>>
+
+	<<if _args[0] is "Sydney">>
+		<<switch $sydney.rank>>
+			<<case "initiate">><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+			<<case "monk">><<set _trResult to (C.npc.Sydney.pronoun is "m" ? "수도자" : "수녀")>><<trPost 1 $_post $_sep>>
+			<<case "priest">><<set _trResult to "사제">><<trPost 1 $_post $_sep>>
+			<<default>><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+		<</switch>>
+	<<elseif $_arg is "dark">>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _trResult to "신생아">><<trPost 1 $_post $_sep>>
+			<<case "monk">>
+				<<if $temple_confessor_intro>>
+					<<set _trResult to "그릇">><<trPost 0 $_post $_sep>>
+				<<else>>
+					<<set _trResult to "사도">><<trPost 1 $_post $_sep>>
+				<</if>>
+			<<case "priest">><<set _trResult to "어둠의 사제">><<trPost 1 $_post $_sep>>
+			<<default>><<set _trResult to "신생아">><<trPost 1 $_post $_sep>>
+		<</switch>>
+	<<else>>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+			<<case "monk">><<set _trResult to ($player.gender_appearance is "m" ? "수도자" : "수녀")>><<trPost 1 $_post $_sep>>
+			<<case "priest">><<set _trResult to "사제">><<trPost 1 $_post $_sep>>
+			<<default>><<set _trResult to "수련생">><<trPost 0 $_post $_sep>>
+		<</switch>>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "temple_TitlePost">><<temple_titlePost _args[0] _args[1] _args[2]>><</widget>>

@@ -4,14 +4,14 @@
 <<if currentSkillValue('skulduggery') gte $lock>>
 	<span class="green">자물쇠를 따기 쉬워 보인다.</span>
 	<br><br>
-	<<link [[자물쇠를 딴다 (0:10)|Pet Shop]]>><<pass 10>><<crimeup 20>><</link>><<crime>>
+	<<lockpickicon>><<link [[자물쇠를 딴다 (0:10)|Pet Shop]]>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
 	<br>
 <<else>>
 	<span class="red">잠금장치는 당신이 해제할 수 있는 능력 이상인 것 같다.</span>
 	<<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<link [[떠난다|Shopping Centre]]>><</link>>
+<<getouticon>><<link [[떠난다|Shopping Centre]]>><</link>>
 <br>
 
 :: Pet Shop
@@ -40,7 +40,7 @@
 	<br><br>
 <</if>>
 <<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.petShop>>
-	<<link [[금전등록기를 살펴본다|Pet Shop Register]]>><</link>>
+	<<shopicon "register">><<link [[금전등록기를 살펴본다|Pet Shop Register]]>><</link>>
 	<br>
 <</if>>
 <<if $pregnancyStats.wolfToysUnlocked and Time.dayState isnot "night">>
@@ -49,48 +49,57 @@
 	<</if>>
 	<<if !$storedChildrenToys>><<set $storedChildrenToys to {}>><</if>>
 	<<toySelection>>
-	<<link [[늑대를 위한 씹는 장난감들|Pet Shop Item]]>><<set $selectedToy to clone(_toySelection["chewToy"])>><</link>>
+	<<petshopicon "chew">> <<link [[늑대를 위한 씹는 장난감|Pet Shop Item]]>><<set $selectedToy to clone(_toySelection["chewToy"])>><</link>>
+	<br>
+<</if>>
+<<if $farm_stage gte 7 and Time.dayState isnot "night">>
+	<<petshopicon "treat">><<link [[개 간식 (£1 each)|Pet Shop Treats]]>><</link>>
 	<br>
 <</if>>
 <<if $pregnancyStats.parasiteDoctorEvents gte 2 and Time.dayState isnot "night">>
 	<<set _motherStatus to $sexStats.anus.pregnancy.motherStatus + $sexStats.vagina.pregnancy.motherStatus>>
 	<<set _container to $container.home>>
+	<br>
 	<<if $boughtItem isnot undefined>>
-		<br>
-		<<generate1>><<person1>>당신은 가게 주인에게 <<putpost_ rul $boughtItem>> 구입하겠다고 한다. "알겠습니다 <<if $player.gender_appearance is "m">>선생님<<else>>아가씨<</if>>," <<he_ ga>> 미소지으며 말한다. "가능한 빨리 댁으로 배달해 드리도록 하지요."<<endevent>>
-		<br><br>
+		<<generate1>><<person1>>당신은 가게 주인에게 <span class="gold"><<putpost_ rul $boughtItem>></span> 구입하겠다고 한다. "알겠습니다, <<if $player.gender_appearance is "m">>선생님<<else>>아가씨<</if>>," <<he_ ga>> 미소지으며 말한다. "가능한 빨리 댁으로 배달해 드리도록 하지요."<<endevent>>
+		<hr>
 		<<PetShopBoughtItem>>
 	<</if>>
-	<br>
 	__용량 업그레이드:__
 	<br>
 	<<if (_motherStatus is 0 and _container.upgrades.capacity lt 1) or (_motherStatus gt 0 and _container.upgrades.capacity lt 4)>>
-		<ul>
 		<<if _motherStatus gte 0 and _container.upgrades.capacity is 0>>
 			<<if $money gte 20000>>
-				<li><<link [[작은 수조를 산다 £200|$passage]]>><<set $boughtItem to "작은 수조">><</link>></li>
+				<<petshopicon "tank small">><<link [[작은 수조를 산다 £200|$passage]]>><<set $boughtItem to "Small Fish Tank">><</link>>
+				<br>
 			<<elseif _container.upgrades.capacity lt 1>>
-				<li>당신은 작은 수조를 살 £200가 없다.</li>
+				당신은 작은 수조를 살 £200가 없다.
+				<br>
 			<</if>>
 		<</if>>
 		<<if _motherStatus gte 1>>
 			<<if $money gte 50000 and _container.upgrades.capacity lt 2>>
-				<li><<link [[일반 수조를 산다 £500|$passage]]>><<set $boughtItem to "일반 수조">><</link>></li>
+				<<petshopicon "tank medium">><<link [[일반 수조를 산다 £500|$passage]]>><<set $boughtItem to "Fish Tank">><</link>>
+				<br>
 			<<elseif _container.upgrades.capacity lt 2>>
-				<li>당신은 일반 수조를 살 £500가 없다.</li>
+				당신은 일반 수조를 살 £500가 없다.
+				<br>
 			<</if>>
 			<<if $money gte 100000 and _container.upgrades.capacity lt 3>>
-				<li><<link [[커다란 수조를 산다 £1,000|$passage]]>><<set $boughtItem to "커다란 수조">><</link>></li>
+				<<petshopicon "tank large">><<link [[커다란 수조를 산다 £1,000|$passage]]>><<set $boughtItem to "Large Fish Tank">><</link>>
+				<br>
 			<<elseif _container.upgrades.capacity lt 3>>
-				<li>당신은 커다란 수조를 살 £1,000가 없다.</li>
+				당신은 커다란 수조를 살 £1,000가 없다.
+				<br>
 			<</if>>
 			<<if $money gte 500000 and _container.upgrades.capacity lt 4>>
-				<li><<link [[거대한 수조를 산다 £5,000|$passage]]>><<set $boughtItem to "거대한 수조">><</link>></li>
+				<<petshopicon "tank huge">><<link [[거대한 수조를 산다 £5,000|$passage]]>><<set $boughtItem to "Huge Fish Tank">><</link>>
+				<br>
 			<<elseif _container.upgrades.capacity lt 4>>
-				<li>당신은 거대한 수조를 살 £5,000가 없다.</li>
+				당신은 거대한 수조를 살 £5,000가 없다.
+				<br>
 			<</if>>
 		<</if>>
-		</ul>
 	<<else>>
 		당신은 파는 수조 중 가장 좋은 것을 이미 가지고 있다.
 		<br>
@@ -100,23 +109,27 @@
 		__먹이 업그레이드:__
 		<br>
 		<<if _container.upgrades.foodStorage lt 3>>
-			<ul>
 			<<if $money gte 50000 and _container.upgrades.foodStorage lt 1>>
-				<li><<link [[작은 자동 먹이 공급기를 산다 £500|$passage]]>><<set $boughtItem to "작은 자동 먹이 공급기">><</link>></li>
+				<<petshopicon "feeder">><<link [[작은 자동 먹이 공급기를 산다 £500|$passage]]>><<set $boughtItem to "Small Automatic Feeder">><</link>>
+				<br>
 			<<elseif _container.upgrades.foodStorage lt 1>>
-				<li>당신은 작은 자동 먹이 공급기를 살 £500가 없다.</li>
+				당신은 작은 자동 먹이 공급기를 살 £500가 없다.
+				<br>
 			<</if>>
 			<<if $money gte 150000 and _container.upgrades.foodStorage lt 2>>
-				<li><<link [[자동 먹이 공급기를 산다 £1,500|$passage]]>><<set $boughtItem to "자동 먹이 공급기">><</link>></li>
+				<<petshopicon "feeder">><<link [[자동 먹이 공급기를 산다 £1,500|$passage]]>><<set $boughtItem to "Automatic Feeder">><</link>>
+				<br>
 			<<elseif _container.upgrades.foodStorage lt 2>>
-				<li>당신은 자동 먹이 공급기를 살 £1,500가 없다.</li>
+				당신은 자동 먹이 공급기를 살 £1,500가 없다.
+				<br>
 			<</if>>
 			<<if $money gte 750000 and _container.upgrades.foodStorage lt 3>>
-				<li><<link [[큰 자동 먹이 공급기를 산다 £7,500|$passage]]>><<set $boughtItem to "큰 자동 먹이 공급기">><</link>></li>
+				<<petshopicon "feeder">><<link [[큰 자동 먹이 공급기를 산다 £7,500|$passage]]>><<set $boughtItem to "Large Automatic Feeder">><</link>>
+				<br>
 			<<elseif _container.upgrades.foodStorage lt 3>>
-				<li>당신은 큰 자동 먹이 공급기를 살 £7,500가 없다.</li>
+				당신은 큰 자동 먹이 공급기를 살 £7,500가 없다.
+				<br>
 			<</if>>
-			</ul>
 		<<elseif _motherStatus gte 1>>
 			당신은 파는 먹이 공급기 중 가장 좋은 것을 이미 가지고 있다.
 			<br>
@@ -127,18 +140,20 @@
 		__장식 업그레이드:__
 		<br>
 		<<if _container.upgrades.luxury lt 1 or (_container.upgrades.capacity gt 3 and _container.upgrades.luxury lt 2)>>
-			<ul>
 			<<if $money gte 500000 and _container.upgrades.luxury lt 1>>
-				<li><<link [[일반적인 장식을 산다 £5,000|$passage]]>><<set $boughtItem to "일반적인 장식">><</link>></li>
+				<<petshopicon "decor">><<link [[일반적인 장식을 산다 £5,000|$passage]]>><<set $boughtItem to "Standard Decorations">><</link>>
+				<br>
 			<<elseif _container.upgrades.luxury lt 1>>
-				<li>당신은 일반적인 장식을 살 £5,000가 없다.</li>
+				당신은 일반적인 장식을 살 £5,000가 없다.
+				<br>
 			<</if>>
 			<<if $money gte 1500000 and _container.upgrades.luxury lt 2 and _container.upgrades.capacity gt 3>>
-				<li><<link [[이국적인 장식을 산다 £15,000|$passage]]>><<set $boughtItem to "이국적인 장식">><</link>></li>
+				<<petshopicon "decor exotic">><<link [[이국적인 장식을 산다 £15,000|$passage]]>><<set $boughtItem to "Exotic Decorations">><</link>>
+				<br>
 			<<elseif _container.upgrades.luxury lt 2 and _container.upgrades.capacity gt 3>>
-				<li>당신은 이국적인 장식을 살 £15,000가 없다.</li>
+				당신은 이국적인 장식을 살 £15,000가 없다.
+				<br>
 			<</if>>
-			</ul>
 		<<else>>
 			당신은 파는 장식 중 가장 좋은 것을 이미 가지고 있다.
 			<br>
@@ -147,20 +162,15 @@
 	<<if $pregnancyStats.parasiteBook is 2>>
 		<br>
 		<<if $money gte 2000>>
-			<<link [[Buy notebook (£20)|Pet Shop Book]]>><<set $money -= 2000>><</link>>
+			<<assignmenticon>><<link [[공책을 산다 (£20)|Pet Shop Book]]>><<set $money -= 2000>><</link>>
 		<<else>>
-			You see a notebook available that you could use to collect info on your parasites. It costs £20. You can't afford it.
+			당신은 당신의 기생충들에 대한 정보를 모으는 데 사용할 수 있는 공책을 파는 것을 본다. 그것은 £20이다. 당신은 그것을 구입할 돈이 없다.
 		<</if>>
 		<br>
 	<</if>>
 <</if>>
 <br>
-<<if $farm_stage gte 7 and Time.dayState isnot "night">>
-	<br>
-	<<link [[개 간식을 산다 (개당 £1)|Pet Shop Treats]]>><</link>>
-	<br>
-<</if>>
-<<link [[떠난다|Shopping Centre]]>><</link>>
+<<getouticon>><<link [[떠난다|Shopping Centre]]>><</link>>
 <br>
 
 :: Pet Shop Treats
@@ -174,39 +184,39 @@
 <</if>>
 
 <<if $money gte 100>>
-	<<link [[1개를 산다 (£1)|Pet Shop Treats Buy]]>><<set $money -= 100>><<set $kennel_treats += 1>><</link>>
+	<<petshopicon "treat">><<link [[1개를 산다 (£1)|Pet Shop Treats Buy]]>><<set $money -= 100>><<set $kennel_treats += 1>><</link>>
 	<br>
 <<else>>
 	<span class="blue">당신은 하나라도 구입할 돈이 없다.</span>
 	<br>
 <</if>>
 <<if $money gte 1000>>
-	<<link [[10개를 산다 (£10)|Pet Shop Treats Buy]]>><<set $money -= 1000>><<set $kennel_treats += 10>><</link>>
+	<<petshopicon "treat">><<link [[10 개를 산다(£10)|Pet Shop Treats Buy]]>><<set $money -= 1000>><<set $kennel_treats += 10>><</link>>
 	<br>
 <</if>>
 <<if $money gte 5000>>
-	<<link [[50개를 산다 (£50)|Pet Shop Treats Buy]]>><<set $money -= 5000>><<set $kennel_treats += 50>><</link>>
+	<<petshopicon "treat">><<link [[50개를 산다 (£50)|Pet Shop Treats Buy]]>><<set $money -= 5000>><<set $kennel_treats += 50>><</link>>
 	<br>
 <</if>>
 <<if $money gte 10000>>
-	<<link [[100개를 산다 (£100)|Pet Shop Treats Buy]]>><<set $money -= 10000>><<set $kennel_treats += 100>><</link>>
+	<<petshopicon "treat">><<link [[100개를 산다 (£100)|Pet Shop Treats Buy]]>><<set $money -= 10000>><<set $kennel_treats += 100>><</link>>
 	<br>
 <</if>>
 <<if $money gte 20000>>
-	<<link [[200개를 산다 (£200)|Pet Shop Treats Buy]]>><<set $money -= 20000>><<set $kennel_treats += 200>><</link>>
+	<<petshopicon "treat">><<link [[200개를 산다 (£200)|Pet Shop Treats Buy]]>><<set $money -= 20000>><<set $kennel_treats += 200>><</link>>
 	<br>
 <</if>>
 <<if $money gte 50000>>
-	<<link [[500개를 산다 (£500)|Pet Shop Treats Buy]]>><<set $money -= 50000>><<set $kennel_treats += 500>><</link>>
+	<<petshopicon "treat">><<link [[500개를 산다 (£500)|Pet Shop Treats Buy]]>><<set $money -= 50000>><<set $kennel_treats += 500>><</link>>
 	<br>
 <</if>>
 <<if $money gte 100000>>
-	<<link [[1000개를 산다 (£1000)|Pet Shop Treats Buy]]>><<set $money -= 100000>><<set $kennel_treats += 1000>><</link>>
+	<<petshopicon "treat">><<link [[1000개를 산다 (£1000)|Pet Shop Treats Buy]]>><<set $money -= 100000>><<set $kennel_treats += 1000>><</link>>
 	<br>
 <</if>>
 
 <br>
-<<link [[아무것도 사지 않는다|Pet Shop]]>><</link>>
+<<getouticon>><<link [[아무것도 사지 않는다|Pet Shop]]>><</link>>
 
 :: Pet Shop Treats Buy
 <<effects>>

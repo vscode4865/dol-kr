@@ -1,8 +1,14 @@
 :: Widgets Sleep [widget]
 
 <<widget "sleep">>
-	<<sleephour>>
-	<<ruffleHairFromSleep>>
+	<<if $earSlime.corruption is 100 and $earSlime.growth gte 50 and $earSlime.focus is "none" and !$statFreeze and !$args[0] and $earSlimeTest>>
+		/* Doing events this way, means that npc's may still be loaded, so endevent or loading new npc's should not be done */
+		<<earSlimeFocusChoice>>
+		<<set _dreaming to true>>
+	<<else>>
+		<<sleephour>>
+		<<ruffleHairFromSleep>>
+	<</if>>
 <</widget>>
 
 <<widget "sleephour">>
@@ -84,12 +90,13 @@
 				<<elseif Time.schoolDay and Time.hour is 7 and !$daily.baileyWake>>
 					<<set _sleepinterrupt to 1>>
 					<<set $daily.baileyWake to true>>
-				<<elseif $corruption_slime gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and Time.dayState is "night" and $slimeSleepEvent is 0 and $kylarbed isnot 1>>
+				<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and Time.dayState is "night" and $earSlime.eventTimer is 0 and $kylarbed isnot 1>>
 					<<set $slimeWake to 1>>
 					<<break>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
-
-
 			<<case "asylum">>
 				<<asylumeffects>>
 				<<if Time.hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
@@ -99,6 +106,9 @@
 				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
 					<<set _sleepinterrupt to 1>>
 					<<set $rapewake to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "prison">>
 				<<if Time.hour is 6>>
@@ -114,6 +124,15 @@
 				<<elseif $farm_attack_timer is 0 and Time.hour gte 21>>
 					<<set $remywake to 1>>
 					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+
+				<<elseif (Object.values($children).find(child => child.mother === "Alex" && child.location === "alex_cottage") or Object.values($children).find(child => child.father === "Alex" && child.location === "alex_cottage")) and Time.dayState is "night" and !$weekly.alexNightTimeNursery and $rng gte 56>>
+					<<set _sleepinterrupt to 1>>
+					<<set $weekly.alexNightTimeNursery to 1>>
+					<<set _alexWake to 1>>
+
 				<</if>>
 			<<case "cabin">>
 				<<if wraithSleepEventCheck()>>
@@ -126,6 +145,9 @@
 				<<if $location is "forest" and $wolfpackferocity gte 10 and $wolfwake isnot 1>>
 					<<set _sleepinterrupt to 1>>
 					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "tower">>
 				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
@@ -138,10 +160,54 @@
 			<<case "wolf_cave">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
+				<<elseif $wolfpackferocity gte 10 and $wolfwake isnot 1 and random(1,10) is 10>>
+					<<set _sleepinterrupt to 1>>
+					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
 				<</if>>
 			<<case "pound">>
 				<<if Time.hour is 6 or Time.hour is 12 or Time.hour is 18>>
 					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "island">>
+				<<if $island[$island.home].camouflage is "simple">>
+					<<set _rng to random(1, 160)>>
+				<<elseif $island[$island.home].camouflage is "basic">>
+					<<set _rng to random(1, 140)>>
+				<<elseif $island[$island.home].camouflage is "advanced">>
+					<<set _rng to random(1, 120)>>
+				<<else>>
+					<<set _rng to random(1, 100)>>
+				<</if>>
+				<<if $island.home is "rocky_hillock">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>
+				<<elseif $island.home is "waterfall">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 10 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_2 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>
+				<<elseif $island.home is "gulch">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 10 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_2 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 15 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_3 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>					
 				<</if>>
 		<</switch>>
 
@@ -168,12 +234,21 @@
 		<<if !($sleeptrouble is 1 and $controlled is 0)>>
 			<<set $tiredness -= 50>>
 		<</if>>
+		<<if $location is "island">>
+			<<if $island[$island.home].curtains is "simple">>
+				<<set $tiredness -= 15>>
+			<<elseif $island[$island.home].curtains is "basic">>
+				<<set $tiredness -= 30>>
+			<<elseif $island[$island.home].curtains is "advanced">>
+				<<set $tiredness -= 45>>
+			<</if>>
+		<</if>>
 		<<set $tiredness -= $_bonusFatigueLoss>>
 
 		<<if $location is "tower">>
 			<<bird_pass 60>>
 		<<else>>
-			<<pass 1 hours>>
+			<<pass 1 hour>>
 		<</if>>
 
 		<<if $nightmares gte 1 and $controlled is 0>>
@@ -217,6 +292,9 @@
 		<<case "prison bed">>
 			<<set $_storeLocation to "prison bed">>
 			<<set $wardrobe_location to "prison">>
+		<<case "Temple Bunk Bed">>
+			<<set $_storeLocation to "Temple Bunk Bed">>
+			<<set $wardrobe_location to "temple">>		
 		<<default>>
 			Something went wrong with the "bedclotheson" widget, please report
 			<<run console.log('Something went wrong with the "bedclotheson" widget, please report')>>
@@ -238,70 +316,164 @@
 <</widget>>
 
 <<widget "slimeNoSleep">>
-	<<if $corruption_slime gte 80>>
-		<<set _eventsList to ["have sex with someone or something", "only sleep naked from now on"]>>
+	<<set $earSlime.eventTimer to 4>>
+	<<set _eventsList to ["go commando"]>>
+	<<if $earSlime.corruption gte 80>>
+		<<run _eventsList.push("have sex with someone or something")>>
 
-		<<if $alwaysSleepNaked is true>>
-			<<set _eventsList.delete("only sleep naked from now on")>>
+		<<if $earSlime.alwaysSleepNaked is false>>
+			<<run _eventsList.push("only sleep naked from now on")>>
 		<</if>>
 	<<else>>
-		<<set _eventsList to ["have sex with someone", "go running or swimming for an hour"]>>
+		<<run _eventsList.push("have sex with someone")>>
 	<</if>>
-	<<if currentSkillValue('skulduggery') gt 200>>
-		<<set _eventsList.push("steal something")>>
+	<<if ["home"].includes($location) and Time.dayState is "night" and between(Time.hour, 20, 24)>>
+		<<run _eventsList.push("go running or swimming for an hour")>>
+		<<if currentSkillValue("skulduggery") gt 200>>
+			<<set _eventsList.push("steal something")>>
+		<</if>>
+		<<if $exhibitionism gt 35>>
+			<<set _eventsList.push("go running or swimming naked for an hour")>>
+			<<set _eventsList.push("go running or swimming naked for two hours")>>
+			<<set _eventsList.push("study at the school library while naked for an hour")>>
+			<<set _eventsList.push("study at the school library while naked for two hours")>>
+		<</if>>
 	<</if>>
-	<<if $exhibitionism gt 35>>
-		<<set _eventsList.push("go running or swimming naked for an hour")>>
+	<<if $earSlime.growth gt 50>>
+		<<if $earSlime.focus is "pregnancy" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<</if>>
+		<</if>>
+		<<if $earSlime.focus is "impregnation" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<<if !playerIsPregnant()>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<</if>>
+		<</if>>
+		<<if ["pregnancy", "mixed"].includes($earSlime.focus) and ($player.vaginaExist or $analdisable is "f") and !playerIsPregnant()>>
+			<<if maleChance() gt 0 or beastMaleChance() gt 0>>
+				<<set _task to `get sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
+				<<run _eventsList.push(_task)>>
+				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
+			<</if>>
+			<<if $player.penisExist and $player.penissize gte 0 and $semen_volume gte 300 and !$earSlime.defyCooldown and $awareness gte 200>>
+				<<set _task to `get your own sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
+				<<run _eventsList.push(_task)>>
+				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if ["impregnation", "mixed"].includes($earSlime.focus)>>
+			<<if maleChance() lt 100 or beastMaleChance() lt 100>>
+				<<run _eventsList.push("ejaculate into someones vagina")>>
+				<<run _eventsList.push("ejaculate into someones vagina")>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+				<</if>>
+			<</if>>
+		<</if>>
 	<</if>>
+	<<if $earSlime.growth gte 100 and $earSlime.defyCooldown gte 24>>
+		<<set $earSlime.event to "masturbate and orgasm at least ten times">>
+	<<elseif $earSlime.growth gte 100 and $earSlime.defyCooldown gte random(16, 30)>>
+		<<set $earSlime.event to "masturbate and orgasm at least five times">>
+	<<else>>
+		<<set _maxEvents to _eventsList.length - 1>>
+		<<set $earSlime.event to _eventsList[random(0,_maxEvents)]>>
+	<</if>>
+	<<set _tempEventHide to true>>
+	<<set _noSleep to $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
 
-	<<set _maxEvents to _eventsList.length - 1>>
-	<<set $slimeEvent to _eventsList[random(0,_maxEvents)]>>
+	<span class="lewd">당신은 머릿속의 슬라임이<<if _noSleep>> 잠을 자라고 허락해주기 전에<</if>><<trSlimeEvent $earSlime.event>> 명령을 내리는 것을 느낀다.</span> 녀석은 명령을 따른다면 보상을 해줄 것이고, 그렇지 않는다면 그에 걸맞는 결과를 맞이하게 될 것이라 협박한다.
 
-	<span class="lewd">머릿속의 슬라임이 잠을 자라고 허락해주기 전에 <<trSlimeEvent>> 명령을 내린다.</span> 녀석은 명령을 따른다면 보상을 해줄 것이고, 그렇지 않는다면 그에 걸맞는 결과를 맞이하게 될 것이라 협박한다.
 	<br><br>
-	<<link [[Obey|SleepSlimeEventObey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+	<<link [[순종한다|SleepSlimeEventObey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 	<br>
-	<<link [[Defy|SleepSlimeEventDefy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<sub 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+	<<link [[거부한다|SleepSlimeEventDefy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<sub 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
 <</widget>>
 
 <<widget "slimeEventResult">>
-	<<if $slimeEvent is "go running or swimming naked for an hour" or "go running or swimming for an hour">>
-		<<set $slimeEventLength to 2>>
+	<<if !$slimeBedExit>>
+		<<set $slimeBedExit to "Bed">>
+		<<set $slimeBedroomExit to "Bedroom">>
 	<</if>>
-	<<if $slimeEvent is "only sleep naked from now on">>
+	<<if $earSlime.event.includes("two hours")>>
+		<<set $earSlime.eventLength to 4>>
+	<<elseif $earSlime.event.includes("an hour")>>
+		<<set $earSlime.eventLength to 2>>
+	<</if>>
+	<<if $earSlime.event.includes("masturbate and orgasm at least")>>
+		/* Gets set to 0 on it being completed */
+		<<set $earSlime.defyCooldown += 82>>
+	<</if>>
+	<<if $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
+		<<set $earSlime.noSleep to true>>
+	<</if>>
+	<<if $earSlime.event is "only wear feminine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(31, 62)}>>
+		<<else>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(3, 31)}>>
+		<</if>>
+	<<elseif $earSlime.event is "only wear masculine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<set $earSlime.forcedDressing to {type: "m", days: random(3, 31)}>>
+	<</if>>
+	<<if $earSlime.event is "only sleep naked from now on">>
 		<<strip>>
-		<<set $alwaysSleepNaked to true>>
-		<<unset $slimeEvent>>
-		당신은 자러가기 전에 옷을 벗는다.
+		<<set $earSlime.alwaysSleepNaked to true>>
+		<<set $earSlime.event to "">>
+		당신은 침대에 들어가기 전에 옷을 벗는다.
 		<br><br>
-		<<link [[다음|Bed]]>><</link>>
+		<<link [[다음|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<elseif $earSlime.event is "go commando">>
+		<<if !playerHasStrapon() and !$worn.under_lower.outfitSecondary and $worn.under_lower.name isnot "naked">>
+			<<underlowerstrip>>
+			당신은 침대에 들어가기 전에 <<worn_under_lower_name_ ul>> 벗는다.
+		<<else>>
+			당신은 침대에 눕는다.
+		<</if>>
+		<br><br>
+		<<link [[다음|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<elseif !$earSlime.noSleep>>
+		당신은 침대에 눕는다.
+		<br><br>
+		<<link [[다음|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 	<<else>>
 		당신은 주어진 책무를 다하기 위해 침대로부터 떨어진다.
 		<br><br>
-		<<link [[다음|Bedroom]]>><</link>>
+		<<link [[다음|$slimeBedroomExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 	<</if>>
 <</widget>>
 
 <<widget "slimeEventEnd">>
-	<<switch $slimeEvent>>
-		<<case "go running or swimming naked for an hour">>
-			<<if $slimeEventLength is 1 and $exposed is 2>>
-				<<unset $slimeEvent>>
-				<<unset $slimeEventLength>>
-			<<elseif $exposed is 2>>
-				<<set $slimeEventLength -= 1>>
+	<<if _args[0]>>
+		<<if $earSlime.event.includes(_args[0]) and (!$earSlime.event.includes("naked") or $exposed is 2)>>
+			<<set $earSlime.eventLength -= 1>>
+			<<if $earSlime.eventLength lte 0>>
+				<<set $earSlime.event to "">>
+				<<set $earSlime.eventLength to 0>>
+				<<set $earSlime.noSleep to false>>
 			<</if>>
-		<<case "go running or swimming for an hour">>
-			<<if $slimeEventLength is 1>>
-				<<unset $slimeEvent>>
-				<<unset $slimeEventLength>>
-			<<else>>
-				<<set $slimeEventLength -= 1>>
-			<</if>>
-		<<default>>
-			<<unset $slimeEvent>>
-	<</switch>>
+		<</if>>
+	<</if>>
 <</widget>>
 
 <<widget "wraithEvent">>
@@ -356,18 +528,107 @@
 	<</if>>
 <</widget>>
 
+<<widget "earSlimeFocusChoice">>
+	/* This event cannot run endevent or make changes to loaded npc's in anyway */
+	<<set _prevLocation to $location>>
+	<<set $location to "tentworld">>
+	<<set _pregnancyEnabled to $playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f">>
+	<<if $earSlime.dreamRejected>>
+		오, 또 촉수 평원의 꿈이다, 당신이 꿈 밖에서는 기억을 못 할 것이라는 것은 맞았다.
+		<<if $earSlime.dreamRejected gte 5>>
+			당신은 당신이 그것을 거부하면 할 수록 그들이 덜 나타난다는 느낌이 든다.
+		<</if>>
+		<br><br>
+		다시 한번, 누군가의 흐릿한 형체 셋이 당신 앞에 나타난다. 그것은 <span class="sub">무시할 수 없거나 쉽게 취소할 수 있는 선택</span>이고 당신이 진짜 당신이 되기 위해서는 <span class="lewd">그들 중 하나의 앞으로 나아가야</span> 한다는 것을 당신에게 상기시킨다.
+		<<if $earSlime.dreamRejected gte 10>>
+			그 목소리는 그것이 당신에게 그것이 요구하는 것을 시키려 더 필사적인 것 같다.
+		<</if>>
+	<<else>>
+		당신은 촉수 평원에서 깨어난 것 같지만, 당신의 지식에서 지금 보고 있는 것은 실제가 아니고 당신이 그걸 전혀 기억하지 못 할 것이라는 것을 안다.
+		<br><br>
+		갑자기, 누군가의 흐릿한 형체 셋이 당신 앞에 나타난다. 무언가가 이것은 <span class="sub">무시할 수 없거나 쉽게 취소할 수 있는 선택</span>이고 당신이 진짜 당신이 되기 위해서는 <span class="lewd">그들 중 하나의 앞으로 나아가야</span> 한다는 것을 당신에게 말해준다.
+	<</if>>
+	<br><br>
+	왼쪽의 형체에서 당신이 첫번째로 알아챈 것은,
+	<<if _pregnancyEnabled>>
+		그 형체가 임신해 배가 엄청 크다는 것이다.
+		<<if !$player.vaginaExist and !(playerIsPregnant() and playerAwareTheyArePregnant()) and Object.values($children).find(child => child.mother === "pc")>>
+			당신은 질이 없기 때문에, 어떻게 그것이 당신의 진짜 당신이 될 것인지 궁금해한다.
+		<</if>>
+	<<else>>
+		그 형체가 아주 여성스럽다는 것이다.
+	<</if>>
+	<<if $player.vaginaExist>>
+		<span class="lewd">그 형체의 보지에서는 계속 액체가 떨어지고 있다.</span>
+	<</if>>
+	<<if $breastsizemax gte 1>>
+		그 형체는 <<print setup.breastsizes[$breastsizemax]>> 유방 한 쌍을 가지고 있<<if $breastfeedingdisable is "f">>고, 만지고 있지는 않지만 <span class="lewd">모유가 뚝뚝 떨어지고</span> 있<</if>>다.
+	<</if>>
+	<<if $player.penisExist>>
+		그 형체의 다리 사이에서는, 당신은 작고 불투명한 슬라임 구체가 자지를 가리고 있는 것을 발견한다. 그 목소리가 당신에게 비록 그것이 쓸모없고 갇혀 있지만, <span class="lewd">그것은 계속 거기에서 당신에게 쾌감을 줄 것이라고</span> 말한다.
+	<</if>>
+
+	<br><br>
+	오른쪽의 형체에서 당신이 첫번째로 알아챈 것은,
+	<<if $player.penisExist>>
+		그 형체의 자지가 엄청나게 거대하고 그것이 <span class="lewd">계속 쿠퍼액을 뚝뚝 떨어뜨리고 있다는 것</span>이다.
+	<<else>>
+		그 형체가 거대한 자지처럼 생긴 기생충을 가지고 있으며 그것이 <span class="lewd">계속 쿠퍼액처럼 보이는 것을 뚝뚝 떨어뜨리고 있다는 것</span>이다.
+	<</if>>
+	그 형체는 완벽하게 평평한 가슴을 가지고 있<<if _pregnancyEnabled>>고 다른 둘과 다르게, 임신하고 있지 않<</if>>다.
+	<<if $npcPregnancyDisable is "f">>
+		그 목소리가 당신에게 당신은 <span class="lewd">당신이 바라는 누구든지 임신</span>시킬 수 있을 것이라고 말한다.
+	<<else>>
+		그 목소리가 당신에게 당신은 <span class="lewd">당신이 바라는 누구와도 훨씬 더 재미를 볼</span> 수 있을 것이라고 말한다.
+	<</if>>
+
+	<br><br>
+	가운데 있는 형체는 다른 둘이 섞인 것 같은 모습이고<<if _pregnancyEnabled>>, 임신하기는 했지만<</if>>, 확실하게 덜 흥분된
+	<<if $player.penisExist>>
+		자지를 가지고 있다.
+	<<else>>
+		자지처럼 생긴 기생충을 가지고 있다.
+	<</if>>
+	그 형체의 <<chest_ nun>> 정확히 당신의 것과 같<<if $breastfeedingdisable is "f">>고 모유는 전혀 보이지 않는<</if>>다. 그 목소리가 당신에게 집중이 되지 않기 때문에 다른 둘과 같은 방법으로 혜택을 받거나 <span class="lewd">쾌감을 얻</span>지 못할 것이라고 말한다.
+
+	<br><br>
+	<<link [[왼쪽 형체로 다가간다|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "pregnancy">><<set $earSlime.growth++>><</link>><<if $player.gender is "m" and $analdisable is "t" and _pregnancyEnabled>><<note "With anal being disabled, pregnancy cannot occur for you" "italic">><</if>>
+	<br>
+	<<link [[가운데 형체로 다가간다|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "mixed">><<set $earSlime.growth++>><</link>>
+	<br>
+	<<link [[오른쪽 형체로 다가간다|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "impregnation">><<set $earSlime.growth++>><</link>>
+	<br>
+	<<link [[아무것도 하지 않는다|$passage]]>><<set $location to _prevLocation>><<set $earSlime.growth -= 5 + Math.clamp($earSlime.dreamRejected, 0, 20)>><<set $earSlime.dreamRejected++>><</link>>
+<</widget>>
+
 :: SleepSlimeEventObey
-	당신은 슬라임의 요구를 따른다.
-	<<slimeEventResult>>
+<<effects>>
+
+당신은 슬라임의 요구를 따른다.
+<<slimeEventResult>>
 
 :: SleepSlimeEventDefy
-<<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
+<<effects>>
+<<if !$slimeBedExit>>
+	<<set $slimeBedExit to "Bed">>
+	<<set $slimeBedroomExit to "Bedroom">>
+<</if>>
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		당신은 슬라임이 요구하는 것을 거부하면서 더 듣지 않고 침대에 눕는다. 하지만, <span class="red">그것이 당신을 다른 방법으로 처벌할 수 있다는 것을 알기에, 그것은 당신을 제지하지 않는다.</span>
+	<<else>>
+		당신은 슬라임이 요구하는 것을 거부하면서 더 듣지 않고 침대에 누우려 한다. 하지만, <span class="teal">그것은 이전에 당신을 압도한 것 때문에 아직 지쳐 있다.</span> 당신은 그것이 당신의 발걸음을 반대 방향으로 강제로 돌리려 시도하는 것을 느끼지만, <span class="green">실패한다</span>.
+	<</if>>
+	<<set $earSlime.event to "">>
+	<br><br>
+	<<link [[다음|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
 	슬라임은 강제로 당신이 명령을 따르게 만들었다.
 	<<slimeEventResult>>
-
 <<else>>
 	당신은 슬라임의 명령을 거부하는 데에 성공하여, 명령을 따르지 않고 침대로 들어갈 수 있었다.
-	<<unset $slimeEvent>>
+	<<set $earSlime.event to "">><<set $earSlime.defyCooldown += 4>>
 	<br><br>
-	<<link [[다음|Bed]]>><</link>>
+	<<link [[다음|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
 <</if>>

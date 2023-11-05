@@ -56,15 +56,15 @@ function compile() {
 		esac
 	fi
 
-	$TWEEGO_EXE "$@" -o  "$TARGET" --head "devTools/head.html" --module "modules" game/ || build_failed="true"
+	$TWEEGO_EXE "$@" -f sugarcube-2-ko -o  "$TARGET" --head "devTools/head.html" --module "modules" game/ || build_failed="true"
 
 	if [ "$build_failed" = "true" ]; then
 		echoError "Build failed."
 		exit 1
 	else
 		if [ "$TARGET" != "Degrees of Lewdity.html" ]; then
-			# android builder expects to find a file by this name, and it has to be full copy, not just symlink
-			cp "$TARGET" "Degrees of Lewdity.html";
+			# android builder expects to find a file by this name. this is a symbolic link, not a full copy
+			ln -fs "$TARGET" "Degrees of Lewdity.html";
 		fi
 		echo "Done: \"$TARGET\""
 		exit 0

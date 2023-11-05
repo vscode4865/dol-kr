@@ -34,20 +34,20 @@
 <<else>>
 
 	<<if $leftarm is "bound" or $rightarm is "bound">>
-		<<ind>><<link [[속박구를 푼다 (0:10)|Prison Cell]]>><<set $unbind to 1>><<pass 10>><<arm_unbind>><</link>>
+		<<undobindingsicon>><<link [[구속구를 푼다 (0:10)|Prison Cell]]>><<set $unbind to 1>><<pass 10>><<arm_unbind>><</link>>
 		<br><br>
 	<</if>>
 	<<if $prison.poster and !$prison.tunnel>>
-		<<ind>><<link [[포스터를 관찰한다|Prison Poster]]>><<set $prison.tunnel to 1>><</link>>
+		<<furnitureicon "poster.png">><<link [[포스터를 관찰한다|Prison Poster]]>><<set $prison.tunnel to 1>><</link>>
 		<br>
 	<<elseif $prison.tunnel is 1 and $prison.hammer is 1>>
-		<<ind>><<link [[포스터 뒤의 벽을 쳐본다|Prison Poster 2]]>><<set $prison.tunnel to 2>><</link>>
+		<<furnitureicon "poster.png">><<link [[포스터 뒤의 벽을 쳐본다|Prison Poster 2]]>><<set $prison.tunnel to 2>><</link>>
 		<br>
 	<<elseif $prison.tunnel gte 120 and $prison.schedule is "lockdown">>
-		<<ind>><<link [[터널을 조사한다|Prison Tunnel]]>><</link>>
+		<<investigateicon>><<link [[터널을 조사한다|Prison Tunnel]]>><</link>>
 		<br>
 	<<elseif $prison.tunnel gte 2 and $prison.schedule is "lockdown">>
-		<<ind>><<link [[터널을 판다|Prison Tunnel]]>><</link>>
+		<<getouticon "dig">><<link [[터널을 판다|Prison Tunnel]]>><</link>>
 		<br>
 	<</if>>
 	<<if $prison.schedule is "revolt">>
@@ -60,7 +60,7 @@
 	<</if>>
 	<<roomoptions>>
 	<<if $prison.schedule isnot "lockdown" and !$worn.face.type.includes("blindfold")>>
-		<<plaqueicon>><<link [[명판을 본다|Prison Plaque]]>><</link>>
+		<<prisonicon "plaque">><<link [[철판을 본다|Prison Plaque]]>><</link>>
 		<br>
 	<</if>>
 	<<wardrobeicon>><<link [[찬장|Prison Wardrobe]]>><</link>>
@@ -71,7 +71,7 @@
 	<</if>>
 	<br>
 	<<if $prison.schedule isnot "lockdown">>
-		<<link [[떠난다|Prison Walkway]]>><</link>>
+		<<getouticon>><<link [[떠난다|Prison Walkway]]>><</link>>
 		<br>
 	<</if>>
 	<br>
@@ -155,11 +155,11 @@
 	<br><br>
 	<<for _i to 1; _i lt 9; _i++>>
 		<<if _i is 1>>
-			<<link [[1시간 동안 판다|Prison Tunnel Dig]]>><<set $prison_dig to 1>><</link>><<gtiredness>>
+			<<getouticon "dig">><<link [[1시간 동안 판다|Prison Tunnel Dig]]>><<set $prison_dig to 1>><</link>><<gtiredness>>
 			<br>
 		<<else>>
 			<<capture _i>>
-				<<link [[_i + "시간 동안 판다"|Prison Tunnel Dig]]>><<set $prison_dig to _i>><</link>><<gtiredness>>
+				<<getouticon "dig">><<link [[_i + "시간 동안 판다"|Prison Tunnel Dig]]>><<set $prison_dig to _i>><</link>><<gtiredness>>
 				<br>
 			<</capture>>
 		<</if>>
@@ -168,7 +168,7 @@
 <</if>>
 
 
-<<link [[떠난다|Prison Cell]]>><</link>>
+<<getouticon>><<link [[떠난다|Prison Cell]]>><</link>>
 <br>
 
 
@@ -330,55 +330,60 @@
 
 :: Prison Sleep
 <<set _autosavehere to true>>
-<<sleep>><<effects>>
-
-<<wakingEffects $sleepHoursTotal>>
-<<if $nightmares gte 1 and $controlled is 0>>
-	<<if _wakingEffect isnot undefined>>
-		당신은 뭔가
-	<<else>>
-		당신은 자신이 뭔가
-	<</if>>
-	<<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다.
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
 <<else>>
-	<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
-		당신은 잠을 푹 잤지만 몸이 조금 거친걸 느낀다.
-		<br><br>
-	<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
-		당신은 잠을 자지만 더러운 꿈에 시달린다.
-		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
-		<<arousal `100 * $sleepHoursTotal`>>
-		<<if $arousal gte $arousalmax>>
-			그들은 당신을 한계로 밀어넣는다.
-			<<orgasm>>
+	<<effects>>
+
+	<<wakingEffects $sleepHoursTotal>>
+	<<if $nightmares gte 1 and $controlled is 0>>
+		<<if _wakingEffect isnot undefined>>
+			당신은 뭔가
+		<<else>>
+			당신은 자신이 뭔가
+		<</if>>
+		<<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>창백하고<<else>>어둡고<</if>> 끔찍한 것에 뒤를 쫓기는 꿈을 꾼다.
+	<<else>>
+		<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+			당신은 잠을 푹 잤지만 몸이 조금 거친걸 느낀다.
+			<br><br>
+		<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+			당신은 잠을 자지만 더러운 꿈에 시달린다.
+			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+			<<arousal `100 * $sleepHoursTotal`>>
+			<<if $arousal gte $arousalmax>>
+				그들은 당신을 끝으로 밀어넣는다.
+				<<orgasm>>
+			<<else>>
+				<br><br>
+			<</if>>
+		<<elseif !_wakingEffect>>
+			당신은 푹 잤다.
+			<br><br>
 		<<else>>
 			<br><br>
 		<</if>>
-	<<elseif !_wakingEffect>>
-		당신은 푹 잤다.
+	<</if>>
+	<<sleepeffects>>
+	<<if $daily.prison.wake>>
+		종소리가 울려 당신을 잠에서 깨운다.
 		<br><br>
+		<<set $wardrobe_location to "prison">>
+		<<wardrobeSelection true>>
+		<<radiooutfits>>
+		<br><br>
+		<<link [[다음|Prison Cell]]>><<bedclotheson "prison bed">><<endevent>><</link>>
+		<br>
+
 	<<else>>
 		<br><br>
+		<<set $wardrobe_location to "prison">>
+		<<wardrobeSelection true>>
+		<<radiooutfits>>
+		<br><br>
+		<<link [[일어난다|Prison Cell]]>><<bedclotheson "prison bed">><</link>>
 	<</if>>
-<</if>>
-<<sleepeffects>>
-<<if $daily.prison.wake>>
-	벨소리가 울려 당신을 잠에서 깨운다.
-	<br><br>
-	<<set $wardrobe_location to "prison">>
-	<<wardrobeSelection true>>
-	<<radiooutfits>>
-	<br><br>
-	<<link [[다음|Prison Cell]]>><<bedclotheson "prison bed">><<endevent>><</link>>
-	<br>
-
-<<else>>
-	<br><br>
-	<<set $wardrobe_location to "prison">>
-	<<wardrobeSelection true>>
-	<<radiooutfits>>
-	<br><br>
-	<<link [[일어난다|Prison Cell]]>><<bedclotheson "prison bed">><</link>>
 <</if>>
 
 :: Prison Wardrobe [exitCheckBypass]
@@ -973,7 +978,7 @@
 			당신의 감옥은 구석에 있다.
 			<br>
 
-			<<cellicon>><<link [[당신의 감옥|Prison Cell]]>><</link>>
+			<<prisonicon "cell">><<link [[당신의 감옥|Prison Cell]]>><</link>>
 			<br><br>
 
 			<<if $prison.attention_level gte 1 and !$prison.protection and $prison.schedule is "free time">>
@@ -983,7 +988,7 @@
 						<<scarred_inmate_ yi 0 capo>> 감옥은 그 누구보다 스파르타 식이다. 마치 아무도 없는 것 처럼.
 						<<endevent>>
 						<br>
-						<<cellicon>><<link [[스파르타 식 감옥|Prison Scarred]]>><</link>>
+						<<prisonicon "cell">><<link [[스파르타 식 감옥|Prison Scarred]]>><</link>>
 						<br><br>
 					<</if>>
 					/*
@@ -991,7 +996,7 @@
 					<<tattooed_inmat_ yie 0 apo>> 감옥 벽과, 천장까지도, 음란물로 장식되어있다.
 					<<endevent>>
 					<br>
-					<<cellicon>><<link [[음란물이 장식된 감옥|Prison Tattooed]]>><</link>>
+					<<prisonicon "cell">><<link [[음란물로 장식된 감옥|Prison Tattooed]]>><</link>>
 					<br><br>
 					*/
 				<</if>>
@@ -1002,7 +1007,7 @@
 				<span class="blue">의료실로 가는 문은 닫혀있다.</span>
 				<br><br>
 			<<else>>
-				<<prisonmedicalicon>><<link [[의료실|Prison Medical]]>><</link>>
+				<<prisonicon "medical">><<link [[의료실|Prison Medical]]>><</link>>
 				<br><br>
 			<</if>>
 			중앙 타워를 계단이 둥글게 감싼다.
@@ -1060,11 +1065,11 @@
 				<span class="lblue">물이 뿜어져 나온다.</span>
 			<</if>>
 			<br>
-			<<link [[욕실|Prison Shower]]>><</link>>
+			<<bathroomicon "shower">><<link [[샤워실|Prison Shower]]>><</link>>
 			<br><br>
 			다른 문에서 희미한 화학 약품 냄새가 난다. 가까운 감옥은 비었고 금속이 뒤틀리고 부식되어있다.
 			<br>
-			<<prisonlaundryicon>><<link [[빨래실|Prison Laundry]]>><</link>>
+			<<prisonicon "laundry">><<link [[빨래실|Prison Laundry]]>><</link>>
 			<br><br>
 
 			<<if $prison.kylar is "active" and !$prison_kylar_cell and ($prison.schedule is "free time" or $prison.schedule is "yard")>>
@@ -1072,17 +1077,17 @@
 				카일라는 <<his_ yi>> <<his_ yi>> 무릎에 있는 무언가를 가지고 야단을 떨며 감옥에 있는 침대에 앉아있다.
 				<<endevent>>
 				<br>
-				<<cellicon>><<link [[카일라의 감옥|Prison Kylar]]>><</link>>
+				<<prisonicon "cell">><<link [[카일라의 감옥|Prison Kylar]]>><</link>>
 				<br><br>
 			<</if>>
 
-			복도가 햇빛을 향해있다.
+			복도가 햇빛을 향해, 이어진다.
 			<br>
-			<<link [[마당|Prison Yard]]>><</link>>
+			<<getouticon>><<link [[마당|Prison Yard]]>><</link>>
 			<br><br>
 			중앙 타워를 계단이 둥글게 감싼다. 당신은 그걸 지나왔다.
 			<br>
-			<<link [[당신의 감옥으로 가는 계단을 오른다|Prison Walkway]]>><</link>>
+			<<stairsicon "up">><<link [[당신의 감옥으로 가는 계단을 오른다|Prison Walkway]]>><</link>>
 			<br><br>
 
 			<<prison_map block>>
@@ -1385,14 +1390,14 @@
 						<span class="blue">당신의 다리가 묶인채로 달릴 순 없다.</span>
 						<br>
 					<<else>>
-						<<prisonrunicon>><<link [[달린다 (0:30)|Prison Yard Run]]>><<endevent>><<tiredness 6>><<athletics 6>><<pass 30>><</link>><<gathletics>><<gphysique>>
+						<<prisonicon "run">><<link [[달린다 (0:30)|Prison Yard Run]]>><<endevent>><<tiredness 6>><<athletics 6>><<pass 30>><</link>><<gathletics>><<gphysique>>
 						<br>
 					<</if>>
 					<<if $leftarm is "bound" or $rightarm is "bound">>
 						<span class="blue">당신의 팔이 묶인채로 바벨을 들 순 없다.</span>
 						<br>
 					<<else>>
-						<<prisonlifticon>><<link [[바벨을 들어올린다 (0:30)|Prison Yard Exercise]]>><<endevent>><<pass 30>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
+						<<prisonicon "lift">><<link [[바벨을 들어올린다 (0:30)|Prison Yard Exercise]]>><<endevent>><<pass 30>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
 						<br>
 					<</if>>
 				<</if>>
@@ -1423,7 +1428,7 @@
 				<br>
 				땅이 완만하게 경사져 넓은 문으로 이어진다. 오래된 음식 냄새가 공기로 퍼져 나온다.
 				<br>
-				<<prisoncanteenicon>><<link [[식당|Prison Canteen]]>><<endevent>><</link>>
+				<<prisonicon "canteen">><<link [[식당|Prison Canteen]]>><<endevent>><</link>>
 				<br><br>
 
 				벽이 튀어나와 다른 곳보다 훨씬 높은 첨탑이 있다. 아래에 금속으로 된 문이 있다.
@@ -1457,10 +1462,10 @@
 				시야에서 가려진 작은 공간이 숨겨져있다. 커다란 잠긴 문이 주변 돌과 어우러진다.
 				<br>
 				<<if $prison.yard_door is 1>>
-					<<prisondooricon>><<link [[해변으로 몰래 들어간다 (0:01)|Prison Beach]]>><<endevent>><<pass 1>><</link>>
+					<<prisonicon "door">><<link [[해변으로 몰래 들어간다 (0:01)|Prison Beach]]>><<endevent>><<pass 1>><</link>>
 					<br>
 				<<else>>
-					<<prisondooricon>><<link [[커다란 문|Prison Yard Door]]>><<endevent>><</link>>
+					<<prisonicon "door">><<link [[커다란 문|Prison Yard Door]]>><<endevent>><</link>>
 					<br>
 				<</if>>
 				<br>
@@ -1729,7 +1734,7 @@
 	<<beastsplural_ un>> 반란을 멈추느라 너무 바쁘거나 아예 당신을 눈치채지도 못한다. <span class="green">그 어떤 것도 당신의 탈출을 막지 않는다.</span>
 	<br><br>
 
-	<<link [[탈출한다 (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeup>><<pass 30>><<prison_guards -40>><</link>><<crime>><<gggsuspicion>><<ggtiredness>>
+	<<link [[탈출한다 (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeUp>><<pass 30>><<prison_guards -40>><</link>><<gggcrime>><<gggsuspicion>><<ggtiredness>>
 	<br>
 	<<link [[착지한다|Prison Spire]]>><<endevent>><</link>>
 	<br>
@@ -1744,7 +1749,7 @@
 	<span class="green">그 어떤 것도 당신의 탈출을 막지 않는다.</span>
 	<br><br>
 
-	<<link [[탈출한다 (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeup>><<pass 30>><<prison_guards -40>><</link>><<crime>><<gggsuspicion>><<ggtiredness>>
+	<<link [[탈출한다 (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeUp>><<pass 30>><<prison_guards -40>><</link>><<gggcrime>><<gggsuspicion>><<ggtiredness>>
 	<br>
 	<<link [[착지한다|Prison Spire]]>><<endevent>><</link>>
 	<br>

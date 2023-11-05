@@ -344,6 +344,12 @@
     ```
 
     ```
+    <<breastssimplePost>>
+	     <<breastssimple>>의 대체 위젯.
+        + <<breastsPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<bellyDescriptionPost>>
         <<bellyDescriptionPost *["pc"|npc|size] [force] post "sep">>
 
@@ -1236,6 +1242,18 @@
     ```
 
     ```
+    <<sisterPost>>
+        <<sister>>의 대체 위젯. <<SisterPost>> 로도 사용가능.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<sister_npcPost>>
+        <<sister>>의 npc버전인 <<sister_npc>>의 대체 위젯. <<Sister_npcPost>> 로도 사용가능.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<victimgirlPost>>
          <<victimgirl>>의 대체 위젯.
        + <<charlesPost>>와 용도 및 방식 같음. 생략
@@ -1267,7 +1285,13 @@
 
     ```
     <<bitchPost>>
-        <<bitch>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        <<bitch>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<bitch_piratePost>>
+        <<bitch_pirate>>의 대체 위젯. <<whorePost>> 로도 사용가능.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1322,6 +1346,12 @@
     ```
     <<monks_and_nunsPost>>
         <<monks_and_nuns>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<brothers_and_sistersPost>>
+        <<brothers_and_sisters>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1629,6 +1659,21 @@
        + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
+   ```
+    <<temple_titlePost>>
+        <<temple_titlePost arg post "sep">>
+
+       <<temple_title>>의 대체 위젯. 조사를 붙일 수 있다. <<templeTitlePost>>로도 쓸 수 있다.
+        
+        선택사항
+            - arg: 원본 매크로의 인수.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<temple_titlePost "을">>               // 수련생을
+    ```
+
 
 * personPost
     ```
@@ -1882,7 +1927,10 @@
 * slimeEvent.twee
     ```
     <<trSlimeEvent>>
-        <<trSlimeEvent>>
+        <<trSlimeEvent event>>
+		
+		선택사항
+		- event: 번역할 이벤트 내용. 생략하면 $earSlime.event를 번역한다.
 
         슬라임 이밴트를 번역한다.
         # 바로 출력하기 때문에 _trResult를 사용하지 않음
@@ -2026,6 +2074,20 @@
     trColourJS
         trColourJS(colour, post, sep)
         <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. TODO: 리팩토링될 수 있음.
+    ```
+
+* trCrime
+    ```
+    <<trCrimeName>>
+        <<trCrimeName *name post sep>>, trCrimeName(name, post, sep)
+
+        범죄명을 번역한다. js 형식으로도 사용가능.
+
+        필수사항
+        - *name: 번역할 범죄명
+
+        e.g.
+        <<trCrimeName 'exposure'>>	// 과다노출
     ```
 
 * trFurniture
@@ -2266,12 +2328,16 @@
 * trPill
     ```
     <<trPill>>
-        <<trPill *PillType>>
+        <<trPill *PillType post "sep">>
 
         약의 타입을 번역합니다.
 
         필수사항
         - *PillType: 약의 타입
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
 
         e.g.
         <<trPill "Growth">>     // 성장약
@@ -2532,6 +2598,7 @@
         e.g.
         <<trWeather "rain">>                //  "비"
     ```
+
 
 -----------------
 # 기타 명사 매크로
@@ -2806,7 +2873,7 @@
 		```
 	- bodyPost 계열
 		```
-		<<breasts_ (조사)>>, <<bellyDescription_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
+		<<breasts_ (조사)>>, <<breastssimple_ (조사)>>, <<bellyDescription_ (조사)>>, <<nipple_ (조사)>>, <<nipples_ (조사)>>, <<bottom_ (조사)>>, <<pussy_ (조사)>>, <<genitals_ (조사)>>, <<genitalsandbreasts_ (조사)>>,
 		<<clit_ (조사)>>, <<penis_ (조사)>>, <<penisSimple_ (조사)>>, <<glans_ (조사)>>, <<testicles_ (조사)>>, <<testicle_ (조사)>>, <<hand_ (조사)>>, <<mouth_ (조사)>>,  
 		<<npcPenis_ (조사)>>, <<npcPenisSimple_ (조사)>>, <<npcVagina_ (조사)>>, <<npcAnus_ (조사)>>, <<npcGenitals_ (조사)>>, 
 		```
@@ -2837,15 +2904,15 @@
 	- otherPost 계열
 		```
 		<<charles_ (조사)>>, <<theowner_ (조사)>>, <<someone_ (조사)>>, <<spouse_ (조사)>>, <<father_ (조사)>>, <<Father_ (조사)>>, <<mummy_ (조사)>>, <<Mummy_ (조사)>>, 
-		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>,
-		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
+		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>, <<Wife_ (조사)>>, <<sister_ (조사)>>, <<Sister_ (조사)>>, <<sister_npc_ (조사)>>, <<Sister_npc_ (조사)>>,
+		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<bitch_pirate_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
 		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<pmother_ (조사)>>, <<pMother_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, <<monks_and_nuns_ (조사)>>, 
-		<<priest_ (조사)>>, <<priests_ (조사)>>,
+		<<brothers_and_sisters_ (조사)>>, <<priest_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<wolf_cave_singular_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
-		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>,
+		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>, <<temple_title_ (조사)>>, <<temple_Title_ (조사)>>,
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
 	- personPost 계열

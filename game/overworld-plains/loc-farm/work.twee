@@ -121,7 +121,10 @@
 	<</if>>
 <</if>>
 
-<<if $fields_damaged gte 0>>
+<<if isPlayerNonparasitePregnancyEnding() and getPregnancyObject().fetus[0].father is "Alex">>
+	<<pcFarmBirth>>
+
+<<elseif $fields_damaged gte 0>>
 	<<farm_damage_report>>
 
 	<<link [[다음|Farm Work]]>><</link>>
@@ -143,8 +146,8 @@
 
 	<<link [[준비한다|Farm Assault Wardrobe]]>><<endevent>><<set $phase to 2>><</link>>
 	<br>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined and $rng lte ($corruption_slime / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2>>
-	<span class="lewd">당신은 머리 속의 슬라임이 오늘 일하는 동안 당신에게 옷을 숨기고 노출하고 있으라고 명령하는 것을 느낀다.</span> 그것은 당신이 명령에 따른다면 보상을 약속하고, 따르지 않으면 결과가 따를 거라고 위협한다.
+<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined and $rng lte ($earSlime.corruption / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2>>
+	<span class="lewd">당신은 머릿속의 슬라임이 오늘 일하는 동안 당신에게 옷을 숨기고 노출하고 있으라고 명령하는 것을 느낀다.</span> 그것은 당신이 명령에 따른다면 보상을 약속하고, 따르지 않으면 결과가 따를 거라고 위협한다.
 	<br><br>
 
 	<<link [[명령에 따른다|Farm Slime Strip Obey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
@@ -152,7 +155,7 @@
 	<<link [[거부한다|Farm Slime Strip Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
 <<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is true and $slimeFarmNakedStored is undefined>>
-	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 출근하기 전에 옷을 벗는다.
+	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 	<<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
 	<br><br>
 	<<link [[다음|Farm Work]]>><</link>>
@@ -226,12 +229,12 @@
 	당신은 집 앞뜰로 돌아간다. 빠르게 다가오는 발자국 소리가 들린다. 당신이 돌아서자, 때마침 알렉스가 보인다. <<he_ nun>> 당신의 발을 걸어서 당신을 넘어뜨린다.
 	<br><br>
 
-	당신은 땅바닥에 등을 깔고 넘어져 있다. 알렉스는 당신의 손목을 붙들어 바닥에 고정시킨다. "왜 그래?" <<he_ nun>> 놀리듯 말한다. "못 벗어나겠나 봐?"<<gglust>><<npcincr Alex lust 5>><<gdom>><<npcincr Alex dom 1>>
+	당신은 바닥에 등을 대고 넘어진다. 알렉스는 당신의 손목을 붙들어 바닥에 고정시킨다. "왜 그래?" <<he_ nun>> 놀리듯 말한다. "못 벗어나겠나 봐?"<<gglust>><<npcincr Alex lust 5>><<gdom>><<npcincr Alex dom 1>>
 	<br><br>
 
 	<<link [[위로 올라간다|Farm Love Get]]>><<unset $alex_countdown>><</link>><<physiquedifficulty 1 16000>>
 	<br>
-	<<link [[한 마디 한다|Farm Love Annoyed]]>><<unset $alex_countdown>><</link>>
+	<<link [[짜증낸다|Farm Love Annoyed]]>><<unset $alex_countdown>><</link>>
 	<br>
 	<<link [[추파를 던진다|Farm Love Flirt]]>><<npcincr Alex love 1>><<npcincr Alex lust 5>><<unset $alex_countdown>><</link>><<promiscuous1>><<glove>><<gglust>>
 	<br>
@@ -330,9 +333,16 @@
 		"Here's a little extra." <<He>> hands you <<moneyGain $farm.wage>>.
 	<</if>>
 	<br><br>
-	You walk down the road leading away from the farm.
-	<br><br>
-	<<link [[다음|Farmland]]>><<endevent>><</link>>
+
+	<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<pcPregnancyRevealToAlex>>
+
+	<<else>>
+		You walk down the road leading away from the farm.
+		<br><br>
+		<<link [[다음|Farmland]]>><<endevent>><</link>>
+
+	<</if>>
 <<elseif $farm.build_finished.includes("wall 1")>>
 	<<run $farm.build_finished.delete("wall 1")>>
 	You examine the perimeter wall. <span class="gold">The stonework is repaired,</span> and now envelopes the entire farm. Aside from the entrance, the river, and the great hedge. You feel more secure.<<lltrauma>><<llstress>><<trauma -12>><<stress -12>>
@@ -569,44 +579,223 @@
 		<br>
 	<</if>>
 <<else>>
-	<<if $farm_yield_alex gte 1 and not (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_work.alex isnot "shower">>
-			<<npc Alex>><<person1>>
-			<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
-			"Hey," shouts Alex, striding towards you. "We've had a better yield than expected lately," <<he>> says, grasping your hand in <<his>> own and pressing something into your palm.
-			<<if _alex.dom gte 30>>
-				<<if $farm_stage gte 7>>
-					<span class="pink">"You deserve a little for your help, partner."</span>
+	<<if $farm_work isnot undefined and $farm_work.alex isnot undefined and npcIsPregnant("Alex") and !talkedAboutPregnancy("Alex","pc") and npcBellySize("Alex") gte 1 and !$farm_work.alex.includes("shower","admin","clearing") and between(Time.hour, 6, 21)>>
+		<<npc "Alex">>
+		Alex approaches you. You can see a nervous expression on <<his>> face.
+		<br><br>
+
+		<<if $speech_attitude is "meek">>
+			"I-is something wrong?" you ask.
+		<<elseif $speech_attitude is "bratty">>
+			"You okay? You don't seem like it," you ask.
+		<<else>>
+			"Is everything okay?" you ask.
+		<</if>>
+		<br><br>
+
+		"We need to talk. It's important," <<he>> says, leading you to the cottage.
+		<br><br>
+
+		<<link [[다음|Farm Alex Pregnancy Reveal]]>><</link>>
+
+	<<elseif playerIsPregnant() and playerBellyVisible() and !talkedAboutPregnancy("pc","Alex") and Time.hour isnot 7>>
+		<<npc "Alex">>
+		<<setTalkedAboutPregnancy "pc" "Alex">>
+		<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+			You notice Alex staring at your belly in horror. "You're...you're pregnant?! You didn't tell me anything..."
+
+			<<if getPregnancyObject().potentialFathers.length gte 2 or !getPregnancyObject().potentialFathers.find(s => s.source === "Alex")>>
+				<<He>> sounds disappointed.
+				<br><br>
+
+				"W-well, you can take a break from the farm whenever you're not feeling well," <<he>> says.
+				<br><br>
+
+				<<link [[다음|Farm Work]]>><<endevent>><</link>>
+
+			<<else>>
+				<br><br>
+				<<He>> looks at you, as if waiting for a response.
+
+				"Actually, let's go to the cottage, shall we?" Alex leads you inside.
+				<br><br>
+
+				<<link [[다음|Farm PC Pregnancy Reveal]]>><<set $phase to 3>><</link>>
+
+			<</if>>
+
+		<<else>>
+			You notice Alex looking at your belly. "Oh, got yourself knocked up? You can take a break from the farm if you feel it's too much for you. I don't mind," <<he>> says.
+			<br><br>
+
+			<<link [[다음|Farm Work]]>><<endevent>><</link>>
+
+		<</if>>
+
+	<<elseif isPlayerNonparasitePregnancyEnding() and getPregnancyObject().fetus[0].father is "Alex">>
+		<<pcFarmBirth>>
+
+	<<elseif npcPregnancyEnding("Alex")>>
+		<<npc "Alex">>
+		"F-fuck..." you hear Alex yell. You rush to <<him>>.
+		<br>
+
+		"What's wrong?" you ask. Approaching <<him>>, you see fluids running down <<his>> thighs.
+		<br>
+
+		"I think it's happening," <<he>> says.
+		<br><br>
+
+		You feel your heart pounding faster than usual. "Should I take you to the hospital?" you ask.<<gstress>><<stress 6>>
+		<br><br>
+
+		"No, it's okay. I don't really like those places. Let's just go inside," <<he>> says.
+		<br>
+
+		You help <<him>> to get into the cottage and onto the sofa. "Could you call the local doctor?" <<he>> says while pulling <<his>> phone from <<his>> pocket and giving it to you.
+		<br><br>
+
+		<<link [[다음|Farm Alex Birth]]>><</link>>
+
+	<<elseif C.npc.Alex.pregnancy.missedBirth is true>>
+		<<npc "Alex">><<run delete C.npc.Alex.pregnancy.missedBirth>>
+
+		<<if C.npc.Alex.pregnancy.knowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+			<<set C.npc.Alex.pregnancy.knowledge to true>>
+
+			<<if C.npc.Alex.pregnancy.missedBirthCount is 1>>
+				Alex approaches you. You can see a nervous expression on <<his>> face.
+				<br><br>
+
+				<<if $speech_attitude is "meek">>
+					"I-is something wrong?" you ask.
+				<<elseif $speech_attitude is "bratty">>
+					"You okay? You don't seem like it," you ask.
 				<<else>>
-					<span class="pink">"Keep at it. You'll make a fine farmer someday."</span>
+					"Is everything okay?" you ask.
 				<</if>>
 				<br><br>
 
-				<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 9`>>.</span>
+				"We need to talk. It's important," <<he>> says, leading you to the cottage.
 				<br><br>
-			<<elseif _alex.dom lte -30>>
+
+				<<link [[다음|Farm Alex Forgotten Birth]]>><</link>>
+
+			<<else>>
+				You see Alex staring at you with empty eyes, <<he>> shake <<his>> head and walks away.
+				<br><br>
+
+				<<link [[다음|Farm Work]]>><<endevent>><</link>>
+
+			<</if>>
+
+		<<else>>
+			"Hey," shouts Alex, a scowl etched into her face as she stomps toward you. "Where the hell were you?!"
+			<br><br>
+
+			You're confused until you look down at her midsection. Her baby belly's gone; <span class="red">you must've missed her going into labor.</span>
+			<br><br>
+
+			"I really thought you'd be there for me when it happened," <<he>> sighs. "Guess I was wrong."
+			<br><br>
+
+			<<link [[Apologize|Farm Alex Missed Birth]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Stay silent|Farm Alex Missed Birth]]>><<set $phase to 2>><</link>>
+
+		<</if>>
+
+	<<elseif C.npc.Alex.pregnancy.hospitalBirth is true>>
+		<<npc "Alex">>
+		<<run delete C.npc.Alex.pregnancy.hospitalBirth>>
+		Alex approaches you. You can see a nervous expression on <<his>> face. "Hey."
+		<br><br>
+
+		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.knowledge is true>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
+		<br><br>
+
+		<<He>> looks at your belly with sad eyes. "Look, I can't stand the idea of our kids somewhere out there, livin' as orphans. There's room here at the cottage for them, I'd just need some help with the fields and then with a nursery. It's an option, if you'll consider it."
+		<br><br>
+
+		<<if Time.dayState isnot "night">>"I've got to get back to work<<else>>I've got to take some rest<</if>>," <<he>> says, the sadness in <<his>> eyes in no way diminished. <<He>> leans in and gives you a quick hug before walking off.
+		<br><br>
+
+		<span class="gold">Alex is willing to keep <<his>> kids at the farm, but first you should help <<him>> out.</span>
+		<br><br>
+
+		<<link [[다음|Farm Work]]>><</link>>
+
+
+	<<elseif C.npc.Alex.pregnancy.fee is true>>
+		<<npc "Alex">>
+		<<run delete C.npc.Alex.pregnancy.fee>>
+		<<run delete C.npc.Alex.pregnancy.knowledge>>
+
+		You approach Alex. "I've paid Bailey already, we can go get our children anytime," you say.
+		<br><br>
+
+		<<He>> smiles and hugs you. "Finally," <<he>> says. "We can finally live like a real family, all of us."
+		<br>
+
+		You hug <<him>> back, and you both stay like that for a while before releasing each other.
+		<br><br>
+
+		"But you know we can't take <<if childrenCountBetweenParents("pc","Alex") gte 2>>them<<else>>it<</if>> here by horse, right?" you say.
+		<br><br>
+
+		Alex laughs. "I know, dummy. You didn't really think I would do that, do you?" <<he>> asks.
+		<br>
+
+		"Okay, maybe I thought about it, but hey, I think my parents can help. I'll call them," <<he>> says as <<he>> reaches for <<his>> phone.
+		<br><br>
+
+		<<He>> makes the call and explains the situation to <<his>> parents, occasionally looking at you and blushing.
+		<br><br>
+
+		<<link [[다음|Farm Alex Orphanage Trip]]>><</link>>
+
+	<<elseif $exposed lte 0 and (Object.values($children).find(child => child.mother === "Alex" && child.location === "alex_cottage") or Object.values($children).find(child => child.father === "Alex" && child.location === "alex_cottage")) and !$daily.farmBabyInteraction and $rng gte 56 and (Time.hour gte 8 and Time.hour lte 15)>>
+		<<alex_baby_interactions>>
+
+	<<elseif $farm_yield_alex gte 1 and not (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_work.alex isnot "shower">>
+		<<npc Alex>><<person1>>
+		<<set _alex to $NPCName[$NPCNameList.indexOf("Alex")]>>
+		"Hey," shouts Alex, striding towards you. "We've had a better yield than expected lately," <<he>> says, grasping your hand in <<his>> own and pressing something into your palm.
+		<<if _alex.dom gte 30>>
+			<<if $farm_stage gte 7>>
+				<span class="pink">"You deserve a little for your help, partner."</span>
+			<<else>>
+				<span class="pink">"Keep at it. You'll make a fine farmer someday."</span>
+			<</if>> <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 9`>>.</span>
+			<br><br>
+
+		<<elseif _alex.dom lte -30>>
 			<<if $farm_stage gte 7>>
 				<span class="teal">"Hope you don't mind handling the profits, partner."</span>
 			<<else>>
 				<span class="teal">"Dunno what I'd do without you, so this is fair."</span>
-			<</if>>
+			<</if>> <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 24`>>.</span>
 			<br><br>
 
-			<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 24`>>.</span>
-			<br><br>
 		<<else>>
 			<<if $farm_stage gte 7>>
 				<span class="blue">"Here's your share of the profits, partner."</span>
 			<<else>>
 				<span class="blue">"Your doing, so this is fair. You've a way with the animals."</span>
-			<</if>>
+			<</if>> <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 18`>>.</span>
 			<br><br>
 
-			<<He>> marches away. <span class="gold">You've earned <<moneyGain `$farm_yield_alex * 18`>>.</span>
-			<br><br>
 		<</if>>
 
-		<<link [[다음|Farm Work]]>><<endevent>><</link>>
-		<br>
+		<<alex_pregnancy_comment>>
+
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+			<<pcPregnancyRevealToAlex>>
+		<<else>>
+			<<link [[다음|Farm Work]]>><<endevent>><</link>>
+
+		<</if>>
+
 		<<unset $farm_yield_alex>>
 	<<elseif $farm_work.recent_shift gte $farm_work.event_time and $farm_event isnot 1 and Time.dayState isnot "night">>
 		<<set $farm_event to 1>>
@@ -616,38 +805,38 @@
 			<<orgasmLocation "alexFarmWork">>
 		<</if>>
 		<<if $farm_stage gte 7>>
-			<<cottageicon>><<link [[농가 (0:01)|Farm Cottage]]>><<pass 1>><</link>>
+			<<farmicon "cottage">><<link [[농가 (0:01)|Farm Cottage]]>><<pass 1>><</link>>
 			<br>
-			<<ind>><<link [[밭 (0:05)|Farm Fields]]>><<pass 5>><<set $eventskip to 1>><</link>>
+			<<gardenicon "plot">><<link [[밭 (0:05)|Farm Fields]]>><<pass 5>><<set $eventskip to 1>><</link>>
 			<br>
 
 			<<if $farm_work.alex isnot "shower">>
-				<<ind>><<link [[샤워실 (0:01)|Farm Shed]]>><<pass 1>><</link>>
+				<<bathroomicon "shower">><<link [[샤워실 (0:01)|Farm Shed]]>><<pass 1>><</link>>
 				<br>
 			<</if>>
 			/* Go to farm barn passage if outside of farming hours, go to cattle milking passage otherwise. */
 			<<if Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)>>
 				/* Determine whether you can access the barn normally with Alex's consent. */
 				<<if $farm.milking isnot undefined and $farm.milking.dayMilking>>
-					<<ind>><<link [[헛간 (0:02)|Farm Barn]]>><<pass 2>><</link>>
+					<<farmicon "barn">><<link [[헛간 (0:02)|Farm Barn]]>><<pass 2>><</link>>
 				<<else>>
-					<<ind>><<link [[헛간에 몰래 들어간다 (0:05)|Farm Barn]]>><<pass 5>><</link>>
+					<<farmicon "barn">><<link [[헛간에 몰래 들어간다 (0:05)|Farm Barn]]>><<pass 5>><</link>>
 				<</if>>
 			<<else>>
-				<<ind>><<link [[헛간 (0:02)|Farm Cattle Milk]]>><<pass 2>><</link>>
+				<<farmicon "barn">><<link [[헛간 (0:02)|Farm Cattle Milk]]>><<pass 2>><</link>>
 			<</if>>
 			<br>
 		<</if>>
 		<<if $farm_stage gte 9>>
-			<<ind>><<link [[연구실 (0:01)|Farm Still]]>><<pass 1>><</link>>
+			<<scienceicon>><<link [[연구실 (0:01)|Farm Still]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
 		<<if $farm.woodland gte 1>>
-			<<ind>><<link [[삼림지 (0:05)|Farm Woodland]]>><<pass 5>><</link>>
+			<<foresticon>><<link [[삼림지 (0:05)|Farm Woodland]]>><<pass 5>><</link>>
 			<br>
 		<</if>>
 		<<if $farm_stage gte 7 and !$farm_kennel>>
-			<<ind>><<link [[개집 (0:03)|Farm Kennel]]>><<pass 3>><</link>>
+			<<farmicon "kennel">><<link [[개집 (0:03)|Farm Kennel]]>><<pass 3>><</link>>
 			<br>
 		<</if>>
 		<<if $farm.parasitebarn gte 1>>
@@ -659,14 +848,14 @@
 
 		<<if $farm_stage gte 7>>
 			<<if $farm.steed>>
-				<<link [[말에 안장을 얹는다|Farm Saddle]]>><</link>>
+				<<animalicon "horse">><<link [[말에 안장을 얹는다|Farm Saddle]]>><</link>>
 				<br>
 			<<else>>
-				<<link [[말에 안장을 얹는다 (0:10)|Farm Steed]]>><<pass 10>><</link>>
+				<<animalicon "horse">><<link [[말에 안장을 얹는다 (0:10)|Farm Steed]]>><<pass 10>><</link>>
 				<br>
 			<</if>>
 		<</if>>
-		<<link [[떠난다|Farmland]]>><</link>>
+		<<getouticon>><<link [[떠난다|Farmland]]>><</link>>
 		<br>
 		<<if ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined>>
 			<<set $daily.slimeFarmNaked to false>>
@@ -676,7 +865,7 @@
 
 :: Farm Slime Strip Obey
 <<effects>>
-슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 출근하기 전에 옷을 벗는다.
+슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 
 <<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
 
@@ -686,16 +875,27 @@
 
 :: Farm Slime Strip Defy
 <<effects>>
-<<if $corruption_slime gte (currentSkillValue('willpower') / 10)>>
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10) and !$earSlime.defyCooldown>>
+	<<if $exhibitionism gte 55 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
+	<<else>>
+		<<set $earSlime.defyCooldown += 8>>
+	<</if>>
 	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">you fail</span> to resist its influence.<<ggwillpower>><<willpower 3>>
 	<br><br>
-	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 출근하기 전에 옷을 벗는다.
+	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 	<<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
 	<br><br>
 
 	<<link [[다음|Farm Work]]>><</link>>
 <<else>>
-	You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to expose yourself.<<gwillpower>><<willpower 1>><<set $daily.slimeFarmNaked to false>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to ignore the slime but feel a jolt of pain as it punishes you for defiance. You feel it try, <span class="green">but fail,</span> to force you to expose yourself.<<gwillpower>><<willpower 1>>
+	<</if>>
+	<<set $daily.slimeFarmNaked to false>>
 	<br><br>
 	<<link [[다음|Farm Work]]>><</link>>
 <</if>>
@@ -1084,7 +1284,7 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
-	당신은 한 마리를 놓쳤다.
+	한 마리가 보이지 않는다.
 	<br><br>
 
 	<<link [[녀석을 찾아본다 (0:10)|Farm Chickens Look]]>><<pass 10>><<farm_count 10>><</link>>
@@ -1096,7 +1296,7 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 	<<link [[녀석은 괜찮을 것이다|Farm Chickens Fine]]>><<set $catbuild += 1>><<farm_yield -1>><</link>><<lfarm>>
 	<br>
 <<else>>
-	당신은 만족스럽게 문을 닫고 잠근다.
+	만족스럽게, 당신은 문을 닫고 잠근다.
 	<br><br>
 
 	<<link [[다음|Farm Work]]>><</link>>
@@ -1152,9 +1352,9 @@ You enter the sty, and release the <<farm_text_many pig>>. They walk down the ai
 당신은 알렉스가 양손에 무거운 양동이를 하나씩 들고 마당을 가로지르는 것을 발견한다.
 
 <<if $speech_attitude is "meek">>
-	"도와줘도 될까?" 당신이 묻는다.
+	"도-도와줄까?" 당신이 묻는다.
 <<elseif $speech_attitude is "bratty">>
-	당신은 양동이 중 하나에 손을 뻗는다. "도울게." 당신이 말한다.
+	당신은 양동이 중 하나에 손을 뻗는다. "도울게," 당신이 말한다.
 <<else>>
 	"도움 필요해?" 당신이 말한다.
 <</if>>
@@ -1163,7 +1363,7 @@ You enter the sty, and release the <<farm_text_many pig>>. They walk down the ai
 알렉스는 당신에게 양동이 하나를 건네며 웃는다. "고맙다. 같이 하면 더 빠를 거야."
 <br><br>
 
-당신은 알렉스를 도와 마당을 가로질러 사료를 나르고, 울타리를 넘어 여물통에 쏟는다.
+당신은 알렉스를 도와 마당을 가로질러 사료를 나르고, 울타리 너머 여물통에 쏟는다.
 
 
 <<if $farm_work.pigs_fed gte 6>>
@@ -1392,7 +1592,7 @@ You approach a <<farm_text horse>>. You take <<farm_his horse>> bridle in hand a
 	<br>
 <</if>>
 <<if $deviancy gte 75>>
-	<<link [[올라타게 둔다|Farm Horses Lewd Mount]]>><</link>><<deviant5>>
+	<<link [[당신에게 올라타게 한다|Farm Horses Lewd Mount]]>><</link>><<deviant5>>
 	<br>
 <</if>>
 <br><br>
@@ -1420,7 +1620,7 @@ You drop to your knees beside the <<farm_text horse>>, and observe <<farm_his ho
 <</if>>
 
 <br><br>
-<<if $handskill gte random(1, 1000)>>
+<<if currentSkillValue("handskill") gte random(1, 1000)>>
 	<<farm_He horse>> starts bucking against your hands, <span class="green">but you manage to keep up.</span> <<farm_He horse>> moves faster, until <<farm_his horse>> whole body shudders in orgasm.
 
 
@@ -1482,7 +1682,7 @@ You drop to your knees beside the <<farm_text horse>>, and observe <<farm_his ho
 
 <br><br>
 
-<<if $oralskill gte random(1, 1000)>>
+<<if currentSkillValue("oralskill") gte random(1, 1000)>>
 	<<farm_He horse>> starts bucking against your face. You grasp <<farm_his horse>> hind legs, <span class="green">and manage to remain steady.</span> It moves faster, until <<farm_his horse>> whole body shudders in orgasm.
 
 
@@ -1709,7 +1909,7 @@ You open the barn doors, and release the <<farm_text_many cattle>> from their pe
 
 You enter the cattle barn.
 <<if $farm.barn gte 1>>
-	크고 빛나는 착유기가 중앙에 놓여있다.
+	크고, 반짝이는 착유기가 중앙에 놓여있다.
 <<else>>
 	커다란 착유기가 중앙에 놓여있다.
 <</if>>
@@ -1734,83 +1934,83 @@ The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can m
 		<<if $farm_work.cattle.monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 			<<if $farm_work.cattle.gender_plural is "m">>
 				<<if $cbchance gte 100>>
-					알렉스의 지시는 간단했지만, 당신은 그들의 유두에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음머 운다.
+					알렉스의 지시는 간단했지만, 당신은 그들의 유두에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<<else>>
-					알렉스의 지시는 간단했지만, 당신은 그들의 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음머 운다.
+					알렉스의 지시는 간단했지만, 당신은 그들의 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<elseif $farm_work.cattle.gender_plural is "f">>
 				<<if $dgchance gte 1>>
-					알렉스의 지시는 간단했지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음머 운다.
+					알렉스의 지시는 간단했지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<<else>>
-					알렉스의 지시는 간단했지만, 당신은 그들의 유방에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음머 운다.
+					알렉스의 지시는 간단했지만, 당신은 그들의 유방에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<else>>
-				알렉스의 지시는 간단했지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들과 황소 소년들은 기대에 차 음머 운다.
+				알렉스의 지시는 간단했지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들과 황소 소년들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<<else>>
 			<<if $farm_work.cattle.gender_plural is "m">>
-				알렉스의 지시는 간단했지만, 당신은 녀석들의 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소들은 기대에 차 음머 운다.
+				알렉스의 지시는 간단했지만, 당신은 녀석들의 자지에 흡입관을 부착할 때 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소들은 기대에 차 음메 하고 운다.
 			<<elseif $farm_work.cattle.gender_plural is "f">>
-				알렉스의 지시는 간단했지만, 당신은 이 작업을 어색해한다. 소들은 당신이 흡입관을 녀석들의 젖가슴에 부착할 때 기대에 차 음머 운다.
+				알렉스의 지시는 간단했지만, 당신은 이 작업을 어색해한다. 암소들은 당신이 흡입관을 녀석들의 젖가슴에 부착할 때 기대에 차 음메 하고 운다.
 			<<else>>
-				알렉스의 지시는 간단했다. 녀석들의 자지에 흡입관을 부착할 때 당신은 머뭇거린다. 젖가슴 또한 충분히 어색했다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소들은 기대에 차 음머 운다.
+				알렉스의 지시는 간단했다. 젖가슴 또한 충분히 어색했지만, 녀석들의 자지에 흡입관을 부착할 때 당신은 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<</if>>
 	<<elseif $cattle_milked lte 1200>>
 		<<if $farm_work.cattle.monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 			<<if $farm_work.cattle.gender_plural is "m">>
 				<<if $cbchance gte 100>>
-					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유두에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음머 운다.
+					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유두에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<<else>>
-					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음머 운다.
+					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<elseif $farm_work.cattle.gender_plural is "f">>
 				<<if $dgchance gte 1>>
-					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음머 운다.
+					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<<else>>
-					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음머 운다.
+					이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<else>>
-				이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들과 황소 소년들은 기대에 차 음머 운다.
+				이 일에 제법 익숙해진 것 같긴 하지만, 당신은 그들의 유방과 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소 소녀들과 황소 소년들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<<else>>
 			<<if $farm_work.cattle.gender_plural is "m">>
-				이 일에 제법 익숙해진 것 같긴 하지만, 당신은 녀석들의 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소들은 기대에 차 음머 운다.
+				이 일에 제법 익숙해진 것 같긴 하지만, 당신은 녀석들의 자지에 흡입관을 부착할 때 여전히 시선을 돌리게 된다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 황소들은 기대에 차 음메 하고 운다.
 			<<elseif $farm_work.cattle.gender_plural is "f">>
-				이 일에 제법 익숙해진 것 같다. 소들은 당신이 흡입관을 녀석들의 젖가슴에 부착할 때 기대에 차 음머 운다.
+				이 일에 제법 익숙해진 것 같다. 암소들은 당신이 흡입관을 녀석들의 젖가슴에 부착할 때 기대에 차 음메 하고 운다.
 			<<else>>
-				이 일에 제법 익숙해진 것 같다. 젖가슴은 충분히 쉬웠지만, 녀석들의 자지에 흡입관을 부착할 때 당신은 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소들은 기대에 차 음머 운다.
+				이 일에 제법 익숙해진 것 같다. 젖가슴은 충분히 쉬웠지만, 녀석들의 자지에 흡입관을 부착할 때 당신은 머뭇거린다. 당신은 이 일이 전혀 음란할 것 없다는 사실을 스스로에게 상기시킨다. 젖소들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<</if>>
 	<<else>>
 		<<if $farm_work.cattle.monster_roll is true and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
 			<<if $farm_work.cattle.gender_plural is "m">>
 				<<if $cbchance gte 100>>
-					당신은 그들의 젖꼭지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소 소년들은 기대에 차 음머 운다.
+					당신은 그들의 젖꼭지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<<else>>
-					당신은 그들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소 소년들은 기대에 차 음머 운다.
+					당신은 그들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소 소년들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<elseif $farm_work.cattle.gender_plural is "f">>
 				<<if $dgchance gte 1>>
-					당신은 그들의 유방과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들은 기대에 차 음머 운다.
+					당신은 그들의 유방과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<<else>>
-					당신은 그들의 유방에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들은 기대에 차 음머 운다.
+					당신은 그들의 유방에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<else>>
-				당신은 그들의 젖꼭지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들과 황소 소년들은 기대에 차 음머 운다.
+				당신은 그들의 젖꼭지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들과 황소 소년들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<<else>>
 			<<if $farm_work.cattle.gender_plural is "m">>
-				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소들은 기대에 차 음머 운다.
+				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소들은 기대에 차 음메 하고 운다.
 			<<elseif $farm_work.cattle.gender_plural is "f">>
-				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 소들은 기대에 차 음머 운다.
+				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 암소들은 기대에 차 음메 하고 운다.
 			<<else>>
-				당신은 녀석들의 젖가슴과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소들은 기대에 차 음머 운다.
+				당신은 녀석들의 젖가슴과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<</if>>
 	<</if>>
 <<else>>
-	젖소들이 기대감에 차서 음머 울고 있다.
+	젖소들이 기대감에 차서 음메 하고 울고 있다.
 <</if>>
 
 <br><br>
@@ -2285,11 +2485,11 @@ You sneak up to the shed, and push the door open.
 
 	<<if _alex.love gte 10>>
 		<<if _alex.dom gte 10>>
-			"편하게 쉬어도 돼." <<he_ 가>> 말한다. "넌 그럴 자격 충분해."
+			"편하게 쉬어도 돼," <<he_ 가>> 말한다. "넌 그럴 자격 충분해."
 		<<elseif _alex.dom lte -10>>
-			"마주쳐서 반갑다." <<he_ 가>> 말한다. "나랑 같이 앉을래?"
+			"마주쳐서 반갑다," <<he_ 가>> 말한다. "나랑 같이 앉을래?"
 		<<else>>
-			"네가 지나가길 바라고 있었지." <<he_ 가>> 자신 옆의 땅을 가리키며 말한다.
+			"네가 지나가길 바라고 있었지," <<he_ 가>> 말하며, <<himPost>> 옆의 땅을 가리키며 말한다.
 		<</if>>
 	<<elseif _alex.love lte -10>>
 		<<if _alex.dom gte 10>>
@@ -2301,11 +2501,11 @@ You sneak up to the shed, and push the door open.
 		<</if>>
 	<<else>>
 		<<if _alex.dom gte 10>>
-			"뭐든 도움이 필요할 때는 말해." <<he_ 가>> 말한다.
+			"뭐든 도움이 필요할 때는 말해," <<he_ 가>> 말한다.
 		<<elseif _alex.dom lte -10>>
-			"때때로 쉬어주는 것도 좋지." <<he_ 가>> 말한다.
+			"때때로 쉬어주는 것도 좋지," <<he_ 가>> 말한다.
 		<<else>>
-			"편하게 있어도 돼." <<he_ 가>> 말한다. "가끔씩 쉬어줘도 괜찮지."
+			"편하게 있어도 돼," <<he_ 가>> 말한다. "가끔씩 쉬어줘도 괜찮지."
 		<</if>>
 	<</if>>
 	<br><br>
@@ -2334,14 +2534,15 @@ You sneak up to the shed, and push the door open.
 <</if>>
 <br><br>
 
+<<rng>>
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $farm_stage gte 4 and !playerBellyVisible()>>
+<<if (!npcIsPregnant("Alex") and !playerBellyVisible() and !knowsAboutPregnancy("pc","Alex")) and $danger gte (9900 - $allure) and $farm_stage gte 4>>
 	<<if $farm_relax_drink is "accept">>
-		"한잔 더?" <<he>> asks, producing another bottle from the hiding place.
+		"한잔 더?" <<he_ 가>> 물어보며, 숨겨놓은 곳에서 병을 하나 더 꺼낸다.
 	<<elseif $farm_relax_drink is "refuse">>
-		"내가 너한테 한 잔 못 주는 거 확실해?" <<he>> asks, pulling the bottle from its hiding place again.
+		"내가 너한테 한 잔 못 주는 거 확실해?" <<he_ 가>> 물어보며, 숨겨놓은 곳에서 병을 다시 꺼낸다.
 	<<else>>
-		"한잔 할래?" <<he>> asks out of nowhere. <<He>> pulls a bottle from an alcove beneath a thick root, and offers it to you. "혼자 마시지 말라고 그러더라고."
+		"한잔 할래?" <<he_ 가>> 갑자기 묻는다. <<He_ 는>> 두꺼운 나무뿌리 아래의 움푹 패인 곳에서 병 하나를 꺼내, 당신에게 주려고 한다. "혼자 마시지 말라고 그러더라고."
 	<</if>>
 	<br><br>
 
@@ -2376,13 +2577,13 @@ You sneak up to the shed, and push the door open.
 <<effects>>
 <<npc Alex>><<person1>>
 
-당신은 밀크셰이크를 들고 알렉스에게 다가간다. <<He>> waves at you with a bottle beside <<him>>, seemingly unaware. "이봐, 한잔-"
+당신은 밀크셰이크를 들고 알렉스에게 다가간다. <<He_ 는>> <<himPost>> 옆에 병을 놓아둔 채, 그것을 알아차리지 못한 듯 당신에게 손을 흔든다. "이봐, 한잔-"
 <br>
 "할래?" 당신이 가로채며, 크림 음료를 가볍게 흔든다.
 <br><br>
 
-"이건 예상 못 했는걸," <<he>> chuckles in amusement, and stashes the bottle away. "Not looking forward to the crash later either. But I'll accept the generous offer. Cheers."
-Alex takes it off your hands, and after twenty minutes of sipping and chatting, tips <<his>> hat off to you as you part ways.
+"내가 생각했던 건 아니지만," <<he_ 는>> 재밌다는 듯 킥킥거리며, 병을 멀리 치운다. "나중에 부딪히거나 하면 안 되니까. 하지만 관대한 제의는 받아들이지. 건배."
+알렉스는 당신에게서 음료를 받아들고, 20분 동안 홀짝거리며 잡담을 나누고, 당신이 떠날 때 <<his_ yi>> 모자를 벗어 인사한다.
 <br><br>
 
 <<link [[다음|Farm Work]]>><</link>>
@@ -2391,7 +2592,7 @@ Alex takes it off your hands, and after twenty minutes of sipping and chatting, 
 <<effects>>
 <<npc Alex>><<person1>>
 
-당신은 알렉스의 옆에 앉아서 밀크셰이크를 준비한다. "한잔 할래?" 둘은 동시에 묻는다. <<He_ ga>> 병을 꺼내어 동시에 당신에게 내민 것이다.
+당신은 알렉스의 옆에 앉아서, 밀크셰이크를 준비한다. "한잔 할래?" 둘은 동시에 묻는다. <<He_ ga>> 병을 꺼내어 동시에 당신에게 내민 것이다.
 <br><br>
 
 <<if $worn.head.name is "naked">>
@@ -2400,8 +2601,8 @@ Alex takes it off your hands, and after twenty minutes of sipping and chatting, 
 "혼자 마시지 말라고 그러더라고." 당신은 알렉스의 목소리를 최대한 비슷하게 따라하며 덧붙인다.
 <br><br>
 
-<<He_ 는>> 걷잡을 수 없이 웃음을 터트렸고, 당신은 <<him_ 과>> 함께 웃으며 20분을 보낸다. 마지막에는 크림이 듬뿍 든 간식을 함께 나눠 마신다.
-"당분 보충 고맙다." <<he_ 가>> 씨근거리며 눈물을 훔친다. 호흡을 가다듬고 나서 두 사람은 헤어진다.
+<<He_ 는>> 걷잡을 수 없이 웃음을 터트렸고, 당신은 <<him_ 과>> 함께 웃으며 20분을 보낸다. 마지막에는, 크림이 듬뿍 든 간식을 함께 나눠 마신다.
+"당분 보충 고맙다," <<he_ 가>> 씨근거리며, 눈물을 훔친다. 호흡을 가다듬고 나서, 두 사람은 헤어진다.
 <br><br>
 
 <<link [[다음|Farm Work]]>><</link>>
@@ -2413,12 +2614,12 @@ You relax on the hammock next to the stables.
 <<if $weather is "rain" or $weather is "snow">>You're glad to have some cover from the <<print ($weather is "rain"?'rain':'snow')>>.<</if>>
 
 <<if $rng gte 75 and Time.dayState isnot "night" and $NPCName[$NPCNameList.indexOf("Alex")].love gte 80 and $farm_work.alex isnot "still" and $alex_countdown is undefined and $farm_stage gte 7>>
-	알렉스가 당신에게 손을 흔들며 다가오는 것이 보인다.
-	"이봐, 파트너," <<nnpc_he_ ga "Alex">> 웃으며 당신의 무릎 위에 눕는다. "그냥 지나가려던 길이었는데."
+	당신에게 손을 흔들며, 알렉스가 다가오는 것이 보인다.
+	"이봐, 파트너," <<nnpc_he_ ga "Alex">> 웃으며 당신의 무릎 위에 눕는다. "그냥 잠깐 들러볼까 하고."
 	<br><br>
 
-	당신은 <<nnpc_him_ 과 "Alex">> 함께 기댄 채 이따금씩 불어오는 산들바람에 몸을 맡긴다. <<nnpc_He_ 는 "Alex">> 어느 순간 한숨을 쉬며 마지못해 일어난다.
-	"난 다시 일하러 가 봐야 해. 근데 너랑 함께 있는 걸 저항할 수가 없네."
+	당신은 <<nnpc_him_ 과 "Alex">> 함께 기댄 채, 이따금씩 불어오는 산들바람에 몸을 맡긴다. <<nnpc_He_ 는 "Alex">> 어느 순간 한숨을 쉬며 마지못해 일어난다.
+	"난 다시 일하러 가 봐야 해. 근데 너랑 함께 있고 싶은 것에 저항할 수가 없네."
 <<elseif Time.dayState is "night">>
 	말들은 잠을 자고 있기에, 당신은 평화롭고 고요한 시간을 보낼 수 있었다.
 <<elseif $farm_work.horses_out is 1>>
@@ -2777,7 +2978,7 @@ You remain on your hands and knees as the machine milks you again and again, suc
 	<<if $farm_penis_milk lte 0>>
 		<<set $farm_penis_milk to 1>>
 	<</if>>
-	한 병을 다 채우기에는 양이 모자랐다. 당신은 그것을 우유와 섞는다.<<gfarm>>
+	한 병을 다 채우기에는 양이 모자라다. 당신은 그것을 우유와 섞는다.<<gfarm>>
 	<<farm_yield $farm_penis_milk>>
 <</if>>
 <br><br>
@@ -2786,7 +2987,7 @@ You remain on your hands and knees as the machine milks you again and again, suc
 <<barn_img penis>>
 
 <<if $farm.milking.dayMilking is true and Time.hour gte 7 and Time.hour lte 21 and $farm_end is undefined>>
-	당신은 떨리는 손으로 흡입관을 제거하고 일어난다.
+	당신은 떨리는 손으로 흡입관을 제거하고, 두 발로 일어난다.
 	<<deviancy2>>
 
 	<<link [[다음 (0:30)|Farm Cattle Milk]]>><<pass 30>><<clotheson>><<machine_end>><</link>>
@@ -2794,12 +2995,12 @@ You remain on your hands and knees as the machine milks you again and again, suc
 <<elseif $farm.milking.caught is true and $farm.milking.alexNightEvent is false>>
 	<<set $farm.milking.alexNightEvent to true>>
 	<<set $farm.milking.dayMilking to true>>
-	당신이 떨리는 손으로 흡입관을 제거할 때,
+	당신이 떨리는 손으로 흡입관을 제거했을 때,
 	<<deviancy2>>
 	<<link [[다음 (0:30)|Farm Barn Caught]]>><<pass 30>><<machine_end>><<endevent>><</link>>
 	<br>
 <<else>>
-	당신은 떨리는 손으로 흡입관을 제거하고 일어난다.
+	당신은 떨리는 손으로 흡입관을 제거하고, 두 발로 일어난다.
 	<<deviancy2>>
 
 	<<link [[다음 (0:30)|Farm Barn]]>><<pass 30>><<clotheson>><<machine_end>><</link>>
@@ -2813,6 +3014,6 @@ You remain on your hands and knees as the machine milks you again and again, suc
 <br><br>
 "우유가 추가로 남던 이유가 여기 있었군," <<he_ 가>> 얼굴을 붉힌 채로 말한다. "내가 너한테 도와달라고는 했지만, 이렇게까지 해줄 줄은 몰랐어." <<npcincr Alex love 1>><<glove>><<npcincr Alex lust 1>><<glust>>
 <br><br>
-<<He_ 는>> 나가려고 몸을 돌렸다가, 잠시 멈춘다. "소들에게 소홀해지지만 않는다면, 해도 괜찮아."
+<<He_ 는>> 나가려고 몸을 돌렸다가, 잠시 멈춘다, "소들에게 소홀해지지만 않는다면, 난 괜찮아."
 <br><br>
 <<link [[다음|Farm Barn]]>><<clotheson>><<endevent>><</link>>
