@@ -134,7 +134,11 @@ const Time = (() => {
 
 	function nextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
-		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
+			return newDate.getFirstWeekdayOfMonth(2);
+		}
+
+		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
@@ -145,7 +149,7 @@ const Time = (() => {
 	}
 
 	function isSchoolTerm(date) {
-		const termEndDate = nextSchoolTermEndDate(date);
+		const termEndDate = nextSchoolTermEndDate(date).addDays(1);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
 		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
 
@@ -446,7 +450,7 @@ function dayPassed() {
 	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
 	if (V.temple_chastity_timer > 0) V.temple_chastity_timer--;
 	if (V.temple_rank !== "prospective" && V.temple_rank !== "initiate") {
-		if (V.grace >= 1) fragment.append(wikifier("grace", -1));
+		if (V.grace >= 1 && !V.daily.graceUp) fragment.append(wikifier("grace", -2));
 	}
 	if (V.temple_evaluation) {
 		V.temple_evaluation--;
