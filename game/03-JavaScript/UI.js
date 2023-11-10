@@ -706,10 +706,10 @@ function updateOptions() {
 		updatehistorycontrols();
 		const optionsData = clone(V.options);
 		const tmpButtons = T.buttons;
-		const tmpKey = T.key;
+		const tmpKey = T.key; /* numberify_enabled workaround */ T.optionsRefresh = false;
 
 		if (!State.restore()) return; // don't do anything if state couldn't be restored
-		V.options = optionsData;
+		V.options = optionsData; /* numberify_enabled workaround */ Links.enabled=V.options.numberify_enabled?true:false;
 		tanned(0, "ignoreCoverage");
 		State.show();
 
