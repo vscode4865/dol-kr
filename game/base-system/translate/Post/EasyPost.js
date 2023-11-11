@@ -506,6 +506,8 @@ const EasyPostMacroList = [
 
 	// <<monks_and_nuns_ nun>> = <<monks_and_nuns>>는 
 	{ name: "monks_and_nuns_", orig_name: "monks_and_nunsPost", is_print: 0},
+	{ name: "Monks_and_Nuns_", orig_name: "monks_and_nunsPost", is_print: 0},
+	
 	{ name: "brothers_and_sisters_", orig_name: "brothers_and_sistersPost", is_print: 0},
 
 	// <<priest_ nun>> = <<priest>>는 
