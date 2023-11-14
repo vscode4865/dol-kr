@@ -1,9 +1,9 @@
-/*Time namespace
+/* Time namespace
 	Use Time prefix when accessing any getters or functions (e.g. Time.second, Time.schoolDay, or Time.getLastDayOfMonth(), etc.)
 	Getters: (Most of these are being used in one way or another)
-	
+
 	Time.date - Returns Date object of current date.
-	
+
 	Time.holidayMonths - Returns array of all months that are considered holidays.
 
 	Time.second - Returns current number of seconds since last whole minute.
@@ -80,6 +80,10 @@ const Time = (() => {
 		setDate(new DateTime(currentDate.year, currentDate.month, currentDate.day, hour || 0, minute || 0));
 	}
 
+	function setTimeRelative(hour, minute) {
+		setDate(new DateTime(currentDate.year, currentDate.month, currentDate.day, currentDate.hour + (hour || 0), currentDate.minute + (minute || 0)));
+	}
+
 	/**
 	 *
 	 * Pass X amount of seconds, executing code after reaching certain thresholds.
@@ -130,7 +134,11 @@ const Time = (() => {
 
 	function nextSchoolTermStartDate(date) {
 		const newDate = new DateTime(date);
-		newDate.addMonths(holidayMonths.find(e => e >= newDate.month) - newDate.month + 1);
+		if (!holidayMonths.includes(newDate.month) && date.day < newDate.getFirstWeekdayOfMonth(2).day) {
+			return newDate.getFirstWeekdayOfMonth(2);
+		}
+
+		newDate.addMonths(holidayMonths.find(e => e > newDate.month) - newDate.month + 1);
 		return newDate.getFirstWeekdayOfMonth(2);
 	}
 
@@ -141,10 +149,14 @@ const Time = (() => {
 	}
 
 	function isSchoolTerm(date) {
+		const termEndDate = nextSchoolTermEndDate(date).addDays(1);
 		const firstMonday = date.getFirstWeekdayOfMonth(2);
-		const startOfHoliday = firstMonday.addDays(-2);
-		return !holidayMonths.some(
-			month => (month === date.month && date.day >= startOfHoliday.day) || (month % 12 === date.month && date.day < startOfHoliday.day)
+		const prevMonth = ((date.month - 2 + 12) % 12) + 1;
+
+		return !(
+			date.timeStamp >= termEndDate.timeStamp ||
+			(holidayMonths.includes(date.month) && date.day >= firstMonday.day) ||
+			(holidayMonths.includes(prevMonth) && date.day < firstMonday.day)
 		);
 	}
 
@@ -239,6 +251,7 @@ const Time = (() => {
 		set,
 		setDate,
 		setTime,
+		setTimeRelative,
 		pass,
 		isSchoolTerm,
 		isSchoolDay,
@@ -363,6 +376,8 @@ function weekPassed() {
 		V.brothelVending.weeksRent++;
 	}
 
+	fragment.append(wikifier("world_corruption", "soft", V.world_corruption_hard));
+
 	delete V.weekly;
 	V.weekly = { theft: {}, sewers: {} };
 
@@ -407,7 +422,7 @@ function dayPassed() {
 		V.brothelshowdata.done = false;
 	}
 
-	if (V.brothel_escortjob !== undefined && Time.date.timeStamp > V.brothel_escortjob.date){
+	if (V.brothel_escortjob !== undefined && Time.date.timeStamp > V.brothel_escortjob.date) {
 		V.brothel_escortjob.missed = true;
 	}
 
@@ -435,7 +450,7 @@ function dayPassed() {
 	if (V.temple_quarters >= 1) V.temple_quarters = Math.clamp(V.temple_quarters - 10, 0, 100);
 	if (V.temple_chastity_timer > 0) V.temple_chastity_timer--;
 	if (V.temple_rank !== "prospective" && V.temple_rank !== "initiate") {
-		if (V.grace >= 1) fragment.append(wikifier("grace", -1));
+		if (V.grace >= 1 && !V.daily.graceUp) fragment.append(wikifier("grace", -2));
 	}
 	if (V.temple_evaluation) {
 		V.temple_evaluation--;
@@ -463,14 +478,14 @@ function dayPassed() {
 		}
 	}
 
+	earSlimeDaily();
+
 	if (V.bell_timer) V.bell_timer--;
-	if (V.slimeSleepEvent >= 1) V.slimeSleepEvent--;
-	if (V.slimeSleepEvent < 1) delete V.slimeEvent;
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
 	if (V.lake_ice_broken < 1) delete V.lake_ice_broken;
 	if (V.community_service >= 1) {
 		if (V.community_service_done !== 1 && !["asylum", "prison"].includes(V.location)) {
-			fragment.append(wikifier("crimeup", 200));
+			fragment.append(wikifier("crimeUp", 200, "obstruction"));
 			V.effectsmessage = 1;
 			V.community_message = "missed";
 		}
@@ -640,7 +655,20 @@ function dayPassed() {
 	if (V.pillory_tenant.exists && V.pillory_tenant.endday < Time.days) fragment.append(wikifier("clear_pillory"));
 
 	delete V.daily;
-	V.daily = { school: { attended: {} }, whitney: {}, robin: {}, kylar: {}, morgan: {}, eden: {}, alex: {}, sydney: {}, ex: {}, pharm: {}, prison: {} };
+	V.daily = {
+		school: { attended: {} },
+		whitney: {},
+		robin: {},
+		kylar: {},
+		morgan: {},
+		eden: {},
+		alex: {},
+		sydney: {},
+		ex: {},
+		pharm: {},
+		prison: {},
+		livestock: {},
+	};
 
 	if (Number.isInteger(V.challengetimer)) {
 		V.challengetimer--;
@@ -687,10 +715,10 @@ function hourPassed(hours) {
 			V.fringelength++;
 			fragment.append(wikifier("calchairlengthstage"));
 		}
-		if (V.slimeDefyCooldown) {
-			V.slimeDefyCooldown--;
-			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime") V.slimeDefyCooldown--;
-			if (V.slimeDefyCooldown < 1) delete V.slimeDefyCooldown;
+		if (V.earSlime.defyCooldown) {
+			V.earSlime.defyCooldown--;
+			if (V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlime.growth < 100) V.earSlime.defyCooldown--;
+			if (V.earSlime.defyCooldown <= 0) V.earSlime.defyCooldown = 0;
 		}
 		playerEndWaterProgress();
 	}
@@ -746,7 +774,7 @@ function minutePassed(minutes) {
 	parasiteProgressTime(minutes);
 	parasiteProgressTime(minutes, "vagina");
 	if (isPlayerNonparasitePregnancyEnding()) {
-		// To prevent new events from occuring, allowing players to more easily go to the hospital or similar locations
+		// To prevent new events from occurring, allowing players to more easily go to the hospital or similar locations
 		V.eventskip = 1;
 		V.stress += Math.floor(minutes * 40);
 	}
@@ -823,6 +851,16 @@ function dawnCheck() {
 	delete V.alex_bed_spurned;
 	delete V.connudatus_stripped;
 	delete V.robin_kicked_out;
+
+	delete V.foxCrimeProgress;
+	for (const crimeKeys of Object.keys(setup.crimeNames)) {
+		if (V.crime[crimeKeys].daily >= C.crime.spree) {
+			// If the player commits too much of the same type of crime in one day, they leave behind more evidence.
+			V.crime[crimeKeys].current += Math.floor(V.crime[crimeKeys].daily * 0.1);
+		}
+		// Reset daily crime of all types to 0
+		V.crime[crimeKeys].daily = 0;
+	}
 
 	return fragment;
 }
@@ -937,6 +975,7 @@ function dailyNPCEffects() {
 		else C.npc.Sydney.title = "faithful";
 		if (V.sydneyScience !== 1 || V.sydneySeen.includes("science")) delete V.sydneyLate;
 		if (Time.schoolDay && random(1, 4) === 1) V.sydneyLate = 1;
+		if (Time.weekDay === 2 && V.sydney && V.sydney.rank === "initiate") V.sydneyLate = 1;
 		if (
 			V.sydneySeen.includes("library") &&
 			C.npc.Sydney.love >= 60 &&
@@ -986,7 +1025,7 @@ function dailyNPCEffects() {
 				V.wraithCompoundChance = 0;
 				if (V.wraith.offspring === "sold") V.wraithCompoundChance += 10;
 			}
-			V.wraithCompoundChance++;
+			if (V.world_corruption_soft >= 30) V.wraithCompoundChance++;
 			if (V.wraithCompoundChance >= random(5, 60 - C.npc["Ivory Wraith"].lust)) {
 				V.wraithCompoundEvent = true;
 				delete V.wraithCompoundChance;
@@ -1190,8 +1229,13 @@ function dailyLiquidEffects() {
 		V.semen_amount = 0;
 	}
 
-	fragment.append(wikifier("milkvolume", -2));
-	fragment.append(wikifier("lactation_pressure", -1));
+	let pressureReduction = -1;
+	if (V.earSlime.growth >= 75 && V.earSlime.focus === "impregnation") pressureReduction -= 2;
+	if (V.earSlime.growth >= 75 && V.earSlime.focus === "pregnancy") pressureReduction += 2;
+	if (pressureReduction < 0) {
+		fragment.append(wikifier("milkvolume", pressureReduction * 2));
+		fragment.append(wikifier("lactation_pressure", pressureReduction));
+	}
 
 	if (V.purity + V.semen_volume < 980) fragment.append(wikifier("semenvolume", 3));
 	if (V.purity + V.milk_volume < 1000) V.milk_volume += 10;
@@ -1427,7 +1471,7 @@ function dailySchoolEffects() {
 				}
 			}
 		}
-		if (V.studyBooks.stolen !== "none" && Time.schoolTerm) fragment.append(wikifier("crimeup", 1));
+		if (V.studyBooks.stolen !== "none" && Time.schoolTerm) fragment.append(wikifier("crimeUp", 1, "thievery"));
 		if (V.recentReturnTimer) {
 			V.recentReturnTimer--;
 			if (V.recentReturnTimer <= 0) delete V.recentReturnTimer;
@@ -1438,7 +1482,25 @@ function dailySchoolEffects() {
 		if (V.bookStolenKnown === undefined) V.bookStolenKnown = 1;
 		if (V.libraryMoneyStolen === undefined) V.libraryMoneyStolen = 0;
 		V.libraryMoneyStolen += 20;
-		fragment.append(wikifier("crimeup", 20));
+		fragment.append(wikifier("crimeUp", 20, "thievery"));
+	}
+
+	if (V.island !== undefined) {
+		if (V.island.walnut >= 1) {
+			const rng = random(0, V.island.walnut);
+			V.island.walnut -= rng;
+			V.island.walnut_dried += rng;
+		}
+	}
+
+	if (V.temple_initiate_days !== undefined) {
+		V.temple_initiate_days += 1;
+	}
+	if (V.temple_monk_days !== undefined) {
+		V.temple_monk_days += 1;
+	}
+	if (V.temple_spar !== undefined) {
+		delete V.temple_spar;
 	}
 
 	return fragment;
@@ -1532,7 +1594,7 @@ function dailyFarmEvents() {
 			fragment.append(wikifier("farm_stock", "eggs", 6, 12));
 		}
 		if (V.farm.kennel >= 1) {
-			fragment.append(wikifier("farm_dogs", -2));
+			fragment.append(wikifier("farm_dogs", -1));
 			fragment.append(wikifier("farm_cattle", -1));
 		}
 		fragment.append(wikifier("farm_build_day"));
@@ -1645,8 +1707,12 @@ function passArousalWetness(passMinutes) {
 			V.pantiesSoaked = V.underlowerwet >= 100;
 		}
 	}
-
-	V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, 0, 100);
+	if (V.earSlime.focus === "pregnancy" && V.earSlime.growth >= 75) {
+		// Prevent it from dropping below 30 or 60 when the ear slime has fully grown with a focus on pregnancy
+		V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, V.earSlime.growth >= 100 ? 60 : 30, 100);
+	} else {
+		V.vaginaArousalWetness = Math.clamp(V.vaginaArousalWetness, 0, 100);
+	}
 	fragment.append(wikifier("vaginaWetnessCalculate"));
 
 	return fragment;
@@ -1672,6 +1738,109 @@ function getArousal(passMinutes) {
 	if (playerHasButtPlug()) addedArousal += minuteMultiplier;
 	if (V.parasite.left_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
 	if (V.parasite.right_ear.name === "slime" && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+	if (V.earSlime.growth > 100 && random(1, 10) >= 9) wikifier("drugs", Math.min(60, passMinutes));
+
+	if (V.worn.genitals.name === "chastity parasite") {
+		if (!V.masturbating) {
+			if (V.earSlime.corruption >= 100 && !V.earSlime.defyCooldown && !V.earSlime.vibration) {
+				V.earSlime.lastVibration += passMinutes;
+				if (V.earSlime.lastVibration > random(180, 720)) {
+					V.earSlime.vibration = random(2, 60);
+					V.earSlime.lastVibration = 0;
+				}
+			}
+			if (V.earSlime.defyCooldown) {
+				if (V.pain < 25) V.pain += Math.clamp(passMinutes, 0, 20 - Math.floor(V.pain));
+				// Helps to reduce the penis size
+				V.penisgrowthtimer += Math.floor(passMinutes / 4);
+			} else if (V.earSlime.vibration > 0) {
+				addedArousal += Math.clamp(minuteMultiplier, 0, V.earSlime.vibration * 10) * V.genitalsensitivity;
+				V.earSlime.vibration -= Math.clamp(passMinutes, 0, V.earSlime.vibration);
+				V.earSlime.lastVibration = Math.clamp(passMinutes - V.earSlime.vibration, 0, Infinity);
+			}
+		}
+	} else {
+		V.earSlime.vibration = 0;
+		V.earSlime.lastVibration = 0;
+	}
 
 	return addedArousal;
+}
+
+function earSlimeDaily() {
+	if (V.earSlime.eventTimer >= 1) V.earSlime.eventTimer--;
+	if (V.earSlime.eventTimer < 1) V.earSlime.event = "";
+
+	if (V.earSlime.corruption >= 60 && V.parasite.left_ear.name === "slime" && V.parasite.right_ear.name === "slime" && V.earSlimeTest) {
+		if (V.earSlime.growth < 100) V.earSlime.growth++;
+		if (V.earSlime.corruption >= 100) V.earSlime.growth++;
+		V.earSlime.growth = Math.clamp(V.earSlime.growth, 0, V.earSlime.focus === "none" ? 50 : 200);
+	} else if (V.earSlime.corruption < 30 && V.earSlime.growth <= 50 && V.earSlimeTest) {
+		// Reduce the growth variable only if below or equal to 50
+		V.earSlime.growth--;
+	}
+
+	if (V.earSlime.growth >= 75 && V.parasite.breasts.name !== "parasite") {
+		wikifier("parasite", "breasts", "parasite", "noSuck");
+		V.effectsmessage = 1;
+		V.earSlimebreastsParasite = 1;
+	}
+
+	if (V.earSlime.growth >= 100) {
+		if (
+			(V.earSlime.growth >= 95 && V.player.gender !== "f" && V.parasite.penis.name !== "parasite") ||
+			(V.earSlime.growth >= 100 && V.player.gender === "f" && V.parasite.clit.name !== "parasite")
+		) {
+			if (V.player.gender !== "f") {
+				V.effectsmessage = 1;
+				V.earSlimePenisParasite = 1;
+				if (V.parasite.penis.name && V.parasite.penis.name !== "parasite") {
+					V.earSlimePenisParasite = V.parasite.penis.name;
+					wikifier("removeparasite", "penis");
+				}
+				wikifier("parasite", "penis", "parasite", "noSuck");
+			} else {
+				V.effectsmessage = 1;
+				V.earSlimeClitParasite = 1;
+				if (V.parasite.clit.name && V.parasite.clit.name !== "parasite") {
+					V.earSlimeClitParasite = V.parasite.clit.name;
+					wikifier("removeparasite", "clit");
+				}
+				wikifier("parasite", "clit", "parasite", "noSuck");
+				if (["mixed", "impregnation"].includes(V.earSlime.focus) && V.player.gender === "f") V.player.penisExist = true;
+			}
+		}
+
+		// Breaks chastity gear over time, attempts to equip a chastity parasite if it aplies
+		if (!["naked", "chastity parasite"].includes(V.worn.genitals.name) && playerChastity()) {
+			V.worn.genitals.integrity -= 500;
+			if (V.worn.genitals.integrity <= 0) {
+				V.effectsmessage = 1;
+				V.penisslimebrokenchastitymessage = V.worn.genitals.name;
+				V.worn.genitals.type.push("broken");
+				wikifier("genitalsruined");
+			}
+		}
+
+		if (V.earSlime.focus === "pregnancy" && V.player.penisExist) {
+			if (V.worn.genitals.name === "naked" && !V.masturbating) {
+				// Equips a chastity parasite
+				V.effectsmessage = 1;
+				V.penisslimecagemessage = 1;
+				wikifier("genitalswear", 8);
+				V.worn.genitals.origin = "ear slime";
+			} else if (V.worn.genitals.name === "chastity parasite" && V.worn.genitals.integrity < clothingData("genitals", V.worn.genitals, "integrity_max")) {
+				// Repairs the chastity parasite
+				if (integrityKeyword(V.worn.genitals.integrity, "genitals") !== "full") {
+					V.effectsmessage = 1;
+					V.penisslimecagemessage = 2;
+				}
+				V.worn.genitals.integrity = clothingData("genitals", V.worn.genitals, "integrity_max");
+			}
+		}
+		if (V.earSlime.forcedDressing) {
+			V.earSlime.forcedDressing.days--;
+			if (V.earSlime.forcedDressing.days < 0) delete V.earSlime.forcedDressing;
+		}
+	}
 }

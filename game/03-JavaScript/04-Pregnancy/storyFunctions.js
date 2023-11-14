@@ -165,7 +165,7 @@ window.playerNormalPregnancyType = playerNormalPregnancyType;
 function wakingPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
-	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0) || pregnancy.type === "parasite") return false;
+	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && !playerIsPregnant()) || pregnancy.type === "parasite") return false;
 
 	const rng = random(0, 100);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -256,7 +256,7 @@ window.wakingPregnancyEvent = wakingPregnancyEvent;
 function dailyPregnancyEvent() {
 	const pregnancy = getPregnancyObject();
 	if (!pregnancy.fetus || V.statFreeze) return false;
-	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0) || pregnancy.type === "parasite") return false;
+	if ((!V.player.vaginaExist && playerNormalPregnancyTotal() === 0 && !playerIsPregnant()) || pregnancy.type === "parasite") return false;
 
 	const rng = random(0, 100) + (V.daily.pregnancyEvent || 0);
 	const menstruation = V.sexStats.vagina.menstruation;
@@ -264,7 +264,9 @@ function dailyPregnancyEvent() {
 	const pregnancyStage = pregnancy.timerEnd ? Math.clamp(pregnancy.timer / pregnancy.timerEnd, 0, 1) : false;
 	let dailyEffects;
 
-	if ((between(pregnancyStage, 0.9, 0.95) && rng > 80) || (between(pregnancyStage, 0.95, 1) && rng >= 75)) {
+	if (pregnancy.gaveBirth) {
+		/* Show no events right after giving birth */
+	} else if ((between(pregnancyStage, 0.9, 0.95) && rng > 80) || (between(pregnancyStage, 0.95, 1) && rng >= 75)) {
 		dailyEffects = "nearBirthEvent";
 	} else if ((between(pregnancyStage, 0.7, 0.8) && rng > 85) || (between(pregnancyStage, 0.8, 0.9) && rng >= 80)) {
 		dailyEffects = "nearBirth";
@@ -346,7 +348,7 @@ function pregnancyNameCorrection(name, caps = false) {
 			Wikifier.wikifyEval('<<trNamedNPC "' + name + '" "name">>'); name = T.trResult; getPostNum(T.trResult);
 			break;
 		case "pc":
-			name = "당신 자신"; T.postNum = 0;
+			name = "당신 자신"; T.trResult = name; T.postNum = 0;
 			break;
 		default:
 			Wikifier.wikifyEval('<<trNPCdesc "' + name + '">>'); name = name[0] === name[0].toLowerCase() ? "어떤 " + T.trResult : T.trResult; getPostNum(T.trResult);
@@ -452,6 +454,9 @@ function playerHeatMinArousal() {
 
 	// Should always be the first to modify minArousal
 	if (risk <= 1 && pills.contraceptive.doseTaken === 0) {
+		if (V.earSlime.growth > 50 && V.earSlime.focus === "pregnancy" && !V.earSlime.defyCooldown) {
+			minArousal += Math.clamp(V.earSlime.growth, 0, 200) * 5 * (2 - risk);
+		}
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10 * (2 - risk);
 		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10 * (2 - risk);
@@ -474,6 +479,9 @@ function playerRutMinArousal() {
 	let minArousal = 0;
 
 	if (pills.contraceptive.doseTaken === 0 && V.player.beastRut !== undefined && V.player.beastRut <= 1) {
+		if (V.earSlime.growth > 50 && V.earSlime.focus === "impregnation" && !V.earSlime.defyCooldown) {
+			minArousal += Math.clamp(V.earSlime.growth, 0, 200) * 5;
+		}
 		if (V.wolfgirl >= 2) minArousal += Math.clamp(V.wolfbuild, 0, 100) * 10;
 		if (V.cat >= 2) minArousal += Math.clamp(V.catbuild, 0, 100) * 10;
 		if (V.cow >= 2) minArousal += Math.clamp(V.cowbuild, 0, 100) * 10;
@@ -488,7 +496,7 @@ function playerRutMinArousal() {
 window.playerRutMinArousal = playerRutMinArousal;
 
 function playerAwareTheyCanBePregnant() {
-	return V.player.vaginaExist || (canBeMPregnant() && V.sexStats.anus.pregnancy.totalBirthEvents >= 1);
+	return V.player.vaginaExist || (canBeMPregnant() && V.sexStats.anus.pregnancy.totalBirthEvents >= 1) || playerAwareTheyArePregnant();
 }
 window.playerAwareTheyCanBePregnant = playerAwareTheyCanBePregnant;
 
@@ -692,7 +700,7 @@ function knowsAboutAnyPregnancy(mother, whoToCheck) {
 	}
 	return !!Object.entries(V.pregnancyStats.awareOfBirthId)
 		.filter(awareOf => awareOf[0].includes(mother))
-		.find(awareOf => awareOf.includes(whoToCheckConverted));
+		.find(awareOf => awareOf[1].includes(whoToCheckConverted));
 }
 window.knowsAboutAnyPregnancy = knowsAboutAnyPregnancy;
 
@@ -775,3 +783,69 @@ function removeBabyIntro(mother, introFor, birthId) {
 	}
 }
 DefineMacro("removeBabyIntro", removeBabyIntro);
+
+/* Returns the total times a someone has talked about someone elses pregnancy */
+function talkedAboutPregnancy(mother, whoToCheck, existingId) {
+	const talkedAbout = V.pregnancyStats.talkedAboutPregnancy;
+	let birthId;
+	let whoToCheckConverted;
+	if (whoToCheck === "pc") {
+		whoToCheckConverted = whoToCheck;
+	} else if (V.NPCNameList.includes(whoToCheck)) {
+		whoToCheckConverted = V.NPCNameList.indexOf(whoToCheck);
+	} else {
+		return 0;
+	}
+
+	if (existingId !== undefined && talkedAbout[mother + existingId] && talkedAbout[mother + existingId][whoToCheckConverted]) {
+		return talkedAbout[mother + existingId][whoToCheckConverted];
+	}
+
+	if (mother === "pc" && playerIsPregnant()) {
+		birthId = mother + getPregnancyObject().fetus[0].birthId;
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
+	}
+
+	if (birthId && talkedAbout[birthId] && talkedAbout[birthId][whoToCheckConverted]) return talkedAbout[birthId][whoToCheckConverted];
+
+	return 0;
+}
+window.talkedAboutPregnancy = talkedAboutPregnancy;
+
+/* Increments the total times a someone has talked about someone elses pregnancy, should only be used for the players current pregnancy */
+function setTalkedAboutPregnancy(mother, whoToIncrement, existingId) {
+	const talkedAbout = V.pregnancyStats.talkedAboutPregnancy;
+	let birthId;
+	let whoToIncrementConverted;
+	if (whoToIncrement === "pc") {
+		whoToIncrementConverted = whoToIncrement;
+	} else if (V.NPCNameList.includes(whoToIncrement)) {
+		whoToIncrementConverted = V.NPCNameList.indexOf(whoToIncrement);
+	} else {
+		return 0;
+	}
+
+	if (talkedAbout[mother + existingId]) {
+		birthId = mother + existingId;
+	} else if (mother === "pc") {
+		if (playerIsPregnant()) {
+			birthId = mother + getPregnancyObject().fetus[0].birthId;
+		}
+	} else if (C.npc[mother] && npcIsPregnant(mother)) {
+		birthId = mother + getPregnancyObject(mother).fetus[0].birthId;
+	} else {
+		return 0;
+	}
+
+	if (birthId) {
+		if (!talkedAbout[birthId]) talkedAbout[birthId] = {};
+		if (!talkedAbout[birthId][whoToIncrementConverted]) {
+			talkedAbout[birthId][whoToIncrementConverted] = 0;
+		}
+		talkedAbout[birthId][whoToIncrementConverted]++;
+		return talkedAbout[birthId][whoToIncrementConverted];
+	}
+	return 0;
+}
+DefineMacro("setTalkedAboutPregnancy", setTalkedAboutPregnancy);

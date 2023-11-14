@@ -2,21 +2,27 @@
 <<widget "breastsPost">><<silently>>
 	<<if Number.isInteger($player.breastsize)>>
 		<<if $player.breastsize lte 0>>
-			<<set _trResult to "유두">>
+			<<set _trResult to "유두">><<trPost 1 _args[0] _args[1]>>
 		<<else>>
-			<<set _trResult to setup.breastsizes[$player.breastsize] + " 젖통">>
+			<<set _trResult to setup.breastsizes[$player.breastsize] + " 젖통">><<trPost 0 _args[0] _args[1]>>
 		<</if>>
 	<<elseif $debugdisable is "f">>
 		<<set _trResult to "ERROR - $$player.breastsize 가 숫자가 아님: $player.breastsize">>
 	<</if>>
-    <<if _args[0] isnot undefined>>
-        <<if $player.breastsize is 0>>
-            <<trPost 1 _args[0] _args[1]>>
-        <<else>>
-            <<trPost 0 _args[0] _args[1]>>
-        <</if>>
-    <</if>>
 <</silently>><<breastsensitivity>><<print _trResult>><</widget>>
+
+<<widget "breastssimplePost">><<silently>>
+	<<if Number.isInteger($player.breastsize)>>
+		<<if $player.breastsize lte 0>>
+			<<set _trResult to "유두">><<trPost 1 _args[0] _args[1]>>
+		<<else>>
+			<<set _trResult to "젖통">><<trPost 0 _args[0] _args[1]>>
+		<</if>>
+	<<elseif $options.debugdisable is "f">>
+		<<set _trResult to "ERROR - $$player.breastsize 가 숫자가 아님: $player.breastsize">>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
+
 
 <!--_args[0] - uses "pc", the named npc's name, or a number-->
 <!--_args[1] - forces the pregnancy description-->
@@ -115,7 +121,7 @@
 		<<set $_nosens to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
 	<</if>>
 
-	<<genitalstate>><<set _genital_state_text to _text_output>>
+	<<genitalstate "pussy">><<set _genital_state_text to _text_output>>
 	<<set _trResult to "">>
 	<<if !$_nosens>>
 		<<genitalsensitivity>><<set _trResult += _text_output>>
@@ -146,13 +152,18 @@
 	<<else>>
 		<<genitalsensitivity>><<set _trResult to _text_output>>
 		<<if $player.penisExist>>
-			<<if playerChastity("cage")>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				<<set _trResult += "봉인된 ">>
+			<<elseif playerChastity("cage")>>
 				<<set _trResult += "갇혀있는 ">>
 			<</if>>
 			<<if $player.virginity.penile is true and $_num isnot 2>>
-				<<set _trResult += "동정 ">>
+				<<set $_virgin to "동정 ">>
 			<</if>>
-			<<set _trResult += "자지">><<set _postNum to 1>>
+			<<if $player.gender is "f" and $parasite.clit.name is "parasite" and _args[0] isnot 2>>
+				<<set _trResult += "기생충 ">>
+			<</if>>
+			<<set _trResult += $_virgin + "자지">><<set _postNum to 1>>
 		<</if>>
 		<<if $player.vaginaExist>>
 			<<if $player.penisExist>>
@@ -221,7 +232,7 @@
     <<if _penissize_text isnot "">>
         <<set _penissize_text to _penissize_text + " ">>
     <</if>>
-	<<genitalstate>><<set _genital_state_text to _text_output>>
+	<<genitalstate "penis">><<set _genital_state_text to _text_output>>
 	<<set _trResult to "">>
 	<<if !$_arg>>
 		<<genitalsensitivity>><<set _trResult += _text_output>>
@@ -293,7 +304,7 @@
 			<<set $_tempArray to _args[0].split(' ')>>
 			
 			<<set $_hand to $_tempArray.pop()>>
-			<<if $_hand is "hand">>	/* ex. "left hand" */
+			<<if $_hand.includes("hand")>>	/* ex. "left hand" */
 				<<set $_hand to $_tempArray.pop()>>
 			<</if>>
 			<<if $_tempArray.length>>

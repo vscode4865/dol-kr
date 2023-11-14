@@ -98,31 +98,9 @@ function handleTouchMove(evt) {
 	yDown = null;
 }
 
-const disableNumberifyInVisibleElements = ["#passage-testing-room"];
-
-// Number-ify links
-window.Links = window.Links || {};
-Links.currentLinks = [];
-
-function getPrettyKeyNumber(counter) {
-	let str = "";
-
-	if (counter > 30) str = "Ctrl + ";
-	else if (counter > 20) str = "Alt + ";
-	else if (counter > 10) str = "Shift + ";
-
-	if (counter % 10 === 0) str += "0";
-	else if (counter < 10) str += counter;
-	else {
-		const c = Math.floor(counter / 10);
-		str += (counter - 10 * c).toString();
-	}
-
-	return str;
-}
+//Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
 
 $(document).on(":passagerender", function (ev) {
-	Links.currentLinks = [];
 
 	if (passage() === "GiveBirth") {
 		$(ev.content)
@@ -131,48 +109,6 @@ $(document).on(":passagerender", function (ev) {
 				Wikifier.wikifyEval("<<resetPregButtons>>");
 				Links.generateLinkNumbers(ev.content);
 			});
-	}
-
-	Links.generateLinkNumbers(ev.content);
-});
-
-Links.keyNumberMatcher = /^\([^)]+\)/;
-
-Links.generateLinkNumbers = content => {
-	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify) return;
-
-	for (let i = 0; i < disableNumberifyInVisibleElements.length; i++) {
-		if ($(content).find(disableNumberifyInVisibleElements[i]).length || $(content).is(disableNumberifyInVisibleElements[i])) return; // simply skip this render
-	}
-
-	// wanted to use .macro-link, but wardrobe and something else doesn't get selected, lmao
-	Links.currentLinks = $(content).find(".link-internal").not(".no-numberify *, .no-numberify");
-
-	$(Links.currentLinks).each(function (i, el) {
-		if (Links.keyNumberMatcher.test(el.innerHTML)) {
-			el.innerHTML = el.innerHTML.replace(Links.keyNumberMatcher, `(${getPrettyKeyNumber(i + 1)})`);
-		} else {
-			$(el).html("(" + getPrettyKeyNumber(i + 1) + ") " + $(el).html());
-		}
-	});
-};
-Links.generate = () => Links.generateLinkNumbers(document.getElementsByClassName("passage")[0] || document);
-
-$(document).on("keyup", function (ev) {
-	if (!V.options.numberify_enabled || !StartConfig.enableLinkNumberify || V.tempDisable) return;
-
-	if (document.activeElement.tagName === "INPUT" && document.activeElement.type !== "radio" && document.activeElement.type !== "checkbox") return;
-
-	if ((ev.keyCode >= 48 && ev.keyCode <= 57) || (ev.keyCode >= 96 && ev.keyCode <= 105)) {
-		const fixedKeyIndex = ev.keyCode < 60 ? ev.keyCode - 48 : ev.keyCode - 96;
-
-		let requestedLinkIndex = [9, 0, 1, 2, 3, 4, 5, 6, 7, 8][fixedKeyIndex];
-
-		if (ev.ctrlKey) requestedLinkIndex += 30;
-		else if (ev.altKey) requestedLinkIndex += 20;
-		else if (ev.shiftKey) requestedLinkIndex += 10;
-
-		if ($(Links.currentLinks).length >= requestedLinkIndex + 1) $(Links.currentLinks[requestedLinkIndex]).click();
 	}
 });
 
@@ -354,7 +290,7 @@ function settingsNudeGenderAppearance() {
 		switch (val) {
 			case -1:
 				text =
-					"NPC들은 성별을 파악할 때 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다. <span class='purple inline-colour'>몇몇 플레이어 설정보다 우선합니다.</span> <span class='red inline-colour'>크로스드레싱 경고를 비활성합니다.</span>";
+					"NPC들은 성별을 파악할 때 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다. <span class='purple inline-colour'>몇몇 플레이어 묘사와 성별 묘사 설정보다 우선합니다.</span> <span class='red inline-colour'>크로스드레싱 경고를 비활성합니다.</span>";
 				break;
 			case 0:
 				text = "NPC들은 당신의 성별을 파악할 때 당신의 생식기를 <span class='blue inline-colour'>무시할</span> 것입니다.";
@@ -369,7 +305,7 @@ function settingsNudeGenderAppearance() {
 				text = "Error: bad value: " + val;
 				val = 0;
 		}
-		$("#numberslider-value-nudegenderdc").text("").append(text).addClass("small-description").css("margin-left", "1em");
+		$("#numberslider-value-nudegenderdc").text("").append(text).addClass("small-description");
 	};
 
 	$(() => {
@@ -448,6 +384,109 @@ function settingsNamedNpcBreastSize(id, persist) {
 	});
 }
 window.settingsNamedNpcBreastSize = settingsNamedNpcBreastSize;
+
+function settingsGenericGenders(id) {
+	let slider = null; const trid = {"NPCs":"NPC들", "beasts":"짐승들", "other victims you encounter":"당신과 조우하는 다른 희생자들"};
+	const updateText = () => {
+		let val = null;
+		let attraction = null;
+		let men = null;
+		let women = null;
+
+		if (id === "beasts") {
+			val = V.beastmalechance;
+			slider = "beastmalechance";
+		} else if (id === "NPCs") {
+			val = V.malechance;
+			slider = "malechance";
+		} else if (id === "mlm") {
+			val = V.maleChanceMale;
+			slider = "malechancemale";
+			attraction = "<span class='blue inline-colour'>남성에게 끌릴</span>";
+			men = "남성들";
+			women = "여성들";
+		} else if (id === "wlw") {
+			val = V.maleChanceFemale;
+			slider = "malechancefemale";
+			attraction = "<span class='pink inline-colour'>여성에게 끌릴</span>";
+			men = "남성들";
+			women = "여성들";
+		} else if (id === "blm") {
+			val = V.beastMaleChanceMale;
+			slider = "beastmalechancemale";
+			attraction = "<span class='blue inline-colour'>수컷에게 끌릴</span>";
+			men = "수컷 짐승들";
+			women = "암컷 짐승들";
+		} else if (id === "blw") {
+			val = V.beastMaleChanceFemale;
+			slider = "beastmalechancefemale";
+			attraction = "<span class='pink inline-colour'>암컷에게 끌릴</span>";
+			men = "수컷 짐승들";
+			women = "암컷 짐승들";
+		} else {
+			val = V.malevictimchance;
+			slider = "malevictimchance";
+		}
+
+		let text = null;
+
+		if (id === "mlm" || id === "wlw" || id === "blw" || id === "blm") {
+			switch (val) {
+				case 100: text = `<span class='gold inline-colour'>0%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>100%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
+				case 0: text = `<span class='gold inline-colour'>100%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>0%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
+				default: text = `<span class='gold inline-colour'>${(100 - val)}%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>${val}%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
+			}
+		} else {
+			if (val === 100) {
+				text = `<span class='gold inline-colour'>모든</span> ${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>일 것입니다.`;
+			} else if (val === 0) {
+				text = `<span class='gold inline-colour'>모든</span> ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
+			} else if (val === 50) {
+				text = `${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>과 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>으로 <span class='gold inline-colour'>동등하게</span> 나누어질 것입니다.`;
+			} else if (val > 50) {
+				text = `<span class='gold inline-colour'>${val}%</span>의 ${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>일 것입니다.`;
+			} else {
+				text = `<span class='gold inline-colour'>${(100 - val)}%</span>의 ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
+			}
+		}
+
+		jQuery("#numberslider-value-" + slider).text("").append(text).addClass("small-description");
+		};
+
+		$(() => {
+		updateText();
+		$("#numberslider-input-" + slider).on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+
+window.settingsGenericGenders = settingsGenericGenders;
+
+function settingsMonsterChance() {
+	const updateText = () => {
+		const val = V.monsterchance;
+		let text = null;
+
+		switch (val) {
+			case 100: text = "짐승들은 <span class='gold inline-colour'>항상</span> 몬스터 소년과 소녀로 나올 것입니다."; break;
+			case 0: text = "환각 중에 허용되지 않는다면, 짐승들은 <span class='gold inline-colour'>절대</span> 몬스터 소년과 소녀로 나오지 않을 것입니다."; break;
+			case 50: text = "모든 짐승들 중 <span class='gold inline-colour'>절반</span>은 몬스터 소년과 소녀로 대체될 것입니다."; break;
+			default: text = `모든 짐승들 중 <span class='gold inline-colour'>${val}%</span>는 몬스터 소년과 소녀로 대체될 것입니다.`; break;
+		}
+
+		jQuery("#numberslider-value-monsterchance").text("").append(text).addClass("small-description");
+		};
+
+		$(() => {
+		updateText();
+		$("#numberslider-input-monsterchance").on("input change", function (e) {
+			updateText();
+		});
+	});
+}
+
+window.settingsMonsterChance = settingsMonsterChance;
 
 function settingsBeastGenders(singleUpdate) {
 	const updateText = () => {
@@ -543,14 +582,14 @@ function settingsNpcGenders(singleUpdate) {
 				break;
 			case 25:
 				if (T.maleChanceSplit === "t") {
-					text = "<span class='gold inline-colour'>75%</span>의 NPC들은 <span class='gold inline-colour'>동성</span>을 선호할 것입니다.";
+					text = "<span class='gold inline-colour'>75%</span>의 NPC들이 <span class='gold inline-colour'>동성</span>을 선호할 것입니다.";
 				} else {
 					text = "<span class='gold inline-colour'>75%</span>의 NPC들은 <span class='pink inline-colour'>여성</span>일 것입니다.";
 				}
 				break;
 			case 0:
 				if (T.maleChanceSplit === "t") {
-					text = "<span class='gold inline-colour'>모든</span> NPC들은 <span class='gold inline-colour'>동성</span>을 선호할 것입니다.";
+					text = "<span class='gold inline-colour'>모든</span> NPC들이 <span class='gold inline-colour'>동성</span>을 선호할 것입니다.";
 				} else {
 					text = "<span class='gold inline-colour'>모든</span> NPC들은 <span class='pink inline-colour'>여성</span>일 것입니다.";
 				}
@@ -625,12 +664,19 @@ function onInputChanged(func) {
 window.onInputChanged = onInputChanged;
 
 function closeOverlay() {
+	wikifier("journalNotesTextareaSave");
 	updateOptions();
 	delete T.currentOverlay;
+	delete V.tempDisable;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
 }
 window.closeOverlay = closeOverlay;
+
+function journalNotesReplacer(name) {
+	return name.replace(/[^a-zA-Z0-9' _-]+/g, "");
+}
+window.journalNotesReplacer = journalNotesReplacer;
 
 function updatehistorycontrols() {
 	// if undefined, initiate new variable based on engine config
@@ -638,7 +684,6 @@ function updatehistorycontrols() {
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
 	// option to only save active state into sessionStorage, for better performance
-	if (V.options.sessionHistory === undefined) V.options.sessionHistory = true; // todo: delete this line in 0.4.2.x
 	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
 	else Config.history.maxSessionStates = 1;
 
@@ -661,10 +706,10 @@ function updateOptions() {
 		updatehistorycontrols();
 		const optionsData = clone(V.options);
 		const tmpButtons = T.buttons;
-		const tmpKey = T.key;
+		const tmpKey = T.key; /* numberify_enabled workaround */ T.optionsRefresh = false;
 
 		if (!State.restore()) return; // don't do anything if state couldn't be restored
-		V.options = optionsData;
+		V.options = optionsData; /* numberify_enabled workaround */ Links.enabled=V.options.numberify_enabled?true:false;
 		tanned(0, "ignoreCoverage");
 		State.show();
 

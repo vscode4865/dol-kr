@@ -24,28 +24,29 @@
 		<</if>>
 		<br><br>
 		<<if $exposed lte 0>>
-			<<link [[밖으로 나간다|High Street]]>><</link>>
+			<<highicon>><<link [[밖으로 나간다|High Street]]>><</link>>
 			<br>
 		<<else>>
-			<<link [["끝날때까지 숨어 있는다 (1:00)"|Furniture Shop]]>><<pass 1 hour>><</link>>
+			<<ind>><<link [["끝날때까지 숨어 있는다 (1:00)"|Furniture Shop]]>><<pass 1 hour>><</link>>
 		<</if>>
 	<<else>>
 		<<if Time.dayState is "night" and Time.hour isnot 21 and !$weekly.theft.furnitureShop>>
-			<<link [[금전등록기를 살펴본다|Furniture Shop Register]]>><</link>>
+			<<shopicon "register">><<link [[금전등록기를 살펴본다|Furniture Shop Register]]>><</link>>
 			<br>
 		<</if>>
 		<<if $exposed lte 0 and Time.dayState isnot "night" and Time.hour isnot 21>>
-			<<link [[판매 목록을 본다|Furniture Shop Catalogue]]>><</link>>
+			<<furnitureicon "catalogue.png">><<link [[판매 목록을 본다|Furniture Shop Catalogue]]>><</link>>
 			<br>
 		<</if>>
 		<<if ($exposed lte 0 and Time.dayState isnot "night" and Time.hour isnot 21) or (Time.hour gte 21 and !$weekly.theft.furnitureShop)>>
 			<br>
 			벽지들과 포스터들이 구석에 쌓여 있다.
 			<br>
-			<<link [[벽지와 포스터를 본다|Furniture Shop Papers]]>><</link>>
+			<<furnitureicon "wallpaper.png">><<link [[벽지와 포스터를 본다|Furniture Shop Papers]]>><</link>>
 			<br>
 		<</if>>
-		<<link [[나간다|Shopping Centre]]>><</link>>
+		<br>
+		<<getouticon>><<link [[나간다|Shopping Centre]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -72,8 +73,8 @@
 			name	: _chosenPoster,
 			nameCap	: _chosenPoster.toUpperFirst()
 		})>>
-		<<crimeup 5>>
-	<</link>><<gcrime>>
+		<<crimeUp 5 "petty">>
+	<</link>><<gcrime "petty">>
 	<br>
 <<elseif Time.dayState is "night">>
 	<span class="purple">당신은 이미 상점에서 물건을 훔쳤다.</span> 다른 것을 훔치기 위해서는 나중에 다시 와야 한다.
@@ -99,7 +100,7 @@
 		<<link [['구입한다 (£' + _posterCost / 50 + ')'|Furniture Shop Papers]]>>
 			<<set $money -= _posterCost * 2>>
 			<<if _chosenPosterCustom is "" or _chosenPosterCustom is undefined>><<set _chosenPosterCustom to "custom design">><</if>>
-			<<set _normalisedName to Util.escape(_chosenPosterCustom)>>
+			<<set _normalisedName to Util.escape(_chosenPosterCustom).replace(/\[/g, "&#91;").replace(/\]/g, "&#93;")>>
 			<<run Furniture.set('poster', 'poster', {
 				name	: _normalisedName,
 				nameCap	: _normalisedName.toUpperFirst()
@@ -137,8 +138,8 @@
 			name	: _chosenWallpaper,
 			nameCap	: _chosenWallpaper.toUpperFirst()
 		})>>
-		<<crimeup 5>>
-	<</link>><<gcrime>>
+		<<crimeUp 5 "petty">>
+	<</link>><<gcrime "petty">>
 	<br>
 <<elseif $money gte _wallpaperCost>>
 	선제작된 벽지를 고른다:
@@ -162,7 +163,7 @@
 		<<link [['구입한다 (£' + _wallpaperCost / 50 + ')'|Furniture Shop Papers]]>>
 			<<set $money -= _wallpaperCost * 2>>
 			<<if _chosenWallpaperCustom is "" or _chosenWallpaperCustom is undefined>><<set _chosenWallpaperCustom to "custom design">><</if>>
-			<<set _normalisedName to Util.escape(_chosenWallpaperCustom)>>
+			<<set _normalisedName to Util.escape(_chosenWallpaperCustom).replace(/\[/g, "&#91;").replace(/\]/g, "&#93;")>>
 			<<run Furniture.set('wallpaper', 'wallpaper', {
 				name	: _normalisedName,
 				nameCap	: _normalisedName.toUpperFirst()
@@ -178,7 +179,7 @@
 	<br>
 <</if>>
 
-<<link [[뒤로|Furniture Shop]]>><</link>>
+<<getouticon>><<link [[뒤로|Furniture Shop]]>><</link>>
 <br>
 
 :: Furniture Shop Catalogue [exitCheckBypass]
@@ -187,7 +188,7 @@
 <<set $chosenFurnitureCategory to $chosenFurnitureCategory || "bed">>
 <<dynamic "furnitureUpdate" "furniture-update-container">>
 <br><br>
-<<link [[뒤로|Furniture Shop]]>>
+<<getouticon>><<link [[뒤로|Furniture Shop]]>>
 	<<run delete $chosenFurnitureCategory>>
 	<<unset $furnitureDowngrade>>
 <</link>>
@@ -259,7 +260,7 @@
 	<<set $currentFurnishing to Furniture.get($chosenFurnitureCategory)>>
 	<<if $chosenFurnitureCategory is "desk" and $currentFurnishing is null>>
 		<<set $currentFurnishing to Furniture.set('desk','desk')>>
-	<</if>>	
+	<</if>>
 현재 당신의 방에 설치되어 있는 가구:
 	<<if $currentFurnishing>>
 		<<furnitureicon $currentFurnishing.iconFile>>
@@ -278,7 +279,7 @@
 					<<else>>
 						<br>책상에서 프로젝트에 몰두할 때 더 효율적으로 할 수 있게 해 준다.
 					<</if>>
-				<</if>>	
+				<</if>>
 				<<if $currentFurnishing.type.includes('double')>><br>누군가 적절하게 자고 갈 정도의 충분한 공간이 있다.<</if>>
 			<</if>>
 		</div>
@@ -331,7 +332,7 @@
 									<<else>>
 										<br>책상에서 공부를 더 효율적으로 할 수 있게 해 준다.
 									<</if>>
-								<</if>>	
+								<</if>>
 								<<if $_furnishing.type.includes('double')>><br>누군가 적절하게 자고 갈 정도의 충분한 공간이 있다.<</if>>
 							<</if>>
 						</span></mouse> |

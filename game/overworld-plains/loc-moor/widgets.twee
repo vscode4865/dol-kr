@@ -41,7 +41,7 @@
 				<span class="blue">야생의 당근을 수확하기 위해서는 관리 스킬이 더 높아야 합니다.</span>
 				<br><br>
 			<</if>>
-			<<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
+			<<ind>><<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
@@ -123,6 +123,17 @@
 				<<set $moorFlower to "phallus plant">>
 			<</if>>
 			당신은 달콤한 향기를 맡는다. <<if $moorFlower is "flower">>분홍색 꽃이<<else>>특이한 식물이<</if>> 헤더 사이에서 자라고 있다.
+			<<if ($parasite.left_ear.name is "slime" and random(1, 4) is 4) or ($parasite.right_ear.name is "slime" and random(1, 4) is 4)>>
+				<span class="red">귓속의 슬라임이 그것의 매력에 저항하는 당신의 능력을 약화시킨다.</span>
+				<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+					<<set $moorFlowerMod to 400>>
+				<<else>>
+					<<set $moorFlowerMod to 200>>
+				<</if>>
+			<<else>>
+				<<set $moorFlowerMod to 0>>
+			<</if>>
+
 			<br><br>
 			<<if $moorFlower is "flower">>
 				<<link [[조사한다|Moor Flower]]>><<arousal 600>><<drugs 60>><</link>><<garousal>>
@@ -130,7 +141,7 @@
 				<<link [[조사한다|Moor Phallus Plant]]>><<arousal 600>><<drugs 60>><</link>><<garousal>>
 			<</if>>
 			<br>
-			<<link [[무시한다|Moor Flower Ignore]]>><</link>><<willpowerdifficulty 1 600>>
+			<<link [[무시한다|Moor Flower Ignore]]>><</link>><<willpowerdifficulty `1 + $moorFlowerMod` `600 + $moorFlowerMod`>>
 			<br>
 		<<case 6>>
 			당신은 작은 골짜기를 타고 흐르는 개울을 마주친다. 물살은 빠르지만, 깨끗하고 그리 깊지 않다.
@@ -176,10 +187,10 @@
 				<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 					<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
 				<<else>>
-					<<link [[마신다 (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><</link>><<lstress>>
+					<<foodicon "beerbottle">><<link [[마신다 (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><</link>><<lstress>>
 				<</if>>
 				<br>
-				<<link [[거절한다|Moor Youths Decline]]>><</link>>
+				<<refuseicon>><<link [[거절한다|Moor Youths Decline]]>><</link>>
 				<br>
 			<</if>>
 		<<case 8>>
@@ -199,7 +210,7 @@
 			<<link [[다음|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case 2>>
-			당신은 시야 한구석에서 어두운 형체가 움직이는 것을 본디. 그것은 당신이 돌아보기도 전에 사라진다.<<gstress>><<stress 6>>
+			당신은 시야 한구석에서 어두운 형체가 움직이는 것을 본다. 그것은 당신이 돌아보기도 전에 사라진다.<<gstress>><<stress 6>>
 			<br><br>
 
 			<<link [[다음|Moor]]>><<set $eventskip to 1>><</link>>
@@ -215,7 +226,7 @@
 				<</if>>
 				<br><br>
 
-				<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<<link [[떠난다|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
 				<br>
 			<<else>>
 				관목숲에서 <<beasttype_ i>> 나타나, 당신의 길을 가로막는다. <<bHe_ nun>> 귀를 씰룩거리며 잠시 당신을 응시하다가, 덤불 속으로 돌진한다.
@@ -275,7 +286,7 @@
 				<span class="blue">야생의 양파를 수확하기 위해서는 관리 스킬이 더 높아야 합니다.</span>
 				<br><br>
 			<</if>>
-			<<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
+			<<getinicon>><<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
@@ -561,7 +572,7 @@
 				<span class="blue">야생의 마늘을 수확하기 위해서는 관리 스킬이 더 높아야 합니다.</span>
 				<br><br>
 			<</if>>
-			<<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
+			<<ind>><<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
@@ -976,13 +987,13 @@
 
 <<widget "moor_fox">>
 	<<beastNEWinit 1 fox>>
-	Your hear rustling from somewhere behind you. It sounds like it's getting closer.
+	당신의 뒤편 어딘가에서 부스럭거리는 소리가 들린다. 그 소리는 점점 가까워지고 있는 것 같다.
 	<br><br>
 
-	<<link [[Dodge|Moor Fox Dodge]]>><</link>><<dancedifficulty 1 $NPCList[0].skills.athletics>>
+	<<link [[피한다|Moor Fox Dodge]]>><</link>><<dancedifficulty 1 $NPCList[0].skills.athletics>>
 	<br>
-	<<link [[Stand your ground|Moor Fox Stand]]>><</link>><<physiquedifficulty $NPCList[0].skills.athletics $physiquemax>>
+	<<link [[가만히 있는다|Moor Fox Stand]]>><</link>><<physiquedifficulty $NPCList[0].skills.athletics $physiquemax>>
 	<br>
-	<<link [[Call out|Moor Fox Call]]>><</link>>
+	<<link [[부른다|Moor Fox Call]]>><</link>>
 	<br>
 <</widget>>

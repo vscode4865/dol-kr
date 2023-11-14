@@ -18,6 +18,11 @@
 		<<trVirginity $player.virginity.handholding>>손 순결: <<print ($player.virginity.handholding is true ? "존재" : ($player.virginity.handholding is false ? "뺏어간 이 불명" : _trResult + "에게 빼앗김"))>>
 		<br>
 		<<trVirginity $player.virginity.kiss>>첫 키스: <<print ($player.virginity.kiss is true ? "존재" : ($player.virginity.kiss is false ? "뺏어간 이 불명" : _trResult + "에게 빼앗김"))>>
+		<br>
+		<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+			<<trVirginity $player.virginity.temple>>사원의 서약: <<print ($player.virginity.temple is true ? "깨지지 않음" : ($player.virginity.temple is false ? "깨뜨린 이 불명" : _trResult + "에게 깨짐"))>>
+			<br>
+		<</if>>
 		<br><br>
 	<</foldout>>
 
@@ -98,18 +103,34 @@
 			<br>
 		<</if>>
 		<br>
+		<<if $confessionsDone>>
+			죄를 고해한 횟수: $confessionsDone번
+			<br>
+		<</if>>
+		<<if $confessionsTaken>>
+			고해가 받아들여진 횟수: $confessionsTaken번
+			<br>
+		<</if>>
 	<</foldout>>
 
 	<<foldout false "_sexFoldout">>
 		<span class="gold">섹스</span>
 		절정을 느낀 횟수: $orgasmstat번
 		<br>
+		<<if $ruinedOrgasmStat>>
+			절정에 도달하려다 멈춘 횟수: $ruinedOrgasmStat번
+			<br>
+		<</if>>
 		<<if $asphyxiaLvl gte 2>>
 			목이 졸린 상태에서 절정을 느낀 횟수: $chokeorgasm번
 			<br>
 		<</if>>
 		<<if $player.penisExist or $toydildodisable is "f">>
 			다른 이에게 박은 횟수: $penilestat번
+			<br>
+		<</if>>
+		<<if $straponstat>>
+			페니스 밴드 자지로 다른 이에게 박은 횟수: $straponstat번
 			<br>
 		<</if>>
 		<<if $player.penisExist>>
@@ -405,8 +426,6 @@
 		<br>
 		기절함: $passoutstat번
 		<br>
-		범죄 이력: $crimehistory번
-		<br>
 		우수 성적: $distinction_stat회
 		<br>
 		수면 시간: $sleepStat시간
@@ -547,8 +566,12 @@
 			<br>
 			이상성욕: <<print Math.trunc($deviancy)>>
 			<br>
-			타락도: <<print Math.trunc($corruption_slime)>>
+			타락도: <<print Math.trunc($earSlime.corruption)>>
 			<br>
+			<<if $earSlime.growth>>
+				귀 슬라임 성장도: <<print Math.trunc($earSlime.growth)>>
+				<br>
+			<</if>>
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
 				신앙심: <<print Math.trunc($grace)>>
 				<br>
@@ -566,6 +589,14 @@
 				0
 			<</if>>
 			<br><br>
+			민감도:
+			<mouse class="tooltip linkBlue">(?)<span>이것은 해당 부위가 자극을 받았을 때 오르는 흥분도의 배율입니다.</span></mouse>
+			<ul style="margin-top:0px;margin-left:-5px;">
+				<li>입: <<print $mouthsensitivity.toFixed(2)>></li>
+				<li>가슴: <<print $breastsensitivity.toFixed(2)>></li>
+				<li>성기: <<print $genitalsensitivity.toFixed(2)>></li>
+				<li>엉덩이: <<print $bottomsensitivity.toFixed(2)>></li>
+			</ul>
 			유방 성장 진행률: <<print Math.trunc(100 - ($breastgrowthtimer / 10))>>%
 			<mouse class="tooltip linkBlue">(?)<span>100%나 그 이상에 도달하면 성장하며, 0%나 그 이하에 도달하면 수축합니다.</span></mouse>
 			<br>
@@ -612,7 +643,7 @@
 				<<if $sexStats && $sexStats.pills>>
 					음경이 커질 수 있음: <<print ($player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gte 20) ? "네" : "아니오")>>
 					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lt 20>>
-						<mouse class="tooltip linkBlue">(?)<span>음경 성장약을 과다복용하거나 음경에 성게형 기생충을 기생시킬 필요가 있습니다.</span></mouse>
+						<mouse class="tooltip linkBlue">(?)<span>음경 성장약을 과다복용하거나 자지에 성게형 자지 기생충을 기생시킬 필요가 있습니다.</span></mouse>
 					<<elseif $player.penissize is $penissizemax>>
 						<mouse class="tooltip linkBlue">(?)<span>최대 크기입니다.</span></mouse>
 					<</if>>
@@ -643,7 +674,7 @@
 			<<if $player.bottomsize is $bottomsizemin>>
 				<mouse class="tooltip linkBlue">(?)<span>최소 크기입니다.</span></mouse>
 			<</if>>
-			<br>
+			<br><br>
 		<</foldout>>
 
 		<<foldout false "_clothesFoldout">>
@@ -687,7 +718,7 @@
 			<br>
 			징계: <<print Math.trunc($detention)>>
 			<br>
-			범죄: <<print Math.trunc($crime)>>
+			범죄: <<print Math.trunc(crimeSumCurrent())>>
 			<br>
 			고아원 희망: <<print Math.trunc($orphan_hope)>>
 			<br>
@@ -724,7 +755,46 @@
 			사교 명성: <<print Math.trunc($fame.social)>>
 			<br>
 			모델 명성: <<print Math.trunc($fame.model)>>
+			<br>
+			섬주민 언어: <<print Math.trunc($islander_language)>>
 			<br><br>
+		<</foldout>>
+
+		<<foldout false "_crimeFoldout">>
+			<span class="gold">범죄</span>
+			<<for $_cr range Object.keys(setup.crimeNames)>>
+				<<foldout false $_cr>>
+					<span class="gold"><<trCrimeName `setup.crimeNames[$_cr]`>><<print toTitleCase(_trResult) + ":">></span>
+					<<print "현재: " + Math.trunc($crime[$_cr].current)>>
+					<br>
+					<<print "이력: " + Math.trunc($crime[$_cr].history)>>
+					<br>
+					<<print "매일: " + Math.trunc($crime[$_cr].daily)>>
+					<br>
+					<<print "횟수: " + Math.trunc($crime[$_cr].count)>>
+					<br>
+					<<print "횟수 이력: " + Math.trunc($crime[$_cr].countHistory)>>
+					<br>
+				<</foldout>>
+			<</for>>
+			<<foldout false "_crimeTotalsFoldout">>
+				<span class="gold">총계:</span>
+				<<print "현재: " + crimeSumCurrent()>>
+				<br>
+				<<print "이력: " + crimeSumHistory()>>
+				<br>
+				<<print "매일: " + crimeSumDaily()>>
+				<br>
+				<<print "횟수: " + crimeSumCount()>>
+				<br>
+				<<print "횟수 이력: " + crimeSumCountHistory()>>
+				<br>
+			<</foldout>>
+			<<foldout false "_crimeEventsFoldout">>
+				<span class="gold">범죄 이벤트:</span>
+				<span id="statscrimeevents"><<listCrimeCheats>></span>
+				<br>
+			<</foldout>>
 		<</foldout>>
 
 		<<foldout false "_transformationFoldout">>

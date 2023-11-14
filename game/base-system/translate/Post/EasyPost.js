@@ -70,6 +70,7 @@ const EasyPostMacroList = [
 	// bodyPost 
 	// <<breasts_ rul>> = <<breasts>>를 
 	{ name: "breasts_", orig_name: "breastsPost", is_print: 0},
+	{ name: "breastssimple_", orig_name: "breastssimplePost", is_print: 0},
 
 	{ name: "bellyDescription_", orig_name: "bellyDescriptionPost", is_print: 0},
 
@@ -445,6 +446,14 @@ const EasyPostMacroList = [
 	// <<wife_ nun>> = <<wife>>는 
 	{ name: "wife_", orig_name: "wifePost", is_print: 0},
 
+	// <<Wife_ nun>> = <<Wife>>는 
+	{ name: "Wife_", orig_name: "wifePost", is_print: 0},
+
+	{ name: "sister_", orig_name: "sisterPost", is_print: 0},
+	{ name: "Sister_", orig_name: "sisterPost", is_print: 0},
+	{ name: "sister_npc_", orig_name: "sister_npcPost", is_print: 0},
+	{ name: "Sister_npc_", orig_name: "sister_npcPost", is_print: 0},
+
 	// <<victimgirl_ ul>> = <<victimgirl>>을 
 	{ name: "victimgirl_", orig_name: "victimgirlPost", is_print: 0},
 
@@ -459,6 +468,7 @@ const EasyPostMacroList = [
 
 	// <<bitch_ nun>> = <<bitch>>는 
 	{ name: "bitch_", orig_name: "bitchPost", is_print: 0},
+	{ name: "bitch_pirate_", orig_name: "bitch_piratePost", is_print: 0},
 
 	// <<whore_ nun>> = <<whore>>는 
 	{ name: "whore_", orig_name: "whorePost", is_print: 0},
@@ -496,12 +506,18 @@ const EasyPostMacroList = [
 
 	// <<monks_and_nuns_ nun>> = <<monks_and_nuns>>는 
 	{ name: "monks_and_nuns_", orig_name: "monks_and_nunsPost", is_print: 0},
+	{ name: "Monks_and_Nuns_", orig_name: "monks_and_nunsPost", is_print: 0},
+	
+	{ name: "brothers_and_sisters_", orig_name: "brothers_and_sistersPost", is_print: 0},
 
 	// <<priest_ nun>> = <<priest>>는 
 	{ name: "priest_", orig_name: "priestPost", is_print: 0},
 
 	// <<priests_ nun>> = <<priests>>는 
 	{ name: "priests_", orig_name: "priestsPost", is_print: 0},
+
+	{ name: "bishop_", orig_name: "bishopPost", is_print: 0},
+	{ name: "bishop_hands_", orig_name: "bishop_handsPost", is_print: 0},
 
 	// <<farm_text_many_ nun dog>> = <<farm_text_many dog>>는 
 	{ name: "farm_text_many_", orig_name: "farm_text_manyPost", is_print: 0},
@@ -582,6 +598,9 @@ const EasyPostMacroList = [
 	{ name: "condomDesc_", orig_name: "condomDescPost", is_print: 0},
 
 	{ name: "office_manager_", orig_name: "office_managerPost", is_print: 0},
+
+	{ name: "temple_title_", orig_name: "temple_titlePost", is_print: 0},
+	{ name: "temple_Title_", orig_name: "temple_titlePost", is_print: 0},
 
 	// personPost 
 	// <<person_ ul>> = <<person>>을 

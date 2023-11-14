@@ -301,6 +301,7 @@
 
 <<widget "inittemple">>
 	<<set $temple_rank to "initiate">>
+	<<set $temple_initiate_days to 0>>
 	<<set $player.virginity.temple to true>>
 	<<set $temple_garden to 0>>
 	<<set $temple_quarters to 0>>
@@ -441,7 +442,7 @@
 		<br><br>
 
 		<<if $templePromised isnot "">>
-			<<He>> replies, saying "Looks like it. Remember, procreation within wedlock isn't a sin." <<He>> points to your ring. "Perhaps this town has some hope after all."
+			<<He_ ga>> 대답한다. "그래 보이는구나. 기억하렴, 결혼한 뒤의 출산은 죄악이 아니란다." <<He_ nun>> 당신의 반지를 가리킨다. "어쩌면 이 마을도 아직 희망이라는 걸 갖고 있는지도."
 			<<ltrauma>><<trauma -6>><<lstress>><<stress -6>>
 		<<else>>
 			<<He_ ga>> 대답한다. "그래 보이는구나. 결혼 반지는 없지만,
@@ -492,7 +493,12 @@
 		<</if>>
 	<<elseif $rng gte 51>>
 		<<if $awareness gte 800>>
-			전투로 단련된 수도자들은, 겉치장에 불과한 말들을 신도들에게 들려준다. 당신은 부패가 얼마나 깊이 퍼졌는지 궁금해 한다.
+			전투로 단련된 수도자들은, 겉치장에 불과한 말들을 신도들에게 들려준다.
+			<<if $temple_confessor_intro>>
+				고해의 봉인이 깨지지 않은 채로 남아있다, 아직까지는.
+			<<else>>
+				당신은 타락이 얼마나 깊이 퍼졌는지 궁금해 한다.
+			<</if>>
 			<<gstress>><<stress 6>>
 			<br><br>
 
@@ -618,7 +624,7 @@
 			<<if $temple_rank is "initiate">>
 				<<monk_ ga>> 지나간다. "아, 수련생이로군." <<he_ ga>> 말한다. "알맞은 때에 왔구나. 우리는 오늘 헌금을 받으러 갈 거고, 네 도움이 필요하다. 더 많은 수도자들이 일렬로 붙어 다닐수록 사람들은 더 관대해지지." 여러 명의 다른 수련생들이 이미 <<him_ gwa>> 동행하고 있다.
 			<<else>>
-				<<monk_ ga>> 지나간다. "<<if $player.gender_appearance is "m">>형제여<<else>>자매여<</if>>," <<he_ ga>> 말한다. "우리는 오늘 헌금을 받으러 갈 건데, 동행하겠나?" 여러 명의 다른 수련생들이 이미 <<him_ gwa>> 동행하고 있다.
+				<<monk_ ga>> 지나간다. "<<Sister_ yo>>," <<he_ ga>> 말한다. "우리는 오늘 헌금을 받으러 갈 건데, 동행하겠나?" 여러 명의 다른 수련생들이 이미 <<him_ gwa>> 동행하고 있다.
 			<</if>>
 			<br><br>
 
@@ -685,3 +691,82 @@
 		<<set _sydneyTemple to true>>
 	<</if>>
 <</widget>>
+
+<<widget "temple_title">><<silently>>
+	<<if _args[0] is "Sydney">>
+		<<switch $sydney.rank>>
+			<<case "initiate">><<set _text_output to "initiate">>
+			<<case "monk">><<set _text_output to (C.npc.Sydney.pronoun is "m" ? "monk" : "nun")>>
+			<<case "priest">><<set _text_output to "priest">>
+			<<default>><<set _text_output to "initiate">>
+		<</switch>>
+	<<elseif _args[0] is "dark">>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _text_output to "neonate">>
+			<<case "monk">>
+				<<if $temple_confessor_intro>>
+					<<set _text_output to "vessel">>
+				<<else>>
+					<<set _text_output to "apostle">>
+				<</if>>
+			<<case "priest">><<set _text_output to "dark priest">>
+			<<default>><<set _text_output to "neonate">>
+		<</switch>>
+	<<else>>
+		<<switch $temple_rank>>
+			<<case "initiate">><<set _text_output to "initiate">>
+			<<case "monk">><<set _text_output to ($player.gender_appearance is "m" ? "monk" : "nun")>>
+			<<case "priest">><<set _text_output to "priest">>
+			<<default>><<set _text_output to "initiate">>
+		<</switch>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "temple_Title">><<silently>>
+	<<if _args[0] is "Sydney">>
+		<<temple_title "Sydney">><<capitalise>>
+	<<elseif _args[0] is "dark">>
+		<<temple_title "dark">><<capitalise>>
+	<<else>>
+		<<temple_title>><<capitalise>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "endconfession">>
+	<<set $daily.confessed to $confession>>
+	<<unset $attendant>>
+	<<unset $confession>>
+	<<endevent>>
+<</widget>>
+
+<<widget "temple_bailey_options">>
+	<<babyRent>>
+	<<if $money gte $rentmoney + ($babyRent or 0)>>
+		<<link [[Pay up|Temple Bailey Pay]]>><</link>>
+		<br>
+		<<link [[거절한다|Temple Bailey Refuse]]>><<def 1>><<grace -30>><</link>><<lllgrace>>
+		<br>
+	<<else>>
+		<<set $baileypaychain to 0>>
+		<<if $speech_attitude is "meek">>
+			"I-I don't have the money," you tell Bailey. "Please don't hold it against the temple."
+		<<elseif $speech_attitude is "bratty">>
+			"I don't have it," you tell Bailey. "And it takes some gall for you to ask surrounded by my <<brothers_and_sisters>>."
+		<<else>>
+			"I don't have it," you tell Bailey. "I hope God forgives your sins."
+		<</if>>
+		<br>
+		"A debt disgraces us."
+		<br>
+		"Disgraces our <<sister>>."<<lllgrace>><<grace -30>>
+		<br><br>
+
+		"So be it," Bailey says. <<nnpc_He Bailey>> turns and walks away.
+		<br><br>
+
+		<<link [[다음|Temple]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+	<<set $renttime to 7>><<set $rentday to Time.weekDay>>
+<</widget>>
+
