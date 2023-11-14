@@ -2747,12 +2747,35 @@
         + 말. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
+* overworld-plains/loc-farm/assault.twee
+    ```
+    <<farm_assault_location>>
+		<<farm_assault_location [cap] post sep>>
+
+		공격받는 밭을 표시한다.
+
+        선택사항
+		- cap: 원본 매크로의 인수. 대문자 표시용
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+    ```
+
+    ```
+    <<farm_assault_thugs>>
+		+ 공격자. <<farm_assault_location>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<farm_assault_intruders>>
+        + 침입자. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 * overworld-plains/loc-farm/widgets.twee
     ```
     <<fox_text>>
         + 여우. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
-
 
 -----------------
 # 기타
