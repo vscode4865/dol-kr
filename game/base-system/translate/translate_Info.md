@@ -275,7 +275,7 @@
 # Post
     + ~Post 계열은 바로 출력하기 때문에 _trResult를 사용하지 않음
 
-* trBeasttypeFun
+* beasttypePost
     ```
     <<trBeasttypeFun>>
         <<trBeasttypeFun *typename post "sep">>
@@ -293,7 +293,6 @@
         <<trBeasttypeFun "dog" "을">>_trResult                     // 개를
     ```
 
-* beasttypePost
     ```
     <<beasttypePost>>
         <<beasttypePost [num] post "sep">>
