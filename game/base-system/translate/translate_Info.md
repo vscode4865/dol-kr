@@ -2914,13 +2914,15 @@
 		```
 	- HePost 계열
 		```
-		<<He_ (조사)>>, <<He_Short_ (조사)>>, <<he_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Hers_ (조사)>>, <<hers_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
-		<<bHe_ (조사)>>, <<bhe_ (조사)>>, <<bHimself_ (조사)>>, <<bhimself_ (조사)>>, <<bHim_ (조사)>>, <<bhim_ (조사)>>, <<bHers_ (조사)>>, <<bhers_ (조사)>>, 
+		<<He_ (조사)>>, <<She_ (조사)>>, <<He_Short_ (조사)>>, <<he_ (조사)>>, <<she_ (조사)>>, <<Him_ (조사)>>, <<him_ (조사)>>, <<Her_ (조사)>>, <<her_ (조사)>>, 
+		<<Hers_ (조사)>>, <<hers_ (조사)>>, <<His_ (조사)>>, <<his_ (조사)>>, <<Hes_ (조사)>>, <<hes_ (조사)>>, <<Himself_ (조사)>>, <<himself_ (조사)>>, 
+		<<bHe_ (조사)>>, <<bhe_ (조사)>>, <<bHis_ (조사)>>, <<bhis_ (조사)>>, <<bHes_ (조사)>>, <<bhes_ (조사)>>, <<bHimself_ (조사)>>, <<bhimself_ (조사)>>, 
+		<<bHim_ (조사)>>, <<bhim_ (조사)>>, <<bHers_ (조사)>>, <<bhers_ (조사)>>, 
 		<<pShe_ (조사)>>, <<pshe_ (조사)>>, <<pher_ (조사)>>, <<pHer_ (조사)>>, <<pHerself_ (조사)>>, <<pherself_ (조사)>>, <<phers_ (조사)>>, <<phim_ (조사)>>, <<ohe_ (조사)>>, 
 		<<farm_He_ (조사)>>, <<farm_he_ (조사)>>, <<nnpc_He_ (조사)>>, <<nnpc_he_ (조사)>>, <<nnpc_Him_ (조사)>>, <<nnpc_him_ (조사)>>, <<nnpc_himself_ (조사)>>, 
 		<<nnpc_wife_ (조사)>>, <<nnpc_lass_ (조사)>>, <<nnpc_gender_ (조사)>>, <<nnpc_gendery_ (조사)>>, <<nnpc_genitals_ (조사)>>, <<nnpc_girlfriend_ (조사)>>,
 		<<nnpc_brother_ (조사)>>, <<nnpc_Brother_ (조사)>>, <<nnpc_title_ (조사)>>, <<nnpc_Title_ (조사)>>, 
-		<<His_ (조사)>>, <<his_ (조사)>>, <<bhis_ (조사)>>, <<Bhis_ (조사)>>, <<hisselect_ (조사)>>, <<his1_ (조사)>> ~ <<his6_ (조사)>>, <<farm_His_ (조사)>>, <<farm_his_ (조사)>>, 
+		<<hisselect_ (조사)>>, <<his1_ (조사)>> ~ <<his6_ (조사)>>, <<farm_His_ (조사)>>, <<farm_his_ (조사)>>, 
 		<<nnpc_His_ (조사)>>, <<nnpc_his_ (조사)>>
 		```
 	- otherPost 계열
