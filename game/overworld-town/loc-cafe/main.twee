@@ -95,6 +95,38 @@
 	<<link [[다음|Ocean Breeze]]>><</link>>
 	<br>
 
+<<elseif !$daily.earSlimeOceanBreezeCafeEat and $openinghours is 1 and $exposed lt 1 and !$daily.cafeEaten and $money gte 200 and numberOfEarSlime() and earSlimeMakingMundaneRequests() and random(0,100) gte 92>>
+	<<set _cafeOptions to []>>
+	<<if $money gte 200>>
+		<<run _cafeOptions.push("coffee")>>
+	<</if>>
+	<<if $money gte 700 and !playerAwareTheyArePregnant()>>
+		<<switch Time.season>>
+			<<case "winter">><<run _cafeOptions.push("winter ale")>>
+			<<case "spring">><<run _cafeOptions.push("fruity ale")>>
+			<<case "summer">><<run _cafeOptions.push("shandy")>>
+			<<default>><<run _cafeOptions.push("autumn ale")>>
+		<</switch>>
+	<</if>>
+	<<if $money gte 500>>
+		<<run _cafeOptions.push("fruit salad")>>
+	<</if>>
+	<<if $money gte 1000>>
+		<<run _cafeOptions.push("pancake")>>
+	<</if>>
+	<<if $money gte 5000>>
+		<<run _cafeOptions.push("deluxe cream bun")>>
+	<</if>>
+	<<set $daily.earSlimeOceanBreezeCafeEat to _cafeOptions.random()>>
+	<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to have a $daily.earSlimeOceanBreezeCafeEat.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+	<br><br>
+	<<earSlimeCafeLinks "Obey">>
+	<br>
+	<<if $earSlime.startedThreats>>
+		<<link [[Defy|Ocean Breeze Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+	<<else>>
+		<<link [[무시한다|Ocean Breeze]]>><</link>>
+	<</if>>
 <<else>>
 	<<if Time.hour is $closinghour>>
 		닫을 시간이다. 샘이 모든 사람을 밖으로 내보내고 있다.
@@ -241,7 +273,7 @@
 
 <</if>>
 
-<<getouticon>><<link [[나간다|Cliff Street]]>><</link>>
+<<clifficon>><<link [[나간다|Cliff Street]]>><</link>>
 <br>
 
 :: Ocean Breeze Ask
@@ -1399,10 +1431,30 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
 <br>
 
+:: Ocean Breeze Slime Defy
+<<effects>>
+<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<set $earSlime.defyCooldown += 2>>
+	The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to buy the $daily.earSlimeOceanBreezeCafeEat.
+	<<ggwillpower>><<willpower 1>>
+	<br><br>
+	<<earSlimeCafeLinks>>
+<<else>>
+	You try to ignore the command from the slime and continue on. You feel it try, <span class="green">but fail,</span> to force you to buy the $daily.earSlimeOceanBreezeCafeEat.
+	<br><br>
+	<<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 :: Cafe Coffee
 <<endevent>>
 <<set _coffee to ["모카를", "라떼를", "카라멜 라떼를", "화이트 초콜릿 모카를", "플랫 화이트를", "아이스 카라멜 라떼를"].pluck()>>
-당신은 창가의 약간 높은 자리에 앉아 메뉴판을 보고는 <<print _coffee>> 주문한다. 
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
+take a seat at one of the elevated seats at the window and order a <<print _coffee>> from the menu.
 주문한 음료는 곧바로 나온다. 갓 추출한 커피의 기분 좋은 향기가 퍼져나와 코를 간질인다.
 
 <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $exhibitionism gte 55>>
@@ -1724,19 +1776,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 
 :: Cafe Fruit Salad
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
-
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아 과일 샐러드를 주문한다. 
+	take a seat and order a fruit salad.
 	주문한 메뉴는 곧바로 나온다. 신선한 딸기, 블루베리, 키위와 파인애플 덩어리가 들어있다. 샐러드는 달콤하고 맛이 좋다. 
 	유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아 과일 샐러드를 주문한다. 
+	take a seat and order a fruit salad.
 	주문한 메뉴는 곧바로 나온다. 신선한 딸기, 블루베리, 키위와 파인애플 덩어리가 들어있다. 샐러드는 달콤하고 맛이 좋다. 
 	당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
 <<else>>
-	당신은 야외 자리에 앉아 과일 샐러드를 주문한다. 
+	take a seat outside and order a fruit salad.
 	주문한 메뉴는 곧바로 나온다. 신선한 딸기, 블루베리, 키위와 파인애플 덩어리가 들어있다. 샐러드는 달콤하고 맛이 좋다. 
 	당신은 산들바람을 즐기며 바다를 내다본다.
 	<br><br>
@@ -1746,18 +1802,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <br>
 
 :: Cafe Pancakes
-
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
+
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아 팬케이크를 주문한다. 주문한 메뉴는 커피 한 잔과 함께 곧 나온다. 
+	take a seat and order pancakes. They arrive soon after, along with a cup of coffee.
 	여태까지 고아원에서 먹은 그 무엇보다도 맛있다. 유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아 팬케이크를 주문한다. 주문한 메뉴는 커피 한 잔과 함께 곧 나온다. 
+	take a seat and order pancakes. They arrive soon after, along with a cup of coffee.
 	여태까지 고아원에서 먹은 그 무엇보다도 맛있다. 당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
 <<else>>
-	당신은 자리에 앉아 팬케이크를 주문한다. 주문한 메뉴는 커피 한 잔과 함께 곧 나온다. 
+	take a seat and order pancakes. They arrive soon after, along with a cup of coffee.
 	여태까지 고아원에서 먹은 그 무엇보다도 맛있다. 당신은 산들바람을 즐기며 바다를 내다본다.
 	<br><br>
 <</if>>
@@ -2008,7 +2069,12 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Cream Bun
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
-당신은 자리에 앉아, 메뉴에서 "현지 생산 우유"를 사용한다고 홍보하는 크림 빵을 주문한다. 주문한 빵은 곧 나온다.
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
+take a seat and order a cream bun, advertised on the menu as using "locally sourced milk." It soon arrives.
 <br><br>
 
 빵은 굉장히 크고, 크림이 튀어나와 있다. 접시 사방에 크림을 흩뿌리지 않고 빵을 먹기란 굉장히 힘들 것으로 보인다. 
@@ -2069,18 +2135,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Winter Ale
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아, 윈터 에일을 주문한다.
+	take a seat and order a winter ale.
 	주문한 에일은 곧 아름다운 곡선의 유리병에 담겨 나온다. 쓰기보다는 달콤하다. 그것은 맛있다.
 	유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아, 윈터 에일을 주문한다.
+	take a seat and order a winter ale.
 	주문한 에일은 곧 아름다운 곡선의 유리병에 담겨 나온다. 쓰기보다는 달콤하다. 그것은 맛있다.
 	당신은 창밖으로 눈 쌓인 거리를 바라보며, 알코올이 몸 안쪽을 데워 주는 기분을 느낀다.
 	<br><br>
 <<else>>
-	당신은 자리에 앉아, 윈터 에일을 주문한다.
+	take a seat and order a winter ale.
 	주문한 에일은 곧 아름다운 곡선의 유리병에 담겨 나온다. 쓰기보다는 달콤하다. 그것은 맛있다.
 	당신은 창밖을 내다보며, 알코올이 몸 안쪽을 데워 주는 기분을 느낀다.
 	<br><br>
@@ -2092,18 +2163,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Spring Ale
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아, 계절을 고려하여 과일 에일을 주문한다.
+	take a seat and, considering the season, order a fruity ale.
 	주문한 에일은 곧 평범한 맥주잔에 담겨 나온다. 매우 달콤하고 가볍다. 그것은 맛있다.
 	유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아, 계절을 고려하여 과일 에일을 주문한다.
+	take a seat and, considering the season, order a fruity ale.
 	주문한 에일은 곧 평범한 맥주잔에 담겨 나온다. 매우 달콤하고 가볍다. 그것은 맛있다.
 	당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
 <<else>>
-	당신은 자리에 앉아, 계절을 고려하여 과일 에일을 주문한다.
+	take a seat and, considering the season, order a fruity ale.
 	주문한 에일은 곧 평범한 맥주잔에 담겨 나온다. 매우 달콤하고 가볍다. 그것은 맛있다.
 	당신은 바다를 내다보며, 봄의 산들바람을 만끽한다.
 	<br><br>
@@ -2115,18 +2191,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Summer Ale
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아, 계절을 고려하여 섄디를 주문한다.
+	take a seat and, considering the season, order a shandy.
 	주문한 섄디는 곧 나온다. 맥주잔과 캔이 같이 나온 것을 보아 당신이 직접 따르도록 만들어졌음이 분명하다. 아주 상쾌한 레몬 맛이다!
 	유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아, 계절을 고려하여 섄디를 주문한다.
+	take a seat and, considering the season, order a shandy.
 	주문한 섄디는 곧 나온다. 맥주잔과 캔이 같이 나온 것을 보아 당신이 직접 따르도록 만들어졌음이 분명하다. 아주 상쾌한 레몬 맛이다!
 	당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
 <<else>>
-	당신은 자리에 앉아, 계절을 고려하여 섄디를 주문한다.
+	take a seat and, considering the season, order a shandy.
 	주문한 섄디는 곧 나온다. 맥주잔과 캔이 같이 나온 것을 보아 당신이 직접 따르도록 만들어졌음이 분명하다. 아주 상쾌한 레몬 맛이다!
 	당신은 바다를 내다보며, 여름의 산들바람을 만끽한다.
 	<br><br>
@@ -2138,18 +2219,23 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Autumn Ale
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
+<<if $daily.earSlimeOceanBreezeCafeEat>>
+	You decide that the ear slime is right and
+<<else>>
+	You
+<</if>>
 <<if $weather is "rain">>
-	당신은 자리에 앉아, 어텀 에일을 주문한다.
+	take a seat and order an autumn ale.
 	주문한 에일은 곧 나온다. 달콤하고 약간의 카라멜 향이 난다. 그것은 맛있다. 
 	유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
 <<elseif $weather is "snow">>
-	당신은 자리에 앉아, 어텀 에일을 주문한다.
+	take a seat and order an autumn ale.
 	주문한 에일은 곧 나온다. 달콤하고 약간의 카라멜 향이 난다. 그것은 맛있다. 
 	당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
 <<else>>
-	당신은 자리에 앉아, 어텀 에일을 주문한다.
+	take a seat and order an autumn ale.
 	주문한 에일은 곧 나온다. 달콤하고 약간의 카라멜 향이 난다. 그것은 맛있다. 
 	당신은 바다를 내다보며, 가을의 산들바람을 만끽한다.
 	<br><br>
@@ -2403,5 +2489,5 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 
 <<endevent>>
 
-<<link [[나간다|Cliff Street]]>><<set $eventskip to 1>><</link>>
+<<clifficon>><<link [[떠난다|Cliff Street]]>><<set $eventskip to 1>><</link>>
 <br>

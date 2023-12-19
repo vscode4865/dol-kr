@@ -1,5 +1,8 @@
 :: Traits [widget]
 <<widget "traits">>
+	<<if $sexStats and $sexStats.pills>>
+		<<set _pills to $sexStats.pills.pills>>
+	<</if>>
 	<<set _traitLists to [
 		{
 			title: "일반적인 특성들",
@@ -46,7 +49,6 @@
 						if (dailyPurity + V.featsPurityBoost === 0) return "매일마다의 순결도 상승이 되지 않는다.";
 						return "매일마다 순결도가 감소한다.";
 					},
-					text: "매일마다 순결도가 상승한다.",
 				},
 				{
 					name: "일일 순결도 감소 보너스",
@@ -96,6 +98,38 @@
 					colour: "red",
 					has: $backgroundTraits.includes("plantlover"),
 					text: " 당신은 미약과 술에 더 영향을 많이 받는다. 당신은 꿀에서 자양분을 끌어낸다. 그것을 마시면 당신의 활기를 북돋아, 신체 능력을 올리고 스트레스를 낮춘다. 오랫동안 꿀을 마시지 못하면 당신의 몸에 타격을 받으며, 결국에는 이 특성과 <<if $submissive lte 850>><span class='lewd'>식물 애호가</span><<else>><span class='lewd'>식물 성애자</span><</if>> 특성이 사라진다.<span class='hidden'></span>",
+				},
+				{
+					name: () => {
+						return "Ear slime focus: " + $earSlime.focus;
+					},
+					colour: "lewd",
+					has: $earSlime.focus and $earSlime.focus isnot "none",
+					text: () => {
+						let result;
+						switch ($earSlime.focus) {
+							case "pregnancy":
+								result = "You chose the path of pregnancy, causing the ear slime to amplify traits related to becoming pregnant, while weakening other traits.";
+								break;
+							case "mixed":
+								result = "You chose to walk the path between pregnancy and impregnation, causing the ear slime to amplify traits related to both, to a lesser degree.";
+								break;
+							case "impregnation":
+								result = "You chose the path of impregnation, causing the ear slime to amplify traits related to impregnating others, while weakening other traits.";
+								break;
+						}
+						let parasites = [];
+						if ($parasite.breasts and $parasite.breasts.name is "parasite") {
+							if ($player.breastsize gte 1) {
+								parasites.push("breasts");
+							} else {
+								parasites.push("chest");
+							}
+						}
+						if (($parasite.clit and $parasite.clit.name is "parasite") or ($parasite.penis and $parasite.penis.name is "parasite")) parasites.push("genitals");
+						if (parasites.length) result += ` Its parasites cover your ${formatList(parasites, "and", true)} like clothing.`;
+						return result;
+					}
 				},
                 {
                     name: "임신",
@@ -260,7 +294,7 @@
 					name: "타천사",
 					colour: "black",
 					has: $fallenangel gte 3,
-					text: "세상은 너무나도 잔인하다. 하루가 끝나갈 때마다 당신은 보다 덜 순수해짐을 느끼더라도, 당신은 당신 자신을 포기하지 않을 것이다.",
+					text: 'The world is so cruel. Though you feel less pure by the day, you will not relinquish yourself. Unlocks the "disparage" action.',
 				},
 				{
 					name: "타천사",
@@ -295,7 +329,7 @@
 				{
 					name: "빛남",
 					colour: "gold",
-					has: between($angel,4,5),
+					has: $angel gte 4,
 					text: ' 당신은 순수하다. 촉수에게 큰 피해를 입히는 "쫓아내기"를 해금하고, 당신의 천사 특성치에 따라 하루에 몇 번 사용가능하게 한다. 그 힘은 최대 순결도일 때 크게 높아진다. 오늘의 남은 사용횟수: ($angelBanish / $angelBanishMax)',
 				},
 				{
@@ -419,6 +453,149 @@
 					text: "당신은 그곳에 갇혔을 때 어떻게 반응해야 하는지 알고 있다.",
 				},
 			],
+		},
+		{
+			title: "Medicinal Traits",
+			traits: [
+				{
+					name: "Anti-Parasite Cream",
+					colour: "green",
+					has: _pills and _pills["Anti-Parasite Cream"] and _pills["Anti-Parasite Cream"].doseTaken,
+					text: () => {
+						return `A parasite-repelling cream, preventing further internal parasite impregnation. ${_pills["Anti-Parasite Cream"].doseTaken} day${_pills["Anti-Parasite Cream"].doseTaken is 1 ? "" : "s"} remaining.`;
+					}
+				},
+				{
+					name: "Fertility booster",
+					colour: "lewd",
+					has: _pills and _pills["fertility booster"] and _pills["fertility booster"].doseTaken,
+					text: () => {
+						let result = `You have ${_pills["fertility booster"].doseTaken gte 2 ? "overdosed on pills" : "taken a pill"} that `;
+						let multiple = false;
+						let hasEffect = false;
+						if ((!playerIsPregnant() or !playerAwareTheyArePregnant()) and playerAwareTheyCanBePregnant()) {
+							multiple = true;
+							hasEffect = true;
+							result += "makes it easier for you to get pregnant with more children";
+						}
+						if ($player.penisExist and $player.penissize gte -1) {
+							hasEffect = true;
+							if (multiple) result += " and ";
+							result += "makes your sperm more virile";
+						}
+						if (!hasEffect) {
+							result += "currently has no effect on you";
+						}
+						result += `. ${_pills["fertility booster"].doseTaken} day${_pills["fertility booster"].doseTaken is 1 ? "" : "s"} remaining.`;
+
+						return result;
+					}
+				},
+				{
+					name: "Contraceptive",
+					colour: "lblue",
+					has: _pills and _pills["contraceptive"] and _pills["contraceptive"].doseTaken,
+					text: () => {
+						let result = `You have ${_pills["contraceptive"].doseTaken gte 2 ? "overdosed on pills" : "taken a pill"} that `;
+						let multiple = false;
+						let hasEffect = false;
+						if (!playerAwareTheyCanBePregnant() or !playerAwareTheyArePregnant()) {
+							multiple = true;
+							hasEffect = true;
+							result += "makes it harder for you to get pregnant";
+						}
+						if ($player.penisExist and $player.penissize gte -1) {
+							hasEffect = true;
+							if (multiple) result += " and ";
+							result += "makes your sperm less virile";
+						}
+						if (!hasEffect) {
+							result += "currently has no effect on you";
+						}
+						result += `. ${_pills["contraceptive"].doseTaken} day${_pills["contraceptive"].doseTaken is 1 ? "" : "s"} remaining.`;
+
+						return result;
+					}
+				},
+				{
+					name: "Penis blocker pills",
+					colour: "green",
+					has: _pills and _pills["penis blocker"] and _pills["penis blocker"].doseTaken,
+					text: () => {
+						let result = `You have taken a pill that`;
+						if ($player.penisExist) {
+							result += " prevents the re-sizing of your penis.";
+						} else {
+							result += " has no effect on you.";
+						}
+						return result;
+					}
+				},
+				{
+					name: "Penis growth pills",
+					colour: "green",
+					has: _pills and _pills["penis growth"] and _pills["penis growth"].doseTaken,
+					text: () => {
+						let result = `You have ${_pills["penis growth"].doseTaken gte 2 ? "overdosed on" : "taken"} pills that `;
+						if ($player.penisExist) {
+							result += " encourages the growth of your penis.";
+						} else {
+							result += " that has no effect on you.";
+						}
+						return result;
+					}
+				},
+				{
+					name: "Penis reduction pills",
+					colour: "green",
+					has: _pills and _pills["penis reduction"] and _pills["penis reduction"].doseTaken,
+					text: () => {
+						let result = `You have ${_pills["penis reduction"].doseTaken gte 2 ? "overdosed on" : "taken"} pills that `;
+						if ($player.penisExist) {
+							result += " encourages the shrinking of your penis.";
+						} else {
+							result += " that has no effect on you.";
+						}
+						return result;
+					}
+				},
+				{
+					name: "Breast blocker pills",
+					colour: "green",
+					has: _pills and _pills["breast blocker"] and _pills["breast blocker"].doseTaken,
+					text: "You have taken a pill that prevents the re-sizing of your breasts.",
+				},
+				{
+					name: "Breast growth pills",
+					colour: "green",
+					has: _pills and _pills["breast growth"] and _pills["breast growth"].doseTaken,
+					text: `You have ${_pills and _pills["breast growth"].doseTaken gte 2 ? "overdosed on" : "taken"} a pill that encourages the growth of your breasts.`,
+				},
+				{
+					name: "Breast reduction pills",
+					colour: "green",
+					has: _pills and _pills["breast reduction"] and _pills["breast reduction"].doseTaken,
+					text: `You have ${_pills and _pills["breast reduction"].doseTaken gte 2 ? "overdosed on" : "taken"} a pill that encourages the shrinking of your breasts.`,
+				},
+				{
+					name: "Bottom blocker pills",
+					colour: "green",
+					has: _pills and _pills["bottom blocker"] and _pills["bottom blocker"].doseTaken,
+					text: "You have taken a pill that prevents the re-sizing of your bottom.",
+				},
+				{
+					name: "Bottom growth pills",
+					colour: "green",
+					has: _pills and _pills["bottom growth"] and _pills["bottom growth"].doseTaken,
+					text: `You have ${_pills and _pills["bottom growth"].doseTaken gte 2 ? "overdosed on" : "taken"} a pill that encourages the growth of your bottom.`,
+				},
+				{
+					name: "Bottom reduction pills",
+					colour: "green",
+					has: _pills and _pills["bottom reduction"] and _pills["bottom reduction"].doseTaken,
+					text: `You have ${_pills and _pills["bottom reduction"].doseTaken gte 2 ? "overdosed on" : "taken"} a pill that encourages the shrinking of your bottom.`,
+				},
+			]
 		},
 		{
 			title: "특수한 특성들",
@@ -732,7 +909,7 @@
 					textColour: "red",
 				},
 				{
-					name: () => V.hallucinations >= 2 || V.bestialitydisable === "t" ? "스톡홀름 증후군: 하피" : "스톡홀름 증후군: 거대 매",
+					name: () => V.greathawkmonster === 2 || V.bestialitydisable === "t" ? "Stockholm Syndrome: Harpy" : "Stockholm Syndrome: Great Hawk",
 					colour: "white",
 					has: $syndromebird gte 1,
 					text: "그건 그냥 짝을 원하고 있을 뿐이다.",

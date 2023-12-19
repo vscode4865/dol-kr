@@ -837,12 +837,16 @@
 					<<set $_parasiteMessage to '새 기생충이 당신 자지의 밑둥'>>
 				<</if>>
 			<</if>>
-			<<if $earSlimeClitParasite is 1>>
+			<<if $earSlimeClitParasite>>
 				<<set $_looks to playerChastity("vagina") ? "느낌이다" : "모습이다">>
-				<<if $_parasiteMessage>>
-					<<set $_parasiteMessage += `과 클리토리스 주위에 형성된다. 그것은 이제 당신 자신의 자지가 된 것 같은 ${$_looks}`>>
+				<<if $earSlime.focus is "pregnancy">>
+					<<set $_parasiteMessage to 'A new parasite forms around your <<pussy>>'>>
 				<<else>>
-					<<set $_parasiteMessage to `새 기생충이 당신의 클리토리스 주위에 형성되었고, 자지와 비슷한 ${$_looks}`>>
+					<<if $_parasiteMessage>>
+						<<set $_parasiteMessage += `과 클리토리스 주위에 형성된다. 그것은 이제 당신 자신의 자지가 된 것 같은 ${$_looks}`>>
+					<<else>>
+						<<set $_parasiteMessage to `새 기생충이 당신의 클리토리스 주위에 형성되었고, 자지와 비슷한 ${$_looks}`>>
+					<</if>>
 				<</if>>
 			<</if>>
 			<span class="blue">
@@ -854,7 +858,7 @@
 				<span class="red">이전 <<trParasite $earSlimePenisParasite "은">>_trResult 그것이 다 자라자 곧 떨어져 버린다.</span>
 			<</if>>
 			<<if $earSlimeClitParasite and $earSlimeClitParasite isnot 1>>
-				<span class="red">클리토리스 위에 있었던 <<trParasite $earSlimeClitParasite "은">>_trResult 새로운 기생충이 더 크게 자라자 떨어져 버린다.</span>
+				<span class="red">The $earSlimeClitParasite that was on your clit falls off as the new one grows larger.</span>
 			<</if>>	
 			<<unset $earSlimebreastsParasite>>
 			<<unset $earSlimePenisParasite>>
@@ -937,12 +941,7 @@
 		<<run delete $daily.parasiteEvent>>
 	<</if>>
 
-	<<if $earSlime.event is "go commando" and $earSlime.eventTimer lte 1>>
-		<<set $earSlime.event to "">>
-		<span class="green">귓속의 슬라임이 당신이 명령을 이행한 것에 기뻐하며 속옷을 입지 말라는 명령을 그만둔다.</span>
-		<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
-		<br>
-	<<elseif $earSlime.event.includes("get sperm into your") and $earSlime.event.includes("completed") and $earSlime.eventTimer lte 2>>
+	<<if $earSlime.event.includes("get sperm into your") and $earSlime.event.includes("completed") and $earSlime.eventTimer lte 2>>
 		<<set $earSlime.event to "">>
 		<span class="green">귓속의 슬라임이 당신이 <<print $player.vaginaExist ? "질" : "항문">> 안에 정액을 넣으라는 명령을 이행한 것에 기뻐하고 있다.</span>
 		<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
@@ -958,9 +957,14 @@
 		<</if>>
 		<br>
 	<<elseif $earSlime.event and ($earSlime.eventTimer lte 2 or ($earSlime.noSleep and Time.dayState isnot "night"))>>
-		<span class="red">귓속의 슬라임이 임무를 완수하지 못한 것에 대한 처벌을 내린다.</span>
-		<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>><<set $earSlime.event to "">><<set $earSlime.noSleep to false>>
-		<<set $earSlime.defyCooldown += 4>>
+		<<if $earSlime.startedThreats>>
+			<span class="red">귓속의 슬라임이 임무를 완수하지 못한 것에 대한 처벌을 내린다.</span>
+			<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>>
+			<<set $earSlime.defyCooldown += 4>>
+		<<else>>
+			<span class="cyan">The slime in you ear is upset you were unable to complete what you said you would do.</span>
+		<</if>>
+		<<set $earSlime.event to "">><<set $earSlime.noSleep to false>>
 		<br>
 	<</if>>
 
