@@ -11,7 +11,7 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.4.5",
+	version: "0.4.5.3",
 	versionName: "",
 	sneaky: false,
 };
@@ -32,7 +32,7 @@ idb.footerHTML = `
 	<div class="savesListRow">
 		<div class="saveGroup">
 			<span style="margin: 0;">
-				<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdity¸¦ ÁöÁö</a>ÇØ ÁÖ½Ã´Â ¸ğµç ºĞµé²² Æ¯º°È÷ °¨»çµå¸³´Ï´Ù
+				<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdityë¥¼ ì§€ì§€</a>í•´ ì£¼ì‹œëŠ” ëª¨ë“  ë¶„ë“¤ê»˜ íŠ¹ë³„íˆ ê°ì‚¬ë“œë¦½ë‹ˆë‹¤
 			</span>
 			<div class="saveId"></div>
 			<div class="saveButton"></div>
@@ -40,7 +40,7 @@ idb.footerHTML = `
 			<div class="saveDetails"></div>
 		</div>
 		<div class="saveButton">
-			<input type="button" class="saveMenuButton right" value="ÀüºÎ »èÁ¦" onclick="idb.saveList('confirm clear')">
+			<input type="button" class="saveMenuButton right" value="ì „ë¶€ ì‚­ì œ" onclick="idb.saveList('confirm clear')">
 		</div>
 	</div>`
 
@@ -211,6 +211,13 @@ Config.navigation.override = function (dest) {
 			case "Forest Shop Legs":
 			case "Forest Shop Feet":
 				return "Forest Shop";
+
+			case "Cafe Fruit Salad":
+			case "Cafe Autumn Ale":
+			case "Cafe Summer Ale":
+			case "Cafe Spring Ale":
+			case "Cafe Winter Ale":
+				return "Cafe Eat";
 
 			case "Over Outfit Shop":
 			case "Outfit Shop":
@@ -476,6 +483,17 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
+			
+			case "Whitney Bully Parasite Event Submit":
+			case "Whitney Bully Parasite Event Escape Attempt":
+				return "Bully Parasite";
+			
+			case "Whitney Bully Parasite Event Combat":
+				return "Bully Parasite Fight";
+
+			case "Whitney Bully Parasite Event Combat Loss":
+			case "Whitney Bully Parasite Event Combat Victory":
+				return "Bully Parasite Fight Finish";
 			default:
 				return false;
 		}

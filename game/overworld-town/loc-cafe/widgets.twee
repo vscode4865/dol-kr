@@ -1,6 +1,26 @@
 :: Widgets Cafe [widget]
 <<widget "eventschef">>
-	<<if $rng gte 81>>
+<<cleareventpool>>
+<<if $chef_state gte 9 and $breastfeedingdisable is "f" and $lactating is 1>>
+	<<addinlineevent "chef_coffee" 0.7>>
+	As you get ready to put the dough in the oven, <<npc Sam>><<person1>>Sam bursts in. "You didn't start yet, right?" You tell <<him>> that you haven't started making the cream yet. "Good. I need you to make some coffee. I know you don't usually handle that, but we have a couple of foreign aristocrats visiting us."
+	<br><br>
+
+	You ask why they would want a drink instead of the buns. "Oh, they're ordering buns too, it's just that… I already promised them you would be handling their entire meal, which also includes the drinks..." <<he>> says apologetically. "I'm sorry to spring this on you so suddenly, but I'm sure you won't have any problems making just a couple of drinks for them."
+	<br><br>
+
+	Not seeing many options, you tell <<him>> you'll do it. "Wonderful! Don't worry, there are no expectations for you to be a skilled barista. What matters is that they are made by our star chef."
+	<br><br>
+
+	As you get ready to make them coffee, <span class="lewd">a lewd idea strikes you.</span> Perhaps you could add your 'secret ingredient' to it.
+	<br><br>
+	<<link [[Make the drinks normally|Cafe Coffee Creation]]>><<endevent>><</link>>
+	<br>
+	<<link [[Use your secret ingredient |Cafe Coffee Lewd]]>><<endevent>><</link>><<promiscuous2>>
+	<br>
+	<</addinlineevent>>
+<</if>>
+<<addinlineevent "chef_thief" 0.7>>
 		<<generatey1>><<person1>>
 		문이 끼익거리는 소리가 들려온다.
 		<<if random(1, 1000) gte $skulduggery>>
@@ -17,7 +37,8 @@
 			<<link [[무시한다|Chef Thief Ignore]]>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 61>>
+		<</addinlineevent>>
+<<addinlineevent "chef_chat" 0.7>>
 		<<npc Sam>><<person1>>샘이 확인하러 온다. 당신은 결국 몇 분간 잡담을 나눈다. 곧 홀에서 뭔가 부서지는 소리가 나면서 <<hisPost "의">> 이목을 끈다.
 		<<lstress>><<stress -6>><<ltrauma>><<trauma -6>>
 		<br><br>
@@ -25,8 +46,8 @@
 		<<endevent>>
 
 		<<chefwork>>
-
-	<<elseif $rng gte 41>>
+<</addinlineevent>>
+<<addinlineevent "chef_rape" 0.7>>
 		<<generate1>><<person1>>
 		뒷문이 열린다. <<personPost "이">> 커다란 밀가루 자루를 든 채로, 엉덩이부터 들어온다. <<HePost "은">> 밀가루 자루를 바닥에 내려놓은 뒤, 주머니에서 메모지 하나를 꺼내든다. "이것 좀 사인해주시겠어요?" <<HePost "이">> 메모지를 내밀며 말한다.
 		<br><br>
@@ -45,8 +66,8 @@
 
 			<<chefwork>>
 		<</if>>
-
-	<<elseif $rng gte 21>>
+<</addinlineevent>>
+<<addinlineevent "chef_tear" 0.7>>
 		<<if random(1, 100) gte 51 and !$worn.upper.type.includes("naked") or !$worn.over_upper.type.includes("naked")>>
 			<<if !$worn.over_upper.type.includes("naked")>>
 				<<set $worn.over_upper.integrity -= 5>>
@@ -101,15 +122,15 @@
 					<<integritycheck>><<exposure>>
 					<<if $exposed gte 1>>
 						당신은 수건으로 몸을 가린다.<<towelup>>
+						<br><br>
 					<</if>>
 				<</if>>
-				<br><br>
 			<</if>>
 		<</if>>
 
 	<<chefwork>>
-
-	<<elseif $rng gte 11>>
+<</addinlineevent>>
+<<addinlineevent "chef_spill" 0.7>>
 		<<if $NPCName[$NPCNameList.indexOf("Sam")].love gte 30>>
 			당신은 내용물을 약간 흘린다. 마치 실수를 감지라도 한듯 샘이 나타나더니, 대신 청소를 해준다.
 		<<else>>
@@ -119,12 +140,14 @@
 		<br><br>
 
 		<<chefwork>>
-	<<else>>
+<</addinlineevent>>
+<<addinlineevent "chef_consistency" 0.7>>
 		배합을 일정하게 맞추는 것은 약간 어렵지만, 어쨌든 제대로 재료들을 섞는 데에 성공한다.
 		<br><br>
 
 		<<chefwork>>
-	<</if>>
+<</addinlineevent>>
+<<runeventpool>>
 <</widget>>
 
 <<widget "chefwork">>
@@ -294,28 +317,28 @@
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -9>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<ltiredness>>
 		<<case "winter ale">>
-			<<link [[_linkName|Cafe Winter Ale]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 700>><<alcohol 100>><<pass 10>>
+			<<link [[_linkName|Cafe Eat]]>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "winter ale">><<set $money -= 700>><<alcohol 100>><<pass 10>>
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "fruity ale">>
-			<<link [[_linkName|Cafe Spring Ale]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 700>><<alcohol 60>><<pass 10>>
+			<<link [[_linkName|Cafe Eat]]>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "fruity ale">><<set $money -= 700>><<alcohol 60>><<pass 10>>
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "shandy">>
-			<<link [[_linkName|Cafe Summer Ale]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 700>><<alcohol 40>><<pass 10>>
+			<<link [[_linkName|Cafe Eat]]>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "shandy">><<set $money -= 700>><<alcohol 40>><<pass 10>>
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "autumn ale">>
-			<<link [[_linkName|Cafe Autumn Ale]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 700>><<alcohol 80>><<pass 10>>
+			<<link [[_linkName|Cafe Eat]]>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "autumn ale">><<set $money -= 700>><<alcohol 80>><<pass 10>>
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "fruit salad">>
-			<<link [[_linkName|Cafe Fruit Salad]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 500>><<pass 20>>
+			<<link [[_linkName|Cafe Eat]]>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "fruit salad">><<set $money -= 500>><<pass 20>>
 				<<if _linkName is "복종한다">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "복종한다">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>>
 		<<case "pancake">>

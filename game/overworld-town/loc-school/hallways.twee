@@ -1167,38 +1167,37 @@
 	<br><br>
 <</if>>
 
-:: Whitney Bully Parasite Event Submit
-
+:: Bully Parasite
 <<effects>>
-<<eventwhitneyparasitecontinue>>
 
-:: Whitney Bully Parasite Event Escape Attempt
-
-<<effects>>
-<<if $physiqueSuccess>>
-	폭발적인 힘으로, 당신은 <<group_ ul>> 던져버리고는 싸울 준비를 한다.
-	<br><br>
-	<<link [[싸운다|Whitney Bully Parasite Event Combat]]>><<set $molestationstart to 1>><</link>>
+<<if $phase is 0>>
+	<<WhitneyParasite>>
 <<else>>
-	<<physiquedifficulty 1 10000 true>>
 	<<if $physiqueSuccess>>
-		겁에 질린 동시에 격분하여, 당신은 자유롭게 되기 위해 안간힘을 쓴다. 당신은 휘트니의 친구 중 한 명을 떨쳐내고, 당신의 체력을 본 다른 이들은 충격을 받는다. 하지만 다른 이가 그 자리를 대체하고, 그런 상황이 반복되다가 결국 당신은 완전히 붙잡힌 상태에서 휘트니가 당신의 배에 주먹을 강하게 꽂는다. 그 바람에 당신의 온몸에서 힘이 빠진다.
-		<<pain 10>><<gpain>>
+		폭발적인 힘으로, 당신은 <<group_ ul>> 던져버리고는 싸울 준비를 한다.
+		<br><br>
+		<<link [[싸운다|Bully Parasite Fight]]>><<set $molestationstart to 1>><</link>>
 	<<else>>
-		겁에 질려, 당신은 <<groupPost>>에게서 어떻게든 빠져나가 안전한 장소로 도망칠 수 있지 않을까 하는 희망을 품고는, 그들의 손아귀에서 벗어나려 안간힘을 쓴다. 안타깝게도, 이렇게 힘센 손이 많은 상태에서는 탈출할 수 있을 정도로 당신이 힘이 세지 않다. 당신의 애처로운 시도는 휘트니의
-		<<if playerBellySize(true) gte 8>>
-			발길질이 정강이에 꽂히는
+		<<physiquedifficulty 1 10000 true>>
+		<<if $physiqueSuccess>>
+			겁에 질린 동시에 격분하여, 당신은 자유롭게 되기 위해 안간힘을 쓴다. 당신은 휘트니의 친구 중 한 명을 떨쳐내고, 당신의 체력을 본 다른 이들은 충격을 받는다. 하지만 다른 이가 그 자리를 대체하고, 그런 상황이 반복되다가 결국 당신은 완전히 붙잡힌 상태에서 휘트니가 당신의 배에 주먹을 강하게 꽂는다. 그 바람에 당신의 온몸에서 힘이 빠진다.
+			<<pain 10>><<gpain>>
 		<<else>>
-			주먹이 배에 꽂히는
+			겁에 질려, 당신은 <<groupPost>>에게서 어떻게든 빠져나가 안전한 장소로 도망칠 수 있지 않을까 하는 희망을 품고는, 그들의 손아귀에서 벗어나려 안간힘을 쓴다. 안타깝게도, 이렇게 힘센 손이 많은 상태에서는 탈출할 수 있을 정도로 당신이 힘이 세지 않다. 당신의 애처로운 시도는 휘트니의
+			<<if playerBellySize(true) gte 8>>
+				발길질이 정강이에 꽂히는
+			<<else>>
+				주먹이 배에 꽂히는
+			<</if>>
+			결과 밖에는 가져오지 않았고, 감히 저항하려 했다는 이유로 따귀를 얻어맞는다.
+			<<pain 15>><<ggpain>>
 		<</if>>
-		결과 밖에는 가져오지 않았고, 감히 저항하려 했다는 이유로 따귀를 얻어맞는다.
-		<<pain 15>><<ggpain>>
+		<br><br>
+		<<WhitneyParasite>>
 	<</if>>
-	<br><br>
-	<<eventwhitneyparasitecontinue>>
 <</if>>
 
-:: Whitney Bully Parasite Event Combat
+:: Bully Parasite Fight
 
 <<if $molestationstart is 1>>
 	<<set $molestationstart to 0>>
@@ -1208,8 +1207,8 @@
 	<<neutral 1>>
 	<<molested>>
 	<<maninit>><<npcidlegenitals>>
-	<<set $enemyanger += 200>>
 	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
 	"옷 벗을 시간이다, <<bitch_ ya>>." <<personPost "이">> 말한다. "네 의사 따윈 상관없어."
 	<br><br>
 <</if>>
@@ -1219,49 +1218,48 @@
 <<stateman>>
 <br><br>
 <<actionsman>>
-<<if $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[다음|Whitney Bully Parasite Event Combat Victory]]>><</link>></span><<nexttext>>
-<<elseif $pain gte 100 and $willpowerpain is 0>>
-	<span id="next"><<link [[다음|Whitney Bully Parasite Event Combat Loss]]>><</link>></span><<nexttext>>
-<<elseif $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") and $worn.under_upper.type.includes("naked")>>
-	<span id="next"><<link [[다음|Whitney Bully Parasite Event Combat Loss]]>><</link>></span><<nexttext>>
-<<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[다음|Whitney Bully Parasite Event Combat Victory]]>><</link>></span><<nexttext>>
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0) or ($worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") and $worn.under_upper.type.includes("naked"))>>
+	<span id="next"><<link [[다음|Bully Parasite Fight Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link [[다음|Whitney Bully Parasite Event Combat]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[다음|Bully Parasite Fight]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Whitney Bully Parasite Event Combat Loss
-
-<<effects>>
-<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") and $worn.under_upper.type.includes("naked")>>
-	당신의 옷을 벗기고 나자 휘트니 패거리의 기세가 좀 누그러지나, 아직 끝나기에는 한참 남았다.
-<<else>>
-	당신이 순종적이게 될 때까지 두들겨 패고 나자 휘트니 패거리의 기세가 좀 누그러지나, 아직 끝나기에는 한참 남았다.
-<</if>>
-<br><br>
-<<endcombat>>
-<<npc Whitney>><<person1>>
-<<eventwhitneyparasitecontinue>>
-
-:: Whitney Bully Parasite Event Combat Victory
+:: Bully Parasite Fight Finish
 <<effects>>
 
-<<if $enemyarousal gte $enemyarousalmax>>
-	<<ejaculation "short">>
-	<<tearful>> 당신은 바닥에서 헐떡이는 휘트니와 <<person1>><<hisPost "의">> 친구들을 내버려두고 떠난다.
-	<br><br>
-<<else>>
+<<if $enemyhealth lte 0>>
 	적들이 복도 바닥에서 고통에 훌쩍이는 동안 당신은 승리의 짜릿함을 만끽한다. 또한 훌륭한 싸움 솜씨를 관중들에게 보여주었으니 당신의 자존심이나 명성에도 흠이 간 것은 없다.
 	<<status 15>><<ggcool>>
 	<br><br>
 
-<</if>>
+	<<clotheson>>
+	<<endcombat>>
 
-<<endcombat>>
-<<clotheson>>
-<br><br>
-<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+	<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+	<<tearful>> 당신은 바닥에서 헐떡이는 휘트니와 <<person1>><<hisPost "의">> 친구들을 내버려두고 떠난다.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+
+<<else>>
+	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") and $worn.under_upper.type.includes("naked")>>
+		당신의 옷을 벗기고 나자 휘트니 패거리의 기세가 좀 누그러지나, 아직 끝나기에는 한참 남았다.
+	<<else>>
+		당신이 순종적이게 될 때까지 두들겨 패고 나자 휘트니 패거리의 기세가 좀 누그러지나, 아직 끝나기에는 한참 남았다.
+	<</if>>
+	<br><br>
+
+	<<endcombat>>
+
+	<<npc Whitney>><<person1>>
+	<<WhitneyParasite>>
+<</if>>
 
 :: Hallways Exposed Hypnosis
 <<effects>>

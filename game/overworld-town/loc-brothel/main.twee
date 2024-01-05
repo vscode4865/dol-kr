@@ -143,59 +143,66 @@
 <</if>>
 
 <<if $brothelVending>>
-	<<if $brothelVending.status is "asked" or $brothelVending.status is "sold">>
+	<<if $brothelVending.status is "asked" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4)>>
 		<<condomicon "machine">><span class="gold">당신은 쇼핑 센터에서 자판기를 구매해 여기에 설치할 수 있다.</span>
+		<br><br>
+	<<elseif $brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4>>
+		<<condomicon "machine">><span class="gold">Your vending machine has been sold. You should talk to Briar.</span>
 		<br><br>
 	<<elseif $brothelVending.status is "bought">>
 		<<condomicon "machine">> <<link [[자판기를 설치한다 (0:30)|Brothel Dressing Room]]>><<set $brothelVending.status to "set">><<set $weekly.brothelVMCollect to true>><<pass 30>><</link>>
 		<br><br>
-	<<elseif $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
-		<<if !($brothelVending.products % 2) and $condomLvl gte 1>>
-			<<condomicon>>당신은 <span class="gold">약국 간호사</span>와 콘돔 판매에 대해 논할 수 있다.
-			<br><br>
-		<</if>>
-		<<if $brothelVending.products lt 2 and $adultshopunlocked>>
-			<<sextoysicon "lube">>당신은 <span class="gold">시리스 선생님</span>과 윤활제 판매에 대해 논할 수 있다.
-			<br><br>
-		<</if>>
+	<<elseif $brothelVending.status is "set">>
 		<<if $brothelVending.products>>
-			당신은 자판기의 재고를 확인한다.
-			<<if $brothelVending.products % 2>>
-				<<if $brothelVending.condoms lte 1>>
-					콘돔 자판기가 <span class="red">비어 있다.</span> 당신은 약국에서 추가분을 조달할 수 있다.
-					<br><br>
-				<<else>>
-					<<if $brothelVending.condoms gte 200>>
-						콘돔 자판기가 <span class="green">꽉 차 있다.</span>
-					<<else>>
-						<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
-						당신은 콘돔 <<trNumber $brothelVending.condoms>> 팩이 있는 것을 확인한다. 3개들이 콘돔 <<trNumber $brothelVending.condomsToRefill>> 팩이 더 들어갈 공간이 있다. 당신은 약국에서 추가분을 조달할 수 있다.
-					<</if>>
-					<br>
-					당신은 약국에서는 £60에 파는 3개들이 콘돔 팩의 가격을 £80로 책정한다.
-					<br>
-					<<condomicon>><<link [[콘돔을 산다 (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>>
-					<br><br>
-				<</if>>
+			<<set _outOfStock to []>>
+			<<set _full to []>>
+			<<set _buyMore to []>>
+			<<set _productsAvailable to []>>
+			<<set _productsToPurchase to []>>
+			<<if $brothelVending.condoms lt 200>><<run _buyMore.push(`condoms at the <span class="gold">pharmacy</span>`)>><</if>>
+			<<if $brothelVending.lube lt 200>><<run _buyMore.push(`lube at the <span class="gold">adult shop</span>`)>><</if>>
+
+			<<if $brothelVending.condoms is 0>>
+				<<run _outOfStock.push(`condom dispenser`)>>
+			<<elseif $brothelVending.condoms gte 200>>
+				<<run _full.push(`condom dispenser`)>>
+			<<else>>
+				<<run _productsAvailable.push(`<span class="gold">$brothelVending.condoms</span> pack<<if $brothelVending.condoms gt 1>>s<</if>> of condoms`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.condomsToRefill</span> pack<<if $brothelVending.condomsToRefill isnot 1>>s<</if>> of condoms`)>>
 			<</if>>
-			<<if $brothelVending.products gte 2>>
-				<<if $brothelVending.lube lte 1>>
-					윤활제 자판기가 <span class="red">비어 있다.</span> 당신은 성인용품점에서 추가분을 조달할 수 있다.
-					<br><br>
-				<<else>>
-					<<if $brothelVending.lube gte 200>>
-						윤활제 자판기가 <span class="green">꽉 차 있다.</span>
-					<<else>>
-						<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
-						당신은 윤활제 <<trNumber $brothelVending.lube>> 병이 있는 것을 확인한다. <<trNumber $brothelVending.lubeToRefill>> 병이 더 들어갈 공간이 있다. 당신은 성인용품점에서 추가분을 조달할 수 있다.
-					<</if>>
-					<br>
-					당신은 성인용품점에서는 £20에 파는 윤활제의 가격을 £30으로 책정한다.
-					<br>
-					<<sextoysicon "lube">><<link [[윤활제를 산다 (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>>
-					<br><br>
-				<</if>>
+			<<if $brothelVending.lube is 0>>
+				<<run _outOfStock.push(`lube dispenser`)>>
+			<<elseif $brothelVending.lube gte 200>>
+				<<run _full.push(`lube dispenser`)>>
+			<<else>>
+				<<run _productsAvailable.push(`<span class="gold">$brothelVending.lube</span> bottle<<if $brothelVending.lube gt 1>>s<</if>> of lube`)>>
+				<<run _productsToPurchase.push(`<span class="blue">$brothelVending.lubeToRefill</span> bottle<<if $brothelVending.lubeToRefill isnot 1>>s<</if>> of lube`)>>
 			<</if>>
+
+			<<condomicon "machine">> You check the stock of your vending machine.
+			<<if _full.length gte 1>>
+				The <<print _full.join(" and ")>> <<print _full.length gte 2 ? " are " : " is ">><span class="green">full.</span>.
+			<</if>>
+			<<if _outOfStock.length gte 1>>
+				The <<print _outOfStock.join(" and ")>><<print _outOfStock.length gte 2 ? " are " : " is ">><span class="red">empty.</span>.
+			<</if>>
+			<<if _productsAvailable.length gte 1>>
+				There <<print $brothelVending.condoms is 1 or ($brothelVending.condoms is 0 and $brothelVending.lube is 1) or ($brothelVending.condoms is 200 and $brothelVending.lube is 1) ? "is" : "are">> <<print _productsAvailable.join(" and ")>> inside the machine. There is room for <<print _productsToPurchase.join(" and ")>>.
+			<</if>>
+			<<if _buyMore.length gte 1>>
+				You can purchase <<print _buyMore.join(" and ")>>.
+			<</if>>
+			You have <<print $weekly.brothelVMCollect ? "already" : "not">> collected this week's earnings.
+			<br>
+			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
+				<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60. <i class="green">It'd be more cost-efficient for you buy them at the pharmacy.</i></span></mouse>
+				<br>
+			<</if>>
+			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
+				<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">Expensive</span> <mouse class="tooltip linkBlue">(?)<span>You have set the price of the lube to £30, while in the adult shop, it costs £20. <i class="green">It'd be more cost-efficient for you buy them at the adult shop.</i></span></mouse>
+				<br>
+			<</if>>
+			<br>
 		<</if>>
 	<</if>>
 <</if>>
@@ -552,7 +559,7 @@
 		<<if $brothelVending.status is "idea">>
 			<<condomicon "machine">><<link [[브라이어에게 자판기 설치에 대해 물어본다 (0:20)|Brothel VM ask]]>><<pass 20>><</link>>
 			<br>
-		<<elseif $brothelVending.products and $brothelVending.status is "set" and !$weekly.brothelVMCollect>>
+		<<elseif $brothelVending.products and ($brothelVending.status is "set" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4)) and !$weekly.brothelVMCollect>>
 			<<highicon>><<link [[자판기에서 돈을 꺼낸다 (0:10)|Brothel VM income]]>><<pass 10>><</link>>
 			<br>
 		<</if>>
@@ -563,11 +570,11 @@
 	<</if>>
 	<<if $brothelshowdata.intro is 2>>
 		<<if $brothel_escortjob is undefined>>
-			<<ind>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
+			<<danubeicon>><<link [[Work for wealthy client|Brothel Escort Job Accept]]>><</link>>
 			<br>
 
 		<<elseif $brothel_escortjob.accept isnot true and $weekly.escortjob isnot 1>>
-			<<ind>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
+			<<danubeicon>><<link [[Work for wealthy client|Brothel Escort Job Accept]]>><</link>>
 			<br>
 
 		<</if>>
@@ -1922,10 +1929,10 @@
 	<<person1>>"좋아." <<person_ i>> 말한다.
 	<br><br>
 	<<if crimeSumCurrent() gte 4500>>
-		<<person2>>"이 녀석은 약삭빠른 녀석이야," <<person_ i>> 말한다. "<<pshe_ ga>> 아무 것도 못하게 <<phimPost>>에게 수갑부터 채워."
+		<<person2>>"This one's slippery," says the <<person>>. "<<print $worn.handheld.name isnot "naked" ? "Take <<pher>> $worn.handheld.name and cuff <<phim>>" : "Cuff <<phim>> first">> so <<pshe>> doesn't try anything."
 		<br><br>
 		"알겠어."
-		<<set $leftarm to "bound">><<set $rightarm to "bound">>
+		<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 	<</if>>
 <</if>>
 
@@ -1989,7 +1996,7 @@
 
 :: Brothel Raid Arrest 2
 <<set $outside to 0>><<set $location to "town">><<effects>>
-<<set $leftarm to "bound">><<set $rightarm to "bound">>
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 <<pass 45>>
 당신은 수갑을 찬 채로 벽에 서있는 창관의 직원들 앞으로 안내된다. 한 무리의 행인들이 멍하니 바라보고 있다.
 <br><br>
@@ -2365,15 +2372,14 @@ The car comes to a stop, and Briar pulls you out. "I like avoiding this place. I
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 You ask Briar if <<he>> has already checked your vending machine's stock and collected the money this week.
 <br><br>
-<<if $brothelVending.weeksEmpty gte 4>>
-	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
+<<if $brothelVending.status is "sold">>
+	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty weeks. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
 	<br><br>
 	You try to explain why you haven't been able to refill the machine for so long, but Briar cuts you off.
 	<br><br>
-	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold"> you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
+	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold">you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
 	<br><br>
 	<<set $money += 100000>>
-	<<set $brothelVending.status to "sold">>
 	<<set $brothelVending.weeksEmpty to 0>>
 	<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
 		Briar pauses. "You never collected on your last sales before it was emptied.
@@ -2402,9 +2408,7 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 		but unfortunately, that eats up the rest of the profits. All you're getting back is the money you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney _productCost>>. "Try stocking more products next time, if you want to do more than break even."
 	<</if>>
 	<<set $money += _productCost>>
-	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
 	<<set $brothelVending.condomsSold to 0>>
-	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
 	<<set $brothelVending.lubeSold to 0>>
 	<<set $brothelVending.weeksRent to 0>>
 	<<set $weekly.brothelVMCollect to true>>

@@ -435,7 +435,17 @@
 		<</if>>
 
 	<<elseif $rng gte 81>>
-		시리스는 교과서 $rng쪽을 펼치라고 말한다. 교실은 느긋한 분위기다; 대부분의 학생들은 교과서를 읽기보단 수다를 떠는 데에 더 집중한다.
+		Sirris asks the class to turn to page $rng of their textbook.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			You realise too late that you forgot your bookbag.
+			<<if $NPCName[$NPCNameList.indexOf("Sirris")].love gte 10>>
+			Sirris gently chides you, but passes you a spare copy of the textbook. "I'll excuse it this time, but please be more prepared in the future."
+			<<else>>
+				Sirris shakes <<his>> head. "I'm sorry, but I need you to be more prepared next time," <<he>> admonishes as <<he>> hands you a spare copy of the textbook. <<detention 1>><<gdelinquency>>
+			<</if>>
+		<<else>>
+			The classroom has a laid-back atmosphere; most of the students spend more time chatting than reading.
+		<</if>>
 	<<elseif $rng gte 71>>
 		시리스는 <<print either("환경","우주","자기장","전자","화학 결합","아인슈타인","과학적 방법론의 선구자들","아이작 뉴턴","핵융합","효소의 역할", "DNA")>>에 대한 짧은 영상을 튼다. 교실은 느긋한 분위기다. 대부분의 학생은 영상을 보지만, 많은 이들이 계속해서 수다를 떨고 있다.
 	<<elseif $rng gte 61>>
@@ -1355,25 +1365,51 @@
 		A student near you finishes reading a passage. Now Doren points to you.
 		<br><br>
 
-		<<if $trauma gte (($traumamax / 5) * 3)>>
-			But due to the stress you've been under, you forgot your book! <<gstress>><<stress 4>>
-		<<elseif $delinquency gte 666>>
-			Does <<he>> seriously expect you to read like these nerds? You haven't even brought your book.
-		<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
-			But you're so tired, you left your book in your locker.
+		<<if $worn.handheld.name isnot "naked" and !$worn.handheld.type.includes("bookbag")>>
+			<<if $trauma gte (($traumamax / 5) * 3)>>
+				But due to the stress you've been under, you forgot your bookbag! <<gstress>><<stress 4>>
+			<<elseif $delinquency gte 666>>
+				Does <<he>> seriously expect you to read like these nerds? You haven't even brought your book.
+			<<elseif $tiredness gte (C.tiredness.max / 5) * 3>>
+				But you're so tired, you left your book in your locker.
+			<<else>>
+				But you forgot your bookbag today.
+			<</if>>
+			<br><br>
+
+			<<link [[Tell Doren you don't have your book|English Read Passage]]>><<set $phase to 0>><</link>>
+			<br>
+			<<link [[Look to classmates for help|English Read Passage]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Try to make something up|English Read Passage]]>><<set $phase to 2>><</link>>
+			<br>
+			<<if $speech_attitude is "bratty" or $delinquency gte 400>><<link [[Refuse to read|English Read Passage]]>><<set $phase to 3>><</link>><br><</if>>
 		<<else>>
-			But you forgot your book today.
+			You turn the page and begin reciting the passage aloud.
+
+			<<if $englishtrait gte 4>>
+				You add a dramatic flair to your reading, and the class hangs on every word. Doren compliments your diction. "You have a mighty fine gift there, <<lass>>.
+				<<if $englishPlay is "ongoing" and $englishPlayRoles.Player isnot "none">>
+					I'm looking forward to seeing you shine onstage.
+				<<elseif $englishPlay is "ongoing">>
+					It's a shame you didn't sign up for the play.
+					<<if $englishPlayLate>>There's still time, you know!<</if>>
+				<<else>>
+					Have you ever considered a career in theatre?
+				<</if>>" <<npcincr Doren love 1>>
+			<<elseif $englishtrait is 3>>
+				Your voice is strong and clear as you breeze through the text. Doren gives you a nod of approval and moves on to the next student.
+			<<elseif $englishtrait is 2>>
+				You stutter when you reach some foreign phrases, but you manage to get through the reading decently enough.
+			<<elseif $englishtrait is 1>>
+				The text is too erudite for you, and you falter as you read. Doren corrects your mispronunciation of an unfamiliar word, and someone in the back of the room titters. <<lcool>><<status -1>>
+			<<else>>
+				You try to make it through the passage, but it's beyond your comprehension. Your classmates openly snicker as you fumble over the words. Doren reprimands the class but takes pity on you by moving on to the next person. You sink into your seat and console yourself with the knowledge that you at least remembered to bring your book to class. <<lcool>><<status -3>>
+			<</if>>
 		<</if>>
 		<br><br>
-
-		<<link [[Tell Doren you don't have your book|English Read Passage]]>><<set $phase to 0>><</link>>
-		<br>
-		<<link [[Look to classmates for help|English Read Passage]]>><<set $phase to 1>><</link>>
-		<br>
-		<<link [[Try to make something up|English Read Passage]]>><<set $phase to 2>><</link>>
-		<br>
-		<<if $speech_attitude is "bratty" or $delinquency gte 400>><<link [[Refuse to read|English Read Passage]]>><<set $phase to 3>><</link>><br><</if>>
-
+		<<endevent>>
+		<<link [[다음|English Lesson]]>><</link>>
 	<<elseif $rng gte 41>>
 		<<if $delinquency gte 400>>
 			<<npc Doren>><<person1>>교실 내의 소동을 가라앉히기 위해, 도렌은 통제가 잘 안 되는 학생들을 떼어놓는다. 거기엔 당신<<if $kylarenglishstate is "active">>과 카일라<</if>>도 포함되어 있다. <<HePost "은">><<endevent>> 한 번도 문제를 일으킨 적 없는 조용한 학생인 <<generates1>><<person1>><<personPost>> 옆에 당신을 앉힌다.
@@ -2090,7 +2126,7 @@
 			<<if currentSkillValue('history') gte 500>>
 				<<print either("19세기 미국 상인의 복장","17세기 카리브해 지역의 사략선 선원의 복장","후기 빅토리아 시대 상인의 의복","제1차 세계대전 군인의 제복 모조품")>>이
 			<<elseif currentSkillValue('history') gte 300>>
-				<<print either("밝고 고풍스러운 복장","해적 복장","옛날 사진의 사람들이 입을 법한 옷","군복")>>이
+				<<print either("a bright, old-fashioned outfit","a pirate costume","clothes like people wear in old photos","a soldier costume")>>.
 			<<else>>
 				어떤 <<print either("오래된 옷","전통 복장","구식 옷")>>이
 			<</if>> 있다.
@@ -3014,7 +3050,7 @@
 			<<condomicon "machine">><<link [[Buy condoms (2-pack £20)|Vending Machine Buy]]>><</link>>
 			<br>
 		<<else>>
-			You can't afford them.
+			당신은 그것을 구매할 돈이 없다.
 			<br>
 		<</if>>
 		<<if !Time.schoolTime>>
@@ -3041,10 +3077,10 @@
 		<<set $weekly.earSlimeSkipLesson to $args[0]>>
 		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to skip the $args[0] lesson.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
 		<br><br>
-		<<link [[Obey|School Lesson Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<<link [[복종한다|School Lesson Slime]]>><<set $phase to 0>><<set $lessonPassage to $passage>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 		<br>
 		<<if $earSlime.startedThreats>>
-			<<link [[Defy|School Lesson Slime]]>><<set $phase to 2>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+			<<link [[반항한다|School Lesson Slime]]>><<set $phase to 2>><<set $lessonPassage to $passage>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 		<<else>>
 			<<link [[무시한다|School Lesson Slime]]>><<set $phase to 1>><<set $lessonPassage to $passage>><</link>>
 		<</if>>
@@ -3078,7 +3114,7 @@
 	You ignore the command from the slime and continue on.
 	<br><br>
 	<<link [[다음|$lessonPassage]]>><<unset $lessonPassage>><<endevent>><</link>>
-	<<set $daily.earSlimeSkipLesson to "ignored">>	
+	<<set $daily.earSlimeSkipLesson to "ignored">>
 <<else>>
 	You follow the ear slime's command and leave the <<if $daily.earSlimeSkipLesson is "swimming">>pool<<else>>classroom<</if>>.
 	<br><br>
