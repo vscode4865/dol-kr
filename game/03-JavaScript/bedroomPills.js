@@ -544,10 +544,10 @@ setup.pills = [
 	{
 		name: "Hair Growth Formula",
 		description:
-			"A spray containing Minoxidil and other ingredients to promote faster growth and healthier hair when applied directly to hair. Effective for 3 days on application.",
-		onTakeMessage: "You apply the spray. You hope it helps grow your hair quickly.",
+			"미녹시딜과 머리카락에 직접 발랐을 때 머리카락을 빠르게 자라게 하며 더 건강하게 하는 다른 성분들을 포함한 스프레이입니다. 뿌린 후 3일 동안 효과가 지속됩니다.",
+		onTakeMessage: "당신은 스프레이를 뿌린다. 당신은 그것이 당신의 머리카락을 빠르게 자라도록 해 주기를 바란다.",
 		warning_label:
-			"Warning: Please consult your doctor if you have an allergic reaction shortly after application. Contact your doctor immediately if you get the spray in your mouth or eyes.",
+			"주의사항: 사용하고 잠시 후 알레르기 반응이 일어나는 경우 의사와 상의하십시오. 스프레이가 입이나 눈에 들어갔을 경우 곧바로 의사에게 가십시오.",
 		autoTake() {
 			return V.sexStats.pills["pills"][this.name].autoTake;
 		},
@@ -558,7 +558,7 @@ setup.pills = [
 			return V.sexStats.pills["pills"][this.name].owned;
 		},
 		hpi_take_pills() {
-			return "Apply to hair";
+			return "머리에 뿌린다";
 		},
 		hpi_doseTaken() {
 			if (V.sexStats.pills["pills"][this.name].doseTaken) {
@@ -570,7 +570,7 @@ setup.pills = [
 			}
 		},
 		hpi_take_every_morning() {
-			return this.autoTake() ? "Stop Applying it" : "Apply when required";
+			return this.autoTake() ? "그만 뿌린다" : "필요시에 뿌린다";
 		},
 		type: "hair",
 		subtype: "Hair Growth Formula",
