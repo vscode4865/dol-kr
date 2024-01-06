@@ -243,17 +243,21 @@ const EasyPostMacroList = [
 	// HePost 
 	// <<He_ nun>> = <<He>>는, <<He_ nun 1>> = <<He 1>>는 
 	{ name: "He_", orig_name: "HePost", is_print: 0},
+	{ name: "She_", orig_name: "HePost", is_print: 0},
 
 	{ name: "He_Short_", orig_name: "He_ShortPost", is_print: 0},
 
 	// <<he_ nun>> = <<he>>는, <<he_ nun 1>> = <<he 1>>는 
 	{ name: "he_", orig_name: "simpleHePost", is_print: 0},
+	{ name: "she_", orig_name: "simpleHePost", is_print: 0},
 
 	// <<Him_ ul>> = <<Him>>을, <<Him_ ul 1>> = <<Him 1>>을 
 	{ name: "Him_", orig_name: "simpleHePost", is_print: 0},
+	{ name: "Her_", orig_name: "simpleHePost", is_print: 0},
 
 	// <<him_ ul>> = <<him>>을, <<him_ ul 1>> = <<him 1>>을 
 	{ name: "him_", orig_name: "simpleHePost", is_print: 0},
+	{ name: "her_", orig_name: "simpleHePost", is_print: 0},
 
 	// His (소유대명사;그의 것)는 His (소유격, 그의) 와 중복되므로 대신, Hers (그녀의 것)으로 사용함 
 	// <<Hers_ rul>> = <<Hers>>를, <<Hers_ rul 1>> = <<Hers 1>>를 
@@ -279,6 +283,11 @@ const EasyPostMacroList = [
 	// <<bhe_ nun>> = <<bhe>>는, <<bhe_ nun 1>> = <<bhe 1>>는 
 	{ name: "bHe_", orig_name: "bHePost", is_print: 0},
 	{ name: "bhe_", orig_name: "bHePost", is_print: 0},
+
+	// <<bHis_ rul>> = <<bHis>>을 
+	// <<bhis_ rul>> = <<bhis>>을 
+	{ name: "bHis_", orig_name: "bHePost", is_print: 0},
+	{ name: "bhis_", orig_name: "bHePost", is_print: 0},
 
 	{ name: "bHes_", orig_name: "bHePost", is_print: 0},
 	{ name: "bhes_", orig_name: "bHePost", is_print: 0},
@@ -325,11 +334,6 @@ const EasyPostMacroList = [
 
 	// <<ohe_ nun>> = <<ohe>>는, <<ohe_ nun 1>> = <<ohe 1>>는 
 	{ name: "ohe_", orig_name: "ohePost", is_print: 0},
-
-	// <<bHis_ rul>> = <<bHis>>을 
-	// <<bhis_ rul>> = <<bhis>>을 
-	{ name: "bHis_", orig_name: "bHePost", is_print: 0},
-	{ name: "bhis_", orig_name: "bHePost", is_print: 0},
 
 	// <<hisselect_ yi 1>> = <<hisselect 1>>의 
 	{ name: "hisselect_", orig_name: "hisselectPost", is_print: 0},
