@@ -146,7 +146,7 @@
 
 	<<link [[준비한다|Farm Assault Wardrobe]]>><<endevent>><<set $phase to 2>><</link>>
 	<br>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined and $rng lte ($earSlime.corruption / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is undefined and $rng lte ($earSlime.corruption / 2) and $slimeFarmNakedStored is undefined and $exposed lt 2 and ($earSlime.growth gte 80 - ($earSlime.exhibitionism * 10))>>
 	<span class="lewd">당신은 머릿속의 슬라임이 오늘 일하는 동안 당신에게 옷을 숨기고 노출하고 있으라고 명령하는 것을 느낀다.</span> 그것은 당신이 명령에 따른다면 보상을 약속하고, 따르지 않으면 결과가 따를 거라고 위협한다.
 	<br><br>
 
@@ -154,26 +154,27 @@
 	<br>
 	<<link [[거부한다|Farm Slime Strip Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 	<br>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is true and $slimeFarmNakedStored is undefined>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is true and $slimeFarmNakedStored is undefined>>
 	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 	<<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
+	<<if $farm_stage gte 7>><<set $farm_naked to 1>><</if>>
 	<br><br>
 	<<link [[다음|Farm Work]]>><</link>>
-<<elseif ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is true and ($worn.lower.name.includes("towel") or $worn.upper.name.includes("towel")) and $farm_naked is 1>>
+<<elseif numberOfEarSlime() and $daily.slimeFarmNaked is true and ($worn.lower.name.includes("towel") or $worn.upper.name.includes("towel")) and $farm_naked is 1>>
 	<<generalRuined "upper">><<generalRuined "lower">>
 	슬라임의 명령에 따라, 당신은 알렉스가 찾을 수 있도록 수건을 남겨둔다.
 	<br><br>
 	<<link [[다음|Farm Work]]>><</link>>
 <<elseif (Time.hour lte 5 or Time.hour gte 22 or (Time.hour is 21 and $farm_end is 1)) and $farm_stage lt 7>>
-	<<link [[헛간에 몰래 들어간다 (0:05)|Farm Barn]]>><<pass 5>><</link>>
+	<<sneakicon>><<link [[헛간에 몰래 들어간다 (0:05)|Farm Barn]]>><<pass 5>><</link>>
 	<br><br>
-	<<link [[떠난다|Farmland]]>><</link>>
+	<<getouticon>><<link [[떠난다|Farmland]]>><</link>>
 	<br>
 <<elseif $exposed gte 2 and $farm_naked isnot 1 and $farm_stage lt 7>>
 	당신은 울타리 뒤에 숨어서, <<lewdness_ rul>> 감추고 있다.
 	<br><br>
 	<<if $exhibitionism gte 75>>
-		<<link [[어쨌든 일한다|Farm Work Naked]]>><<npcincr Alex lust 3>><<set $farm_naked to 1>><</link>><<exhibitionist5>><<gglust>>
+		<<ind>><<link [[어쨌든 일한다|Farm Work Naked]]>><<npcincr Alex lust 3>><<set $farm_naked to 1>><</link>><<exhibitionist5>><<gglust>>
 		<br>
 	<<elseif $slimeFarmNakedStored is true>>
 		<<if $exhibitionism gte 55>>
@@ -186,22 +187,22 @@
 			<<set _stress to 40>>
 			<<set _trauma to 40>>
 		<</if>>
-		<<link [[어쨌든 일한다|Farm Work Naked]]>><<npcincr Alex lust 3>><<set $farm_naked to 1>><<stress _stress>><<trauma _trauma>><</link>><<gglust>>
+		<<ind>><<link [[어쨌든 일한다|Farm Work Naked]]>><<npcincr Alex lust 3>><<set $farm_naked to 1>><<stress _stress>><<trauma _trauma>><</link>><<gglust>>
 		<<if _stress is 40>><<ggstress>><<else>><<gstress>><</if>>
 		<<if _trauma is 40>><<ggtrauma>><<elseif _trauma is 5>><<gtrauma>><</if>>
 		<br>
 	<</if>>
 	<<if $farm_work.alex isnot undefined and $farm_work.alex isnot "shower" and Time.hour gte 6 and Time.hour lte 20 and $slimeFarmNakedStored is undefined>>
 		<<if $worn.upper.exposed gte 2 or $worn.lower.exposed gte 2>>
-			<<link [[알렉스에게 옷을 달라고 한다 (0:05)|Farm Alex Clothes]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
+			<<ind>><<link [[알렉스에게 옷을 달라고 한다 (0:05)|Farm Alex Clothes]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
 			<br>
 		<<else>>
-			<<link [[알렉스에게 몸을 말리기 위한 무언가를 달라고 한다 (0:05)|Farm Alex Dry]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
+			<<ind>><<link [[알렉스에게 몸을 말리기 위한 무언가를 달라고 한다 (0:05)|Farm Alex Dry]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
 			<br>
 		<</if>>
 	<</if>>
 	<br>
-	<<link [[떠난다|Farmland]]>><</link>>
+	<<getouticon>><<link [[떠난다|Farmland]]>><</link>>
 	<br>
 <<elseif ($farm_shift gte 360 or $farm.clearing lte 50) and $farm_stage is 2>>
 	<<farmVisitor>>
@@ -334,7 +335,7 @@
 	<</if>>
 	<br><br>
 
-	<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+	<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 		<<pcPregnancyRevealToAlex>>
 
 	<<else>>
@@ -660,8 +661,8 @@
 	<<elseif C.npc.Alex.pregnancy.missedBirth is true>>
 		<<npc "Alex">><<run delete C.npc.Alex.pregnancy.missedBirth>>
 
-		<<if C.npc.Alex.pregnancy.knowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
-			<<set C.npc.Alex.pregnancy.knowledge to true>>
+		<<if C.npc.Alex.pregnancy.selfKnowledge is undefined and Object.values($children).find(child => child.mother === "Alex" && child.location === "home")>>
+			<<set C.npc.Alex.pregnancy.selfKnowledge to true>>
 
 			<<if C.npc.Alex.pregnancy.missedBirthCount is 1>>
 				Alex approaches you. You can see a nervous expression on <<his>> face.
@@ -711,7 +712,7 @@
 		Alex approaches you. You can see a nervous expression on <<his>> face. "Hey."
 		<br><br>
 
-		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.knowledge is true>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
+		"I got a call from the hospital saying that you were in labour. <<if C.npc.Alex.pregnancy.pcKnowledge>>Sorry I couldn't be there. I just couldn't leave the farm, not in this state...<<else>> I had no idea I knocked you up; you didn't tell me anything...<</if>>"
 		<br><br>
 
 		<<He>> looks at your belly with sad eyes. "Look, I can't stand the idea of our kids somewhere out there, livin' as orphans. There's room here at the cottage for them, I'd just need some help with the fields and then with a nursery. It's an option, if you'll consider it."
@@ -729,7 +730,6 @@
 	<<elseif C.npc.Alex.pregnancy.fee is true>>
 		<<npc "Alex">>
 		<<run delete C.npc.Alex.pregnancy.fee>>
-		<<run delete C.npc.Alex.pregnancy.knowledge>>
 
 		You approach Alex. "I've paid Bailey already, we can go get our children anytime," you say.
 		<br><br>
@@ -789,7 +789,7 @@
 
 		<<alex_pregnancy_comment>>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.knowledge isnot true or C.npc.Alex.pregnancy.test is true)>>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant() and getPregnancyObject().potentialFathers.find(s => s.source === "Alex") and (C.npc.Alex.pregnancy.pcKnowledge isnot true or C.npc.Alex.pregnancy.test is true) and C.npc.Alex.pregnancy.ultraSound isnot "requested">>
 			<<pcPregnancyRevealToAlex>>
 		<<else>>
 			<<link [[다음|Farm Work]]>><<endevent>><</link>>
@@ -857,7 +857,7 @@
 		<</if>>
 		<<getouticon>><<link [[떠난다|Farmland]]>><</link>>
 		<br>
-		<<if ($parasite.left_ear.name is "slime" or $parasite.right_ear.name is "slime") and $daily.slimeFarmNaked is undefined>>
+		<<if numberOfEarSlime() and $daily.slimeFarmNaked is undefined>>
 			<<set $daily.slimeFarmNaked to false>>
 		<</if>>
 	<</if>>
@@ -868,6 +868,7 @@
 슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 
 <<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
+<<if $farm_stage gte 7>><<set $farm_naked to 1>><</if>>
 
 <br><br>
 
@@ -885,6 +886,7 @@
 	<br><br>
 	슬라임의 명령에 따라, 당신은 당신의 옷이 안전할 것이라고 생각되는 장소를 발견하고 일하러 가기 전에 옷을 벗는다.
 	<<undressclothes "farmHidingSpot">><<set $slimeFarmNakedStored to true>><<set $daily.slimeFarmNaked to true>>
+	<<if $farm_stage gte 7>><<set $farm_naked to 1>><</if>>
 	<br><br>
 
 	<<link [[다음|Farm Work]]>><</link>>
@@ -1010,7 +1012,7 @@ You follow <<him>> to the farmhouse. Alex need only turn to see your <<lewdness>
 
 A towel drops down the stairwell, and you dry yourself in the kitchen. You hear Alex come down the stairs. <<He>> asks if you're decent before entering.
 
-<<if $weather is "rain" and !$worn.head.type.includes("rainproof")>>
+<<if $weather is "rain" and (!$worn.head.type.includes("rainproof") || !$worn.handheld.type.includes("rainproof"))>>
 	"Get yourself a Sou'wester's if the rain's bothering you," <<he>> says. "They work a treat. I'd best get back to work."
 <<else>>
 	"Did you fall in the river?" <<he>> laughs. "You go careful. I'd best get back to work."
@@ -1191,7 +1193,7 @@ You release the chickens from their coop, then enter to clean up. It's large eno
 		<<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].sleeve_img is 1>>
 			You feel a tugging at your wrists. Several chickens have poked their beaks through the gaps in the wire and are grasping your sleeves. Your arms are held in place.
 			<br><br>
-			<<bind>>
+			<<bindtemp>>
 			<<set $phase to 1>>
 		<<else>>
 			<<set $phase to 0>>
@@ -1997,15 +1999,15 @@ The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can m
 					당신은 그들의 유방에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들은 기대에 차 음메 하고 운다.
 				<</if>>
 			<<else>>
-				당신은 그들의 젖꼭지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들과 황소 소년들은 기대에 차 음메 하고 운다.
+				당신은 그들의 유방과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소 소녀들과 황소 소년들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<<else>>
 			<<if $farm_work.cattle.gender_plural is "m">>
 				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 황소들은 기대에 차 음메 하고 운다.
 			<<elseif $farm_work.cattle.gender_plural is "f">>
-				당신은 녀석들의 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 암소들은 기대에 차 음메 하고 운다.
+				당신은 녀석들의 유방에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 암소들은 기대에 차 음메 하고 운다.
 			<<else>>
-				당신은 녀석들의 젖가슴과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 젖소들은 기대에 차 음메 하고 운다.
+				당신은 녀석들의 유방과 자지에 흡입관을 부착하며 공상에 잠기고, 당신의 숙련된 손은 자동으로 움직인다. 소들은 기대에 차 음메 하고 운다.
 			<</if>>
 		<</if>>
 	<</if>>
@@ -2051,7 +2053,7 @@ The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can m
 <<elseif $cattle_milked lte 1200 or $deviancy lt 35>>
 	You're used to milking cattle, and the <<beasttype>> appreciates the attention.
 <<else>>
-	You daydream as you work, your practiced hands moving on their own. The <<beasttype>> appreciates the attention.
+	You daydream as you work, your practised hands moving on their own. The <<beasttype>> appreciates the attention.
 <</if>>
 <<deviancy1>>
 
@@ -2209,19 +2211,45 @@ You sneak up to the shed, and push the door open.
 		<<if $NPCList[0].penis isnot "none">>
 			Rivulets of water run down <<his>> toned body, flowing over <<his>> <<print $NPCList[0].breastsdesc>> and <<print $NPCList[0].penisdesc>>
 		<<else>>
-			Rivulets of water run down <<his>> <<print $NPCList[0].breastsdesc>>, and flow over the rest of <<his>> toned body.
+			Rivulets of water run down <<his>> <<print $NPCList[0].breastsdesc>>, and flow over the rest of <<his>> toned body<<if npcBellyVisible("Alex")>>and <<his>> baby bump<</if>>.
 		<</if>>
 	<<else>>
 		<<if $NPCList[0].penis isnot "none">>
 			Rivulets of water run down <<his>> toned body, flowing over <<his>> <<print $NPCList[0].penisdesc>>.
 		<<else>>
-			Rivulets of water run down <<his>> toned body.
+			Rivulets of water run down <<his>> toned body<<if npcBellyVisible("Alex")>>and <<his>> baby bump<</if>>.
 		<</if>>
 	<</if>>
 
 	<<His>> face, arms and legs are much darker than parts protected from <<his>> days in the sun.<<garousal>><<arousal 600>>
-
 	<br><br>
+
+	<<if (npcIsPregnant("Alex") and C.npc.Alex.pregnancy.selfKnowledge is true) or npcBellyVisible("Alex")>>
+		With <<his>> eyes still closed, Alex places <<his>> hands over <<his>> belly and gently starts to massage it.
+
+		<<if pregnancyCountBetweenParents("Alex", "PC", true) is 0>>
+			<<if npcBellyVisible("Alex")>>
+				"You sure take up a lot of space for something so small,"
+
+			<<else>>
+				"Me? A mother? This still feels so surreal,"
+
+			<</if>>
+
+		<<else>>
+			<<if pregnancyCountBetweenParents("Alex","pc",true) gte 1>>
+				"Strangely, I've missed this feeling. This feeling of fullness,"
+
+			<<else>>
+				"Hope you get along with your <<if childrenCountBetweenParents("Alex","pc") is 1>>sibling<<else>>siblings<</if>>,"
+
+			<</if>>
+
+		<</if>>
+
+		<<he>> says, as if talking with <<his>> unborn child.
+		<br><br>
+	<</if>>
 
 	A draft blows through the gap in the door. Alex opens <<his>> eyes, but you're already gone. <<He>> shuts the door, none the wiser.
 	<br><br>
@@ -2576,6 +2604,7 @@ You sneak up to the shed, and push the door open.
 :: Alex Give Milkshake
 <<effects>>
 <<npc Alex>><<person1>>
+<<wearProp "milkshake">>
 
 당신은 밀크셰이크를 들고 알렉스에게 다가간다. <<He_ 는>> <<himPost>> 옆에 병을 놓아둔 채, 그것을 알아차리지 못한 듯 당신에게 손을 흔든다. "이봐, 한잔-"
 <br>
@@ -2586,11 +2615,12 @@ You sneak up to the shed, and push the door open.
 알렉스는 당신에게서 음료를 받아들고, 20분 동안 홀짝거리며 잡담을 나누고, 당신이 떠날 때 <<his_ yi>> 모자를 벗어 인사한다.
 <br><br>
 
-<<link [[다음|Farm Work]]>><</link>>
+<<link [[다음|Farm Work]]>><<handheldon>><</link>>
 
 :: Alex Share Milkshake
 <<effects>>
 <<npc Alex>><<person1>>
+<<wearProp "milkshake">>
 
 당신은 알렉스의 옆에 앉아서, 밀크셰이크를 준비한다. "한잔 할래?" 둘은 동시에 묻는다. <<He_ ga>> 병을 꺼내어 동시에 당신에게 내민 것이다.
 <br><br>
@@ -2605,7 +2635,7 @@ You sneak up to the shed, and push the door open.
 "당분 보충 고맙다," <<he_ 가>> 씨근거리며, 눈물을 훔친다. 호흡을 가다듬고 나서, 두 사람은 헤어진다.
 <br><br>
 
-<<link [[다음|Farm Work]]>><</link>>
+<<link [[다음|Farm Work]]>><<handheldon>><</link>>
 
 :: Farm Stables Rest
 <<set $outside to 0>><<effects>>
@@ -2763,7 +2793,7 @@ You are in the barn. The <<farm_text_many cattle>> sleep sound.
 			<</if>>
 		<</if>>
 		<br>
-		<<link [[떠난다|Farm Work]]>><</link>>
+		<<getouticon>><<link [[떠난다|Farm Work]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -2865,6 +2895,11 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 	<br><br>
 <</if>>
 
+<<if $milk_amount lte 200 and $earSlime.event is "use the farm equipment to empty your breasts of milk">>
+	<<set $earSlime.event to "">>
+	<<set $earSlime.noSleep to false>>
+<</if>>
+
 <<if $farm.milking.dayMilking is true and Time.hour gte 7 and Time.hour lte 21 and $farm_end is undefined>>
 	You remove the suction tube with a shaking hand, and rise to your feet.
 	<<deviancy2>>
@@ -2934,57 +2969,92 @@ You take one of the suction tubes, and attach it to your <<penis>>.
 The machine continues its devilish work, sucking with more intensity. You feel a warmth build.<<gggarousal>><<arousal 10000>>
 <<orgasm>>
 <br>
-Your semen is sucked up the tube, where it drips into a glass tank. The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
-<<orgasm>>
-<<arousal 10000>>
-<<orgasm>>
-<br>
+<<if _deniedOrgasm>>
+	Despite the attempts to milk your <<penis>>, your orgasm is still ruined by the slime in your ear. The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
+	<<orgasm>>
+	<<arousal 10000>>
+	<<orgasm>>
+	<br>
 
-You remain on your hands and knees as the machine milks you again and again, sucking everything it can take. Just when you fear you're about to pass out, the machine comes to a halt.
-<br><br>
-
-/* Either use the amount of semen produced by those three orgasms, or the original amount calculated for $farm_penis_milk, whichever is larger */
-<<set _orgasm_semen to _original_amount - $semen_amount>>
-<<if _orgasm_semen gt $farm_penis_milk>>
-	<<set $farm_penis_milk to _orgasm_semen>>
+	You remain on your hands and knees as the machine attempts to milks you again and again, only causing you more pain as it continues. Just when you fear you're about to pass out, the machine comes to a halt.
+	<br><br>
 <<else>>
-	<<semen_amount `-($farm_penis_milk - _orgasm_semen)`>>
-	<<set $semen_produced_stat += ($farm_penis_milk - _orgasm_semen)>>
-<</if>>
-
-<<if $farm_penis_milk gte 3000>>
-	<span class="green">The tank almost overflows with semen.</span><<farmCatchChance 0.4>>
-<<elseif $farm_penis_milk gte 2000>>
-	<span class="teal">The tanks are over half full with your semen.</span><<farmCatchChance 0.2>>
-<<elseif $farm_penis_milk gte 1000>>
-	<span class="lblue">There's a large volume of semen in the tank.</span><<farmCatchChance 0.1>>
-<<elseif $farm_penis_milk gte 300>>
-	<span class="blue">There's a decent volume of semen in the tank.</span><<farmCatchChance 0.05>>
-<<else>>
-	<span class="purple">There's only a dribble of semen in the tank.</span><<farmCatchChance 0.01>>
-<</if>>
-<br><br>
-
-<<if $farm_penis_milk gte 2000>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
-	<span class="gold">You've filled $farm_penis_milk bottles of semen.</span>
-	<<tending_give bottle_of_semen $farm_penis_milk>>
-<<elseif $farm_penis_milk gte 1000>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
-	<span class="gold">You've filled a bottle with semen.</span>
-	<<tending_give bottle_of_semen $farm_penis_milk>>
-<<else>>
-	<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 300)>>
-	<<if $farm_penis_milk lte 0>>
-		<<set $farm_penis_milk to 1>>
+	<<set _femaleclimaxAmount to 0>>
+	<<if $femaleclimax>>
+		<<set _femaleclimaxAmount++>>
+		Despite the attempts to milk your <<penis>>, no semen is sucked up the tube.
+	<<else>>
+		Your semen is sucked up the tube, where it drips into a glass tank.
 	<</if>>
-	한 병을 다 채우기에는 양이 모자라다. 당신은 그것을 우유와 섞는다.<<gfarm>>
-	<<farm_yield $farm_penis_milk>>
-<</if>>
-<br><br>
+	The machine doesn't give you a chance to recover.<<gggarousal>><<arousal 10000>>
+	<<orgasm>><<if $femaleclimax>><<set _femaleclimaxAmount++>><</if>>
+	<<arousal 10000>>
+	<<orgasm>><<if $femaleclimax>><<set _femaleclimaxAmount++>><</if>>
+	<br>
+	<<if _femaleclimaxAmount lt 3>>
+		You remain on your hands and knees as the machine milks you again and again, sucking everything it can take.
+	<<else>>
+		You remain on your hands and knees as the machine milks you again and again, however, you release no semen for it to collect.
+	<</if>>
 
+	Just when you fear you're about to pass out, the machine comes to a halt.
+	<br><br>
+
+	/* Either use the amount of semen produced by those three orgasms, or the original amount calculated for $farm_penis_milk, whichever is larger */
+	<<set _orgasm_semen to _original_amount - $semen_amount>>
+	<<if _femaleclimaxAmount>><<set $farm_penis_milk *= (3 - _femaleclimaxAmount) / 3>><</if>>
+	<<if _femaleclimaxAmount gte 3>>
+		<<set $farm_penis_milk to 0>>
+	<<elseif _orgasm_semen gt $farm_penis_milk>>
+		<<set $farm_penis_milk to _orgasm_semen>>
+	<<else>>
+		<<semen_amount `-($farm_penis_milk - _orgasm_semen)`>>
+		<<set $semen_produced_stat += ($farm_penis_milk - _orgasm_semen)>>
+	<</if>>
+
+	<<if $farm_penis_milk gte 3000>>
+		<span class="green">The tank almost overflows with semen.</span><<farmCatchChance 0.4>>
+	<<elseif $farm_penis_milk gte 2000>>
+		<span class="teal">The tanks are over half full with your semen.</span><<farmCatchChance 0.2>>
+	<<elseif $farm_penis_milk gte 1000>>
+		<span class="lblue">There's a large volume of semen in the tank.</span><<farmCatchChance 0.1>>
+	<<elseif $farm_penis_milk gte 300>>
+		<span class="blue">There's a decent volume of semen in the tank.</span><<farmCatchChance 0.05>>
+	<<elseif $farm_penis_milk gte 1>>
+		<span class="purple">There's only a dribble of semen in the tank.</span><<farmCatchChance 0.01>>
+	<<else>>
+		<span class="red">There's no semen in the tank.</span>
+	<</if>>
+	<br><br>
+
+	<<if $farm_penis_milk gte 2000>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
+		<span class="gold">You've filled $farm_penis_milk bottles of semen.</span>
+		<<tending_give bottle_of_semen $farm_penis_milk>>
+		<br><br>
+	<<elseif $farm_penis_milk gte 1000>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 1000)>>
+		<span class="gold">You've filled a bottle with semen.</span>
+		<<tending_give bottle_of_semen $farm_penis_milk>>
+		<br><br>
+	<<elseif $farm_penis_milk gte 1>>
+		<<set $farm_penis_milk to Math.trunc($farm_penis_milk / 300)>>
+		<<if $farm_penis_milk lte 0>>
+			<<set $farm_penis_milk to 1>>
+		<</if>>
+		한 병을 다 채우기에는 양이 모자라다. 당신은 그것을 우유와 섞는다.<<gfarm>>
+		<<farm_yield $farm_penis_milk>>
+		<br><br>
+	<</if>>
+
+	<<if $semen_amount lte 200 and $earSlime.event is "use the farm equipment to empty your penis of semen">>
+		<<set $earSlime.event to "">>
+		<<set $earSlime.noSleep to false>>
+	<</if>>
+<</if>>
 <<unset $farm_penis_milk>>
 <<barn_img penis>>
+
 
 <<if $farm.milking.dayMilking is true and Time.hour gte 7 and Time.hour lte 21 and $farm_end is undefined>>
 	당신은 떨리는 손으로 흡입관을 제거하고, 두 발로 일어난다.

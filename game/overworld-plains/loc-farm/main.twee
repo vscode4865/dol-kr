@@ -2,8 +2,10 @@
 <<set $outside to 1>><<set $location to "farm">><<set $bus to "farm">>
 <<if $slimeFarmNakedStored is true>>
 	<<storeon "farmHidingSpot">>
+	<<exposure>>
 	<<unset $slimeFarmNakedStored>>
 <</if>>
+<<if $farm_stage gte 7>><<unset $farm_naked>><</if>>
 <<effects>>
 당신은 농장에 있다.
 <<if Time.dayState is "night">>
@@ -74,7 +76,12 @@
 		<</if>>
 	<</if>>
 	<<if $farm_stage gte 2>>
-		<<farmicon "barn">><<link [[농장 (0:05)|Farm Work]]>><<pass 5>><</link>>
+		<<farmicon "barn">><<link [[농장 (0:05)|Farm Work]]>>
+			<<pass 5>>
+			<<if $farm_stage gte 7 and (($exhibitionism gte 75 and $exposed gte 2) or ($exhibitionism gte 55 and $exposed gte 1))>>
+				<<set $farm_naked to 1>>
+			<</if>>
+		<</link>>
 		<br>
 	<</if>>
 	<<if $exposed lte 0>>
@@ -451,25 +458,41 @@
 	"우리가 해냈어," 알렉스가 말한다. <<He_ yi>> 목소리는 피곤한 것처럼 들리고, <<his_ yi>> 옷은 찢어져 있으며, <<his_ yi>> 머리카락은 땀으로 범벅이 되었지만 <<his_ yi>> 얼굴에 미소가 번진다. "우리가 두 번째 밭을 정리했어."
 	<br><br>
 
-	<<He_ nun>> 문제의 밭으로 당신을 인도하다가, 울타리에 멈춰선다. <<He_ nun>> 앉으면서 당신도 따라오라는 듯 손짓한다. "너 없이는 이걸 해낼 수 없었을 거야," <<he_ ga>> 유리병에서 한 모금 마시며 말한다.
-	<<if playerBellyVisible()>>
-		<<He_ nun>> <<his_ yi>> 주머니에서 또 하나를 꺼내다가, 당신의 <<bellyDescription_ ul "pc">> 힐끗 보고 얼굴을 찌푸린다.
+	<<He_ nun>> 문제의 밭으로 당신을 인도하다가, 울타리에 멈춰선다. <<He_ nun>> 앉으면서 당신도 따라오라는 듯 손짓한다. "너 없이는 이걸 해낼 수 없었을 거야," <<he_ ga>> 말하며,
+
+	<<if C.npc.Alex.pregnancy.selfKnowledge is true and npcIsPregnant("Alex") and talkedAboutPregnancy("Alex","pc")>>
+		<<his_ yi>> 주머니에서 유리병을 하나 꺼내 <<his_ yi>> 입으로 가까이 가져간다.
+		<br><br>
+
+		당신은 <<himPost>>에게 근엄한 눈빛을 보낸다.
+		<br><br>
+
+		"미안," <<he_ ga>> 말하며, 병을 멀리 치운다. "나쁜 습관이야."
 		<br><br>
 
 		<<link [[다음|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
-		<br>
-	<<else>>
-		<<He_ nun>> <<his_ yi>> 주머니에서 또 하나를 꺼내 당신에게 권한다.
-		<br><br>
 
-		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
-			<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
+	<<else>>
+		<<if playerBellyVisible()>>
+			<<He_ nun>> <<his_ yi>> 주머니에서 또 하나를 꺼내다가, 당신의 <<bellyDescription_ ul "pc">> 힐끗 보고 얼굴을 찌푸린다.
+			<br><br>
+
+			<<link [[다음|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
+			<br>
 		<<else>>
-			<<link [[마신다|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>><<lstress>>
+			<<He_ nun>> <<his_ yi>> 주머니에서 또 하나를 꺼내 당신에게 권한다.
+			<br><br>
+
+			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
+			<<else>>
+				<<link [[마신다|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>><<lstress>>
+			<</if>>
+			<br>
+			<<link [[거절한다|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
+			<br>
 		<</if>>
-		<br>
-		<<link [[거절한다|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
-		<br>
+
 	<</if>>
 <</widget>>
 
@@ -862,8 +885,22 @@
 :: Farm Stage 6 5
 <<set $location to "alex_cottage">><<effects>>
 
-당신은 알렉스의 <<if $pronoun is "m">>아버지<<else>>어머니<</if>>와 함께 부엌 식탁에 앉는다. "도시 사람이 그렇게 도움이 될 수 있다니 놀랍구나-"
+당신은 알렉스의 <<if $pronoun is "m">>아버지<<else>>어머니<</if>>와 함께 부엌 식탁에 앉는다.
+
+<<if C.npc.Alex.pregnancy.selfKnowledge is true or (C.npc.Alex.pregnancy.pcKnowledge is true and C.npc.Alex.pregnancy.sample isnot true and getPregnancyObject().fetus[1].father is "Alex" and getPregnancyObject().fetus.length is 1)>>
+	"그래, 네가
+	<<if talkedAboutPregnancy("Alex","pc")>>
+		내 조그만 <<print $pronoun is "m" ? "아들을" : "딸을">> 임신시킨 도시 사람이구나?"
+	<<else>>
+		내 조그만 <<print $pronoun is "m" ? "아들이" : "딸이">> 임신시킨 도시 사람이구나?"
+	<</if>>
+
+<<else>>
+	"도시 사람이 그렇게 도움이 될 수 있다니 놀랍구나-"
+
+<</if>>
 <br>
+
 "<<if $pronoun is "m">>아빠<<else>>엄마<</if>>-" 알렉스가 끼어든다.
 <br>
 "게다가 이렇게 귀여운 아이여서 더 놀랐고-"
@@ -919,7 +956,7 @@
 당신은 고개를 끄덕이지만, 알렉스가 돼지우리 뒤로 사라질 때까지 기다린다. 당신은 봉투를 열어본다. 그 안에는 현금 뭉치와 함께, 쪽지가 들어있다.
 <br><br>
 
-<i>"내 <<if $pronoun is "m">>아들<<else>>딸<</if>>을 돌봐줘서 고맙구나. 약소하지만 받아주렴. 알렉스에게 주지 마. 그리고 <<him_ ga>> 너에게 어떤 것도 강요하지 못하게 하렴. <<He_ nun>> 착한 <<nnpc_gendery_ iji "Alex">>만, 좀 끈질기단다."
+<i>"내 <<if $pronoun is "m">>아들<<else>>딸<</if>>을 돌봐줘서 고맙구나. 약소하지만 받아주렴. 알렉스에게 주지 마. 그리고 <<him_ ga>> 너에게 어떤 것도 강요하지 못하게 하렴. <<He_ nun>> 착한 <<nnpc_gendery_ iji "Alex">>만, 좀 끈질기단다."<<if C.npc.Alex.pregnancy.selfKnowledge is true or C.npc.Alex.pregnancy.pcKnowledge is true>> 나는 내 <<if C.npc.Alex.gender is "f">>딸이<<else>>아들이<</if>> 정차가기 시작했다는 것이 정말 기쁘단다. 그렇게 만들어 줘서 고맙다.<</if>>"
 </i>
 <br><br>
 당신은 돈을 세어본다. <<moneyGain 10000>>가 들어있다.
@@ -1778,9 +1815,9 @@
 		<br>
 	<</if>>
 <<else>>
-	<<link [[자위한다|Farm Shower Masturbation]]>><<set $masturbationstart to 1>><</link>>
+	<<ind>><<link [[자위한다|Farm Shower Masturbation]]>><<set $masturbationstart to 1>><</link>>
 	<br>
-	<<link [[떠난다|Farm Work]]>><<clotheson>><</link>>
+	<<getouticon>><<link [[떠난다|Farm Work]]>><<clotheson>><</link>>
 	<br>
 <</if>>
 
@@ -2004,7 +2041,7 @@
 
 	<<if $arousal gte $arousalmax>>
 		당신의 몸이 떨린다. <<orgasm>>
-		알렉스는 놀라기는커녕 당신의 절정에 용기를 얻는다. "넌 정말 변태야," <<he_ nun>> 당신의 몸을 자신 쪽으로 끌어당기며 말한다.
+		알렉스는 놀라기는커녕, 당신의 절정에 용기를 얻는다. "넌 정말 변태야," <<he_ nun>> 당신의 몸을 자신 쪽으로 끌어당기며 말한다.
 		<br><br>
 
 		<<if $promiscuity gte 15>>

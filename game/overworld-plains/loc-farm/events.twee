@@ -17,7 +17,7 @@
 
 <<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].sleeve_img isnot 1 and ($leftarm is "bound" or $rightarm is "bound") and $phase is 1>>
 	닭들은 <span class="lblue">당신의 팔을 놓아주면서,</span>당신의 너덜너덜한 소매를 찢어버린다. 
-	<<unbind>>
+	<<unbindtemp>>
 	<br><br>
 <<elseif $phase is 1>>
 	닭들은 당신의 팔을 제자리에 놓는다.
@@ -48,7 +48,7 @@
 
 	<<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].sleeve_img is 1>>
 		만족한 채로, 닭들이 울타리에서 물러나면서 당신의 팔을 풀어주자, 그 <<farm_text_ nun dog>> 닭장을 떠난다.
-		<<unbind>>
+		<<unbindtemp>>
 	<<else>>
 		만족한 채로, 그 <<farm_text_ nun dog>> 당신을 바닥에 내버려 둔 채, 닭장을 떠난다
 	<</if>>
@@ -68,7 +68,7 @@
 
 	<<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].sleeve_img is 1>>
 		The <<farm_text dog>> turns and runs. The chickens follow, releasing your arms.
-		<<unbind>>
+		<<unbindtemp>>
 	<<else>>
 		The <<farm_text dog>> turns and runs as you pull yourself to your feet.
 	<</if>>
@@ -90,7 +90,7 @@
 
 	<<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].sleeve_img is 1>>
 		The chickens follow suit.
-		<<unbind>>
+		<<unbindtemp>>
 	<<else>>
 	<</if>>
 	<br><br>
@@ -3716,21 +3716,21 @@ Their plan ruined, the sneaking pair end their attempt at concealment, and run. 
 	You focus on riding and holding the horse reins.
 
     <<if $weather is "clear">>
-        The <<steed_text>>s runs through the meadow and a pleasant breeze passes by.
+        The <<steed_text>>s run through the meadow and a pleasant breeze passes by.
         <br>
 
         As the sun shines between the clouds, you can see beautiful and natural scenery unlike anything you've seen in town.<<lstress>><<stress -6>>
         <br><br>
 
     <<elseif $weather is "overcast">>
-        The <<steed_text>>s runs through the meadow and a cool breeze passes by.
+        The <<steed_text>>s run through the meadow and a cool breeze passes by.
         <br>
 
         You can smell fertile soil and grass in the air. Even though the clouds cover the sun, the meadow still looks beautiful.<<lstress>><<stress -6>>
         <br><br>
 
     <<else>>
-        The <<steed_text>>s runs through the meadow, and a snowflake falls on your face and melts.
+        The <<steed_text>>s run through the meadow, and a snowflake falls on your face and melts.
         <br>
 
         The cold wind makes it hard for you to keep your eyes open, but the act of riding a horse through snow that no one has stepped on gives you a sense of freedom.<<lstress>><<stress -6>>
@@ -3792,7 +3792,7 @@ Alex spurs the <<steed_text>>. "Isn't this a good time?"
 <<elseif $speech_attitude is "bratty">>
     "Hell yeah! Let's do this again later!" you say.
 <<else>>
-    "Yes, it sure is." you say.
+    "Yes, it sure is," you say.
 <</if>>
 <br><br>
 
@@ -3885,7 +3885,7 @@ Alex puffs <<his>> chest out with pride. After an enjoyable time in the meadow, 
     "I'll get you some clothes when we return to the farm," <<he>> mutters with a blush, trying not to look at your body as much as possible.
     <br><br>
 
-    "Well then...Let's try again later, not today." Alex gives you a worried expression as he holds the reins in <<his>> hand.
+    "Well then...Let's try again later, not today." Alex gives you a worried expression as <<he>> holds the reins in <<his>> hand.
     <br><br>
 
     <<He>> gives you some riding tips as the two of you walk back to the farm. You catch <<him>> peeking at your body when <<he>> thinks you're not looking.<<glust>><<gthighskill>><<npcincr Alex lust 1>><<set $thighskill += 10>>
@@ -4075,6 +4075,13 @@ Alex quickly enters the cottage and takes out some clothes. "Here."
 
 당신은 알렉스의 지시에 따라 길을 걸어간다.
 
+<<if !npcIsPregnant("Alex") and $rng gte 72>>
+	<<set $alexBooze to true>>
+
+	당신은 목록을 힐끗 보고, 언급된 술이 있음을 알아차린다.
+
+<</if>>
+
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
 	차 한 대가 지나가면서 당신에게 경적을 울려댄다.<<gstress>><<stress 6>>
@@ -4086,18 +4093,49 @@ Alex quickly enters the cottage and takes out some clothes. "Here."
 <<endevent>>
 <<generate1>><<person1>>
 "그거 쇼핑 목록이니?" <<he_ 가>> 묻는다. "이리 줘 보렴, 정리해 줄게."
-
-<<set $farm_work.shopping_money to random(2000, 6000)>>
-<<He_ 는>> 목록을 가져간 다음, 실내를 휙휙 돌아다니며, 당신을 대신하여 음식과 잡화를 바구니에 담는다.
 <br><br>
 
-<<link [[다음|Farm Shopping 2]]>><</link>>
-<br>
+<<set $farm_work.shopping_money to random(2000, 6000)>>
+
+<<if $alexBooze>>
+	<<link [[아무 말도 하지 않는다|Farm Shopping 2]]>><</link>>
+	<br>
+	<<link [[식료품점 주인에게 술은 빼 놓으라고 한다|Farm Shopping 2]]>><<set $alexBooze to "noBooze">><</link>>
+
+<<else>>
+	<<He_ 는>> 목록을 가져간 다음, 실내를 휙휙 돌아다니며, 당신을 대신하여 음식과 잡화를 바구니에 담는다.
+	<br><br>
+
+	<<link [[다음|Farm Shopping 2]]>><</link>>
+	<br>
+
+<</if>>
 
 :: Farm Shopping 2
 <<effects>>
 
-<<He_ 는>> 금전등록기로 그것들 모두를 계산한다. "<<printmoney $farm_work.shopping_money>>가 되겠구나," <<he_ 가>> 말한다.
+<<if $alexBooze is "noBooze">>
+	"거기서 술은 빼 주시겠어요?" 당신이 부탁한다.
+	<br><br>
+
+<<elseif $alexBooze>>
+	"ID를 보여주겠니?" <<he_ ga>> 지친 목소리로, 말한다.
+	<br><br>
+
+	<<if $id gte 1>>
+		당신은 주인에게 당신의 ID를 건네준다. <<He_ nun>> 그것을 빠르게 훑어보고 당신에게 돌려준 후 식료품을 가방에 담는다.
+
+	<<else>>
+		<<set $alexBooze to "noID">>
+		당신은 ID를 찾는 척 하며 살짝 꼼지락거린다. 주인은 짜증스런 눈으로 흘깃 보고는 술을 옆으로 치운다.
+
+	<</if>>
+	<br><br>
+
+<</if>>
+
+<<He_ nun>> 금전등록기에 <<if $alexBooze is "noBooze" or $alexBooze is "noID">>술을 제외한 <</if>>모든 물품을 등록한다. "전부 <<printmoney $farm_work.shopping_money>>로구나," <<he_ ga>> 말한다.
+<br><br>
 
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
@@ -4118,8 +4156,6 @@ Alex quickly enters the cottage and takes out some clothes. "Here."
 		<br>
 	<</if>>
 <<else>>
-	<br><br>
-
 	<<link [[지불한다|Farm Shopping Pay]]>><</link>>
 	<br>
 	<<link [[잡아채 도망간다|Farm Shopping Steal]]>><<crimeUp 50 "thievery">><</link>><<crime "thievery">><<athleticsdifficulty 1 600>>
@@ -4284,13 +4320,22 @@ You hand over the money Alex gave you, and pick up the basket.
 <br><br>
 <<endevent>>
 <<npc Alex>><<person1>>
-<br>
 
-You return to the farm. Alex meets you in the yard. "Nice," <<he>> says. "Leave it in the kitchen."
-<br><br>
+You return to the farm. Alex meets you in the yard.
 
-<<link [[다음|Farm Work]]>><<endevent>><</link>>
-<br>
+<<if $alexBooze>>
+	"Thanks," <<he>> says, taking the basket. As <<he>> turns toward the farmhouse, <<he>> glances down into the bag.
+	<br><br>
+
+	<<alexBoozeShopping>>
+
+<<else>>
+	"Nice," <<he>> says. "Leave it in the kitchen."
+	<br><br>
+
+	<<link [[다음|Farm Work]]>><<endevent>><</link>>
+
+<</if>>
 
 :: Farm Shopping Steal
 <<effects>>
@@ -4379,9 +4424,8 @@ You return to the farm. Alex meets you in the yard. "Nice," <<he>> says. "Leave 
 You arrive at the farm. Alex meets you in the yard.
 <br><br>
 
-
 <<if $exposed gte 1>>
-	<<He>> blushes and looks away. "Wh-what happened to your-" <<he>> gulps. "Never mind." <<He>> takes the basket.<<towelup>>
+	<<He>> blushes and looks away. "Wh-what happened to your-" <<he>> gulps. "Never mind." <<He>> takes the basket.<<if $farm_naked isnot 1>><<towelup>><</if>>
 	<br><br>
 	<<if $farm_naked isnot 1>>
 		<<He>> disappears into the farmhouse, and emerges with some towels. <<He>> throws them at you without looking, before turning back to the building.
@@ -4404,10 +4448,16 @@ You arrive at the farm. Alex meets you in the yard.
 	"고마워," <<he_ 가>> 장바구니를 건네받으며 말한다. <<He>> turns towards the farmhouse.
 	<br><br>
 
-	<<link [[Give Alex the money|Farm Shopping Give]]>><<trauma -6>><<npcincr Alex dom -1>><<npcincr Alex love 1>><</link>><<ldom>><<glove>><<ltrauma>>
-	<br>
-	<<link [[Keep the money|Farm Shopping Keep]]>><<set $money += $farm_work.shopping_money>><</link>>
-	<br>
+	<<if $alexBooze>>
+		<<alexBoozeShopping>>
+
+	<<else>>
+		<<link [[Give Alex the money|Farm Shopping Give]]>><<trauma -6>><<npcincr Alex dom -1>><<npcincr Alex love 1>><</link>><<ldom>><<glove>><<ltrauma>>
+		<br>
+		<<link [[Keep the money|Farm Shopping Keep]]>><<set $money += $farm_work.shopping_money>><</link>>
+		<br>
+
+	<</if>>
 <</if>>
 <br><br>
 
@@ -4510,6 +4560,36 @@ You pocket the money as Alex enters the farmhouse.
 <<link [[다음|Farm Work]]>><<endevent>><</link>>
 <br>
 
+:: Farm Shopping Booze
+<<effects>>
+
+<<if $alexBooze is "noBooze">>
+	<<if C.npc.Alex.dom gte 20>>
+		You grip Alex by <<his>> shoulder. <<He>> attempts to shake you off, but you keep your grip. Annoyed, you toss the remaining notes at <<him>>.
+		<br><br>
+
+		"Stop acting like such a brat. I'm only looking out for you."
+		<br><br>
+
+		As you turn away, <<he>> mumbles something to <<himself>>. <<He>> sounds chastened.<<lstress>><<ldom>><<stress -6>><<npcincr "Alex" dom -1>>
+
+	<<elseif ($alexBooze is "noBooze" and C.npc.Alex.dom lte 20) or $alexBooze is "noID">>
+		You place your hand on Alex's shoulder. <<He>> glances at you, then at your open hand with the leftover banknotes. "The money for the alcohol," you say.
+		<br><br>
+
+		<<He>> nods. "Thanks." <<He>> turns away, and you think you hear <<him>> mumble an apology.<<lstress>><<stress -6>>
+	<</if>>
+
+<<else>>
+	You grab Alex by <<his>> shoulder. <<He>> looks back at you. You grab <<his>> hand and place the bank notes into it. "Here's what was left."
+	<br><br>
+
+	Alex's face softens a bit before <<he>> kisses your cheek.<<glove>><<npcincr "Alex" love 1>>
+
+<</if>>
+<br><br>
+
+<<link [[다음|Farm Work]]>><<unset $alexBooze>><<endevent>><</link>>
 
 :: Farm Race
 <<effects>>
@@ -5096,7 +5176,7 @@ You stand beside Alex as the goons close in. <<He>> plants <<his>> feet, then la
 <<endevent>>
 <<generate1>><<generate2>>
 <<person1>>
-Another goon rushes to assist, while the other two rush you.
+Another goon advances on Alex, while the remaining two rush you.
 <br><br>
 
 <<link [[다음|Farm Lorry Fight]]>><<set $fightstart to 1>><</link>>
@@ -5350,7 +5430,36 @@ You carry the boxes inside, and leave them on kitchen table.
 <<link [[다음|Farm Work]]>><</link>>
 <br>
 
+:: Farm Lorry Pregnant Variant
+<<effects>>
 
+<<if $phase is 1>>
+	<<if $speech_attitude is "bratty">>
+    	"Don't worry, I can take them,"
+    <<elseif $speech_attitude is "meek">>
+        "I-It's okay, I'll deal with them,"
+    <<else>>
+        "It's fine, I'll deal with them,"
+    <</if>>
+    you say.
+	<br><br>
+
+    "N-NO!" <<he>> says, gripping your arm. "What if they come this way? I need you to stay with me," <<he>> says. Looking at <<his>> face, you see a mix of fear and frustration.
+	<br><br>
+
+<<elseif $phase is 2>>
+	Looking at Alex's face, you see a mix of fear and frustration. You can't risk leaving <<him>> alone, not while <<hes>> like this. You decide to stay with Alex.
+	<br><br>
+
+<</if>>
+
+You both walk into the farmhouse, and Alex locks the door behind you. <<He>> sits in the living room and rests <<his>> forehead in <<his>> palms.
+<br><br>
+
+You hear laughter outside.
+<br><br>
+
+<<link [[다음|Farm Lorry Safety 2]]>><</link>>
 
 :: Farm Rape
 <<if $molestationstart is 1>>

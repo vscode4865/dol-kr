@@ -3,12 +3,46 @@ Config.history.controls = false;
 Config.saves.slots = 9;
 Config.history.maxStates = 1;
 
+/* LinkNumberify and images will enable or disable the feature completely */
+/* debug will enable or disable the feature only for new games */
+/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
+/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
+window.StartConfig = {
+	debug: false,
+	enableImages: true,
+	enableLinkNumberify: true,
+	version: "0.4.5.3",
+	versionName: "",
+	sneaky: false,
+};
+
 State.prng.init();
 
 window.versionUpdateCheck = true;
 window.onLoadUpdateCheck = false;
 
 let pageLoading = false;
+
+Config.saves.isAllowed = () => {
+	if (tags().includes("nosave") || V.replayScene) return false;
+	return true;
+}
+
+idb.footerHTML = `
+	<div class="savesListRow">
+		<div class="saveGroup">
+			<span style="margin: 0;">
+				<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdity를 지지</a>해 주시는 모든 분들께 특별히 감사드립니다
+			</span>
+			<div class="saveId"></div>
+			<div class="saveButton"></div>
+			<div class="saveName"></div>
+			<div class="saveDetails"></div>
+		</div>
+		<div class="saveButton">
+			<input type="button" class="saveMenuButton right" value="전부 삭제" onclick="idb.saveList('confirm clear')">
+		</div>
+	</div>`
 
 function onLoad(save) {
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
@@ -102,19 +136,6 @@ function onSave(save, details) {
 window.onSave = onSave;
 Save.onSave.add(onSave);
 
-/* LinkNumberify and images will enable or disable the feature completely */
-/* debug will enable or disable the feature only for new games */
-/* sneaky will enable the Sneaky notice banner on the opening screen and save display */
-/* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
-window.StartConfig = {
-	debug: false,
-	enableImages: true,
-	enableLinkNumberify: true,
-	version: "0.4.3.3",
-	versionName: "",
-	sneaky: false,
-};
-
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");
 window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
@@ -190,6 +211,13 @@ Config.navigation.override = function (dest) {
 			case "Forest Shop Legs":
 			case "Forest Shop Feet":
 				return "Forest Shop";
+
+			case "Cafe Fruit Salad":
+			case "Cafe Autumn Ale":
+			case "Cafe Summer Ale":
+			case "Cafe Spring Ale":
+			case "Cafe Winter Ale":
+				return "Cafe Eat";
 
 			case "Over Outfit Shop":
 			case "Outfit Shop":
@@ -455,6 +483,17 @@ Config.navigation.override = function (dest) {
 				return "Chalets Work One Sex";
 			case "Chalets Work One Rape Finish":
 				return "Chalets Work One Sex Finish";
+			
+			case "Whitney Bully Parasite Event Submit":
+			case "Whitney Bully Parasite Event Escape Attempt":
+				return "Bully Parasite";
+			
+			case "Whitney Bully Parasite Event Combat":
+				return "Bully Parasite Fight";
+
+			case "Whitney Bully Parasite Event Combat Loss":
+			case "Whitney Bully Parasite Event Combat Victory":
+				return "Bully Parasite Fight Finish";
 			default:
 				return false;
 		}

@@ -143,59 +143,66 @@
 <</if>>
 
 <<if $brothelVending>>
-	<<if $brothelVending.status is "asked" or $brothelVending.status is "sold">>
+	<<if $brothelVending.status is "asked" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty lt 4)>>
 		<<condomicon "machine">><span class="gold">당신은 쇼핑 센터에서 자판기를 구매해 여기에 설치할 수 있다.</span>
+		<br><br>
+	<<elseif $brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4>>
+		<<condomicon "machine">><span class="gold">당신의 자판기는 판매되었다. 브라이어에게 이야기하는 게 좋겠다.</span>
 		<br><br>
 	<<elseif $brothelVending.status is "bought">>
 		<<condomicon "machine">> <<link [[자판기를 설치한다 (0:30)|Brothel Dressing Room]]>><<set $brothelVending.status to "set">><<set $weekly.brothelVMCollect to true>><<pass 30>><</link>>
 		<br><br>
-	<<elseif $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
-		<<if !($brothelVending.products % 2) and $condomLvl gte 1>>
-			<<condomicon>>당신은 <span class="gold">약국 간호사</span>와 콘돔 판매에 대해 논할 수 있다.
-			<br><br>
-		<</if>>
-		<<if $brothelVending.products lt 2 and $adultshopunlocked>>
-			<<sextoysicon "lube">>당신은 <span class="gold">시리스 선생님</span>과 윤활제 판매에 대해 논할 수 있다.
-			<br><br>
-		<</if>>
+	<<elseif $brothelVending.status is "set">>
 		<<if $brothelVending.products>>
-			당신은 자판기의 재고를 확인한다.
-			<<if $brothelVending.products % 2>>
-				<<if $brothelVending.condoms lte 1>>
-					콘돔 자판기가 <span class="red">비어 있다.</span> 당신은 약국에서 추가분을 조달할 수 있다.
-					<br><br>
-				<<else>>
-					<<if $brothelVending.condoms gte 200>>
-						콘돔 자판기가 <span class="green">꽉 차 있다.</span>
-					<<else>>
-						<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
-						당신은 콘돔 <<trNumber $brothelVending.condoms>> 팩이 있는 것을 확인한다. 3개들이 콘돔 <<trNumber $brothelVending.condomsToRefill>> 팩이 더 들어갈 공간이 있다. 당신은 약국에서 추가분을 조달할 수 있다.
-					<</if>>
-					<br>
-					당신은 약국에서는 £60에 파는 3개들이 콘돔 팩의 가격을 £80로 책정한다.
-					<br>
-					<<condomicon>><<link [[콘돔을 산다 (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>>
-					<br><br>
-				<</if>>
+			<<set _outOfStock to []>>
+			<<set _full to []>>
+			<<set _buyMore to []>>
+			<<set _productsAvailable to []>>
+			<<set _productsToPurchase to []>>
+			<<if $brothelVending.condoms lt 200>><<run _buyMore.push(`추가 콘돔을 <span class="gold">약국에서</span>`)>><</if>>
+			<<if $brothelVending.lube lt 200>><<run _buyMore.push(`추가 윤활제를 <span class="gold">성인용품점에서</span>`)>><</if>>
+
+			<<if $brothelVending.condoms is 0>>
+				<<run _outOfStock.push(`콘돔 자판기`)>>
+			<<elseif $brothelVending.condoms gte 200>>
+				<<run _full.push(`콘돔 자판기`)>>
+			<<else>>
+				<<run _productsAvailable.push(`콘돔 <span class="gold">$brothelVending.condoms</span> 팩`)>>
+				<<run _productsToPurchase.push(`콘돔 <span class="blue">$brothelVending.condomsToRefill</span> 팩`)>>
 			<</if>>
-			<<if $brothelVending.products gte 2>>
-				<<if $brothelVending.lube lte 1>>
-					윤활제 자판기가 비어 있다. 당신은 성인용품점에서 추가분을 조달할 수 있다.
-					<br><br>
-				<<else>>
-					<<if $brothelVending.lube gte 200>>
-						윤활제 자판기가 <span class="green">꽉 차 있다.</span>
-					<<else>>
-						<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
-						당신은 윤활제 <<trNumber $brothelVending.lube>> 병이 있는 것을 확인한다. <<trNumber $brothelVending.lubeToRefill>> 병이 더 들어갈 공간이 있다. 당신은 성인용품점에서 추가분을 조달할 수 있다.
-					<</if>>
-					<br>
-					당신은 성인용품점에서는 £20에 파는 윤활제의 가격을 £30으로 책정한다.
-					<br>
-					<<sextoysicon "lube">><<link [[윤활제를 산다 (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>>
-					<br><br>
-				<</if>>
+			<<if $brothelVending.lube is 0>>
+				<<run _outOfStock.push(`윤활제 자판기`)>>
+			<<elseif $brothelVending.lube gte 200>>
+				<<run _full.push(`윤활제 자판기`)>>
+			<<else>>
+				<<run _productsAvailable.push(`윤활제 <span class="gold">$brothelVending.lube</span> 병`)>>
+				<<run _productsToPurchase.push(`윤활제 <span class="blue">$brothelVending.lubeToRefill</span> 병`)>>
 			<</if>>
+
+			<<condomicon "machine">> 당신은 자판기의 재고를 확인한다.
+			<<if _full.length gte 1>>
+				<<print _full.join("와 ")>>가 <span class="green">꽉 차 있다.</span>.
+			<</if>>
+			<<if _outOfStock.length gte 1>>
+				<<print _outOfStock.join("와 ")>>가 <span class="red">비어 있다.</span>.
+			<</if>>
+			<<if _productsAvailable.length gte 1>>
+				자판기 안에는 <<print _productsAvailable.join("과 ")>>이 남아있다. <<print _productsToPurchase.join("과 ")>>을 더 넣을 공간이 있다.
+			<</if>>
+			<<if _buyMore.length gte 1>>
+				당신은 <<print _buyMore.join(", 그리고 ")>> 조달할 수 있다.
+			<</if>>
+			당신은 이번주 매상을 <<print $weekly.brothelVMCollect ? "이미 가져갔다" : "아직 가져가지 않았다">>.
+			<br>
+			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
+				<<condomicon>><<link [[콘돔을 산다 (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 3개들이 콘돔 팩의 가격을 £80로 책정했지만, 약국에서는, £60이다. <i class="green">약국에서 사는 게 더 싸게 살 수 있을 것이다.</i></span></mouse>
+				<br>
+			<</if>>
+			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
+				<<sextoysicon "lube">><<link [[윤활제를 산다 (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 윤활제 가격을 £30로 책정했지만, 성인용품점에서는, £20이다. <i class="green">성인용품점에서 사는 게 더 싸게 살 수 있을 것이다.</i></span></mouse>
+				<br>
+			<</if>>
+			<br>
 		<</if>>
 	<</if>>
 <</if>>
@@ -501,13 +508,13 @@
 	브라이어는 와인잔을 들고 소파에 누워 있다. <<He_ nun>> 당신이 들어오자 고개를 든다. "내 제안을 생각해봤니?"
 	<br><br>
 
-	<<link [[네|"Briar's Office"]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+	<<ind>><<link [[네|"Briar's Office"]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
 	<br>
 	<<if $id is 0>>
-		<<link [[신분증에 대해 문의한다|"Briar's Office ID"]]>><</link>>
+		<<askicon>><<link [[신분증에 대해 문의한다|"Briar's Office ID"]]>><</link>>
 		<br>
 	<</if>>
-	<<link [[떠난다|Brothel]]>><<endevent>><</link>>
+	<<getouticon>><<link [[떠난다|Brothel]]>><<endevent>><</link>>
 	<br>
 
 <<else>>
@@ -552,7 +559,7 @@
 		<<if $brothelVending.status is "idea">>
 			<<condomicon "machine">><<link [[브라이어에게 자판기 설치에 대해 물어본다 (0:20)|Brothel VM ask]]>><<pass 20>><</link>>
 			<br>
-		<<elseif $brothelVending.products and $brothelVending.status is "set" and !$weekly.brothelVMCollect>>
+		<<elseif $brothelVending.products and ($brothelVending.status is "set" or ($brothelVending.status is "sold" and $brothelVending.weeksEmpty gte 4)) and !$weekly.brothelVMCollect>>
 			<<highicon>><<link [[자판기에서 돈을 꺼낸다 (0:10)|Brothel VM income]]>><<pass 10>><</link>>
 			<br>
 		<</if>>
@@ -563,11 +570,11 @@
 	<</if>>
 	<<if $brothelshowdata.intro is 2>>
 		<<if $brothel_escortjob is undefined>>
-			<<ind>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
+			<<danubeicon>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
 			<br>
 
 		<<elseif $brothel_escortjob.accept isnot true and $weekly.escortjob isnot 1>>
-			<<ind>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
+			<<danubeicon>><<link [[부자 고객을 위해 일한다|Brothel Escort Job Accept]]>><</link>>
 			<br>
 
 		<</if>>
@@ -634,7 +641,7 @@
 <br><br>
 
 <<if currentSkillValue('skulduggery') gte 400>>
-	<i>어떤 생각 하나가 문뜩 떠오른다.</i> 만약 그들이 연료를 팔지 않는다면, 브라이어는 이전에 어떻게 기계를 작동시켰을까?
+	<i>어떤 생각 하나가 문득 떠오른다.</i> 만약 그들이 연료를 팔지 않는다면, 브라이어는 이전에 어떻게 기계를 작동시켰을까?
 	<br><br>
 
 	<<link [[묻는다|Briar Machine Ask 3]]>><<control 10>><</link>><<gcontrol>>
@@ -642,7 +649,7 @@
 	<<link [[생각을 떨쳐낸다|Brothel]]>><<endevent>><</link>>
 	<br>
 <<else>>
-	<<link [[떠난다|Brothel]]>><<endevent>><</link>>
+	<<link [[창관|Brothel]]>><<endevent>><</link>>
 	<br>
 <</if>>
 
@@ -1922,10 +1929,10 @@
 	<<person1>>"좋아." <<person_ i>> 말한다.
 	<br><br>
 	<<if crimeSumCurrent() gte 4500>>
-		<<person2>>"이 녀석은 약삭빠른 녀석이야," <<person_ i>> 말한다. "<<pshe_ ga>> 아무 것도 못하게 <<phimPost>>에게 수갑부터 채워."
+		<<person2>>"이 녀석은 약삭빠른 녀석이야," <<person_ i>> 말한다. "<<pshe_ ga>> 아무 것도 못하게 <<print $worn.handheld.name isnot "naked" ? "<<pher_ yi>> <<worn_handheld_name_ ul>> 빼앗고 <<phimPost>>에게 수갑을 채워" : "<<phimPost>>에게 수갑부터 채워">>."
 		<br><br>
 		"알겠어."
-		<<set $leftarm to "bound">><<set $rightarm to "bound">>
+		<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 	<</if>>
 <</if>>
 
@@ -1989,7 +1996,7 @@
 
 :: Brothel Raid Arrest 2
 <<set $outside to 0>><<set $location to "town">><<effects>>
-<<set $leftarm to "bound">><<set $rightarm to "bound">>
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 <<pass 45>>
 당신은 수갑을 찬 채로 벽에 서있는 창관의 직원들 앞으로 안내된다. 한 무리의 행인들이 멍하니 바라보고 있다.
 <br><br>
@@ -2365,15 +2372,15 @@ The car comes to a stop, and Briar pulls you out. "I like avoiding this place. I
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 You ask Briar if <<he>> has already checked your vending machine's stock and collected the money this week.
 <br><br>
-<<if $brothelVending.weeksEmpty gte 4>>
-	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
+<<if $brothelVending.status is "sold">>
+	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty weeks. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
 	<br><br>
 	You try to explain why you haven't been able to refill the machine for so long, but Briar cuts you off.
 	<br><br>
-	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold"> you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
+	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold">you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
 	<br><br>
 	<<set $money += 100000>>
-	<<set $brothelVending.status to "sold">>
+	<<set $brothelVending.weeksEmpty to 0>>
 	<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
 		Briar pauses. "You never collected on your last sales before it was emptied.
 	<</if>>
@@ -2401,9 +2408,7 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 		but unfortunately, that eats up the rest of the profits. All you're getting back is the money you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney _productCost>>. "Try stocking more products next time, if you want to do more than break even."
 	<</if>>
 	<<set $money += _productCost>>
-	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
 	<<set $brothelVending.condomsSold to 0>>
-	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
 	<<set $brothelVending.lubeSold to 0>>
 	<<set $brothelVending.weeksRent to 0>>
 	<<set $weekly.brothelVMCollect to true>>
@@ -2453,7 +2458,7 @@ You accept Briar's conditions and tell <<him>> you will buy the vending machine 
 <<effects>>
 You tell Briar you are not interested in <<his>> conditions.
 <br><br>
-"Suit yourself. I'm not going to change my mind,” <<he>> returns to sipping <<his>> wine.
+"Suit yourself. I'm not going to change my mind," <<he>> returns to sipping <<his>> wine.
 <br><br>
 <<link [[다음|"Briar's Office"]]>><</link>>
 
@@ -2615,6 +2620,7 @@ It doesn't take long until you are bound and unable to move. They hook up the ch
 
 :: Brothel Escort Job
 <<effects>>
+<<set $brothel_escortjob.sub to 0>>
 
 You are bound and suspended, unable to move or see. Laughter and lively chatter are heard from the hallway, coming closer. The partying guests come in and gather around you. Conversations are calming down and a sense of suspense hangs in the air.
 <br><br>
@@ -2626,7 +2632,7 @@ You are bound and suspended, unable to move or see. Laughter and lively chatter 
 <br>
 
 <<if $submissive gte 1150>>
-    <<link [[Be obedient|Brothel Escort Job 2]]>><<set $phase to 2>><<set $brothel_escortjob.sub to 1>><<endevent "phaseless">><</link>><<submissivetext>>
+    <<link [[Be obedient|Brothel Escort Job 2]]>><<set $phase to 2>><<set $brothel_escortjob.sub += 1>><<endevent "phaseless">><</link>><<submissivetext>>
 <<elseif $submissive lte 850>>
     <<link [[Be defiant|Brothel Escort Job 2]]>><<set $phase to 3>><<endevent "phaseless">><</link>><<defianttext>>
 <</if>>
@@ -2792,7 +2798,7 @@ The <<person1>><<person>> grabs you by the chin and lifts your head to get a goo
 	You meet <<his>> gaze head on. Your determination seems to unsettle <<him>>.
 	<br><br>
 
-	"I had a lot of fun," <<he>> says, avoiding your look. "Thank you."<<llstress>><<stress - 12>>
+	"I had a lot of fun," <<he>> says, avoiding your look. "Thank you."<<llstress>><<stress -12>>
 	<br><br>
 
 	<<He>> turns and leaves the room.
@@ -2894,11 +2900,11 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 	You leave <<him>> be and move on.
 	<br><br>
 
-	<<set $money -= 200>>
+	<<set $money -= 20000>>
 
 <</if>>
 
-<<link [[다음|Danube Street]]>><<endevent>><<set $weekly.escortjob to 1>><<endcombat>><<unset $brothel_escortjob>><<stress -200>><<pass 60>><</link>>
+<<link [[다음|Danube Street]]>><<endevent>><<set $weekly.escortjob to 1>><<endcombat>><<unset $brothel_escortjob>><<pass 60>><</link>>
 
 :: Brothel Escort Job Escape
 <<effects>>

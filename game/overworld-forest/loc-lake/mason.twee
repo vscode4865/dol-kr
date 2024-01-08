@@ -7,9 +7,9 @@
 "여기서 보니 반갑구나." <<he_ ga>> 말했다. "그럼 난 마저 한 바퀴 더 돌러 가볼게." <<He_ nun>> 당신이 가까이 가기도 전에 헤엄쳐 가버린다.
 <br><br>
 
-<<link [[잡으려고 시도한다 (0:05)|Lake Mason Swim]]>><<tiredness 1>><</link>><<swimmingdifficulty 1 300>><<gtiredness>>
+<<swimicon>><<link [[잡으려고 시도한다 (0:05)|Lake Mason Swim]]>><<tiredness 1>><</link>><<swimmingdifficulty 1 300>><<gtiredness>>
 <br>
-<<link [[떠난다|Lake Depths]]>><<endevent>><</link>>
+<<getouticon>><<link [[떠난다|Lake Depths]]>><<endevent>><</link>>
 <br>
 
 :: Lake Mason Swim
@@ -258,9 +258,9 @@
 
 	<<if $exposed gte 2>>
 		<<if $exhibitionism gte 75>>
-			<<link [[연못 안에 앉는다|Mason In Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist5>><</if>>
+			<<ind>><<link [[연못 안에 앉는다|Mason In Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist5>><</if>>
 			<br>
-			<<link [[연못가에 앉는다|Mason Beside Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist5>><</if>>
+			<<ind>><<link [[연못가에 앉는다|Mason Beside Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist5>><</if>>
 			<br>
 		<<else>>
 			<<covered>> 메이슨에게 이런 식으로 당신의 존재를 알려서는 안된다!
@@ -268,27 +268,27 @@
 		<</if>>
 	<<elseif $exposed gte 1>>
 		<<if $exhibitionism gte 35>>
-			<<link [[연못 안에 앉는다|Mason In Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist3>><</if>>
+			<<ind>><<link [[연못 안에 앉는다|Mason In Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist3>><</if>>
 			<br>
-			<<link [[연못가에 앉는다|Mason Beside Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist3>><</if>>
+			<<ind>><<link [[연못가에 앉는다|Mason Beside Pond Naked]]>><</link>><<if $daily.ex.mason isnot 1>><<exhibitionist3>><</if>>
 			<br>
 		<<else>>
 			<<covered>> 메이슨에게 이런 식으로 당신의 존재를 알려서는 안된다!
 			<br><br>
 		<</if>>
 	<<else>>
-		<<link [[연못 안에 앉는다|Mason In Pond]]>><</link>>
+		<<ind>><<link [[연못 안에 앉는다|Mason In Pond]]>><</link>>
 		<br>
-		<<link [[연못가에 앉는다|Mason Beside Pond]]>><</link>>
+		<<ind>><<link [[연못가에 앉는다|Mason Beside Pond]]>><</link>>
 		<br>
 	<</if>>
-	<<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
+	<<getouticon>><<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
 	<br>
 <<else>>
 	연못은 비어 있다. 메이슨은 비가 오는 주말과 휴일 저녁에 호수에서 수영을 즐긴 후에 이 곳에 올 것이다. 
 	<br><br>
 
-	<<link [[떠난다|Lake Waterfall]]>><</link>>
+	<<getouticon>><<link [[떠난다|Lake Waterfall]]>><</link>>
 	<br>
 <</if>>
 
@@ -519,22 +519,21 @@
 	<<if Time.dayState is "night">>
 		어렴풋하던 태양빛의 끝자락이 잎사귀 사이에서 희미하게 사라진다. 메이슨이 일어났다. "여기 너무 오래 있으면 감기에 걸릴 거야." <<he_ ga>> 말한다. "어두워지면 숲은 위험할 수 있으니 내가 데려다주마."
 		<br><br>
+		<<set _storedClothes to clothingInStorage("lakeshore")>>
 
-		<<for _active_clothes range Object.keys($store)>>
-			<<for _i to 0; _i lt $store[_active_clothes].length; _i++>>
-				<<if $store[_active_clothes][_i].location is "lakeshore">>
-					<<set _temp_clothes_present to 1>>
-					<<break>>
-				<</if>>
-			<</for>>
-		<</for>>
-
-		<<if _temp_clothes_present is 1>>
-			<<link [[옷을 갈아입고, 메이슨과 집으로 간다 (0:40)|Mason Walk]]>><<pass 40>><<storeon "lakeshore">><<set $masonDressed to true>><</link>>
+		<<if $earSlime.forcedCommando isnot undefined and _storedClothes.find(item => item.slot is "under_lower" and !item.type.includes("naked"))>>
+			<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+			<<set _earSlimeText to true>>
+		<<elseif _storedClothes.length>>
+			<<link [[옷을 갈아입고, 메이슨과 집으로 간다 (0:40)|Mason Walk]]>><<pass 40>><<storeload "lakeshore">><<set $masonDressed to true>><</link>>
 			<br>
 		<</if>>
 
-		<<link [[메이슨과 집으로 간다 (0:30)|Mason Walk]]>><<pass 30>><</link>>
+		<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
+			<<if !_earSlimeText>><span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span><</if>>
+		<<else>>
+			<<link [[메이슨과 집으로 간다 (0:30)|Mason Walk]]>><<pass 30>><</link>>
+		<</if>>
 		<br>
 		<<link [[혼자 가겠다고 말한다|Mason Walk Refuse]]>><</link>>
 		<br>
@@ -546,7 +545,7 @@
 		<br>
 		<<link [[추파를 던진다 (0:30)|Mason Pond Flirt]]>><<pass 30>><<npcincr Mason love -1>><<npcincr Mason lust 1>><</link>><<promiscuous1>><<llove>><<glust>>
 		<br>
-		<<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
+		<<getouticon>><<link [[떠난다|Lake Waterfall]]>><<endevent>><</link>>
 		<br>
 	<</if>>
 <</widget>>

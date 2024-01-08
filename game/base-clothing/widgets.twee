@@ -136,6 +136,10 @@
 	<<generalWear "hands" _args[0] _args[1] _args[2]>>
 <</widget>>
 
+<<widget "handheldwear">>
+	<<generalWear "handheld" _args[0] _args[1] _args[2]>>
+<</widget>>
+
 <<widget "legswear">>
 	<<generalWear "legs" _args[0] _args[1] _args[2]>>
 <</widget>>
@@ -292,6 +296,10 @@
 	<<generalSend _args[1] "hands" _args[0] _args[2] _args[3]>>
 <</widget>>
 
+<<widget "handheldsend">>
+	<<generalSend _args[1] "handheld" _args[0] _args[2] _args[3]>>
+<</widget>>
+
 <<widget "legssend">>
 	<<generalSend _args[1] "legs" _args[0] _args[2] _args[3]>>
 <</widget>>
@@ -317,6 +325,7 @@
 	<<facestrip>>
 	<<neckstrip>>
 	<<handsstrip>>
+	<<handheldstrip>>
 	<<legsstrip>>
 	<<feetstrip>>
 	<<setKnowsAboutPregnancyCurrentLoaded>>
@@ -433,12 +442,35 @@
 	<<generalStrip "hands">>
 <</widget>>
 
+<<widget "handheldstrip">>
+	<<generalStrip "handheld">>
+<</widget>>
+
 <<widget "legsstrip">>
 	<<generalStrip "legs">>
 <</widget>>
 
 <<widget "feetstrip">>
 	<<generalStrip "feet">>
+<</widget>>
+
+/*temporarily equips a handheld "prop" for visual effect in scenes. props can be cleared earlier in a scene via <<handheldon>> or <<clotheson>>, and are cleared in <<endevent>>*/
+<<widget "wearProp">>
+	<<switch _args[0]>>
+		<<case "milkshake">><<set _propIndex to 10>>
+		<<case "cigarette">><<set _propIndex to 11>>
+		<<case "popcorn">><<set _propIndex to 16>>
+		<<case "gingerbread">><<set _propIndex to 17>>
+		<<case "lemonade">><<set _propIndex to 18>>
+		<<case "mug">><<set _propIndex to 19>>
+		<<default>><span class="red">ERROR: _args[0] is not a valid prop. Please report this bug.</span>
+	<</switch>>
+
+	<<set $propEquipped to 1>>
+	<<if !$worn.handheld.type.includes("prop")>>
+		<<handheldstrip>>
+		<<handheldwear _propIndex>>
+	<</if>>
 <</widget>>
 
 /*Returns all carried clothes back to the wardrobe*/
@@ -487,6 +519,7 @@
 	<<handsruined>>
 	<<legsruined>>
 	<<feetruined>>
+	<<handheldruined>>
 	<<setKnowsAboutPregnancyCurrentLoaded>>
 <</widget>>
 
@@ -652,7 +685,7 @@
 			<<if $_item.colourCustom isnot undefined>><<set _colourCustom to $_item.colourCustom>><</if>>
 			<<if $_item.accessory_colourCustom isnot undefined>><<set _accessory_colourCustom to $_item.accessory_colourCustom>><</if>>
 
-			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">> /* NO SPLIT ADDED */ 
+			<<if $_item.outfitSecondary isnot undefined and $_item.outfitSecondary[1] is "broken">> /* NO SPLIT ADDED */
 			<<elseif $money gte $_cost>>
 				<<generalSend $_return $_slot $_setupItem.index $_item.colour $_item.accessory_colour>>
 				<<if $_item.one_piece is "split">>
@@ -700,12 +733,28 @@
 
 <<widget "underupperruined">>
 	<<set _noRebuy to _args[0]>>
+	<<if $worn.under_lower.type.includes("naked")>>
+		<<set $_exposedType to $worn.under_lower.exposedType>>
+	<</if>>
 	<<generalRuined "under_upper">>
+	<<if $_exposedType and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to $_exposedType>>
+	<</if>>
 <</widget>>
 
 <<widget "underlowerruined">>
 	<<set _noRebuy to _args[0]>>
+	<<if $worn.under_lower.type.includes("naked")>>
+		<<set $_exposedType to $worn.under_lower.exposedType>>
+	<</if>>
 	<<generalRuined "under_lower">>
+	<<if _args[1] and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to _args[1]>>
+	<<elseif $_exposedType and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to $_exposedType>>
+	<<elseif !$_exposedType>>
+		<<set $worn.under_lower.exposedType to "ruined">>
+	<</if>>
 <</widget>>
 
 <<widget "genitalsruined">>
@@ -738,6 +787,11 @@
 	<<generalRuined "hands">>
 <</widget>>
 
+<<widget "handheldruined">>
+	<<set _noRebuy to _args[0]>>
+	<<generalRuined "handheld">>
+<</widget>>
+
 <<widget "legsruined">>
 	<<set _noRebuy to _args[0]>>
 	<<generalRuined "legs">>
@@ -762,8 +816,9 @@
 	<</for>>
 	<<buttplugon>>
 	<<if !($worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_lower.name is "naked" and $worn.under_upper.name is "naked")>>
-		당신은 옷을 고쳐입는다.
-		<br><br>
+		당신은 옷을 고쳐입<<if $rightarm isnot "bound" and $worn.handheld.name isnot "naked">>고 <<worn_handheld_name_ ul>> 집어든다<<else>>는다<</if>>.<br><br>
+	<<elseif $rightarm isnot "bound" and $worn.handheld.name isnot "naked">>
+		당신은 <<worn_handheld_name_ ul>> 집어든다.
 	<</if>>
 
 	<<exposure>>
@@ -787,7 +842,7 @@
 			<<set $_slot to _args[0]>>
 		<</if>>
 		<<set _slots to []>>
-		<<if $carried[$_slot].name isnot "naked">>
+		<<if $carried[$_slot].name isnot "naked" or ($_slot is "handheld" and $worn.handheld.type.includes("prop") and $carried.handheld.name is "naked")>>
 			<<if $worn[$_slot].cursed is 1>>
 				<<carriedSend "wardrobe" $_slot>>
 			<<else>>
@@ -859,6 +914,10 @@
 
 <<widget "handson">>
 	<<generalOn "hands">>
+<</widget>>
+
+<<widget "handheldon">>
+	<<generalOn "handheld">>
 <</widget>>
 
 <<widget "legson">>
@@ -950,11 +1009,27 @@
 <</widget>>
 
 <<widget "underuppersteal">>
+	<<if $worn.under_lower.type.includes("naked")>>
+		<<set $_exposedType to $worn.under_lower.exposedType>>
+	<</if>>
 	<<generalSteal "under_upper" _args[0]>>
+	<<if $_exposedType and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to $_exposedType>>
+	<</if>>
 <</widget>>
 
 <<widget "underlowersteal">>
+	<<if $worn.under_lower.type.includes("naked")>>
+		<<set $_exposedType to $worn.under_lower.exposedType>>
+	<</if>>
 	<<generalSteal "under_lower" _args[0]>>
+	<<if _args[1] and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to _args[1]>>
+	<<elseif $_exposedType and $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to $_exposedType>>
+	<<else>>
+		<<set $worn.under_lower.exposedType to "stolen">>
+	<</if>>
 <</widget>>
 
 <<widget "overheadsteal">>
@@ -975,6 +1050,10 @@
 
 <<widget "handssteal">>
 	<<generalSteal "hands" _args[0]>>
+<</widget>>
+
+<<widget "handheldsteal">>
+	<<generalSteal "handheld" _args[0]>>
 <</widget>>
 
 <<widget "legssteal">>
@@ -1012,6 +1091,9 @@
 		<</if>>
 		<<generalUndress $_location $_slot>>
 	<</for>>
+	<<if $worn.under_lower.type.includes("naked")>>
+		<<set $worn.under_lower.exposedType to "notWorn">>
+	<</if>>
 <</widget>>
 
 <<widget "undressOverClothes">>
@@ -1042,7 +1124,7 @@
 			<<run window.wardrobeStripStraponException($worn.under_lower.name)>>
 		<<else>>
 			<<if _storeItemSkip is undefined>>
-				<<set _storeItemSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false, "butt_plug":true}>>
+				<<set _storeItemSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "handheld":false, "legs":false, "feet":false, "butt_plug":true}>>
 			<</if>>
 			<<unset _undressSlot>>
 			/*Checks if the current slot is part of an outfit and switches to the main piece if that is the case*/
@@ -1204,6 +1286,10 @@
 	<<generalUndress _args[0] "hands">>
 <</widget>>
 
+<<widget "handheldundress">>
+	<<generalUndress _args[0] "handheld">>
+<</widget>>
+
 <<widget "legsundress">>
 	<<generalUndress _args[0] "legs">>
 <</widget>>
@@ -1351,7 +1437,7 @@
 /* Inputting "return" will return the item to the wardrobe */
 
 <<widget "storeon">>
-	<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "legs":false, "feet":false}>>
+	<<set _equipSkip to {"over_upper":false, "over_lower":false, "upper":false, "lower":false, "under_upper":false, "under_lower":false, "over_head":false, "head":false, "face":false, "neck":false, "hands":false, "handheld":false, "legs":false, "feet":false}>>
 	<<set _store_temp to _args[0]>>
 	<<set _store_option to _args[1] or 0>>
 	<<for $_slot range setup.clothingLayer.all>>
@@ -1462,6 +1548,10 @@
 	<<generalStoreon _args[0] "hands" _args[1]>>
 <</widget>>
 
+<<widget "storeonhandheld">>
+	<<generalStoreon _args[0] "handheld" _args[1]>>
+<</widget>>
+
 <<widget "storeonlegs">>
 	<<generalStoreon _args[0] "legs" _args[1]>>
 <</widget>>
@@ -1494,7 +1584,7 @@
 	<<for _j to 0; _j lt $_selectedWardrobe[_slot].length; _j++>>
 		<<set $_selectedItem to $_selectedWardrobe[_slot][_j]>>
 		<<if _item.name is $_selectedItem.name and _item.colour is $_selectedItem.colour and _item.accessory_colour is $_selectedItem.accessory_colour>>
-			<<set _matched to (_item.colour isnot "custom") + (_item.accessory_colour isnot "custom")>>
+			<<set _matched to (_item.colour isnot "custom") + (_item.accessory is 0 or _item.accessory_colour isnot "custom")>>
 
 			<<if _item.colourCustom isnot undefined and _item.colourCustom is $_selectedItem.colourCustom>>
 				<<set _matched++>>
@@ -1572,9 +1662,10 @@
 		/*Prevent equip when the ear slime doesn't allow it*/
 		<<if _wearId gte 0 and _slimePrevent.includes(_slot) and $earSlime.corruption gte 10>>
 			<<if $daily.corruptionSlimeClothes is undefined>>
-				<<set $daily.corruptionSlimeClothes to random($earSlime.corruption * 5, $earSlime.corruption * 15) - currentSkillValue('willpower')>>
+				<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
+				<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
 			<</if>>
-			<<if ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school")) and Time.schoolDay) and !_item.type.includesAny("event")>>
+			<<if ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school") and Time.schoolDay)) and !_item.type.includesAny("event")>>
 				<span class="red">당신은 <<trSearchClothes _item.name "name" "을">>_trResult 입으려고 했지만, 귓속의 슬라임이 허락하지 않는다.</span>
 				<br>
 				<<continue>>
@@ -1600,7 +1691,7 @@
 										<<set _matched++>>
 									<</if>>
 								<</if>>
-								<<if $_selectedWardrobe[_labelWW][_j].accessory_colour isnot "custom">>
+								<<if $_selectedWardrobe[_labelWW][_j].accessory is 0 or $_selectedWardrobe[_labelWW][_j].accessory_colour isnot "custom">>
 									<<set _matched++>>
 								<<elseif _item.accessory_colourCustom isnot undefined and $_selectedWardrobe[_labelWW][_j].accessory_colourCustom isnot undefined>>
 									<<if _item.accessory_colourCustom is $_selectedWardrobe[_labelWW][_j].accessory_colourCustom>>
@@ -1658,6 +1749,7 @@
 		neck:false,
 		face:false,
 		hands:false,
+		handheld:false,
 		legs:false,
 		feet:false,
 		genitals:false,

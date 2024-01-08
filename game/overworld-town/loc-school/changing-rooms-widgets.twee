@@ -1,9 +1,15 @@
 :: Widgets Changing Room [widget]
 
 <<widget "changingRoom">>
+	<<unset $lastChangingRoom>>
 	<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
-	<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
+	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
+	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
+		<<set _seenGender to "f">>
+	<<else>>
+		<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
+	<</if>>
 	<<set _playerGenderAppearance to (_seenGender is _changingRoomGenderType ? "same" : "other")>>
 	<<set _uncomfortable to ($backgroundTraits.includes("crossdresser") and $player.gender is _changingRoomGenderType)>>
 	<<set _justChangedClothes to ["School Pool Wardrobe", "School Boy Changing Room", "School Girl Changing Room"].includes($passagePrev)>>
@@ -157,14 +163,16 @@
 
 <<widget "schoolChangingRoomLinks">>
 	<<if $exposed gte 2 and $exhibitionism gte 75 and $poolroomstate isnot "empty">>
-		<<swimmingicon>><<link [[수영장에 들어간다|School Pool]]>><</link>><<if $swimall isnot 1>><<gdelinquency>><</if>>
+		<<swimmingicon>><<link [[수영장에 들어간다|School Pool]]>><<set $lastChangingRoom to $passage>><<set $justEntered to true>><</link>><<if $swimall isnot 1>><<gdelinquency>><</if>>
 	<<elseif $exposed gte 2 and $swimall isnot 1 and $poolroomstate isnot "empty">>
 		<span class="pink">이렇게 노출한 상태로는 수영장에 들어갈 수 없다!</span>
 	<<else>>
-		<<swimmingicon>><<link [[수영장에 들어간다|School Pool]]>><</link>>
+		<<swimmingicon>><<link [[수영장에 들어간다|School Pool]]>><<set $lastChangingRoom to $passage>><<set $justEntered to true>><</link>>
 	<</if>>
 	<br>
-	<<if $exhibitionism lte 75 and $exposed gte 1>>
+	<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
+		<span class="red">당신 귓속의 슬라임이 수영복을 입은 채로 나가는 것을 허락하지 않는다.</span>
+	<<elseif $exhibitionism lte 75 and $exposed gte 1>>
 		<span class="pink">이렇게 노출한 상태로는 밖으로 나갈 수 없다!</span>
 	<<elseif $exposed gte 1>>
 		<<getouticon>><<link [[나간다|School Pool Entrance Exhibitionism]]>><</link>>

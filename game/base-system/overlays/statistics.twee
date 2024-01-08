@@ -153,11 +153,11 @@
 		<br>
 		입에 사정당한 횟수: $oralejacstat번
 		<br>
-		삼킨 정액의 양: $semenswallowedstat mL
+		삼킨 정액의 양: <<print Math.floor($semenswallowedstat)>> mL
 		<<if $bestialitydisable is "f">>
 			<br>
-			삼킨 동물 정액의 양: $animalsemenswallowedstat mL
-			<</if>>
+			삼킨 동물 정액의 양: <<print Math.floor($animalsemenswallowedstat)>> mL
+		<</if>>
 		<br>
 		손으로 해준 횟수: $handstat번
 		<br>
@@ -204,13 +204,13 @@
 		자위하며 보낸 시간: <<print Math.trunc($secondsSpentMasturbating / 60)>>분
 		<br>
 		<<if $breastfeedingdisable is "f">>
-			마신 모유량: $milk_drank_stat mL
+			마신 모유량: <<print Math.floor($milk_drank_stat)>> mL
 			<br>
-			모유 생산량: $milk_produced_stat mL
+			모유 생산량: <<print Math.floor($milk_produced_stat)>> mL
 			<br>
 		<</if>>
 		<<if $plantdisable is "f">>
-			마신 꿀의 양: $nectar_drank_stat mL
+			마신 꿀의 양: <<print Math.floor($nectar_drank_stat)>> mL
 			<br>
 		<</if>>
 		<<if $player.penisExist>>
@@ -222,7 +222,7 @@
 			<br>
 		<</if>>
 		<<if $player.penisExist or $breastfeedingdisable is "f">>
-			강제로 짜내진 양: $fluid_forced_stat mL
+			강제로 짜내진 체액의 양: <<print Math.floor($fluid_forced_stat)>> mL
 			<br>
 		<</if>>
 		<<if $knot_stat isnot undefined>>
@@ -456,7 +456,24 @@
 		빠진 역사 수업: $schoolLessonsMissed.history회
 		<br>
 		빠진 수영 수업: $schoolLessonsMissed.swimming회
-		<br><br>
+		<br>
+		<<if $earSlimeDaysStat>>
+			귓속 슬라임과 함께한 기간: $earSlimeDaysStat일
+			<br>
+		<</if>>
+		<<if $earSlime.days>>
+			현재의 귓속 슬라임과 함께한 기간: $earSlime.days일
+			<br>
+		<</if>>
+		<<if $earSlimePassiveDaysStat>>
+			수동적인 귓속 슬라임과 함께한 기간: $earSlimePassiveDaysStat일
+			<br>
+		<</if>>
+		<<if $whitney_smoke gte 1>>
+			피운 담배 수: $whitney_smoke개비
+			<br>
+		<</if>>
+		<br>
 	<</foldout>>
 
 
@@ -482,7 +499,7 @@
 			<mouse class="tooltip linkBlue">(?)<span>세이브가 로드된 총 횟수이며, 같은 세이브에서의 반복적인 로드는 계산되지 않습니다. '0.3.12.X' 및 그 이전 버전에서의 횟수는 확인이 불가능합니다</span></mouse>
 			<br>
 			플레이 시간: <<print msToTime(($saveDetails.playTime ? $saveDetails.playTime : 0) + ($saveDetails.loadTime ? new Date() - $saveDetails.loadTime : 0))>>
-			<mouse class="tooltip linkBlue">(?)<span>'h:mm:ss'양식으로 표시됩니다. 게임을 켜 둔 채로 방치했다가, 저장하면 그 시간까지 계산되기 때문에, 이를 방지하려면, 게임 플레이를 끝내기 전에 저장하고 플레이를 재개할 때 로드해야 한다는 것에 주의하세요.  '0.3.12.X' 및 그 이전 버전에서의 시간은 확인이 불가능합니다</span></mouse>
+			<mouse class="tooltip linkBlue">(?)<span>'h:mm:ss'양식으로 표시됩니다. 게임을 켜 둔 채로 몇 시간 방치했다가, 저장하면 그 시간까지 계산되므로 주의하세요. 이를 방지하려면, 게임 플레이를 끝내기 전에 저장하고 플레이를 재개할 때 로드하세요. '0.3.13.X' 및 그 이전 버전에서의 시간은 확인이 불가능합니다</span></mouse>
 			<br>
 		<</if>>
 		<<if $saveVersions isnot undefined>>
@@ -641,15 +658,15 @@
 				<mouse class="tooltip linkBlue">(?)<span>100%나 그 이상에 도달하면 성장하며, 0%나 그 이하에 도달하면 수축합니다.</span></mouse>
 				<br>
 				<<if $sexStats && $sexStats.pills>>
-					음경이 커질 수 있음: <<print ($player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gte 20) ? "네" : "아니오")>>
-					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lt 20>>
+					음경이 커질 수 있음: <<print ($player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gte 20)? "네" : "아니오")>>
+					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lt 20>>
 						<mouse class="tooltip linkBlue">(?)<span>음경 성장약을 과다복용하거나 자지에 성게형 자지 기생충을 기생시킬 필요가 있습니다.</span></mouse>
 					<<elseif $player.penissize is $penissizemax>>
 						<mouse class="tooltip linkBlue">(?)<span>최대 크기입니다.</span></mouse>
 					<</if>>
 					<br>
-					음경이 작아질 수 있음: <<print ($player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lte -20) ? "네" : "아니오")>>
-					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gt -20>>
+					음경이 작아질 수 있음: <<print ($player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) lte -20)? "네" : "아니오")>>
+					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose - ($worn.genitals.type.includes("shrinking") ? 20 : 0) gt -20>>
 						<mouse class="tooltip linkBlue">(?)<span>음경 축소약을 과다복용하거나 음경에 슬라임 기생충을 기생시킬 필요가 있습니다.</span></mouse>
 					<<elseif $player.penissize is $penissizemin>>
 						<mouse class="tooltip linkBlue">(?)<span>최소 크기입니다.</span></mouse>
@@ -756,7 +773,7 @@
 			<br>
 			모델 명성: <<print Math.trunc($fame.model)>>
 			<br>
-			섬주민 언어: <<print Math.trunc($islander_language)>>
+			섬주민 언어: <<if $islander_language is undefined>>0<<else>><<print Math.trunc($islander_language)>><</if>>
 			<br><br>
 		<</foldout>>
 

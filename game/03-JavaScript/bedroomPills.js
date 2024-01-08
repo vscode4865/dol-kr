@@ -341,11 +341,11 @@ setup.pills = [
 			return V.player.penisExist && this.owned() > 0 ? 1 : 0;
 		},
 		take_condition() {
-			return (
-				this.doseTaken() === 0 &&
+			return this.doseTaken() === 0 &&
 				V.sexStats.pills["pills"]["penis growth"].doseTaken === 0 &&
 				V.sexStats.pills["pills"]["penis reduction"].doseTaken === 0
-			);
+				? 1
+				: 0;
 		},
 		effects: [],
 	},
@@ -541,7 +541,54 @@ setup.pills = [
 		},
 		effects: [`<<awareness -1>>`, `<<control 10>>`, `<<set $medicated += 1>>`],
 	},
+	{
+		name: "Hair Growth Formula",
+		description:
+			"미녹시딜과 머리카락에 직접 발랐을 때 머리카락을 빠르게 자라게 하며 더 건강하게 하는 다른 성분들을 포함한 스프레이입니다. 뿌린 후 3일 동안 효과가 지속됩니다.",
+		onTakeMessage: "당신은 스프레이를 뿌린다. 당신은 그것이 당신의 머리카락을 빠르게 자라도록 해 주기를 바란다.",
+		warning_label:
+			"주의사항: 사용하고 잠시 후 알레르기 반응이 일어나는 경우 의사와 상의하십시오. 스프레이가 입이나 눈에 들어갔을 경우 곧바로 의사에게 가십시오.",
+		autoTake() {
+			return V.sexStats.pills["pills"][this.name].autoTake;
+		},
+		doseTaken() {
+			return V.sexStats.pills["pills"][this.name].doseTaken;
+		},
+		owned() {
+			return V.sexStats.pills["pills"][this.name].owned;
+		},
+		hpi_take_pills() {
+			return "머리에 뿌린다";
+		},
+		hpi_doseTaken() {
+			if (V.sexStats.pills["pills"][this.name].doseTaken) {
+				return (
+					V.sexStats.pills["pills"][this.name].doseTaken + "일 동안" + (V.sexStats.pills["pills"][this.name].doseTaken > 1 ? "" : "") + " 유효"
+				);
+			} else {
+				return "해당사항 없음";
+			}
+		},
+		hpi_take_every_morning() {
+			return this.autoTake() ? "그만 뿌린다" : "필요시에 뿌린다";
+		},
+		type: "hair",
+		subtype: "Hair Growth Formula",
+		shape: "spray",
+		overdose() {
+			return V.sexStats.pills["pills"][this.name].overdose;
+		},
+		icon: "img/misc/icon/hairspray.png",
+		display_condition() {
+			return this.owned() > 0 ? 1 : 0;
+		},
+		take_condition() {
+			return this.doseTaken() === 0 ? 1 : 0;
+		},
+		effects: [],
+	},
 ];
+// ToDo: figure out a means to allow applying the Hair Growth Formula to pubic hair as well
 
 function generateHomePillsInventory() {
 	$(function () {
@@ -737,12 +784,16 @@ function onTakeClick(itemName) {
 		case "Anti-Parasite Cream":
 			V.sexStats.pills["pills"][itemName].doseTaken += 14;
 			break;
+		case "Hair Growth Formula":
+			V.sexStats.pills["pills"][itemName].doseTaken += 3;
+			break;
 		default:
+			// Stat for total pills consumption
+			V.pillsConsumed = (V.pillsConsumed || 0) + 1;
 			V.sexStats.pills["pills"][itemName].doseTaken += 1;
 			break; // Stat for specific pill consumptionbreak;
 	}
 
-	V.pillsConsumed = typeof V.pillsConsumed === "undefined" || V.pillsConsumed == null ? 1 : V.pillsConsumed + 1; // Stat for total pills consumption
 	for (const item of setup.pills) {
 		if (item.name === itemName) {
 			for (const widget of item.effects) // run the widgets associated with a pill
@@ -752,6 +803,7 @@ function onTakeClick(itemName) {
 			if (item.doseTaken() > 1 && item.name.contains("blocker") === false) {
 				switch (item.type) {
 					case "parasite":
+					case "hair":
 						break;
 					case "pregnancy":
 						V.overdosePillsTaken = item.name;
@@ -938,6 +990,7 @@ function resetAllDoseTaken() {
 			case "Anti-Parasite Cream":
 			case "fertility booster":
 			case "contraceptive":
+			case "Hair Growth Formula":
 				if (V.sexStats.pills["pills"][pill].doseTaken > 0) {
 					V.sexStats.pills["pills"][pill].doseTaken--;
 				}

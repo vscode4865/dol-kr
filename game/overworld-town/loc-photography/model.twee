@@ -1,6 +1,10 @@
 :: Photo Model
 <<effects>>
 
+<<if numberOfEarSlime()>>
+	<<set $earSlime.knowsAboutPhotoShoot to true>>
+<</if>>
+
 당신은 니키를 따라 계단을 올라가 하얀 스크린이 있는 큰 방으로 들어간다. 조명 몇 개와 카메라 한 대가 기다리고 있다.
 <br><br>
 
@@ -87,8 +91,40 @@
 <<exhibitionism1>>
 
 <<if $worn.face.type.includes("mask")>>
-	<<link [[마스크는 계속 착용하고 여성복을 입는다|Photo Model 2]]>>
-		<<undressKeepFace "photo">>
+	<<if $earSlime.forcedDressing and $earSlime.forcedDressing.type is "m">>
+		<span class="red">The ear slime refuses to allow you to wear a feminine outfit.</span>
+	<<else>>
+		<<link [[마스크는 계속 착용하고 여성복을 입는다|Photo Model 2]]>>
+			<<undressKeepFace "photo">>
+			<<set $photo_upper_index to $photo_upper_f_index>>
+			<<set $photo_lower_index to $photo_lower_f_index>>
+			<<set $photo_under_index to $photo_under_f_index>>
+			<<underlowerwear $photo_under_index>>
+			<<lowerwear $photo_lower_index>>
+			<<upperwear $photo_upper_index>>
+		<</link>>
+	<</if>>
+	<br>
+	<<if $earSlime.forcedDressing and $earSlime.forcedDressing.type is "f">>
+		<span class="red">The ear slime refuses to allow you to wear a masculine outfit.</span>
+	<<else>>
+		<<link [[마스크는 계속 착용하고 남성복을 입는다|Photo Model 2]]>>
+			<<undressKeepFace "photo">>
+			<<set $photo_upper_index to $photo_upper_m_index>>
+			<<set $photo_lower_index to $photo_lower_m_index>>
+			<<set $photo_under_index to $photo_under_m_index>>
+			<<underlowerwear $photo_under_index>>
+			<<lowerwear $photo_lower_index>>
+			<<upperwear $photo_upper_index>>
+		<</link>>
+	<</if>>
+	<br><br>
+<</if>>
+<<if $earSlime.forcedDressing and $earSlime.forcedDressing.type is "m">>
+	<span class="red">The ear slime refuses to allow you to wear a feminine outfit.</span>
+<<else>>
+	<<link [[옷을 모두 벗고 여성복을 입는다|Photo Model 2]]>>
+		<<undress "photo">>
 		<<set $photo_upper_index to $photo_upper_f_index>>
 		<<set $photo_lower_index to $photo_lower_f_index>>
 		<<set $photo_under_index to $photo_under_f_index>>
@@ -96,9 +132,13 @@
 		<<lowerwear $photo_lower_index>>
 		<<upperwear $photo_upper_index>>
 	<</link>>
-	<br>
-	<<link [[마스크는 계속 착용하고 남성복을 입는다|Photo Model 2]]>>
-		<<undressKeepFace "photo">>
+<</if>>
+<br>
+<<if $earSlime.forcedDressing and $earSlime.forcedDressing.type is "f">>
+	<span class="red">The ear slime refuses to allow you to wear a masculine outfit.</span>
+<<else>>
+	<<link [[옷을 모두 벗고 남성복을 입는다|Photo Model 2]]>>
+		<<undress "photo">>
 		<<set $photo_upper_index to $photo_upper_m_index>>
 		<<set $photo_lower_index to $photo_lower_m_index>>
 		<<set $photo_under_index to $photo_under_m_index>>
@@ -106,27 +146,7 @@
 		<<lowerwear $photo_lower_index>>
 		<<upperwear $photo_upper_index>>
 	<</link>>
-	<br><br>
 <</if>>
-<<link [[옷을 모두 벗고 여성복을 입는다|Photo Model 2]]>>
-	<<undress "photo">>
-	<<set $photo_upper_index to $photo_upper_f_index>>
-	<<set $photo_lower_index to $photo_lower_f_index>>
-	<<set $photo_under_index to $photo_under_f_index>>
-	<<underlowerwear $photo_under_index>>
-	<<lowerwear $photo_lower_index>>
-	<<upperwear $photo_upper_index>>
-<</link>>
-<br>
-<<link [[옷을 모두 벗고 남성복을 입는다|Photo Model 2]]>>
-	<<undress "photo">>
-	<<set $photo_upper_index to $photo_upper_m_index>>
-	<<set $photo_lower_index to $photo_lower_m_index>>
-	<<set $photo_under_index to $photo_under_m_index>>
-	<<underlowerwear $photo_under_index>>
-	<<lowerwear $photo_lower_index>>
-	<<upperwear $photo_upper_index>>
-<</link>>
 <br><br>
 
 :: Photo Model 2
@@ -501,6 +521,7 @@ You get dressed behind the screen, and emerge to find the camera righted, and Ni
 <<effects>>
 
 <<famemodel 20 "pic">>
+<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 <<storeon "photo">>
 You get dressed behind the screen, and emerge to find Niki counting out your cash. You make <<moneyGain $photo.money>>.
 <br><br>
@@ -583,7 +604,9 @@ Niki returns, carrying a stool ahead of <<nnpc_him "Niki">>. You use it as a pro
 <<elseif $photo.blackmail gte 1>>
 	<<link [[받아들인다|Photo Model Topless]]>><<trauma 12>><<stress 12>><<set $phase to 1>><</link>><<ggtrauma>><<ggstress>><<glove "Niki">>
 <<elseif $photo.pubfame>>
-	<<link [[받아들인다|Photo Model Topless]]>><<set $desperateaction to "you need the photo">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
+	<<link [[받아들인다|Photo Model Topless]]>><<set $desperateaction to "당신은 사진이 필요하다">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
+<<elseif $earSlime.event.includes("fully expose yourself while working as a model in town")>>
+	<<link [[받아들인다|Photo Model Topless]]>><<set $desperateaction to "당신은 몸을 노출해야만 한다">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
 <<else>>
 	<span class="blue">당신은 그럴수 있을 만큼 음란하거나 절박하지 않다.</span>
 <</if>>
@@ -601,6 +624,16 @@ Niki returns, carrying a stool ahead of <<nnpc_him "Niki">>. You use it as a pro
 <</if>>
 <<if $enemyno gte 1 and $photo.blackmail gte 1>>
 	The <<person>> shakes <<his>> head. <<photo_evidence_upload>>
+<</if>>
+<<if $earSlime.event.includes("fully expose yourself while working as a model in town")>>
+	<<set $earSlime.event to "">>
+	<span class="red">The slime in your ear punishes you for failing to complete your task.</span>
+	<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>>
+	<<if $exhibitionism gte 75 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
+	<<else>>
+		<<set $earSlime.defyCooldown += 8>>
+	<</if>>
 <</if>>
 <br><br>
 <<if $photo.refused gte 2>>
@@ -638,6 +671,7 @@ Niki returns, carrying a stool ahead of <<nnpc_him "Niki">>. You use it as a pro
 	Niki nods, and wraps up the photoshoot without another word.
 	<br><br>
 	<<famemodel 20 "pic">>
+	<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 	<<storeon "photo">>
 	You get dressed behind the screen, and emerge to find Niki counting out your cash. You make <<moneyGain $photo.money>>.
 	<br><br>
@@ -660,6 +694,7 @@ Niki returns, carrying a stool ahead of <<nnpc_him "Niki">>. You use it as a pro
 <<effects>>
 
 <<famemodel 20 "pic">>
+<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 <<storeon "photo">>
 You're still blushing when you emerge, now dressed, to find Niki counting out your cash.
 <<if $enemyno gte 2>>
@@ -695,6 +730,7 @@ Money in hand, you leave the studio.
 <<set $photo.money *= 2>>
 <<famemodel 10 vid>>
 <<fameexhibitionism 10 vid>>
+<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 <<npcincr Niki love 1>>
 
 <<if setup.clothes.upper[clothesIndex('upper', $worn.upper)].strap is 1>>
@@ -760,7 +796,9 @@ Niki takes more pictures, focusing your chest and face. <<nnpc_He "Niki">> remai
 <<elseif $photo.blackmail gte 1>>
 	<<link [[받아들인다|Photo Model Undies]]>><<trauma 12>><<stress 12>><<set $phase to 1>><</link>><<ggtrauma>><<ggstress>><<glove "Niki">>
 <<elseif $photo.pubfame>>
-	<<link [[받아들인다|Photo Model Undies]]>><<set $desperateaction to "you need the photo">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
+	<<link [[받아들인다|Photo Model Undies]]>><<set $desperateaction to "당신은 사진이 필요하다">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
+<<elseif $earSlime.event.includes("fully expose yourself while working as a model in town")>>
+	<<link [[받아들인다|Photo Model Undies]]>><<set $desperateaction to "당신은 몸을 노출해야만 한다">><<set $phase to 0>><</link>><<exhibitionist4>><<glove "Niki">>
 <<else>>
 	<span class="blue">당신은 그럴수 있을 만큼 음란하거나 절박하지 않다.</span>
 <</if>>
@@ -773,6 +811,7 @@ Niki takes more pictures, focusing your chest and face. <<nnpc_He "Niki">> remai
 <<set $photo.money += 400>>
 <<famemodel 10 vid>>
 <<fameexhibitionism 10 vid>>
+<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 <<npcincr Niki love 1>>
 
 You pull the $worn.lower.name down your legs. "Wait," Niki says. "Hold that pose." Niki takes several shots from various angles, then you pull the fabric the rest of the way, leaving you in just the $worn.under_lower.name.
@@ -841,7 +880,9 @@ Niki circles you, and asks you to arch your back with your hands between your th
 <<elseif $photo.blackmail gte 1>>
 	<<link [[받아들인다|Photo Model Nude]]>><<trauma 12>><<stress 12>><<set $phase to 1>><</link>><<ggtrauma>><<ggstress>><<glove "Niki">>
 <<elseif $photo.pubfame>>
-	<<link [[받아들인다|Photo Model Nude]]>><<set $desperateaction to "you need the photo">><<set $phase to 0>><</link>><<exhibitionist5>><<glove "Niki">>
+	<<link [[받아들인다|Photo Model Nude]]>><<set $desperateaction to "당신은 사진이 필요하다">><<set $phase to 0>><</link>><<exhibitionist5>><<glove "Niki">>
+<<elseif $earSlime.event.includes("fully expose yourself while working as a model in town")>>
+	<<link [[받아들인다|Photo Model Nude]]>><<set $desperateaction to "당신은 몸을 노출해야만 한다">><<set $phase to 0>><</link>><<exhibitionist5>><<glove "Niki">>
 <<else>>
 	<span class="blue">당신은 그럴수 있을 만큼 음란하거나 절박하지 않다.</span>
 <</if>>
@@ -855,6 +896,7 @@ Niki circles you, and asks you to arch your back with your hands between your th
 <<set $photo.money += 500>>
 <<famemodel 10 vid>>
 <<fameexhibitionism 10 vid>>
+<<if playerBellyVisible()>><<famepregnancy `Math.ceil(playerBellySize() / 10)`>><</if>>
 <<npcincr Niki love 1>>
 
 Niki's camera clicks and flashes as you peel your $worn.under_lower.name down your legs, exposing your <<genitals>>. You take your time, and stop to pose with the fabric around your ankles before kicking them away.
@@ -878,6 +920,11 @@ Niki's camera clicks and flashes as you peel your $worn.under_lower.name down yo
 <<set $worn.under_lower to clone(setup.clothes.under_lower[0])>>
 
 You turn to let Niki snap you from different angles. <<nnpc_He "Niki">> moves fast now. Sweat soon glistens on <<nnpc_his "Niki">> forehead, lit by the white lights above.
+<<if $earSlime.event.includes("fully expose yourself while working as a model in town")>>
+	<<set $earSlime.event to "">>
+	<span class="green">The slime in your ear is pleased that you completed its task of exposing yourself here.</span>
+	<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
+<</if>>
 <br><br>
 
 At last, Niki sighs and steps away. "Thank you," <<nnpc_he "Niki">> pants. "You can get dressed now." You walk behind the screen.

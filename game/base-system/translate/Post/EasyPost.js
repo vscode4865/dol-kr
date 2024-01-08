@@ -46,6 +46,7 @@ const EasyPostMacroList = [
 	{ name: "worn_face_name_", orig_name: "worn_face_name", is_print: 0},
 	{ name: "worn_feet_name_", orig_name: "worn_feet_name", is_print: 0},
 	{ name: "worn_genitals_name_", orig_name: "worn_genitals_name", is_print: 0},
+	{ name: "worn_handheld_name_", orig_name: "worn_handheld_name", is_print: 0},
 	{ name: "worn_hands_name_", orig_name: "worn_hands_name", is_print: 0},
 	{ name: "worn_head_name_", orig_name: "worn_head_name", is_print: 0},
 	{ name: "worn_legs_name_", orig_name: "worn_legs_name", is_print: 0},

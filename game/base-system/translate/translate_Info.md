@@ -1557,7 +1557,12 @@
         e.g.
         <<plant_detailsPost "forest" "을">>               // <<plant_details "forest">>을
     ```
- 
+
+    ```
+    <<seasonal_beveragePost>>
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
     ```
     <<tower_creature_textPost>>
         + <<charlesPost>>와 용도 및 방식 같음. 생략

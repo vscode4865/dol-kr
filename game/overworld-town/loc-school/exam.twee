@@ -19,6 +19,11 @@
 		<span class="green"><<trNamedNPC $_teacher_name "name" "의">>_trResult 사랑:</span> <span class="black">+5%</span>
 		<br>
 	<</if>>
+	<<if $delinquency lte 400>>
+		<<set $exam_chance += 5>>
+		<span class="green">모범생:</span> <span class="black">+5%</span>
+		<br>
+	<</if>>
 	<<if _args[0] is "maths">>
 		<<if $whitneymaths is "active">>
 			<<set $exam_chance -= 5>>
@@ -30,6 +35,12 @@
 			<br>
 		<</if>>
 	<</if>>
+	<<if $drunk gte 1>>
+		<<set _drunk to Math.ceil($drunk / 50)>>
+		<<set $exam_chance -= _drunk>>
+		<span class="purple">술에 취함:</span> <span class="black">-_drunk%</span>
+		<br>
+	<</if>>
 	<<if $anxiety gte 2>>
 		<<set $exam_chance -= 20>>
 		<span class="red">굉장히 긴장함:</span> <span class="black">-20%</span>
@@ -37,6 +48,15 @@
 	<<elseif $anxiety gte 1>>
 		<<set $exam_chance -= 10>>
 		<span class="red">긴장함:</span> <span class="black">-10%</span>
+		<br>
+	<</if>>
+	<<if $arousal gte 8000>>
+		<<set $exam_chance -= 10>>
+		<span class="lewd">굉장히 흥분함:</span> <span class="black">-10%</span>
+		<br>
+	<<elseif $arousal gte 6000>>
+		<<set $exam_chance -= 5>>
+		<span class="lewd">흥분함:</span> <span class="black">-5%</span>
 		<br>
 	<</if>>
 
@@ -183,22 +203,36 @@
 		당신은 시험에 집중하며, 다른 학생들이 신음하고 사각거리는 동안 최선을 다한다.
 	<<case 1>>
 		당신은 숨을 깊게 들이마시고, 압박감을 받지 않도록 노력한다.
-	<<case 2>>
-		<<skulduggerycheck>>
-		당신은 시리스를 주시한다. <<He_ nun>> 방을 감시하고 있어야 하지만, 창문 밖을 내다보는 데 시간을 더 쓰고 있는 것 같다. 조심하기만 한다면 옆 자리 아이의 걸 베낄 수
-
-		<<if $skulduggerysuccess is 1>>
-			있을 것이다. <span class="green">당신은 어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
-			<<set $exam_chance += 10>><<passPercent 10>>
+	<<case 2 3 5>>
+		<<if $phase is 5>>
+			<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+				<<skulduggerycheck>><<set _cheating to true>>
+				The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to look for ways to cheat in the exam.
+			<<else>>
+				You try to ignore the command from the slime and focus on the exam. You feel it try, <span class="green">but fail,</span> to force to cheat, however, it is still a distraction. <<set $exam_chance -= 5>><<passPercent -5>>
+			<</if>>
 		<<else>>
-			있-
-			<br><br>
-			<span class="red">"네 시험지에만 집중해,"</span> 시리스가 바로 당신을 쳐다보며 말한다. <<He_ nun>> 보기보단 여기에 집중하고 있었던 모양이다.
-			<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<<skulduggerycheck>><<set _cheating to true>>
+			<<if $phase is 3>>You follow the slimes command and look for ways to cheat in the exam.<</if>>
 		<</if>>
-		<br><br>
 
-		<<skulduggeryuse true>>
+		<<if _cheating>>
+			당신은 시리스를 주시한다. <<He_ nun>> 방을 감시하고 있어야 하지만, 창문 밖을 내다보는 데 시간을 더 쓰고 있는 것 같다. 조심하기만 한다면 옆 자리 아이의 걸 베낄 수
+			<<if $skulduggerysuccess is 1>>
+				있을 것이다. <span class="green">당신은 어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
+				<<set $exam_chance += 10>><<passPercent 10>>
+			<<else>>
+				있-
+				<br><br>
+				<span class="red">"네 시험지에만 집중해,"</span> 시리스가 바로 당신을 쳐다보며 말한다. <<He_ nun>> 보기보단 여기에 집중하고 있었던 모양이다.
+				<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<</if>>
+			<br><br>
+
+			<<skulduggeryuse true>>
+		<</if>>
+	<<case 4>>
+		You do your best to ignore the slime command, and focus on doing your best to tune out the scribbling and groans of other students.
 <</switch>>
 <br><br>
 
@@ -229,13 +263,14 @@
 <<generatey2>> <!-- student who doesn't stop writing when the exam is over -->
 
 <<switch $phase>>
-	<<case 0>>
+	<<case 0 7>>
+		<<if $phase is 7>>You do your best to ignore the slime command, and<<else>>You<</if>>
 		<<if $whitneymaths is "active">>
-			당신은 시험에 집중하려 하지만, 휘트니의 잦은 방해가 집중하기 더 어렵게 한다.
+			try to focus on the exam, but Whitney's frequent distractions make it difficult to concentrate.
 		<<elseif $whitneymaths is "seat">>
-			당신은 시험에 집중하려 하지만, 휘트니가 산발적으로 더듬어 대어 집중하기 더 어렵게 한다. <<garousal>><<arousal 300 "genitals">><<arousal 300 "bottom">>
+			try to focus on the exam, but Whitney's sporadic groping makes it difficult to concentrate. <<garousal>><<arousal 300 "genitals">><<arousal 300 "bottom">>
 		<<else>>
-			당신은 시험에 집중하며, 다른 학생들이 신음하고 사각거리는 동안 최선을 다한다.
+			focus on the exam, doing your best to tune out the scribbling and groans of other students.
 		<</if>>
 	<<case 1>>
 		<<if $whitneymaths is "active">>
@@ -245,23 +280,35 @@
 		<<else>>
 			당신은 숨을 깊게 들이마시고, 압박감을 받지 않도록 노력한다.
 		<</if>>
-	<<case 2>>
-		<<skulduggerycheck>>
-		<<generatey3>><<person3>>
-		당신은 옆을 본다. 옆에 있는 <<person_ un>> 자신감에 차 있는 것처럼 보인다. 리버의 시선을 피할 수 있길 바라며, 당신은 악의 없는 행동으로 리버
-
-		<<if $skulduggerysuccess is 1>>
-			시선을 피하기를 바란다. <span class="green">당신은 어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
-			<<set $exam_chance += 10>><<passPercent 10>>
+	<<case 2 6 8>>
+		<<if $phase is 8>>
+			<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+				<<skulduggerycheck>><<set _cheating to true>>
+				The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to look for ways to cheat in the exam.
+			<<else>>
+				You try to ignore the command from the slime and focus on the exam. You feel it try, <span class="green">but fail,</span> to force to cheat, however, it is still a distraction. <<set $exam_chance -= 5>><<passPercent -5>>
+			<</if>>
 		<<else>>
-			시선을-
-			<br><br>
-			<span class="red">"눈은 앞을 봐야지,"</span> 리버가 <<person1>><<his_ yi>> 눈빛으로 당신을 꿰뚫으며 말한다. <<He_ nun>> 이 문제에 대해서는 한 마디도 더 하지 않지만, 당신의 시험지가 더욱 철저히 검토받을 것임을 안다.
-			<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<<skulduggerycheck>><<set _cheating to true>>
+			<<if $phase is 6>>You follow the slimes command and look for ways to cheat in the exam.<</if>>
 		<</if>>
-		<br><br>
+		<<generatey3>><<person3>>
 
-		<<skulduggeryuse true>>
+		<<if _cheating>>
+			당신은 옆을 본다. 옆에 있는 <<person_ un>> 자신감에 차 있는 것처럼 보인다. 리버의 시선을 피할 수 있길 바라며, 당신은 악의 없는 행동으로 리버
+			<<if $skulduggerysuccess is 1>>
+				시선을 피하기를 바란다. <span class="green">당신은 어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
+				<<set $exam_chance += 10>><<passPercent 10>>
+			<<else>>
+				시선을-
+				<br><br>
+				<span class="red">"눈은 앞을 봐야지,"</span> 리버가 <<person1>><<his_ yi>> 눈빛으로 당신을 꿰뚫으며 말한다. <<He_ nun>> 이 문제에 대해서는 한 마디도 더 하지 않지만, 당신의 시험지가 더욱 철저히 검토받을 것임을 안다.
+				<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<</if>>
+			<br><br>
+
+			<<skulduggeryuse true>>
+		<</if>>
 	<<case 3>>
 		<<npc Whitney 3>>
 		<<if $danceSuccess>>
@@ -341,25 +388,39 @@
 		당신은 시험에 집중하며, 다른 학생들이 신음하고 사각거리는 동안 최선을 다한다.
 	<<case 1>>
 		당신은 숨을 깊게 들이마시고, 압박감을 받지 않도록 노력한다.
-	<<case 2>>
-		<<skulduggerycheck>>
-		도렌은 종종 당신에게 등을 보이지만, <<his_ yi>> 경로는 예측하기 어렵다.
-
-		<<if $skulduggerysuccess is 1>>
-			<<He_ nun>> 언제라도 돌아볼 수 있었지만, <span class="green">당신은 대담한 눈초리로 옆사람의 시험지를 읽어볼 수 있었다.</span>
-			<<set $exam_chance += 10>><<passPercent 10>>
+	<<case 2 4 6>>
+		<<if $phase is 6>>
+			<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+				<<skulduggerycheck>><<set _cheating to true>>
+				The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to look for ways to cheat in the exam.
+			<<else>>
+				You try to ignore the command from the slime and focus on the exam. You feel it try, <span class="green">but fail,</span> to force to cheat, however, it is still a distraction. <<set $exam_chance -= 5>><<passPercent -5>>
+			<</if>>
 		<<else>>
-			당신은 <<he_ ga>> 지나가길 기다렸다가, 옆 자리 아이의 시험지를 훔쳐 본다. 도렌은 갑자기 휙 돌아보더니, <span class="red"><<his_ yi>> 손을 당신의 책상에 쾅 내려친다.</span>
+			<<skulduggerycheck>><<set _cheating to true>>
+			<<if $phase is 4>>You follow the slimes command and look for ways to cheat in the exam.<</if>>
+		<</if>>
+
+		<<if _cheating>>
+			도렌은 종종 당신에게 등을 보이지만, <<his_ yi>> 경로는 예측하기 어렵다.
+			<<if $skulduggerysuccess is 1>>
+				<<He_ nun>> 언제라도 돌아볼 수 있었지만, <span class="green">당신은 대담한 눈초리로 옆사람의 시험지를 읽어볼 수 있었다.</span>
+				<<set $exam_chance += 10>><<passPercent 10>>
+			<<else>>
+				당신은 <<he_ ga>> 지나가길 기다렸다가, 옆 자리 아이의 시험지를 훔쳐 본다. 도렌은 갑자기 휙 돌아보더니, <span class="red"><<his_ yi>> 손을 당신의 책상에 쾅 내려친다.</span>
+				<br><br>
+
+				"파리가 있었구나," <<he_ ga>> 말한다. <<He_ nun>> 당신이 부정행위를 하다 걸린 부끄러움을 느끼게 내버려 두었지만, 어쨌든 당신의 시험지는 더욱 철저히 검토받을 것이다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<</if>>
 			<br><br>
 
-			"파리가 있었구나," <<he_ ga>> 말한다. <<He_ nun>> 당신이 부정행위를 하다 걸린 부끄러움을 느끼게 내버려 두었지만, 어쨌든 당신의 시험지는 더욱 철저히 검토받을 것이다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+			<<skulduggeryuse true>>
 		<</if>>
-		<br><br>
-
-		<<skulduggeryuse true>>
 	<<case 3>>
 		<<npc Kylar 2>><<person2>>
 		당신은 카일라의 시험지를 쳐다본다. <<He_ nun>> 그걸 알아차리고 자기 시험지를 보여주고 싶어 안달난 듯, <<he_ ga>> 답안을 적는 동안 당신의 시야를 가로막는 <<his_ yi>> 팔을 치운다. <<He_ nun>> 어려운 문제에 창의적인 해답을 적는다.
+	<<case 5>>
+		You do your best to ignore the slime command, and focus on doing your best to tune out the scribbling and groans of other students.
 <</switch>>
 <br><br>
 
@@ -394,29 +455,42 @@
 		당신은 시험에 집중하며, 다른 학생들이 신음하고 사각거리는 동안 최선을 다한다.
 	<<case 1>>
 		당신은 숨을 깊게 들이마시고, 압박감을 받지 않도록 노력한다.
-	<<case 2>>
-		<<skulduggerycheck>>
-		윈터는 책을 한 권 가져와 읽으며, 시험에는 신경을 쓰지 않는 것처럼 보인다.
-
-
-		<<if $skulduggerysuccess is 1>>
-			하지만 당신은 그게 사실이 아니라는 걸 알고 있다. 방금, 그리고 지금, 선생님의 관심이 끌리는 순간들이 있다. 그러한 순간들을 노려, 당신은 옆 자리 아이의 것을 훔쳐보면서, <span class="green">어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
-			<<set $exam_chance += 10>><<passPercent 10>>
-		<<else>>
-			당신은 기회를 노려 옆 자리 아이의 시험지를 훔쳐본다.
-			<br><br>
-			<<if $robinhistory is "seat">>
-				<span class="red">로빈이 당신의 옆구리를 푹 찌른다.</span> "부정행위는 안 되지!"
-				<br><br>
-
-				윈터가 쳐다본다. "잡담은 금지다." 지금 이 상황을 빠져나가는 건 불가능할 것이다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>>
+	<<case 2 3 5>>
+		<<if $phase is 5>>
+			<<if $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+				<<skulduggerycheck>><<set _cheating to true>>
+				The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to look for ways to cheat in the exam.
 			<<else>>
-				<span class="red">"부정행위는 안 돼,"</span> 윈터는 책에서 눈을 떼지도 않고 말한다. 딱히 누구라고 말하진 않았지만, 당신은 <<he_ ga>> 당신에게 말하고 있다는 걸 안다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+				You try to ignore the command from the slime and focus on the exam. You feel it try, <span class="green">but fail,</span> to force to cheat, however, it is still a distraction. <<set $exam_chance -= 5>><<passPercent -5>>
 			<</if>>
+		<<else>>
+			<<skulduggerycheck>><<set _cheating to true>>
+			<<if $phase is 3>>You follow the slimes command and look for ways to cheat in the exam.<</if>>
 		<</if>>
-		<br><br>
 
-		<<skulduggeryuse true>>
+		<<if _cheating>>
+			윈터는 책을 한 권 가져와 읽으며, 시험에는 신경을 쓰지 않는 것처럼 보인다.
+			<<if $skulduggerysuccess is 1>>
+				하지만 당신은 그게 사실이 아니라는 걸 알고 있다. 방금, 그리고 지금, 선생님의 관심이 끌리는 순간들이 있다. 그러한 순간들을 노려, 당신은 옆 자리 아이의 것을 훔쳐보면서, <span class="green">어려운 문제들에 대한 답 몇 개를 옮겨적었다.</span>
+				<<set $exam_chance += 10>><<passPercent 10>>
+			<<else>>
+				당신은 기회를 노려 옆 자리 아이의 시험지를 훔쳐본다.
+				<br><br>
+				<<if $robinhistory is "seat">>
+					<span class="red">로빈이 당신의 옆구리를 푹 찌른다.</span> "부정행위는 안 되지!"
+					<br><br>
+
+					윈터가 쳐다본다. "잡담은 금지다." 지금 이 상황을 빠져나가는 건 불가능할 것이다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>>
+				<<else>>
+					<span class="red">"부정행위는 안 돼,"</span> 윈터는 책에서 눈을 떼지도 않고 말한다. 딱히 누구라고 말하진 않았지만, 당신은 <<he_ ga>> 당신에게 말하고 있다는 걸 안다.<<gstress>><<stress 6>><<set $exam_chance -= 10>><<passPercent -10>><<ggdelinquency>><<detention 5>>
+				<</if>>
+			<</if>>
+			<br><br>
+
+			<<skulduggeryuse true>>
+		<</if>>
+	<<case 4>>
+		You do your best to ignore the slime command, and focus on doing your best to tune out the scribbling and groans of other students.
 <</switch>>
 <br><br>
 

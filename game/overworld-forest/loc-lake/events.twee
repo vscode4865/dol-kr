@@ -1,7 +1,51 @@
+:: Lake Stroll Slime Defy
+<<effects>><<lakeeffects>>
+
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You ignore the slime's command. You feel a jolt of pain as the slime punishes you for your defiance. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You ignore the slime's command. The slime tries to overpower your will, and you feel a jolt of pain as it punishes you for your defiance. However, <span class="teal">it's still worn out from overpowering you earlier.</span> It tries <span class="green">and fails</span> to force you to go for a stroll.
+	<</if>>
+	<br><br>
+	<<link [[다음|Lake Shore]]>><<endevent>><</link>>
+	<br>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	<<if $deviancy gte 55 and $earSlime.growth lt 100>>
+		<<set $earSlime.defyCooldown += 4>>
+	<<else>>
+		<<set $earSlime.defyCooldown += 8>>
+	<</if>>
+	The slime tries to assert control. <span class="red">It overpowers your will,</span> forcing you to take a stroll by the lake.
+	<<ggwillpower>><<willpower 3>>
+	<br><br>
+	<<link [[다음|Lake Stroll]]>>
+		<<pass 60>><<set $earSlimeLakeStroll to true>>
+		<<if $exposed gte 2>>
+			<<arousal 1000>><<rng>>
+			<<if $laketeenspresent is 1>>
+				<<set $phase to 2>>
+			<<else>>
+				<<set $phase to 3>>
+			<</if>>
+		<<else>>
+			<<set $phase to 1>>
+		<</if>>
+	<</link>><<if $exposed gte 2>><<garousal>><</if>>
+<<else>>
+	The slime tries to assert control, <span class="green">but you fight it off</span> and manage to wrench yourself away from where it wants you to walk.
+	<<gwillpower>><<willpower 1>>
+	<br><br>
+
+	<<link [[다음|Lake Shore]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
 :: Lake Stroll
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 40>><<set $bus to "lakewaterfall">>
-
+<<if $earSlimeLakeStroll>>You follow the slime's command.<</if>>
 <<if $phase is 1>>
 	<<set $phase to 0>>
 	당신은 호수 주변을 산책한다.
@@ -32,7 +76,7 @@
 
 <<elseif $phase is 2>>
 	<<flaunting>> 당신은 호수 가장자리를 따라 걷는다. 주변에 사람들이 몇몇 있지만, 그들은 당신이 얼마나 노출되어 있는지 알지 못할 것 같다.
-	<<exhibitionism5>>
+	<<if !$earSlimeLakeStroll>><<exhibitionism5>><</if>>
 
 	<<if $player.bodyliquid.vagina.semen gte 2>> 정액 몇 방울이 당신의 <<pussyPost>>에서 떨어져 땅에 떨어진다.<</if>>
 
@@ -68,7 +112,7 @@
 <<elseif $phase is 3>>
 
 	<<flaunting>> 당신은 호수 가장자리를 따라 걷는다. 주변에 다른 사람은 보이지 않지만, 이렇게 노출되는 것은 흥분된다.
-	<<exhibitionism4>>
+	<<if !$earSlimeLakeStroll>><<exhibitionism4>><</if>>
 
 	<<if $player.bodyliquid.vagina.semen gte 2>>
 		당신이 걷자 정액 몇 방울이 당신의 <<pussyPost>>에서 떨어져 땅에 떨어진다.
@@ -110,6 +154,7 @@
 		<<link [[돌아간다|Lake Shore]]>><<clotheson>><</link>>
 	<</if>>
 <</if>>
+<<unset $earSlimeLakeStroll>>
 
 :: Lake Insect
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
@@ -1020,7 +1065,7 @@ The <<person1>><<personPost "이">> 텐트에 다가가면서 당신의 손을 �
 
 <<location "forest">><<effects>>
 <<set $forest to 10>>
-<<set $leftarm to "bound">><<set $rightarm to "bound">>
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 <<upperruined>><<lowerruined>><<underruined>>
 <<generateCultist 1>><<person1>>
 <<if $pronoun is "m">>

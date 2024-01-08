@@ -7,6 +7,7 @@
 	<<set $robinhistory to "missing">>
 <</if>>
 <<if $schoolstate is "fourth">>
+	<<classRoomEarSlime "history">>
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
@@ -129,6 +130,7 @@
 		<br><br>
 	<</if>>
 <<elseif $schoolstate is "lunch">>
+	<<classRoomEarSlime "history">>
 	당신은 역사 교실에 들어간다.
 	<<if _robin_location is "school" and $daily.school.lunchEaten is 1>>
 		로빈은 이미 들어와 있다.
@@ -152,11 +154,14 @@
 		<!-- Should be changed once naked classes are a thing -->
 		당신은 옷을 제대로 입지 않은 채로 공부해선 안된다고 생각한다.
 		<br>
+	<<elseif !$worn.handheld.type.includes("bookbag")>>
+		<span class="blue">당신은 책가방이 없이는 공부할 수 없다.</span>
+		<br>
 	<<else>>
-		<<link [[역사를 공부한다|History Classroom Study]]>><</link>><<gstress>><<ghistory>>
+		<<historyicon>><<link [[역사를 공부한다|History Classroom Study]]>><</link>><<gstress>><<ghistory>>
 	<</if>>
 	<br>
-	<<link [[나간다|Hallways]]>><</link>>
+	<<getouticon>><<link [[떠난다|Hallways]]>><</link>>
 	<br>
 <<elseif $schoollesson is 1>>
 	<<if $daily.school.historyInterrupted is 1>>
@@ -217,11 +222,25 @@
 
 	<<endevent>>
 	<<exam_cheat history>>
-	<<link [[집중한다|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
-	<br>
-	<<link [[긴장을 푼다|History Exam]]>><<set $phase to 1>><</link>>
-	<br>
-	<<link [[부정행위|History Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	<<if !$daily.earSlimeCheatExam and numberOfEarSlime() and earSlimeMakingMundaneRequests() and random(0,200) gte 150 - $earSlime.corruption>>
+		<<set $daily.earSlimeCheatExam to true>>
+		<span @class="$earSlime.startedThreats ? 'lewd' : 'lblue'">You feel the slime in your head command you to cheat in the exam.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
+		<br><br>
+		<<link [[복종한다|History Exam]]>><<set $phase to 3>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+		<<if $earSlime.startedThreats>>
+			<<link [[반항한다|History Exam]]>><<set $phase to 5>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+		<<else>>
+			<<link [[무시한다|History Exam]]>><<set $phase to 4>><</link>>
+		<</if>>
+		<br>
+	<<else>>
+		<<link [[집중한다|History Exam]]>><<stress 6>><<set $phase to 0>><<set $exam_chance += 5>><</link>><<gstress>><<passPercent 5>>
+		<br>
+		<<link [[긴장을 푼다|History Exam]]>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[부정행위|History Exam]]>><<set $phase to 2>><</link>><<skulduggerydifficulty>>
+	<</if>>
 	<br>
 <<else>>
 	<<if Time.minute lte 5>>

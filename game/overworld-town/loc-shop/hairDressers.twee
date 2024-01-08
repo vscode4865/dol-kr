@@ -42,11 +42,13 @@
 			<<highicon>><<link [[밖으로 나간다|High Street]]>><</link>>
 			<br>
 		<<else>>
-			<<link [["끝날때까지 숨어 있는다 (1:00)"|Hairdressers]]>><<pass 1 hour>><</link>>
+			<<ind>><<link [["끝날때까지 숨어 있는다 (1:00)"|Hairdressers]]>><<pass 1 hour>><</link>>
 		<</if>>
 	<<else>>
 		<<if Time.dayState is "night" and Time.hour isnot $closinghour>>
 			<<hairdressericon "gel">><<link [[헤어 젤 한 병을 훔친다|$passage]]>><<crimeUp `8 / 100` "petty">><<set $hairgelBottles += 1>><</link>><<crime "petty">>
+			<br>
+			<<hairdressericon "hairspray">><<link [[모발 성장약 한 병을 훔친다|$passage]]>><<crimeUp `50 / 100` "petty">><<set $sexStats.pills.pills["Hair Growth Formula"].owned++>><<set $sexStats.pills.boughtOnce to true>><</link>><<crime "petty">>
 			<br>
 			<<if !$weekly.theft.hairDressers>>
 				<<shopicon "register">><<link [[금전등록기를 살펴본다|Hairdressers Register]]>><</link>>
@@ -61,6 +63,13 @@
 				<<hairdressericon "gel">> <span class="blue">당신은 헤어 젤을 구매할 돈이 없다.</span>
 				<br>
 			<</if>>
+			<<if $money gte 5000>>
+				<<hairdressericon "hairspray">> <<link [[모발 성장약을 구매한다 (£50)|Hairdressers Gel]]>><<set $money -= 5000>><<set $sexStats.pills.pills["Hair Growth Formula"].owned += 3>><<set $sexStats.pills.boughtOnce to true>><<set $phase to 1>><</link>>
+				<br>
+			<<else>>
+				<<hairdressericon "hairspray">> <span class="blue">당신은 헤어 젤을 구매할 돈이 없다.</span>
+				<br>
+			<</if>>
 			<<hairdressericon "chair">><<link [[의자에 앉는다|Hairdressers Seat]]>><</link>>
 			<br><br>
 		<</if>>
@@ -70,16 +79,27 @@
 <</if>>
 
 :: Hairdressers Gel
-<<generate1>><<person1>>당신은 모발 화장품 판매대를 둘러본다. 당신은 "헝클어짐이 없으면, 불평도 없다!"라는 딱지가 붙어있는 작은 병을 고른다.
+
+<<generate1>><<person1>>당신은 모발 화장품 판매대를 둘러본다. 당신은 "헝클어짐이 없으면, 불평도 없다!"라는 딱지가 붙어있는 작은 <<if $phase is 1>>통을<<else>>병을<</if>> 고른다.
 <br><br>
-한 미용사가 당신이 구입한 것을 금전등록기에 등록하면서 잡담을 한다. "이 제품은 끝내주죠," <<he_ ga>> 말한다. "병이 작아서, <span class="teal">한 번 쓸 양</span>만큼만 들어 있지만, 돌처럼 단단하게 고정해 줄 거에요. 머리가 헝클어질 것에 대해 걱정할 필요가 없을 겁니다. 최소한, 당신이 머리 스타일을 바꾸기고 결정하기 전 까지는 말이죠."
+한 미용사가 당신이 구입한 것을 금전등록기에 등록하면서 잡담을 한다. "이 제품은 끝내주죠," <<he_ ga>> 말한다.
+
+<<if $phase is 1>>
+	"통이 작아서, <span class="teal">몇 번 쓸 양</span>만큼만 들어 있지만, 매일 쓸 필요가 없어요. 머리가 짧은 것에 대해 걱정할 필요가 없을 겁니다. 당신이 머리카락을 자르기로 결정하기 전 까지는 말이죠."
+<<else>>
+	"병이 작아서, <span class="teal">한 번 쓸 양</span>만큼만 들어 있지만, 돌처럼 단단하게 고정해 줄 거에요. 머리가 헝클어질 것에 대해 걱정할 필요가 없을 겁니다. 최소한, 당신이 머리 스타일을 바꾸기로 결정하기 전 까지는 말이죠."
+<</if>>
 <br><br>
 <<He_ nun>> 미소지으며 당신에게 쇼핑백을 건넨다. "<<print either("구입해 주셔서 고마워요!","좋은 하루 되세요.","조심해 가세요.","당신과 거래해서 기쁩니다.","다시 오세요!")>>"
 <br><br>
-당신은 <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "병" : "병">>의 헤어 젤을 가지고 있다.
+<<if $phase is 1>>
+	당신은 <span class="gold"><<print $sexStats.pills.pills["Hair Growth Formula"].owned>></span>번 쓸 수 있는 모발 성장약을 가지고 있다.
+<<else>>
+	당신은 <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "병" : "병">>의 헤어 젤을 가지고 있다.
+<</if>>
 <br><br>
 
-<<link [[다음|Hairdressers]]>><</link>>
+<<link [[다음|Hairdressers]]>><<endevent>><</link>>
 
 :: Hairdressers Seat
 
