@@ -26,6 +26,7 @@ const trPostsList = {
 	 "이다" : ["이다", "다", "이다"], "다" : ["이다", "다", "이다"],
 	 "이지" : ["이지", "지", "이지"], "지" : ["이지", "지", "이지"]
 };
+setup.trPostsList = trPostsList;
 
 function trPost(postNum, post, sep)
 {
