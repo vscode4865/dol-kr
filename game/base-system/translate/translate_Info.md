@@ -1361,6 +1361,18 @@
     ```
 
     ```
+    <<bishopPost>>
+        <<bishop>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<bishop_handsPost>>
+        <<bishop_hands>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
     <<priestsPost>>
         <<priests>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
@@ -2936,7 +2948,7 @@
 		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>, <<Wife_ (조사)>>, <<sister_ (조사)>>, <<Sister_ (조사)>>, <<sister_npc_ (조사)>>, <<Sister_npc_ (조사)>>,
 		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<bitch_pirate_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
 		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<pmother_ (조사)>>, <<pMother_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, 
-		<<monks_and_nuns_ (조사)>>, <<Monks_and_Nuns_ (조사)>>, <<brothers_and_sisters_ (조사)>>, <<priest_ (조사)>>, <<priests_ (조사)>>,
+		<<monks_and_nuns_ (조사)>>, <<Monks_and_Nuns_ (조사)>>, <<brothers_and_sisters_ (조사)>>, <<priest_ (조사)>>, <<bishop_ (조사)>>, <<bishop_hands_ (조사)>>, <<priests_ (조사)>>,
 		<<farm_text_many_ (조사)>>, <<farm_text_ (조사)>>, <<Master_ (조사)>>, <<master_ (조사)>>, <<daughter_ (조사)>>, <<male_ (조사)>>, <<daylight_ (조사)>>, 
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<wolf_cave_singular_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
