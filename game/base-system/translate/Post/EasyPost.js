@@ -606,6 +606,8 @@ const EasyPostMacroList = [
 
 	{ name: "temple_title_", orig_name: "temple_titlePost", is_print: 0},
 	{ name: "temple_Title_", orig_name: "temple_titlePost", is_print: 0},
+	
+	{ name: "changingRoomGender_", orig_name: "changingRoomGenderPost", is_print: 0},
 
 	// personPost 
 	// <<person_ ul>> = <<person>>을 

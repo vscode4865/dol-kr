@@ -1690,6 +1690,21 @@
         <<temple_titlePost "을">>               // 수련생을
     ```
 
+   ```
+    <<changingRoomGenderPost>>
+        <<changingRoomGenderPost [gender] post "sep">>
+
+       $changingRoomGender를 번역하기 위한 위젯. 조사를 붙일 수 있다.
+        
+        선택사항
+            - gender: 생략하면 $changingRoomGender 사용.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<changingRoomGenderPost "을">>               // 남학생들을
+    ```
+
 
 * personPost
     ```
@@ -2953,7 +2968,7 @@
 		<<ppackbrother_ (조사)>>, <<pPackbrother_ (조사)>>, <<ppackbrothers_ (조사)>>, <<pPackbrothers_ (조사)>>, 
 		<<pheat_ (조사)>>, <<wolf_cave_plural_ (조사)>>, <<wolf_cave_singular_ (조사)>>, <<beast_jaws_text_ (조사)>>, <<beast_Jaws_text_ (조사)>>, <<beast_teeth_text_ (조사)>>,
 		<<handtool_ (조사)>>, <<lefttool_ (조사)>>, <<righttool_ (조사)>>, <<struggle_appendage_ (조사)>>, <<plant_details_ (조사)>>, <<Plant_details_ (조사)>>, <<tower_creature_text_ (조사)>>, <<pound_text_ (조사)>>,
-		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>, <<temple_title_ (조사)>>, <<temple_Title_ (조사)>>,
+		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>, <<temple_title_ (조사)>>, <<temple_Title_ (조사)>>, <<changingRoomGender_ (조사)>>,
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
 	- personPost 계열

@@ -939,3 +939,27 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "temple_TitlePost">><<temple_titlePost _args[0] _args[1] _args[2]>><</widget>>
+
+<<widget "changingRoomGenderPost">><<silently>>
+	<<if _args[0] is undefined or _args[0].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_changingRoomGender to $changingRoomGender>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<else>>
+		<<set $_changingRoomGender to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<</if>>
+
+	<<if ndef setup.trChangingRoomGender>>
+		<<set setup.trChangingRoomGender to {
+			"boy":{koname : "남학생", post : 0},
+			"boys":{koname : "남학생들", post : 2},
+			"girl":{koname : "여학생", post : 0},
+			"girls":{koname : "여학생들", post : 2},
+		}>>
+	<</if>>
+	<<set $_found to setup.trChangingRoomGender[$_changingRoomGender]>>
+	<<if def $_found>>
+		<<set _trResult to $_found.koname>>
+		<<trPost $_found.post $_post $_sep>>
+	<<else>>
+		<<set _trResult to "<span class='red'>에러: changingRoomGenderPost: 정의되지 않음: " + $_changingRoomGender + "</span>">>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>
