@@ -577,6 +577,9 @@ const EasyPostMacroList = [
 	// <<righttool_ un 1>> = $NPCList[1].righttool은 
 	{ name: "righttool_", orig_name: "righttoolPost", is_print: 0},
 
+	{ name: "pcpetname_", orig_name: "pcpetnamePost", is_print: 0},
+	{ name: "pcPetname_", orig_name: "pcpetnamePost", is_print: 0},
+
 	// <<struggle_appendage_ nun "mouth">> = <<struggle_appendage "mouth">>는 
 	{ name: "struggle_appendage_", orig_name: "struggle_appendagePost", is_print: 0},
 
