@@ -2808,6 +2808,12 @@
         + 여우. <<pShePost>>와 용도 및 방식 같음. 생략
     ```
 
+* overworld-town/loc-school/school-project-widgets.twee
+    ```
+    <<sterlingTitle>> <<sterlingFather>> <<sterlingSir>> <<taylorSon>> <<taylorSibling>> <<cassBoy>>
+        + 연극 배역들간의 관계. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 -----------------
 # 기타
 	- 동사 매크로중 몇몇은 영어와 한글의 차이 때문에 추가 옵션을 받는 매크로가 존재한다.
