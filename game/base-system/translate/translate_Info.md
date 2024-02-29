@@ -2427,6 +2427,26 @@
     ```
 
     ```
+    <<trChangePost>>
+        <<trChangePost *txt *newPost "sep">>
+        
+        번역된 조사를 다른 조사로 변경한다
+
+        필수사항
+        - *txt: 조사가 붙은 문자열, 혹은 조사 단독으로 쓰일 수도 있다 (이 경우 ㄹ받침은 고려하지 않음)
+        - *newPost: 새로운 조사
+
+        선택사항
+        - sep: 조사를 _trPost에 따로 저장한다.
+
+        e.g.
+        <<trChangePost "소녀는" "으로">>                   //  _trResult= "소녀로", _trPost="로"
+        <<trChangePost "소년은" "으로">>                   //  _trResult= "소년으로", _trPost="으로"
+        <<trChangePost "팔을" "으로" "sep">>                   //  _trResult= "팔", _trPost="로"
+        <<trChangePost "을" "으로">>                   //  _trResult= "을", _trPost="로"
+    ```
+
+    ```
     <<getPostNum>>
         <<getPostNum *txt>>
         
@@ -2572,10 +2592,10 @@
         <<trSeason ["autumn", "winter"] "과">>                //  가을, 겨울과
     ```
 
-* trToyName
+* trChildToyName
     ```
-    <<trToyName>>
-        <<trToyName [toyName] post "sep">>
+    <<trChildToyName>>
+        <<trChildToyName [toyName] post "sep">>
         
         아이 장난감을 번역한다. 섹스 장난감이 아닌 것에 주의.
 
@@ -2585,7 +2605,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trToyName "Teddy Bear" '이' >>_trResult             //  테디베어가
+        <<trChildToyName "Teddy Bear" '이' >>_trResult             //  테디베어가
     ```
 
 
@@ -2999,6 +3019,6 @@
 		```
 		<<beastdesc_ (조사)>>, <<bodypart_ (조사)>>, <<bodywriting_ (조사)>>, <<breastsdesc_ (조사)>>, <<namedNPC_ (조사)>>,
 		<<NPCdesc_ (조사)>>, <<NPCname_ (조사)>>, <<penisdesc_ (조사)>>, <<plants_ (조사)>>, <<plants_plural_ (조사)>>, 
-		<<toyName_ (조사)>>, <<weather_ (조사)>>, <<sextoy_ (조사)>>, 
+		<<childToyName_ (조사)>>, <<weather_ (조사)>>, <<sextoy_ (조사)>>, 
 		<<relaxed_guard_ (조사)>>, <<anxious_guard_ (조사)>>, <<veteran_guard_ (조사)>>, <<methodical_guard_ (조사)>>, <<tattooed_inmate_ (조사)>>, <<scarred_inmate_ (조사)>>, 
 		```

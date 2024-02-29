@@ -28,6 +28,36 @@ const trPostsList = {
 };
 setup.trPostsList = trPostsList;
 
+/* trPostNumList : "대표조사" : 조사번호("받침O" = 0, "받침X" = 1, "ㄹ받침" = 2), */
+const trPostNumList = {
+	 "은" : 0, "는" : 1,
+	 "이" : 0, "가" : 1,
+	 "을" : 0, "를" : 1,
+	 "과" : 0, "와" : 1,
+	 "이랑" : 0, "랑" : 1,
+	 "아" : 0, "야" : 1,
+	 "이여" : 0, "여" : 1,
+	 "이야" : 0,
+	 "으로" : 0, "로" : 1,
+	 "으로서" : 0, "로서" : 1,
+	 "으로써" : 0, "로써" : 1,
+	 "으로부터" : 0, "로부터" : 1,
+	 "이라" : 0, "라" : 1,
+	 "이었" : 0, "였" : 1,
+	 "이라고" : 0, "라고" : 1,
+	 "이나" : 0, "나" : 1,
+	 "이란" : 0, "란" : 1,
+	 "이든가" : 0, "든가" : 1,
+	 "이던가" : 0, "던가" : 1,
+	 "이든지" : 0, "든지" : 1,
+	 "이던지" : 0, "던지" : 1,
+	 "이야말로" : 0, "야말로" : 1,
+	 "이구나" : 0, "구나" : 1,
+	 "이다" : 0, "다" : 1,
+	 "이지" : 0, "지" : 1
+};
+setup.trPostNumList = trPostNumList;
+
 function trPost(postNum, post, sep)
 {
 	if (post)
@@ -68,6 +98,55 @@ function trPost(postNum, post, sep)
 }
 window.trPost = trPost;
 DefineMacro("trPost", trPost);
+
+function trChangePost(txt, newPost, sep)
+{
+	console.log("txt=" + txt + ", newPost="+newPost+", sep="+sep);
+	if (!newPost) newPost = "";
+	if (!txt || txt.length == 0) return newPost;
+	
+	var postIdx, post, postNum;
+	if (txt.length > 4) 
+		postIdx = -4;
+	else
+		postIdx = -txt.length;
+	console.log("postIdx(pre) =" + postIdx);
+	// 이전 조사에서 조사번호를 찾음
+	for (; postIdx < 0; postIdx++)
+	{
+		post = txt.slice(postIdx);
+		postNum = trPostNumList[post];
+		if (typeof(postNum) === "number") break;
+	}
+	console.log("postIdx(post) =" + postIdx);
+	if (postIdx != 0) 
+	{
+		// 찾았음
+		txt = txt.slice(0, postIdx);
+
+		if (txt.length > 0 && (newPost == "으로" || newPost == "로")) // ㄹ받침?
+			postNum = getPostNum(txt);
+
+		let trPostData = trPostsList[newPost];
+			if (trPostData)
+				post = trPostData[postNum];
+	}
+	else
+		post = newPost;
+	
+	T.postNum = postNum;
+	T.trPost = post;
+	if (!sep)
+	{
+		txt += post;
+		T.trResult = txt;
+	}
+	else
+		T.trResult = txt;
+	return txt;
+}
+window.trChangePost = trChangePost;
+DefineMacro("trChangePost", trChangePost);
 
 /* getPostNum : 문자열에서 조사 번호를 찾아 _postNum에 넣는다 (0: 종성 있음 1: 종성 없음 2: 종성 ㄹ) */
 function getPostNum(txt)
