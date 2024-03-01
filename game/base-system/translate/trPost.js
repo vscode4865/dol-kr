@@ -101,7 +101,6 @@ DefineMacro("trPost", trPost);
 
 function trChangePost(txt, newPost, sep)
 {
-	console.log("txt=" + txt + ", newPost="+newPost+", sep="+sep);
 	if (!newPost) newPost = "";
 	if (!txt || txt.length == 0) return newPost;
 	
@@ -110,7 +109,6 @@ function trChangePost(txt, newPost, sep)
 		postIdx = -4;
 	else
 		postIdx = -txt.length;
-	console.log("postIdx(pre) =" + postIdx);
 	// 이전 조사에서 조사번호를 찾음
 	for (; postIdx < 0; postIdx++)
 	{
@@ -118,13 +116,12 @@ function trChangePost(txt, newPost, sep)
 		postNum = trPostNumList[post];
 		if (typeof(postNum) === "number") break;
 	}
-	console.log("postIdx(post) =" + postIdx);
 	if (postIdx != 0) 
 	{
 		// 찾았음
 		txt = txt.slice(0, postIdx);
 
-		if (txt.length > 0 && (newPost == "으로" || newPost == "로")) // ㄹ받침?
+		if (txt.length > 0 && ["으로", "로", "야"].includes(newPost)) // ㄹ받침, ~야(아/야, 이야/야)인 경우 정확한 조사번호 확인
 			postNum = getPostNum(txt);
 
 		let trPostData = trPostsList[newPost];

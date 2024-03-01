@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
-function getToyName(index, capitalise = false) {
-	const toy = T.playerToys[index];
+function getToyName(index, capitalise = false, post = undefined, sep = undefined) {
+	const toy = T.playerToys[index]; if (typeof (capitalise) === "string") {sep = post; post = capitalise; capitalise = false;}
 	if (toy == null) {
 		let msg = "Could not find the player's toy name.";
 		if (index === "none") msg = "An attempt to access a toy with the wrong hand was made.";
 		Errors.report(msg, { index });
-		return "toy duck";
+		return "장난감 오리";
 	}
 	const name = capitalise ? toy.namecap : toy.name;
-	return toy.colour ? toy.colour + " " + name : name;
+	return toy.colour ? trColourJS(toy.colour) + " " + sextoyPost(name, post, sep) : sextoyPost(name, post, sep);
 }
 window.getToyName = getToyName;
 DefineMacroS("toyName", getToyName);
