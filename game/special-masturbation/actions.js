@@ -11,9 +11,9 @@ function masturbationActions() {
 		const toy = clone(playerToys[V["currentToy" + location.toLocaleUpperFirst()]]);
 		return toy;
 	};
-	const toyDisplay = (toy1, toy2) => {
-		if (toy1 && toy2) return (toy1.colour ? toy1.colour + " " : "") + toy1.name + " and " + (toy2.colour ? toy2.colour + " " : "") + toy2.name;
-		if (toy1) return (toy1.colour ? toy1.colour + " " : "") + toy1.name;
+	const toyDisplay = (toy1, toy2, post, sep) => { if(typeof(toy2) === "string") { sep = post; post = toy2; toy2 = undefined; }
+		if (toy1 && toy2) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColourJS(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
+		if (toy1) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
 		return "";
 	};
 	const genitalsExposed = () => V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && V.worn.under_lower.vagina_exposed >= 1;
@@ -156,7 +156,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 	const stop = action => {
 		return {
 			action,
-			text: "Move your hand away",
+			text: "손을 치운다",
 		};
 	};
 
@@ -166,7 +166,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 
 	switch (V[arm + "arm"]) {
 		case 0:
-			result.text = `Your ${arm} hand is free.`;
+			result.text = `당신은 <<hand_ ro '${arm}'>> 아무것도 하지 않고 있다.`;
 			if (V.player.penisExist) {
 				if (
 					(V.awareness >= 400 || V.earSlime.event.includes("get your own sperm into your")) &&
@@ -175,7 +175,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 				) {
 					result.options.push({
 						action: "msemencover",
-						text: "Cover your fingers in semen",
+						text: "당신의 손가락을 정액으로 뒤덮는다",
 						colour: "sub",
 						otherElements: V.earSlime.event.includes("get your own sperm into your") ? undefined : "<<combataware 5>>",
 					});
@@ -183,27 +183,27 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 				if (!playerChastity("penis")) {
 					result.options.push({
 						action: "mpenisentrance",
-						text: V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "Fondle your parasitic penis" : "Fondle your penis",
+						text: V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "기생충 자지를 애무한다" : "자지를 애무한다",
 						colour: "sub",
 					});
 				} else if (V.worn.genitals.name === "chastity parasite") {
 					result.options.push({
 						action: "mchastityparasiteentrance",
-						text: "Fondle your chastity parasite",
+						text: "기생충 정조대를 애무한다",
 						colour: "sub",
 					});
 				} else {
 					result.options.push({
 						action: "mchastity",
 						text:
-							V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "Try to fondle your parasitic penis" : "Try to fondle your penis",
+							V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "기생충 자지를 애무하려 시도한다" : "자지를 애무하려 시도한다",
 						colour: "sub",
 					});
 				}
 				if (V.player.ballsExist && ballsExposed() && V.ballssize >= -1 && (V.ballssize >= 1 || V[otherArm + "arm"] !== "mballs")) {
 					result.options.push({
 						action: "mballsentrance",
-						text: "Fondle your balls",
+						text: "불알을 애무한다",
 						colour: "sub",
 					});
 				}
@@ -212,13 +212,13 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 				if (!playerChastity("vagina")) {
 					result.options.push({
 						action: "mvaginaentrance",
-						text: "Fondle your pussy",
+						text: "보지를 애무한다",
 						colour: "sub",
 					});
 				} else {
 					result.options.push({
 						action: "mchastity",
-						text: "Try to fondle your pussy",
+						text: "보지를 애무하려 시도한다",
 						colour: "sub",
 					});
 				}
@@ -226,7 +226,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 			if (V.awareness >= 100) {
 				result.options.push({
 					action: "mchest",
-					text: "Fondle your chest",
+					text: "가슴을 애무한다",
 					colour: "sub",
 					otherElements: "<<combataware 2>>",
 				});
