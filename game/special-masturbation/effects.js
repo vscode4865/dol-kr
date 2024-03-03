@@ -61,7 +61,7 @@ function masturbationeffects() {
 	if (V.corruptionMasturbation) {
 		if (V.leftarm === "bound" && V.rightarm === "bound") {
 			sWikifier(
-				'The slime in your ear makes you fight against the binds around your arms. You make no progress, <span class="blue">and it gives up.</span><<arousal 600 "masturbation">><<stress 6>><<gstress>><<garousal>>'
+				'슬라임이 당신에게 당신의 팔을 묶은 것을 풀라고 한다. 당신은 어떤 진척도 내지 못하고, <span class="blue">녀석은 포기한다.</span><<arousal 600 "masturbation">><<stress 6>><<gstress>><<garousal>>'
 			);
 			fragment.append(" ");
 			V.rightaction = "mrest";
@@ -73,7 +73,7 @@ function masturbationeffects() {
 			(playerHeatMinArousal() + playerRutMinArousal() >= 1000 && V.earSlime.growth >= 100 && V.earSlime.defyCooldown)
 		) {
 			sWikifier(
-				'The slime in your ear feel it\'s not worth trying to force you to masturbate in your current state, <span class="blue">and it lets you go.</span>'
+				'	귓속의 슬라임은 현재 상태에서 당신에게 자위를 강제로 시키는 것은 가치가 없다고 느끼고, <span class="blue">당신을 풀어준다.</span>'
 			);
 			fragment.append(" ");
 			V.corruptionMasturbation = false;
@@ -89,7 +89,7 @@ function masturbationeffects() {
 						// Prevents the PC from continuing actions that they normally are unable to do yet
 						if (V.mouth === "mpenis") {
 							sWikifier(
-								'<span class="green">With the loss of the control from the slime in your ear, you remove your <<penis>> from your mouth and move away.</span>'
+								'<span class="green">당신 귓속의 슬라임이 통제력을 잃어버림에 따라, 당신은 <<penis_ rul>> 입에서 빼서 치운다.</span>'
 							);
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
@@ -97,7 +97,7 @@ function masturbationeffects() {
 							V.mouth = 0;
 							V.penisuse = 0;
 						} else if (V.mouth === "mpenisentrance") {
-							sWikifier('<span class="green">With the loss of the control from the slime in your ear, you move away from your <<penis>>.</span>');
+							sWikifier('<span class="green">당신 귓속의 슬라임이 통제력을 잃어버림에 따라, 당신은 <<penis_ rul>> 치운다.</span>');
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
 							V.mouthaction = 0;
@@ -105,7 +105,7 @@ function masturbationeffects() {
 							V.penisuse = 0;
 						} else if (V.mouth === "mchastityparasiteentrance") {
 							sWikifier(
-								'<span class="green">With the loss of the control from the slime in your ear, you move away from your chastity parasite.</span>'
+								'<span class="green">당신 귓속의 슬라임이 통제력을 잃어버림에 따라, 당신은 기생충 정조대 자지를 치운다.</span>'
 							);
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
@@ -113,7 +113,7 @@ function masturbationeffects() {
 							V.mouth = 0;
 							V.penisuse = 0;
 						} else if (V.mouth === "mvaginaentrance") {
-							sWikifier('<span class="green">With the loss of the control from the slime in your ear, you move away from your <<pussy>>.</span>');
+							sWikifier('<span class="green">당신 귓속의 슬라임이 통제력을 잃어버림에 따라, 당신은 <<pussy_ rul>> 치운다.</span>');
 							fragment.append(" ");
 							V.mouthactiondefault = "rest";
 							V.mouthaction = 0;
@@ -141,20 +141,20 @@ function masturbationeffects() {
 	if (otherVariables.additionalEffect.hands === "ballplayeffects" && V.worn.genitals.name !== "chastity parasite") {
 		if (V.arousal >= V.arousalmax * (4 / 5) || (V.earSlime.focus === "impregnation" && V.earSlime.growth >= 100)) {
 			if (genitalsExposed()) {
-				sWikifier('Your <<penis>> bucks eagerly, and <span class="pink">precum leaps from the tip.</span>');
+				sWikifier('당신의 <<penis_ ga>> 격렬하게 움직이며, <span class="pink">쿠퍼액이 끝에서 튀어오른다.</span>');
 			} else {
-				sWikifier('Your <<penis>> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>>.</span>');
+				sWikifier('당신의 <<penis_ ga>> 격렬하게 움직이며, <span class="pink">쿠퍼액이 당신의 <<exposedlower_ rul>> 통해 새어나온다.</span>');
 			}
 		} else if (V.arousal >= V.arousalmax * (3 / 5)) {
 			if (genitalsExposed()) {
-				sWikifier('Your <<penis>> bucks eagerly, and <span class="pink">precum beads at the tip.</span>');
+				sWikifier('당신의 <<penis_ ga>> 격렬하게 움직이며, <span class="pink">쿠퍼액이 귀두에서 방울진다.</span>');
 			} else {
-				sWikifier('Your <<penis>> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>>.</span>');
+				sWikifier('당신의 <<penis_ ga>> 격렬하게 움직이며, <span class="pink">쿠퍼액이 당신의 <<exposedlowerPost>> 위에 짙은 자국을 만든다.</span>');
 			}
 		} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-			sWikifier("The pressure makes your <<penis>> throb.");
+			sWikifier("그 압력이 당신의 <<penis_ rul>> 고동치게 한다.");
 		} else {
-			sWikifier("The pressure makes your <<penis>> twitch.");
+			sWikifier("그 압력이 당신의 <<penis_ rul>> 씰룩거리게 한다.");
 		}
 		fragment.append(" ");
 	}
@@ -168,15 +168,15 @@ function masturbationeffects() {
 	) {
 		if (V.arousal >= V.arousalmax * (4 / 5) || (V.earSlime.focus === "impregnation" && V.earSlime.growth >= 100)) {
 			if (genitalsExposed()) {
-				sWikifier('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum leaps from the tip.</span>');
+				sWikifier('당신의 <<penis_ ga "strap-on">> 격렬하게 움직이며, <span class="pink">쿠퍼액이 끝에서 튀어오른다.</span>');
 			} else {
-				sWikifier('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum seeps through your <<exposedlower>>.</span>');
+				sWikifier('당신의 <<penis_ ga "strap-on">> 격렬하게 움직이며, 쿠퍼액이 당신의 <<exposedlower_ rul>> 통해 새어나온다.</span>');
 			}
 		} else {
 			if (genitalsExposed()) {
-				sWikifier('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">precum beads at the tip.</span>');
+				sWikifier('당신의 <<penis_ ga "strap-on">> 격렬하게 움직이며, <span class="pink">쿠퍼액이 귀두에서 방울진다.</span>');
 			} else {
-				sWikifier('Your <<penis "strap-on">> bucks eagerly, and <span class="pink">your precum creates a dark spot on your <<exposedlower>>.</span>');
+				sWikifier('당신의 <<penis_ ga "strap-on">> 격렬하게 움직이며, <span class="pink">쿠퍼액이 당신의 <<exposedlowerPost>> 위에 짙은 자국을 만든다.</span>');
 			}
 		}
 		fragment.append(" ");

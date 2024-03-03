@@ -2849,7 +2849,7 @@
 		원래는 "벗긴다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "벗기고", "but" 이 추가되면 "벗기려 하지만" 으로 표시됨
     ```
 
-* base-system/widjets.js
+* base-system/widgets.js
     ```
 	formatList()
 		formatList(*arr, conjunction = "그리고", useOxfordComma = false, separator=", ")
@@ -2881,6 +2881,40 @@
 		사용법 (배열의 메소드로 사용)
 		- 위젯형: <<set _trResult to _fruits.formatList()>><<trPost _postNum "을">><<print _trResult>>
 		- 템플릿형: <<print _fruits.formatList()>>?ul
+    ```
+
+* special-masturbation/actions.js, effects.js
+    ```
+	toyDisplay()
+		toyDisplay(*toy1, toy2, post, sep)
+			
+		손에 들고 있는 섹스 장난감을 번역해 보여준다.
+		
+		필수사항
+		- toy1: 번역하려는 장난감 id
+		
+        선택사항
+		- toy2: 번역하려는 추가 장난감 id
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+    ```
+
+* special-masturbation/macros-masturbation.js
+	getToyName()
+		getToyName(*index, capitalise, post, sep)
+		<<toyName *index capitalise post sep>>
+			
+		손에 들고 있는 섹스 장난감을 번역해 보여준다. (deprecated)
+		
+		필수사항
+		- index: 번역하려는 장난감 id
+		
+        선택사항
+		- capitalise: 대문자 표시 플래그 (원본 매크로에 사용되는 인수값)
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
     ```
 
 
