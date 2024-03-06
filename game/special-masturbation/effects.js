@@ -184,11 +184,11 @@ function masturbationeffects() {
 
 	if (otherVariables.additionalEffect.earSlimeDefy.length) {
 		sWikifier(
-			`All your attempts to feel pleasure lead to alternating feelings of <span class="lewd">pleasure</span> and <span class="red">pain</span> directly to your ${formatList(
+			`쾌감을 느끼기 위해 당신이 한 모든 시도는 당신의 ${formatList(
 				otherVariables.additionalEffect.earSlimeDefy,
-				"and",
+				"그리고",
 				true
-			)}. <<gpain>>`
+			)}에 직접적으로 <span class="lewd">쾌감</span>과 <span class="red">고통</span>이 교차하는 결과로 이어진다. <<gpain>>`
 		);
 		fragment.append(" ");
 	}
@@ -205,18 +205,18 @@ function masturbationeffects() {
 			// Prevents a double message
 			V.earSlime.vibration++;
 		} else if (V.earSlime.vibration <= 10) {
-			sWikifier('<span class="lewd">Your chastity parasite softly pulsates around your <<penis>>.</span>');
+			sWikifier('<span class="lewd">당신의 기생충 정조대가 <<penisPost>> 주위에서 부드럽게 진동한다.</span>');
 		} else if (V.earSlime.vibration <= 20) {
-			sWikifier('<span class="lewd">Your chastity parasite pulsates around your <<penis>>.</span>');
+			sWikifier('<span class="lewd">당신의 기생충 정조대가 <<penisPost>> 주위에서 진동한다.</span>');
 		} else if (V.earSlime.vibration <= 30) {
 			sWikifier(
-				`<span class="lewd">Your chastity parasite vibrates on your <<penis>>${V.mouth === "mchastityparasiteentrance" ? " and tongue" : ""}.</span>`
+				`<span class="lewd">당신의 기생충 정조대가 <<penis_ wa 'sep'>>${V.mouth === "mchastityparasiteentrance" ? "_trPost 혓바닥" : ""} 위에서 진동한다.</span>`
 			);
 		} else {
 			sWikifier(
-				`<span class="lewd">Your chastity parasite strongly vibrates on your <<penis>>${
-					V.mouth === "mchastityparasiteentrance" ? " and tongue" : ""
-				}.</span>`
+				`<span class="lewd">당신의 기생충 정조대가 <<penis_ wa 'sep'>>${
+					V.mouth === "mchastityparasiteentrance" ? "_trPost 혓바닥" : ""
+				} 위에서 강하게 진동한다.</span>`
 			);
 		}
 		if (V.earSlime.vibration > 1) fragment.append(" ");
@@ -226,17 +226,17 @@ function masturbationeffects() {
 		if (V.worn.under_lower.vagina_exposed && V.worn.lower.vagina_exposed) {
 			wikifier("vaginaFluidPassive");
 			if (T.lube_released) {
-				sWikifier('<span class="pink">Juices leak from your <<pussy>>.</span>');
+				sWikifier('<span class="pink">애액이 당신의 <<pussyPost>>에서 새어나온다.</span>');
 			}
 		} else if (V.worn.under_lower.vagina_exposed === 0 && V.underlowerwetstage < 3) {
-			sWikifier(`<span class="pink">Juices leak from your <<pussy>> and dampen your ${V.worn.under_lower.name}.</span>`);
+			sWikifier(`<span class="pink">애액이 당신의 <<pussyPost>>에서 새어나와 당신의 <<worn_under_lower_name_ ul>> 적신다.</span>`);
 			wikifier("underlowerwet", 1);
 		} else if (V.worn.lower.vagina_exposed === 0) {
 			sWikifier(
-				`<span class="pink">Juices leak from your <<pussy>><<if V.underlowerwet gte 60>>, soak through your ${V.worn.under_lower.name},<</if>> and dampen your ${V.worn.lower.name}.</span>`
+				`<span class="pink">애액이 당신의 <<pussyPost>>에서 새어나와<<if V.underlowerwet gte 60>>, 당신의 <<worn_under_lower_name_ ul>> 흠뻑 적시고 배어나와,<</if>> 당신의 <<worn_lower_name_ ul>> 적신다.</span>`
 			);
 		} else {
-			sWikifier('<span class="pink">Juices leak from your <<pussy>> and dampen your clothing.</span>');
+			sWikifier('<span class="pink">애액이 당신의 <<pussyPost>>에서 새어나와 당신의 옷을 적신다.</span>');
 		}
 		fragment.append(" ");
 	}
@@ -248,7 +248,7 @@ function masturbationeffects() {
 	) {
 		V.corruptionMasturbation = true;
 		V.corruptionMasturbationCount = random(1, 4);
-		fragment.append(span("The slime in your ear decides that it wants you to have more fun.", "red"));
+		fragment.append(span("귓속의 슬라임은 당신에게 더 재미를 보게 해주기를 원한다.", "red"));
 		fragment.append(" ");
 	}
 
@@ -290,7 +290,7 @@ function masturbationeffectsArms(
 		if (random(0, 100) >= 91 && V.earSlime.corruption > currentSkillValue("willpower") / 10 && V.corruptionMasturbation === undefined) {
 			V.corruptionMasturbation = true;
 			V.corruptionMasturbationCount = random(2, 6);
-			fragment.append(span("The slime in your ear decides that it will continue for you.", "red"));
+			fragment.append(span("귓속의 슬라임은 당신이 계속해야 한다고 결정한다.", "red"));
 			fragment.append(" ");
 			clearAction(0);
 		} else {
@@ -306,10 +306,10 @@ function masturbationeffectsArms(
 			V.worn.over_upper.exposed = 2;
 			if (V.worn.over_upper.open) {
 				V.worn.over_upper.state_top = "midriff";
-				sWikifier(`You pull down your ${V.worn.over_upper.name}, <span class="lewd">exposing your <<breastsaside>>.</span>`);
+				sWikifier(`당신은 <<worn_over_upper_name_ ul>> 끌어내려, <span class="lewd">당신의 <<breastsaside_ rul>> 노출시킨다.</span>`);
 			} else {
 				V.worn.over_upper.state = "chest";
-				sWikifier(`You pull up your ${V.worn.over_upper.name}, <span class="lewd">exposing your <<breastsaside>>.</span>`);
+				sWikifier(`당신은 <<worn_over_upper_name_ ul>> 끌어올려, <span class="lewd">당신의 <<breastsaside_ rul>> 노출시킨다.</span>`);
 			}
 			fragment.append(" ");
 			break;
@@ -318,10 +318,10 @@ function masturbationeffectsArms(
 			V.worn.upper.exposed = 2;
 			if (V.worn.upper.open) {
 				V.worn.upper.state_top = "midriff";
-				sWikifier(`You pull up your ${V.worn.upper.name}, <span class="lewd">exposing your <<breastsaside>>.</span>`);
+				sWikifier(`당신은 <<worn_upper_name_ ul>> 끌어내려, <span class="lewd">당신의 <<breastsaside_ rul>> 노출시킨다.</span>`);
 			} else {
 				V.worn.upper.state = "chest";
-				sWikifier(`You pull up your ${V.worn.upper.name}, <span class="lewd">exposing your <<breastsaside>>.</span>`);
+				sWikifier(`당신은 <<worn_upper_name_ ul>> 끌어올려, <span class="lewd">당신의 <<breastsaside_ rul>> 노출시킨다.</span>`);
 			}
 			fragment.append(" ");
 			break;
@@ -331,16 +331,16 @@ function masturbationeffectsArms(
 			if (V.worn.under_upper.open) {
 				V.worn.under_upper.state_top = "midriff";
 				if (V.player.breastsize >= 3) {
-					sWikifier(`You pull down your ${V.worn.under_upper.name} <span class="lewd">and your <<breasts>> flop out.</span>`);
+					sWikifier(`당신이 <<worn_under_upper_name_ ul>> 끌어내리자 <span class="lewd">당신의 <<breasts_ ga>> 털썩 튀어나온다.</span>`);
 				} else {
-					sWikifier(`You pull down your ${V.worn.under_upper.name}, <span class="lewd">exposing your <<breasts>>.</span>`);
+					sWikifier(`당신은 <<worn_under_upper_name_ ul>> 끌어내려, <span class="lewd">당신의 <<breasts_ rul>> 노출시킨다.</span>`);
 				}
 			} else {
 				V.worn.under_upper.state = "chest";
 				if (V.player.breastsize >= 3) {
-					sWikifier(`You pull up your ${V.worn.under_upper.name} <span class="lewd">and your <<breasts>> flop out.</span>`);
+					sWikifier(`당신이 <<worn_under_upper_name_ ul>> 끌어올리자 <span class="lewd">당신의 <<breasts_ ga>> 털썩 튀어나온다.</span>`);
 				} else {
-					sWikifier(`You pull up your ${V.worn.under_upper.name}, <span class="lewd">exposing your <<breasts>>.</span>`);
+					sWikifier(`당신은 <<worn_under_upper_name_ ul>> 끌어올려, <span class="lewd">당신의 <<breasts_ rul>> 노출시킨다.</span>`);
 				}
 			}
 			fragment.append(" ");
@@ -352,10 +352,10 @@ function masturbationeffectsArms(
 			V.worn.over_lower.exposed = 2;
 			if (setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].skirt) {
 				V.worn.over_lower.skirt_down = 0;
-				sWikifier(`You lift up your ${V.worn.over_lower.name}, <span class="lewd">exposing your <<exposedlower>>.</span>`);
+				sWikifier(`당신은 <<worn_over_lower_name_ ul>> 잡아올려, <span class="lewd">당신의 <<exposedlower_ rul>> 노출시킨다.</span>`);
 			} else {
 				V.worn.over_lower.state = "thighs";
-				sWikifier(`You pull down your ${V.worn.over_lower.name}, <span class="lewd">exposing your <<exposedlower>>.</span>`);
+				sWikifier(`당신은 <<worn_over_lower_name_ ul>> 끌어내려, <span class="lewd">당신의 <<exposedlower_ rul>> 노출시킨다.</span>`);
 			}
 			fragment.append(" ");
 			break;
@@ -366,10 +366,10 @@ function masturbationeffectsArms(
 			V.worn.lower.exposed = 2;
 			if (setup.clothes.lower[clothesIndex("lower", V.worn.lower)].skirt) {
 				V.worn.lower.skirt_down = 0;
-				sWikifier(`You lift up your ${V.worn.lower.name}, <span class="lewd">exposing your <<undies>>.</span>`);
+				sWikifier(`당신은 <<worn_lower_name_ ul>> 잡아올려, <span class="lewd">당신의 <<undies_ rul>> 노출시킨다.</span>`);
 			} else {
 				V.worn.lower.state = "thighs";
-				sWikifier(`You pull down your ${V.worn.lower.name}, <span class="lewd">exposing your <<undies>>.</span>`);
+				sWikifier(`당신은 <<worn_lower_name_ ul>> 끌어내려, <span class="lewd">당신의 <<undies_ rul>> 노출시킨다.</span>`);
 			}
 			fragment.append(" ");
 			break;
@@ -379,7 +379,7 @@ function masturbationeffectsArms(
 			V.worn.under_lower.vagina_exposed = 1;
 			V.worn.under_lower.state = "thighs";
 			V.worn.under_lower.exposed = 2;
-			sWikifier(`You pull down your ${V.worn.under_lower.name}, <span class="lewd">exposing your <<genitals>>.</span>`);
+			sWikifier(`당신은 <<worn_under_lower_name_ ul>> 끌어내려, <span class="lewd">당신의 <<genitals_ rul>> 노출시킨다.</span>`);
 			fragment.append(" ");
 			break;
 	}
@@ -412,16 +412,16 @@ function masturbationeffectsArms(
 			V.mouthactiondefault = "mrest";
 			V.mouthaction = 0;
 			V.mouth = 0;
-			fragment.append(span("You move your mouth away from your pussy."));
+			fragment.append(span("당신은 당신의 보지에서 입을 치운다."));
 		}
 		if (V[armAction] === "mvaginatease") {
 			clearAction("mrest");
 			V[arm + "arm"] = 0;
 			if (doubleAction) {
 				V[otherArm + "arm"] = 0;
-				fragment.append(span("You remove your fingers from your vagina."));
+				fragment.append(span("당신은 당신의 질에서 손가락들을 치운다."));
 			} else {
-				fragment.append(span("You remove your finger from your vagina."));
+				fragment.append(span("당신은 당신의 질에서 손가락을 치운다."));
 			}
 			fragment.append(" ");
 		}
@@ -437,9 +437,9 @@ function masturbationeffectsArms(
 			V[arm + "arm"] = 0;
 			if (doubleAction) {
 				V[otherArm + "arm"] = 0;
-				fragment.append(span("You remove your fingers from your anus."));
+				fragment.append(span("당신은 당신의 항문에서 손가락들을 치운다."));
 			} else {
-				fragment.append(span("You remove your finger from your anus."));
+				fragment.append(span("당신은 당신의 항문에서 손가락을 치운다."));
 			}
 			fragment.append(" ");
 		}
