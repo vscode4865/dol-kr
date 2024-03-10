@@ -1058,7 +1058,7 @@ function masturbationeffectsArms(
 				V[otherArm + "arm"] = 0;
 				fragment.append(span("당신은 양손을 당신의 고환에서 치운다.", "lblue"));
 			} else {
-				fragment.append(span(`당신은 <<hand_ rul '${arm}'>> 당신의 고환에서 치운다.`, "lblue"));
+				fragment.append(span(`당신은 ${handPost(arm, '을')} 당신의 고환에서 치운다.`, "lblue"));
 			}
 			break;
 		case "mballsfondle":
@@ -1092,11 +1092,11 @@ function masturbationeffectsArms(
 							`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 더듬으며 그것이 당신의 <<penisPost>> 밑둥에서 긴장하며 꽉 조이는 느낌을 즐긴다.`
 						);
 					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-						fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 애무하며 그 간지러운 느낌을 즐긴다.`));
+						fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 애무하며 그 간지러운 느낌을 즐긴다.`));
 					} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-						fragment.append(span(`당신은 <<handPost '${arm}'>> 안의 ${altText.oneOfYour} 이리저리 움직이며 그 무게감을 즐긴다.`));
+						fragment.append(span(`당신은 ${handPost(arm)} 안의 ${altText.oneOfYour} 이리저리 움직이며 그 무게감을 즐긴다.`));
 					} else {
-						fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 쓰다듬는다.`));
+						fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 쓰다듬는다.`));
 					}
 				}
 			}
@@ -1133,16 +1133,16 @@ function masturbationeffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
 							break;
 						case 3:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
 							break;
 						case 4:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 감싸고 ${altText.gently} 쥐어짠다.`));
 							break;
 						default:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> 당신의 ${balls} 감싸고 ${altText.gently} 쥐어짠다.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} 당신의 ${balls} 감싸고 ${altText.gently} 쥐어짠다.`));
 							break;
 					}
 				}
@@ -1157,7 +1157,6 @@ function masturbationeffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`당신은 ${balls} 각각의 손에 한쪽씩 나눠잡는다`));
 							fragment.append(span(`당신은 ${balls} 각각의 손에 한쪽씩 나눠잡는다`));
 							break;
 						case 3:
@@ -1175,16 +1174,16 @@ function masturbationeffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다`));
 							break;
 						case 3:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다`));
 							break;
 						case 4:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다`));
 							break;
 						default:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> 당신의 양쪽 ${balls} 가뿐하게 잡는다`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} 당신의 양쪽 ${balls} 가뿐하게 잡는다`));
 							break;
 					}
 				}
@@ -1214,16 +1213,16 @@ function masturbationeffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다.`, "blue"));
 							break;
 						case 3:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다.`, "blue"));
 							break;
 						case 4:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다.`, "blue"));
 							break;
 						default:
-							fragment.append(span(`당신은 <<hand_ ro '${arm}'>> 당신의 양쪽 ${balls} 가뿐하게 잡는다`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} 당신의 양쪽 ${balls} 가뿐하게 잡는다`, "blue"));
 							break;
 					}
 				}
@@ -1418,7 +1417,7 @@ function masturbationeffectsArms(
 				V[armActionDefault] = V.player.vaginaExist ? "mvaginaentrancedildo" : "manusentrancedildo";
 			}
 
-			fragment.append(span(`당신은 <<hand_ ro '${arm}'>> ${altText.toy} 잡는다.`));
+			fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.toy} 잡는다.`));
 			break;
 		case "mdildostop":
 			clearAction("mrest");
@@ -1429,7 +1428,7 @@ function masturbationeffectsArms(
 				altText.selectedOtherToy = selectedToy(otherArm, false);
 				fragment.append(span(`당신은 ${toyDisplay(altText.selectedToy, altText.selectedOtherToy, '을')} 내려놓는다.`, "lblue"));
 			} else {
-				fragment.append(span(`당신은 <<hand_ yi '${arm}'>> ${toyDisplay(altText.selectedToy, '을')} 내려놓는다.`, "lblue"));
+				fragment.append(span(`당신은 ${handPost(arm, '의')} ${toyDisplay(altText.selectedToy, '을')} 내려놓는다.`, "lblue"));
 			}
 			break;
 		case "mpenisentrancestroker":
@@ -1532,7 +1531,7 @@ function masturbationeffectsArms(
 						`당신은 당신의 ${toyDisplay(
 							altText.selectedToy,
 							altText.selectedOtherToy, '을'
-						)} 당신의 <<penisPost>>에 문지르며, <<exposedlowerPost>> 아래의 그 모양을 느낀다.</span>`
+						)} 당신의 <<penisPost>>에 문지르며, <<exposedlowerPost>> 아래의 그 모양을 느낀다.`
 					);
 				}
 			} else {
@@ -1544,7 +1543,7 @@ function masturbationeffectsArms(
 						`당신은 당신의 ${toyDisplay(
 							altText.selectedToy,
 							altText.selectedOtherToy, '을'
-						)} 당신의 <<penisPost>>에 문지르며, <<exposedlowerPost>> 아래의 그 모양을 느낀다.</span>`
+						)} 당신의 <<penisPost>>에 문지르며, <<exposedlowerPost>> 아래의 그 모양을 느낀다.`
 					);
 				}
 			}
@@ -1566,7 +1565,7 @@ function masturbationeffectsArms(
 						`무언가 느끼도록 당신은 ${toyDisplay(altText.selectedToy, altText.selectedOtherToy, '으로')} 당신의 <<penis_ rul>> 범하라고 강요된다.`
 					);
 				} else {
-					sWikifier(`무언가 느끼도록 당신은 ${toyDisplay(altText.selectedToy, '으로')} 당신의 <<penis_ rul>> 범하라고 강요된다.`
+					sWikifier(`무언가 느끼도록 당신은 ${toyDisplay(altText.selectedToy, '으로')} 당신의 <<penis_ rul>> 범하라고 강요된다.`);
 				}
 			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
 				wikifier("arousal", 600, "masturbationPenis");
