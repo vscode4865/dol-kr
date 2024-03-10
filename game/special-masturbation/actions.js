@@ -762,7 +762,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 		}
 	}
 
-	if (!V.possessed) result.options.push({ action: "mrest", text: "가만히 둔다" });
+	if (!V.possessed) result.options.push({ action: "mrest", text: "가만히 있는다" });
 
 	return result;
 }
@@ -779,13 +779,13 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed }) 
 	const stop = action => {
 		return {
 			action,
-			text: "Move your mouth away",
+			text: "입을 치운다",
 		};
 	};
 	const rest = () => {
 		return {
 			action: "mrest",
-			text: "가만히 둔다",
+			text: "가만히 있는다",
 		};
 	};
 
@@ -1044,7 +1044,7 @@ function masturbationActionsVagina({ selectedToy, toyDisplay, genitalsExposed })
 			if (result.options.length) {
 				result.options.push({
 					action: "mrest",
-					text: "가만히 둔다",
+					text: "가만히 있는다",
 				});
 			}
 			break;
@@ -1093,7 +1093,7 @@ function masturbationActionsVagina({ selectedToy, toyDisplay, genitalsExposed })
 			});
 			result.options.push({
 				action: "mrest",
-				text: "가만히 둔다",
+				text: "가만히 있는다",
 			});
 			break;
 		default:
@@ -1125,7 +1125,7 @@ function masturbationActionsAnus({ selectedToy, toyDisplay, genitalsExposed }) {
 			if (result.options.length) {
 				result.options.push({
 					action: "mrest",
-					text: "가만히 둔다",
+					text: "가만히 있는다",
 				});
 			}
 			break;
@@ -1174,7 +1174,7 @@ function masturbationActionsAnus({ selectedToy, toyDisplay, genitalsExposed }) {
 			});
 			result.options.push({
 				action: "mrest",
-				text: "가만히 둔다",
+				text: "가만히 있는다",
 			});
 			break;
 		default:
