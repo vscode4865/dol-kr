@@ -718,8 +718,8 @@ const EasyPostMacroList = [
 	// <<plants_plural_ ul "daisy">> = <<trPlants "daisy" "plural" "을">> 
 	{ name: "plants_plural_", orig_name: "trPlantsPlural", is_print: 1},
 
-	// <<toyName_ un "teddy bear">> = <<trToyName "teddy bear" "은">> 
-	{ name: "toyName_", orig_name: "trToyName", is_print: 1},
+	// <<childToyName_ un "teddy bear">> = <<trChildToyName "teddy bear" "은">> 
+	{ name: "childToyName_", orig_name: "trChildToyName", is_print: 1},
 
 	// <<weather_ nun "rain">> = <<trWeather "rain" "은">> 
 	{ name: "weather_", orig_name: "trWeather", is_print: 1},

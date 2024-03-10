@@ -2427,6 +2427,26 @@
     ```
 
     ```
+    <<trChangePost>>
+        <<trChangePost *txt *newPost "sep">>
+        
+        번역된 조사를 다른 조사로 변경한다
+
+        필수사항
+        - *txt: 조사가 붙은 문자열, 혹은 조사 단독으로 쓰일 수도 있다 (이 경우 ㄹ받침, ~야 문제는 고려하지 않음)
+        - *newPost: 새로운 조사
+
+        선택사항
+        - sep: 조사를 _trPost에 따로 저장한다.
+
+        e.g.
+        <<trChangePost "소녀는" "으로">>                   //  _trResult= "소녀로", _trPost="로"
+        <<trChangePost "소년은" "으로">>                   //  _trResult= "소년으로", _trPost="으로"
+        <<trChangePost "팔을" "으로" "sep">>                   //  _trResult= "팔", _trPost="로"
+        <<trChangePost "을" "으로">>                   //  _trResult= "을", _trPost="로"
+    ```
+
+    ```
     <<getPostNum>>
         <<getPostNum *txt>>
         
@@ -2572,10 +2592,10 @@
         <<trSeason ["autumn", "winter"] "과">>                //  가을, 겨울과
     ```
 
-* trToyName
+* trChildToyName
     ```
-    <<trToyName>>
-        <<trToyName [toyName] post "sep">>
+    <<trChildToyName>>
+        <<trChildToyName [toyName] post "sep">>
         
         아이 장난감을 번역한다. 섹스 장난감이 아닌 것에 주의.
 
@@ -2585,7 +2605,7 @@
         - sep: 조사를 분리하여 저장한다.
 
         e.g.
-        <<trToyName "Teddy Bear" '이' >>_trResult             //  테디베어가
+        <<trChildToyName "Teddy Bear" '이' >>_trResult             //  테디베어가
     ```
 
 
@@ -2829,7 +2849,7 @@
 		원래는 "벗긴다" 로 표시되지만 마지막 옵션에 "and" 가 추가되면 "벗기고", "but" 이 추가되면 "벗기려 하지만" 으로 표시됨
     ```
 
-* base-system/widjets.js
+* base-system/widgets.js
     ```
 	formatList()
 		formatList(*arr, conjunction = "그리고", useOxfordComma = false, separator=", ")
@@ -2861,6 +2881,40 @@
 		사용법 (배열의 메소드로 사용)
 		- 위젯형: <<set _trResult to _fruits.formatList()>><<trPost _postNum "을">><<print _trResult>>
 		- 템플릿형: <<print _fruits.formatList()>>?ul
+    ```
+
+* special-masturbation/actions.js, effects.js
+    ```
+	toyDisplay()
+		toyDisplay(*toy1, toy2, post, sep)
+			
+		손에 들고 있는 섹스 장난감을 번역해 보여준다.
+		
+		필수사항
+		- toy1: 번역하려는 장난감 id
+		
+        선택사항
+		- toy2: 번역하려는 추가 장난감 id
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+    ```
+
+* special-masturbation/macros-masturbation.js
+	getToyName()
+		getToyName(*index, capitalise, post, sep)
+		<<toyName *index capitalise post sep>>
+			
+		손에 들고 있는 섹스 장난감을 번역해 보여준다. (deprecated)
+		
+		필수사항
+		- index: 번역하려는 장난감 id
+		
+        선택사항
+		- capitalise: 대문자 표시 플래그 (원본 매크로에 사용되는 인수값)
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
     ```
 
 
@@ -2999,6 +3053,6 @@
 		```
 		<<beastdesc_ (조사)>>, <<bodypart_ (조사)>>, <<bodywriting_ (조사)>>, <<breastsdesc_ (조사)>>, <<namedNPC_ (조사)>>,
 		<<NPCdesc_ (조사)>>, <<NPCname_ (조사)>>, <<penisdesc_ (조사)>>, <<plants_ (조사)>>, <<plants_plural_ (조사)>>, 
-		<<toyName_ (조사)>>, <<weather_ (조사)>>, <<sextoy_ (조사)>>, 
+		<<childToyName_ (조사)>>, <<weather_ (조사)>>, <<sextoy_ (조사)>>, 
 		<<relaxed_guard_ (조사)>>, <<anxious_guard_ (조사)>>, <<veteran_guard_ (조사)>>, <<methodical_guard_ (조사)>>, <<tattooed_inmate_ (조사)>>, <<scarred_inmate_ (조사)>>, 
 		```
