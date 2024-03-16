@@ -6,6 +6,12 @@
 *(.twee)파일
     *메크로
 
+#TODO
+* 원본이 twee 로 작성되지 않은 번역위젯들을 js 기반으로 변경
+* 임시로 만들어둔 js function 을 정식으로 변경
+	* trColourJS
+	* handPost
+	* trCreature, trParasite, trChastityParasite
 
 
 
