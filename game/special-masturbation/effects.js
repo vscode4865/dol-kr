@@ -948,7 +948,7 @@ function masturbationeffectsArms(
 				if (V.arousal >= (V.arousalmax / 5) * 3) {
 					wikifier("arousal", 500, "masturbationPenis");
 					sWikifier(
-						`당신이 기생충 자지를 희롱하려 애쓰자, 각각, <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보내고</span>, 당신은 그것을 거의 참기가 어렵다.`
+						`당신이 기생충 자지를 희롱하려 애쓰자, 각각, <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보내고</span>, 당신은 그것을 거의 참고 있기가 힘들다.`
 					);
 				} else {
 					sWikifier(
@@ -999,7 +999,7 @@ function masturbationeffectsArms(
 				if (V.arousal >= (V.arousalmax / 5) * 3) {
 					wikifier("arousal", 500, "masturbationPenis");
 					sWikifier(
-						`당신이 기생충 자지를 쥐어짜려 애쓰자, 각각, <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보내고</span>, 당신은 그것을 거의 참기가 어렵다.`
+						`당신이 기생충 자지를 쥐어짜려 애쓰자, 각각, <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보내고</span>, 당신은 그것을 거의 참고 있기가 힘들다.`
 					);
 				} else {
 					sWikifier(
@@ -2795,33 +2795,33 @@ function masturbationeffectsMouth({
 			V.selfsuckDepth = 0;
 			wikifier("arousal", 200, "masturbationGenital");
 			if (V.penisHeight === 0) {
-				sWikifier(`<span class="blue">You take your <<penis>> into your mouth, sending a lewd tingle up your spine.</span>`);
+				sWikifier(`<span class="blue">당신은 당신의 <<penis_ rul>> 입에 넣어, 음란한 따끔거림을 당신의 척추를 타고 흐르게 한다.</span>`);
 			} else {
-				sWikifier(`<span class="blue">You take the head of your <<penis>> into your mouth, sending a lewd tingle up your spine.</span>`);
+				sWikifier(`<span class="blue">당신은 당신의 <<penisPost>> 머리부분을 입에 넣어, 음란한 따끔거림을 당신의 척추를 타고 흐르게 한다.</span>`);
 			}
 			break;
 		case "mpenisdeepthroat":
 			clearAction(V.selfsuckDepth < V.selfsuckLimit ? "mpenisdeepthroat" : "mpenissuck");
 			V.selfsuckDepth++;
 			wikifier("arousal", 200 + 50 * V.selfsuckDepth, "masturbationGenital");
-			sWikifier(`You push your <<penis>> deeper into your mouth. `);
+			sWikifier(`당신은 당신의 <<penis_ rul>> 당신 입 안으로 더 깊숙이 밀어넣는다. `);
 			if (V.selfsuckDepth === V.penisHeight) {
 				if (V.leftarm === "mpenisentrance" && V.rightarm === "mpenisentrance") {
-					altText.hands = "hands";
+					altText.hands = "양손을";
 					V.leftarm = 0;
 					V.leftarmaction = "mrest";
 					V.rightarm = 0;
 					V.rightarmaction = "mrest";
 				} else if (V.leftarm === "mpenisentrance") {
-					altText.hands = "left hand";
+					altText.hands = "왼손을";
 					V.leftarm = 0;
 					V.leftarmaction = "mrest";
 				} else if (V.rightarm === "mpenisentrance") {
-					altText.hands = "right hand";
+					altText.hands = "오른손을";
 					V.rightarm = 0;
 					V.rightarmaction = "mrest";
 				}
-				if (altText.hands) sWikifier(`<span class="lblue">You move your ${altText.hands} away from your <<penis>> to make room.</span> `);
+				if (altText.hands) sWikifier(`<span class="lblue">당신은 자리를 만들기 위해 ${altText.hands} 당신의 자지에서 치운다.</span> `);
 				fragment.append(deepthroateffects(span));
 			}
 			break;
@@ -2830,24 +2830,24 @@ function masturbationeffectsMouth({
 			wikifier("arousal", 200 + 50 * V.selfsuckDepth, "masturbationGenital");
 			if (V.selfsuckDepth >= 2) {
 				clearAction();
-				sWikifier('<span class="lblue">You pull back hard on your <<penis>> and extract some of it from your throat.</span>');
+				sWikifier('<span class="lblue">당신은 당신의 <<penisPost>>에서 머리를 세게 뒤로 당겨 그것의 일부를 당신의 목구멍에서 빼낸다.</span>');
 				fragment.append(" ");
 				fragment.append(deepthroateffects(span));
 			} else if (V.selfsuckDepth === 1) {
 				clearAction();
-				sWikifier('<span class="lblue">You pull back on your <<penis>> and free it from your throat.</span>');
+				sWikifier('<span class="lblue">당신은 당신의 <<penisPost>>에서 머리를 뒤로 당겨 그것을 당신의 목구멍에서 빼낸다.</span>');
 				fragment.append(" ");
 				fragment.append(deepthroateffects(span));
 			} else {
 				clearAction("mpenisstop");
-				sWikifier('<span class="lblue">You pull back until only the head of your <<penis>> remains in your mouth.</span>');
+				sWikifier('<span class="lblue">당신은 당신의 <<penisPost>> 귀두부분만 입에 남을 때까지 머리를 뒤로 당긴다.</span>');
 			}
 			break;
 		case "mpenismouthoff":
 			clearAction("mrest");
 			V.mouth = "mpenisentrance";
 			V.mouthstate = 0;
-			sWikifier('<span class="lblue">You take your mouth off of your <<penis>>.</span>');
+			sWikifier('<span class="lblue">당신은 당신의 <<penisPost>>에서 입을 치운다.</span>');
 			break;
 		case "mpenissuck":
 			clearAction();
@@ -2855,31 +2855,31 @@ function masturbationeffectsMouth({
 				wikifier("arousal", 100, "masturbationGenital");
 				wikifier("pain", 1);
 				additionalEffect.earSlimeDefy.pushUnique(V.player.virginity.penile === true ? "동정 자지" : "자지");
-				sWikifier(`Your forced to roughtly suck on your <<penis>> to feel something.`);
+				sWikifier(`무언가 느끼도록 당신은 당신의 <<penis_ rul>> 거칠게 빨라고 강요된다.`);
 			} else if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 100 && V.earSlime.focus === "impregnation") {
 				wikifier("arousal", 400 + 50 * V.selfsuckDepth, "masturbationGenital");
 				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "열정적으로" : "천천히";
 				if (V.arousal >= (V.arousalmax / 5) * 4) {
 					if (V.selfsuckDepth <= 1) {
 						sWikifier(
-							"You constantly swallow precum as it streams into your mouth while you move your head back and forth on your <<penis>>. A satisfying warmth fills your stomach."
+							"당신이 당신의 <<penisPost>> 위에서 머리를 앞뒤로 움직이는 동안 쿠퍼액이 입 안으로 흘러들어와 당신은 그것을 끊임없이 삼킨다. 만족스러운 따뜻함이 당신의 배를 채운다."
 						);
 					} else {
 						sWikifier(
-							"A waterfall of precum streams down your throat as you move your head back and forth on your <<penis>>. A satisfying warmth fills your stomach."
+							"당신이 당신의 <<penisPost>> 위에서 머리를 앞뒤로 움직이는 동안 쿠퍼액의 폭포가 당신의 목구멍으로 흘러내린다. 만족스러운 따뜻함이 당신의 배를 채운다."
 						);
 					}
 				} else {
 					if (V.penisHeight === V.selfsuckDepth) {
 						if (V.selfsuckDepth >= 2) {
-							sWikifier(`You lick the base of your <<penis>> while your throat massages the shaft.`);
+							sWikifier(`당신의 목구멍이 육봉을 마사지하는 동안 당신은 당신의 <<penisPost>> 밑둥을 핥는다.`);
 						} else {
-							sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking the base.`);
+							sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 그 밑둥을 핥는다.`);
 						}
 					} else if (V.selfsuckDepth >= 1) {
-						sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking along the shaft.`);
+						sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 육봉을 핥는다.`);
 					} else {
-						sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking around the tip.`);
+						sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 그 끝 주위를 핥는다.`);
 					}
 				}
 			} else {
@@ -2887,21 +2887,21 @@ function masturbationeffectsMouth({
 				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "열정적으로" : "천천히";
 				if (V.arousal >= (V.arousalmax / 5) * 4) {
 					if (V.selfsuckDepth <= 1) {
-						sWikifier("You drink down precum as it flows into your mouth while you move your head back and forth on your <<penis>>.");
+						sWikifier("당신이 당신의 <<penisPost>> 위에서 머리를 앞뒤로 움직이는 동안 쿠퍼액이 입 안으로 흘러들어와 당신은 그것을 마신다.");
 					} else {
-						sWikifier("Precum flows down your throat as you move your head back and forth on your <<penis>>.");
+						sWikifier("당신이 당신의 <<penisPost>> 위에서 머리를 앞뒤로 움직이는 동안 쿠퍼액이 당신의 목구멍으로 흘러내린다.");
 					}
 				} else {
 					if (V.penisHeight === V.selfsuckDepth) {
 						if (V.selfsuckDepth >= 2) {
-							sWikifier(`You lick the base of your <<penis>> while your throat massages the shaft.`);
+							sWikifier(`당신의 목구멍이 육봉을 마사지하는 동안 당신은 당신의 <<penisPost>> 밑둥을 핥는다.`);
 						} else {
-							sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking the base.`);
+							sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 그 밑둥을 핥는다.`);
 						}
 					} else if (V.selfsuckDepth >= 1) {
-						sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking along the shaft.`);
+						sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 육봉을 핥는다.`);
 					} else {
-						sWikifier(`You ${altText.eagerly} suck on your <<penis>> while licking around the tip.`);
+						sWikifier(`당신은 ${altText.eagerly} 당신의 <<penis_ rul>> 빨면서 그 끝 주위를 핥는다.`);
 					}
 				}
 			}
@@ -2910,7 +2910,7 @@ function masturbationeffectsMouth({
 			clearAction("mrest");
 			V.mouth = 0;
 			V.penisuse = 0;
-			sWikifier(`<span class="lblue">You move your mouth away from your <<penis>>.</span>`);
+			sWikifier(`<span class="lblue">당신은 당신의 <<penisPost>>에서 입을 치운다.</span>`);
 			break;
 		case "mchastityparasitelick":
 			clearAction();
@@ -2918,7 +2918,7 @@ function masturbationeffectsMouth({
 				wikifier("arousal", 100, "masturbationGenital");
 				wikifier("pain", 4);
 				sWikifier(
-					`You lick the parasite, for each one, the parasite sends alternating waves of <span class="lewd">pleasure</span> and <span class="red">pain</span>.<<gpain>>`
+					`당신이 기생충 자지를 핥자, 각각, 기생충이 <span class="lewd">쾌감</span>과 <span class="red">고통</span>의 물결을 교차해 보낸다.<<gpain>>`
 				);
 			} else if (V.earSlime.corruption < 100) {
 				wikifier("arousal", 200, "masturbationGenital");
@@ -2926,11 +2926,11 @@ function masturbationeffectsMouth({
 				altText.eagerly = V.arousal >= V.arousalmax * (2 / 5) ? "열정적으로" : "천천히";
 				if (V.arousal >= (V.arousalmax / 5) * 4) {
 					sWikifier(
-						`You ${altText.eagerly} to lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your <<penis>>.</span>`
+						`당신이 ${altText.eagerly} 기생충 자지를 핥자, 각각, <span class="lewd">기생충이 당신의 <<penis_ rul>> 통해 쾌감의 물결을 보낸다.</span>`
 					);
 				} else {
 					sWikifier(
-						`You ${altText.eagerly} to lick the parasite, for each one, <span class="lewd">the parasite sends a small wave of pleasure through your <<penis>>.</span>`
+						`당신이 ${altText.eagerly} 기생충 자지를 핥자, 각각, <span class="lewd">기생충이 당신의 <<penis_ rul>> 통해 작은 쾌감의 물결을 보낸다.</span>`
 					);
 				}
 			} else {
@@ -2940,11 +2940,11 @@ function masturbationeffectsMouth({
 				if (V.arousal >= (V.arousalmax / 5) * 3) {
 					wikifier("arousal", 500, "masturbationGenital");
 					sWikifier(
-						`You struggle to lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body</span>, they are almost too much for you.`
+						`당신이 기생충 자지를 핥으려 애쓰자, 각각, 기생충이 <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보내고</span>, 당신은 그것을 거의 참고 있기가 힘들다.`
 					);
 				} else {
 					sWikifier(
-						`You ${altText.eagerly} lick the parasite, for each one, <span class="lewd">the parasite sends a wave of pleasure through your body.</span>`
+						`당신이 ${altText.eagerly} 기생충 자지를 핥자, 각각, <span class="lewd">기생충이 쾌감의 물결을 당신의 몸 전체로 보낸다.</span>`
 					);
 				}
 			}
@@ -2953,7 +2953,7 @@ function masturbationeffectsMouth({
 			clearAction("mrest");
 			V.mouth = 0;
 			V.penisuse = 0;
-			sWikifier(`<span class="lblue">You move your mouth away from your chastity parasite.</span>`);
+			sWikifier(`<span class="lblue">당신은 기생충 정조대 자지에서 입을 치운다.</span>`);
 			break;
 		case "mvaginaentrance":
 			if (V.vaginause === 0) {
@@ -2969,9 +2969,9 @@ function masturbationeffectsMouth({
 					fragment.append(" ");
 				}
 				if (genitalsExposed()) {
-					fragment.append(span(`You run your tongue over your exposed clit 기대감에 몸을 떤다.`, "blue"));
+					fragment.append(span(`당신은 혀를 당신의 노출된 <<clitPost>> 위에서 움직이며 기대감에 몸을 떤다.`, "blue"));
 				} else {
-					sWikifier(`<span class="blue">You run your tongue over your <<pussy>>, feeling it beneath your <<exposedlower>>.</span>`);
+					sWikifier(`<span class="blue">당신은 혀를 당신의 <<pussyPost>> 위에서 움직이며,  <<exposedlowerPost>> 아래의 그 모양을 느낀다.</span>`);
 				}
 			} else {
 				clearAction("mrest");
