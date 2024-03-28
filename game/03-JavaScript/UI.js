@@ -367,15 +367,15 @@ function settingsGenericGenders(id) {
 		if (id === "mlm" || id === "wlw" || id === "blw" || id === "blm") {
 			switch (val) {
 				case 100:
-					text = `<span class='gold inline-colour'>No</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>all</span> <span class='blue inline-colour'>${men}</span> will be ${attraction}.`;
+					text = `<span class='gold inline-colour'>0%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>100%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
 					break;
 				case 0:
-					text = `<span class='gold inline-colour'>All</span> <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>no</span> <span class='blue inline-colour'>${men}</span> will be  ${attraction}.`;
+					text = `<span class='gold inline-colour'>100%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>0%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
 					break;
 				default:
 					text = `<span class='gold inline-colour'>${
 						100 - val
-					}%</span> of <span class='pink inline-colour'>${women}</span> and <span class='gold inline-colour'>${val}%</span> of <span class='blue inline-colour'>${men}</span> will be ${attraction}.`;
+					}%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>${val}%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
 					break;
 			}
 		} else {
@@ -385,13 +385,13 @@ function settingsGenericGenders(id) {
 				text = `<span class='gold inline-colour'>모든</span> ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
 			} else if (val === 50) {
 				text =
-					id.charAt(0).toUpperCase() +
-					id.slice(1) +
-					" will be <span class='gold inline-colour'>evenly</span> split between <span class='blue inline-colour'>male</span> and <span class='pink inline-colour'>female</span> genders.";
+					trid[id] +
+					"은" +
+					` <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>과 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>으로 <span class='gold inline-colour'>동등하게</span> 나누어질 것입니다.`;
 			} else if (val > 50) {
 				text = `<span class='gold inline-colour'>${val}%</span>의 ${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>일 것입니다.`;
 			} else {
-				text = `<span class='gold inline-colour'>${100 - val}%</span> of ${id} will be <span class='pink inline-colour'>female</span>.`;
+				text = `<span class='gold inline-colour'>${100 - val}%</span>의 ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
 			}
 		}
 
@@ -418,16 +418,16 @@ function settingsMonsterChance() {
 
 		switch (val) {
 			case 100:
-				text = "Beasts will <span class='gold inline-colour'>always</span> be monster girls and boys.";
+				text = "짐승들은 <span class='gold inline-colour'>항상</span> 몬스터 소년과 소녀로 나올 것입니다.";
 				break;
 			case 0:
-				text = "Beasts will <span class='gold inline-colour'>never</span> appear as monster girls and boys, unless allowed while hallucinating.";
+				text = "환각 중에 허용되지 않는다면, 짐승들은 <span class='gold inline-colour'>절대</span> 몬스터 소년과 소녀로 나오지 않을 것입니다.";
 				break;
 			case 50:
-				text = "<span class='gold inline-colour'>Half</span> of all beasts will be replaced by monster girls and boys.";
+				text = "모든 짐승들 중 <span class='gold inline-colour'>절반</span>은 몬스터 소년과 소녀로 대체될 것입니다.";
 				break;
 			default:
-				text = `<span class='gold inline-colour'>${val}%</span> of beasts will be replaced by monster girls and boys.`;
+				text = `모든 짐승들 중 <span class='gold inline-colour'>${val}%</span>는 몬스터 소년과 소녀로 대체될 것입니다.`;
 				break;
 		}
 

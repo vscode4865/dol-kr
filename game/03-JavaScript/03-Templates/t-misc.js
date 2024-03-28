@@ -51,7 +51,7 @@ Template.add('animal', () =>
 		"연어",
 		"참치",
 		"사슴",
-		"oyster"
+		"굴"
 	); getPostNum(T.trResult); return T.trResult;}
 );
 
@@ -108,7 +108,7 @@ Template.add("animals", () =>
 		"연어들",
 		"참치들",
 		"사슴들",
-		"oysters"
+		"굴들"
 	); getPostNum(T.trResult); return T.trResult;}
 );
 
@@ -155,54 +155,54 @@ Template.add("sin", () => {T.trResult = either("오만", "분노", "질투", "�
 
 /* ?chatter1 */
 Template.add("chatter1",() => 
-	{T.trResult = either(
-		"If you think about it, neither of us are really here.",
+	either(
+		"잘 생각해보면, 사실 우리 둘 다 여기에 없는 거야.",
 
-		"Hey, listen. You hear that? It's nothing.",
+		"야야, 들어 봐. 그 소문 들었냐? 그거 아무것도 아냐.",
 
-		"Don't knock it 'till you try it. Jazz metal just works.",
+		"직접 해보기 전까진 함부로 판단하면 안돼. 재즈 메탈은 통한다고.",
 
-		"Winter's actually kinda hot, in a fossil kinda way.",
+		"윈터 선생님은 사실 정말 멋져, 화석적인 면에서 말이지만.",
 
-		"I'd let a wolf knot me, to be honest.",
+		"솔직히 말해서, 늑대한테는 대줄 수 있을 것 같아.",
 
-		"If quizzes are quizzical, then what are tests?",
+		"퀴즈(quiz)가 당혹스러우면(quizzical), 시험(test)은 뭐겠어? (testicle = 고환임을 이용한 말장난)",
 
-		"You. Me. That bookshelf. Library dodgeball. You in?",
+		"너. 나. 저 책장. 도서관 피구. 같이 할래?",
 
-		"I haven't seen a single recycling bin in this school. Unbelievable.",
+		"I나는 이 학교에서 재활용 쓰레기통을 본 적이 한 번도 없어. 믿을 수가 없네.",
 
-		"The canteen food is actually pretty good. It's a guilty pleasure of mine.",
+		"우리 학교 식당 음식이 꽤 괜찮더라. 내 소소한 낙이야.",
 
-		"Oh, to be a caterpillar, unaware of the woes of the world.", 
+		"아, 세상의 비애를 모르는 애벌레가 될 수 있다면, 얼마나 좋을까.", 
 
-		"Someone said they saw a whale that had, like, tentacles, like a squid. Think squids and whales finally put their differences aside and got busy?"
-	); getPostNum(T.trResult); return T.trResult;}
+		"누가 오징어처럼, 마치, 촉수 같은 것이 달린 고래를 봤다고 하더라고. 오징어랑 고래가 마침내 그들의 차이를 이겨내고 같이 한 판 떴다고 생각해?"
+	)
 );
 
 /* ?chatter2 */
 Template.add("chatter2",() => 
-	{T.trResult = either(
-		"Why am I friends with you?",
+	either(
+		"왜 내가 너같은 애랑 친구먹고 있는 걸까?",
 
-		"I told you to stop hanging out with me.",
+		"나한테 아는 척 하지 말라고 했잖아.",
 
-		"What the fuck?",
+		"뭔 개소리야?",
 
-		"I'm out of here.",
+		"난 여기서 나가야겠어.",
 
-		"Can we please have a normal conversation for once?",
+		"우리 한번만이라도 정상적인 대화를 하면 안될까?",
 
-		"...What?",
+		"...뭐?",
 
-		"Pretty sure you're not supposed to come to school drunk.",
+		"술취한 채로 학교에 오면 안 되지.",
 
-		"I'm calling the police.",
+		"I경찰 부른다.",
 
-		"I gotta get that restraining order. For real, this time.",
+		"접근금지 신청을 해야겠어. 이번엔, 진짜로.",
 
-		"Can I peg you?",
+		"너 좀 어디에 처박아두면 안되냐?",
 		
-		"Can you make like a tree and die for the winter?"
-	); getPostNum(T.trResult); return T.trResult;}
+		"나무처럼 가만히 있다가 겨울에는 좀 죽어주면 안되겠냐?"
+	)
 );

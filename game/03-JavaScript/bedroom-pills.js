@@ -217,7 +217,7 @@ setup.pills = [
 	{
 		name: "breast blocker",
 		description:
-			"A selective oestrogen receptor modulator (SERM), blocking the protein receptors responsible for breast growth; supplemented by 269mg of Tetraozealpostigyl.",
+			"선택적 에스트로겐 수용체 조절자 (SERM)가, 유방의 성장에 관여하는 단백질 수용체를 차단합니다; 269mg의 테트라오제알포스티글이 함유되어 있습니다.",
 		onTakeMessage: "당신은 당신의 가슴 크기를 유지하기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
 		warning_label:
 			'<span class="hpi_notice_label">주의사항: 이 약의 투약중 어떤 부작용도 보고되어 있지 않습니다. 24시간 내에 1정 이상 투약하는 것은 효과가 없을 것입니다</span>',
@@ -361,7 +361,7 @@ setup.pills = [
 	{
 		name: "fertility booster",
 		description:
-			"Each pill contains 50mg of clomiphene citrate, a structural analogue of oestrogens. It also acts on your hypothalamus which secretes the hormones necessary to trigger ovulation. In some cases effectively inducing your ovary to release eggs.",
+			"1정 당 50mg의 에스트로겐 유사물질인, 클로미펜 시트르산염을 함유하고 있습니다. 이 약은 또한 시상하부에 작용하여 배란을 촉진하는 데 필요한 호르몬을 분비시킵니다. 몇몇 경우 효과적으로 난소에서 난자생성을 유도시킵니다.",
 		onTakeMessage: "당신은 당신의 생식력을 늘리기 위해 약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
 		warning_label:
 			"주의사항: 적정용량을 복용하는 동안, 임신 초기와 비슷한 증상을 포함한 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
@@ -404,7 +404,7 @@ setup.pills = [
 	{
 		name: "contraceptive",
 		description:
-			"Estroprogestatifs associating 24mg of ethinylestradiol(synthetic oestrogen) and 31mg of a synthetic progestin for a near-perfect contraceptive effect.",
+			"24mg의 에치닐에스트라디올(합성 에스트로겐)과 31mg의 합성 프로게스토겐이 복합된 에스트로프로게스트라피츠가 거의-완벽한 피임 효과를 발휘합니다.",
 		onTakeMessage: "당신은 피임약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
 		warning_label:
 			"주의사항: 적정용량을 복용하는 동안 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
@@ -620,8 +620,8 @@ function addElementToGrid(item) {
 			<div class="hpi_item">
 				<div class="hpi_icon">${item.frontIcon ? `<img class="icon infront" src="${item.frontIcon}"/>` : ""}<img class="icon" src="${item.icon}"/></div>
 				<div class="hpi_name" id="hpi_name_${itemName}">
-					${itemName}
-					${item.autoTake() === true ? `<span class="hpi_auto_label"> [Auto]</span>` : ""}
+					${item_koname}
+					${item.autoTake() === true ? `<span class="hpi_auto_label"> [자동]</span>` : ""}
 				</div>
 				<div class="hpi_count" onmouseenter="T.disableGridClick = true" onmouseleave="T.disableGridClick = false">${item.owned()}</div>
 			</div>
@@ -641,8 +641,8 @@ function onHomePillItemClick(itemName) {
 					${item.description}
 					<div class="hpi_warning_label">${item.warning_label}</div>
 					<div id="hpi_desc_action">
-						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick('${item.name}', '${item.type}')">Take pill</a>
-						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick('${item.name}', '${item.type}')">Take every morning</a>
+						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick('${item.name}', '${item.type}')">약을 먹는다</a>
+						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick('${item.name}', '${item.type}')">매일 아침 먹는다</a>
 					</div>
 				</div>`;
 				window.initPillContextButtons(item);
