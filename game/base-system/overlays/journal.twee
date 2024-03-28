@@ -61,11 +61,13 @@
 					<<set _date to new DateTime($brothel_escortjob.date)>>
 					<li>당신은 파트너 일이 예정되어 있다. 창관에서 당신에게 창관 앞으로
 					<<if Time.monthDay is _date.day>>
-						<span class="gold">오늘</span> <span class="gold"><<ampm _date.hour>> 까지 오라고 했다.</span>
+						<span class="gold">today</span> at <span class="gold"><<ampm _date.hour>></span>.
+					<<elseif _date.addDays(-1).day is Time.monthDay>>
+						<span class="gold">내일</span> 공격할 것이다.
 					<<elseif _date.addDays(-7).day gte Time.monthDay>>
-						다음 <span class="gold"><<trDaysOfWeek _date.weekDayName>>_trResult</span> <span class="gold"><<ampm _date.hour>> 까지 오라고 했다.</span>
+						next <span class="gold">_date.weekDayName</span> at <span class="gold"><<ampm _date.hour>></span>.
 					<<else>>
-						<span class="gold"><<trDaysOfWeek _date.weekDayName>>_trResult</span> <span class="gold"><<ampm _date.hour>> 까지 오라고 했다.</span>
+						on <span class="gold">_date.weekDayName</span> at <span class="gold"><<ampm _date.hour>></span>.
 					<</if>></li>
 				<</if>>
 			<</if>>
@@ -124,7 +126,6 @@
 			<</if>>
 
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-				<li>You are <<print $temple_rank is "initiate" ? "an initiate at" : "a <<temple_title>> of">> the temple.
 				<li>당신은 사원의 <<print $temple_rank is "initiate" ? "수련생이다" : "<<temple_title_ ida>>">>.
 					<<if $temple_chastity_timer lte 0>>
 						<span class="pink">정조 시험이 예정되어 있다.</span>
@@ -145,7 +146,7 @@
 		<span class="gold bold">기억해야 할 것</span>
 		<ul style="margin-top:10px;margin-left:-5px;">
 			<<if $temple_spear_mission is 1>>
-				<li>조던이 당신에게 고대의 창을 되찾으라는 임무를 주었다. 그것은 신비한 섬에 위치해 있다고 한다.
+				<li>Jordan has tasked you with retrieving an artefact spear. It is said to reside on a mysterious island.
 					<<if $temple_spear_mission_winter is undefined>>
 						조던이 지역 박물관의 역사학자가 더 많은 정보를 알고 있을지도 모른다고 언급했다.
 					<<else>>
@@ -211,10 +212,10 @@
 								'미키'는 커버 안쪽에 암호가 쓰여있는 사원의 건축에 대한 책을 찾아주기를 원한다.
 							<<case "kylar">>
 								'미키'는 편지를
-								<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison">>
+								<<if C.npc.Kylar.state is "prison">>
 									경찰서에 배달해서, 그들이 카일라에게 전해주기를 원한다.
 								<<else>>
-									<<if $NPCName[$NPCNameList.indexOf("Kylar")].init isnot 1>>당신의 학교 학생인, <</if>>카일라에게 전해주기를 원한다.
+									Kylar<<if C.npc.Kylar.init isnot 1>>, a student at your school<</if>>.
 								<</if>>
 							<<case "wren">>
 								'미키'는 편지를 <<if $wren_intro is undefined>>렌이라는 <<nnpc_genderPost "Wren">>에게 전해주기를 원한다. <<nnpc_He_ nun "Wren">> 황무지에 있는 레미의 사유지나, 밤에 부두에서 찾을 수 있을 것이다<<else>>렌에게 전해주기를 원한다<</if>>.
@@ -451,13 +452,13 @@
 	<<if $halloween is 1>>
 		<ul style="margin-top:10px;margin-left:-5px;">
 			<li>할로윈은 10월 31이다.</li>
-			<<if $halloween_whitney is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
+			<<if $halloween_whitney is 1 and C.npc.Whitney.state isnot "dungeon">>
 				<li>휘트니는 <<ampm 19 00>>에 도무스 가에서 트릭-오어-트릿을 할 것이다.</li>
 			<</if>>
 			<<if $halloween_robin is 1 and $robinmissing is 0>>
 				<li>로빈은 <<ampm 16 00>>부터 <<ampm 19 00>>까지 트릭-오어-트릿을 하러 갈 것이다.</li>
 			<</if>>
-			<<if $halloween_kylar is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+			<<if $halloween_kylar is 1 and C.npc.Kylar.state isnot "prison">>
 				<li>카일라가 <<ampm 21 00>> 이후에 공원에서 만나자고 했다.</li>
 			<</if>>
 			<<if $halloween_eden is 1>>
@@ -487,9 +488,9 @@
 				<</if>>
 			</li>
 
-			<<if $christmas_gift_robin is undefined and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+			<<if $christmas_gift_robin is undefined and C.npc.Robin.init is 1>>
 				<li>당신은 쇼핑센터<<if $forest_shop_intro is 1>>나 숲가게<</if>>에서 로빈을 위한 선물을 살 수 있다.</li>
-			<<elseif $christmas_gift_robin and $christmas_gift_robin_wrapped isnot 1 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+			<<elseif $christmas_gift_robin and $christmas_gift_robin_wrapped isnot 1 and C.npc.Robin.init is 1>>
 				<li>당신은 방에서 로빈을 위한 선물을 포장할 수 있다.</li>
 			<</if>>
 			<<if !$christmas_wrap>>
@@ -775,6 +776,9 @@
 	<</if>>
 	<<if $panties_held gte 1>>
 		<li>당신은 훔친 속옷을 <<print $panties_held is 1 ? "한 장" : "<span class='green'>$panties_held</span> 장">> 가지고 있다. 당신은 <<print $panties_held is 1 ? "그것을" : "그것들을">> 점심시간 동안 학교 뒷마당에서 팔 수 있다.</li>
+	<</if>>
+	<<if $farm_key is true>>
+		<li>You have stashed a ring of keys. You can use them to escape, be careful not to get caught with them.</li>
 	<</if>>
 	</ul>
 

@@ -43,7 +43,7 @@
 <<else>>
 	<<run statusCheck("Robin")>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if ($halloween_kylar is 1 or $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60) and $halloween_kylar_proposed isnot 1 and Time.dayState is "night" and $NPCName[$NPCNameList.indexOf("Kylar")].init is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and (($halloween is 1 and Time.monthDay is 31 and Time.hour gte 21) or (Time.monthName is "November" and Time.monthDay is 1 and Time.hour lte 6)) and !$possessed>>
+	<<if ($halloween_kylar is 1 or C.npc.Kylar.love gte 60) and $halloween_kylar_proposed isnot 1 and Time.dayState is "night" and C.npc.Kylar.init is 1 and C.npc.Kylar.state is "active" and (($halloween is 1 and Time.monthDay is 31 and Time.hour gte 21) or (Time.monthName is "November" and Time.monthDay is 1 and Time.hour lte 6)) and !$possessed>>
 		<<halloweenkylar>>
 	<<elseif ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
 		<<eventsstreet>>
@@ -87,7 +87,7 @@
 			<<unset $robinReunionScene>>
 			당신은 로빈이 <<his_ yi>> 핫초코 가판대 뒤에 서 있는 것을 볼 수 있다.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He_ nun>> 믿을 수 없다는 듯이 당신을 바라본다.
 				<br><br>
 
@@ -103,7 +103,7 @@
 			당신은 고개를 저으며, 그들은 당신에게 별다른 도움이 되지 않을 것이고, 그래서 당신이 일찍 "나왔다"고 말한다. 로빈은 혼란스러워 보이지만, 개의치 않고 고개를 끄덕인다. <<He_ nun>> 당신을 안아준다.
 			<br>
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				"음, 네가 자유로워져서 기뻐," 라고 <<he_ ga>> 당신을 꼭 껴안으며 중얼거린다.
 			<<else>>
 				"음, 다시 만나서 반가워! 기분이 나아졌으면 좋겠어."
@@ -111,7 +111,7 @@
 			<br>
 			둘이서 잠시 사소한 잡담을 나눈다. 결국, 로빈은 <<his_ yi>> 가판대로 돌아가야 한다고 말한다.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He_ nun>> 시선을 바닥에 고정한 채, 천천히 몸을 뒤척인다.
 			<<else>>
 				<<He_ nun>> 웃으며 작별 인사를 건넨다.
@@ -127,7 +127,7 @@
 			<<link [[다음|Park]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and Time.season is "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0 and !$possessed>>
+	<<elseif C.npc.Robin.init is 0 and Time.season is "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0 and !$possessed>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>당신은 공원 가판대에서 친숙한 누군가가 일하고 있는 것을 봤다. <<He_ nun>> 거의 동시에 당신의 존재를 알아차린다. "어이!" 로빈이다. <<He_ nun>> 고아원에서 함께 사는 아이다. <<He_ nun>> 당신과 같은 나이임에도, 당신을 항상 동경해왔다. <<He_ nun>> 머그컵을 닦으면서, 당신에게 손을 흔든다. <<He_ ga>> 머그컵을 내려놓고, 당신이 다가오자 당신을 껴안아 준다.
 		<br><br>
@@ -166,21 +166,20 @@
 				<<robinicon "cocoa">><<link [[로빈의 핫초코 가판대|Robin Chocolate]]>><</link>>
 				<br>
 			<</if>>
-			<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and !["rain", "snow"].includes($weather) and Time.dayState is "day" and $kylarwatched isnot 1 and !($englishPlay is "ongoing" and $englishPlayRoles.Kylar and $schoolstate is "afternoon")>>
-				<<if !Time.schoolDay or Time.hour lte 8 or Time.hour gte 15>>
-					<<if $kylar.fountain is 1>>
-						<br>
-						카일라는 분수대에 앉아 가끔 동전을 던진다.
-						<br>
-						<<parkicon "fountain">><<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
-				<<else>>
-						<br>
-						카일라는 벤치에 앉아 무언가를 스케치한다.
-						<br>
-						<<parkicon>><<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
-					<</if>>
-					<br><br>
+			<<set _kylarLocation to getKylarLocation()>>
+			<<if _kylarLocation.area is "park">>
+				<<if _kylarLocation.state is "fountain">>
+					<br>
+					카일라는 분수대에 앉아 가끔 동전을 던진다.
+					<br>
+					<<parkicon "fountain">><<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
+				<<elseif _kylarLocation.state is "bench">>
+					<br>
+					카일라는 벤치에 앉아 무언가를 스케치한다.
+					<br>
+					<<parkicon>><<link [[다가간다|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
 				<</if>>
+				<br><br>
 			<</if>>
 			<<if isInPark("whitney")>>
 				<br>

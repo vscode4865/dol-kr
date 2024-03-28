@@ -2,7 +2,7 @@
 <<widget "kylargag">>
 	<<set $mouthuse to "gagged">>
 	<<facewear 28>>
-	<<if $NPCName[$NPCNameList.indexOf("Kylar")].clothes.lower.name.includes("skirt")>>
+	<<if C.npc.Kylar.clothes.lower.name.includes("skirt")>>
 		<<He_ ga>> <<his_ yi>> 치마 밑에서 칼을 꺼낸다.
 	<<else>>
 		<<He_ ga>> <<his_ yi>> 주머니에서 칼을 뽑아낸다.
@@ -77,7 +77,7 @@
 		<br><br>
 
 		<<kylaroptionsleave "manor">>
-	<<elseif $bus is "kylarmanor" and Time.hour lt 18>>
+	<<elseif $bus is "kylarmanor" and Time.hour lte 6>>
 		<<unset $kylar_action>>
 		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
 		<br><br>
@@ -86,7 +86,7 @@
 		<br>
 		<<link [[Pounce|Manor Kylar Pounce]]>><<npcincr Kylar love 1>><</link>><<promiscuous1>><<glove>>
 		<br>
-	<<elseif _kylarStatus.includes("Love") and $NPCName[$NPCNameList.indexOf("Kylar")].love gte 90 and $kylar_camera is undefined>>
+	<<elseif _kylarStatus.includes("Love") and C.npc.Kylar.love gte 90 and $kylar_camera is undefined>>
 		Kylar looks even more anxious than usual. <<He>> stares at <<his>> feet, and shifts <<his>> weight between them. "I-I," <<he>> gulps. "I got you something." <<He>> crouches, and reaches behind a bench, pulling out a bow-tied box. <<He>> holds it out to you.
 		<br><br>
 
@@ -1344,6 +1344,17 @@
 <<set _kylar to statusCheck("Kylar")>>
 <<cleareventpool>>
 
+<<if $daily.kylar.libraryInteract is 1>>
+	/* Ensures the event fires once, avoiding repetition for now */
+	<<set $daily.kylar.libraryInteract to 2>>
+
+	<<addevent "kylarLibraryStalkTease1">>
+	<<runeventpool>>
+
+	<br><br>
+	<<kylaroptions "notext">>
+	<<exit>>
+<</if>>
 <<if _kylarStatus.includes("Love")>>
 	<<if $genderknown.includes("Kylar") and !$worn.lower.type.includes("naked")>>
 		<<addevent "kylarFlirtEventClothesPull">> <!-- defined in Widgets Kylar -->
@@ -2417,7 +2428,7 @@ Kylar balks at your words, looking at you nervously. "W-what?"
 	<<if _kylarLower.includes("skirt")>>
 		<<he>> reaches under <<his>> _kylarLower and pulls off <<his>> $daily.kylar.underwear.colourDesc.
 	<<else>>
-		<<he>> lifts <<his>> _kylarLower and, in a complex maneuver you can't quite follow, manages to remove <<his>> $daily.kylar.underwear.colourDesc without removing <<his>> _kylarLower.
+		<<he>> lifts <<his>> _kylarLower and, in a complex manoeuvre you can't quite follow, manages to remove <<his>> $daily.kylar.underwear.colourDesc without removing <<his>> _kylarLower.
 	<</if>>
 <</if>>
 <br><br>
@@ -2492,7 +2503,15 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 <<set $outside to 0>><<effects>><<run statusCheck("Kylar")>>
 <<set $kylar_action to "chat">>
 
-<<if _kylarStatus.includes("Love")>>
+<<if $daily.kylar.libraryInteract is 1>>
+	/* Ensures the event fires once, avoiding repetition for now */
+	<<set $daily.kylar.libraryInteract to 2>>
+
+	<<kylarLibraryStalkChat1>>
+
+	<<kylaroptions "notext">>
+	<<exit>>
+<<elseif _kylarStatus.includes("Love")>>
 	<<bodywritingExposureCheck>>
 	<<if _bodywriting_exposed gte 1 and !$daily.kylar.bodywriting and _bodypart>>
 		<<set $daily.kylar.bodywriting to true>>
@@ -2823,7 +2842,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 		<br><br>
 		<<link [[격려한다|Kylar Encourage]]>><<npcincr Kylar love 1>><</link>><<glove>>
 		<br>
-		<<link [[Tease|Kylar Arcade Tease]]>><</link>>
+		<<link [[희롱한다|Kylar Arcade Tease]]>><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -3199,7 +3218,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 		당신은 식사하는 동안 <<him_ 과>> 이야기 하면서, 시드니에 대한 주제는 최대한 피한다.
 	<<elseif $robinromance is 1>>
 		로빈은 말하던 것을 멈추고, 도서관을 향해 다시 달려가는 시드니를 멍하니 바라본다.
-		<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 50>>
+		<<if C.npc.Robin.dom gte 50>>
 			<<he_ 는>> 입을 삐죽 내밀어, 시드니가 키스했던 뺨과 같은 자리에 키스한다. "내가 더 잘 해." 
 		<<else>>
 			"왜 그랬... 방금 무슨 일이 있었던 거야?" <<he_ 가>> 인상을 쓴다.
@@ -3209,46 +3228,49 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 		로빈이 말하던 것을 멈추고, 당신을 놀리듯이 쿡쿡 찌른다. "누군가는 인기쟁이네! 시드니랑 너 잘 어울린다. 잘 됐어."
 		당신은 <<him_ 과>> 식사하면서, 시드니에 대해 서로 즐거운 대화를 나눈다.
 	<</if>>
-	"교실에서 기다릴게." 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다.
+	"I'm going to wait in the classroom," <<he>> says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?"
 	<br><br>
 
-	<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+	<<if C.npc.Kylar.state is "active">>
 		카일라가 식당 건너편에서 그 광경을 지켜본다.
-		<<ggksuspicion>><<npcincr Kylar rage 3>>
+		<<ggksuspicion>><<npcincr Kylar rage 3>><<set $kylarexit to "jealous both">>
 		<br><br>
 	<</if>>
 	<<endevent>>
-
-	<<link [[다음|Canteen]]>><</link>>
+	<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><<unset $kylarexit>><</link>><br>
+	<<schoolicon "library">><<link [[Say you'd rather go to the library (0:05)|School Library]]>><<set $robinexit to "library">><<set $phase2 to "library">><<pass 5>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $phase2 to "canteen">><</link>>
 	<br>
 <<else>>
-	당신은 식사를 마친다. "교실에서 기다릴게," 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다.
+	You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?"
 	<br><br>
 
-		<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+		<<if C.npc.Kylar.state is "active">>
 			카일라가 식당 건너편에서 그 광경을 지켜본다.
-			<<gksuspicion>><<npcincr Kylar rage 1>>
+			<<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarexit to "jealous robin">>
 			<br><br>
 		<</if>>
 	<<endevent>>
-	<<link [[다음|Canteen]]>><</link>>
+	<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><<unset $kylarexit>><</link>><br>
+	<<schoolicon "library">><<link [[Say you'd rather go to the library (0:05)|School Library]]>><<set $robinexit to "library">><<set $phase2 to "library">><<pass 5>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $phase2 to "canteen">><</link>>
 	<br>
 <</if>>
 
 :: Kylar Canteen Stay
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
-<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 95>>
+<<if C.npc.Kylar.rage gte 95>>
 	카일라는 내내 조용하다가, 당신의 뒤에 있는 무언가를 가리킬 때만 입을 연다. 당신이 뒤를 돌아보았을 떄에는 이미 그것은 사라져 있다.
 	<br><br>
 
-	당신은 식사를 마친다. "교실에서 기다릴게," 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다.
+	You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?" Kylar glares at <<him>>, but <<he>> gives no sign of noticing.
 	<br><br>
 
-	<<endevent>><<npc Kylar>><<person1>>
-	<span class="red">당신은 일어서면서 휘청거린다.</span> 당신은 어지러움을 느낀다. "괜찮아?" 점차 혼미해지는 정신 속에서 카일라가 말하는 소리가 들린다. "넌 간호사가 필요해." <<He_ 는>> 당신의 어깨에 팔을 두르고 문 쪽으로 당신을 이끈다. 당신은 정신을 잃는다.
-	<br><br>
-	<<link [[다음|Kylar Basement]]>><<endevent>><</link>>
+	<<endevent>>
+	<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|Canteen Stay]]>><<set $kylarexit to "rage robin">><<set $phase2 to "basement">><<pass 1>><</link>><br>
+	<<schoolicon "library">><<link [[Say you'd rather go to the library (0:05)|School Library]]>><<set $robinexit to "library">><<set $kylarexit to "rage">><<set $phase2 to "basement">><<pass 5>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $kylarexit to "rage">><<set $phase2 to "basement">><</link>>
 	<br>
 
 <<else>>
@@ -3268,11 +3290,13 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 		<<endevent>>
 
 	<<else>>
-		당신은 식사를 마친다. "교실에서 기다릴게," 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다. 카일라가 <<him_ 을>> 노려보지만, <<he_ 는>> 전혀 눈치채지 못한다.
+		You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?" Kylar glares at <<him>>, but <<he>> gives no sign of noticing.
 		<br><br>
 
 		<<endevent>>
-		<<link [[다음|Canteen]]>><</link>>
+		<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><</link>><br>
+		<<schoolicon "library">><<link [[Say you'd rather go to the library|Canteen Stay]]>><<set $robinexit to "library">><<set $phase2 to "library">><</link>><br>
+		<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $phase2 to "canteen">><</link>>
 		<br>
 	<</if>>
 <</if>>
@@ -3289,7 +3313,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 <<endevent>><<npc Robin>><<person1>>
 <<if $robinromance is 1>>
 	로빈은 잠시 당신을 바라보다가, <<his_>>의 식판을 내려다본다. <<He_ 는>> 일어서서 아무 말 없이 자리를 떠난다.
-	<<lllove>><<npcincr Robin love -5>>
+	<<lllove>><<npcincr Robin love -5>><<set $withRobin to "hurt">><<if $robin.timer.hurt is 0>><<set $robin.hurtReason to "you kissing Kylar">><<set $robin.timer.hurt to 1>><</if>>
 	<br><br>
 <<else>>
 	로빈은 당신을 홀긋 쳐다보지만, <<he_ ga>> 당신이 뭘 하고 있는지 본 순간 얼굴을 붉히며 고개를 돌린다.
@@ -3302,7 +3326,14 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 <</if>>
 
 <<endevent>>
-<<link [[다음|Canteen]]>><</link>>
+<br><br>
+<<if $withRobin is "hurt">>
+	<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><</link>><br>
+<<else>>
+	<<historyicon>><<link [[Follow Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+<</if>>
+<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><<unset $withRobin>><</link>>
 <br>
 
 :: Kylar Canteen Robin
@@ -3330,10 +3361,12 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 로빈은 걱정스러운 표정을 짓는다. "카일라는 괜찮은 걸까?" <<he_ 가>> 묻는다.
 <br><br>
 
-당신은 식사를 마친다. "교실에서 기다릴게," 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다. 카일라가 식당 건너편에서 <<him_ 을>> 노려보지만, <<he_ 는>> 전혀 눈치채지 못한다.
-<br><br>
+You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?" Kylar glares at <<him>> from across the canteen, but <<he>> gives no sign of noticing.
 
-<<link [[다음|Canteen]]>><<endevent>><</link>>
+<br><br>
+<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><</link>><br>
+<<schoolicon "library">><<link [[Say you'd rather go to the library|Canteen Stay]]>><<set $robinexit to "library">><<set $phase2 to "library">><</link>><br>
+<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $phase2 to "canteen">><</link>>
 <br>
 
 :: Kylar Canteen Refuse
@@ -3345,32 +3378,38 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 <br><br>
 
 <<endevent>><<npc Robin>><<person1>>
-당신은 식사를 마친다. "교실에서 기다릴게," 당신이 다 먹을 즈음 <<he_ 가>> 말한다. "지각하는 거 안 좋아하거든." <<he_ 가>> 당신을 안아준다. 카일라가 <<him_ 을>> 노려보지만, <<he_ 는>> 전혀 눈치채지 못한다.
+You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?" Kylar glares at <<him>>, but <<he>> gives no sign of noticing.
 <br><br>
 
 <<endevent>>
-<<link [[다음|Canteen]]>><</link>>
+<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><</link>><br>
+<<schoolicon "library">><<link [[Say you'd rather go to the library|Canteen Stay]]>><<set $robinexit to "library">><<set $phase2 to "library">><</link>><br>
+<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><<set $robinexit to "leave">><<set $phase2 to "canteen">><</link>>
+
 <br>
 
 :: Canteen Lunch Kylar
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
 <<endevent>><<npc Kylar>><<person1>>
+<<set _kylarlocation to getKylarLocation()>>
 
 당신은 카일라의 옆에 앉아 인사를 건넨다.
 
-<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 95>>
+<<if C.npc.Kylar.rage gte 95>>
 	<<Hes_ 는>> 내내 조용하다가, 당신의 뒤에 있는 무언가를 가리킬 때만 입을 연다. 당신이 뒤를 돌아보았을 떄에는 이미 그것은 사라져 있다.
 	<br><br>
 
 	당신은 식사를 마친다.
 	<br><br>
+	<<endevent>>
+	<<set $kylarexit to "rage">><<set $phase2 to "basement">>
 
-	<span class="red">당신은 일어서면서 휘청거린다.</span> 당신은 어지러움을 느낀다. "괜찮아?" 점차 혼미해지는 정신 속에서 카일라가 말하는 소리가 들린다. "넌 간호사가 필요해." <<He_ 는>> 당신의 어깨에 팔을 두르고 문 쪽으로 당신을 이끈다. 당신은 정신을 잃는다.
-	<br><br>
-	<<link [[다음|Kylar Basement]]>><<endevent>><</link>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|Canteen Stay]]>><</link>><br>
+	<<schoolicon "library">><<link [[Go to the library (0:05)|Canteen Stay]]>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen Stay]]>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].love gte 60 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 16 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon" and $rng gte 80>>
+<<elseif C.npc.Kylar.love gte 60 and C.npc.Whitney.dom gte 16 and C.npc.Whitney.state isnot "dungeon" and $rng gte 80>>
 	<<he_ 가>> 입을 열고 당신에게 인사를 건네기도 전에, 한 인물이 당신의 다른쪽 옆자리에 미끄러져 들어온다. 휘트니다.
 	<br><br>
 	<<npc Whitney 2>><<person2>>
@@ -3408,10 +3447,18 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	<</if>>
 	<br><br>
 
-	당신은 식사를 마친다. 카일라는 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
+	You finish your food. Kylar carries your trays away, then walks in the direction of the <<if _kylarlocation.area is "library">>library<<else>>rear courtyard<</if>>.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
+	<<endevent>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 
 <<else>>
@@ -3421,12 +3468,21 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	당신은 식사를 마치고 떠난다. 카일라는 <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
+	<<endevent>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 <</if>>
 
 :: Canteen Kylar Whitney Kiss
 <<effects>>
+
 당신은 눈을 감고 키스에 응한다. <<npcincr Whitney love 1>><<glove>>
 <br><br>
 
@@ -3443,6 +3499,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 
 :: Canteen Kylar Whitney Refuse
 <<effects>>
+
 당신은 휘트니를 밀어낸다. 카일라가 당신을 가까이 끌어당긴다.
 <<if $speech_attitude is "meek">>
 	당신은 꼭 달라붙는다.
@@ -3457,6 +3514,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 
 :: Canteen Kylar Whitney Slap
 <<effects>>
+<<set _kylarlocation to getKylarLocation()>>
 
 휘트니가 <<his_>>의 혀를 당신의 입에 억지로 밀어넣자, 당신은 그 혀를 깨물어버린다.
 <br><br>
@@ -3472,8 +3530,15 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 
 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<person1>><<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 <br><br>
-
-<<link [[다음|Canteen]]>><<endevent>><</link>>
+<<endevent>>
+<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+<<if _kylarlocation.area is "library">>
+	<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+<<else>>
+	<<schoolicon "courtyard">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+	<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+<</if>>
+<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 <br>
 
 :: Canteen Kylar Whitney Confrontation
@@ -3518,7 +3583,7 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	<br><br>
 
 	<<if $cool gte 240>><<enable_rescue>><</if>>
-	<<if $robinmissing is 0 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>><<enable_rescue>><</if>>
+	<<if $robinmissing is 0 and C.npc.Robin.init is 1 and C.npc.Robin.dom gte 60>><<enable_rescue>><</if>>
 <</if>>
 
 <<effects>>
@@ -3537,7 +3602,9 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 <</if>>
 
 :: Canteen Kylar Whitney Intervene Finish
-<<effects>><<run statusCheck("Kylar")>>
+<<effects>>
+<<run statusCheck("Kylar")>>
+<<set _kylarlocation to getKylarLocation()>>
 
 <<if $enemyhealth lte 0>>
 	당신은 휘트니를 무릎 꿇리고, 관중이 당신에게 환호한다. <<gcool>><<status 1>>
@@ -3577,9 +3644,15 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
-	<br><br>
-
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
+	<br>
 
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
@@ -3595,14 +3668,21 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 
 <<elseif $alarm is 1 and $rescue is 1>><<set $rescued += 1>>
 	당신의 외침은 식당의 소음에 묻혀버린다. 휘트니는 <<his_>> 팔을 뒤로 당겨, 주먹을 날릴 준비를 하지만, 뒤에서 누군가가 팔을 감싸안는 바람에 방해 받는다.
 	<br><br>
 
-	<<if $robinmissing is 0 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $NPCName[$NPCNameList.indexOf("Robin")].dom gte 60>>
+	<<if $robinmissing is 0 and C.npc.Robin.init is 1 and C.npc.Robin.dom gte 60>>
 		<span class="green">로빈이다.</span> 다른 한 쌍의 학생들이 뛰어들어, 휘트니의 반대편 팔을 붙잡는다. 너무 많은 무게가 실려, 그들은 뒤로 넘어진다.
 		<br><br>
 	<<elseif $cool gte 240>>
@@ -3626,8 +3706,15 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	휘트니가 떠난 후 다른 학생들은 흥미를 잃는다. 당신은 안도하는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
-	<br><br>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
+	<br>
 
 <<else>>
 	휘트니가 우위를 점하고, 당신을 벽에다 꽂아버린다. "좆만한 멍청이가!"
@@ -3655,7 +3742,14 @@ You raise a knee into <<his>> crotch. <<He>> yelps in surprise as you lean forwa
 	<<tearful>> 당신은 조금 전 일을 곱씹는 카일라 옆에서 식사를 마친다. <<He_ 는>> 다 먹은 당신의 식판을 치우고, <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><<endevent>><</link>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<if _kylarlocation.area is "library">>
+		<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<else>>
+		<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+		<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<</if>>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 <</if>>
 
@@ -3735,6 +3829,7 @@ Whitney regains some composure as <<he>> follows Leighton from the room. <<He>> 
 
 :: Canteen Kylar Cheer 2
 <<effects>>
+<<set _kylarlocation to getKylarLocation()>>
 
 The crowd disperses, leaving a lone, trembling Kylar on the ground. You approach <<person1>><<him>>, <<his>> eyes staring into space. You extend your hand to <<hers>>.
 <br><br>
@@ -3759,7 +3854,14 @@ You smile and squeeze <<his>> other hand. <<He>> drops the knife with a horrifie
 You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if $weather is "rain" or $weather is "snow">>도서관<<else>>학교 뒷마당<</if>> 방향으로 걸어간다.
 <br><br>
 
-<<link [[다음|Canteen]]>><<endevent>><</link>>
+<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+<<if _kylarlocation.area is "library">>
+	<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+<<else>>
+	<<schoolicon "library">><<link [[Follow Kylar to the courtyard (0:02)|School Rear Courtyard]]>><<pass 2>><</link>><br>
+	<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+<</if>>
+<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 <br>
 
 :: Canteen Whitney Cheer
@@ -3795,7 +3897,10 @@ Kylar stirs on the ground.
 	"What a fucking nutcase," Whitney says. <<person2>><<He>> gives you a playful shove. "I expect a reward for winning later, slut." <<He>> leaves the canteen, <<his>> cronies in tow.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><</link>><<endevent>>
+	<<endevent>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 
 <<else>>
@@ -3817,7 +3922,10 @@ Kylar stirs on the ground.
 	You look back to Kylar, but <<person1>><<hes>> already gone. The other students disperse.
 	<br><br>
 
-	<<link [[다음|Canteen]]>><</link>><<endevent>>
+	<<endevent>>
+	<<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
+	<<schoolicon "library">><<link [[Go to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
+	<<foodicon "eat">><<link [[Stay in the canteen|Canteen]]>><</link>>
 	<br>
 <</if>>
 
@@ -3828,11 +3936,30 @@ Kylar stirs on the ground.
 당신은 카일라의 책상으로 다가간다.
 
 <<if _kylarStatus.includes("Love")>>
-	<<Hes_ 는>> <<his_>>의 스케치북에 당신의 그림을 그리고 있다.
+	<<Hes>> sketching a picture of you
+	<<if _kylarStatus.includes("Rage")>>
+		and <<himself>> in <<his>> sketchbook.
+	<<else>>
+		in <<his>> sketchbook.
+	<</if>>
 <<else>>
 	<<He_ 는>> 당신을 발견하자 <<he_ 가>> 그리던 것이 무엇인지 숨긴다.
 <</if>>
 <br><br>
+<<kylaroptions>>
+
+:: Kylar Library Jealousy
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
+
+<<npc Kylar>><<person1>>
+당신은 카일라의 책상으로 다가간다.
+
+You notice <<him>> glaring at Sydney. As <<he>> sees you, <<he>> turns <<his>> attention to you.
+<br><br>
+
+<<if !$daily.kylar.libraryInteract>>
+	<<set $daily.kylar.libraryInteract to 1>>
+<</if>>
 <<kylaroptions>>
 
 :: Kylar Courtyard

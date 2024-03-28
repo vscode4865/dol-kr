@@ -101,11 +101,17 @@
 			<</if>>
 		<</for>>
 	<<elseif $outfit.find(outfitSet => outfitSet.type.includes("sleep"))>>
+		<<icon "cross.png" "infront">>
+		<<if _passage is "Bed">>
+			<<furnitureicon _bed.iconFile>>
+		<<else>>
+			<<bedicon>>
+		<</if>>
 		<<if $possessed>>
-			<<ind>><span class="purple">당신 머리의 슬라임은 조용하다.</span>
+			<span class="purple">머릿속의 슬라임은 조용하다.</span>
 			<br>
 		<<else>>
-			<<ind>><span class="purple">슬라임이 당신이 옷을 입고 자는 것을 허락하지 않는다.</span>
+			<span class="purple">The slime is not allowing you to sleep with anything on.</span>
 			<br>
 		<</if>>
 	<</if>>
@@ -277,7 +283,7 @@
 					<<unset _randomColour>>
 					<<unset _randomColourAcc>>
 					<<for $_equipIndex, $_wardrobeItem range _selectedWardrobe[$_slot]>>
-						<<if $_incomingItemName isnot $_wardrobeItem.name>>
+						<<if $_incomingItemName isnot $_wardrobeItem.name or ($_wardrobeItem.outfitSecondary and !["broken", "split"].includes($_wardrobeItem.outfitSecondary[1]))>>
 							<<continue>>
 						<</if>>
 						/* Check for saved colors in clothing set */
@@ -530,7 +536,7 @@
 			<<set _resultStrings to {}>>
 			<<set _locationName to ($wardrobes[$wardrobe_location] is undefined ? "wardrobe" : $wardrobe_location)>>
 			<<set _wardrobeName to $wardrobes[_locationName].name + (!$wardrobes[_locationName].name.includes("locker") ? " wardrobe" : "")>>
-			<<trWardrobeName _wardrobeName>><<run Object.values(_notEquipped).forEach(notEquippedItem => {
+			<<run Object.entries(_notEquipped).forEach(([slot, notEquippedItem]) => {
 				switch (notEquippedItem.reason) {
 					case "not found":
 						if (_resultStrings.notFound === undefined) {
@@ -641,6 +647,7 @@
 						_resultStrings.cursedUnequip.names.push(notEquippedItem.name);
 						break;
 					case "not found piece":
+						if (V.worn[slot].name === notEquippedItem.name) break;
 						if (_resultStrings.notFoundPiece === undefined) {
 							_resultStrings.notFoundPiece = {
 								"start": "예기치 못한 문제로 (대부분 세이브파일 에러로) 당신은 ",

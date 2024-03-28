@@ -6,12 +6,10 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 아무것도 입지 않았다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 수영복만 입고 있다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 속옷만 입고 있다는 사실을 자각했다.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "only wearing swimwear" : "only wearing underwear">>
+		<<else>>
+			<<set _naked to "not wearing anything">>
 		<</if>>
 		<br><br>
 		<<npc Doren>><<person1>>
@@ -21,66 +19,74 @@
 		<br><br> good starting point for when you can go to class naked-->
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 		<br><br>
-	<<elseif $worn.upper.type.includes("school") and $worn.lower.type.includes("school") and $rightarm isnot "bound">>
-		<<if $daily.school.attended.english>>
-			당신은 영어 수업에 다시 들어와,
-			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
-				 교실 뒷편에 코트를 건 뒤
-				<<undressOverClothes "englishClassroom">>
-			<</if>>
-			자리에 앉는다.
-			<br><br>
-			<<englishstart>>
-		<<elseif Time.minute lte 5>>
-			당신은 영어 교실에 들어간다.
-			<<npc Doren>><<person1>>
-			학생들이 자리에 앉는 동안 도렌이 교실 앞쪽에서 수업 준비를 하고 있다.
-			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
-				<<undressOverClothes "englishClassroom">>
-				당신은 교실 뒷편에 코트를 건 뒤 자리에 앉는다.
-			<</if>>
-			<br><br>
-			<<englishstart>>
-		<<else>>
-			당신은
-			<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
-				교실 뒷편에 코트를 건 뒤
-				<<undressOverClothes "englishClassroom">>
-			<</if>>
-			영어 교실에 들어간다.
-			<<npc Doren>><<person1>>
-			도렌이 말을 하다 말고 당신에게 미소를 지어보인다.
-			<<if $daily.school.englishExcused>>
-				<<run delete $daily.school.englishExcused>>
-				"걱정 말거라, <<lassPost>>. 괜찮다."
-			<<else>>
-				"안 오는 것보다는 늦는게 낫지! 앉으렴, 늦어서 못 들은 내용을 설명할테니 말이야."
-				<<gdelinquency>>
-				<<detention 1>>
-			<</if>>
-			<br><br>
-			당신이 자리에 앉자, 도렌이 수업을 계속한다.
-			<br><br>
-
-			<<englishstart>>
-		<</if>>
-
-	<<elseif $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
-		도렌이 걱정스러운 표정을 짓는다. "<<if $player.gender_appearance is "m">>청년<<else>>아가씨<</if>>, 누가 그렇게 묶어놓은 거야? 괜찮니? 교장 선생님께 그걸 자를 도구가 있을 거야. 어서 교장실로 가보렴."
+		<<exit>>
+	<</if>>
+	<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+		Doren looks concerned. "<<= $player.gender_appearance is "m" ? "Lad" : "Lass">>, who tied you up like that? Are you okay? Leighton should have something to cut you free. Go see the head."
 		<br><br>
 
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 		<br><br>
-	<<else>>
+		<<exit>>
+	<</if>>
+	<<if !$worn.upper.type.includes("school") or !$worn.lower.type.includes("school")>>
 		<<npc Doren>><<person1>>
 		도렌이 웃는다. "교복을 입지 않으면 내 수업을 들을 수 없단다. 내 규칙상으론 그래. 교장 선생님에게 예비 교복이 있을 거야."
 		<br><br>
 
 		<<link [[다음|Hallways]]>><<endevent>><</link>>
 		<br><br>
+		<<exit>>
+	<</if>>
+	<<if $daily.school.attended.english>>
+		당신은 영어 수업에 다시 들어와,
+		<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
+			교실 뒷편에 코트를 건 뒤
+			<<undressOverClothes "englishClassroom">>
+		<</if>>
+		자리에 앉는다.
+		<br><br>
+		<<englishstart>>
+		<<exit>>
+	<</if>>
+	<<if Time.minute lte 5>>
+		당신은 영어 교실에 들어간다.
+		<<npc Doren>><<person1>>
+		학생들이 자리에 앉는 동안 도렌이 교실 앞쪽에서 수업 준비를 하고 있다.
+		<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
+			<<undressOverClothes "englishClassroom">>
+			당신은 교실 뒷편에 코트를 건 뒤 자리에 앉는다.
+		<</if>>
+		<br><br>
+		<<englishstart>>
+		<<exit>>
 	<</if>>
 
-<<elseif $schoollesson is 1>>
+	당신은
+	<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked" or $worn.over_head.name isnot "naked">>
+		교실 뒷편에 코트를 건 뒤
+		<<undressOverClothes "englishClassroom">>
+	<</if>>
+	영어 교실에 들어간다.
+	<<npc Doren>><<person1>>
+	도렌이 말을 하다 말고 당신에게 미소를 지어보인다.
+	<<if $daily.school.englishExcused>>
+		<<run delete $daily.school.englishExcused>>
+		"걱정 말거라, <<lassPost>>. 괜찮다."
+	<<else>>
+		"안 오는 것보다는 늦는게 낫지! 앉으렴, 늦어서 못 들은 내용을 설명할테니 말이야."
+		<<gdelinquency>>
+		<<detention 1>>
+	<</if>>
+	<br><br>
+	당신이 자리에 앉자, 도렌이 수업을 계속한다.
+	<br><br>
+
+	<<englishstart>>
+	<<exit>>
+<</if>>
+
+<<if $schoollesson is 1>>
 	<<if $daily.school.englishInterrupted is 1>>
 		<<npc Doren>><<person1>>당신은 영어 교실에 들어간다. 도렌이 갑자기 말을 멈추고는 당신을 바라본다. "하! 내 수업에 대한 열정이 넘치는 건 기쁘다만, 다른 수업을 듣고 있어야 하는 거 아니니? 징계 처리를 해야겠구나. 안 그러면 내가 레이턴에게 한소리 듣게 되니까 말이야." <<HePost "은">> 당신을 문 밖으로 쫓아낸다.
 		<<gdelinquency>>
@@ -110,7 +116,8 @@
 	<</if>>
 	You spot Sydney near a group of students.
 	<<if !$englishPlayLate>>
-		<<if $englishPlayReadiness gte 56 and $englishPlayRoles.SydneyKnown and $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown and !$englishPlayDoubleRehearsal>>
+		<<set _kylarLocation to getKylarLocation()>>
+		<<if _kylarLocation.area is "english" and _kylarLocation.state is "dual_rehearsal">>
 			<span class="blue">Kylar is with <<nnpc_him "Sydney">>.</span>
 			<br>
 			<<link [[Rehearse with Kylar and Sydney (2:00)|English Play Rehearse Both]]>><<pass 30>><<englishskill 18>><</link>><<gggenglish>><<gggreadiness>>
@@ -125,7 +132,7 @@
 			<<link [[Approach Sydney|English Play Intro Sydney]]>><</link>>
 		<</if>>
 		<br>
-		<<if $englishPlayRoles.Kylar isnot "none" and !$englishPlayRoles.KylarKnown>>
+		<<if _kylarLocation.area is "english" and _kylarLocation.state is "rehearsal">>
 			Kylar stands alone in a corner. Others seem to be avoiding <<nnpc_him "Kylar">>.
 			<br>
 			<<link [[Approach Kylar|English Play Intro Kylar]]>><</link>>
@@ -208,7 +215,7 @@
 		영어 수업이 시작되었다. 무엇을 할까?
 		<br><br>
 	<<else>>
-		영어 수업이 계속된다. 무엇을 할까?
+		The English lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -222,6 +229,10 @@
 	<br>
 	<<daydreamicon>><<link [[몽상한다|English Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|English Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 75>>
 		<<ind>><<link [[자위한다|English Lesson Masturbate]]>><<set $masturbationstart to 1>><<npcincr Kylar lust 5>><</link>><<exhibitionist5>><<glust>>
 		<br>
@@ -233,7 +244,7 @@
 		<br><br>
 		<<classgrades>>
 	<<else>>
-		영어 수업이 계속된다. 무엇을 할까?
+		The English lesson continues. How do you want to conduct yourself?
 		<br><br>
 	<</if>>
 	<<if $arousal gte $arousalmax>>
@@ -247,6 +258,10 @@
 	<br>
 	<<daydreamicon>><<link [[몽상한다|English Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[Sleep at your desk|English Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 55>>
 		<<ind>><<link [[자위한다|English Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
 		<br>
@@ -291,24 +306,9 @@
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
 <</if>>
 
 :: English Lesson Socialise
@@ -339,24 +339,9 @@
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
 <</if>>
 
 :: English Lesson Daydream
@@ -380,30 +365,30 @@
 <<stress _stress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "englishClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "englishClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><</link>>
+	<<lessonEnd "englishClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsenglish>>
-	<<else>>
-		<<eventsenglishsafe>>
-	<</if>>
+	<<lessonEvents "english">>
+<</if>>
+
+:: English Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You rest your head on the desk while Doren <<print either("discusses the proper use of adverbs", "animatedly reads aloud from a book", "talks about the symbolism of yellow curtains", "shares examples of different types of poems", "leads two students in a reenactment of a play")>>. Your eyes soon close, just for a moment, before you open them again. You struggle to stay awake, but the desk is just too comfy.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "englishClassroom" "sleep">>
+<<else>>
+	<<eventsenglishsleep>>
 <</if>>
 
 :: English Kylar Move
 
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<if $NPCName[$NPCNameList.indexOf("Kylar")].love gte 90>>
+<<if C.npc.Kylar.love gte 90>>
 	당신은 다른 자리로 가기 위해 물건을 챙긴다. 카일라가 당신의 허벅지 위에 손을 올린다. <<hisPost "의">> 손에는 칼 한 자루가 들려있다. "어-어딜 가는 거야, 내 사랑?" <<HePost "이">> 말한다. "이미 우리 자리가 있잖아."
 	<br><br>
 	<<link [[다음|English Lesson]]>><<endevent>><</link>>

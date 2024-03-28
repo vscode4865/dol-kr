@@ -152,14 +152,8 @@
 		그 앞에 서자 표면에 파문이 일더니, 어렴풋이 익숙한 <<girlPost "이">>
 	<<elseif $trauma gte $traumamax>>
 		멍한 눈의 <<girlPost "이">>
-	<<elseif $pain gte 100>>
-		울고 있는 <<girlPost "이">>
-	<<elseif $pain gte 40>>
-		눈물이 그렁그렁한 <<girlPost "이">>
-	<<elseif $pain gte 1>>
-		얼굴을 찌푸린 <<girlPost "이">>
 	<<else>>
-		활발한 <<girlPost "이">>
+		A <<= $pain gte 100 ? "crying" : $pain gte 40 ? "tearful" : $pain gte 1 ? "frowning" : "cheerful">> <<girl>>
 	<</if>>
 	이쪽을 바라보고 있다.
 	<<if ["haunt", "despair"].includes($wraith.state) and $hallucinations gte 1 and random(1, 100) is 1>>
@@ -1051,7 +1045,7 @@
 			<<set _bodyWritingOptions["Love Interests"]["휘트니 전용 걸레"] to "whitneys_slut">>
 		<</if>>
 	<</if>>
-	<<if $kylarenglish gte 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+	<<if $kylarenglish gte 1 and C.npc.Kylar.state isnot "prison">>
 		<<set _bodyWritingOptions["Love Interests"]["카일라의 집착"] to "kylars_obsession">>
 		<<set _bodyWritingOptions["Love Interests"]["카일라를 영원히 사랑해"] to "love_kylar_forever">>
 		<<set _bodyWritingOptions["Love Interests"]["카일라에게 예약됨"] to "reserved_for_kylar">>
@@ -1063,7 +1057,7 @@
 		<<set _bodyWritingOptions["Love Interests"]["숲에서는 외로워"] to "its_lonely_in_the_woods">>
 		<<set _bodyWritingOptions["Love Interests"]["누군가 너를 사냥하고 있다"] to "something_is_hunting_you">>
 	<</if>>
-	<<if $dateCount.Avery gte 3 and $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
+	<<if $dateCount.Avery gte 3 and C.npc.Avery.state isnot "dismissed">>
 		<<set _bodyWritingOptions["Love Interests"]["에이버리의 어린 " + ($player.gender_appearance isnot "m" ? "아내" : "남편")] to "averys_trophy">>
 		<<set _bodyWritingOptions["Love Interests"]["사랑스러움"] to "endearing">>
 		<<if ($player.penisExist or $player.gender_appearance is "m" or $backgroundTraits.includes("crossdresser"))>>
@@ -1089,7 +1083,7 @@
 		<<set _bodyWritingOptions["Love Interests"]["시드니의 구원자"] to "sydneys_savior">>
 		<<set _bodyWritingOptions["Love Interests"]["시드니에게 속함"] to "bound_to_sydney">>
 		<<set _bodyWritingOptions["Love Interests"]["시드니가 나를 :)"] to "sydney_makes_me_smile">>
-		<<if $NPCName[$NPCNameList.indexOf("Sydney")].purity gt 1>>
+		<<if C.npc.Sydney.purity gt 1>>
 			<<set _bodyWritingOptions["Love Interests"]["가장 순결한 사랑"] to "purest_love">>
 		<<else>>
 			<<set _bodyWritingOptions["Love Interests"]["음란한 죄인"] to "lusty_sinners">>
@@ -1717,17 +1711,18 @@
 			<span class="gold" style="padding-left:5px">질감:</span>
 				<<for _trait range _textureTraits.sort()>>
 					<<silently>><< _trait>><</silently>>
+					<<set _traitObj to setup.shopDetails[_trait]>>
 					<div class="filters-trait-row">
 						<label>
 							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
 							<<clothingtrait _trait 'display_normal'>>
 							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
-							<<if $noTraitDescription>>
-								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<if !_traitObj.desc>>
+								<<print _traitObj.name>>
 							<<else>>
 								<mouse class = "tooltip-small">
-									<<trClothingTrait _clothesTrait>><<print _trResult>>
-									<span class="black"><<print _clothesDesc>></span>
+									<<print _traitObj.name>>
+									<span class="black"><<print _traitObj.desc>></span>
 								</mouse>
 							<</if>>
 						</label>
@@ -1739,17 +1734,18 @@
 			<<set _styleTraits to ["braids", "buns", "pigtails", "ponytail"]>>
 				<<for _trait range _styleTraits.sort()>>
 					<<silently>><< _trait>><</silently>>
+					<<set _traitObj to setup.shopDetails[_trait]>>
 					<div class="filters-trait-row">
 						<label>
 							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
 							<<clothingtrait _trait 'display_normal'>>
 							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
-							<<if $noTraitDescription>>
-								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<if !_traitObj.desc>>
+								<<print _traitObj.name>>
 							<<else>>
 								<mouse class = "tooltip-small">
-									<<trClothingTrait _clothesTrait>><<print _trResult>>
-									<span class="black"><<print _clothesDesc>></span>
+									<<print _traitObj.name>>
+									<span class="black"><<print _traitObj.desc>></span>
 								</mouse>
 							<</if>>
 						</label>
@@ -1761,17 +1757,18 @@
 			<<set _otherTraits to ["loose","short"]>>
 				<<for _trait range _otherTraits.sort()>>
 					<<silently>><< _trait>><</silently>>
+					<<set _traitObj to setup.shopDetails[_trait]>>
 					<div class="filters-trait-row">
 						<label>
 							<<set _checked = $shopClothingFilter.traits.includes(_trait) ? 'checked="checked"' : ''>>
 							<<clothingtrait _trait 'display_normal'>>
 							<<print '<input type="checkbox" @id="_trait" @value="_trait" ' + _checked + ' onclick="window.shopClothingFilterToggleTrait(this.value)">'>>
-							<<if $noTraitDescription>>
-								<<trClothingTrait _clothesTrait>><<print _trResult>>
+							<<if !_traitObj.desc>>
+								<<print _traitObj.name>>
 							<<else>>
 								<mouse class = "tooltip-small">
-									<<trClothingTrait _clothesTrait>><<print _trResult>>
-									<span class="black"><<print _clothesDesc>></span>
+									<<print _traitObj.name>>
+									<span class="black"><<print _traitObj.desc>></span>
 								</mouse>
 							<</if>>
 						</label>
@@ -2250,6 +2247,7 @@
 							<<listbox "_angel.wings" autoselect>>
 								<<option "숨기기" "hidden">>
 								<<option "기본값" "default">>
+								<<option "클래식" "classic">>
 							<</listbox>>
 						</div>
 						<br>
@@ -2279,12 +2277,15 @@
 								<<listbox "_fallen.wings" autoselect>>
 									<<option "숨기기" "hidden">>
 									<<option "기본값" "default">>
+									<<option "클래식" "classic">>
 									<<option "Feathered" "fallenplus">>
+									<<option "Classic Feathered" "classicfallenplus">>
 								<</listbox>>
 							<<else>>
 								<<listbox "_fallen.wings" autoselect>>
 									<<option "숨기기" "hidden">>
 									<<option "기본값" "default">>
+									<<option "클래식" "classic">>
 								<</listbox>>
 							<</if>>
 						</div>

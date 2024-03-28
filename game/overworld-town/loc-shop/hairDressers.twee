@@ -60,14 +60,14 @@
 				<<hairdressericon "gel">> <<link [[헤어 젤을 구매한다 (£8)|Hairdressers Gel]]>><<set $money -= 800>><<set $hairgelBottles += 1>><</link>>
 				<br>
 			<<else>>
-				<<hairdressericon "gel">> <span class="blue">당신은 헤어 젤을 구매할 돈이 없다.</span>
+				<<hairdressericon "gel">> <span class="blue">You can't afford any hair gel or growth formula.</span>
 				<br>
 			<</if>>
 			<<if $money gte 5000>>
 				<<hairdressericon "hairspray">> <<link [[모발 성장약을 구매한다 (£50)|Hairdressers Gel]]>><<set $money -= 5000>><<set $sexStats.pills.pills["Hair Growth Formula"].owned += 3>><<set $sexStats.pills.boughtOnce to true>><<set $phase to 1>><</link>>
 				<br>
-			<<else>>
-				<<hairdressericon "hairspray">> <span class="blue">당신은 헤어 젤을 구매할 돈이 없다.</span>
+			<<elseif $money gte 800>>
+				<<hairdressericon "hairspray">> <span class="blue">You can't afford any hair growth formula.</span>
 				<br>
 			<</if>>
 			<<hairdressericon "chair">><<link [[의자에 앉는다|Hairdressers Seat]]>><</link>>
@@ -222,7 +222,7 @@
 			<<set _dyeNames to ["빨간색","흑옥색", "검은색", "금발", "부드러운 금발", "백금색", "황금색", "애쉬 블론드", "스트로베리 블론드", "짙은 갈색", "갈색", "부드러운 갈색", "연한 갈색", "번트 오렌지색", "생강색", "블러드 오렌지색", "파란색", "깊은 파란색", "네온 파란색", "초록색", "짙은 라임색", "톡식 그린색", "청록색", "분홍색", "밝은 분홍색", "핫핑크색", "부드러운 분홍색", "진홍색", "보라색", "중간 보라색", "밝은 보라색", "흰색", "순백색"]>>
 			<<set $hairdressersHairColour to ["red","jetblack", "black", "blond", "softblond", "platinumblond", "golden", "ashyblond", "strawberryblond", "darkbrown", "brown", "softbrown", "lightbrown", "burntorange", "ginger", "bloodorange", "blue", "deepblue", "neonblue", "green", "darklime", "toxicgreen", "teal", "pink", "brightpink", "hotpink", "softpink", "crimson", "purple", "mediumpurple", "brightpurple", "white", "snowwhite"]>>
 
-			<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange">>
+			<<if $money gte _currentCost + 3000 or $dyeOption isnot "noChange" or $twoToneHairDye>>
 				<<if $dyeOption is "removeDye">>
 					<<set _currentCost += 3000>>
 				<<elseif not $twoToneHairDye and $dyeOption isnot "noChange">>
@@ -352,9 +352,9 @@
 
 		<<if $money lt _currentCost>>
 			당신은 미용사에게 줄 돈이 충분하지 않다.
-		<<elseif  $twoToneHairDye and ($twoToneDyeOption1 eq $twoToneDyeOption2)>>
+		<<elseif $twoToneHairDye and ($twoToneDyeOption1 eq $twoToneDyeOption2)>>
 			투톤 머리 염색을 위해서는 당신은 서로 다른 두 색상을 선택해야만 한다.
-		<<elseif _currentCost gt 0 >>
+		<<elseif _currentCost gt 0>>
 			<<link [[미용사에게 요금을 낸다|Hairdressers Session]]>>
 				<<set $money -= _currentCost>>
 			<</link>>
@@ -491,7 +491,7 @@
 <</widget>>
 
 <<widget "hairDressersOptionsSydney">>
-	<<set $_sydney to $NPCName[$NPCNameList.indexOf("Sydney")]>>
+	<<set $_sydney to C.npc.Sydney>>
 	<<set _currentCost to 0>>
 	<<set _currentCost += ($sydneyHairOption isnot $sydney.hair ? 3000 : 0)>>
 	<<set _currentCost += ($dyeOption is "removeDye" ? 3000 : ($dyeOption isnot "noChange" ? 6000 : 0))>>

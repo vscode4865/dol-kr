@@ -1,6 +1,6 @@
 :: Temple Confess Approach
 <<set $outside to 0>><<set $location to "temple">><<temple_effects>><<effects>>
-당신은 사원의 중앙홀 벽에 따뜻하게 자리잡은 고해성사실로 접근한다. 중앙 장식에 화려한 상징이 춤을 추고 양쪽의 무거운 나무 문이 이어진다.
+You approach the confessional, secluded against the wall of the main hall. Ornate symbology dances across the centre trim, continuing on the heavy wooden doors on each side.
 오른쪽은 참회자들이 죄를 고백할 수 있도록 개방되어 있고, 왼쪽은 사제, 즉 '고해신부'를 위한 공간이다. 가운데에는 작은 놋쇠 종이 매달려 있다.
 <br><br>
 
@@ -1148,7 +1148,8 @@
 <</if>>
 <<if $earSlime.corruption>>
 	<<if $earSlime.growth gte 50>>
-		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), 51, Infinity)>>
+		<<set _minGrowth to $earSlime.growth gte 100 and playerIsPregnant() ? 100 : 51>>
+		<<set $earSlime.growth to Math.clamp(Math.ceil($earSlime.growth * 0.9), _minGrowth, Infinity)>>
 		<<if $earSlime.growth gte 100>>
 			<<set $earSlime.defyCooldown += 6>>
 		<<else>>
@@ -1325,7 +1326,7 @@
 :: Temple Confess Tutorial
 <<set $outside to 0>><<set $location to "temple">><<temple_effects>><<effects>>
 <<npc Jordan>><<person1>>
-당신은 사원의 중앙홀 벽에 따뜻하게 자리잡은 고해성사실로 접근한다. 중앙 장식에 화려한 상징이 춤을 추고 양쪽의 무거운 나무 문이 이어진다.
+You approach the confessional, secluded against the wall of the main hall. Ornate symbology dances across the centre trim, continuing on the heavy wooden doors on each side.
 오른쪽은 참회자들이 죄를 고백할 수 있도록 개방되어 있고, 왼쪽은 사제, 즉 '고해신부'를 위한 공간이다. 가운데에는 작은 놋쇠 종이 매달려 있다.
 <br><br>
 
@@ -1623,13 +1624,13 @@
 	<<generate1>><<person1>><<set $attendant to "sinner_generic_forgive">>
 	그들이 앉는다. <<personsimple_ yi>> 목소리가 당신을 맞이한다.
 	<<set _sinPoolForgive to [
-		`"제가 죄를 지었으니 용서해주세요, <<sisterPost>>님. 이웃의 배우자를 탐하였습니다."`,
-		`"제가 죄를 지었으니 용서해주세요, <<sisterPost>>님. 이웃을 탐하였습니다."`,
+		`"Forgive me, <<sister>>, for I have sinned. I have coveted my neighbour's spouse."`,
+		`"Forgive me, <<sister>>, for I have sinned. I have coveted my neighbour."`,
 		`"제가 죄를 지었으니 용서해주세요, <<sisterPost>>님. 내기에서 졌고, 벌거벗은 채로 마을을 가로질렀습니다."`,
 		`"제가 죄를 지었으니 용서해주세요, <<sisterPost>>님. 몇 주 동안 배우자 몰래 스트립 클럽에 다녀왔어요."`,
 		`"제가 죄를 지었으니 용서해주세요, <<sisterPost>>님. 전... 동네 매춘업소에서 마음껏 즐겼어요."`,
 		`"전 문제가 있습니다. 미친 듯이 도박을 했습니다."`,
-		`"이웃에 대해 불순한 생각을 가진 저를 용서해주십시오, <<sisterPost>>님."`,
+		`"Forgive me, <<sister>>, for I've had impure thoughts about my neighbour."`,
 		`"친한 친구에 대해 불순한 생각을 가진 저를 용서해주십시오, <<sisterPost>>님."`,
 		`"여기 성직자들에 대해 불순한 생각을 가진 저를 용서해주십시오, <<sisterPost>>님."`,
 		`"많은 사람들에 대해 불순한 생각을 가진 저를 용서해주십시오, <<sisterPost>>님."`,
@@ -1998,7 +1999,7 @@
 		<</if>>
 		<br><br>
 
-		"형편없어. 넌 마치 우리  <<if $malechance is 100>>아빠<<else>>엄마<</if>>처럼 들려. 하지만... 그건 당신이 옳다는 뜻일지도 모르겠네." <<He_ ga>> 고해성사를 마치고 고해실을 나간다. <<grace 1>><<ggrace>>
+		"Lame. You sound like my <<if $malechance is 100>>dad<<else>>mum<</if>>. But... maybe that means you're right." <<He>> exits the confessional. <<grace 1>><<ggrace>>
 	<<case "sinner_6" "sinner_7">>
 		"주님은 이해하십니다. 세상은 잔인할 수 있지만 당신은 최선을 다하고 있습니다."
 		<br><br>
@@ -2787,7 +2788,7 @@
 		<br>
 	<<else>>
 		<br><br>
-		<<set $seductiondifficulty to 8000 - (($NPCName[$NPCNameList.indexOf("Sydney")].love + $NPCName[$NPCNameList.indexOf("Sydney")].lust) * 15) - $NPCName[$NPCNameList.indexOf("Sydney")].purity>>
+		<<set $seductiondifficulty to 8000 - ((C.npc.Sydney.love + C.npc.Sydney.lust) * 15) - C.npc.Sydney.purity>>
 		<<seductioncheck>>
 		<br><br>
 
@@ -2848,7 +2849,7 @@
 	<<elseif _sydneyStatus.includes("pure")>>
 		<<set $enemyarousalmax -= 100>>
 	<</if>>
-	<<if _sydneyChastity and $NPCName[$NPCNameList.indexOf("Sydney")].chastity.anus.includes("shield")>>
+	<<if _sydneyChastity and C.npc.Sydney.chastity.anus.includes("shield")>>
 		<<set $enemyarousalmax -= 100>>
 	<</if>>
 	<<set $timer to random(6, 12)>>
@@ -3053,7 +3054,7 @@
 			참회자가 말한다.
 			<<switch $sydneyConfession.Attendant>>
 				<<case "sinner_1">>
-					"이웃의 배우자에 대해 불순한 생각을 했어요. 지금은 결혼 생활에 완벽하게 행복합니다..."
+					"I've had impure thoughts about my neighbour's spouse. Now, I'm perfectly happy in my marriage..."
 				<<case "sinner_2">>
 					"나는... 전 범죄자입니다. 카페에서 주인 없는 지폐를 훔쳤어요..."
 				<<case "sinner_3">>
@@ -3721,9 +3722,9 @@
 "차?" <<person1>><<his_ yi>> 오른쪽에 있는 <<person2>><<priest_ ga>> 물어본다.<br>
 "...아님 커피?" <<person1>><<his_ yi>> 왼쪽에 있는 <<person3>><<priest_ ga>> 물어본다.<br><br>
 
-<<link [[차|Temple Confessor Intro 4]]>><<set $phase to 0>><<stress -6>><</link>><<lstress>>
+<<link [[Tea|Temple Confessor Intro 4]]>><<wearProp "tea">><<set $phase to 0>><<stress -6>><</link>><<lstress>>
 <br>
-<<link [[커피|Temple Confessor Intro 4]]>><<set $phase to 1>><<tiredness -6>><</link>><<ltiredness>>
+<<link [[Coffee|Temple Confessor Intro 4]]>><<wearProp "coffee">><<set $phase to 1>><<tiredness -6>><</link>><<ltiredness>>
 <br>
 
 :: Temple Confessor Intro 4
@@ -3752,7 +3753,7 @@
 <<else>>
 	오른쪽 <<person2>><<priest>> 의자를 들고 돌아와서 <<his_ yi>> 왼손과 <<person3>><<priest_ yi>> 오른손을 맞잡는다.
 <</if>>
-중앙의 <<person1>><<priest_ ga>> 당신의 눈높이까지 내려와 앉는다. <<His_ yi>> 얼굴이 훨씬 더 온화해 보인다. "두 번째 질문입니다." <<he_ ga>> 말한다. "어땠어요? 당신의 첫 경험은?"<br>
+The <<person1>>centre <<priest>> sits, coming down to your eye level. <<His>> face seems much more gentle. "My second question," <<he>> starts. "How was it? Your first time?"<br>
 "첫 정화인가요?"<br>
 "첫 정화라고요?"<br><br>
 
@@ -3859,7 +3860,7 @@
 				"시들다."<br>
 				"꽃이 핀다."<br><br>
 			<</if>>
-			"네가 가서 <<nnpc_him_ rul "Sydney">> 망쳤지, 그렇지? <<nnpc_His_ yi "Sydney">> 순수함은 사라졌어. 넌 알 수 없었겠지만, 아이야, 네가 지금 여기 와서 우리에게 증명했어.
+			"You went and spoilt <<nnpc_him "Sydney">>, did you not? <<nnpc_His "Sydney">> innocence is gone. You couldn't have known, child, and you've made it up to us by being here now.
 		<<else>>
 			<<if $templePromised is "Sydney">>
 				"함께, 하나 되어."<br>
@@ -3910,7 +3911,7 @@
 		"넘쳐나는 컵."<br><br>
 
 		"하지만. 타락한 자의 파트너가 재판을 통해 우리 교단에 입문했다면, 그 타락은 그들에게도 뿌리를 내릴 수 없다. 도망칠 곳이 없는 타락은 그들 안에 있는 거룩한 진실에 의해 목이 졸릴 것이다. 처녀자리의 선물로." 방 안의 모든 예복 차림의 인물들이 오른발을 쿵쾅거리며 주의를 기울인다. 그 소리가 가슴에 울려 퍼진다.<br>
-		"우리의 구세주."<br>
+		"Our saviour."<br>
 		"우리의 교도관."<br>
 		"하나."<br>
 		"영원히."<br><br>
@@ -3958,11 +3959,11 @@
 			"조던이 <<sisterPost "에">> 대해 극찬을 아끼지 않았어요.
 			<<if $spear_vessel is "temple" and $jordan_ritual_dance is 4>>
 				컬트 활동에서 <<nnpc_his_ yi "Jordan">> 무리 중 한 명을 구출했을 뿐만 아니라 처녀자리의 창을 되찾았습니다." 형체들은 모두 주의를 기울이며 오른발을 쿵쾅쿵쾅 친다.<br>
-				"우리의 구세주"<br>
+				"Our saviour."<br>
 				"우리의 교도관."
 			<<elseif $spear_vessel is "temple">>
 				처녀자리의 창을 되찾은 <<sister_ rul>> 그냥 무시할 수는 없다." 형체들은 모두 주목하며 오른발을 쿵쾅쿵쾅 친다.<br>
-				"우리의 구세주"<br>
+				"Our saviour."<br>
 				"우리의 교도관."
 			<<else>>
 				컬트 활동에서 <<nnpc_his_ yi "Jordan">> 무리 중 한 명을 구출했습니다." <<he_ ga>> <<his_ yi>> 입술을 핥으며 말한다.
