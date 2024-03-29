@@ -40,7 +40,7 @@ setup.feats = {
 	},
 	"It Belongs in a Museum": {
 		title: "이건 박물관으로 가야해!",
-		desc: "Find all the artefacts",
+		desc: "모든 유물을 찾았다",
 		difficulty: 3,
 		series: "",
 		filter: ["All", "General"],
@@ -742,7 +742,7 @@ setup.feats = {
 		difficulty: 2,
 		series: "",
 		filter: ["All", "Pregnancy"],
-		hint: "Hint: The Magic that helps create that what should not be.",
+		hint: "Hint: 마법이 생성되지 않아야 할 것이 생성되는 것을 돕는다.",
 	},
 	"Diversity of Life": {
 		title: "생명의 다양성",
@@ -1480,7 +1480,7 @@ setup.feats = {
 	},
 	"Field Work": {
 		title: "현장 연구",
-		desc: "Built an archaeological field office at the lake.",
+		desc: "호수에 고고학 연구 사무소를 만들었다.",
 		difficulty: 1,
 		series: "",
 		filter: ["All", "Discoveries"],
