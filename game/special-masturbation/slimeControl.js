@@ -31,7 +31,7 @@ function masturbationSlimeControl() {
 		if (alternateForcedActions.includes("selfImpreg")) {
 			disableArmActions = true;
 		} else {
-			fragment.append(redText("The slime prevents you from moving your left hand away."));
+			fragment.append(redText("슬라임이 당신의 왼쪽 손을 치우지 못하게 한다."));
 			fragment.append(" ");
 			V.leftaction = "slime";
 		}
@@ -43,7 +43,7 @@ function masturbationSlimeControl() {
 		if (alternateForcedActions.includes("selfImpreg")) {
 			disableArmActions = true;
 		} else {
-			fragment.append(redText("The slime prevents you from moving your right hand away."));
+			fragment.append(redText("슬라임이 당신의 오른쪽 손을 치우지 못하게 한다."));
 			fragment.append(" ");
 			V.rightaction = "slime";
 		}
@@ -52,20 +52,20 @@ function masturbationSlimeControl() {
 	if (alternateForcedActions.includes("selfImpreg")) {
 		// Do nothing
 	} else if (V.mouthaction === "mpenisstop" || V.mouthaction === "mpenismouthoff") {
-		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your <<penis>>.</span>'));
+		fragment.append(Wikifier.wikifyEval('<span class="red">슬라임이 당신의 입을 <<penisPost>>에서 치우지 못하게 한다.</span>'));
 		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mchastityparasitestop") {
-		fragment.append(Wikifier.wikifyEval('<span class="red">The slime prevents you from moving your mouth away from your chastity parasite.</span>'));
+		fragment.append(Wikifier.wikifyEval('<span class="red">슬라임이 당신의 입을 기생충 정조대 자지에서 치우지 못하게 한다.</span>'));
 		fragment.append(" ");
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mpenispullback") {
 		fragment.append(
-			Wikifier.wikifyEval('<span class="red">The slime prevents you from pulling back from sucking your <<penis>> as deep as you currently are.</span>')
+			Wikifier.wikifyEval('<span class="red">슬라임이 지금 하는 것처럼 당신의 <<penisPost>>를 깊이 집어넣고 빨고 있는 중에 당신이 머리를 뒤로 빼내지 못하게 한다.</span>')
 		);
 		V.mouthaction = "slime";
 	} else if (V.mouthaction === "mvaginastop") {
-		fragment.append(redText("The slime prevents you from moving your mouth away from your vagina."));
+		fragment.append(redText("슬라임이 당신의 입을 보지에서 치우지 못하게 한다."));
 		fragment.append(" ");
 		V.mouthaction = "slime";
 	}
@@ -76,7 +76,7 @@ function masturbationSlimeControl() {
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.leftaction) &&
 		!(V.mouth !== 0 && playerToys[V.currentToyLeft].type.includes("stroker"))
 	) {
-		fragment.append(redText("The slime prevents you from putting the sex toy in your left hand down."));
+		fragment.append(redText("슬라임이 당신 왼손의 섹스 장난감을 내려놓지 못하게 한다."));
 		fragment.append(" ");
 		V.leftaction = "slime";
 	}
@@ -86,7 +86,7 @@ function masturbationSlimeControl() {
 		["mdildostop", "mvaginastopdildo", "manusstopdildo", "mpenisstopstroker", "mmouthstopdildo", "mstopbreastpump"].includes(V.rightaction) &&
 		!(V.mouth !== 0 && playerToys[V.currentToyRight].type.includes("stroker"))
 	) {
-		fragment.append(redText("The slime prevents you from putting the sex toy in your right hand down."));
+		fragment.append(redText("슬라임이 당신 오른손의 섹스 장난감을 내려놓지 못하게 한다."));
 		fragment.append(" ");
 		V.rightaction = "slime";
 	}
@@ -94,11 +94,11 @@ function masturbationSlimeControl() {
 	if (V.corruptionMasturbation) {
 		if (V.earSlime.event.includes("get your own sperm into your")) {
 			fragment.append(
-				Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself, but limits it's control so you can do you task.</span>")
+				Wikifier.wikifyEval("<span class='red'>슬라임은 여전히 억지로 당신을 자위시키고 있지만, 녀석의 통제력이 제한되어 있어 당신은 자신이 원하는 일을 할 수가 있다.</span>")
 			);
 			fragment.append(" ");
 		} else {
-			fragment.append(Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself.</span>"));
+			fragment.append(Wikifier.wikifyEval("<span class='red'>슬라임은 여전히 억지로 당신을 자위시키고 있다.</span>"));
 			fragment.append(" ");
 		}
 	}
