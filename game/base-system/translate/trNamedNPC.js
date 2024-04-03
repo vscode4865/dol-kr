@@ -23,6 +23,6 @@ function trNamedNPCInner(name, type)
 		delete T.trResult;
 		delete T.postNum;
 	}
-	return '';
+	return T.trResult;
 }
-DefineMacroS("trNamedNPCInner", trNamedNPCInner);
+DefineMacro("trNamedNPCInner", trNamedNPCInner);

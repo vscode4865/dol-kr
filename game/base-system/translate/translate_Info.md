@@ -12,6 +12,7 @@
 	* trColourJS
 	* handPost
 	* trCreature, trParasite, trChastityParasite
+	* trNPCname
 
 
 
@@ -1227,6 +1228,19 @@
         <<girl>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
+
+    ```
+    <<ladyPost>>
+        <<lady>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<gentlemanPost>>
+        <<gentleman>>의 대체 위젯.
+        + <<charlesPost>>와 용도 및 방식 같음. 생략
+    ```
+
 
     ```
     <<girlsPost>>
@@ -3026,7 +3040,8 @@
 	- otherPost 계열
 		```
 		<<charles_ (조사)>>, <<theowner_ (조사)>>, <<someone_ (조사)>>, <<spouse_ (조사)>>, <<father_ (조사)>>, <<Father_ (조사)>>, <<mummy_ (조사)>>, <<Mummy_ (조사)>>, 
-		<<girl_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<wife_ (조사)>>, <<Wife_ (조사)>>, <<sister_ (조사)>>, <<Sister_ (조사)>>, <<sister_npc_ (조사)>>, <<Sister_npc_ (조사)>>,
+		<<girl_ (조사)>>, <<lady_ (조사)>>, <<gentleman_ (조사)>>, <<girls_ (조사)>>, <<girlfriend_ (조사)>>, <<friend_ (조사)>>, <<wife_ (조사)>>, <<Wife_ (조사)>>, 
+		<<sister_ (조사)>>, <<Sister_ (조사)>>, <<sister_npc_ (조사)>>, <<Sister_npc_ (조사)>>,
 		<<victimgirl_ (조사)>>, <<victimgirls_ (조사)>>, <<lass_ (조사)>>, <<gender_ (조사)>>, <<bitch_ (조사)>>, <<bitch_pirate_ (조사)>>, <<whore_ (조사)>>, <<slut_ (조사)>>, <<semen_ (조사)>>, <<prostate_ (조사)>>, 
 		<<personpenis_ (조사)>>, <<wallet_ (조사)>>, <<sir_ (조사)>>, <<psir_ (조사)>>, <<pSir_ (조사)>>, <<pmother_ (조사)>>, <<pMother_ (조사)>>, <<monk_ (조사)>>, <<monks_ (조사)>>, 
 		<<monks_and_nuns_ (조사)>>, <<Monks_and_Nuns_ (조사)>>, <<brothers_and_sisters_ (조사)>>, <<priest_ (조사)>>, <<bishop_ (조사)>>, <<bishop_hands_ (조사)>>, <<priests_ (조사)>>,

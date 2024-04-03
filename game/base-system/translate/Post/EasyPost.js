@@ -442,11 +442,16 @@ const EasyPostMacroList = [
 	// <<girl_ ul>> = <<girl>>을 
 	{ name: "girl_", orig_name: "girlPost", is_print: 0},
 
+	{ name: "lady_", orig_name: "ladyPost", is_print: 0},
+	{ name: "gentleman_", orig_name: "gentlemanPost", is_print: 0},
+
 	// <<girls_ nun>> = <<girls>>는 
 	{ name: "girls_", orig_name: "girlsPost", is_print: 0},
 
 	// <<girlfriend_ nun>> = <<girlfriend>>는 
 	{ name: "girlfriend_", orig_name: "girlfriendPost", is_print: 0},
+
+	{ name: "friend_", orig_name: "friendPost", is_print: 0},
 
 	// <<wife_ nun>> = <<wife>>는 
 	{ name: "wife_", orig_name: "wifePost", is_print: 0},

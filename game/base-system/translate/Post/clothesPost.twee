@@ -33,12 +33,28 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "undiesPost">><<silently>>
+	<<if _args[0] isnot undefined>>
+		<<if typeof _args[0] is "string" and _args[0].substring(0,1).search("[가-힣]") gte 0>>
+			<<unset $_num>><<unset $_pluck>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+		<<elseif _args[1] isnot undefined and typeof _args[1] is "string" and _args[1].substring(0,1).search("[가-힣]") gte 0>>
+			<<set $_num to _args[0]>><<unset $_pluck>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+		<<else>>
+			<<set $_num to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+		<</if>>
+	<<else>>
+		<<set $_num to _args[0]>><<set $_pluck to _args[1]>><<set $_post to _args[2]>><<set $_sep to _args[3]>>
+	<</if>>
+
     <<if !$worn.under_lower.type.includes("naked")>>
-        <<trClothes "under_lower" $worn.under_lower.name "name" _args[0] _args[1]>>
+		<<if $_num and $_num gte 1>>
+			<<trClothes "under_lower" $worn.under_lower.name_simple "name" $_post $_sep>>
+		<<else>>
+			<<trClothes "under_lower" $worn.under_lower.name "name" $_post $_sep>>
+		<</if>>
     <<elseif !$worn.genitals.type.includes("naked")>>
-        <<trClothes "genitals" $worn.genitals.name "name" _args[0] _args[1]>>
+        <<trClothes "genitals" $worn.genitals.name "name" $_post $_sep>>
     <<else>>
-        <<genitalsPost _args[0] _args[1]>>
+        <<genitalsPost $_num $_post $_sep>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
@@ -46,7 +62,9 @@
 	<<outfitChecks>>
 	<<if _middleOutfit>>
         <<trClothes "upper" $worn.upper.name "name" _args[0] _args[1]>>
-    <<else>>
+    <<elseif _underBottoms>>
+        <<trClothes "under_lower" $worn.under_lower.name "name" _args[0] _args[1]>>
+	<<else>>
         <<trClothes "lower" $worn.lower.name "name" _args[0] _args[1]>>
     <</if>>
 <</silently>><<print _trResult>><</widget>>
