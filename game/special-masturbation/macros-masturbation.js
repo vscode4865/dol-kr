@@ -7,7 +7,7 @@ function getToyName(index, capitalise = false, post = undefined, sep = undefined
 		return "장난감 오리";
 	}
 	const name = capitalise ? toy.name : toy.name;
-	return toy.colour ? trColourJS(toy.colour) + " " + sextoyPost(name, post, sep) : sextoyPost(name, post, sep);
+	return toy.colour ? trColour(toy.colour) + " " + sextoyPost(name, post, sep) : sextoyPost(name, post, sep);
 }
 window.getToyName = getToyName;
 DefineMacroS("toyName", getToyName);

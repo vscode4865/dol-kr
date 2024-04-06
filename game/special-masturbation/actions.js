@@ -11,8 +11,8 @@ function masturbationActions() {
 		return toy;
 	};
 	const toyDisplay = (toy1, toy2, post, sep) => { if(typeof(toy2) === "string") { sep = post; post = toy2; toy2 = undefined; }
-		if (toy1 && toy2) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColourJS(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
-		if (toy1) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
+		if (toy1 && toy2) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColour(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
+		if (toy1) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
 		return "";
 	};
 	const genitalsExposed = () => V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && V.worn.under_lower.vagina_exposed >= 1;

@@ -7,12 +7,12 @@ function buildEyeDetails() {
 	if (lenses.right !== 0 || lenses.left !== 0) {
 		sentence += "당신은 "; sentence_end = "에 착용하고 있다";
 		if (typeof lenses.left === "string") {
-			sentence += trColourJS(setup.colours.eyes_map[lenses.left].name, "과", "sep");
+			sentence += trColour(setup.colours.eyes_map[lenses.left].name, "과", "sep");
 			concatFlag = true;
 		}
 		if (typeof lenses.right === "string" && lenses.left !== lenses.right) {
 			if (concatFlag) sentence += T.trPost + " ";
-			sentence += trColourJS(setup.colours.eyes_map[lenses.right].name);
+			sentence += trColour(setup.colours.eyes_map[lenses.right].name);
 			concatFlag = true;
 		}
 		if (concatFlag) {
@@ -27,12 +27,12 @@ function buildEyeDetails() {
 	const leftEyeColour = colourMap[V.leftEyeColour];
 	const rightEyeColour = colourMap[V.rightEyeColour];
 	if (typeof leftEyeColour === "object") {
-		sentence += trColourJS(leftEyeColour.name, "과", "sep");
+		sentence += trColour(leftEyeColour.name, "과", "sep");
 		concatFlag = true;
 	}
 	if (typeof rightEyeColour === "object" && V.leftEyeColour !== V.rightEyeColour) {
 		if (concatFlag) sentence += T.trPost + " ";
-		sentence += trColourJS(rightEyeColour.name);
+		sentence += trColour(rightEyeColour.name);
 		concatFlag = true;
 	}
 	if (concatFlag) sentence += " 눈";

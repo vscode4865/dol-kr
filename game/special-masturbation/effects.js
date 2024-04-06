@@ -33,8 +33,8 @@ function masturbationEffects() {
 		return toy;
 	};
 	const toyDisplay = (toy1, toy2, post, sep) => { if(typeof(toy2) === "string") { sep = post; post = toy2; toy2 = undefined; }
-		if (toy1 && toy2) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColourJS(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
-		if (toy1) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
+		if (toy1 && toy2) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColour(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
+		if (toy1) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
 		return "";
 	};
 
@@ -1421,7 +1421,7 @@ function masturbationEffectsArms(
 			// Set the current toy
 			altText.selectedToy = selectedToy(arm, true);
 			altText.toyType = altText.selectedToy.type;
-			altText.toy = `${altText.selectedToy.colour ? trColourJS(altText.selectedToy.colour) : ""} ${sextoyPost(altText.selectedToy.name, '을')}`;
+			altText.toy = `${altText.selectedToy.colour ? trColour(altText.selectedToy.colour) : ""} ${sextoyPost(altText.selectedToy.name, '을')}`;
 			// Set the default action
 			if (altText.toyType.includes("stroker")) {
 				V[armActionDefault] = "mpenisentrancestroker";

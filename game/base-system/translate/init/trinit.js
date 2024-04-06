@@ -370,7 +370,7 @@ function trinit_namedNPC()
 			if (Array.isArray(entry.title))
 			{
 				let length = entry.title.length;
-				for (j = 0; j < length; j++)
+				for (let j = 0; j < length; j++)
 				{
 					temp.koname = entry.kotitle[j];
 					temp.post = entry.titlepost[j];
@@ -1258,11 +1258,11 @@ function trinit_roleList()
 }
 window.trinit_roleList = trinit_roleList;
 
-function trinit_toySelectionList()
+function trinit_childToySelectionList()
 {
-	if (!setup.trToySelectionList)
+	if (!setup.trChildToySelectionList)
 	{
-		setup.trToySelectionList = {
+		setup.trChildToySelectionList = {
 			/* baby rattles */
 			"babyrattle" : {ko : "아기 딸랑이", post : 1},
 			"baby rattle" : {ko : "아기 딸랑이", post : 1},
@@ -1333,7 +1333,7 @@ function trinit_toySelectionList()
 	
 	}
 }
-window.trinit_toySelectionList = trinit_toySelectionList;
+window.trinit_childToySelectionList = trinit_childToySelectionList;
 
 function trinit_hairtype()
 {

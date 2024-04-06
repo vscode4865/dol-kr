@@ -9,7 +9,6 @@
 #TODO
 * 원본이 twee 로 작성되지 않은 번역위젯들을 js 기반으로 변경
 * 임시로 만들어둔 js function 을 정식으로 변경
-	* trColourJS
 	* handPost
 	* trCreature, trParasite, trChastityParasite
 	* trNPCname
@@ -2120,12 +2119,6 @@
         e.g.
         <<trColour 'red'>>
     ```
- 
-   ```
-    trColourJS
-        trColourJS(colour, post, sep)
-        <<trColour>>의 js 인터페이스. 이름 바뀔 수 있음. TODO: 리팩토링될 수 있음.
-    ```
 
 * trCrime
     ```
@@ -2177,7 +2170,7 @@
 * trList
     ```
     <<trList>>
-        <<trList *list [method]>>
+        <<trList *list [method] [options]>>
         
         배열을 번역하여 _trList 변수에 저장한다.
 
@@ -2186,6 +2179,7 @@
 
 		선택사항
 		- method: 번역할 위젯. 생략시 "putpost" 가 사용됨
+		- options: 추가 옵션. 따옴표 등으로 묶어 입력
 		
 		note
 		- 이 위젯은 formatList 로 출력하는 것을 전제로 제작되었습니다.
@@ -2198,7 +2192,7 @@
 * trListboxItems
 	```
 	<<trListboxItemsFromArray>>
-		<<trListboxItemsFromArray *arrayname>>
+		<<trListboxItemsFromArray *arrayname [options]>>
 		
 		<<listbox>> 에 배열이 들어갈 때 배열을 번역하여 _trListboxItems 에 설정한다.
 		
@@ -2206,6 +2200,9 @@
 		- arrayname 원본 배열 이름 (따옴표를 붙여줄것)
 		- 해당 arrayname 에 대한 번역표가 trListboxItems.twee 의 <<trListboxItemsInit>> 매크로 안에 존재할것
 		- 혹은 기존 매크로로 번역할 수 있는 것이면 매크로를 <<trListboxItemsInit>>에 지정하면 해당 매크로를 사용하여 번역함.
+
+		선택사항
+		- options: 추가 옵션. 따옴표 등으로 묶어 입력
 		
 		e.g. 1 (번역표)
 		/* 원본 */

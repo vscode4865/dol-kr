@@ -1,6 +1,6 @@
-:: Widgets trBodyWriting [widget nobr]
-<<widget "trBodyWriting_init">>
-    <<set setup.trBodyWritingList to [
+function trBodyWriting_init()
+{
+    setup.trBodyWritingList = [
             {
                 name: "rape_me",
                 writing: "Rape me",
@@ -76,7 +76,7 @@
             {
                 name: "bitch",
                 writing: "Bitch",
-                writing_ko: ($player.gender_appearance isnot "m" ? "암캐" : "개새끼")
+				writing_ko: `${V.player.gender_appearance !== "m" ? "암캐" : "개새끼"}`
             },
 
             {
@@ -220,7 +220,7 @@
             {
                 name: "five_pound_whore",
                 writing: "£5 whore",
-                writing_ko: "£5어치 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "£5어치 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -250,7 +250,7 @@
             {
                 name: "whore",
                 writing: "Whore",
-                writing_ko: ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+				writing_ko: `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -424,7 +424,7 @@
             {
                 name: "stupid_whore",
                 writing: "Stupid whore",
-                writing_ko: "멍청한 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "멍청한 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -610,19 +610,19 @@
             {
                 name: "skank",
                 writing: "Skank",
-                writing_ko: ($player.gender_appearance isnot "m" ? "음탕녀" : "음탕남")
+                writing_ko: `${V.player.gender_appearance !== "m" ? "음탕녀" : "음탕남"}`
             },
 
             {
                 name: "gutter_whore",
                 writing: "Gutter whore",
-                writing_ko: "시궁창 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "시궁창 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
                 name: "stupid_ho",
                 writing: "Stupid ho",
-                writing_ko: "멍청한 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "멍청한 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -652,7 +652,7 @@
             {
                 name: "barn_slut",
                 writing: "Barn slut",
-                writing_ko: "외양간 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "외양간 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -712,7 +712,7 @@
             {
                 name: "criminal_whore",
                 writing: "Criminal whore",
-                writing_ko: "범죄자 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "범죄자 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -736,7 +736,7 @@
             {
                 name: "dumb_bitch",
                 writing: "Dumb bitch",
-                writing_ko: "멍청한 " + ($player.gender_appearance isnot "m" ? "암캐" : "개새끼")
+                writing_ko: "멍청한 " + `${V.player.gender_appearance !== "m" ? "암캐" : "개새끼"}`
             },
 
             {
@@ -754,7 +754,7 @@
             {
                 name: "anal_whore",
                 writing: "Anal whore",
-                writing_ko: "항문 전용 " + ($player.gender_appearance isnot "m" ? "창녀" : "남창")
+                writing_ko: "항문 전용 " + `${V.player.gender_appearance !== "m" ? "창녀" : "남창"}`
             },
 
             {
@@ -856,7 +856,7 @@
 				{
 					name: "averys_trophy",
 					writing: "Avery's Trophy",
-					writing_ko: "에이버리의 어린 " + ($player.gender_appearance isnot "m" ? "아내" : "남편"),
+					writing_ko: "에이버리의 어린 " + `${V.player.gender_appearance !== "m" ? "아내" : "남편"}`,
 				},
 
 				{
@@ -946,7 +946,7 @@
 				{
 					name: "black_wolfs_bitch",
 					writing: "Black Wolf's Bitch",
-					writing_ko: "검은 늑대의 " + ($player.gender_appearance isnot "m" ? "암캐" : "수캐"),
+					writing_ko: "검은 늑대의 " + `${V.player.gender_appearance !== "m" ? "암캐" : "수캐"}`,
 				},
 
 				{
@@ -1078,7 +1078,7 @@
 				{
 					name: "stupid_little_fucking_sextease_bitch_fucker",
 					writing: "Stupid little fucking sextease bitch fucker",
-					writing_ko: "멍청하고 조그맣고 괘씸한 성희롱 " + ($player.gender_appearance isnot "m" ? "암캐년" : "수캐놈"),
+					writing_ko: "멍청하고 조그맣고 괘씸한 성희롱 " + `${V.player.gender_appearance !== "m" ? "암캐년" : "수캐놈"}`,
 				},
 
 				{
@@ -1207,53 +1207,15 @@
 					writing_ko: "동그라미",
 				},
 	
-    ]>>
-	<<set $_nameIndex to {}>>
-	<<set $_writingIndex to {}>>
-	<<for $_i, $_entry range setup.trBodyWritingList>>
-		<<set $_nameIndex[$_entry.name] to $_entry.writing_ko>>
-		<<set $_writingIndex[$_entry.writing] to $_entry.writing_ko>>
-	<</for>>
-	<<set setup.trBodyWritingList.nameIndex to $_nameIndex>>
-	<<set setup.trBodyWritingList.writingIndex to $_writingIndex>>
-<</widget>>
-
-<<widget "trBodyWritingOld">><<silently>>
-    <<if setup.trBodyWritingList is undefined>>
-        <<trBodyWriting_init>>
-    <</if>>
-
-	<<set _trResult to setup.trBodyWritingList.nameIndex[_args[0]]>>
-	<<if _trResult is undefined>>
-		<<set _trResult to setup.trBodyWritingList.writingIndex[_args[0]]>>
-	<</if>>
-
-    <<if _trResult is undefined>>
-        <<set _trResult to "BodyWritingList에 정의되지 않음: "+_args[0]>>
-    <<else>>
-		<<getPostNum _trResult>>
-        <<trPost _postNum _args[1] _args[2]>>
-    <</if>>
-<</silently>><</widget>>
-
-<<widget "trBodyWritingCategoryOld">><<silently>>
-	<<if _trBodyWritingCategory is undefined>>
-		<<set _trBodyWritingCategory to {
-			"General": "일반",
-			"Promiscuity": "음란",
-			"Prostitution": "매춘",
-			"Exhibitionism": "노출증",
-			"Deviancy": "이상성욕",
-			"Masochism": "마조히즘",
-			"Pregnancy": "임신",
-			"Love Interests": "연인",
-		}>>
-	<</if>>
-
-	<<set _trResult to _trBodyWritingCategory[_args[0]]>>
-	
-	<<if _trResult is undefined>>
-		<<set _trResult to _args[0]>>
-	<</if>>
-
-<</silently>><</widget>>
+    ];
+	let nameIndex = {};
+	let writingIndex = {};
+	for (let entry of setup.trBodyWritingList)
+	{
+		nameIndex[entry.name] = entry.writing_ko;
+		writingIndex[entry.writing] = entry.writing_ko;
+	}
+	setup.trBodyWritingList.nameIndex = nameIndex;
+	setup.trBodyWritingList.writingIndex = writingIndex;
+}
+window.trBodyWriting_init = trBodyWriting_init;
