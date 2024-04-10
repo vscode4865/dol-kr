@@ -297,41 +297,7 @@
 
 <<widget "testiclePost">><<testiclesPost _args[0] _args[1] _args[2]>><</widget>>
 
-<<widget "handPost">><<silently>>
-	<<if _args[0] isnot undefined>>
-		<<if _args[0].substring(0,1).search("[가-힣]") gte 0>>
-			<<set $_postStr to _args[0]>><<set $_postOpt to _args[1]>>
-		<<else>>
-			<<set $_tempArray to _args[0].split(' ')>>
-			
-			<<set $_hand to $_tempArray.pop()>>
-			<<if $_hand.includes("hand")>>	/* ex. "left hand" */
-				<<if $_hand is "hands">>
-					<<set $_both to 1>>
-				<</if>>
-				<<set $_hand to $_tempArray.pop()>>
-			<</if>>
-			<<set $_postStr to _args[1]>><<set $_postOpt to _args[2]>>
-		<</if>>
-	<</if>>
-	<<if $_hand is "left">>
-		<<set $_tempArray.push("왼손")>>
-	<<elseif $_hand is "right">>
-		<<set $_tempArray.push("오른손")>>
-	<<elseif $_hand is "both" or $_both is 1>>
-		<<set $_tempArray.push("양손")>>
-	<<else>>
-		<<set $_tempArray.push("손")>>
-	<</if>>
-	<<set _trResult to $_tempArray.join(" ")>>
-    <<if $_postStr isnot undefined>>
-        <<trPost 0 $_postStr $_postOpt>>
-    <</if>>
-<</silently>><<print _trResult>><</widget>>
-<<script>>
-function handPost(hand, post, sep) { Wikifier.wikifyEval(`<<handPost ${hand} ${post} ${sep}>>`); return T.trResult;}
-window.handPost = handPost;
-<</script>>
+/* <<widget "handPost">> - bodyPost.twee 맨 아래로 */
 
 <<widget "mouthPost">><<silently>>
 	<<set _trResult to "입술">><<trPost 2 _args[0] _args[1]>>
@@ -521,3 +487,48 @@ window.handPost = handPost;
 	<<getPostNum _trResult>>
 	<<trPost _postNum _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
+
+:: Scripts bodyPost [script]
+
+function handPost(hand, post, sep)
+{
+	let tempArray = [];
+	let both = false;
+	if (hand)
+	{
+		if (hand.substring(0,1).search("[가-힣]") >= 0)
+		{
+			sep = post;
+			post = hand;
+		}
+		else
+		{
+			tempArray = hand.split(' ');
+
+			hand = tempArray.pop();
+			if (hand.includes("hand"))	/* ex. "left hand" */
+			{
+				if (hand == "hands")
+					both = true;
+
+				hand = tempArray.pop();
+			}
+		}
+	}
+	if (hand == "left")
+		tempArray.push("왼손");
+	else if (hand == "right")
+		tempArray.push("오른손");
+	else if (hand == "both" || both == true)
+		tempArray.push("양손");
+	else
+		tempArray.push("손");
+	
+	T.trResult = tempArray.join(" ");
+    if (post)
+        trPost(0, post, sep);
+    
+	return T.trResult;
+}
+window.handPost = handPost;
+DefineMacroS("handPost", handPost);

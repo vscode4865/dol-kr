@@ -1,19 +1,22 @@
-:: Widgets trinit_creature[widget nobr]
-<<widget "trinit_creatureParasite">>
-	<<if setup.trCreatures.parasite is undefined>>
-		<<set setup.trCreatures.parasite to [
+function trinit_creatureParasite()
+{
+	if (!setup.trCreatures.parasite)
+	{
+		setup.trCreatures.parasite = [
 			{name:"none",koName:"없음",post:0,plural:"none"},
 			{name:"urchin",koName:"성게형 기생충",post:0,plural:"urchins"},
 			{name:"slime",koName:"슬라임",post:0,plural:"slimes"},
 			{name:"maggot",koName:"구더기",post:1,plural:"maggots"},		
 			{name:"parasite",koName:"기생충",post:0,plural:"parasites"},
-		]>>
-	<</if>>	
-<</widget>>
+		];
+	}
+}
 
-<<widget "trinit_creatureStruggle">>
-	<<if setup.trCreatures.struggle is undefined>>
-		<<set setup.trCreatures.struggle to [
+function trinit_creatureStruggle()
+{
+	if (!setup.trCreatures.struggle)
+	{
+		setup.trCreatures.struggle = [
 			{name:"none",koName:"없음",post:0,plural:"none"},
 			{name:"lurker",koName:"럴커",post:1,plural:"lurkers"},
 			{name:"wasp",koName:"말벌",post:2,plural:"wasps"},
@@ -22,14 +25,16 @@
 			{name:"slug",koName:"민달팽이",post:1,plural:"slugs"},
 			{name:"slime",koName:"슬라임",post:0,plural:"slimes"},
 			{name:"pale",koName:"창백한",post:0,plural:"pales"},
-		]>>
-	<</if>>	
-<</widget>>
+		];
+	}
+}
 
-<<widget "trinit_creatureSwarm">>
-	<<if setup.trCreatures.swarm is undefined>>
-		<<set setup.trCreatures.swarm to [
-			/*swarm.type*/
+function trinit_creatureSwarm()
+{
+	if (!setup.trCreatures.swarm)
+	{
+		setup.trCreatures.swarm = [
+			// swarm.type
 			{name:"none",koName:"없음",post:0,plural:"none"},
 			{name:"fish",koName:"물고기",post:1,plural:"fishes"},
 			{name:"eel",koName:"장어",post:1,plural:"eels"},
@@ -39,21 +44,23 @@
 			{name:"maggot",koName:"구더기",post:1,plural:"maggots"},
 			{name:"worm",koName:"벌레",post:1,plural:"worms"},
 			{name:"pale",koName:"창백한",post:0,plural:"pales"},
-			/*swarm.name*/
+			// swarm.name
 			{name:"container",koName:"상자",post:1,plural:"containers"},
 			{name:"swarm",koName:"무리",post:1,plural:"swarms"},
 			{name:"sac",koName:"주머니",post:1,plural:"sacs"},
 			{name:"mass",koName:"덩어리",post:1,plural:"masses"},
 			{name:"jar",koName:"병",post:0,plural:"jars"},
 			{name:"dildo",koName:"딜도",post:1,plural:"dildos"},
-		]>>
-	<</if>>	
-<</widget>>
+		];
+	}
+}
 
-<<widget "trinit_creatureTentacle">>
-	<<if setup.trCreatures.tentacle is undefined>>
-		<<set setup.trCreatures.tentacle to [
-			/* tentacle.type */
+function trinit_creatureTentacle()
+{
+	if (!setup.trCreatures.tentacle)
+	{
+		setup.trCreatures.tentacle = [
+			// tentacle.type
 			{name:"none",koName:"없음",post:0,plural:"none"},
 			{name:"tentacle",koName:"촉수",post:1,plural:"tentacles"},
 			{name:"root",koName:"뿌리",post:1,plural:"roots"},
@@ -63,8 +70,8 @@
 			{name:"metal",koName:"금속",post:0,plural:"metals"},
 			{name:"pale",koName:"창백한",post:0,plural:"pales"},
 			
-			/* tentacle.desc */
-			/* normal */
+			/// tentacle.desc ///
+			// normal
             {name:"slimy",koName:"미끌미끌한",post:-1,plural:"slimy"},
             {name:"sticky",koName:"끈적끈적한",post:-1,plural:"sticky"},
             {name:"thick",koName:"굵은",post:-1,plural:"thick"},
@@ -87,50 +94,50 @@
             {name:"squishy",koName:"물렁물렁한",post:-1,plural:"squishy"},
             {name:"rough",koName:"거친",post:-1,plural:"rough"},
 			
-			/* pale */
-				{name:"ghostly",koName:"유령 같은",post:-1,plural:"ghostly"},
-				{name:"translucent",koName:"반투명한",post:-1,plural:"translucent"},
-				{name:"twitching",koName:"씰룩거리는",post:-1,plural:"twitching"},
-				{name:"manic",koName:"미친듯이 움직이는",post:-1,plural:"manic"},
-				{name:"cloudy",koName:"흐릿한",post:-1,plural:"cloudy"},
-				{name:"ethereal",koName:"희미한",post:-1,plural:"ethereal"},
-				{name:"incandescent",koName:"빛나는",post:-1,plural:"incandescent"},
-				{name:"iridescent",koName:"무지개빛의",post:-1,plural:"iridescent"},
-				{name:"searing",koName:"뜨거운",post:-1,plural:"searing"},
+			// pale
+			{name:"ghostly",koName:"유령 같은",post:-1,plural:"ghostly"},
+			{name:"translucent",koName:"반투명한",post:-1,plural:"translucent"},
+			{name:"twitching",koName:"씰룩거리는",post:-1,plural:"twitching"},
+			{name:"manic",koName:"미친듯이 움직이는",post:-1,plural:"manic"},
+			{name:"cloudy",koName:"흐릿한",post:-1,plural:"cloudy"},
+			{name:"ethereal",koName:"희미한",post:-1,plural:"ethereal"},
+			{name:"incandescent",koName:"빛나는",post:-1,plural:"incandescent"},
+			{name:"iridescent",koName:"무지개빛의",post:-1,plural:"iridescent"},
+			{name:"searing",koName:"뜨거운",post:-1,plural:"searing"},
 				
-			/* vine */
-				{name:"flowering",koName:"꽃피고 있는",post:-1,plural:"flowering"},
-				{name:"blossoming",koName:"꽃이 활짝 핀",post:-1,plural:"blossoming"},
-				{name:"wooden",koName:"나무",post:-1,plural:"wooden"},
-				{name:"blooming",koName:"꽃봉오리가 있는",post:-1,plural:"blooming"},
-				{name:"climbing",koName:"기어오르는",post:-1,plural:"climbing"},
-				{name:"mossy",koName:"이끼낀",post:-1,plural:"mossy"},
-				{name:"grassy",koName:"풀로 덮인",post:-1,plural:"grassy"},
-				{name:"thorny",koName:"가시가 난",post:-1,plural:"thorny"},
-				{name:"pistil",koName:"암술로 된",post:-1,plural:"pistil"},
-				{name:"leafy",koName:"잎이 무성한",post:-1,plural:"leafy"},
-				{name:"sprouting",koName:"싹이 난",post:-1,plural:"sprouting"},
-				{name:"sapling",koName:"어린 나무",post:-1,plural:"sapling"},
+			// vine
+			{name:"flowering",koName:"꽃피고 있는",post:-1,plural:"flowering"},
+			{name:"blossoming",koName:"꽃이 활짝 핀",post:-1,plural:"blossoming"},
+			{name:"wooden",koName:"나무",post:-1,plural:"wooden"},
+			{name:"blooming",koName:"꽃봉오리가 있는",post:-1,plural:"blooming"},
+			{name:"climbing",koName:"기어오르는",post:-1,plural:"climbing"},
+			{name:"mossy",koName:"이끼낀",post:-1,plural:"mossy"},
+			{name:"grassy",koName:"풀로 덮인",post:-1,plural:"grassy"},
+			{name:"thorny",koName:"가시가 난",post:-1,plural:"thorny"},
+			{name:"pistil",koName:"암술로 된",post:-1,plural:"pistil"},
+			{name:"leafy",koName:"잎이 무성한",post:-1,plural:"leafy"},
+			{name:"sprouting",koName:"싹이 난",post:-1,plural:"sprouting"},
+			{name:"sapling",koName:"어린 나무",post:-1,plural:"sapling"},
 			
-			/* metal */
-				{name:"jerking",koName:"휙 움직이는",post:-1,plural:"jerking"},
-				{name:"plated",koName:"도금된",post:-1,plural:"plated"},
-				{name:"sparking",koName:"불꽃이 튀는",post:-1,plural:"sparking"},
-				{name:"shiny",koName:"반짝이는",post:-1,plural:"shiny"},
-				{name:"labelled",koName:"표식이 붙어있는",post:-1,plural:"labelled"},
-				{name:"jolting",koName:"덜컥거리는",post:-1,plural:"jolting"},
-				{name:"rusted",koName:"녹슬은",post:-1,plural:"rusted"},
-				{name:"wired",koName:"전선이 연결된",post:-1,plural:"wired"},
-				{name:"stainless",koName:"녹슬지 않은",post:-1,plural:"stainless"},			
-			
-			
-		]>>
-	<</if>>	
-<</widget>>
+			// metal
+			{name:"jerking",koName:"휙 움직이는",post:-1,plural:"jerking"},
+			{name:"plated",koName:"도금된",post:-1,plural:"plated"},
+			{name:"sparking",koName:"불꽃이 튀는",post:-1,plural:"sparking"},
+			{name:"shiny",koName:"반짝이는",post:-1,plural:"shiny"},
+			{name:"labelled",koName:"표식이 붙어있는",post:-1,plural:"labelled"},
+			{name:"jolting",koName:"덜컥거리는",post:-1,plural:"jolting"},
+			{name:"rusted",koName:"녹슬은",post:-1,plural:"rusted"},
+			{name:"wired",koName:"전선이 연결된",post:-1,plural:"wired"},
+			{name:"stainless",koName:"녹슬지 않은",post:-1,plural:"stainless"},			
+		];
+	}
+}
 
-<<widget "trinit_creatureVore">>
-	<<if setup.trCreatures.vore is undefined>>
-		<<set setup.trCreatures.vore to [
+function trinit_creatureVore()
+{
+	if (!setup.trCreatures.vore)
+	{
+		setup.trCreatures.vore = [
 			{name:"none",koName:"없음",post:0,plural:"none"},
             {name:"whale",koName:"고래",post:1,plural:"whales"},
             {name:"snake",koName:"뱀",post:0,plural:"snakes"},
@@ -140,45 +147,52 @@
             {name:"giant",koName:"거대",post:1,plural:"giant"},
             {name:"lurker",koName:"럴커",post:1,plural:"lurkers"},
 
-            /* {name:"giant lurker",koName:"거대 럴커",post:1,plural:"giant lurkers"},*/
-		]>>
-	<</if>>	
-<</widget>>
+            // {name:"giant lurker",koName:"거대 럴커",post:1,plural:"giant lurkers"},
+		];
+	}
+}
 
-
-<<widget "trinit_creature">>
-	<<if setup.trCreatures is undefined>>
-		<<set setup.trCreatures to {}>>
-		<<trinit_creatureParasite>>
-		<<trinit_creatureStruggle>>
-		<<trinit_creatureSwarm>>
-		<<trinit_creatureTentacle>>
-		<<trinit_creatureVore>>
+function trinit_creature()
+{
+	if (!setup.trCreatures)
+	{
+		setup.trCreatures = {};
+		trinit_creatureParasite();
+		trinit_creatureStruggle();
+		trinit_creatureSwarm();
+		trinit_creatureTentacle();
+		trinit_creatureVore();
 		
-		<<set $_trCreaturesAllNameIndex to {}>>
-		<<set $_trCreaturesAllPluralIndex to {}>>
-		<<set $_trCreatureTypes to Object.getOwnPropertyNames(setup.trCreatures)>>
-		<<for $_i, $_trCreatureType range $_trCreatureTypes>>
-			<<set $_trCreaturesNameIndex to {}>>
-			<<set $_trCreaturesPluralIndex to {}>>
-			<<for $_j, $_trCreatureData range setup.trCreatures[$_trCreatureType]>>
-				<<set $_trCreaturesNameIndex[$_trCreatureData.name] to $_trCreatureData>>
-				<<set $_trCreaturesPluralIndex[$_trCreatureData.plural] to $_trCreatureData>>
-			<</for>>
-			<<set setup.trCreatures[$_trCreatureType].nameIndex to $_trCreaturesNameIndex>>
-			<<set setup.trCreatures[$_trCreatureType].pluralIndex to $_trCreaturesPluralIndex>>
-			<<run Object.assign($_trCreaturesAllNameIndex, $_trCreaturesNameIndex)>> 
-			<<run Object.assign($_trCreaturesAllPluralIndex, $_trCreaturesPluralIndex)>> 
-		<</for>>
-		<<set setup.trCreatures.nameIndex to $_trCreaturesAllNameIndex>>
-		<<set setup.trCreatures.pluralIndex to $_trCreaturesAllPluralIndex>>
-	<</if>>
-<</widget>>
+		let trCreaturesAllNameIndex = {};
+		let trCreaturesAllPluralIndex = {};
+		let trCreaturesNameIndex, trCreaturesPluralIndex;
+		let trCreatureTypes = Object.getOwnPropertyNames(setup.trCreatures);
+		for (const trCreatureType of trCreatureTypes)
+		{
+			trCreaturesNameIndex = {};
+			trCreaturesPluralIndex = {};
+			for (const trCreatureData of setup.trCreatures[trCreatureType])
+			{
+				trCreaturesNameIndex[trCreatureData.name] = trCreatureData;
+				trCreaturesPluralIndex[trCreatureData.plural] = trCreatureData;
+			}
+			setup.trCreatures[trCreatureType].nameIndex = clone(trCreaturesNameIndex);
+			setup.trCreatures[trCreatureType].pluralIndex = clone(trCreaturesPluralIndex);
+			Object.assign(trCreaturesAllNameIndex, trCreaturesNameIndex);
+			Object.assign(trCreaturesAllPluralIndex, trCreaturesPluralIndex);
+		}
+		setup.trCreatures.nameIndex = trCreaturesAllNameIndex;
+		setup.trCreatures.pluralIndex = trCreaturesAllPluralIndex;
+	}
+}
+window.trinit_creature = trinit_creature;
 
-<<widget "trinit_swarmAction">>
-	<<if _trSwarmActionList is undefined>>
-		<<set _trSwarmActionList to {
-			/* swarm move */
+function trinit_swarmAction()
+{
+	if (!setup.trSwarmActionList)
+	{
+		setup.trSwarmActionList = {
+			// swarm move
 			"shaking":"흔들린다",
 			"moving towards you":"당신에게로 다가온다",
 			"slithering":"미끄러져 다가온다",
@@ -187,7 +201,7 @@
 			"held above the terrarium":"수조 위에 있다",
 			"writhing":"꿈틀꿈틀 다가온다",
 
-			/* swarm spill */
+			// swarm spill
 			"shatter":"흩어지며",
 			"encircle you":"당신을 둘러싸며",
 			"slither":"주위를 미끄러지며",
@@ -196,11 +210,12 @@
 			"fall into the terrarium":"수조 안으로 떨어지며",
 			"writhe":"온몸을 뒤틀며",
 
-			/* you steady */
+			// you steady
 			"steady":"진정시킨다",
 			"fend off":"피한다",
 			"keep back":"물러나게 한다",
 			"block":"막는다",
-		}>>
-	<</if>>
-<</widget>>
+		};
+	}
+}
+window.trinit_swarmAction = trinit_swarmAction;

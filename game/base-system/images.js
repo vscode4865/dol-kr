@@ -10,11 +10,11 @@ function gainSchoolStar(variable) {
 		}
 	} else {
 		if (V[variable] + 1 === 3) {
-			return `<span class="gold">Gold Star</span>`;
+			return `<span class="gold">금색 별</span>`;
 		} else if (V[variable] + 1 === 2) {
-			return `<span class="platinum">Silver Star</span>`;
+			return `<span class="platinum">은색 별</span>`;
 		} else if (V[variable] + 1 === 1) {
-			return `<span class="brown">Bronze Star</span>`;
+			return `<span class="brown">청동색 별</span>`;
 		}
 	}
 	return "";
@@ -33,7 +33,7 @@ function schoolStar(variable) {
 			return `<img class="icon" src="img/ui/empty_star.png">`;
 		}
 	} else {
-		return `<span class="platinum">${V[variable]} / 3 stars</span>`;
+		return `<span class="platinum">${V[variable]} / 3 개의 별</span>`;
 	}
 }
 window.schoolStar = schoolStar;

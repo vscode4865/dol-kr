@@ -256,7 +256,7 @@ function genderappearancecheck() {
 		if (V.worn.under_upper.exposed >= 1) {
 			/* Exposed breasts */
 			T.breast_indicator = 1;
-			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, V.player.perceived_breastsize > 0 ? "Exposed breasts" : "Exposed flat chest");
+			addfemininityfromfactor((V.player.perceived_breastsize - 0.5) * 100, V.player.perceived_breastsize > 0 ? "노출된 유방" : "노출된 평평한 가슴");
 		} else {
 			/* Breasts covered by only underwear */
 			addfemininityfromfactor(Math.clamp((V.player.perceived_breastsize - 2) * 100, 0, Infinity), "속옷 너머로 가슴 크기 확인 가능");

@@ -13,6 +13,7 @@ function trMonth(monthFullname, post, sep)
 	}
 	else
 		T.trResult = "<span class='red'> 에러: trMonth: 잘못된 인수: " + monthFullname + "</span>";
+	return T.trResult;
 }
 window.trMonth = trMonth;
 DefineMacro("trMonth", trMonth);
@@ -37,6 +38,7 @@ function trDaysOfWeek(daysOfWeekFullname, post, sep)
 	}
 	else
 		T.trResult = "<span class='red'> 에러: trDaysOfWeek: 잘못된 인수: " + daysOfWeekFullname + "</span>";
+	return T.trResult;
 }
 window.trDaysOfWeek = trDaysOfWeek;
 DefineMacro("trDaysOfWeek", trDaysOfWeek);
@@ -84,6 +86,7 @@ function trSeason(seasons, post, sep)
 	
 	T.trResult = trSeasonArray.join(", ");
 	trPost(T.postNum, post, sep);
+	return T.trResult;
 }
 window.trSeason = trSeason;
 DefineMacro("trSeason", trSeason);

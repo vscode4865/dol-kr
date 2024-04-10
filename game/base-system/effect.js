@@ -649,10 +649,10 @@ function effects() {
 			Object.entries(rebuyMessage).forEach(([location, items]) => {
 				element(
 					"span",
-					`Your ${formatList(items, "and", true)} signal${items.length > 1 ? "s" : ""} for a replacement${
+					`당신의 ${formatList(trList(items, "trSearchClothes", "'name'"), "그리고", true)}${trPost(T.postNum, "이")} 너무 해졌기 때문에${
 						V.wardrobes[location]
-							? ` to the ${V.wardrobes[location].name}`
-							: `. (Likely One-off update error, no need to report unless seen multiple times in the same save) ${
+							? ` 새로 사서 ${trWardrobeName(V.wardrobes[location].name)}에 넣었다.`
+							: ` 새로 샀다. (아마도 업데이트 후에 한 번 나는 에러이며, 같은 세이브에서 여러 번 보여지는 게 아니면 버그리포트할 필요 없습니다) ${
 									Array.isArray(V.rebuy_success) ? JSON.stringify(V.rebuy_success) : ""
 							  }`
 					}.
@@ -666,9 +666,9 @@ function effects() {
 		if (V.rebuy_failure.length) {
 			element(
 				"span",
-				`Your ${formatList(V.rebuy_failure, "and", true)} signal${
-					V.rebuy_failure.length > 1 ? "s" : ""
-				} for a replacement, but you don't have enough money.`,
+				`당신의 ${formatList(trList(V.rebuy_failure, "trSearchClothes", "'name'"), "그리고", true)}${trPost(T.postNum, "이")} 너무 해져서
+					
+				새로 사야 하지만, 당신은 충분한 돈이 없다.`,
 				"purple"
 			);
 			V.rebuy_failure = [];
@@ -677,35 +677,35 @@ function effects() {
 		if (V.masochism_message) {
 			switch (V.masochism_message) {
 				case "up 1":
-					element("span", "Your thoughts wander over the attacks you've suffered. You shiver.", "blue");
-					element("i", "You've become a guilty masochist.", "blue");
+					element("span", "여태껏 시달린 공격들이 머릿속을 떠돈다. 몸이 떨려온다.", "blue");
+					element("i", "당신은 죄책감있는 마조히스트가 되었다.", "blue");
 					break;
 				case "up 2":
-					element("span", "Your thoughts turn to the attacks you've suffered. A thrill follows, unbeckoned.", "purple");
-					element("i", "You've become a normal masochist.", "purple");
+					element("span", "여태껏 시달린 공격들이 떠오른다. 그러고는 느닷없이, 흥분이 뒤따라 온다.", "purple");
+					element("i", "당신은 평범한 마조히스트가 되었다.", "purple");
 					break;
 				case "up 3":
-					element("span", "Your body yearns for more abuse.", "pink");
-					element("i", "You've become a hardened masochist.", "pink");
+					element("span", "당신의 몸은 더 많은 학대를 원한다.", "pink");
+					element("i", "당신은 굳건한 마조히스트가 되었다.", "pink");
 					break;
 				case "up 4":
-					element("span", "Your body craves more abuse.", "red");
-					element("i", "You've become a drooling masochist.", "red");
+					element("span", "당신의 몸은 더 많은 학대를 갈망한다.", "red");
+					element("i", "당신은 엄청난 마조히스트가 되었다.", "red");
 					break;
 				case "down 0":
-					element("i", "You are no longer a masochist.", "lblue");
+					element("i", "당신은 더는 마조히스트가 아니다.", "lblue");
 					break;
 				case "down 1":
-					element("span", "You are no longer so masochistic, and can only be considered a", "blue");
-					element("i", "guilty masochist.", "blue");
+					element("span", "당신은 이전보다 피학 성애적인 면모가 줄어들어,", "blue");
+					element("i", "죄책감있는 마조히스트로 분류된다.", "blue");
 					break;
 				case "down 2":
-					element("span", "You are no longer so masochistic, and can only be considered a", "purple");
-					element("i", "normal masochist.", "purple");
+					element("span", "당신은 이전보다 피학 성애적인 면모가 줄어들어,", "purple");
+					element("i", "평범한 마조히스트로 분류된다.", "purple");
 					break;
 				case "down 3":
-					element("span", "You are no longer so masochistic, and can only be considered a", "pink");
-					element("i", "hardened masochist.", "pink");
+					element("span", "당신은 이전보다 피학 성애적인 면모가 줄어들어,", "pink");
+					element("i", "굳건한 마조히스트로 분류된다.", "pink");
 					break;
 			}
 			delete V.masochism_message;
@@ -714,35 +714,35 @@ function effects() {
 		if (V.sadism_message) {
 			switch (V.sadism_message) {
 				case "up 1":
-					element("span", "Your thoughts turn to the pain you've inflicted. You shiver.", "blue");
-					element("i", "You've become a guilty sadist.", "blue");
+					element("span", "당신이 사람들에게 입힌 고통이 머릿속을 떠돈다. 몸이 떨려온다.", "blue");
+					element("i", "당신은 죄책감있는 새디스트가 되었다.", "blue");
 					break;
 				case "up 2":
-					element("span", "Your thoughts turn to the pain you've inflicted. A thrill follows, unbeckoned.", "purple");
-					element("i", "You've become a normal sadist.", "purple");
+					element("span", "당신이 사람들에게 입힌 고통이 머릿속을 떠돈다. 그러고는 느닷없이, 흥분이 뒤따라 온다.", "purple");
+					element("i", "당신은 평범한 새디스트가 되었다.", "purple");
 					break;
 				case "up 3":
-					element("span", "You yearn to hurt others.", "pink");
-					element("i", "You've become a hardened sadist.", "pink");
+					element("span", "당신은 다른 사람들을 학대하는 것을 갈망한다.", "pink");
+					element("i", "당신은 굳건한 새디스트가 되었다.", "pink");
 					break;
 				case "up 4":
-					element("span", "If they want to play rough, so be it.", "red");
-					element("i", "You've become a vengeful sadist.", "red");
+					element("span", "그들이 험하게 하기를 원한다면, 그렇게 해주자.", "red");
+					element("i", "당신은 복수심에 불타는 새디스트가 되었다.", "red");
 					break;
 				case "down 0":
-					element("i", "You are no longer a sadist.", "lblue");
+					element("i", "당신은 더는 새디스트가 아니다.", "lblue");
 					break;
 				case "down 1":
-					element("span", "You are no longer so sadistic, and can only be considered a", "blue");
-					element("i", "guilty sadist.", "blue");
+					element("span", "당신은 이전보다 가학적인 면모가 줄어들어,", "blue");
+					element("i", "죄책감있는 새디스트로 분류된다.", "blue");
 					break;
 				case "down 2":
-					element("span", "You are no longer so sadistic, and can only be considered a", "purple");
-					element("i", "normal sadist.", "purple");
+					element("span", "당신은 이전보다 가학적인 면모가 줄어들어,", "purple");
+					element("i", "평범한 새디스트로 분류된다.", "purple");
 					break;
 				case "down 3":
-					element("span", "You are no longer so sadistic, and can only be considered a", "pink");
-					element("i", "hardened sadist.", "pink");
+					element("span", "당신은 이전보다 가학적인 면모가 줄어들어,", "pink");
+					element("i", "굳건한 새디스트로 분류된다.", "pink");
 					break;
 			}
 			delete V.sadism_message;
@@ -751,19 +751,19 @@ function effects() {
 		if (V.school_crossdress_message) {
 			switch (V.school_crossdress_message) {
 				case 5:
-					element("span", "Your crossdressing has become common knowledge at school. Everyone knows, including the teachers.", "red");
+					element("span", "학교 내에서 당신이 크로스드레서라는 건 공공연한 사실이 되었다. 선생님들을 포함한 모두가 알고 있다.", "red");
 					break;
 				case 4:
-					element("span", "Rumours of your crossdressing are spreading throughout the school.", "pink");
+					element("span", "학교 전체에 당신이 크로스드레서라는 소문이 퍼지고 있다.", "pink");
 					break;
 				case 3:
-					element("span", "Rumours of your crossdressing are spreading, and have become a popular topic of conversation at school.", "purple");
+					element("span", "학교에 당신이 크로스드레서라는 소문이 퍼지고 있고, 흔한 대화 주제 중 하나가 되었다.", "purple");
 					break;
 				case 2:
-					element("span", "Whispers of your crossdressing are spreading through the school.", "blue");
+					element("span", "당신이 크로스드레서라는 내용의 귓속말이 학교에 퍼지고 있다.", "blue");
 					break;
 				case 1:
-					element("span", "A few cliques at school have begun whispering of your crossdressing.", "lblue");
+					element("span", "학교 내의 몇몇 학생들이 당신이 크로스드레서라며 귓속말을 하기 시작했다.", "lblue");
 					break;
 			}
 			delete V.school_crossdress_message;
@@ -772,23 +772,23 @@ function effects() {
 		if (V.school_herm_message) {
 			switch (V.school_herm_message) {
 				case 5:
-					element("span", "Everyone at school has heard of your unique genitalia, including the teachers.", "red");
+					element("span", "선생님들을 포함한 학교의 모두가 당신의 독특한 성기에 대해 들어보았다.", "red");
 					break;
 				case 4:
-					element("span", "Rumours of your unique genitalia have spread throughout the school.", "pink");
+					element("span", "학교 전체에 당신의 독특한 성기에 대한 소문이 퍼지고 있다.", "pink");
 					break;
 				case 3:
 					element(
 						"span",
-						"It sounds far-fetched to many, but the school is rife with gossip about a student with both boy and girl parts.",
+						"많은 학생들이 믿지는 않으나, 남성기와 여성기를 모두 가진 학생에 대한 소문이 학교에 만연하다.",
 						"purple"
 					);
 					break;
 				case 2:
-					element("span", "Rumours of a student with both boy and girl parts are spreading through the school.", "blue");
+					element("span", "남성기와 여성기를 모두 가진 학생에 대한 소문이 학교에 퍼지고 있다.", "blue");
 					break;
 				case 1:
-					element("span", "A few cliques at school have begun whispering about a student with both boy and girl parts.", "lblue");
+					element("span", "학교 내의 몇몇 학생들이 남성기와 여성기를 모두 가진 학생에 대해 귓속말을 하기 시작했다.", "lblue");
 					break;
 			}
 			delete V.school_herm_message;
@@ -796,17 +796,17 @@ function effects() {
 
 		// expects the use of $orgasm_trait_message, $molest_trait_message, $rape_trait_message, $bestiality_trait_message, $tentacle_trait_message, $vore_trait_message, $milk_trait_message and $cum_trait_message
 		[
-			["orgasm", "Hedonist", "Orgasm Addict"],
-			["molest", "Graceful", "Plaything"],
-			["rape", "Survivor", "Fucktoy"],
-			["bestiality", "Tamer", "Bitch"],
-			["tentacle", "Witch", "Prey"],
-			["vore", "Daredevil", "Tasty"],
-			["milk", "Milk Enthusiast", "Milk Addict"],
-			["cum", "Cumoisseur", "Cum Dump"],
+			["orgasm", "쾌락주의자", "절정 중독자"],
+			["molest", "품위있음", "노리개"],
+			["rape", "생존자", "육변기"],
+			["bestiality", "조련사", `${(V.player.gender_appearance == "m")?"수캐":"암캐"}`],
+			["tentacle", "마술사", "먹잇감"],
+			["vore", "무모함", "맛있음"],
+			["milk", "모유 성애자", "모유 중독자"],
+			["cum", "정액 성애자", "정액받이"],
 		].forEach(([variable, defiantName, submissiveName]) => {
 			if (V[`${variable}_trait_message`]) {
-				element("span", `You've gained the "${V.submissive <= 850 ? defiantName : submissiveName}" trait.`, "gold");
+				element("span", `당신은 "${V.submissive <= 850 ? defiantName : submissiveName}" 특성을 얻었다.`, "gold");
 				delete V[`${variable}_trait_message`];
 			}
 		});
@@ -816,24 +816,24 @@ function effects() {
 				case "traitGain":
 					element(
 						"span",
-						`You find yourself craving more sweet nectar. You've gained the "${V.submissive <= 850 ? "Dendrophile" : "Plant Lover"}" and`,
+						`당신은 당신이 달콤한 꿀을 더 갈망하는 것을 알게 되었다. 당신은 "${V.submissive <= 850 ? "식물 애호가" : "식물 성애자"}"와`,
 						"purple"
 					);
-					element("span", '"Nectar Addict"', "red");
-					element("span", "traits.", "purple");
+					element("span", '"꿀 중독"', "red");
+					element("span", "특성을 얻었다.", "purple");
 					break;
 				case "traitLost":
 					element(
 						"span",
-						`The cravings for nectar finally subside. You've lost the "${V.submissive <= 850 ? "Dendrophile" : "Plant Lover"}" and`,
+						`꿀에 대한 갈망이 드디어 가라앉았다. 당신은 "${V.submissive <= 850 ? "식물 애호가" : "식물 성애자"}"와`,
 						"lblue"
 					);
-					element("span", '"Nectar Addict"', "red");
-					element("span", "traits.", "lblue");
+					element("span", '"꿀 중독"', "red");
+					element("span", "특성을 잃었다.", "lblue");
 					break;
 				case "withdrawals":
 					sWikifier(
-						'<span class="red">Your body craves nectar, and has begun to suffer from withdrawals.</span> <<stress 12>><<ggstress>><<trauma 12>><<ggtrauma>><<physique_loss 4>><<lphysique>>'
+						'<span class="red">당신의 몸은 꿀을 갈망하고 있으며, 금단 증상으로 고통받기 시작했다.</span> <<stress 12>><<ggstress>><<trauma 12>><<ggtrauma>><<physique_loss 4>><<lphysique>>'
 					);
 					br();
 					break;
@@ -845,46 +845,46 @@ function effects() {
 			element(
 				"span",
 				V.hiddenTransformMessage === 1
-					? "Your mental state is too fragile to continue hiding your inner self."
-					: "Hiding your inner self takes a toll on your mental state.",
+					? "당신의 내적 자아를 계속 숨기기에는 당신의 정신상태가 너무 취약하다."
+					: "당신의 내적 자아를 숨기고 있기에 정신상태에 무리가 가고 있다.",
 				"red"
 			);
 			delete V.hiddenTransformMessage;
 		}
 
 		if (V.prof_spray_message) {
-			element("span", "Your spray was accurate. You didn't need to use a full cartridge, saving ammo.", "green");
+			element("span", "당신은 스프레이를 정밀하게 쏠 수 있게 되었다. 당신은 한 통을 전부 쓸 필요가 없기에, 탄약을 아낄 수 있다.", "green");
 			delete V.prof_spray_message;
 		}
 
 		if (V.community_message === "missed") {
-			sWikifier('<span class="red">You missed community service. The police have taken note.</span><<crime "obstruction">>');
+			sWikifier('<span class="red">당신은 사회봉사를 하지 않았다. 경찰은 그 사실을 알고 있다.</span><<crime "obstruction">>');
 			delete V.community_message;
 		}
 
 		if (V.toy_message) {
-			element("span", "Sex toys are becoming more popular throughout town.", "pruple");
+			element("span", "섹스 장난감들이 도시 전체에서 점점 인기가 많아지고 있다.", "pruple");
 			delete V.toy_message;
 		}
 
 		if (V.loveInterest_message === 1) {
-			element("i", "You feel that having multiple lovers is wrong. You can no longer choose more than one love interest.", "blue");
+			element("i", "당신은 여러 명의 연인을 갖는 것은 잘못됐다고 느낀다. 당신은 더 이상 연인 하나 이상을 선택할 수 없다.", "blue");
 			delete V.loveInterest_message;
 			delete V.loveInterestAwareMessage;
 		} else if (V.loveInterest_message === 2 && !V.loveInterestAwareMessage) {
-			element("i", "Your mind is open to the possibility of multiple lovers. You may now choose a second love interest.", "pink");
+			element("i", "당신의 마음은 여러 명의 연인에 대한 가능성에 열렸다. 당신은 이제 두번째 연인을 선택할 수 있다.", "pink");
 			delete V.loveInterest_message;
 			V.loveInterestAwareMessage = 1;
 		}
 
 		if (V.fallenangelmessage) {
-			sWikifier('<span class="red">You feel dark presence clawing at your skin.</span> <<gstress>>');
+			sWikifier('<span class="red">당신은 어두운 존재가 당신의 피부를 할퀴는 느낌이 든다.</span> <<gstress>>');
 			V.stress += V.stressmax;
 			delete V.fallenangelmessage;
 		}
 
 		if (V.demonmessage) {
-			sWikifier('<span class="red">You feel a terrible light sear through you.</span> <<gstress>>');
+			sWikifier('<span class="red">당신은 끔찍한 빛이 당신을 관통하며 불태우는 느낌이 든다.</span> <<gstress>>');
 			V.stress += V.stressmax;
 			delete V.demonmessage;
 		}
@@ -893,8 +893,8 @@ function effects() {
 			element(
 				"span",
 				V.blackmoney >= 100
-					? "You feel an animalistic satisfaction towards your growing collection of stolen goods."
-					: "You feel an animalistic satisfaction as you commit such crimes.",
+					? "당신은 훔친 물건이 점점 늘어나는 것에서 동물적인 만족감을 느낀다."
+					: "당신은 그런 범죄를 저지르면서 동물적인 만족감을 느낀다.",
 				"gold"
 			);
 			delete V.foxCrimeMessage;
@@ -903,44 +903,44 @@ function effects() {
 		if (V.bookoverduemessage) {
 			if (V.bookoverduemessage === 1) {
 				sWikifier(`<<crimeUp 5 "thievery">><<delinquency ${5 / 4}>>`);
-				element("span", "You have a book severely overdue, and the police have been informed.", "red");
+				element("span", "당신은 반납기한이 심각하게 지난 책을 가지고 있고, 경찰은 그 사실을 알고 있다.", "red");
 			} else {
 				sWikifier(`<<delinquency ${3 / 4}>>`);
-				element("span", "You have a book overdue, and have incurred delinquency.", "red");
+				element("span", "당신은 반납기한이 지난 책을 가지고 있고, 그로 인해 불량하다고 여겨지고 있다.", "red");
 			}
 			delete V.bookoverduemessage;
 		}
 
 		if (V.wraithcompoundmessage) {
-			element("span", "A fell mist hangs over Elk Street.", "red");
+			element("span", "포악한 안개가 엘크 가에 드리워져 있다.", "red");
 			delete V.wraithcompoundmessage;
 		}
 
 		if (V.earSlimebreastsParasite || V.earSlimePenisParasite || V.earSlimeClitParasite) {
 			const parasiteCount = (V.earSlimebreastsParasite ? 1 : 0) + (V.earSlimePenisParasite ? 1 : 0) + (V.earSlimeClitParasite ? 1 : 0);
 			let parasiteMessage = "";
-			if (V.earSlimebreastsParasite) parasiteMessage += `A new parasite forms around your ${V.player.breastsize >= 1 ? "breasts" : "chest"}`;
+			if (V.earSlimebreastsParasite) parasiteMessage += `새 기생충이 당신 ${V.player.breastsize >= 1 ? "유방" : "가슴"}`;
 
 			if (V.earSlimePenisParasite) {
-				parasiteMessage += parasiteMessage ? " and the base of your penis" : "A new parasite forms around the base of your penis";
+				parasiteMessage += parasiteMessage ? "과 자지의 밑둥" : "새 기생충이 당신 자지의 밑둥";
 			}
 
 			if (V.earSlimeClitParasite) {
 				if (V.earSlime.focus === "pregnancy") {
-					parasiteMessage += parasiteMessage ? " and <<pussy>>" : "A new parasite forms around your <<pussy>>";
+					parasiteMessage += parasiteMessage ? "과 <<pussyPost>> 주위에 형성되었다" : "새 기생충이 당신의 <<pussyPost>> 주위에 형성되었다";
 				} else {
-					const looks = playerChastity("vagina") ? "feels" : "looks";
+					const looks = playerChastity("vagina") ? "느낌이다" : "모습이다";
 					parasiteMessage += parasiteMessage
-						? ` and clit. It ${looks} like you have your own penis now`
-						: `A new parasite forms around the base of your clit, it ${looks} similar to a penis`;
+						? `과 클리토리스 주위에 형성되었다. 그것은 이제 당신 자신의 자지가 된 것 같은 ${looks}`
+						: `새 기생충이 당신의 클리토리스 주위에 형성되었고, 자지와 비슷한 ${looks}`;
 				}
-				element("span", `A satisfied warmth fills you. ${parasiteMessage}`, "blue");
-				element("span", `You can tell that ${parasiteCount > 1 ? "they are" : "it's"} from the slimes in your ears.`);
+				element("span", `만족스러운 따뜻함이 당신을 채운다. ${parasiteMessage}`, "blue");
+				element("span", `당신은 ${parasiteCount > 1 ? "그것들이" : "그것이"} 당신 귓속의 슬라임에서 온 것이라는 것을 알고 있다.`);
 				if (V.earSlimePenisParasite && V.earSlimePenisParasite !== 1) {
-					element("span", `The previous ${V.earSlimePenisParasite} falls off shortly after it finishes growing.`, "red");
+					element("span", `이전 ${trParasite(V.earSlimePenisParasite, '은')} 그것이 다 자라자 곧 떨어져 버린다.`, "red");
 				}
 				if (V.earSlimeClitParasite && V.earSlimeClitParasite !== 1) {
-					element("span", `The previous ${V.earSlimeClitParasite} falls off shortly after it finishes growing.`, "red");
+					element("span", `클리토리스 위에 있었던 ${trParasite(V.earSlimeClitParasite, '은')} 그것이 다 자라자 곧 떨어져 버린다.`, "red");
 				}
 				delete V.earSlimebreastsParasite;
 				delete V.earSlimePenisParasite;
@@ -951,8 +951,8 @@ function effects() {
 		if (V.penisslimebrokenchastitymessage) {
 			element(
 				"span",
-				`The parasite at the base of your genitals frees you from the${
-					V.penisslimecagemessage === 1 ? ", and almost just as quickly, a new chastity parasite forms around your penis" : ""
+				`당신의 성기에 있던 기생충이 떨어${
+					V.penisslimecagemessage === 1 ? "지고, 그리고 곧바로, 새 기생충 정조대가 당신의 자지 주위에 형성된다" : "진다"
 				}.`,
 				"purple"
 			);
@@ -963,7 +963,7 @@ function effects() {
 		if (V.penisslimecagemessage) {
 			element(
 				"span",
-				V.penisslimecagemessage === 1 ? "A new chastity parasite forms around your penis." : "Your chastity parasite looks brand new again.",
+				V.penisslimecagemessage === 1 ? "새 기생충 정조대가 당신의 자지 주위에 형성된다." : "당신의 기생충 정조대가 다시 새 것처럼 깨끗해진다.",
 				"pruple"
 			);
 			delete V.penisslimecagemessage;
@@ -996,15 +996,15 @@ function effects() {
 					case "vagina0":
 						if (V.pregnancyStats.parasiteDoctorEvents >= 4) {
 							sWikifier(
-								`You feel ${V.pregnancyStats.namesParasitesChild ? "your grown child" : "the grown parasite"} in your ${
-									event === "anus0" ? "stomach" : "uterus"
-								}. <<ggarousal>>`
+								`당신은 ${V.pregnancyStats.namesParasitesChild ? "커진 당신의 아기를" : "자란 기생충을"} 당신의 ${
+									event === "anus0" ? "배" : "자궁"
+								} 안에서 느낀다. <<ggarousal>>`
 							);
 						} else {
 							sWikifier(
-								`You feel something large move around in your ${
-									event === "anus0" ? "stomach" : "uterus"
-								}. Might be best to go to the hospital again. <<ggarousal>>`
+								`당신은 무언가 커다란 것이 당신의 ${
+									event === "anus0" ? "배" : "자궁"
+								} 안에서 움직이는 것을 느낀다. 다시 한번 병원에 가 보는 것이 최선일 듯 하다. <<ggarousal>>`
 							);
 						}
 						arousalGain += 2000;
@@ -1013,12 +1013,12 @@ function effects() {
 					case "vagina1":
 						if (V.pregnancyStats.parasiteDoctorEvents >= 2) {
 							sWikifier(
-								`You feel one of ${V.pregnancyStats.namesParasitesChild ? "your children" : "the parasites"} move around in your ${
-									event === "anus1" ? "stomach" : "uterus"
-								}. <<ggarousal>>${stressMulti ? "<<gstress>>" : ""}`
+								`당신은 ${V.pregnancyStats.namesParasitesChild ? "당신의 아기들" : "기생충들"} 중 하나가 ${
+									event === "anus1" ? "배" : "자궁"
+								} 안에서 움직이는 것을 느낀다. <<ggarousal>>${stressMulti ? "<<gstress>>" : ""}`
 							);
 						} else {
-							sWikifier(`You feel something move around in your ${event === "anus1" ? "stomach" : "uterus"}. Might be best to go to the hospital.
+							sWikifier(`당신은 무언가가 당신의 ${event === "anus1" ? "배" : "자궁"} 안에서 움직이는 것을 느낀다. 병원에 가 보는 것이 최선일 듯 하다.
 							<<ggarousal>>${stressMulti ? "<<gstress>>" : ""}`);
 						}
 						arousalGain += (arousalMulti * 500) / (minDaysLeft + 1);
@@ -1027,16 +1027,16 @@ function effects() {
 					case "anus2":
 					case "vagina2":
 						sWikifier(
-							`Your ${
-								event === "anus2" ? "stomach" : "uterus"
-							} rumbles a little. You hope the noise hasn't attracted any attention. <<garousal>>${stressMulti ? "<<gstress>>" : ""}`
+							`당신의 ${
+								event === "anus2" ? "배가" : "자궁이"
+							} 살짝 꾸르륵 거린다. 당신은 이 소리가 어떤 주의도 끌지 않기를 바란다. <<garousal>>${stressMulti ? "<<gstress>>" : ""}`
 						);
 						arousalGain += (arousalMulti * 250) / (minDaysLeft + 1);
 						V.stress += 200 * stressMulti;
 						break;
 					case "anus3":
 					case "vagina3":
-						sWikifier(`You feel a little lightheaded for a moment.${stressMulti ? "<<gstress>>" : ""}`);
+						sWikifier(`잠시동안 머리가 어지러운 것을 느꼈다.${stressMulti ? "<<gstress>>" : ""}`);
 						V.stress += 100 * stressMulti;
 						break;
 				}
@@ -1051,7 +1051,7 @@ function effects() {
 		if (V.earSlime.event.includes("get sperm into your") && V.earSlime.event.includes("completed") && V.earSlime.eventTimer <= 2) {
 			element(
 				"span",
-				`The slime in your ear is pleased that you completed its task of getting sperm into your ${V.player.vaginaExist ? "vagina" : "anus"}.`,
+				`귓속의 슬라임이 당신이 ${V.player.vaginaExist ? "질" : "항문"} 안에 정액을 넣으라는 명령을 이행한 것에 기뻐하고 있다.`,
 				"green"
 			);
 			sWikifier(`<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>`);
@@ -1060,23 +1060,23 @@ function effects() {
 		} else if (V.earSlime.event.includes("get your own sperm into your") && V.earSlime.event.includes("completed") && V.earSlime.eventTimer <= 2) {
 			element(
 				"span",
-				`The slime in your ear is pleased that you completed its task of getting your own sperm into your ${V.player.vaginaExist ? "vagina" : "anus"}.`,
+				`귓속의 슬라임이 당신이 ${V.player.vaginaExist ? "질" : "항문"} 안에 당신 자신의 정액을 넣으라는 명령을 이행한 것에 기뻐하고 있다.`,
 				"green"
 			);
 			sWikifier(`<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>`);
 			if (V.earSlime.growth >= 100 && V.earSlime.focus === "pregnancy" && V.worn.genitals.name === "naked") {
-				sWikifier(`<span class="purple">A new chastity parasite forms around your penis.</span> <<genitalswear 8>>`);
+				sWikifier(`<span class="purple">새 기생충 정조대가 당신의 자지 주위에 형성되었다.</span> <<genitalswear 8>>`);
 				V.worn.genitals.origin = "ear slime";
 			}
 			br();
 			V.earSlime.event = "";
 		} else if (V.earSlime.eventTimer <= 2 || (V.earSlime.noSleep && Time.dayState !== "night")) {
 			if (V.earSlime.startedThreats) {
-				element("span", "The slime in your ear punishes you for failing to complete your task.", "red");
+				element("span", "귓속의 슬라임이 임무를 완수하지 못한 것에 대한 처벌을 내린다.", "red");
 				sWikifier(`<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>>`);
 				V.earSlime.defyCooldown += 4;
 			} else {
-				element("span", "The slime in your ear is upset you were unable to complete what you said you would do.", "cyan");
+				element("span", "귓속의 슬라임은 당신이 하겠다고 말한 명령을 완수할 수 없게 되자 당황하고 있다.", "cyan");
 			}
 			br();
 			V.earSlime.event = "";
@@ -1090,7 +1090,7 @@ function effects() {
 
 	if (V.exposed >= 1 && V.exposedcheck === 1) {
 		V.exposedcheck = 0;
-		sWikifier("You feel self-conscious about your <<nudity>>.");
+		sWikifier("당신은 당신의 <<nudityPost '을'>> 의식한다.<<nudityPostend>>");
 		br();
 	}
 

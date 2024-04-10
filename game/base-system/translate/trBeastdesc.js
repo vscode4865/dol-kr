@@ -44,3 +44,29 @@ function trBeastdesc(beastdesc, post, sep)
 }
 window.trBeastdesc = trBeastdesc;
 DefineMacro("trBeastdesc", trBeastdesc);
+
+function trBeastClaws(claws, post, sep)
+{
+	if (claws)
+	{
+		const trBeastClawsList = {
+			"claws": {koName: "발톱", post: 0},
+			"talons": {koName: "부리", post: 1},
+			"hooves": {koName: "발굽", post: 0},
+			"flippers": {koName: "지느러미", post: 1},
+		};
+	
+		let found = trBeastClawsList[claws];
+		if (found)
+		{
+			T.trResult = found.koName;
+			if (post)
+				trPost(found.post, post, sep);
+		}
+		else
+			T.trResult = `<span class='red'>에러: trBeastClaw: 정의되지 않음: ${claws}</span>`;
+	}
+	return T.trResult;
+}
+window.trBeastClaws = trBeastClaws;
+DefineMacro("trBeastClaws", trBeastClaws);
