@@ -2712,6 +2712,12 @@
 		<<print pregnancyNameCorrection("Avery")>>?ga	// 에이버리가
     ```
 
+* base-clothing/wadrobes.twee
+    ```
+    <<underwearTypeText>>
+        + 속옷. <<pShePost>>와 용도 및 방식 같음. 생략
+    ```
+
 * base-combat/audience.twee
     ```
     <<ahe>>
