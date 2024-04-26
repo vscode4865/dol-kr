@@ -320,6 +320,42 @@ function trinit_namedNPC()
                 titlepost:1
             },
 			
+			/* Books */
+            {
+                name:"raul",
+                title:"---",
+                koname:"라울",
+                kotitle:"---",
+                post:0,
+                titlepost:1
+            },
+
+            {
+                name:"mr pinch",
+                title:"---",
+                koname:"핀치 씨",
+                kotitle:"---",
+                post:1,
+                titlepost:1
+            },
+			
+            {
+                name:"ms pinch",
+                title:"---",
+                koname:"핀치 양",
+                kotitle:"---",
+                post:0,
+                titlepost:1
+            },
+
+            {
+                name:"lew",
+                title:"---",
+                koname:"류",
+                kotitle:"---",
+                post:1,
+                titlepost:1
+            },
 			
 			/* Todo: 다음은 npcCompressor.js에서 motherFatherList 에 있기에 일단 넣어둠. 나중에 필요없게 되면 삭제할것 */
             {

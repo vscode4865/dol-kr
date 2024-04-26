@@ -2498,7 +2498,8 @@
         <<trChangePost "소녀는" "으로">>                   //  _trResult= "소녀로", _trPost="로"
         <<trChangePost "소년은" "으로">>                   //  _trResult= "소년으로", _trPost="으로"
         <<trChangePost "팔을" "으로" "sep">>                   //  _trResult= "팔", _trPost="로"
-        <<trChangePost "을" "으로">>                   //  _trResult= "을", _trPost="로"
+        <<trChangePost "을" "으로">>                   //  _trResult= "으로", _trPost="으로"
+		<<trChangePost "을" "으로" "sep">>                   //  _trResult= "", _trPost="으로"
     ```
 
     ```
