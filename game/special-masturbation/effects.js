@@ -669,12 +669,12 @@ function masturbationEffectsArms(
 				doubleAction = true;
 				handsOn = 2;
 			}
-			altText.target = "<<genitals 1>>";
+			altText.target = "<<genitals_ nun 1>>";
 			if (V[armAction] !== "mchastity" && (!doubleAction || V[armAction] === V[otherArmAction])) {
-				altText.target = V[armAction] === "mpenischastity" ? "<<penis>>" : "<<pussy>>";
+				altText.target = V[armAction] === "mpenischastity" ? "<<penis_ nun>>" : "<<pussy_ nun>>";
 			}
 			sWikifier(
-				`You try to dig your fingers beneath your ${V.worn.genitals.name}, but to no avail. Your ${altText.target} aches for your touch, but there's nothing you can do.<<gstress>>`
+				`당신은 손가락을 당신의 <<worn_genitals_name>> 아래로 집어넣으려 하지만, 실패한다. 당신의 ${altText.target} 당신의 손길을 갈망하지만, 당신이 할 수 있는 것은 아무것도 없다.<<gstress>>`
 			);
 			wikifier("stress", handsOn);
 			clearAction();
@@ -1188,20 +1188,20 @@ function masturbationEffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다.`));
 							break;
 						case 3:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. It fills your palm nicely`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다`));
 							break;
 						case 4:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. You can barely get your hand around it`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다`));
 							break;
 						default:
-							fragment.append(span(`You easily grab both of your ${balls} with your ${arm} hand.`));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} 당신의 양쪽 ${balls} 가뿐하게 잡는다.`));
 							break;
 					}
 				}
-				fragment.append(span(`. You briefly freeze. `));
+				fragment.append(span(`. 당신은 잠시 움직임을 멈춘다. `));
 				fragment.append(span(`당신은 아무것도 느낄 수가 없었다.`, "red"));
 			} else {
 				additionalEffect.hands = "ballplayeffects";
@@ -1227,16 +1227,16 @@ function masturbationEffectsArms(
 					switch (V.ballssize) {
 						case 1:
 						case 2:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다.`, "blue"));
 							break;
 						case 3:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. It fills your palm nicely.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 그것은 당신의 손바닥에 딱 들어온다.`, "blue"));
 							break;
 						case 4:
-							fragment.append(span(`You take ${altText.oneOfYour} in your ${arm} hand. You can barely get your hand around it.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 잡는다. 당신은 간신히 그것을 손으로 감싼다.`, "blue"));
 							break;
 						default:
-							fragment.append(span(`You easily grab both of your ${balls} with your ${arm} hand.`, "blue"));
+							fragment.append(span(`당신은 ${handPost(arm, '으로')} 당신의 양쪽 ${balls} 가뿐하게 잡는다.`, "blue"));
 							break;
 					}
 				}
