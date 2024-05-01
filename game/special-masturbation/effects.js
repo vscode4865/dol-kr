@@ -78,7 +78,7 @@ function masturbationEffects() {
 			delete V.corruptionMasturbationCount;
 		} else {
 			if (V.orgasmdown >= 2) {
-				if (V.corruptionMasturbationCount === undefined || V.corruptionMasturbationCount === null) V.corruptionMasturbationCount = random(2, 6);
+				if (isNaN(V.corruptionMasturbationCount)) V.corruptionMasturbationCount = random(2, 6);
 				if (V.corruptionMasturbationCount <= 0) {
 					V.corruptionMasturbation = false;
 					delete V.corruptionMasturbationCount;
@@ -1084,7 +1084,6 @@ function masturbationEffectsArms(
 				sWikifier(`무언가 느끼도록 당신은 거칠게 ${balls} 더듬으라고 강요된다.`);
 			} else {
 				wikifier("arousal", 100 * handsOn, "masturbationPenis");
-				additionalEffect.hands = "ballplayeffects";
 				if (handsOn === 2) {
 					if (V.arousal >= V.arousalmax * (4 / 5)) {
 						fragment.append(
@@ -1113,6 +1112,7 @@ function masturbationEffectsArms(
 						fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 쓰다듬는다.`));
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mballssqueeze":
@@ -1124,7 +1124,6 @@ function masturbationEffectsArms(
 				sWikifier(`무언가 느끼도록 당신은 거칠게 ${balls} 쥐어짜라고 강요된다.`);
 			} else {
 				wikifier("arousal", 200 * handsOn, "masturbationPenis");
-				additionalEffect.hands = "ballplayeffects";
 				altText.gently = V.arousal >= V.arousalmax * (4 / 5) ? "절박하게" : V.arousal >= V.arousalmax * (3 / 5) ? "" : "부드럽게";
 				if (handsOn === 2) {
 					switch (V.ballssize) {
@@ -1160,6 +1159,7 @@ function masturbationEffectsArms(
 							break;
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mballsentrance":
@@ -1204,7 +1204,6 @@ function masturbationEffectsArms(
 				fragment.append(span(`. 당신은 잠시 움직임을 멈춘다. `));
 				fragment.append(span(`당신은 아무것도 느낄 수가 없었다.`, "red"));
 			} else {
-				additionalEffect.hands = "ballplayeffects";
 				wikifier("arousal", 100 * handsOn, "masturbationPenis");
 				if (handsOn === 2) {
 					switch (V.ballssize) {
@@ -1240,6 +1239,7 @@ function masturbationEffectsArms(
 							break;
 					}
 				}
+				additionalEffect.hands = "ballplayeffects";
 			}
 			break;
 		case "mpenisW":

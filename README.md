@@ -1,3 +1,20 @@
+# Degrees of Lewdity 한국어 번역판에 대하여
+
+이 번역본은 Vrelnir의 Degrees of Lewdity (https://vrelnir.blogspot.com/) 게임 원본을 원본의 CC-BY-NC-SA 라이센스에 의거 동일조건으로 아카라이브 텍스트게임 채널 (https://arca.live/b/textgame) 에서 번역중인 번역본입니다.
+
+이 번역본을 기반으로 하는 2차저작물은 CC-BY-NC-SA 라이센스를 따르는 이상 자유롭게 공유(배포 등) 및 번경하실 수 있습니다.
+
+1. BY - 원본과 번역본의 저작자 (출처)가 명기되어야 합니다.
+2. NC - 비영리 목적으로만 이용 가능합니다.
+3. SA - 원본과 동일한 CC-BY-NC-SA 라이센스를 적용하여야 합니다.
+
+## 참고
+- 원본의 CC-BY-NC-SA 라이센스 (영문): 이 번역본에도 포함되어 있는 LICENSE 파일을 참조
+- CC-BY-NC-SA 라이센스 한글번역본: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko
+- CC-BY-NC-SA 라이센스 권리 한글번역본: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko
+
+이 아래부터는 원본의 README.md 의 내용이 이어집니다.
+---------------------------------------
 # Degrees of Lewdity
 
 ## Lexicon of Lewdity

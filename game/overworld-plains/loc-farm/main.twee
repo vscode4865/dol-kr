@@ -458,10 +458,10 @@
 	"우리가 해냈어," 알렉스가 말한다. <<He_ yi>> 목소리는 피곤한 것처럼 들리고, <<his_ yi>> 옷은 찢어져 있으며, <<his_ yi>> 머리카락은 땀으로 범벅이 되었지만 <<his_ yi>> 얼굴에 미소가 번진다. "우리가 두 번째 밭을 정리했어."
 	<br><br>
 
-	<<He_ nun>> 문제의 밭으로 당신을 인도하다가, 울타리에 멈춰선다. <<He_ nun>> 앉으면서 당신도 따라오라는 듯 손짓한다. "너 없이는 이걸 해낼 수 없었을 거야," <<he_ ga>> 말하며, <<his_ yi>> 주머니에서 유리병을 두 병
+	<<He_ nun>> 문제의 밭으로 당신을 인도하다가, 울타리에 멈춰선다. <<He_ nun>> 앉으면서 당신도 앉으라는 듯 손짓한다. "너 없이는 이걸 해낼 수 없었을 거야," <<he_ ga>> 말하며, <<his_ yi>> 주머니에서 유리병을 두 병
 
 	<<if C.npc.Alex.pregnancy.selfKnowledge is true and npcIsPregnant("Alex") and talkedAboutPregnancy("Alex","pc")>>
-		 꺼내 하나를 <<his_ yi>> 입으로 가까이 가져간다.
+		꺼내 하나를 <<his_ yi>> 입으로 가까이 가져간다.
 		<br><br>
 
 		당신은 <<himPost>>에게 근엄한 눈빛을 보낸다.
@@ -472,26 +472,24 @@
 
 		<<link [[다음|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
 
+	<<elseif playerBellyVisible()>>
+		꺼낸다. <<He_ nun>> 당신에게도 하나 건네려 하다가, 당신의 <<bellyDescription_ ul "pc">> 힐끗 보고는 병을 치우며, 소심하게 미소짓는다.
+		<br><br>
+
+		<<link [[다음|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
+		<br>
 	<<else>>
-		<<if playerBellyVisible()>>
-			꺼낸다. <<He_ nun>> 당신에게도 하나 건네려 하다가, 당신의 <<bellyDescription_ ul "pc">> 힐끗 보고는 병을 치우며, 소심하게 미소짓는다.			<br><br>
+		하나를 당신에게 권한다.
+		<br><br>
 
-			<<link [[다음|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
-			<br>
+		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+			<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
 		<<else>>
-			 하나를 당신에게 권한다.
-			<br><br>
-
-			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
-				<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
-			<<else>>
-				<<link [[마신다|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><<wearProp "beerbottle">><</link>><<lstress>>
-			<</if>>
-			<br>
-			<<link [[거절한다|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
-			<br>
+			<<link [[마신다|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><<wearProp "beerbottle">><</link>><<lstress>>
 		<</if>>
-
+		<br>
+		<<link [[거절한다|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
+		<br>
 	<</if>>
 <</widget>>
 
@@ -886,7 +884,8 @@
 
 당신은 알렉스의 <<if $pronoun is "m">>아버지<<else>>어머니<</if>>와 함께 부엌 식탁에 앉는다.
 
-<<if C.npc.Alex.pregnancy.selfKnowledge is true or (C.npc.Alex.pregnancy.pcKnowledge is true and C.npc.Alex.pregnancy.sample isnot true and getPregnancyObject().fetus[1].father is "Alex" and getPregnancyObject().fetus.length is 1)>>
+<<set _pregObjFetus to getPregnancyObject().fetus || []>>
+<<if C.npc.Alex.pregnancy.selfKnowledge is true or (C.npc.Alex.pregnancy.pcKnowledge is true and C.npc.Alex.pregnancy.sample isnot true and _pregObjFetus.length is 1 and _pregObjFetus[0].father is "Alex")>>
 	"그래, 네가
 	<<if talkedAboutPregnancy("Alex","pc")>>
 		내 조그만 <<print $pronoun is "m" ? "아들을" : "딸을">> 임신시킨 도시 사람이구나?"

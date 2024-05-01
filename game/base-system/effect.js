@@ -863,7 +863,7 @@ function effects() {
 		}
 
 		if (V.toy_message) {
-			element("span", "섹스 장난감들이 도시 전체에서 점점 인기가 많아지고 있다.", "pruple");
+			element("span", "섹스 장난감들이 도시 전체에서 점점 인기가 많아지고 있다.", "purple");
 			delete V.toy_message;
 		}
 
@@ -934,7 +934,7 @@ function effects() {
 						? `과 클리토리스 주위에 형성되었다. 그것은 이제 당신 자신의 자지가 된 것 같은 ${looks}`
 						: `새 기생충이 당신의 클리토리스 주위에 형성되었고, 자지와 비슷한 ${looks}`;
 				}
-				element("span", `만족스러운 따뜻함이 당신을 채운다. ${parasiteMessage}`, "blue");
+				sWikifier(`<span class="blue">만족스러운 따뜻함이 당신을 채운다. ${parasiteMessage}</span>`);
 				element("span", `당신은 ${parasiteCount > 1 ? "그것들이" : "그것이"} 당신 귓속의 슬라임에서 온 것이라는 것을 알고 있다.`);
 				if (V.earSlimePenisParasite && V.earSlimePenisParasite !== 1) {
 					element("span", `이전 ${trParasite(V.earSlimePenisParasite, '은')} 그것이 다 자라자 곧 떨어져 버린다.`, "red");
@@ -964,7 +964,7 @@ function effects() {
 			element(
 				"span",
 				V.penisslimecagemessage === 1 ? "새 기생충 정조대가 당신의 자지 주위에 형성된다." : "당신의 기생충 정조대가 다시 새 것처럼 깨끗해진다.",
-				"pruple"
+				"purple"
 			);
 			delete V.penisslimecagemessage;
 		}

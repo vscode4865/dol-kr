@@ -404,7 +404,7 @@ setup.pills = [
 	{
 		name: "contraceptive",
 		description:
-			"24mg의 에치닐에스트라디올(합성 에스트로겐)과 31mg의 합성 프로게스토겐이 복합된 에스트로프로게스트라피츠가 거의-완벽한 피임 효과를 발휘합니다.",
+			"24mg의 에치닐에스트라디올(합성 에스트로겐)과 31mg의 합성 프로게스틴이 복합된 에스트로프로게스타티프스가 거의-완벽한 피임 효과를 발휘합니다.",
 		onTakeMessage: "당신은 피임약을 먹는다. 당신은 이 약이 광고처럼 효과적이기를 바란다.",
 		warning_label:
 			"주의사항: 적정용량을 복용하는 동안 약한 부작용이 일어날 수 있습니다. 일일 최대용량을 초과해 복용할 경우 심각한 합병증을 일으킬 수 있습니다. 확신이 들지 않을 시에는, 의사와 상의하십시오.",
@@ -636,13 +636,15 @@ function onHomePillItemClick(itemName) {
 		document.getElementById("homeDescPillContainer").style.display = "grid";
 		for (const item of setup.pills) {
 			if (item.name === itemName) {
+				const itemName = "`" + item.name + "`";
+				const itemType = "`" + item.type + "`";
 				document.getElementById("hpi_desc").outerHTML = `
 				<div id="hpi_desc">
 					${item.description}
 					<div class="hpi_warning_label">${item.warning_label}</div>
 					<div id="hpi_desc_action">
-						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick('${item.name}', '${item.type}')">약을 먹는다</a>
-						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick('${item.name}', '${item.type}')">매일 아침 먹는다</a>
+						<a id="hpi_take_pills" class="hpi_take_pills" onclick="window.onTakeClick(${itemName}, ${itemType})">약을 먹는다</a>
+						<a id="hpi_take_every_morning" onclick="window.onAutoTakeClick(${itemName}, ${itemType})">매일 아침 먹는다</a>
 					</div>
 				</div>`;
 				window.initPillContextButtons(item);

@@ -1,5 +1,5 @@
 function gainSchoolStar(variable) {
-	if (V.statdisable === "t") return;
+	if (V.statdisable === "t") return "";
 	if (V.options.images === 1) {
 		if (V[variable] + 1 === 3) {
 			return `<img class="icon" src="img/ui/gold_star.png">`;
@@ -10,11 +10,11 @@ function gainSchoolStar(variable) {
 		}
 	} else {
 		if (V[variable] + 1 === 3) {
-			return `<span class="gold">±İ»ö º°</span>`;
+			return `<span class="gold">ê¸ˆìƒ‰ ë³„</span>`;
 		} else if (V[variable] + 1 === 2) {
-			return `<span class="platinum">Àº»ö º°</span>`;
+			return `<span class="platinum">ì€ìƒ‰ ë³„</span>`;
 		} else if (V[variable] + 1 === 1) {
-			return `<span class="brown">Ã»µ¿»ö º°</span>`;
+			return `<span class="brown">ì²­ë™ìƒ‰ ë³„</span>`;
 		}
 	}
 	return "";
@@ -33,7 +33,7 @@ function schoolStar(variable) {
 			return `<img class="icon" src="img/ui/empty_star.png">`;
 		}
 	} else {
-		return `<span class="platinum">${V[variable]} / 3 °³ÀÇ º°</span>`;
+		return `<span class="platinum">${V[variable]} / 3 ê°œì˜ ë³„</span>`;
 	}
 }
 window.schoolStar = schoolStar;
