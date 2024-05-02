@@ -28,7 +28,7 @@ function trFurniture(furniture, type, post, sep)
 		{
 			T.trResult = furniture;	/* 사용자 문자열일 수 있으므로 원문을 그냥 넘김 */
 			getPostNum(T.trResult);
-			T.postNum = (T.postNum !== undefined?_postNum:1);
+			T.postNum = (T.postNum !== undefined?T.postNum:1);
 			trPost(T.postNum, post, sep);
 		}
 	}

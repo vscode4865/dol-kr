@@ -51,7 +51,7 @@ function trNamedNPC(npcinfo, type, post, sep)
 		if (T.trResult)
 		{
 			if  (post)
-				trPost(T.postNum, post, sep)
+				trPost(T.postNum, post, sep);
 		}
 		else
 			T.trResult = `trNamedNPCerr: 정의되지 않음: ${name}`;
