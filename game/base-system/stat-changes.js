@@ -560,9 +560,9 @@ var statChange = (() => {
 		if (amount) {
 			V.wolfpackferocity = (V.wolfpackferocity || 0) + amount;
 			if (amount > 0) {
-				return statDisplay.statChange("ÈäÆ÷", Math.clamp(amount, 1, 3), "blue");
+				return statDisplay.statChange("í‰í¬", Math.clamp(amount, 1, 3), "blue");
 			} else if (amount < 0) {
-				return statDisplay.statChange("ÈäÆ÷", Math.clamp(amount, -3, -1), "purple");
+				return statDisplay.statChange("í‰í¬", Math.clamp(amount, -3, -1), "purple");
 			}
 		}
 		return "";
@@ -576,9 +576,9 @@ var statChange = (() => {
 		if (amount) {
 			V.wolfpackharmony = (V.wolfpackharmony || 0) + amount;
 			if (amount > 0) {
-				return statDisplay.statChange("Á¶È­", Math.clamp(amount, 1, 3), "lblue");
+				return statDisplay.statChange("ì¡°í™”", Math.clamp(amount, 1, 3), "lblue");
 			} else if (amount < 0) {
-				return statDisplay.statChange("Á¶È­", Math.clamp(amount, -3, -1), "pink");
+				return statDisplay.statChange("ì¡°í™”", Math.clamp(amount, -3, -1), "pink");
 			}
 		}
 		return "";
