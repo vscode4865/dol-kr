@@ -2,7 +2,7 @@ function trNamedNPCInner(name, type)
 {
 	if (!setup.trNamedNPCList)
 		trinit_namedNPC();
-		
+	
 	let found;
 	name = name.toLowerCase();
 	if (!type)
@@ -48,8 +48,11 @@ function trNamedNPC(npcinfo, type, post, sep)
 
 		trNamedNPCInner(name, type);
 		
-		if (T.trResult && post)
-			trPost(T.postNum, post, sep)
+		if (T.trResult)
+		{
+			if  (post)
+				trPost(T.postNum, post, sep)
+		}
 		else
 			T.trResult = `trNamedNPCerr: 정의되지 않음: ${name}`;
 	}
