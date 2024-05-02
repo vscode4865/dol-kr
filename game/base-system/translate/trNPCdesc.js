@@ -98,64 +98,65 @@ DefineMacro("trNPCdesc", trNPCdesc);
 function trNPCname(npcinfo, post, sep)
 {
 	let name;
-	if (!npcinfo)
+	if (npcinfo)
 	{
-		name = V.NPCList[0].name;
-	}
-	else if (typeof(npcinfo) === "number")
-	{
-		name = V.NPCList[Number(npcinfo)].name;
-	}
-	else if (typeof(npcinfo) === "string")
-	{
-		if (setup.trPostsList[npcinfo])
+		if (typeof(npcinfo) === "number")
 		{
-			sep = post;
-			post = npcinfo;
-			name = V.NPCList[0].name;
+			name = V.NPCList[Number(npcinfo)].name;
+		}
+		else if (typeof(npcinfo) === "string")
+		{
+			if (setup.trPostsList[npcinfo])
+			{
+				sep = post;
+				post = npcinfo;
+				name = V.NPCList[0].name;
+			}
+			else
+				name = npcinfo;
 		}
 		else
-			name = npcinfo;
-	}
-	else
-		name = npcinfo[0];	// maybe array
+			name = npcinfo[0];	// maybe array
 
-	if (!setup.trNPCnameList)
-		trinit_NPCname() // 대신 trNPCdesc에 맡겨버릴까?
-	
-	let found;
-	if (typeof(name) !== "string")
-	{
-		found = {};
-		found.koname = `<span class='red'>에러: trNPCname: name이 잘못되었습니다. name:${name}, args[0]:${npcinfo}</span>`
-		post = false;
-	}
-	else
-		found = setup.trNPCnameList[name];
-	
-	if (!found)
-	{
-		if(!setup.trNamedNPCList)
-			trinit_namedNPC();
-
-		trNamedNPCInner(name);
-		if (T.trResult)
+		if (!setup.trNPCnameList)
+			trinit_NPCname() // 대신 trNPCdesc에 맡겨버릴까?
+		
+		let found;
+		if (typeof(name) !== "string")
 		{
 			found = {};
-			found.koname = T.trResult;
-			found.post = T.postNum;
+			found.koname = `<span class='red'>에러: trNPCname: name이 잘못되었습니다. name:${name}, args[0]:${npcinfo}</span>`
+			post = false;
 		}
+		else
+			found = setup.trNPCnameList[name];
+		
+		if (!found)
+		{
+			if(!setup.trNamedNPCList)
+				trinit_namedNPC();
+
+			trNamedNPCInner(name);
+			if (T.trResult)
+			{
+				found = {};
+				found.koname = T.trResult;
+				found.post = T.postNum;
+			}
+		}
+		if (!found) // 대신 trNPCdesc에 맡겨버릴까?
+		{
+			found = {};
+			found.koname = name;
+			found.post = getPostNum(name);
+		}
+		
+		T.trResult = found.koname;
+		if (post)
+			trPost(found.post, post, sep);
 	}
-	if (!found) // 대신 trNPCdesc에 맡겨버릴까?
-	{
-		found = {};
-		found.koname = name;
-		found.post = getPostNum(name);
-	}
-	
-	T.trResult = found.koname;
-	if (post)
-		trPost(found.post, post, sep);
+	else
+		T.trResult = "";
 
 	return T.trResult;
 }
