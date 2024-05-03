@@ -1017,6 +1017,7 @@ function trinit_beastsList()
 		};
     }
 }
+window.trinit_beastsList = trinit_beastsList;
 
 function trinit_bodypartList()
 {
