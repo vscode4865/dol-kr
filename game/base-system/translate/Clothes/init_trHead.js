@@ -1,6 +1,6 @@
-:: Widgets trHead [widget nobr]
-<<widget "init_trHead">>
-    <<set setup.trClothes.head to [
+function init_trHead()
+{
+    setup.trClothes.head = [
         {
             index: 0,
             name: "naked",
@@ -575,5 +575,6 @@
             post: 1,
             description: "머리카락을 뒤로 모아준다."
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trHead = init_trHead;

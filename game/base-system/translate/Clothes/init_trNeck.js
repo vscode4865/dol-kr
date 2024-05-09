@@ -1,6 +1,6 @@
-:: Widgets trNeck [widget nobr]
-<<widget "init_trNeck">>
-    <<set setup.trClothes.neck to [
+function init_trNeck()
+{
+    setup.trClothes.neck = [
         {
             index: 0,
             name: "naked",
@@ -315,5 +315,6 @@
             post: 1,
             description: "강간 대비용 호루라기로는 비효율적이다."
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trNeck = init_trNeck;

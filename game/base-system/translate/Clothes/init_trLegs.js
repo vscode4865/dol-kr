@@ -1,6 +1,6 @@
-:: Widgets trLegs [widget nobr]
-<<widget "init_trLegs">>
-    <<set setup.trClothes.legs to [
+function init_trLegs()
+{
+    setup.trClothes.legs = [
         {
             index: 0,
             name: "naked",
@@ -268,7 +268,7 @@
             name_ko: "가죽 레깅스",
             variable: "leatherleggings",
             post: 1,
-            description: "딱 달라붙는다."
+            description: "너무나도 딱 달라붙어, 투명하다. (속옷의 가죽 레깅스를 구매하세요)"
         },
 
         {
@@ -306,5 +306,15 @@
             post: 1,
             description: "주름장식이 붙어있다."
         },
-    ]>>
-<</widget>>
+
+        {
+            index: 34,
+            name: "tabi",
+            name_ko: "다비",
+            variable: "tabi",
+            post: 1,
+            description: "이국적이다."
+        },
+    ];
+}
+window.init_trLegs = init_trLegs;

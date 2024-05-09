@@ -2,10 +2,18 @@
 const statDisplay = {
 	statChange(statType, amount, colorClass, condition = () => true) {
 		amount = Number(amount);
-		if (V.statdisable === "t" || !condition()) return "";
+		if (V.statdisable === "t" || !condition()) return document.createDocumentFragment();
 
+		const fragment = document.createDocumentFragment();
+		const span = document.createElement("span");
+		span.className = colorClass;
 		const prefix = amount < 0 ? "- " : "+ ";
-		return ` | <span class="${colorClass}">${prefix.repeat(Math.abs(amount))}${statType}</span>`;
+
+		span.textContent = `${prefix.repeat(Math.abs(amount))}${statType}`;
+		fragment.appendChild(document.createTextNode(" | "));
+		fragment.appendChild(span);
+
+		return fragment;
 	},
 	grace(amount, expectedRank) {
 		amount = Number(amount);
@@ -33,7 +41,9 @@ const statDisplay = {
 	},
 	create(name, fn) {
 		if (this[name] === undefined && !Macro.get(name)) {
-			DefineMacroS(name, fn);
+			DefineMacro(name, function () {
+				this.output.append(fn(...this.args));
+			});
 			this[name] = fn;
 		} else {
 			console.error(`A function with the name "${name}" already exists in statDisplay.`);
@@ -42,12 +52,12 @@ const statDisplay = {
 };
 window.statDisplay = statDisplay;
 
-statDisplay.create("ggrace", expectedRank => statDisplay.grace(1, expectedRank));
-statDisplay.create("gggrace", expectedRank => statDisplay.grace(2, expectedRank));
-statDisplay.create("ggggrace", expectedRank => statDisplay.grace(3, expectedRank));
 statDisplay.create("lgrace", expectedRank => statDisplay.grace(-1, expectedRank));
 statDisplay.create("llgrace", expectedRank => statDisplay.grace(-2, expectedRank));
 statDisplay.create("lllgrace", expectedRank => statDisplay.grace(-3, expectedRank));
+statDisplay.create("ggrace", expectedRank => statDisplay.grace(1, expectedRank));
+statDisplay.create("gggrace", expectedRank => statDisplay.grace(2, expectedRank));
+statDisplay.create("ggggrace", expectedRank => statDisplay.grace(3, expectedRank));
 
 statDisplay.create("lstress", () => statDisplay.statChange("스트레스", -1, "green"));
 statDisplay.create("llstress", () => statDisplay.statChange("스트레스", -2, "green"));
@@ -342,6 +352,11 @@ statDisplay.create("gghunger", () => statDisplay.statChange("배고픔", 2, "red
 statDisplay.create("ggghunger", () => statDisplay.statChange("배고픔", 3, "red"));
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("수용", 1, "green"));
+statDisplay.create("ginsecurity", type => {
+	if (type === "breasts_tiny" && V.player.gender === "f") return "";
+	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("불안감", 1, "red");
+	return "";
+});
 
 statDisplay.create("gwillpower", () => statDisplay.statChange("의지력", 1, "green"));
 statDisplay.create("ggwillpower", () => statDisplay.statChange("의지력", 2, "green"));
@@ -413,40 +428,40 @@ statDisplay.create("gggawareness", () => {
 });
 
 statDisplay.create("lspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("시드니의 순결도", -1, "purple");
+		result.append(statDisplay.statChange("시드니의 순결도", -1, "purple"));
 	} else {
-		result = statDisplay.statChange("시드니의 타락도", 1, "purple");
+		result.append(statDisplay.statChange("시드니의 타락도", 1, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("욕정", 1, "lewd");
+		result.append(statDisplay.statChange("욕정", 1, "lewd"));
 	}
 	T.warnstate = -1;
 	return result;
 });
 statDisplay.create("llspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("시드니의 순결도", -2, "purple");
+		result.append(statDisplay.statChange("시드니의 순결도", -2, "purple"));
 	} else {
-		result = statDisplay.statChange("시드니의 타락도", 2, "purple");
+		result.append(statDisplay.statChange("시드니의 타락도", 2, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("욕정", 1, "lewd");
+		result.append(statDisplay.statChange("욕정", 1, "lewd"));
 	}
 	T.warnstate = -2;
 	return result;
 });
 statDisplay.create("lllspurity", () => {
-	let result;
+	const result = document.createDocumentFragment();
 	if (C.npc.Sydney.purity >= 1) {
-		result = statDisplay.statChange("시드니의 순결도", -3, "purple");
+		result.append(statDisplay.statChange("시드니의 순결도", -3, "purple"));
 	} else {
-		result = statDisplay.statChange("시드니의 타락도", 3, "purple");
+		result.append(statDisplay.statChange("시드니의 타락도", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
-		result += statDisplay.statChange("욕정", 1, "lewd");
+		result.append(statDisplay.statChange("욕정", 1, "lewd"));
 	}
 	T.warnstate = -3;
 	return result;
@@ -499,78 +514,90 @@ statDisplay.create("gggslust", () => {
 
 statDisplay.create("lscience", () => statDisplay.statChange("과학", -1, "red"));
 statDisplay.create("gscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("과학", 1, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 statDisplay.create("ggscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("과학", 2, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 statDisplay.create("gggscience", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("과학", 3, "green");
-	return `${result} ${gainSchoolStar("science_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("science_star"));
+	return result;
 });
 
 statDisplay.create("lmaths", () => statDisplay.statChange("수학", -1, "red"));
 statDisplay.create("gmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("수학", 1, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 statDisplay.create("ggmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("수학", 2, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 statDisplay.create("gggmaths", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("수학", 3, "green");
-	return `${result} ${gainSchoolStar("maths_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("maths_star"));
+	return result;
 });
 
 statDisplay.create("lenglish", () => statDisplay.statChange("영어", -1, "red"));
 statDisplay.create("genglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("영어", 1, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 statDisplay.create("ggenglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("영어", 2, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 statDisplay.create("gggenglish", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("영어", 3, "green");
-	return `${result} ${gainSchoolStar("english_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("english_star"));
+	return result;
 });
 
 statDisplay.create("lhistory", () => statDisplay.statChange("역사", -1, "red"));
 statDisplay.create("ghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("역사", 1, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 statDisplay.create("gghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("역사", 2, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 statDisplay.create("ggghistory", () => {
-	T.lustincrdisplay = 1;
 	const result = statDisplay.statChange("역사", 3, "green");
-	return `${result} ${gainSchoolStar("history_star")}`;
+	result.append(" ");
+	result.appendChild(gainSchoolStar("history_star"));
+	return result;
 });
 
 statDisplay.create("ghousekeeping", amount => {
-	if (V.statsdisable === "f") return "";
+	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("정리정돈", 1, "green");
 	} else if (V.housekeeping >= amount) {
-		return "정리정돈 기술을 향상시키기에는 당신은 기술이 너무 좋다.";
+		return " 정리정돈 기술을 향상시키기에는 당신은 기술이 너무 좋다.";
 	}
 	return "";
 });
@@ -630,13 +657,13 @@ statDisplay.create("lrespect", () => statDisplay.statChange("존중", -1, "red")
 statDisplay.create("llrespect", () => statDisplay.statChange("존중", -2, "red"));
 statDisplay.create("lllrespect", () => statDisplay.statChange("존중", -3, "red"));
 statDisplay.create("grespect", arg =>
-	statDisplay.statChange("존중", 1, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("존중", 1, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("ggrespect", arg =>
-	statDisplay.statChange("존중", 2, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("존중", 2, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 statDisplay.create("gggrespect", arg =>
-	statDisplay.statChange("존중", 3, "green", () => (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
+	statDisplay.statChange("존중", 3, "green", () => arg === undefined || (arg === "scum" && V.pirate_rank !== 0) || (arg === "mate" && V.pirate_rank !== 1))
 );
 
 statDisplay.create("ladeviancy", () => statDisplay.statChange("알렉스의 이상성욕", -1, "green"));
@@ -645,3 +672,14 @@ statDisplay.create("llladeviancy", () => statDisplay.statChange("알렉스의 �
 statDisplay.create("gadeviancy", () => statDisplay.statChange("알렉스의 이상성욕", 1, "red"));
 statDisplay.create("ggadeviancy", () => statDisplay.statChange("알렉스의 이상성욕", 2, "red"));
 statDisplay.create("gggadeviancy", () => statDisplay.statChange("알렉스의 이상성욕", 3, "red"));
+
+// These rely on the 'statChange' function in 'stat-changes.js'
+statDisplay.create("gharmony", (amount = 1) => statChange.harmony(amount));
+statDisplay.create("lharmony", (amount = 1) => statChange.harmony(-amount));
+statDisplay.create("gferocity", (amount = 1) => statChange.ferocity(amount));
+statDisplay.create("lferocity", (amount = 1) => statChange.ferocity(-amount));
+statDisplay.create("incgpenisinsecurity", amount => statChange.gainPenisInsecurity(amount));
+statDisplay.create("incggpenisinsecurity", () => statChange.gainPenisInsecurity(20));
+statDisplay.create("gpenisacceptance", statChange.gainPenisAcceptance);
+statDisplay.create("wolfpacktrust", statChange.wolfpacktrust);
+statDisplay.create("wolfpackfear", statChange.wolfpackfear);

@@ -204,10 +204,18 @@
 	<<it "over_lower">>
 <</widget>>
 <<widget "upperit">>
-	<<it "upper">>
+	<<if $worn.upper.name is "naked" and $worn.under_upper.type.includes("covered")>>
+		<<it "under_upper">>
+	<<else>>
+		<<it "upper">>
+	<</if>>
 <</widget>>
 <<widget "lowerit">>
-	<<it "lower">>
+	<<if $worn.lower.name is "naked" and $worn.under_lower.type.includes("covered")>>
+		<<it "under_lower">>
+	<<else>>
+		<<it "lower">>
+	<</if>>
 <</widget>>
 <<widget "underupperit">>
 	<<it "under_upper">>
@@ -240,10 +248,17 @@
 	<<has "over_lower">>
 <</widget>>
 <<widget "upperhas">>
-	<<has "upper">>
-<</widget>>
+	<<if $worn.upper.name is "naked" and $worn.under_upper.type.includes("covered")>>
+		<<has "under_upper">>
+	<<else>>
+		<<has "upper">>
+	<</if>><</widget>>
 <<widget "lowerhas">>
-	<<has "lower">>
+	<<if $worn.lower.name is "naked" and $worn.under_lower.type.includes("covered")>>
+		<<has "under_lower">>
+	<<else>>
+		<<has "lower">>
+	<</if>>
 <</widget>>
 <<widget "underupperhas">>
 	<<has "under_upper">>
@@ -1801,40 +1816,6 @@
 	<</if>>
 <</widget>>
 
-<<widget "ginsecurity">>
-	<<if $statdisable is "f">>
-		<<if _args[0] is "penis_tiny">>
-			<<if $acceptance_penis_tiny lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "penis_small">>
-			<<if $acceptance_penis_small lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "penis_big">>
-			<<if $acceptance_penis_big lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "breasts_tiny">>
-			<<if $acceptance_breasts_tiny lte 999 and $player.gender is "f">>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "breasts_small">>
-			<<if $acceptance_breasts_small lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "breasts_big">>
-			<<if $acceptance_breasts_big lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<<elseif _args[0] is "pregnancy">>
-			<<if $acceptance_pregnancy lte 999>>
-				| <span class="red">+ 불안감</span>
-			<</if>>
-		<</if>>
-	<</if>>
-<</widget>>
-
 <!-- Awareness -->
 
 <<widget "combataware">>
@@ -2300,22 +2281,18 @@
 
 <<widget "groin">><<silently>>
 	<<genitals>>
-	<<if !$worn.lower.type.includes("naked") and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt isnot 1>>
-		<<set _text_output to _text_output + " through your " + $worn.lower.name>>
-	<<elseif !$worn.under_lower.type.includes("naked")>>
-		<<set _text_output to _text_output + " through your " + $worn.under_lower.name>>
+	<<outfitChecks>>
+	<<if !_botomIsSkirt and _bottom>>
+		<<set _text_output to _text_output + " through your " + _bottom.name>>
 	<<else>>
 		<<set _text_output to _text_output>>
 	<</if>>
 <</silently>>_text_output<</widget>>
 
 <<widget "crotch">><<silently>>
-	<<if !$worn.over_lower.type.includes("naked")>>
-		<<set _text_output to $worn.over_lower.name>>
-	<<elseif !$worn.lower.type.includes("naked")>>
-		<<set _text_output to $worn.lower.name>>
-	<<elseif !$worn.under_lower.type.includes("naked")>>
-		<<set _text_output to $worn.under_lower.name>>
+	<<outfitChecks>>
+	<<if _bottom>>
+		<<set _text_output to _bottom.name>>
 	<<else>>
 		<<genitals>>
 	<</if>>
@@ -2328,7 +2305,8 @@
 	2 - display simple name of undies or simple genital description
  -->
 <<widget "undies">><<silently>>
-	<<if !$worn.under_lower.type.includes("naked")>>
+	<<outfitChecks>>
+	<<if !$worn.under_lower.type.includes("naked") and _bottom isnot $worn.under_lower>>
 		<<if _args[0] and _args[0] gte 1>>
 			<<set _text_output to $worn.under_lower.name_simple>>
 		<<else>>
@@ -2343,7 +2321,7 @@
 
 <<widget "bottoms">><<silently>>
 	<<outfitChecks>>
-	<<set _text_output to (_middleOutfit ? $worn.upper.name : _underBottoms ? $worn.under_lower.name : $worn.lower.name)>>
+	<<set _text_output to (_middleOutfit ? $worn.upper.name : $worn.lower.name is "naked" and $worn.under_lower.type.includes("covered") ? $worn.under_lower.name : $worn.lower.name)>>
 <</silently>>_text_output<</widget>>
 
 <<widget "underbottoms">><<silently>>
@@ -2369,7 +2347,7 @@
 <</widget>>
 
 <<widget "allBottoms">>
-	<<if $worn.over_lower.name isnot "naked">>
+	<<if $worn.over_lower.name isnot "naked" and $worn.over_lower.set isnot $worn.over_upper.set>>
 		$worn.over_lower.name\
 	<</if>>
 	<<if $worn.lower.name isnot "naked">>
@@ -2418,7 +2396,9 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "top">><<silently>>
-	<<if !$worn.upper.type.includes("naked")>>
+	<<if !$worn.over_upper.type.includes("naked")>>
+		<<set _text_output to $worn.over_upper.name>>
+	<<elseif !$worn.upper.type.includes("naked")>>
 		<<set _text_output to $worn.upper.name>>
 	<<elseif !$worn.under_upper.type.includes("naked")>>
 		<<set _text_output to $worn.under_upper.name>>
@@ -2428,7 +2408,9 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "topaside">><<silently>>
-	<<if $worn.upper.exposed lte 1>>
+	<<if $worn.over_upper.exposed lte 2>>
+		<<set _text_output to $worn.over_upper.name>>
+	<<elseif $worn.upper.exposed lte 1>>
 		<<set _text_output to $worn.upper.name>>
 	<<elseif $worn.under_upper.exposed is 0>>
 		<<set _text_output to $worn.under_upper.name>>
@@ -2438,13 +2420,8 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "breastsaside">><<silently>>
-	<<if $worn.upper.exposed lte 1>>
-		<<set _text_output to $worn.upper.name>>
-	<<elseif $worn.under_upper.exposed is 0>>
-		<<set _text_output to $worn.under_upper.name>>
-	<<else>>
-		<<breasts>>
-	<</if>>
+	<<outfitChecks>>
+	<<set _text_output to _topUnder?.name || "<<breasts>>">>
 <</silently>>_text_output<</widget>>
 
 <<widget "bottomaside">><<silently>>
@@ -2475,6 +2452,7 @@
 	<<genitals>>
 	<<set _genitals to _text_output>>
 	<<breasts>>
+	<<outfitChecks>>
 	<<set _breasts to _text_output>>
 	<<if $worn.under_lower.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<if !$worn.upper.type.includes("naked")>>
@@ -2482,9 +2460,9 @@
 		<<elseif !$worn.under_upper.type.includes("naked")>>
 			<<undertop>>
 			<<set _undertop to _text_output>>
-		<<set _text_output to "<span class=\"lewd\">exposed " + _genitals + " and " + _undertop + "</span>. Your somewhat covered chest makes your bare lower half feel more conspicuous.">>
+			<<set _text_output to `<span class=\"lewd\">exposed ${_genitals}${!$worn.under_upper.type.includes("covered") ? " and "  + _undertop : ""}</span>. Your somewhat covered chest makes your bare lower half feel more conspicuous`>>
 		<<else>>
-		<<set _text_output to "<span class=\"lewd\">exposed</span> ">>
+			<<set _text_output to "<span class=\"lewd\">exposed</span> ">>
 			<<if $player.breastsize gte 3>>
 				<<if $player.gender is "m">>
 				<<set _text_output to _text_output + "<span class=\"lewd\">" + _genitals + " and " + _breasts + "</span>">>
@@ -2503,8 +2481,7 @@
 				<</if>>
 			<</if>>
 		<</if>>
-	<<elseif $worn.upper.type.includes("naked") and $player.gender_appearance is "f">>
-		<<outfitChecks>>
+	<<elseif _shirtless and $player.gender_appearance is "f">>
 		<<if $worn.under_upper.type.includes("naked")>>
 			<<set _text_output to "<span class=\"lewd\">exposed " + _breasts + "</span>">>
 				<<if $worn.lower.type.includes("naked") and _underOutfit is false>>
@@ -2544,54 +2521,33 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "stripobject">>
-	<<set $worn.upper.integrity -= $stripintegrity>><<set $worn.lower.integrity -= $stripintegrity>><<set $worn.under_lower.integrity -= $stripintegrity>>
-
-	<<if !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0 and !$worn.lower.type.includes("naked") and $worn.lower.integrity lte 0 and !$worn.under_lower.type.includes("naked") and $worn.under_lower.integrity lte 0>>
-	<span class="lewd">당신의 옷은 <<putpost $stripobject>>에 걸려서, 당신의 몸에서 찢겨져 나가 당신을 완전히 알몸으로 만든다!</span>
-
-	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0 and !$worn.lower.type.includes("naked") and $worn.lower.integrity lte 0>>
-	<span class="lewd">당신의 <<outfit_ un>> <<if $stripset is 1>><<putpost $stripobject>>에 걸려서, 당신의 몸에서 완전히 찢겨져 나간다.<<else>><<putpost $stripobject>>에 걸려서, 당신의 몸에서 찢겨져 나간다.<</if>></span>
-
-	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0 and !$worn.under_lower.type.includes("naked") and $worn.under_lower.integrity lte 0>>
-	<span class="lewd">당신의 <<worn_upper_name_ gwa>> <<worn_under_lower_name_ i>> <<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.</span>
-
-	<<elseif !$worn.lower.type.includes("naked") and $worn.lower.integrity lte 0 and !$worn.under_lower.type.includes("naked") and $worn.under_lower.integrity lte 0>>
-	<span class="lewd">당신의 <<worn_lower_name_ gwa>> <<worn_under_lower_name_ i>> <<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.</span>
-
-	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.integrity lte 0>>
-	<span class="lewd">당신의 <<worn_upper_name_ i>> <<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.</span>
-
-	<<elseif !$worn.lower.type.includes("naked") and $worn.lower.integrity lte 0>>
-	<span class="lewd">당신의 <<worn_lower_name_ i>> <<if $worn.lower.plural is 1>><<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.<<else>><<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.<</if>></span>
-
-	<<elseif !$worn.under_lower.type.includes("naked") and $worn.under_lower.integrity lte 0>>
-	<span class="lewd">당신의 <<worn_under_lower_name_ i>> <<if $worn.under_lower.plural is 1>><<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.<<else>><<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.<</if>></span>
-
+	<<outfitChecks>>
+	<<set $_torn = []>>
+	<<set $_topIntegrity = _top ? _top.integrity -= $stripintegrity : 1>>
+	<<set $_bottomIntegrity = _bottom ? _bottom.integrity -= $stripintegrity : 1>>
+	<<set $_bottomUnderIntegrity = _bottomUnder ? _bottomUnder.integrity -= $stripintegrity : 1>>
+	<<if $_topIntegrity lte 0>>
+		<<run $_torn.push(topNamePost())>>
+		<<set $_plural = _top.plural || 0>>
 	<</if>>
+	<<if $_bottomIntegrity lte 0>>
+		<<if !_outfit>><<run $_torn.push(bottomNamePost())>><</if>>
+		<<set $_plural = $_plural || _bottom.plural || 0>>
+	<</if>>
+	<<if $_bottomUnderIntegrity lte 0>>
+		<<run $_torn.push(bottomUnderNamePost())>>
+		<<set $_plural = $_plural || _bottomUnder.plural || 0>>
+	<</if>>
+	<<set $_plural = $_torn.length gt 1 ? 1 : $_plural || 0>>
 
-	<<if $worn.upper.name isnot "naked">>
-		<<if $worn.upper.integrity lte 0>><<upperruined>><<clothesruinstat>><<set $upperoff to 0>>
+	<<if $_torn.length gte 1>>
+		<span class="lewd">당신의 <<= $_torn.length gte 3 ? "옷이" : formatList($_torn)+"?i">> <<putpost $stripobject>>에 걸려서 당신의 몸에서 찢겨져 나간다.</span>
+		<<integritycheck no_text>>
+		<<exposure>>
+
+		<<if $exposed gte 1>>
+			당신은 <<nudityPost "을">> 의식하지 않을 수가 없다.<<nudityPostend>>
 		<</if>>
-	<</if>>
-	<<if $worn.lower.name isnot "naked">>
-		<<if $worn.lower.integrity lte 0>><<lowerruined>><<clothesruinstat>><<set $loweroff to 0>>
-		<</if>>
-	<</if>>
-	<<if $worn.under_lower.name isnot "naked">>
-		<<if $worn.under_lower.integrity lte 0>>
-			<<set $worn.under_lower.type.push("broken")>>
-			<<underlowerruined>><<clothesruinstat>><<set $underloweroff to 0>>
-		<</if>>
-	<</if>>
-	<<if $worn.under_upper.name isnot "naked">>
-		<<if $worn.under_upper.integrity lte 0>><<underupperruined>><<clothesruinstat>><<set $underupperoff to 0>>
-		<</if>>
-	<</if>>
-
-	<<exposure>>
-
-	<<if $exposed gte 1>>
-		당신은 <<nudityPost "을">> 의식하지 않을 수가 없다.<<nudityPostend>>
 	<</if>>
 <</widget>>
 
@@ -2806,26 +2762,27 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "lewdness">><<silently>>
+	/* consider refactoring */
 	<<exposure>>
 	<<genitals>>
 	<<set _genitals to _text_output>>
 	<<undertop>>
 	<<set _undertop to _text_output>>
-	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
+	<<if $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 1 and $worn.upper.exposed lte 1>>
 		<<set _text_output to '<span class="lewd">exposed _genitals</span>'>>
-	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.upper.exposed lte 1>>
+	<<elseif $worn.under_lower.exposed lte 0 and $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 1 and $worn.upper.exposed lte 1 and !$worn.under_lower.type.includes("covered")>>
 		<<set _text_output to '<span class="lewd">exposed $worn.under_lower.name</span>'>>
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
+	<<elseif $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.over_lower.exposed gte 1 and $worn.lower.exposed lte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
 		<<set _text_output to '<span class="lewd">lewdness</span>'>>
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1>>
+	<<elseif $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.lower.exposed lte 1 and !$worn.under_upper.type.includes("covered")>>
 		<<set _text_output to '<span class="lewd">exposed _undertop</span>'>>
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and $player.gender_appearance is "m" and $player.gender is "m">>
+	<<elseif $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and !$worn.under_lower.type.includes("covered") and $player.gender_appearance is "m" and $player.gender is "m">>
 		<<set _text_output to '<span class="lewd">exposed $worn.under_lower.name</span>'>>
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0>>
+	<<elseif $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed lte 0 and !$worn.under_lower.type.includes("covered") and !$worn.under_upper.type.includes("covered")>>
 		<<set _text_output to '<span class="lewd">exposed _undertop and $worn.under_lower.name</span>'>>
-	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $player.gender_appearance is "m" and $player.gender is "m">>
+	<<elseif $worn.under_lower.exposed gte 1 and $worn.lower.exposed gte 2 and $worn.over_lower.exposed gte 1 and $player.gender_appearance is "m" and $player.gender is "m">>
 		<<set _text_output to '<span class="lewd">exposed _genitals</span>'>>
-	<<elseif $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1>>
+	<<elseif $worn.over_upper.exposed gte 1 and $worn.upper.exposed gte 2 and $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1 and !$worn.under_upper.type.includes("covered")>>
 		<<if $player.penisExist and $player.vaginaExist>>
 			<<set _text_output to '<span class="lewd">exposed _undertop, _genitals</span>'>>
 		<<else>>
@@ -3083,26 +3040,32 @@
 	<<else>>
 		<<outfitChecks>>
 		<<set _clothing_strip_sequence to 0>>
-		<<if $worn.upper.exposed lte 1>>
-			<<if _middleOutfit is true>>
-				<<flaunting>> 당신은 당신의 <<worn_upper_name_ ul>> 아무렇게나 벗어, <<undertop_ gwa>> <<undies_ rul>> 노출시킨다.
-			<<else>>
-				<<flaunting>> 당신은 당신의 <<worn_upper_name_ ul>> 잡아당겨, <<undertop_ ul>> 노출시킨다.
-			<</if>>
-		<<set _clothing_strip_sequence += 1>><<upperstrip>><<exposure>>
+		<<if !_overNaked>>
+			<<flaunting>> 당신은 <<= $worn.over_lower.name isnot "naked" and !_overOutfit ? "<<top_name_ gwa>> <<bottom_name_ ul>>" : "<<top_name_ ul>>">> 벗어, <<= topUnderName("을") || "<<breasts_ rul>>">> 노출시킨다.
+			<<overupperstrip>><<overlowerstrip>>
+			<<set _clothing_strip_sequence += 1>><<upperstrip>><<exposure>>
 		<</if>>
-		<<if $worn.lower.exposed lte 1>>
+		<<if $worn.upper.exposed lte 1>>
+			<<= _clothing_strip_sequence is 0 ? "<<flaunting>>" : "그 다음으로">>
+			<<if _middleOutfit is true>>
+				당신은 <<worn_upper_name_ ul>> 아무렇게나 벗어, <<undertop_ gwa>> <<undies_ rul>> 노출시킨다.
+			<<else>>
+				당신은 <<worn_upper_name_ ul>> 잡아당겨, <<undertop_ ul>> 노출시킨다.
+			<</if>>
+			<<set _clothing_strip_sequence += 1>><<upperstrip>><<exposure>>
+		<</if>>
+		<<if $worn.lower.exposed lte 1 and _args[0] isnot "topless">>
 			<<if _clothing_strip_sequence is 0>>
-				<<flaunting>> 당신은 당신의 <<worn_lower_name_ ul>> 잡아당겨, <<undies_ rul>> 노출시킨다.
+				<<flaunting>> 당신은 <<worn_lower_name_ ul>> 잡아당겨, <<undies_ rul>> 노출시킨다.
 			<<else>>
 				당신의 <<worn_lower_name_ i>> 그 다음으로, <<undies_ rul>> 노출시킨다.
 			<</if>>
-		<<set _clothing_strip_sequence += 1>><<lowerstrip>><<exposure>>
+			<<set _clothing_strip_sequence += 1>><<lowerstrip>><<exposure>>
 		<</if>>
 		<<if $worn.under_upper.exposed lte 0 and _args[0] isnot "undies">>
 			<<if _underOutfit is true>>
 				<<if _clothing_strip_sequence is 0>>
-					<<flaunting>> 당신은 당신의 <<worn_under_upper_name_ ul>> 아무렇게나 벗어, <<breasts_ wa>> <<genitals_ rul>> 드러낸다.
+					<<flaunting>> 당신은 <<worn_under_upper_name_ ul>> 아무렇게나 벗어, <<breasts_ wa>> <<genitals_ rul>> 드러낸다.
 				<<elseif _clothing_strip_sequence is 1>>
 					당신의 <<worn_under_upper_name_ i>> 그 다음으로, <<breasts_ wa>> <<genitals_ rul>> 드러낸다.
 				<<else>>
@@ -3110,7 +3073,7 @@
 				<</if>>
 			<<else>>
 				<<if _clothing_strip_sequence is 0>>
-					<<flaunting>> 당신은 당신의 <<worn_under_upper_ ul>> 잡아당겨, <<breasts_ rul>> 드러낸다.
+					<<flaunting>> 당신은 <<worn_under_upper_ ul>> 잡아당겨, <<breasts_ rul>> 드러낸다.
 				<<elseif _clothing_strip_sequence is 1>>
 					당신의 <<worn_under_upper_name_ i>> 그 다음으로, <<breasts_ rul>> 드러낸다.
 				<<else>>
@@ -3121,20 +3084,20 @@
 					<</if>>
 				<</if>>
 			<</if>>
-		<<set _clothing_strip_sequence += 1>><<underupperstrip>><<exposure>>
+			<<set _clothing_strip_sequence += 1>><<underupperstrip>><<exposure>>
 		<</if>>
-		<<if $worn.under_lower.exposed lte 0 and _args[0] isnot "undies">>
+		<<if $worn.under_lower.exposed lte 0 and _args[0] isnot "undies" and _args[0] isnot "topless">>
 			<<if _clothing_strip_sequence is 0>>
-				<<flaunting>> 당신은 당신의 <<worn_under_lower_ ul>> 잡아당겨, <<genitals_ rul>> 내보인다.
+				<<flaunting>> 당신은 <<worn_under_lower_ ul>> 잡아당겨, <<genitals_ rul>> 내보인다.
 			<<elseif _clothing_strip_sequence is 1>>
 				당신의 <<worn_under_lower_name_ i>> 그 다음으로, <<genitals_ rul>> 내보인다.
 			<<else>>
 				마지막으로, 당신은 <<worn_under_lower_name_ ul>> 벗어, <<genitals_ rul>> 내보인다.
 			<</if>>
-		<<set _clothing_strip_sequence += 1>><<underlowerstrip>><<exposure>>
+			<<set _clothing_strip_sequence += 1>><<underlowerstrip>><<exposure>>
 		<</if>>
 	<</if>>
-	<<if !$worn.legs.type.includes("naked")>>
+	<<if !$worn.legs.type.includes("naked") and _args[0] isnot "topless">>
 		당신은 아직 <<worn_legs_name_ ul>> 착용하고 있으나, 이것은 왠지 당신이 훨씬 더 노출된 것 처럼 느끼게 한다.
 	<<else>>
 	<</if>>
@@ -3847,13 +3810,14 @@
 
 <<widget "pullupall">>
 	<<outfitChecks>>
+	<<set _openoverupper to $worn.over_upper.name isnot "naked" ? "<<worn_over_upper_name_ yi>> 앞자락을 연 후 " : "">>
 	<<if _middleOutfit>>
 		<<if _underOutfit>>
-			당신은 당신의 <<worn_upper_name_ gwa>> <<worn_under_upper_name_ ul>> 잡아내려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
+			당신은 당신의 _openoverupper<<worn_upper_name_ gwa>> <<worn_under_upper_name_ ul>> 잡아내려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
 		<<elseif !$worn.under_upper.type.includes("naked")>>
-			당신은 당신의 <<worn_upper_name_ ul>> 잡아내리고 <<worn_under_upper_name_ ul>> 잡아올려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
+			당신은 당신의 _openoverupper<<worn_upper_name_ ul>> 잡아내리고 <<worn_under_upper_name_ ul>> 잡아올려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
 		<<else>>
-			당신은 당신의 <<worn_upper_name_ ul>> 잡아내려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
+			당신은 당신의 _openoverupper<<worn_upper_name_ ul>> 잡아내려, <span class="lewd">당신의 <<breasts_ rul>> 드러낸다.</span>
 		<</if>>
 	<<elseif !$worn.upper.type.includes("naked")>>
 		<<if _underOutfit>>
@@ -3923,7 +3887,7 @@
 	<<outfitChecks>>
 	<<if _middleOutfit>>
 		내려
-	<<elseif !$worn.upper.type.includes("naked")>>
+	<<elseif !_top.type.includes("naked")>>
 		올려
 	<<else>>
 		벗어
@@ -3945,7 +3909,7 @@
 	<<outfitChecks>>
 	<<if _middleOutfit>>
 		내려
-	<<elseif !$worn.upper.type.includes("naked")>>
+	<<elseif !_top.type.includes("naked")>>
 		올려
 	<<else>>
 		벗어
@@ -4864,6 +4828,7 @@
 	<</if>>
 	<<print _text_output>>
 <</widget>>
+
 
 <<widget "farm_he">>
 	<<if $farm_work[_args[0]].monster>>

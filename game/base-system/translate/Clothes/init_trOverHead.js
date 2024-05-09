@@ -1,6 +1,6 @@
-:: Widgets trOverHead [widget nobr]
-<<widget "init_trOverHead">>
-    <<set setup.trClothes.over_head to [
+function init_trOverHead()
+{
+    setup.trClothes.over_head = [
         {
             index: 0,
             name: "naked",
@@ -18,5 +18,6 @@
             post: 1,
             description: "비를 막아준다."
         }
-    ]>>
-<</widget>>
+    ];
+}
+window.init_trOverHead = init_trOverHead;

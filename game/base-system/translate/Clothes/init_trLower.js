@@ -1,6 +1,6 @@
-:: Widgets trLower [widget nobr]
-<<widget "init_trLower">>
-    <<set setup.trClothes.lower to [
+function init_trLower()
+{
+    setup.trClothes.lower = [
         {
             index: 0,
             name: "naked",
@@ -1269,5 +1269,6 @@
            description: "트렌디하고 복고풍이다.",
            post: 1
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trLower = init_trLower;

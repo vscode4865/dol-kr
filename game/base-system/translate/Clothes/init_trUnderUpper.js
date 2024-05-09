@@ -1,6 +1,6 @@
-:: Widgets trUnderUpper [widget nobr]
-<<widget "init_trUnderUpper">>
-    <<set setup.trClothes.under_upper to [
+function init_trUnderUpper()
+{
+    setup.trClothes.under_upper = [
         {
             index: 0,
             name: "naked",
@@ -33,7 +33,7 @@
             name: "leotard",
             name_ko: "레오타드",
             variable: "leotard",
-            description: "몸에 딱 달라붙는다.",
+            description: "몸에 딱 달라붙는다. 당신의 상체를 가려주지만, 공공장소에서는 반바지를 입는 것이 좋을 것이다.",
             post: 1
         },
 
@@ -60,7 +60,7 @@
             name: "skimpy leotard",
             name_ko: "노출 많은 레오타드",
             variable: "leotardskimpy",
-            description: "몸에 딱 달라붙는다. 허벅지를 과시한다.",
+            description: "몸에 딱 달라붙는다. 당신의 상체를 가려주지만, 허벅지와, 그 외에도 이것저것을 과시한다.",
             post: 1
         },
 
@@ -303,7 +303,7 @@
             name: "turtleneck leotard",
             name_ko: "터틀넥 레오타드",
             variable: "leotardturtleneck",
-            description: "몸에 딱 달라붙는다. 목을 보호해준다.",
+            description: "몸에 딱 달라붙는다. 당신의 상체를 가려주지만, 허벅지를 과시한다.",
             post: 1
         },
 
@@ -333,5 +333,6 @@
             description: "몸을 드러내는 수영복.",
             post: 1
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trUnderUpper = init_trUnderUpper;

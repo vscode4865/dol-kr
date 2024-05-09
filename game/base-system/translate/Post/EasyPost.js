@@ -617,6 +617,16 @@ const EasyPostMacroList = [
 	
 	{ name: "changingRoomGender_", orig_name: "changingRoomGenderPost", is_print: 0},
 
+	// outfitNamePost
+	{ name: "top_name", orig_name: "topNamePost", is_print: 0},
+	{ name: "top_name_", orig_name: "topNamePost", is_print: 0},
+	{ name: "topUnder_name", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "topUnder_name_", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "bottom_name", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottom_name_", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottomUnder_name", orig_name: "bottomUnderNamePost", is_print: 0},
+	{ name: "bottomUnder_name_", orig_name: "bottomUnderNamePost", is_print: 0},
+
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},

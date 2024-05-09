@@ -1,6 +1,6 @@
-:: Widgets trHandheld_init [widget nobr]
-<<widget "init_trHandheld">>
-	<<set setup.trClothes.handheld to [
+function init_trHandheld()
+{
+	setup.trClothes.handheld = [
 		{
 			index: 0,
 			name: "naked",
@@ -281,5 +281,6 @@
 			post: 0,
 			description: "음란한 액체로 더럽혀지지 않았다. 아마도.",
 		},	
-	]>>
-<</widget>>
+	];
+}
+window.init_trHandheld = init_trHandheld;

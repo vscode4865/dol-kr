@@ -1726,6 +1726,39 @@
         <<changingRoomGenderPost "을">>               // 남학생들을
     ```
 
+* outfitNamePost
+    ```
+    <<topNamePost>>
+        <<topNamePost post "sep">>
+		topNamePost(post,sep)
+
+        <<outfitCheck>> 이후 확인 가능한 _top.name 을 번역한다.
+		
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+        
+        e.g.
+        <<topNamePost "을">>               // <<SearchClothes _top.name "을">> 과 비슷하게 동작함
+    ```
+	
+    ```
+    <<topUnderNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _topUnder.name 을 번역한다.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
+	
+    ```
+    <<bottomNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _bottom.name 을 번역한다.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
+	
+    ```
+    <<bottomUnderNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _bottomUnder.name 을 번역한다.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
 
 * personPost
     ```
@@ -3086,6 +3119,12 @@
 		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>, <<temple_title_ (조사)>>, <<temple_Title_ (조사)>>, <<changingRoomGender_ (조사)>>,
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
+	
+	- outfitNamePost 계열
+		```
+		<<top_name (조사)>>, <<top_name_ (조사)>>, <<topUnder_name (조사)>>,  <<topUnder_name_ (조사)>>, <<bottom_name (조사)>>, <<bottom_name_ (조사)>>, <<bottomUnder_name (조사)>>,  <<bottomUnder_name_ (조사)>>,
+		```
+		
 	- personPost 계열
 		```
 		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<personname_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<persony_ (조사)>>, <<group_ (조사)>>,

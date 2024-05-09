@@ -1,6 +1,6 @@
-:: Widgets trOverLower [widget nobr]
-<<widget "init_trOverLower">>
-    <<set setup.trClothes.over_lower to [
+function init_trOverUpper()
+{
+    setup.trClothes.over_upper = [
         {
             index: 0,
             name: "naked",
@@ -12,8 +12,8 @@
 
         {
             index: 1,
-            name: "froggy skirt",
-            name_ko: "개구리 치마",
+            name: "froggy coat",
+            name_ko: "개구리 코트",
             variable: "froggy",
             post: 1,
             description: "비를 막아준다."
@@ -27,5 +27,6 @@
             post: 0,
             description: "오래 남아있진 않을 것이다."
         },
-    ]>>
-<</widget>>
+    ];
+}
+window.init_trOverUpper = init_trOverUpper;

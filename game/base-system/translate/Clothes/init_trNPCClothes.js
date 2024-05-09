@@ -1,39 +1,44 @@
-:: Widgets trNpcClothes_init [widget nobr]
-<<widget "init_trNpcClothes">>
-	<<if setup.trNpcClothes is undefined>>
-		<<set setup.trNpcClothes to {}>>
-		<<init_trNpcClothesUpper>>
-		<<init_trNpcClothesLower>>
-		<<init_trNpcClothesSet>>
+function init_trNpcClothes()
+{
+	if (!setup.trNpcClothes)
+	{
+		setup.trNpcClothes = {};
+		init_trNpcClothesUpper();
+		init_trNpcClothesLower();
+		init_trNpcClothesSet();
 
-		<<set $_trClothesAllNameIndex to {}>>
-		<<set $_trClothesParts to Object.getOwnPropertyNames(setup.trNpcClothes)>>
-		<<for $_i, $_trClothesType range $_trClothesParts>>
-			<<set $_desc to false>>
-			<<set $_trClothesNameIndex to {}>>
-			<<if $_trClothesType eq "set">>
-				<<set $_trClothesDescIndex to {}>>
-				<<set $_desc to true>>
-			<</if>>
-			<<for $_j, $_trClothesData range setup.trNpcClothes[$_trClothesType]>>
-				<<set $_trClothesNameIndex[$_trClothesData.name] to $_trClothesData>>
-				<<if $_desc is true>>
-					<<set $_trClothesDescIndex[$_trClothesData.desc] to $_trClothesData>>
-				<</if>>
-			<</for>>
-			<<set setup.trNpcClothes[$_trClothesType].nameIndex to $_trClothesNameIndex>>
-			<<if $_desc is true>>
-				<<set setup.trNpcClothes[$_trClothesType].descIndex to $_trClothesDescIndex>>
-			<</if>>
-			<<run Object.assign($_trClothesAllNameIndex, $_trClothesNameIndex)>> 
-		<</for>>
-		<<set setup.trNpcClothes.nameIndex to $_trClothesAllNameIndex>>
-	<</if>>
-<</widget>>
-
-<<widget "init_trNpcClothesUpper">>
-	<<if setup.trNpcClothes.upper is undefined>>
-		<<set setup.trNpcClothes.upper to [
+		let trClothesAllNameIndex = {};
+		let trClothesParts = Object.getOwnPropertyNames(setup.trNpcClothes);
+		let desc, trClothesNameIndex, trClothesDescIndex;
+		for (const trClothesType of trClothesParts)
+		{
+			desc = false;
+			trClothesNameIndex = {};
+			if (trClothesType == "set")
+			{
+				trClothesDescIndex = {};
+				desc = true;
+			}
+			for (const trClothesData of setup.trNpcClothes[trClothesType])
+			{
+				trClothesNameIndex[trClothesData.name] = trClothesData;
+				if (desc)
+					trClothesDescIndex[trClothesData.desc] = trClothesData;
+			}
+			setup.trNpcClothes[trClothesType].nameIndex = trClothesNameIndex;
+			if (desc)
+				setup.trNpcClothes[trClothesType].descIndex = trClothesDescIndex;
+			Object.assign(trClothesAllNameIndex, trClothesNameIndex);
+		}
+		setup.trNpcClothes.nameIndex = trClothesAllNameIndex;
+	}
+}
+window.init_trNpcClothes = init_trNpcClothes;
+function init_trNpcClothesUpper()
+{
+	if (!setup.trNpcClothes.upper)
+	{
+		setup.trNpcClothes.upper = [
 			{name:"shirt",                   name_ko:"셔츠",	post: 1},
 			{name:"naked",                   name_ko:"알몸",	post: 0},
 			{name:"school shirt",            name_ko:"교복 셔츠",	post: 1},
@@ -128,12 +133,15 @@
 			{name:"vampire jacket",          name_ko:"뱀파이어 자켓",	post: 0},
 			{name:"witch dress",             name_ko:"마녀 드레스",	post: 1},
 			{name:"flowing robe",            name_ko:"흘러내리는 로브",	post: 1}
-		]>>
-	<</if>>
-<</widget>>
-<<widget "init_trNpcClothesLower">>
-	<<if setup.trNpcClothes.lower is undefined>>
-		<<set setup.trNpcClothes.lower to [
+		];
+	}
+}
+
+function init_trNpcClothesLower()
+{
+	if (!setup.trNpcClothes.lower)
+	{
+		setup.trNpcClothes.lower = [
 			{name:"naked",                   name_ko:"알몸",	post: 0},
 			{name:"trousers",                name_ko:"바지",	post: 1},
 			{name:"skirt",                   name_ko:"스커트",	post: 1},
@@ -217,13 +225,15 @@
 			{name:"vampire trousers",        name_ko:"뱀파이어 바지",	post: 1},
 			{name:"witch dress skirt",       name_ko:"마녀 드레스 스커트",	post: 1},
 			{name:"flowing robe",            name_ko:"흘러내리는 로브",	post: 1}
-		]>>
-	<</if>>
-<</widget>>
+		];
+	}
+}
 
-<<widget "init_trNpcClothesSet">>
-	<<if setup.trNpcClothes.set is undefined>>
-		<<set setup.trNpcClothes.set to [
+function init_trNpcClothesSet()
+{
+	if (!setup.trNpcClothes.set)
+	{
+		setup.trNpcClothes.set = [
 			{name: "naked",               name_ko: "알몸",	post: 0,	desc: "naked"},
 			{name: "maleDefault",         name_ko: "셔츠와 바지",	post: 1,	desc: "shirt and trousers"},
 			{name: "femaleDefault",       name_ko: "셔츠와 스커트",	post: 1,	desc: "shirt and skirt"},
@@ -363,6 +373,6 @@
 			/*--------------------------------------------------------------------------------------------------------------------------------------------------*/
 			{name: "maleDefault",         name_ko: "셔츠와 바지",	post: 1,	desc: "shirt and trousers"},
 			{name: "femaleDefault",       name_ko: "셔츠와 스커트",	post: 1,	desc: "shirt and skirt"}
-		]>>
-	<</if>>
-<</widget>>
+		];
+	}
+}

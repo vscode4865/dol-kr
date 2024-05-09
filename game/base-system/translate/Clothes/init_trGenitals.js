@@ -1,6 +1,6 @@
-:: Widgets trGenitals [widget nobr]
-<<widget "init_trGenitals">>
-    <<set setup.trClothes.genitals to [
+function init_trGenitals()
+{
+    setup.trClothes.genitals = [
         {
             index: 0,
             name: "naked",
@@ -90,5 +90,6 @@
             post: 1,
             description: "애널 보호대."
         },
-    ]>>
-<</widget>>
+    ];
+}
+window.init_trGenitals = init_trGenitals;
