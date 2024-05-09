@@ -54,6 +54,8 @@ function trinit_NPCdescAdj()
             "graceful": "품위있어 보이는",
             "plump":"통통한",
             "wide-eyed":"눈이 큰",
+			"chubby":"토실토실한",
+			"heavyset": "땅딸막한",
             "toned":"탄탄한",
             "bulky":"덩치 큰",
             "broad":"어깨가 넓은",
