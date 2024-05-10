@@ -1733,6 +1733,7 @@
 		topNamePost(post,sep)
 
         <<outfitCheck>> 이후 확인 가능한 _top.name 을 번역한다.
+		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 JS 함수를 사용할것 (topUnderNamePost() 등)
 		
         선택사항
         - post: 번역결과의 뒤에 조사를 붙인다.
@@ -3122,6 +3123,7 @@
 	
 	- outfitNamePost 계열
 		```
+		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 해당하는 JS 함수를 사용할것 (topUnderNamePost() 등)
 		<<top_name (조사)>>, <<top_name_ (조사)>>, <<topUnder_name (조사)>>,  <<topUnder_name_ (조사)>>, <<bottom_name (조사)>>, <<bottom_name_ (조사)>>, <<bottomUnder_name (조사)>>,  <<bottomUnder_name_ (조사)>>,
 		```
 		
