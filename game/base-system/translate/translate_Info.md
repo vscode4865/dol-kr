@@ -21,6 +21,7 @@
         <<trClothes *part *clothes_name>>
         <<trClothes *part *clothes_name *name post "sep">>
         <<trClothes *part *clothes_name *[desc | description]>>
+		trClothes(*part, *clothes_name, *mode, post, sep)
 
         옷의 이름이나 설명을 번역한다.
 		butt_plug 도 여기서 번역될 수 있다. (내부적으로 sextoyPost 를 불러옴)
@@ -46,6 +47,7 @@
         <<trSearchClothes *clothes_name>>
         <<trSearchClothes *clothes_name *name post "sep">>
         <<trSearchClothes *clothes_name *[desc | description]>>
+		trSearchClothes(*clothes_name, *mode, post, sep)
 
         
         옷 타입의 지정 없이 번역한다.
@@ -70,6 +72,7 @@
     <<trNpcClothes>>
         <<trNpcClothes *part *[clothes_name|npcnum]>>
         <<trNpcClothes *part *[clothes_name|npcnum] post "sep">>
+		trNpcClothes(*part, *clothes_name, post, sep)
 
         trClothes 의 NPC 버전. 옷의 이름이나 설명을 번역한다.
 
@@ -1733,6 +1736,7 @@
 		topNamePost(post,sep)
 
         <<outfitCheck>> 이후 확인 가능한 _top.name 을 번역한다.
+		* 주의: <<topPost>>, <<bottomPost>> 와 혼동하지 말 것 (서로 다른 위젯임)
 		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 JS 함수를 사용할것 (topUnderNamePost() 등)
 		
         선택사항
@@ -1745,19 +1749,19 @@
 	
     ```
     <<topUnderNamePost>>
-        <<outfitCheck>> 이후 확인 가능한 _topUnder.name 을 번역한다.
+        <<outfitCheck>> 이후 확인 가능한 _topUnder.name 을 번역한다. 주의도 동일.
         + <<topNamePost>>와 용도 및 방식 같음. 생략
     ```
 	
     ```
     <<bottomNamePost>>
-        <<outfitCheck>> 이후 확인 가능한 _bottom.name 을 번역한다.
+        <<outfitCheck>> 이후 확인 가능한 _bottom.name 을 번역한다. 주의도 동일.
         + <<topNamePost>>와 용도 및 방식 같음. 생략
     ```
 	
     ```
     <<bottomUnderNamePost>>
-        <<outfitCheck>> 이후 확인 가능한 _bottomUnder.name 을 번역한다.
+        <<outfitCheck>> 이후 확인 가능한 _bottomUnder.name 을 번역한다. 주의도 동일.
         + <<topNamePost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -3123,6 +3127,8 @@
 	
 	- outfitNamePost 계열
 		```
+		* _top.name 을 <<top_name_ (조사)>> 형식으로 사용
+		* 주의: <<top_ (조사)>>, <<bottom_ (조사)>>와 혼동하지 말 것
 		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 해당하는 JS 함수를 사용할것 (topUnderNamePost() 등)
 		<<top_name (조사)>>, <<top_name_ (조사)>>, <<topUnder_name (조사)>>,  <<topUnder_name_ (조사)>>, <<bottom_name (조사)>>, <<bottom_name_ (조사)>>, <<bottomUnder_name (조사)>>,  <<bottomUnder_name_ (조사)>>,
 		```

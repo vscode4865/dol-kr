@@ -25,18 +25,22 @@ function outfitNamePost(part, outfit, post, sep)
 			
 			result = trClothes(layers[index], outfit.name, "name", post, sep);
 		}
+		else
+			T.trResult = `에러: ${part}NamePost: ${outfit.name}이 ${part}에 없음`;
 	}
+	else
+		T.trResult = `에러: outfitNamePost: part(${part}) 혹은 outfit(${outfit})이 없음`;
 	return result;
 }
 
 window.topNamePost = (post, sep) => outfitNamePost("top", T.top, post, sep);
-DefineMacroS("topNamePost", topNamePost);
+DefineMacroS("topNamePost", (post, sep) => topNamePost(post, sep) || T.trResult);
 
 window.topUnderNamePost = (post, sep) => outfitNamePost("top", T.topUnder, post, sep);
-DefineMacroS("topUnderNamePost", topUnderNamePost);
+DefineMacroS("topUnderNamePost",  (post, sep) => topUnderNamePost(post, sep) || T.trResult);
 
 window.bottomNamePost = (post, sep) => outfitNamePost("bottom", T.bottom, post, sep);
-DefineMacroS("bottomNamePost", bottomNamePost);
+DefineMacroS("bottomNamePost",  (post, sep) => bottomNamePost(post, sep) || T.trResult);
 
 window.bottomUnderNamePost = (post, sep) => outfitNamePost("bottom", T.bottomUnder, post, sep);
-DefineMacroS("bottomUnderNamePost", bottomUnderNamePost);
+DefineMacroS("bottomUnderNamePost",  (post, sep) => bottomUnderNamePost(post, sep) || T.trResult);
