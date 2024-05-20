@@ -346,10 +346,10 @@ function init_trFace()
         {
             index: 38,
             name: "islander mask",
-            name_ko: "섬주민 마스크",
+            name_ko: "섬사람 마스크",
             variable: "islander mask",
             post: 1,
-            description: "섬주민이 쓴다."
+            description: "섬사람이 쓴다."
         },
 
         {

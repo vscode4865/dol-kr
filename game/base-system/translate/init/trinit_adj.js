@@ -84,6 +84,22 @@ function trinit_NPCdescAdj()
 			
 			/* office */
             "office":"사무실",
+			
+			/* adultshop */
+			"shady":"수상한",
+			"shifty":"교활해 보이는",
+			"rotund":"퉁퉁한",
+			"slick-haired":"머리카락이 번들거리는",
+			"senior":"나이가 많은",
+			"flamboyant":"화려하게 입은",
+			"mouth-breathing":"입으로 숨쉬는",
+			"creepy":"기분나쁜",
+			"giggly":"낄낄거리는",
+			"boney":"뼈가 앙상한",
+			"handsome":"잘생긴",
+			"foppish":"멋쟁이",
+			"pretty":"예쁜",
+			"busty":"가슴이 큰",
         };
     }
 }
