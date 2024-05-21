@@ -167,7 +167,7 @@ function trNpcClothes(part, name, post, sep)
 		}
 
 		if (typeof(name) == "number")
-			name = setup.npcClothesSets.find(item => item.name === $NPCList[name].clothes.set).clothes[part].name;
+			name = setup.npcClothesSets.find(item => item.name === V.NPCList[name].clothes.set).clothes[part].name;
 
 		if (name)
 		{
