@@ -645,41 +645,22 @@
 
 <<widget "dancedrunktrip">>
 	당신은 <span class="purple">술이 취해</span> 발을 헛디뎌 비틀거리며, 테이블에서 떨어진다.
-	<<if (!$worn.upper.type.includes("naked") or !$worn.under_upper.type.includes("naked")) and random(1)>>
-		<<if !$worn.upper.type.includes("naked")>>
-			<<set $worn.upper.integrity -= 10>>
-			누군가가 당신을 잡아주지만, 당신의 <<worn_upper_name_ i>> 걸린다.
-			<<if $worn.upper.integrity lte 0>>
-				<span class="pink">당신은 찢어지는 소리를 들었고,</span> 아래를 쳐다보고 그 찢어진 잔해가 군중들 안으로 사라지는 것을 본다.
-				<<arousal 100>><<upperruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
-			<<else>>
-				당신이 다시 올라가는 동안 누군가가 당신의 가슴을 만진다.
-			<</if>>
-		<<else>>
-			<<set $worn.under_upper.integrity -= 10>>
-			누군가가 당신을 잡아주지만, 당신의 <<worn_under_upper_name_ i>> 걸린다.
-			<<if $worn.under_upper.integrity lte 0>>
-				<span class="pink">당신은 찢어지는 소리를 들었고,</span> 아래를 쳐다보고 그 찢어진 잔해가 군중들 안으로 사라지는 것을 본다.
-				<<arousal 100>><<underupperruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
-			<<else>>
-				당신이 다시 올라가는 동안 누군가가 당신의 가슴을 만진다.
-			<</if>>
-		<</if>>
-	<<elseif !$worn.lower.type.includes("naked")>>
-		<<set $worn.lower.integrity -= 10>>
-		누군가가 당신을 잡아주지만, 당신의 <<worn_lower_name_ i>> 걸린다.
-		<<if $worn.lower.integrity lte 0>>
+	<<outfitChecks>>
+	<<if (!_shirtless) and random(1)>>
+		<<set _top.integrity -= 10>>
+		누군가가 당신을 잡아주지만, 당신의 <<top_name_ i>> 어딘가에 걸린다.
+		<<if _top.integrity lte 0>>
 			<span class="pink">당신은 찢어지는 소리를 들었고,</span> 아래를 쳐다보고 그 찢어진 잔해가 군중들 안으로 사라지는 것을 본다.
-			<<arousal 100>><<lowerruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
+			<<arousal 100>><<if _top is $worn.over_upper>><<overupperruined>><<else>><<upperruined>><</if>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
 		<<else>>
-			당신이 다시 올라가는 동안 누군가가 당신의 <<bottom_ ul>> 만진다.
+			당신이 다시 올라가는 동안 누군가가 당신의 가슴을 만진다.
 		<</if>>
-	<<elseif !$worn.under_lower.type.includes("naked")>>
-		<<set $worn.under_lower.integrity -= 10>>
-		누군가가 당신을 잡아주지만, 당신의 <<worn_under_lower_name_ i>> 걸린다.
-		<<if $worn.under_lower.integrity lte 0>>
+	<<elseif !_bottomless>>
+		<<set _bottom.integrity -= 10>>
+		누군가가 당신을 잡아주지만, 당신의 <<bottom_name_ i>> 어딘가에 걸린다.
+		<<if _bottom.integrity lte 0>>
 			<span class="pink">당신은 찢어지는 소리를 들었고,</span> 아래를 쳐다보고 그 찢어진 잔해가 군중들 안으로 사라지는 것을 본다.
-			<<arousal 100>><<underlowerruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
+			<<arousal 100>><<if _bottom is $worn.over_lower>><<overlowerruined>><<else>><<lowerruined>><</if>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
 		<<else>>
 			당신이 다시 올라가는 동안 누군가가 당신의 <<bottom_ ul>> 만진다.
 		<</if>>
@@ -704,7 +685,8 @@
 <</widget>>
 
 <<widget "dancestrip">>
-	<<if $worn.under_lower.name isnot "naked" and ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<outfitChecks>>
+	<<if $worn.under_lower.name isnot "naked" and _skirtExposed>>
 		당신이 몸을 빙그르르 돌리자, 치마가 펄럭인다. 품위가 결여된 청중이 기회를 노리다 <<trClothes "under_lower" $worn.under_lower.name "name" "을">>_trResult 잡고 달려든다.
 		<<set $danceevent to "skirtstrip">><<molested>>
 	<<elseif $worn.over_lower.name isnot "naked">>

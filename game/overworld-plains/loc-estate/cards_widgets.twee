@@ -83,7 +83,7 @@ End conditions
    Bets: allowed to take the pot
    End Location: Estate
    Clothes: allowed to buy back (all states)
-   Reason: Wren realizes they've done a ton of favours already and didn't get much from you, so they must feel defeated enough to let you take the clothes you've lost back
+   Reason: Wren realises they've done a ton of favours already and didn't get much from you, so they must feel defeated enough to let you take the clothes you've lost back
 
 
 
@@ -501,7 +501,7 @@ more suspicion if you actually lose the round. -->
 	<<set $_lostGame to _args[0]>>
 	<!-- no decay if suspicion was gained (through seeing new cards or peeking at dealer card) -->
 	<<if !$blackjack.susRoseInThisRound and $estatePersistent.suspicion gte 1>>
-		<<set $_suspicionDecay to -(($_lostGame ? 4 : 2) + $NPCName[$NPCNameList.indexOf("Wren")].love * 0.05)>>
+		<<set $_suspicionDecay to -(($_lostGame ? 4 : 2) + C.npc.Wren.love * 0.05)>>
 
 		<<if $_lostGame>>
 			You've lost this round, fair and square.<<llsuspicion>>
@@ -581,7 +581,7 @@ more suspicion if you actually lose the round. -->
 		<<set _base_chance to 1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min, $estate._plead_rng_max)>>
 		<<set _base_chance_str to formatDecimals(_base_chance*100, 1)>>
 		<!-- 0-200 points for love (proportionate to 0,50 love) (as in 50 love is always full 200 points)-->
-		<<set _extra_wren to lerp(Math.clamp($NPCName[$NPCNameList.indexOf("Wren")].love / 50, 0, 1), 0, 250)>>
+		<<set _extra_wren to lerp(Math.clamp(C.npc.Wren.love / 50, 0, 1), 0, 250)>>
 		<<set $estate._base_plead_points += _extra_wren>>
 		<<set _extra_wren_chance_str to formatDecimals((1-inverseLerp($estate._plead_required_points, $estate._plead_rng_min + _extra_wren, $estate._plead_rng_max + _extra_wren) - _base_chance)*100, 1)>>
 		<!-- 0-200 points for English (proportionate to 0,1000 english)-->
@@ -630,7 +630,7 @@ more suspicion if you actually lose the round. -->
 
 		<<link [[Run|Estate Cards Cheating Run]]>><<set $estatePersistent.cur_apologised to false>><<npcincr Wren love -10>><</link>><<athleticsdifficulty 500 1000>><<llllove>>
 		<br>
-		<<link [[Plead|Estate Cards Cheating Plead]]>><<set $estatePersistent.cur_apologised to true>><<trauma 15>><<stress 15>><<npcincr Wren love 3>><</link>><<ggtrauma>><<ggstress>><<glove>>
+		<<link [[애원한다|Estate Cards Cheating Plead]]>><<set $estatePersistent.cur_apologised to true>><<trauma 15>><<stress 15>><<npcincr Wren love 3>><</link>><<ggtrauma>><<ggstress>><<glove>>
 			<<if $checkstyle is "skillname">>
 				| <span class="lblue">Forgiveness Chance</span>
 			<<else>>
@@ -936,7 +936,7 @@ more suspicion if you actually lose the round. -->
 	<<if $estatePersistent.suspicion gt 0>>
 		<br><br>
 		Suspicion:
-		<<statbar $estatePersistent.suspicion 100 right>>
+		<<statbar 0 $estatePersistent.suspicion 100>>
 		<<set _consts__danger_zone_suspicion to 70>>
 		<<if $estatePersistent.suspicion gt _consts__danger_zone_suspicion>>
 			<br>
@@ -1081,14 +1081,14 @@ more suspicion if you actually lose the round. -->
 	<</if>>
 	<<fameexhibitionism 7>>
 
-	They lift you, and carry you naked through the estate, <<if $estate.chaos gte 100>>through all the chaos you've caused, <</if>> towards a small barn.
+	They lift you, and carry you naked through the estate, <<if $estate.chaos gte 100>>through all the chaos you've caused,<</if>> towards a small barn.
 	<br><br>
-	A couple of guard see you coming and smirk. Wren hands you to the guards.
+	A couple of guards see you coming and smirk. Wren hands you to the guards.
 	<br><br>
 	<<leash 21>>
 	One of the guards goes into the barn and comes back with a collar and chain, which are then fixed around your neck. The guards tug on the attached chain, forcing you along.
 	<br><br>
-	<<if $NPCName[$NPCNameList.indexOf('Wren')].love gte 20>>
+	<<if C.npc.Wren.love gte 20>>
 		"Looking forward to playing with you again," Wren says. "I know you'll be back soon, one way or another."
 	<<else>>
 		"Don't cause them too much trouble," Wren says.
@@ -1477,7 +1477,7 @@ more suspicion if you actually lose the round. -->
 				<span class="lewd">당신은 당신의 헐벗은 <<bottomPost "과">> <<genitalsPost "에">> 상관하지 않는다. 탁자 아래에 있잖은가.</span>
 				<br>
 			<</if>>
-		<<elseif $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1>>
+		<<elseif $worn.over_lower.exposed gte 1 and $worn.lower.exposed gte 1 and !$worn.under_lower.type.includes("covered")>>
 			<<if $uncomfortable.underwear is true>>
 				<span class="lewd">허리 아래로는 이렇게 거의 아무것도 입지 않는 것은 당신을 불편하게 한다.</span>
 				<br>
@@ -2045,10 +2045,10 @@ more suspicion if you actually lose the round. -->
 		<br><br>
 	<</if>>
 	<<if $estate.cards.desire is "chastity">>
-		<<getouticon>><<link [[떠난다|Estate Cards Leave]]>><</link>>
+		<<getouticon>><<link [[떠난다|Estate Cards Leave]]>><<handheldon>><</link>>
 		<br>
 	<<else>>
-		<<link [[Play (0:01)|Estate Blackjack]]>><<pass 1>><</link>>
+		<<link [[Play (0:01)|Estate Blackjack]]>><<pass 1>><<handheldon>><</link>>
 		<<if $estate.cards.state is "ride">>
 			<span class="purple">Losing may increase arousal.</span> <<cards_virginity_all_warnings>>
 		<</if>>
@@ -2056,7 +2056,7 @@ more suspicion if you actually lose the round. -->
 			<span class="red">당신이 진다면, 렌은 당신의 첫 키스를 받아가게 됩니다.</span>
 		<</if>>
 		<br>
-		<<getouticon>><<link [[떠난다|Estate Cards Leave]]>><<npcincr Wren love -1>><</link>><<llove>>
+		<<getouticon>><<link [[떠난다|Estate Cards Leave]]>><<npcincr Wren love -1>><<handheldon>><</link>><<llove>>
 		<br>
 	<</if>>
 <</widget>>
@@ -2143,13 +2143,13 @@ more suspicion if you actually lose the round. -->
 <<widget "cards_lap_clothes">>
 	<<if $estate.cards.wren_bottoms is 1>>
 		<<if $estate.cards.wren_under_bottoms is 1>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				<<He_ nun>> <<his_ yi>> 치마를 들어올리고 팬티를 벗는다.
 			<<else>>
 				<<He_ nun>> <<his_ yi>> 바지 지퍼를 내리고 팬티를 벗는다.
 			<</if>>
 		<<else>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				<<He_ nun>> <<his_ yi>> 치마를 들어올린다.
 			<<else>>
 				<<He_ nun>> <<his_ yi>> 바지 지퍼를 내린다.
@@ -2157,13 +2157,13 @@ more suspicion if you actually lose the round. -->
 		<</if>>
 	<<else>>
 		<<if $estate.cards.wren_under_bottoms is 1>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				<<He_ nun>> <<his_ yi>> 팬티를 벗는다.
 			<<else>>
 				<<He_ nun>> <<his_ yi>> 팬티를 벗는다.
 			<</if>>
 		<<else>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				렌은 당신에게 유감을 표한다.
 			<<else>>
 				렌은 당신에게 유감을 표한다.
@@ -2175,7 +2175,7 @@ more suspicion if you actually lose the round. -->
 <<widget "cards_lap_clothes_intro">>
 	<<if $estate.cards.wren_bottoms is 1>>
 		<<if $estate.cards.wren_under_bottoms is 1>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				렌은 <<his_ yi>> 치마를 들어올리고 팬티를 벗어,
 			<<else>>
 				렌은 <<his_ yi>> 바지 지퍼를 내리고 팬티를 벗어,
@@ -2186,7 +2186,7 @@ more suspicion if you actually lose the round. -->
 				<span class="lewd"><<his_ yi>> <<penisdesc_ rul $NPCList[0].penisdesc>> 드러낸다.</span>
 			<</if>>
 		<<else>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				Wren hitches up <<his>> skirt,
 			<<else>>
 				Wren unzips <<his>> fly,
@@ -2199,7 +2199,7 @@ more suspicion if you actually lose the round. -->
 		<</if>>
 	<<else>>
 		<<if $estate.cards.wren_under_bottoms is 1>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 				렌은 <<his_ yi>> 팬티를 벗어,
 			<<else>>
 				렌은 <<his_ yi>> 팬티를 벗어,
@@ -2210,7 +2210,7 @@ more suspicion if you actually lose the round. -->
 				<span class="lewd"><<his_ yi>> <<penisdesc_ rul $NPCList[0].penisdesc>> 드러낸다.</span>
 			<</if>>
 		<<else>>
-			<<if $NPCName[$NPCNameList.indexOf("Wren")].pronoun is "f">>
+			<<if C.npc.Wren.pronoun is "f">>
 
 			<<else>>
 

@@ -49,10 +49,10 @@
 		<<elseif $whitney_toilet is 1 and C.npc.Whitney.state is "active" and $rng gte 51 and $daily.whitney.toiletCheck isnot 1>>
 			<<set $daily.whitney.toiletCheck to 1>>
 			<<if $player.penisExist and $player.vaginaExist>>
-				<<set _correctBathroom to ($NPCName[$NPCNameList.indexOf("Whitney")].pronoun is "m" ? "boys" : "girls")>>
+				<<set _correctBathroom to (C.npc.Whitney.pronoun is "m" ? "boys" : "girls")>>
 			<</if>>
 			<<if $changingRoomGender is "boys" and $player.gender is "m" or $changingRoomGender is "girls" and $player.gender is "f" or ($player.penisExist and $player.vaginaExist) and $changingRoomGender isnot _correctBathroom>>
-				<<if $player.gender is $NPCName[$NPCNameList.indexOf("Whitney")].pronoun>>
+				<<if $player.gender is C.npc.Whitney.pronoun>>
 					<<npc Whitney>><<person1>>
 					당신은 휘트니와 마주친다. <<HisPost "의">> 표정이 어두워진다. "내가 다시 여기에 얼굴을 들이밀면 어떻게 된다고 그랬었지?" <<hePost "이">> 말한다. "아무래도 두들겨 패줘야 말을 알아듣겠군."
 					<br><br>
@@ -78,7 +78,7 @@
 					<br>
 				<</if>>
 			<<else>>
-				<<if $player.gender is $NPCName[$NPCNameList.indexOf("Whitney")].pronoun>>
+				<<if $player.gender is C.npc.Whitney.pronoun>>
 					휘트니의 친구 몇 명이 화장실에 들어온다. 그들은 웃으며 서로 툭툭 친다. 위협적인 행동은 하지 않으나, 당신을 내버려 두려고는 하지 않는다.
 					<br><br>
 					"그냥 네가 <<if $player.gender is "m">>앉아서 오줌을 싸는지<<else>>소변기 쓰는 법을 아는지<</if>> 확인하러 온 것 뿐이야. 휘트니의 명령이거든."
@@ -94,7 +94,7 @@
 					<</if>>
 				<<else>>
 					<<npc Whitney>><<person1>>
-					당신은 휘트니와 마주친다. <<HePost "은">> 당신을 여기서 보게 되어 즐거운듯 하다.
+					당신은 휘트니와 마주친다. <<HePost "은">> 당신을 여기서 보게 되어 즐거운 듯 하다.
 					<<if random(1, 100) gte 51>>
 						"마침 잘됐네, 걸레야." <<hePost "이">> 말한다. <<HisPost "의">> 친구들이 함께 있다. <<HePost "은">> 당신의 어깨를 붙잡아 변기칸으로 밀어넣으려 한다.
 						<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
@@ -120,6 +120,19 @@
 					<</if>>
 				<</if>>
 			<</if>>
+		<<elseif $watersportsdisable is "f" and C.npc.Kylar.state is "active" and $kylarenglish gte 1 and C.npc.Kylar.lust gte 60 and $rng gte 51 and $daily.kylar.toilets isnot 1>>
+			<<set $daily.kylar.toilets to 1>>
+			<<npc Kylar>><<person1>>
+
+			당신이 <<changingRoomGenderPost>> 화장실로 들어가자, 뒤에서 발소리가 들린다. 당신은 <<if $submissive lte 850>>뒤로 돌고 카일라가 보인다<<else>>손 하나가 당신의 어깨에 닿을 때 까지 멈춰선다. 카일라다<</if>>. <<if $NPCList[0].pronouns.boy + "s" isnot $changingRoomGender>>당신은 <<hes_ ga>> 여기서 무엇을 하는지 확신하지 못한다.<</if>>
+			<br><br>
+
+			"나-나는, 어, 화장실을 쓰려고," <<he_ ga>> 설명한다. 당신이 대답하지 않고 있자, <<he_ ga>> 말을 잇는다. "너도 같이 갈래?"
+			<br><br>
+
+			/* may want to make this promisc 2 if Kylar is not selected as an LI */
+			<<link [[카일라와 함께 간다 (0:05)|School Toilets Kylar]]>><<npcincr Kylar lust 1>><</link>><<glust>><br>
+			<<link [[밀쳐낸다|School Toilets Kylar Push]]>><<npcincr Kylar love -1>><<npcincr Kylar rage 1>><</link>><<llove>><<gksuspicion>>
 		<<else>>
 			<<if $changingRoomGender is "boys">>
 				<<generateym1>><<generateym2>><<generateym3>>
@@ -128,7 +141,7 @@
 					<br><br>
 					<<link [[사과하고 나간다|School Toilets Encounter]]>><<set $phase to 1>><<stress 2>><</link>><<gstress>>
 					<br>
-					<<if maleChance() isnot 0>>
+					<<if maleChance() isnot 0 and random(1, 4) gte 4>>
 						<<link [[추파를 던진다|School Toilets Encounter]]>><<set $phase to 2>><</link>><<promiscuous1>>
 						<br>
 						<<if $promiscuity gte 15>>
@@ -150,7 +163,7 @@
 					<br><br>
 					<<link [[사과하고 나간다|School Toilets Encounter]]>><<set $phase to 1>><<stress 2>><</link>><<gstress>>
 					<br>
-					<<if maleChance() isnot 100>>
+					<<if maleChance() isnot 100 and random(1, 4) gte 4>>
 						<<link [[추파를 던진다|School Toilets Encounter]]>><<set $phase to 2>><</link>><<promiscuous1>>
 						<br>
 						<<if $promiscuity gte 15>>
@@ -254,7 +267,7 @@
 		<<link [[거절한다|School Fame Blackmail Refuse]]>><<detention 1>><</link>><<gdelinquency>>
 		<br>
 
-	<<elseif Time.days gte 7 and $NPCName[$NPCNameList.indexOf("Kylar")].init isnot 1 and $kylarignored isnot 1>>
+	<<elseif Time.days gte 7 and C.npc.Kylar.init isnot 1 and $kylarignored isnot 1>>
 		<<npc Kylar>><<initnpc Kylar>><<generatey2>><<generatey3>>누군가의 가방이 눈 앞에 떨어진다. 그 바람에 내용물이 빠져나와, 펜과 책이 바닥에 흩어진다. 모퉁이를 돌자, 가방의 주인인 <<person1>><<nnpc_gendery_ ga "Kylar">> 목덜미를 붙들린 채로 들어올려져 사물함 쪽에 밀어붙여진 상태다. <<HePost "은">> 자신을 붙잡고 있는 <<person2>><<personPost "을">> 발로 차나, <<hePost "은">> 그냥 웃기만 한다. "그게 전부야?" <<hePost "이">> 말한다. <<HePost "은">> 괴롭힘 당하는 <<nnpc_gendery_ yi "Kylar">> 헝클어진 검은 머리를 다른 손으로 붙잡는다. "운 좋은줄 알아. 널 다치게 한다면 그것만큼 멍청한 짓도 없을 테니까."
 		<br><br>
 
@@ -263,12 +276,12 @@
 
 		<<link [[개입한다|Kylar Intro Intervene]]>><<npcset Kylar state "active">><<status -10>><<npcincr Kylar love 1>><</link>><<glove>><<lcool>>
 		<br>
-		<<link [[지켜보기만 하나 끝나고 나서 다들 괜찮은지 확인한다|Kylar Intro Help]]>><<npcset Kylar state "active">><<npcincr Kylar love 1>><</link>><<glove>>
+		<<link [["지켜보다가 나중에 " + $NPCList[0].pronouns.he + " 괜찮은지 확인한다"|Kylar Intro Help]]>><<npcset Kylar state "active">><<npcincr Kylar love 1>><</link>><<glove>>
 		<br>
 		<<link [[무시한다|Kylar Intro Ignore]]>><<set $kylarignored to 1>><</link>>
 		<br>
 
-	<<elseif Time.days gte 14 and $kylarignored is 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "active" and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+	<<elseif Time.days gte 14 and $kylarignored is 1 and C.npc.Kylar.state isnot "active" and C.npc.Kylar.state isnot "prison">>
 		<<npcset Kylar state "active">>
 
 		<<npc Kylar>><<person1>>당신은 모퉁이를 돌다가 한 <<nnpc_gendery_ wa "Kylar">> 마주친다. <<HePost "은">> 당신을 올려다보며 노려보려다가, 곧 얼굴이 풀어지며 입이 벌어진다.
@@ -295,7 +308,7 @@
 		<<set $bullytimer to 0>>
 		<<schoolbully>>
 
-	<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $kylar.timer.halls gte $rng>>
+	<<elseif C.npc.Kylar.state is "active" and $kylar.timer.halls gte $rng>>
 		<<set $kylar.timer.halls to 0>>
 		<<kylarhallways>>
 
@@ -893,7 +906,8 @@
 
 <<widget "lockerevent">>
 	<<generatey1>><<generatey2>><<person1>>
-	<<if $cool gte 240 or $worn.under_lower.type.includes("naked")>>
+	<<outfitChecks>>
+	<<if $cool gte 240 or $worn.under_lower.type.includes("naked") or _overOutfit>>
 		While walking through the halls you feel a tug on your $worn.lower.name.
 		You turn to see the culprit, a <<person>> hooking the fabric inside a nearby locker. <<He>> slams the locker door shut.<<stress 5>><<gstress>>
 		<br><br>
@@ -927,12 +941,15 @@
 	<</if>>
 	<<set _physiquemax to $physiquemax * 1.05>>
 	<<link [[Struggle free (0:01)|Hallways Locker Struggle Free Attempt]]>><<pass 1>><</link>><<physiquedifficulty 2000 _physiquemax>>
-	<<if $worn.lower.type.includes("naked") and $exhibitionism gte 35>>
+	<<if _overOutfit and !_middleNaked and !_underNaked>>
 		<br>
-		<<link [[Strip (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist3>>
+		<<link [[벌거벗는다 (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>>
+	<<elseif $worn.lower.type.includes("naked") and $exhibitionism gte 35>>
+		<br>
+		<<link [[벌거벗는다 (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist3>>
 	<<elseif !$worn.lower.type.includes("naked") and $exhibitionism gte 15>>
 		<br>
-		<<link [[Strip (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist1>>
+		<<link [[벌거벗는다 (0:01)|Hallways Strip Locker Clothing]]>><<pass 1>><</link>><<exhibitionist1>>
 	<</if>>
 <</widget>>
 
@@ -960,7 +977,7 @@
 <<widget "eventscourtyard">>
 	<!-- Jimmy TODO: Convert this to use the macros: <<cleareventpool>>, <<addinlineevent>> and <<runeventpool>>. -->
 	<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
-		<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
+		<<set _whitney to C.npc.Whitney>>
 		<<if $exposed gte 1>>
 			몇몇 학생들이 당신이 고개를 내민 것을 보고는 손을 흔든다. 당신도 <<nervously>> 손을 흔든다. 심장이 미친듯이 뛴다. 아무래도 뭔가 이상한 것은 눈치채지 못한 것 같다.
 			<<gstress>><<stress 6>><<garousal>><<arousal 600>>
@@ -976,7 +993,7 @@
 
 			휘트니가 다가와, 당신을 벽 쪽으로 밀친다. <<HePost "은">> 평소보다도 더 화가 난 것 같다.
 			<br><br>
-			<<takeKissVirginity "Whitney" "loveInterest">>
+			<<takeKissVirginity "Whitney" "loveInterest">><br>
 			"멍청한 <<slutPost>> 같으니," <<hePost "이">> 말한다. <<HePost "은">> 양팔로 당신을 고정시킨다. "이걸 원하고 있었잖아. 거부할 생각 마." <<HePost "은">> 놀라우리만치 다정하게 키스한다. "넌 이제부터 내 <<girlfriend_ iya>>. 기뻐하라고." <<HePost "은">> 다시 키스하며, 이번에는 당신의 입술을 문다. <<HePost "은">> 당신을 밀어낸 뒤 돌아보지 않고 떠나간다.
 			<<npcincr Whitney lust 5>><<glust>>
 			<br><br>
@@ -1005,7 +1022,7 @@
 			인근에 모여있던 학생들에게서 웃음소리가 들려온다. <<person1>><<personPost "이">> 핸드폰을 내밀고 있다. 친구들이 <<hisPost "의">> 뒤에 몰려든다.
 			<br>
 
-			"누군지 알 것 같아." <<person2>><<personPost "이">> 말한다. "이 학교 다니는 애잖아."
+			"<<phim_ i>> 누군지 알 것 같아." <<person2>><<personPost "이">> 말한다. "<<pShe_ nun>> 이 학교 다니는 애잖아."
 			<br><br>
 
 			당신은 까치발을 서서 다른 학생들 너머로 쳐다본다. 한 사람이 고가 횡단보도의 계단을 걸어올라가는 영상이 재생된다. 알몸으로 말이다. <span class="lewd">당신이다.</span>
@@ -1018,7 +1035,7 @@
 			당신은 떠나려 하나, <<person2>><<personPost "이">> 고개를 돌렸다가 당신을 본다. "쟤야!" <<hePost "이">> 외친다. 다른 학생들도 고개를 돌리고, 그들의 눈에서는 흥분한 기색이 번뜩거린다.
 			<br><br>
 			<<schoolrep_naked>>
-			<<link [[Walk away|Courtyard Flyover Walk]]>><<status -10>><</link>><<lcool>>
+			<<link [[물러난다|Courtyard Flyover Walk]]>><<status -10>><</link>><<lcool>>
 			<br>
 			<<if $exhibitionism gte 75>>
 				<<link [[Own it|Courtyard Flyover Own]]>><</link>><<exhibitionist5>>
@@ -1037,7 +1054,7 @@
 			당신은 까치발을 서서 다른 학생들 너머로 쳐다본다. 한 사람이 고가 횡단보도의 계단을 걸어올라가는 영상이 재생된다. 알몸으로 말이다. <span class="lewd">당신이다.</span>
 			<br><br>
 
-			"학교 바로 앞의 다리잖아." 스스로가 도망치는 영상을 보고 있는 동안 <<person3>><<personPost "이">> 말한다. "이 학교 학생이 분명해."
+			"학교 바로 앞의 다리잖아." 스스로가 도망치는 영상을 보고 있는 동안 <<person3>><<personPost "이">> 말한다. "<<pShe_ nun>> 이 학교 학생이 분명해."
 			<br>
 
 			"뭐 이런 변태가 다 있담." <<person2>><<personPost "이">> 끼어든다. "영상 나한테 보내줘봐. 누군지 알아낼 수 있을 것 같아."
@@ -1120,7 +1137,7 @@
 			<<elseif $rng gte 81 and $player.gender_appearance is "f" and $player.perceived_breastsize gte 3>>
 				<<generates1>><<person1>>뒤에서 발소리가 들려온다. 몸을 돌리기도 전에, 누군가 달려들어 당신을 넘어뜨릴 뻔 한다. 누군가의 손가락이 당신의 등을 더듬는다.
 				<<if $worn.under_upper.type.includes("naked") or $worn.under_upper.type.includes("sticky")>>
-					"끈이 안 만져져." <<personPost "이">> 놀란듯이 말한다. "브라 같은건 안 입고 있어." <<HePost "은">> 키득거리고 있는 친구들에게로 돌아간다. 얼굴이 붉어진다.
+					"끈이 안 만져져." <<personPost "이">> 놀란듯이 말한다. "브라 같은건 안 입고 있어." <<HePost "은">> 키득거리고 있는 친구들에게로 돌아간다. 당신의 얼굴이 붉어진다.
 					<<gpain>><<pain 1>><<trauma 6>><<stress 6>><<gtrauma>><<gstress>><<fameexhibitionism 3>>
 					<br><br>
 
@@ -1152,11 +1169,11 @@
 					<br>
 				<</if>>
 			<<elseif $rng gte 71>>
+				<<rng>>
 				<<if $beauty gte random(($beautymax / 2), ($beautymax + 1000))>>
 					<<generatey1>><<generatey2>><<person2>>
 					<<personPost "이">> 다가온다. "내 친구가 널 좋아해." <<hePost "이">> 말한다.
 
-					<<rng>>
 					<<if $rng gte 81>><<set $phase to 0>>
 						<<HePost "은">> 벤치에 앉아서 샌드위치를 먹고 있는 <<person1>><<personPost "을">> 가리킨다. <<person2>><<personPost "은">> 가만히 서서, 당신의 반응을 기다린다.
 						<<ltrauma>><<trauma -6>>
@@ -1228,7 +1245,7 @@
 					<<generatey1>><<generatey2>>
 					당신은 <<fullGroupPost "이">> 그들이 반한 상대에 대해 이야기를 나누는 걸 엿듣는다.
 					<<rng>>
-					<<if $rng gte 96 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+					<<if $rng gte 96 and C.npc.Robin.init is 1>>
 						<<person1>><<personPost "이">> 로빈에게 마음이 있다는 것을 인정한다.
 						<br><br>
 						<<if $robinromance gte 1>>
@@ -1246,7 +1263,7 @@
 							<<endevent>>
 							<<courtyard>>
 						<</if>>
-					<<elseif $rng gte 81 and $NPCName[$NPCNameList.indexOf("Whitney")].init is 1>>
+					<<elseif $rng gte 81 and C.npc.Whitney.init is 1>>
 						<<person1>><<personPost "이">> 휘트니에게 마음이 있다는 것을 인정한다.
 						<br><br>
 						<<if $whitneyromance gte 1>>
@@ -1264,7 +1281,7 @@
 							<<endevent>>
 							<<courtyard>>
 						<</if>>
-					<<elseif $rng gte 71 and $NPCName[$NPCNameList.indexOf("Sydney")].init is 1>>
+					<<elseif $rng gte 71 and C.npc.Sydney.init is 1>>
 						<<person1>><<personPost "이">> 시드니에게 마음이 있다는 것을 인정한다.
 						<br><br>
 						<<if $sydneyromance gte 1>>
@@ -1452,8 +1469,9 @@
 <</widget>>
 
 <<widget "schoolbully">>
-	<<set _whitney to $NPCName[$NPCNameList.indexOf("Whitney")]>>
+	<<set _whitney to C.npc.Whitney>>
 	<<npc Whitney>><<person1>>
+	<<outfitChecks>>
 
 	<<if $bullyevent is 0>>
 		<<set $bullyevent += 1>>
@@ -1509,7 +1527,7 @@
 
 	<<elseif $bullyevent is 2>>
 		<<set $bullyevent += 1>>
-		<<if $player.gender_appearance is "m" and $worn.upper.type.includes("naked")>>
+		<<if _shirtless>>
 			휘트니와 <<his_ yi>> 친구들은 당신을 둘러싸고는, 사물함 쪽으로 몬다. "셔츠를 안 입고 다니고 있어?" <<hePost "이">> 말한다. "나이 많은 <<nnpc_genderyPost "Whitney">>들이 보내는 시선을 즐기려고 그러는 거겠지." <<HePost "은">> 친구들을 돌아본다. "가자. 이 걸레를 즐겁게 해줄 수는 없지." 그들은 더는 당신을 괴롭히지 않고 떠난다.
 			<<npcincr Whitney lust 5>><<glust>><<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 			<br><br>
@@ -1517,7 +1535,7 @@
 			<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<<else>>
-			휘트니와 <<his_ yi>> 친구들은 당신을 둘러싸고는, 사물함 쪽으로 몬다. "지나가려면 통행비를 내야 해." <<hePost "은">> 당신의 가슴을 쿡 찌르며 <<trClothes "upper" $worn.upper.name "name" "을">>_trResult 움켜쥔다. "젖꼭지를 보여주면 낸 걸로 쳐주지."
+			휘트니와 <<his_ yi>> 친구들은 당신을 둘러싸고는, 사물함 쪽으로 몬다. "지나가려면 통행비를 내야 해," <<hePost "은">> 당신의 가슴을 쿡 찌르며 <<top_name_ ul>> 움켜쥔다. "젖꼭지를 보여주면 낸 걸로 쳐주지."
 			<br><br>
 
 			<<link [[내버려 둔다|Bully Top]]>><<npcincr Whitney dom 1>><<trauma 6>><<stress 6>><<sub 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
@@ -1611,7 +1629,7 @@
 			<!-- does not increase bullyevent counter -->
 			왜 그런지는 모르겠으나, 휘트니와 <<his_ yi>> 패거리들이 레이턴이 없는 틈을 타 교장이 돌아온다면 그들 중 적어도 한 명은 징계를 받게될만한 일을 하려 들 것이라는 느낌이 든다.
 			<br><br>
-			좋든 싫든, 그들이 하려는 일에 당신은 연관되지 않을 것이다...당장은 말이다.
+			좋든 싫든, 그들이 하려는 일에 당신은 연관되지 않을 것이다... 당장은 말이다.
 			<br><br>
 
 			<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
@@ -1635,11 +1653,11 @@
 			<<link [[무시한다|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 			<<if $submissive lte 500>>
-				<<link [[휘트니의 발을 건다|Bully Trip]]>><<def 1>><</link>><<defianttext>><<npcincr Whitney dom -1>><<ldom>>
+				<<link [[휘트니의 발을 건다|Bully Trip]]>><<def 1>><<npcincr Whitney dom -1>><</link>><<defianttext>><<ldom>>
 				<br>
 			<</if>>
 		<<else>>
-			휘트니와 친구들은 당신을 둘러싼다. 휘트니는 당신에게 달려<<if $leftarm is "bound" and $rightarm is "bound">>든다. 당신은 비틀거리며 뒤로 물러나면서 묶인 팔을 들려 한다.<<else>>들어, 당신이 비틀거리며 뒤로 물러나면서 몸을 보호하기 위해 팔을 들어올리게 만든다.<</if>> 하지만 <<hePost "은">> 바로 앞에서 멈추면서 웃는다. "너 너무 쉽게 겁먹어. 그냥 인사나 하려고 한 건데 말이야." 균형을 잃으면서, 당신은 <<bottom_ ul>> 바닥에 찧으며 넘어진다. 웃음소리가 더 커진다. "정말이지 루저라니까. 가자 얘들아. <<pshe_ ga>> 우리를 전염시키기라도 하기 전에 말이야." <<tearful>> 당신은 자리에서 일어난다.
+			휘트니와 <<his_ yi>> 친구들이 당신을 둘러싼다. 휘트니는 당신에게 달려들어, 당신은 비틀거리며 뒤로 물러나면서 <<= $leftarm is "bound" and $rightarm is "bound" ? "묶인 팔을 들려 한다" : "몸을 보호하기 위해 팔을 치켜든다">>. 하지만, <<hePost "은">> 바로 앞에서 멈추면서, 웃는다.  "너는 너무 쉽게 겁먹어. 그냥 인사나 하려고 한 건데 말이야." 균형을 잃으면서, 당신은 <<bottom_ ul>> 바닥에 찧으며 넘어진다. 웃음소리가 더 커진다. "정말이지 루저라니까. 가자 얘들아. <<pshe_ ga>> 우리를 전염시키기라도 하기 전에 말이야." <<tearful>> 당신은 자리에서 일어난다.
 			<<npcincr Whitney lust 5>><<glust>>
 			<br><br>
 
@@ -1648,9 +1666,7 @@
 		<</if>>
 	<<elseif $bullyevent is 8>>
 		<<set $bullyevent += 1>>
-		휘트니와 <<his_ yi>> 친구들이 당신을 둘러싼다.
-
-		<<HePost "은">> 당신을 사물함 쪽으로 밀어붙인다. "오늘은 뭘 해줄까?" <<hePost "이">> 중얼거린다. "그래." <<HePost "이">> 씩 웃는다. "조금...쓰다듬어주지." <<HePost "이">> 당신의 머리를 쓰다듬자 친구들이 웃음을 터트린다.
+		휘트니와 <<his_ yi>> 친구들이 당신을 둘러싼다. <<HePost "은">> 당신을 사물함 쪽으로 밀어붙인다. "오늘은 뭘 해줄까?" <<hePost "이">> 중얼거린다. "그래." <<HePost "이">> 씩 웃는다. "조금...쓰다듬어주지." <<HePost "이">> 당신의 머리를 쓰다듬자 친구들이 웃음을 터트린다.
 		<br><br>
 
 		<<link [[내버려 둔다|Bully Pat]]>><<npcincr Whitney love 1>><<npcincr Whitney dom 1>><<arousal 600>><</link>><<garousal>><<glove>><<gdom>>
@@ -1662,8 +1678,7 @@
 		<<set $bullyevent += 1>>
 		<<if _whitney.dom gte 20 and ($worn.neck.collared is 1 or $whitneyromance is 1)>>
 			<<if $worn.neck.collared is 1>>
-				휘트니와 <<his_ yi>> 친구들은 당신을 둘러싼다. <<HePost "은">> 당신을 사물함 쪽으로 밀어붙이고는 <<his_ yi>> 손가락으로 당신의 목덜미를 감싼 목걸이를 쓰다듬는다.
-				"네가 네 분수를 알고 있어서 다행이야." <<hePost "이">> 말한다. "애완동물들은 옷을 입지 않지. 벗어. 속옷도 전부."
+				휘트니와 <<his_ yi>> 친구들은 당신을 둘러싼다. <<HePost "은">> 당신을 사물함 쪽으로 밀어붙이고는 <<his_ yi>> 손가락으로 당신의 목덜미를 감싼 개목걸이를 쓰다듬는다. "네가 네 분수를 알고 있어서 다행이야." <<hePost "이">> 말한다. "애완동물들은 옷을 입지 않지. 벗어. 속옷도 전부."
 				<br><br>
 
 				<<link [[내버려 둔다|Bully Strip 2]]>><<strip>><<trauma 6>><<stress 3>><<set $submissive += 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
@@ -1676,9 +1691,7 @@
 				<<link [[싸운다|Bully Fight]]>><<set $fightstart to 1>><<set $submissive -= 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 				<br>
 			<<else>>
-				휘트니와 <<his_ yi>> 친구들이 당신을 둘러싼다. <<HePost "은">> 친구 한 명을 향해 당신을 밀치고, 그 친구도 다른 친구 쪽으로 당신을 밀친다.
-				그게 계속되고, 혼란스러운 와중에 무언가 목 주변을 꽉 잡는다. "내 선물이 어때?" <<hePost "이">> 당신의 귓가에 숨결을 불어넣으며 말한다.
-				"네겐 딱 어울리는 것 같은데 말이야." <<HePost "과">> 친구들은 느긋하게 떠나간다.
+				휘트니와 <<his_ yi>> 친구들이 당신을 둘러싼다. <<HePost "은">> 친구 한 명을 향해 당신을 밀치고, 그 친구도 다른 친구 쪽으로 당신을 밀친다. 그게 계속되고, 혼란스러운 와중에 무언가 목 주변을 꽉 잡는다. "내 선물이 어때?" <<hePost "이">> 당신의 귓가에 숨결을 불어넣으며 말한다. "네겐 딱 어울리는 것 같은데 말이야." <<HePost "과">> 친구들은 느긋하게 떠나간다.
 				<<neckwear 21>>
 				<<npcincr Whitney lust 5>><<glust>><<garousal>><<arousal 600>>
 				<br><br>
@@ -1719,6 +1732,16 @@
 			<</if>>
 			<br><br>
 			<<link [[내버려 둔다|Bully Toilets]]>><</link>>
+			<br>
+			<<link [[싸운다|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
+		<<elseif $forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear is 0 and _whitney.dom gte 18>>
+			Whitney and <<his>> friends surround you. Whitney smirks and grasps your shoulders.	<<He>> tries to push you into the girls' changing room.
+			<br><br>
+			"A new rule, slut," <<he>> says. "I don't want to hear that you've been using the boys' changing room. That means no wearing swimwear meant for boys either. And because I'm so generous, you already got a girl's swimsuit, don't you?"
+			<br><br>
+			<<He>> pushes you closer. <<if $fame.crossdress gte 3>>"And don't you worry about those rumours. As long as you always look the part, I'll make sure everyone knows that you're meant to be in there."<</if>>
+			<br><br>
+			<<link [[Let it happen|Bully Changing Room]]>><</link>>
 			<br>
 			<<link [[싸운다|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 		<<else>>
@@ -1813,7 +1836,7 @@
 		<<if !($whitneypantiescheck is 2 and $forcedcrossdressingdisable is "f" and _whitney.dom gte 18)>>
 			<<WhitneyPantyCheck>>
 		<<elseif !$whitneyskirtcheck>>
-			Whitney rounds the corner ahead, flanked by <<his>> friends. <<He>> grins, and forces other students to move as <<he>> strides in a straight line towards you. 
+			Whitney rounds the corner ahead, flanked by <<his>> friends. <<He>> grins, and forces other students to move as <<he>> strides in a straight line towards you.
 			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.lower.reveal gt 200>>
 				<<set $whitneyskirtcheck to 1>>
 				<br><br>
@@ -1836,7 +1859,7 @@
 				<</if>>
 				<br><br>
 
-				<<link [[Comply|Bully Skirt]]>><<set $phase to 1>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<gdom>>
+				<<link [[응한다|Bully Skirt]]>><<set $phase to 1>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<gdom>>
 				<br>
 				<<link [[싸운다|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 				<br>
@@ -1929,13 +1952,13 @@
 			Someone throws an arm around your shoulder while you're walking. It's Whitney, with several of <<his>> friends clustering around you.
 			<br><br>
 
-			Before you realize what's happening, Whitney turns and shoves you across the hall. You stumble into the lockers.<<gpain>><<violence 6>>
+			Before you realise what's happening, Whitney turns and shoves you across the hall. You stumble into the lockers.<<gpain>><<violence 6>>
 			<br><br>
 
 			"Try staying out of the way next time!" Whitney calls as <<he>> and <<his>> group continue walking. You hear a few of them laughing.<<gstress>><<stress 6>>
 			<br><br>
 
-			<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+			<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 		<</if>>
 
@@ -1970,7 +1993,7 @@
 			<br>
 			<<if $promiscuity gte 35 and $awareness gte 200>>
 				<<link [[Take it further|Bully Analingus Punishment]]>><<set $phase to 2>><<status -10>><<npcincr Whitney love 1>><<npcincr Whitney dom 3>><</link>><<promiscuous3>><<lcool>><<glove>><<ggdom>>
-			
+
 			<</if>>
 
 		<<else>>
@@ -1995,9 +2018,33 @@
 			<<He>> and <<his>> friends turn and walk off without so much as a glance back.<<gstress>><<gtrauma>><<stress 6>><<trauma 2>>
 			<br><br>
 
-			<<link [[다음|Hallways]]>><<set $eventskip to 1>><</link>>
+			<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 
 		<</if>>
+
+	<<elseif $bullyevent is 18 and C.npc.Robin.init gte 1 and getRobinLocation() is "school" and $robinmissing is 0>>
+		<<set $bullyevent += 1>>
+		<<endevent>><<npc "Robin">><<person1>>
+		<<set _lower to C.npc.Robin.clothes.lower.name>>
+
+		You enter the hallway to the hustle and bustle of the school. As you turn a corner, you spot Whitney standing behind Robin. Before you can do anything, Whitney pulls Robin's _lower down, flashing <<his>> underwear to everyone nearby. <<gstress>><<garousal>><<stress 6>><<arousal 600>>
+		<br><br>
+
+		<<if C.npc.Robin.trauma lte 30>>
+			Robin is stunned for a moment, <<his>> face bright red and on the verge of tears. Whitney and <<nnpc_his "Whitney">> friends burst out laughing and walk away, high fiving each other.
+
+		<<else>>
+			<<His>> eyes begin to well up with tears. <<He>> begins to sob loudly, <<his>> face turning bright red.<<gstress>><<lldom>><<ggrtrauma>><<stress 6>><<npcincr "Robin" trauma 2>><<npcincr "Robin" dom -2>>
+			<br><br>
+
+			Whitney and <<nnpc_his "Whitney">> friends look shocked and back away from Robin. They dash down the hall before a teacher can catch wind of the commotion and investigate.
+
+		<</if>>
+		<br><br>
+
+		<<link [[Comfort (0:05)|Bully Pantsing Robin]]>><<npcincr "Robin" trauma -2>><<pass 5>><</link>><<llrtrauma>>
+		<br>
+		<<link [[무시한다|Hallways]]>><<endevent>><<set $eventskip to 1>><<stress 6>><</link>><<gstress>>
 
 	<<else>>
 		<<set $bullyevent to 4>>
@@ -2027,13 +2074,13 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked") or $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and playerChastity()>>
 		<<WhitneyParasitePenisComment>>
 	<<else>>
-		"<<phim_ ul>> 준비시켜 얘들아," 휘트니가 <<his_ yi>> 친구들에게 명령한다. <<he_ ga>> <<print $deviancy gte 75 ? (["음란한", "매혹적이게도 <<EZdisgusting>>"].pluck()) : "<<EZdisgusting>>">> 물체를 가지고 앞으로 걸어오자, 당신은 머리를 굴리며, 그들이 당신에게 무엇을 하려고 하는지 궁금해한다. 당신의 팔이 잡혀있어 그들이
-		
+		"<<phim_ ul>> 준비시켜 얘들아," 휘트니가 <<his_ yi>> 친구들에게 명령한다. <<he_ ga>> <<print $deviancy gte 75 ? (["음란한", "매혹적이게도 <<EZdisgusting>>"].pluck()) : "<<EZdisgusting>>">> 물체를 가지고 앞으로 걸어오자, 당신은 머리를 굴리며, 그들이 당신에게 무엇을 하려고 하는지 궁금해한다. 당신의 팔이 잡혀있고 몸이 완전히 무력화되어, 그들이
+
 		<<switch _parasite_loc>>
 		<<case "bottom">>
-			당신을 비틀어 엎드리게 하고, 
+			당신을 비틀어 엎드리게 하고,
 			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-				당신의 스커트 단을 당신의 등 위로 잡아올려,
+				당신의 치맛단을 당신의 등 위로 잡아올려,
 			<<else>>
 				당신의 허리띠를 무릎 아래로 잡아내려,
 			<</if>>
@@ -2056,10 +2103,10 @@
 					<</if>>
 				<</if>>
 			<<else>>
-				옷을 거칠게 잡아내려, 
+				옷을 거칠게 잡아내려,
 			<</if>>
 			당신의 <<genitals_ rul>> 휘트니와, 학교 복도의 시원한 공기와, 지나가는 모든 사람에게 완전히 노출시키는 걸 어떻게 막을 방법이 없다.
-			
+
 			<<set $genderknown.pushUnique("Whitney")>>
 
 			<<schoolrep_naked>>
@@ -2075,7 +2122,7 @@
 	<<switch _parasite_loc>>
 	<<case "bottom">>
 		<<if !$parasite.bottom.name>>
-			<<bottomPost "이">> 노출된 상태에서는 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 은밀한 구멍으로 가져가는 것을 멈출 수가 없다. 기생충은 곧바로 꿈틀거리며 그 안으로 들어간다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
+			<<bottomPost "이">> 노출된 상태에서는, 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 은밀한 구멍으로 가져가는 것을 멈출 수가 없었고, 기생충은 곧바로 꿈틀거리며 그 안으로 들어간다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
 			<<parasite bottom _parasite_type>>
 			<<arousal 5 "bottom">><<garousal>>
 			<<set _parasitestate to "placed">>
@@ -2083,7 +2130,7 @@
 		<</if>>
 	<<case "nipples">>
 		<<if !$parasite.nipples.name>>
-			<<breastsPost "이">> 노출된 상태에서는 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 떨리는 가슴 쪽으로 가져가는 것을 멈출 수가 없다. 기생충은 곧바로 달라붙는다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
+			<<breastsPost "이">> 노출된 상태에서는, 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 떨리는 가슴 쪽으로 가져가는 것을 멈출 수가 없었고, 기생충은 곧바로 달라붙는다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
 			<<parasite nipples _parasite_type>>
 			<<arousal 5 "breasts">><<garousal>>
 			<<set _parasitestate to "placed">>
@@ -2097,13 +2144,13 @@
 			어찌 되었든, 강제로 노출하게 되는 건 어딘가 꼴리는 구석이 있다.
 			<<set _parasitestate to "sexless">>
 		<<else>>
-			무력하게 <<genitalsPost "이">> 노출된 상태에서는 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 은밀한 부위로 가져가는 것을 멈출 수가 없다.
+			무력하게 <<genitalsPost "이">> 노출된 상태에서는, 휘트니가 히죽거리며 <<trParasite _parasite_type "을">><<print _trResult>> 은밀한 부위로 가져가는 것을 멈출 수가
 			<<if $parasite.penis.name is "parasite" or $parasite.clit.name is "parasite">>
-				기생충은 곧바로 바닥에 떨어진다.
+				없었지만, 기생충은 곧바로 바닥에 떨어진다.
 				"오, 이 녀석이 네가 이미 가지고 있는 녀석과 같이 있고 싶지 않은가 봐."
 				<<set _parasitestate to "genitalsparasitealready">>
 			<<elseif ($player.penisExist and !$parasite.penis.name) or ($player.vaginaExist and !$parasite.clit.name and !$player.penisExist)>>
-				기생충은 곧바로 달라붙는다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
+				없었고, 기생충은 곧바로 달라붙는다. 녀석이 내는 질벅한 소리는 역겨운 만큼이나 음란하다.
 				<<if $player.penisExist>>
 					<<parasite penis _parasite_type>>
 				<<else>>
@@ -2280,9 +2327,9 @@
 				<<if ($_loc is "left_cheek" or $_loc is "right_cheek") and $worn.face.type.includes("mask")>>
 					<<He_ nun>> 당신의 마스크를 옆으로 밀어두고
 				<<elseif ($_loc is "left_shoulder" or $_loc is "right_shoulder") and !($worn.upper.open is 1 or $worn.upper.name is "naked")>>
-					<<He_ nun>> 당신의 <<worn_upper_name_ ul>> 아래로 확 잡아당기고
+					<<He_ nun>> 당신의 <<allTops_ rul>> 아래로 확 잡아당기고
 				<<else>>
-					<<He>>
+					<<He_ nun>>
 				<</if>>
 				당신의 <span class="lewd">"<<trBodyWriting $skin[$_loc].writing>>_trResult" 문신을 살펴본다.</span>
 				"좋아. 여전히 제대로 써 있어." <<HePost "은">> 혀로 당신의 얼굴을 살짝 핥은 뒤, 당신을 밀친다. "나중에 또 보자, <<slut_ a>>."
@@ -2300,7 +2347,7 @@
 					<</if>>
 				<<elseif $_loc is "left_shoulder" or $_loc is "right_shoulder">>
 					<<if !($worn.upper.open is 1 or $worn.upper.name is "naked")>>
-						<<He_ nun>> 당신의 <<worn_upper_name_ ul>> 아래로 잡아당기고 어깨를 쓰다듬는다.
+						<<He_ nun>> 당신의 <<allTops_ rul>> 아래로 잡아당기고 어깨를 쓰다듬는다.
 					<<else>>
 						<<He_ nun>> 당신의 어깨를 쓰다듬는다.
 					<</if>>
@@ -2320,15 +2367,15 @@
 					<<HePost "은">> 앞으로 몸을 숙이고는 당신의 이마를 살짝 핥은 뒤, 소매로 문지른다. "더 좋은 생각이 났어." <<HePost "은">> 주머니에서 펜을 한 자루 꺼낸다. "가만히 있어."
 				<<elseif $_loc is "left_cheek" or $_loc is "right_cheek">>
 					<<if $worn.face.type.includes("mask")>>
-						<<He>> leans in, pulls your mask aside, and licks your cheek. "I've thought of something better." <<He>> rubs your face with <<his>> sleeve while pulling a pen from <<his>> pocket. "Hold still."
+						<<HePost "은">> 앞으로 몸을 숙이고, 당신의 마스크를 옆으로 밀어놓고는, 당신의 뺨을 살짝 핥는다. "더 좋은 생각이 났어." <<HePost "은">> 옷소매로 당신의 얼굴을 문지르며 주머니에서 펜을 한 자루 꺼낸다. "가만히 있어."
 					<<else>>
-						<<He>> leans in and licks your cheek. "I've thought of something better." <<He>> rubs your face with <<his>> sleeve while pulling a pen from <<his>> pocket. "Hold still."
+						<<HePost "은">> 앞으로 몸을 숙이고는 당신의 뺨을 살짝 핥는다. "더 좋은 생각이 났어." <<HePost "은">> 옷소매로 당신의 얼굴을 문지르며 주머니에서 펜을 한 자루 꺼낸다. "가만히 있어."
 					<</if>>
 				<<elseif $_loc is "left_shoulder" or $_loc is "right_shoulder">>
-					<<if $worn.upper.open is 1 or $worn.upper.name is "naked">>
+					<<if $worn.over_upper.name is "naked" and ($worn.upper.open is 1 or $worn.upper.name is "naked")>>
 						<<HePost "은">> 몸을 앞으로 숙여 당신의 어깨를 핥으면서, 주머니에서 펜을 한 자루 꺼낸다. "더 좋은 생각이 났어." <<HePost "은">> 소매로 당신의 어깨를 문지른다. "가만히 있어."
 					<<else>>
-						<<He>> leans in, pulls your $worn.upper.name aside, and licks your shoulder. "I've thought of something better." <<He>> pulls a pen from <<his>> pocket while rubbing your shoulder with <<his>> sleeve. "Hold still."
+						<<He_  ga>> 앞으로 몸을 숙이고, 당신의 <<allTops_ rul>> 옆으로 밀어놓고는, 당신의 어깨를 핥는다. "더 좋은 생각이 났어." <<HePost "은">> 옷소매로 당신의 어깨를 문지르며 주머니에서 펜을 한 자루 꺼낸다. "가만히 있어."
 					<</if>>
 				<</if>>
 				<<set $phase to 1>><<set $daily.whitney.writingTarget to $_loc>>
@@ -2336,7 +2383,7 @@
 			<<elseif $_writableLocs.length gte 1>>
 				<<set $_loc to $_writableLocs.random()>>
 				<<if $_loc is "forehead">>
-					<<He>> leans in and licks your forehead.
+					<<HePost "은">> 앞으로 몸을 숙여 당신의 이마를 살짝 핥는다.
 				<<elseif $_loc is "left_cheek" or $_loc is "right_cheek">>
 					<<if $worn.face.type.includes("mask")>>
 						<<HePost "은">> 앞으로 몸을 숙여, 당신의 마스크를 젖힌 뒤, 뺨을 살짝 핥는다.
@@ -2344,13 +2391,13 @@
 						<<HePost "은">> 앞으로 몸을 숙여, 당신의 뺨을 살짝 핥는다.
 					<</if>>
 				<<elseif $_loc is "left_shoulder" or $_loc is "right_shoulder">>
-					<<if $worn.upper.open is 1 or $worn.upper.name is "naked">>
-						<<He>> leans in and licks your shoulder.
+					<<if $worn.over_upper.name is "naked" and ($worn.upper.open is 1 or $worn.upper.name is "naked")>>
+						<<HePost "은">> 앞으로 몸을 숙여 당신의 어깨를 살짝 핥는다.
 					<<else>>
-						<<He>> leans in, pulls your $worn.upper.name aside, and licks your shoulder.
+						<<HePost "은">> 앞으로 몸을 숙여, 당신의 <<allTops_ rul>> 옆으로 밀어놓고는, 당신의 어깨를 살짝 핥는다.
 					<</if>>
 				<</if>>
-				"I've decided to mark you properly." <<He>> pulls a pen from <<his>> pocket. "Hold still."
+				"네게 표시를 제대로 해 두기로 결정했어." <<He_ ga>> 주머니에서 펜을 하나 꺼낸다. "가만히 있어."
 				<<set $phase to 1>><<set $daily.whitney.writingTarget to $_loc>>
 
 			<<else>>
@@ -2426,7 +2473,7 @@
 				<br>
 			<</if>>
 		<<else>>
-			<<npc Kylar>><<person1>>웃음소리가 들려온다. 모퉁이를 돌자 학생들이 모여있다. <<generatey2>>거기엔 <<person2>><<personPost "이">> 카일라의 팔을 붙잡고는 사물함 쪽으로 밀어붙이고 있다.<<person1>> 그 옆에는 카일라의 사물함이 열려있다. 학생들이 당신을 보자 웃음소리가 더 커진다.
+			<<npc Kylar>><<person1>>웃음소리가 들려온다. 모퉁이를 돌자 학생들이 모여있다. 카일라가 거기에 있고, <<his_ yi>> 팔을 <<generatey2>><<person2>><<personPost "이">> 붙잡고는 사물함 쪽으로 밀어붙이고 있다.<<person1>><<him_ yi>> 옆에는 카일라 자신의 사물함이 열려있다. 학생들이 당신을 보자 웃음소리가 더 커진다.
 			<<gstress>><<stress 6>>
 			<br><br>
 
@@ -2453,7 +2500,7 @@
 
 		<<else>>
 
-			<<npc Kylar>><<person1>>웃음소리가 들려온다. 모퉁이를 돌자 학생들이 모여있다. <<generatey2>>거기엔 <<person2>><<personPost "이">> 카일라의 팔을 붙잡고는 사물함 쪽으로 밀어붙이고 있다.<<person1>> 그 옆에는 카일라의 사물함이 열려있다. 학생들이 당신을 보자 웃음소리가 더 커진다.
+			<<npc Kylar>><<person1>>웃음소리가 들려온다. 모퉁이를 돌자 학생들이 모여있다. 카일라가 거기에 있고, <<his_ yi>> 팔을 <<generatey2>><<person2>><<personPost "이">> 붙잡고는 사물함 쪽으로 밀어붙이고 있다.<<person1>><<him_ yi>> 옆에는 카일라 자신의 사물함이 열려있다. 학생들이 당신을 보자 웃음소리가 더 커진다.
 			<<gstress>><<stress 6>>
 			<br><br>
 
@@ -2589,7 +2636,19 @@
 		<</if>>
 	<<elseif $whitneypantiescheck is 2>>
 		<<set _skirt to clothingData('lower', $worn.lower, "skirt") is 1>>
-		<<if $forcedcrossdressingdisable is "f" and $whitneyskirtcheck is 1 and (!_skirt or $worn.lower.reveal lte 200)>> 
+		<<set _maleClothes to Object.keys($worn).filter((slot) => {
+			return $worn[slot].gender is "m" and !["genitals"].includes(slot);
+		})>>
+		<<if $forcedcrossdressingdisable is "f" and $whitneyCrossdressSchool gte 1 and _maleClothes.length>>
+			Whitney and <<his>> friends surround you. <<He>> frowns when <<he>> notices your <<print $worn[_maleClothes[0]].name>>.
+			"<<if !_skirt>>Ignoring the lack of a skirt, thought<<else>>Thought<</if>> I asked you to not wear any boy's clothes. Bad <<girl>>," Whitney chides. "I'll have to take everything now."
+			<br><br>
+
+			<<link [[내버려 둔다|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
+			<br>
+			<<link [[싸운다|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
+			<br>
+		<<elseif $forcedcrossdressingdisable is "f" and $whitneyskirtcheck gte 1 and (!_skirt or $worn.lower.reveal lte 200)>>
 			Whitney and <<his>> friends surround you. <<He>> frowns when <<he>> notices your $worn.lower.name.
 			"Thought I asked you to wear a <<print (_skirt ? "shorter " : "")>> skirt. Bad <<girl>>," Whitney chides. "I'll have to take everything now."
 			<br><br>
@@ -2672,3 +2731,56 @@
 		<br><br>
 	<</if>>
 <</widget>>
+
+<<widget "whitney_roof_events">>
+	<<set $whitney_roof to 1>>
+	<<npc "Whitney">><<person1>>
+	<<cleareventpool>>
+	<<addinlineevent "whitney_roof_1">>
+		"If it isn't my slut," Whitney says, beckoning you closer. "Good timing. My friends and I are bored. Give us a show."
+		<br><br>
+		<<link [[Ask what sort of show|Whitney Roof Show Ask]]>><</link>>
+		<br>
+		<<link [[Strike a cute pose|Whitney Roof Show Pose]]>><</link>>
+		<br>
+		<<link [[Strut like you're on a catwalk|Whitney Roof Show Strut]]>><</link>><<exhibitionist1>>
+		<br>
+		<<if $exhibitionism gte 15>>
+			<<link [[Strike an erotic pose|Whitney Roof Show Erotic]]>><</link>><<exhibitionist2>>
+		<</if>>
+	<</addinlineevent>>
+	<<addinlineevent "whitney_roof_2">>
+		Whitney spots you, strides closer, and seizes you by the wrist. "Just the slut I need," <<he>> says, pulling you to the railing. "I've some frustrations to take out."
+		<br><br>
+		<<link [[Go along with it|Whitney Roof Railing]]>><</link>>
+		<br>
+		<<link [[싸운다|Whitney Roof Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<</addinlineevent>>
+	<<addinlineevent "whitney_roof_3">>
+		You see Whitney's mouth move, but the wind snatches the words before they reach you. <<His>> friends hear <<him>> though, and turn your way. They walk closer, grinning.
+		<br><br>
+
+		<<link [[Run|Whitney Roof Grope Run]]>><</link>>
+		<br>
+		<<link [[다가간다|Whitney Roof Grope Approach]]>><</link>>
+		<br>
+	<</addinlineevent>>
+	<<addinlineevent "whitney_roof_4">>
+		<<generateyv2>><<person2>>
+		You find Whitney bullying a <<person>>. <<person1>><<He>> holds <<person2>><<him>> by the collar, pushed against the railing.
+		<br><br>
+
+		"It's up to you," Whitney says. "You give me the key to your locker. Or I throw you over."
+		<br><br>
+
+		<<link [[개입한다|Whitney Roof Bully Intervene]]>><</link>>
+		<br>
+		<<link [[Watch|Whitney Roof Bully Watch]]>><</link>>
+		<br>
+		<<link [[떠난다|Whitney Roof Bully Leave]]>><</link>>
+		<br>
+	<</addinlineevent>>
+	<<runeventpool>>
+<</widget>>
+

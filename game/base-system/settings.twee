@@ -142,7 +142,7 @@
 	<<run settingsDisableElement()>>
 <</widget>>
 
-<<widget "fa-icon">><span @class="'fa-icon fa-' + $args.raw" alt="' + $args.raw + '"></span><</widget>>
+<<widget "fa-icon">><span @class="'fa-icon fa-' + _args.raw" alt="' + _args.raw + '"></span><</widget>>
 
 <<widget "startOptionsComplexityButton">>
 	<div @class="_selectedStart is _args[1] ? 'gold buttonStartSelected' : 'buttonStart'" >
@@ -286,7 +286,6 @@
 			<<unset _maleChanceSplit>>
 			<<unset _beastMaleChanceSplit>>
 			<<unset _pregnancytype>>
-			<<unset _cycledisable>>
 			<<unset _incompletePregnancyDisable>>
 		<</button>>
 	</div>
@@ -461,7 +460,6 @@
 						<<set $playerPregnancyBeastDisable to "f">>
 						<<set $npcPregnancyDisable to "f">>
 					<</if>>
-					<<set $cycledisable to _cycledisable>>
 					<<if _incompletePregnancyDisable is "t" or (_incompletePregnancyDisable is "f" and !_foundPregnancy)>>
 						<<set $incompletePregnancyDisable to _incompletePregnancyDisable>>
 						<<npcPregnancyUpdater>>
@@ -661,7 +659,7 @@
 
 	/* this never worked as intended
 	<!-- check if specified face style is installed -->
-	<img id="testImage" class="hidden" @scr="'img/face/' + $facestyle + '/base.png'">
+	<img id="testImage" class="hidden" @src="'img/face/' + $facestyle + '/base.png'">
 	<<if $facestyle is "" or isImageOk("#testImage")>>
 		<<set $facestyle = "default">>
 	<</if>>
@@ -679,6 +677,11 @@
 	<<run State.display(_settingsExitPassage)>>
 	<<set $saveName to $saveName.replace(/[^a-zA-Z가-힣\u4e00-\u9fa5 0-9]+/g,"")>>
 	<<unset $importString>>
+
+	/* Updates the penis max size for females so its never below 1 */
+	<<if $player.gender is "f" && $penissizemax < 0>>
+		<<set $penissizemax to 0>>
+	<</if>>
 <</widget>>
 
 /*complete:{"Vrelnir (Default)":"vrelDefault","Lollipop Scythe":"lollipopScythe","PurityGuy":"purityGuy","Fangi":"fangi"},*/
@@ -1179,7 +1182,7 @@
 	<br><br>
 	<span class="red">설정을 특정 방법으로 변경하면 현재 게임에서, 몇몇 도전과제 달성과, 코인 획득을 할 수 없게 될 수 있습니다.</span> 어떤 곳에서라도 치트를 활성화하면 당신의 현재 플레이하는 게임의 남은 도전과제들을 달성하지 못하게 됩니다. 그렇게 되는 설정들을 변경하려고 하면 당신은 경고를 보게 될 것입니다.
 	<br><br>
-	 몇몇 도전과제들은 당신이 요구조건을 만족하자마자 달성했다고 표시되지만, 다른 것들은 게임 속의 다음 시각이나 자정까지 달성되지 않을 것입니다. 즐거운 사냥을 빕니다!
+	 몇몇 도전과제들은 당신이 요구조건을 만족하자마자 달성했다고 표시되지만, 다른 것들은 게임 속의 다음 시각이까지 달성되지 않을 것입니다. 즐거운 사냥을 빕니다!
 <</widget>>
 
 <<widget "featSettings">>
@@ -2122,29 +2125,31 @@
 		</div>
 		<<if $passage is "Start" or $player.penisExist>>
 			<div class="settingsToggleItem">
+				<!-- Not applicable to the parasite penis -->
 				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">최소 자지 크기 - 해당되는 경우:</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이하로 작아진 자지는 자동으로 커지거나 하지 않습니다.</span></mouse>
 				<br>
 				<<set _name to ["진짜 작음", "아주 작음", "조그마함"]>>
 				<<for _i to 0; _i lt _name.length; _i++>>
-					<span data-target="penissizemax" @data-disabledif="_i - 2 + ' > V.penissizemax'">
+					<span data-target="penissizemax" @data-disabledif="_i - 2 + ` > V.penissizemax||V.player.gender==='f'`">
 						<label data-target="player.gender" data-disabledif="V.player.gender==='f'"><<print _name[_i]>> <<radiobutton "$penissizemin" `(_i - 2)` autocheck>></label>
 						<<if _i lt _name.length - 1>>|<</if>>
 					</span>
 				<</for>>
 			</div>
-
-			<div class="settingsToggleItem">
-				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">최대 자지 크기 - 해당되는 경우:</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이상으로 커진 자지는 자동으로 작아지거나 하지 않습니다.</span></mouse>
-				<br>
-				<<set _name to ["진짜 작음", "아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
-				<<for _i to 0; _i lt _name.length; _i++>>
-					<span data-target='["penissizemin", "player.gender"]' @data-disabledif="_i - 2 + ' < V.penissizemin'||V.player.gender==='f'">
-						<label data-target="player.gender" data-disabledif="V.player.gender==='f'"><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label>
-						<<if _i lt _name.length - 1>>|<</if>>
-					</span>
-				<</for>>
-			</div>
 		<</if>>
+
+		<div class="settingsToggleItem">
+			<!-- Not applicable to females without a parasite penis -->
+			<span class="gold" data-target="player.gender">최대 자지 크기 - 해당되는 경우:</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이상으로 커진 자지는 자동으로 작아지거나 하지 않습니다.</span></mouse>
+			<br>
+			<<set _name to ["진짜 작음", "아주 작음", "조그마함", "작음", "보통", "큼", "거대함"]>>
+			<<for _i to 0; _i lt _name.length; _i++>>
+				<span data-target='["penissizemin", "player.gender"]' @data-disabledif="_i - 2 + ` < V.penissizemin||(` + _i + `<2&&V.player.gender==='f')`">
+					<label data-target="player.gender" @data-disabledif="`(` + _i + `<2&&V.player.gender==='f')`"><<print _name[_i]>> <<radiobutton "$penissizemax" `(_i - 2)` autocheck>></label>
+					<<if _i lt _name.length - 1>>|<</if>>
+				</span>
+			<</for>>
+		</div>
 	</div>
 <</widget>>
 

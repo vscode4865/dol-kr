@@ -139,7 +139,7 @@
 			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
 				<<if _item.type.includes("naked") or (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
 				<<elseif $earSlime.forcedCommando gt 0>>
-					<span class="red">당신은 귓속의 슬라임이 속옷을 입지 말라고 명령해서 <<trClothes _slot _item.name "name" "을">>_trResult 입을 수가 없다</span>
+					<span class="red">당신은 귓속의 슬라임이 속옷을 입지 말라고 명령해서, <<trClothes _slot _item.name "name" "을">>_trResult 입을 수가 없다.</span>
 					<br>
 					<<continue>>
 				<<else>>
@@ -151,7 +151,7 @@
 				<<continue>>
 			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
 				<<if $earSlime.forcedDressing.days gt 0>>
-					<span class="red">당신은 귓속의 슬라임이 더 <<print $earSlime.forcedDressing.type is "f" ? "여성스러운" : "남성스러운">> 복장만을 입도록 해서 <<trClothes _slot _item.name "name" "을">>_trResult 입을 수가 없다.</span>
+					<span class="red">당신은 귓속의 슬라임이 더 <<print $earSlime.forcedDressing.type is "f" ? "여성스러운" : "남성스러운">> 복장만을 입도록 해서, <<trClothes _slot _item.name "name" "을">>_trResult 입을 수가 없다.</span>
 					<br>
 					<<continue>>
 				<<else>>
@@ -335,6 +335,26 @@
 	<div class="wardrobe-action">
 		<<link "무작위로 설정">><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
 	</div> |
+	<<if $options.images and ($uncomfortable.underwear or $uncomfortable.nude)>>
+		<div class="wardrobe-action">
+			<span id="wardrobe-cover" @class="$dontHide ? '' : 'hidden'">
+				<<link "몸을 가린다">>
+					<<dontHideRevert>>
+					<<toggleclass "#wardrobe-cover" "hidden">>
+					<<toggleclass "#wardrobe-dontCover" "hidden">>
+					<<updatesidebarimg>>
+				<</link>>
+				</span>
+			<span id="wardrobe-dontCover" @class="$dontHide ? 'hidden' : ''">
+				<<link "몸을 가리지 않는다">>
+					<<dontHideForNow>>
+					<<toggleclass "#wardrobe-cover" "hidden">>
+					<<toggleclass "#wardrobe-dontCover" "hidden">>
+					<<updatesidebarimg>>
+				<</link>>
+			</span>
+		</div> |
+	<</if>>
 	<div id="randomClothingConfigure" class="hidden">
 		<<if $randomEquipConfigure is undefined>>
 			<<set $randomEquipConfigure to {face: true, feet: true, head: true, hands: true, legs: true, lower: true, neck: true, under_lower: true, under_upper: true, upper: true}>>
@@ -694,6 +714,19 @@
 	</div>
 <</widget>>
 
+<<widget "toggleLowerTuck">>
+	<<set _linkOption1 to _args[0] || "밖으로 뺀다">>
+	<<set _linkOption2 to _args[1] || "안으로 집어넣는다">>
+	<div class="toggleLowerTuck">
+		<<link `($lowerTucked ? _linkOption1 : _linkOption2)`>>
+			<<set $lowerTucked to +!$lowerTucked>>
+			<<updatesidebarimg>>
+			<<run $(".toggleLowerTuck .link-internal").html($lowerTucked ? _linkOption1 : _linkOption2)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+<</widget>>
+
 <<widget "toggleLeash">>
 	<<if ["collar", "free use collar", "leather collar", "spiked collar"].includes($worn.neck.name)>>
 		<<link "목줄을 연결한다">>
@@ -715,6 +748,11 @@
 		<<case "upper">>
 			<<switch $worn.upper.variable>>
 				<<case "schoolcardigan">><<set _altLink to ["카디건을 허리 둘레에 묶는다", "카디건을 평소대로 입는다"]>>
+				<<case "brownleather" "blackleather" "leathercropjacket">><<set _altLink to ["자켓의 지퍼를 닫는다", "자켓의 지퍼를 연다"]>>
+				<<case "waistcoat" "waistcoatlapel" "blazershirt">><<set _altLink to ["안으로 집어넣는다", "밖으로 뺀다"]>>
+				<<case "dress">><<set _altLink to ["셔츠의 버튼을 푼다", "셔츠의 버튼을 잠근다"]>>
+				<<case "kimono">><<set _altLink to ["느슨하게 한다", "꽉 조인다"]>>
+				<<case "kimonomini">><<set _altLink to ["느슨하게 한다", "꽉 조인다"]>>
 				<<default>><<exit>>
 			<</switch>>
 		<<case "neck">>
@@ -722,6 +760,19 @@
 				<<case "suspenders">><<set _altLink to ["가터를 내린다", "가터를 평소대로 착용한다"]>>
 				<<default>><<exit>>
 			<</switch>>
+		<<case "face">>
+			<<if $worn.face.type.includes("cool") or $worn.face.type.includes("glasses")>>
+				<<switch $worn.face.variable>>
+					<<case "monocle">><<set _altLink to ["왼쪽 눈에 착용한다", "오른쪽 눈에 착용한다"]>>
+					<<default>><<set _altLink to ["머리 위로 올린다", "평소처럼 착용한다"]>>
+				<</switch>>
+			<<else>>
+				<<switch $worn.face.variable>>
+					<<case "medical eyepatch" "eyepatch">><<set _altLink to ["왼쪽 눈을 가린다", "오른쪽 눈을 가린다"]>>
+					<<case "swimgoggles">><<set _altLink to ["머리 위로 올린다", "평소처럼 착용한다"]>>
+					<<default>><<exit>>
+				<</switch>>
+			<</if>>
 		<<default>><<exit>>
 	<</switch>>
 	<</silently>>
@@ -766,28 +817,41 @@
 					<<set $worn.upper.altposition to ($worn.upper.altposition is "none" ? "alt" : "none")>>
 				<</if>>
 			<</if>>
-		<<case "neck">>
-				<<if $worn.neck.altposition is undefined and setup.clothes.neck[$worn.neck.index].altposition isnot undefined>>
-					<<set $worn.neck.altposition to "none">>
-				<<else>>
-					<<set $worn.neck.altposition to ($worn.neck.altposition is "none" ? "alt" : "none")>>
-				<</if>>
+		<<case "neck" "face">>
+			<<if $worn[_args[0]].altposition is undefined and setup.clothes[_args[0]][$worn[_args[0]].index].altposition isnot undefined>>
+				<<set $worn[_args[0]].altposition to "none">>
+			<<else>>
+				<<set $worn[_args[0]].altposition to ($worn[_args[0]].altposition is "none" ? "alt" : "none")>>
+			<</if>>
 		<<default>>
 	<</switch>>
 <</widget>>
 
+<<widget "toggleAltSleeve">>
+	<<set _inDefaultState to _args[0] || "소매를 걷어올린다">>
+	<<set _inAltState to _args[1] || "소매를 내린다">>
+	<div class="toggleAltSleeve">
+		<<link `($worn.upper.altsleeve is "none" ? _inDefaultState : _inAltState)`>>
+			<<set $worn.upper.altsleeve to ($worn.upper.altsleeve is "none" ? "alt" : "none")>>
+			<<updatesidebarimg>>
+			<<run $(".toggleAltSleeve .link-internal").html($worn.upper.altsleeve is "none" ? _inDefaultState : _inAltState)>>
+			<<run Links.generateLinkNumbers($(".passage"))>>
+		<</link>>
+	</div>
+<</widget>>
+
 <<widget "toggleFaceLayer">>
 	/*changes z-index */
-	<<set _linkOption1 to "Move hair in front">>
-	<<set _linkOption2 to "Tuck hair behind">>
+	<<set _linkOption1 to "머리카락을 앞으로 뺀다">>
+	<<set _linkOption2 to "머리카락을 뒤로 집어넣는다">>
 	<div class="toggleFaceLayer">
-		<<link `($facelayer is "front" ? _linkOption1 : _linkOption2)`>>
+		<<link `($facelayer is "front" ? _linkOption2 : _linkOption1)`>>
 			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
 			<<updatesidebarimg>>
-			<<if _args[1] is "wardrobe">>
+			<<if _args[0] is "wardrobe">>
 					<<updatewardrobe>>
 			<</if>>
-			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption1 : _linkOption2)>>
+			<<run $(".toggleFaceLayer .link-internal").html($facelayer is "front" ? _linkOption2 : _linkOption1)>>
 			<<run Links.generateLinkNumbers($(".passage"))>>
 		<</link>>
 	</div>
@@ -901,15 +965,20 @@
 				<div class="no-numberify"><<toggleHoodLink>></div>
 				<br>
 			<</if>>
-			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and _wornItem.outfitPrimary is undefined and !_wornItemData.notuck>>
+			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and !_wornItemData.notuck>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
+			<<elseif _wardrobe_list is "lower" and $worn.feet.name isnot "naked" and !_wornItemData.notuck and !setup.clothes.feet[clothesIndex("feet",$worn.feet)].notuck>>
+				<div class="no-numberify"><<toggleLowerTuck>></div>
+			<</if>>
+			<<if _wardrobe_list is "upper" and $worn.upper.name isnot "naked" and _wornItemData.altsleeve>>
+				<div class="no-numberify toggleAltSleeve"><<toggleAltSleeve>></div>
 			<</if>>
 			<div class="no-numberify toggleAltLink"><<toggleAltLink _wardrobe_list "wardrobe">></div>
 			<<if _wardrobe_list is "neck">>
 				<div id="wardrobeLeash" class="no-numberify"><<toggleLeash>></div>
 			<</if>>
 			<<if _wardrobe_list is "face">>
-				<div class="no-numberify toggleAltLink"><<toggleFaceLayer _wardrobe_list "wardrobe">></div>
+				<div class="no-numberify toggleAltLink"><<toggleFaceLayer "wardrobe">></div>
 			<</if>>
 		<</if>>
 		<br>
@@ -1458,7 +1527,7 @@
 <</widget>>
 
 <<widget "cleanupOnWardrobeExit">>
-	<<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>>
+	<<unset $saveColor>><<unset $wardrobeRepeat>><<unset $tempDisable>><<set $delete_outfit to "none">><<unset $forceWardrobeLocation>><<set $dontHide to false>>
 <</widget>>
 
 <<widget "wardrobeExits">>
@@ -1471,7 +1540,7 @@
 			<<if $exposed lte 1>>
 				<<getouticon>><<link [[떠난다|Beach]]>><<cleanupOnWardrobeExit>><</link>>
 			<<elseif $exhibitionism gte 75>>
-				<<sneakicon>><<link [[몰래 나간다|Beach Changing Room Sneak]]>><</link>><<exhibitionist5>>
+				<<sneakicon>><<link [[몰래 나간다|Beach Changing Room Sneak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist5>>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
 			<</if>>
@@ -1485,7 +1554,7 @@
 		<<case "Sydney Beach Changing Room Leave">>
 			<<set _earSlimeEnableSwimwear to true>>
 			<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
-				<span class="red">귓속의 슬라임이 수영복을 입은 채 나가는 것을 허락하지 않는다.</span>
+				<span class="red">귓속의 슬라임이 <<underwearTypeText "을">> 입은 채 나가는 것을 허락하지 않는다.</span>
 			<<elseif $exposed lte 1>>
 				<<getouticon>><<link [[떠난다|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
@@ -1545,8 +1614,28 @@
 			<<link [[닫는다|Temple Bunk]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Pirate Wardrobe">>
 			<<link [[닫는다|Pirate Bed]]>><<cleanupOnWardrobeExit>><</link>>
+		<<case "Office Agency Changing Room">>
+			<<if $exposed lte 1>>
+				<<getouticon>><<link [[떠난다|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
+			<<elseif $exhibitionism gte 55>>
+				<<sneakicon>><<link [[몰래 나간다|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
+			<<else>>
+				이 꼴로는 나갈 수 없다!
+			<</if>>
 	<</switch>>
 	<br><br>
+<</widget>>
+
+<<widget "underwearTypeText">><<silently>>
+	<<if $worn.under_lower.name is "naked">>
+	<<elseif $worn.under_lower.type.includes("swim")>>
+		<<set _trResult to "수영복">><<trPost 0 _args[0] _args[1]>><<set $_text_output to _trResult>>
+	<<elseif $worn.under_lower.type.includes("dance")>>
+		<<set $_text_output to "댄스복">><<trPost 0 _args[0] _args[1]>><<set $_text_output to _trResult>>
+	<<else>>
+		<<set $_text_output to "속옷">><<trPost 0 _args[0] _args[1]>><<set $_text_output to _trResult>>
+	<</if>>
+<</silently>><<if $_text_output>><</if>>
 <</widget>>
 
 :: Wardrobe [exitCheckBypass]
@@ -1627,7 +1716,7 @@
 <<effects>>
 <<wardrobeSelection>>
 <<set _earSlimeEnableSwimwear to true>>
-당신은 자신의 열려있는 락커 앞에 서있다.
+당신은 자신의 열려있는 사물함 앞에 서있다.
 <br><br>
 <div id="wardrobewear"><<wardrobewear>></div>
 <div id="wardrobeExits"><<wardrobeExits>></div>
@@ -1656,6 +1745,16 @@
 <div id="wardrobewear"><<wardrobewear>></div>
 <div id="wardrobeExits"><<wardrobeExits>></div>
 
+<<wardrobe>>
+
+:: Office Agency Changing Room [exitCheckBypass]
+<<effects>><<location "officeBuilding">>
+<<set $wardrobe_location to "officeBuilding">>
+<<wardrobeSelection>>
+당신은 임시 고용직들이 옷을 갈아입도록 허락된 작은 창고 안에 있다.
+<br><br>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
 <<wardrobe>>
 
 :: Wardrobe Sale Crate

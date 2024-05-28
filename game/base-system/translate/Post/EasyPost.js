@@ -442,11 +442,16 @@ const EasyPostMacroList = [
 	// <<girl_ ul>> = <<girl>>을 
 	{ name: "girl_", orig_name: "girlPost", is_print: 0},
 
+	{ name: "lady_", orig_name: "ladyPost", is_print: 0},
+	{ name: "gentleman_", orig_name: "gentlemanPost", is_print: 0},
+
 	// <<girls_ nun>> = <<girls>>는 
 	{ name: "girls_", orig_name: "girlsPost", is_print: 0},
 
 	// <<girlfriend_ nun>> = <<girlfriend>>는 
 	{ name: "girlfriend_", orig_name: "girlfriendPost", is_print: 0},
+
+	{ name: "friend_", orig_name: "friendPost", is_print: 0},
 
 	// <<wife_ nun>> = <<wife>>는 
 	{ name: "wife_", orig_name: "wifePost", is_print: 0},
@@ -577,6 +582,9 @@ const EasyPostMacroList = [
 	// <<righttool_ un 1>> = $NPCList[1].righttool은 
 	{ name: "righttool_", orig_name: "righttoolPost", is_print: 0},
 
+	{ name: "pcpetname_", orig_name: "pcpetnamePost", is_print: 0},
+	{ name: "pcPetname_", orig_name: "pcpetnamePost", is_print: 0},
+
 	// <<struggle_appendage_ nun "mouth">> = <<struggle_appendage "mouth">>는 
 	{ name: "struggle_appendage_", orig_name: "struggle_appendagePost", is_print: 0},
 
@@ -606,6 +614,18 @@ const EasyPostMacroList = [
 
 	{ name: "temple_title_", orig_name: "temple_titlePost", is_print: 0},
 	{ name: "temple_Title_", orig_name: "temple_titlePost", is_print: 0},
+	
+	{ name: "changingRoomGender_", orig_name: "changingRoomGenderPost", is_print: 0},
+
+	// outfitNamePost
+	{ name: "top_name", orig_name: "topNamePost", is_print: 0},
+	{ name: "top_name_", orig_name: "topNamePost", is_print: 0},
+	{ name: "topUnder_name", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "topUnder_name_", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "bottom_name", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottom_name_", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottomUnder_name", orig_name: "bottomUnderNamePost", is_print: 0},
+	{ name: "bottomUnder_name_", orig_name: "bottomUnderNamePost", is_print: 0},
 
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
@@ -713,8 +733,8 @@ const EasyPostMacroList = [
 	// <<plants_plural_ ul "daisy">> = <<trPlants "daisy" "plural" "을">> 
 	{ name: "plants_plural_", orig_name: "trPlantsPlural", is_print: 1},
 
-	// <<toyName_ un "teddy bear">> = <<trToyName "teddy bear" "은">> 
-	{ name: "toyName_", orig_name: "trToyName", is_print: 1},
+	// <<childToyName_ un "teddy bear">> = <<trChildToyName "teddy bear" "은">> 
+	{ name: "childToyName_", orig_name: "trChildToyName", is_print: 1},
 
 	// <<weather_ nun "rain">> = <<trWeather "rain" "은">> 
 	{ name: "weather_", orig_name: "trWeather", is_print: 1},

@@ -4,8 +4,8 @@
 	<<unset $lastChangingRoom>>
 	<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
 	<<set _changingRoomGenderType to ($changingRoomGender is "girls" ? "f" : "m")>>
-	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to random(100,1000)>><</if>>
-	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
+	<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to $player.gender_appearience is "m" ? random(500, 1500) : random(200, 1000)>><</if>>
+	<<if _changingRoomGenderType is "f" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible() or ($forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1 and $player.gender_appearance is "f"))>>
 		<<set _seenGender to "f">>
 	<<else>>
 		<<set _seenGender to (_studentsKnow ? $player.gender : $player.gender_appearance)>> <!-- If they know you crossdress, then they won't judge you by appearance -->
@@ -24,16 +24,28 @@
 
 	<<if _playerGenderAppearance is "same">>
 		<<if $changingroomstate isnot "empty">>
-			이곳은 옷을 갈아입는 <<putpost $changingRoomGender "으로">> 분주하다.
+			이곳은 옷을 갈아입는 <<changingRoomGenderPost "으로">> 분주하다.
 			<<if $changingRoomGender is "boys">>
 				<!-- TODO: Add events for girls and for possible herm reveals. Also, add more boys events too if you feel like it. -->
 				<<eventsSchoolChangingRoomsBoys>>
 			<</if>>
 			<<if !_nomessage>>
-				<<if $player.gender is "m" and $changingRoomGender is "girls" and playerBellyVisible()>>
-					당신의 <<print playerAwareTheyArePregnant() ? "임신한 모습" : "임신한 것처럼 보이는 배">> 때문에 당신이 <<gender_ ra>>는 것을 알아차리지 못하고, 아무도 당신을 다시 쳐다보지 않는다. <<if $NudeGenderDC isnot -1 and !_uncomfortable>>당신은 외설적인 느낌이 든다.<</if>>
+				<<if $changingRoomGender is "girls" and
+					($player.gender is "m" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible()) or
+					($player.gender isnot "m" and $player.gender_appearance is "m" and $fame.pregnancy gte $daily.changingRoomPregnancyFame))>>
+					<<if playerBellyVisible()>>
+						당신의 <<print playerAwareTheyArePregnant() ? "임신한 모습" : "임신한 것처럼 보이는 배">> 때문에 당신이 <<gender_ ra>>는 것을 알아차리지 못하고, 아무도 당신을 다시 쳐다보지 않는다.
+					<<else>>
+						<<if $player.gender_appearance is "m">>
+							<<set $_response to "<<changingRoomGenderPost>>들 중 몇몇이 당신을 무시하기 전에 상반된 표정으로 쳐다본다">>
+						<<else>>
+							<<set $_response to "당신이 <<gender_ ra>>는 것을 알아차리지 못하고, 아무도 당신을 다시 쳐다보지 않는다">>
+						<</if>>
+						당신의 최근 임신에 대한 소문 때문에 $_response.
+					<</if>>
+					<<changingRoomFeelings>>
 				<<elseif $changingRoomGender is "boys" and playerBellyVisible()>>
-					<<putpost $changingRoomGender>>들 중 몇몇이 주로 당신의 <<print playerAwareTheyArePregnant() ? "임신한 배" : "임신한 것처럼 보이는 배">> 때문에, 당신을 불편한 듯 쳐다본다. 당신의 배가 그들이 당신을 여자라고 생각하게 만드는 것이 확실하다.<<gstress>>
+					<<changingRoomGenderPost>>들 중 몇몇이 주로 당신의 <<print playerAwareTheyArePregnant() ? "임신한 배" : "임신한 것처럼 보이는 배">> 때문에, 당신을 불편한 듯 쳐다본다. 당신의 배가 그들이 당신을 여자라고 생각하게 만드는 것이 확실하다.<<gstress>>
 				<<elseif $player.penisExist and $player.vaginaExist>>
 					<<if $changingRoomGender is "boys">><<generatesm1>><<else>><<generatesf1>><</if>><<person1>>
 					<<switch $schoolrep.herm>>
@@ -46,19 +58,12 @@
 					<</switch>>
 					<<endevent>>
 				<<elseif $player.gender isnot $player.gender_appearance and $NudeGenderDC isnot -1>>
-					<<if $schoolrep.crossdress is 3>>
-						<<putpost $changingRoomGender>>들 중 몇몇이 당신을 불편한 듯 쳐다본다. 그들 중 몇은 당신이 사물함으로 향하자 계속 당신을 쳐다본다. <span class="pink">그들은 당신이 크로스드레서라는 소문이 진실이라고 의심하고 있다.</span> <<gstress>>
+					<<if $schoolrep.crossdress gte 3 and $forcedcrossdressingdisable is "f" and $whitneyCrossdressSwimwear gte 1>>
+						<<changingRoomGenderPost>>들 중 몇몇이 당신을 보며 킬킬거린다. <span class="red">그들은 당신이 강제로 여기에서 옷을 갈아입는다는 사실을 분명히 알고 있다.</span> <<gstress>>
+					<<elseif $schoolrep.crossdress is 3>>
+						<<changingRoomGenderPost>>들 중 몇몇이 당신을 불편한 듯 쳐다본다. 그들 중 몇은 당신이 사물함으로 향하자 계속 당신을 쳐다본다. <span class="pink">그들은 당신이 크로스드레서라는 소문이 진실이라고 의심하고 있다.</span> <<gstress>>
 					<<elseif $schoolrep.crossdress lt 3>>
-						당신이 <<gender_ ra>>는 것을 모르기에, 아무도 당신을 다시 쳐다보지 않는다.
-						<<if $backgroundTraits.includes("crossdresser") and $player.gender isnot _changingRoomGenderType>>
-							<<if !$daily.school.changingRoomStressRelief>>
-								<span class="green">당신은 그것 때문에 좋은 기분이 든다.</span><<lstress>><<stress -3>><<set $daily.school.changingRoomStressRelief to true>>
-							<<else>>
-								당신은 그것 때문에 좋은 기분이 든다.
-							<</if>>
-						<<elseif !_uncomfortable>>
-							당신은 외설적인 느낌이 든다.
-						<</if>>
+							당신이 <<gender_ ra>>는 것을 모르기에, 아무도 당신을 다시 쳐다보지 않는다. <<changingRoomFeelings>>
 					<</if>>
 				<</if>>
 				<<changingRoomFeelings 0>>
@@ -77,7 +82,7 @@
 		<</if>>
 		<<schoolChangingRoomLinks>>
 	<<elseif _justChangedClothes and $changingroomstate isnot "empty">>
-		이곳은 옷을 갈아입는 <<putpost $changingRoomGender "으로">> 분주하다.
+		이곳은 옷을 갈아입는 <<changingRoomGenderPost "으로">> 분주하다.
 		<br><br>
 		<<if $NudeGenderDC isnot -1>>
 			<<if _bottomless and _playerGenitals is "other">>
@@ -97,7 +102,7 @@
 			<<elseif _topless and $changingRoomGender is "girls" and $player.breastsize lte 2>>
 				You overhear some of the $changingRoomGender whisper about your exposed <<breasts>>. One of them addresses you directly.
 				"Damn, I've <<print either("seen boys with", "had boyfriends with", "slept with boys that had", "fucked boys with")>> bigger tits than you."
-				They don't realize you really are a <<girl>>.
+				They don't realise you really are a <<girl>>.
 			<<else>>
 				One of the $changingRoomGender looks at you <<print either("quizzically", "curiously", "strangely", "contemplatively")>>.
 				"Wow, you <<print either("really", "kinda", "almost", "")>> look like a <<girl>> wearing that."
@@ -108,7 +113,7 @@
 	<<else>>
 		<<if $changingroomstate isnot "empty">>
 			<<if $exposed gte 2 and _chance isnot 0>>
-				당신은 모퉁이 너머를 훔쳐본다. 옷을 입지 않은 <<putpost $changingRoomGender "이">> 보인다. 들어가려 한다면 들킬 것이다.
+				당신은 모퉁이 너머를 훔쳐본다. 옷을 입지 않은 <<changingRoomGenderPost "이">> 보인다. 들어가려 한다면 들킬 것이다.
 				<br><br>
 				<<ind>><<link [[지켜본다 (0:05)|School Changing Room Watch]]>><<pass 5>><</link>><<promiscuous1>>
 				<br>
@@ -120,31 +125,31 @@
 					<<ind>><<link [[들어간다 (0:05)|School Changing Room Exhibitionism]]>><<pass 5>><<detention 3>><</link>><<gdelinquency>><<exhibitionist5>>
 					<br>
 				<</if>>
-				<<ind>><<link [[나간다|School Pool Entrance]]>><</link>>
+				<<getouticon>><<link [[나간다|School Pool Entrance]]>><</link>>
 			<<elseif $daily.school.changingRoomEntered is Time.hour and _chance isnot 0>>
 				<<if $changingRoomGender is "boys">><<generatesm1>><<else>><<generatesf1>><</if>><<person1>>
 				<<if $player.gender_appearance isnot _changingRoomGenderType and $NudeGenderDC isnot -1>>
-					탈의실 내부는 옷을 입지 않은 <<putpost $changingRoomGender "으로">> 가득하며, 그들은 당신을 <<girl_ ira>>고 생각하고, 허둥지둥 몸을 가린다. 상당수가 화난 것처럼 보인다. <<personPost "이">> 가방을 떨구고는 앞으로 나온다. "이 변태야," <<hePost "이">> 말한다. "자꾸 그렇게 불쑥 들어오면 안된다고." <<HePost "이">> 당신의 팔을 붙잡는다.
+					탈의실 내부는 옷을 입지 않은 <<changingRoomGenderPost "으로">> 가득하며, 그들은 당신을 <<girl_ ira>>고 생각하고, 허둥지둥 몸을 가린다. 상당수가 화난 것처럼 보인다. <<personPost "이">> 가방을 떨구고는 앞으로 나온다. "이 변태야," <<hePost "이">> 말한다. "자꾸 그렇게 불쑥 들어오면 안된다고." <<HePost "이">> 당신의 팔을 붙잡는다.
 				<<else>>
-					탈의실 내부는 옷을 입지 않은 <<putpost $changingRoomGender "으로">> 가득하고 당신이 들어오자 허둥지둥 몸을 가린다. 상당수가 화난 것처럼 보인다. <<personPost "이">> 가방을 떨구고는 앞으로 나온다. "이 변태야," <<hePost "이">> 말한다. "자꾸 그렇게 불쑥 들어오면 안된다고." <<HePost "이">> 당신의 팔을 붙잡는다.
+					탈의실 내부는 옷을 입지 않은 <<changingRoomGenderPost "으로">> 가득하고 당신이 들어오자 허둥지둥 몸을 가린다. 상당수가 화난 것처럼 보인다. <<personPost "이">> 가방을 떨구고는 앞으로 나온다. "이 변태야," <<hePost "이">> 말한다. "자꾸 그렇게 불쑥 들어오면 안된다고." <<HePost "이">> 당신의 팔을 붙잡는다.
 				<</if>>
 				<<detention 3>><<gdelinquency>>
 				<br><br>
-				<<ind>><<link [[도망치려 한다|School Changing Room Escape]]>><</link>><<physiquedifficulty 4000 14000>>
+				<<link [[도망치려 한다|School Changing Room Escape]]>><</link>><<physiquedifficulty 4000 14000>>
 				<br>
-				<<ind>><<link [[추파를 던진다|School Changing Room Flirt]]>><</link>><<promiscuous1>>
+				<<link [[추파를 던진다|School Changing Room Flirt]]>><</link>><<promiscuous1>>
 				<br>
-				<<ind>><<link [[사과한다|School Changing Room Apologise]]>><</link>>
+				<<link [[사과한다|School Changing Room Apologise]]>><</link>>
 			<<else>>
 				<<set $daily.school.changingRoomEntered to Time.hour>>
 				<<if $player.gender_appearance isnot _changingRoomGenderType and $NudeGenderDC isnot -1>>
-					탈의실 내부는 옷을 입지 않은 <<putpost $changingRoomGender "으로">> 가득하며, 그들은 당신을 <<girl_ ira>>고 생각하고, 허둥지둥 몸을 가린다. 상당수가 금방이라도 부끄러워 죽을 것처럼 보이나, 몇 명은 화를 내며 당신을 쫓아낸다.
+					탈의실 내부는 옷을 입지 않은 <<changingRoomGenderPost "으로">> 가득하며, 그들은 당신을 <<girl_ ira>>고 생각하고, 허둥지둥 몸을 가린다. 상당수가 금방이라도 부끄러워 죽을 것처럼 보이나, 몇 명은 화를 내며 당신을 쫓아낸다.
 				<<else>>
-					탈의실 내부는 옷을 입지 않은 <<putpost $changingRoomGender "으로">> 가득하며 당신이 들어오자 허둥지둥 몸을 가린다. 상당수가 금방이라도 부끄러워 죽을 것처럼 보이나, 몇 명은 화를 내며 당신을 쫓아낸다.
+					탈의실 내부는 옷을 입지 않은 <<changingRoomGenderPost "으로">> 가득하며 당신이 들어오자 허둥지둥 몸을 가린다. 상당수가 금방이라도 부끄러워 죽을 것처럼 보이나, 몇 명은 화를 내며 당신을 쫓아낸다.
 				<</if>>
 				<<detention 3>><<gdelinquency>>
 				<br><br>
-				<<ind>><<link [[다음|School Pool Entrance]]>><</link>>
+				<<link [[다음|School Pool Entrance]]>><</link>>
 			<</if>>
 		<<elseif $poolroomstate isnot "empty">>
 			탈의실은 현재 비어있지만, 당신은 수영장에서 적절하게 활동하는 소리를 듣는다. <<if $poolroomstate is "own">>당신이 들어가야 하는 수업이 진행중이다.<</if>>
@@ -171,13 +176,15 @@
 	<</if>>
 	<br>
 	<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
-		<span class="red">당신 귓속의 슬라임이 수영복을 입은 채로 나가는 것을 허락하지 않는다.</span>
+		<span class="red">귓속의 슬라임이 <<underwearTypeText "을">> 입은 채 나가는 것을 허락하지 않는다.</span>
 	<<elseif $exhibitionism lte 75 and $exposed gte 1>>
 		<span class="pink">이렇게 노출한 상태로는 밖으로 나갈 수 없다!</span>
 	<<elseif $exposed gte 1>>
 		<<getouticon>><<link [[나간다|School Pool Entrance Exhibitionism]]>><</link>>
 	<<else>>
-		<<getouticon>><<link [[나간다|School Pool Entrance]]>><</link>>
+		<<getouticon>><<link [[떠난다|School Pool Entrance]]>>
+			<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push(`${$changingRoomGender} exit`)>><</if>>
+		<</link>>
 	<</if>>
 	<<schoolpoolclothes _store_location>>
 	<<lockericon>><<link [[사물함|School Pool Wardrobe]]>><<set $wardrobe_location to "schoolBoys">><</link>>
@@ -192,7 +199,18 @@
 <</widget>>
 
 <<widget "changingRoomFeelings">>
-	<<if _uncomfortable>>
+
+	<<if $schoolrep.crossdress lt 3 and _args[0] is undefined>>
+		<<if $backgroundTraits.includes("crossdresser") and $player.gender isnot _changingRoomGenderType>>
+			<<if !$daily.school.changingRoomStressRelief>>
+				<span class="green">당신은 그것 때문에 좋은 기분이 든다.</span><<lstress>><<stress -3>><<set $daily.school.changingRoomStressRelief to true>>
+			<<else>>
+			당신은 그것 때문에 좋은 기분이 든다.
+			<</if>>
+		<<elseif $NudeGenderDC isnot -1 and !_uncomfortable>>
+			당신은 외설적인 느낌이 든다.
+		<</if>>
+	<<elseif _uncomfortable>>
 		<br><br>
 		<<switch _args[0]>>
 			<<case 1>>Even alone, being in the $changingRoomGender' changing room makes you <span class="red">uncomfortable.</span>
@@ -287,7 +305,7 @@
 			<span class="blue">메이슨은 계속 <<nnpc_his_ yi Mason>> 머리를 탈의실에 들이밀어 확인하고는 한다. 오늘은 사물함을 더 털 수 없을 것이다.</span>
 			<br>
 		<<elseif Time.minute lte 47>>
-			<<ind>><<link [[사물함을 턴다 (0:10)|School Changing Room Locker]]>><<pass 10>><<arousal 600>><</link>><<garousal>>
+			<span class="clothes-white"><<icon "clothes/thong.png">></span><<link [[사물함을 턴다 (0:10)|School Changing Room Locker]]>><<pass 10>><<arousal 600>><</link>><<garousal>>
 			<br>
 		<<else>>
 			<span class="blue">수업이 곧 끝날 것이다. 사물함을 털 시간이 없다.</span>

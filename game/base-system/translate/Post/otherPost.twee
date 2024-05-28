@@ -115,6 +115,11 @@
     <</if>>
 <</silently>><<print _trResult>><</widget>>
 
+<<widget "ladyPost">><<silently>>
+    <<set _trResult to ($player.gender_appearance is "m"? "신사분" : "숙녀분")>><<trPost 0 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "gentlemanPost">><<ladyPost _args[0] _args[1]>><</widget>>
 
 <<widget "girlsPost">><<silently>>
     <<if $player.gender_appearance is "m">>
@@ -125,7 +130,6 @@
 	 <<trPost 2 _args[0] _args[1]>>
 <</silently>><<print _trResult>><</widget>>
 
-
 <<widget "girlfriendPost">><<silently>>
     <<if  $player.gender_appearance is "m">>
         <<set _trResult to "남자친구">>
@@ -133,6 +137,16 @@
         <<set _trResult to "여자친구">>
     <</if>>
 	<<trPost 1 _args[0] _args[1]>>
+<</silently>><<print _trResult>><</widget>>
+
+<<widget "friendPost">><<silently>>
+	<<if $robinromance is 1>>
+		<<girlfriendPost _args[0] _args[1]>>
+	<<elseif _args[0] is "bff">>
+		<<set _trResult to "절친">><<trPost 0 _args[0] _args[1]>>
+	<<else>>
+		<<set _trResult to "친구">><<trPost 1 _args[0] _args[1]>>
+	<</if>>
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "wifePost">><<silently>>
@@ -312,9 +326,11 @@
 <<if $pronoun is "m">>
 	<<set _trResult to "선생님">><<trPost 0 _args[0] _args[1]>>
 <<else>>
-	<<set _trResult to "마님">><<trPost 0 _args[0] _args[1]>>
+	<<set _trResult to "아씨">><<trPost 1 _args[0] _args[1]>>
 <</if>>
 <</silently>><<print _trResult>><</widget>>
+
+<<widget "SirPost">><<sirPost _args[0] _args[1]>><</widget>>
 
 <<widget "psirPost">><<silently>>
 	<<set _trResult to ($player.gender_appearance is "m"? "선생님" : "마님")>><<trPost 0 _args[0] _args[1]>><<gendercheck>>
@@ -607,7 +623,7 @@
 /* <<handtoolPost toolname post sep>> */
 <<widget "handtoolPost">><<silently>>
 	<<if setup.trHandtoolList is undefined>>
-		<<trinit_handtoolList>>
+		<<run trinit_handtoolList()>>
 	<</if>>
 	<<if _args[0] is undefined>>
 		<<set _trResult to "Err: handtoolPost: no toolname">>
@@ -939,3 +955,27 @@
 <</silently>><<print _trResult>><</widget>>
 
 <<widget "temple_TitlePost">><<temple_titlePost _args[0] _args[1] _args[2]>><</widget>>
+
+<<widget "changingRoomGenderPost">><<silently>>
+	<<if _args[0] is undefined or _args[0].substring(0,1).search("[가-힣]") gte 0>>
+		<<set $_changingRoomGender to $changingRoomGender>><<set $_post to _args[0]>><<set $_sep to _args[1]>>
+	<<else>>
+		<<set $_changingRoomGender to _args[0]>><<set $_post to _args[1]>><<set $_sep to _args[2]>>
+	<</if>>
+
+	<<if ndef setup.trChangingRoomGender>>
+		<<set setup.trChangingRoomGender to {
+			"boy":{koname : "남학생", post : 0},
+			"boys":{koname : "남학생들", post : 2},
+			"girl":{koname : "여학생", post : 0},
+			"girls":{koname : "여학생들", post : 2},
+		}>>
+	<</if>>
+	<<set $_found to setup.trChangingRoomGender[$_changingRoomGender]>>
+	<<if def $_found>>
+		<<set _trResult to $_found.koname>>
+		<<trPost $_found.post $_post $_sep>>
+	<<else>>
+		<<set _trResult to "<span class='red'>에러: changingRoomGenderPost: 정의되지 않음: " + $_changingRoomGender + "</span>">>
+	<</if>>
+<</silently>><<print _trResult>><</widget>>

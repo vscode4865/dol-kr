@@ -43,7 +43,7 @@ _Failure to do so can lead to your work being denied._
 
 ### Build Android version (.apk)
 
-See [mobile-build.md](docs\mobile-build.md)
+See [README in devTools/apkbuilder](devTools/apkbuilder/README-windows.txt)
 
 ## Development
 

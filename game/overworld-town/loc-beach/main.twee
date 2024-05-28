@@ -98,7 +98,7 @@
 			<<unset $robinReunionScene>>
 			당신은 로빈이 <<his_ yi>> 레모네이드 가판대 뒤에 서 있는 것을 볼 수 있다.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He_ nun>> 믿을 수 없다는 듯이 당신을 바라본다.
 				<br><br>
 
@@ -114,7 +114,7 @@
 			당신은 고개를 저으며, <<himPost>>에게 그들은 당신에게 별다른 도움이 되지 않을 것이고, 그래서 당신이 일찍 "나왔다"고 말한다. 로빈은 혼란스러워 보이지만, 개의치 않고 고개를 끄덕인다. <<He_ nun>> 당신을 안아준다.
 			<br>
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				"음, 네가 자유로워져서 기뻐," <<he_ ga>> 당신을 꼭 껴안으며 중얼거린다.
 			<<else>>
 				"음, 다시 만나서 반가워! 기분이 나아졌으면 좋겠어."
@@ -122,7 +122,7 @@
 			<br>
 			둘이서 잠시 사소한 잡담을 나눈다. 결국, 로빈은 <<his_ yi>> 가판대로 돌아가야 한다고 말한다.
 
-			<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 40>>
+			<<if C.npc.Robin.trauma gte 40>>
 				<<He_ nun>> 시선을 바닥에 고정한 채, 천천히 몸을 뒤척인다.
 			<<else>>
 				<<He_ nun>> 웃으며 작별 인사를 건넨다.
@@ -138,7 +138,7 @@
 			<<link [[다음|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
+	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>당신은 해변 가판대에서 친숙한 누군가가 일하고 있는 것을 봤다. <<He_ nun>> 거의 동시에 당신의 존재를 알아차린다. "어이!" 로빈이다. <<He_ nun>> 고아원에서 함께 사는 아이다. <<He_ nun>> 당신과 같은 나이임에도, 당신을 항상 동경해왔다. <<He_ nun>> 유리잔을 닦으면서, 당신에게 손을 흔든다. <<He_ ga>> 유리잔을 내려놓고, 당신이 다가오자 당신을 껴안아 준다.
 		<br><br>
@@ -151,7 +151,7 @@
 		<<endevent>>
 		<<link [[다음|Beach]]>><<set $eventskip to 1>><</link>>
 		<br>
-	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and $weather isnot "rain" and $balloonStand.open is false>>
+	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and $weather isnot "rain" and $balloonStand.open is false and $exposed lte 0>>
 		<<generate1>><<saveNPC 0 stall_owner>><<npc Robin 2>>
 		Someone is setting up a new stall on the beach<<if _robin_location is "beach">>, directly across from Robin's lemonade stand. Robin looks somewhat worried<</if>>. The <<person1>><<person>> ties a bunch of colourful balloons to the stall, where they bob invitingly in the air.
 		<br><br>
@@ -179,7 +179,8 @@
 			<br>
 		<</if>>
 		<<if Time.dayState is "day" and $weather is "clear">>
-			<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) and ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+			<<outfitChecks>>
+			<<if _swimwear and !$worn.upper.name isnot "diving suit">>
 				<<baskicon>><<link [[해변에서 선탠을 한다 (1:00)|Tanning]]>><<pass 60>><</link>><<lstress>>
 				<br>
 			<</if>>
@@ -230,12 +231,12 @@
 			<<socialiseicon "volleyball">><<link [[비치 발리볼|Beach Volleyball]]>><</link>>
 			<<if $exhibitionism gte 75 and $daily.beachStrip isnot 1>>
 				<br>
-				<<stripicon>><<link [[벌거벗는다 (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
+				<<skinicon "strip">><<link [[벌거벗는다 (0:20)|Beach Strip]]>><<pass 20>><</link>><<exhibitionist5>>
 			<</if>>
 		<</if>>
 		<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
 			<br>
-			<span class="red">The slime in your ear refuses to allow you to leave with swimwear on.</span>
+			<span class="red">귓속의 슬라임이 <<underwearTypeText "을">> 입은 채 나가는 것을 허락하지 않는다.</span>
 		<<elseif $exposed gte 1 and Time.dayState isnot "night">>
 		<<else>>
 			<<customRest "beach">><br><<add_link "이동<br>">><<hideDisplay>>
@@ -406,7 +407,7 @@
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
 			<<else>>
-				<<link [[마신다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
+				<<link [[마신다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<wearProp "beerbottle">><</link>><<gcool>><<lstress>>
 			<</if>>
 			<br>
 			<<link [[그냥 이야기한다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -427,7 +428,7 @@
 		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 			<span class="blue">당신의 배 속에 아기가 있다는 걸 알면서도 술을 마실 수는 없다.</span>
 		<<else>>
-			<<link [[마신다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
+			<<link [[마신다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<if $propEquipped isnot 1>><<wearProp "beerbottle">><</if>><</link>><<gcool>><<lstress>>
 		<</if>>
 		<br>
 		<<link [[그냥 이야기한다 (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -1134,7 +1135,7 @@ The <<person1>><<person>> shrugs and returns to <<his>> party. You continue enjo
 "Sure!" you say. The <<person>> smiles, and you follow him back to the party.
 <br><br>
 
-You feel everyone's eyes on your body as you walk onto the dry sand and into the campsite. You are soon surrounded by two dozen people your own age. You quickly become the center of attention.
+You feel everyone's eyes on your body as you walk onto the dry sand and into the campsite. You are soon surrounded by two dozen people your own age. You quickly become the centre of attention.
 <br><br>
 
 <<if playerBellyVisible()>>
@@ -1308,7 +1309,7 @@ You are already attracting attention and stares. You decide to turn around and r
 	<br>
 <<else>>
 
-	You think you are about to catch <<him>>, but outside the arcade, he slips into a crowd of people and disappears. You run past the crowd, trying to find <<him>>, but you see no sign of him or your clothes.
+	You think you are about to catch <<him>>, but outside the arcade, <<he>> slips into a crowd of people and disappears. You run past the crowd, trying to find <<him>>, but you see no sign of him or your clothes.
 	<br><br>
 
 	You spend a minute trying desperately to find out which direction the thief went, but you can no longer make <<him>> out amongst the many people milling about. Meanwhile, everyone can see your fully exposed <<genitals>>, <<if $player.breastssize gte 3>><<breasts>>,<</if>> and <<bottom>>. Hundreds of pictures must have been taken of you, and even more people are showing up and pulling out their phones. You try to find a way to escape.

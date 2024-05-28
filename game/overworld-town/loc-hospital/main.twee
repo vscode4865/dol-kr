@@ -12,7 +12,7 @@ You feel yourself being lifted onto a stretcher before passing out again.
 
 :: Widgets Ambulance [widget]
 <<widget "ambulance">>
-	<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+	<<if C.npc.Kylar.rage gte 96 and C.npc.Kylar.state is "active">>
 		<<link [[일어난다|Kylar Basement]]>><<pass 1 hour>><</link>>
 	<<else>>
 		<<link [[일어난다|Ambulance rescue]]>><<pass 1 hour>><</link>>
@@ -139,13 +139,13 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 				<<askicon>><<link [[당신의 임신과 아이들에 대해 문의한다 (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
 				<br>
 			<<else>>
-				<<askicon>><<link [[당신 안의 기생충에 대해 문의한다 (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
+				<<askicon>><<link [[당신 몸 속의 기생충에 대해 문의한다 (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
 				<br>
 			<</if>>
 		<</if>>
 		<<set _pregnancy to getPregnancyObject()>>
 		<<if _pregnancy.awareOf and !$daily.ultrasoundDone and between(_pregnancy.timer / _pregnancy.timerEnd, 0.1, 1)>>
-			<<askicon>><<link [[초음파 검사를 받는 것에 대해 문의한다 (0:10)|Pregnancy ultrasound]]>>
+			<<askicon>><<link [[초음파 검사에 대해 문의한다 (0:10)|Pregnancy ultrasound]]>>
 				<<pass 10>><<set $daily.ultrasoundDone to true>>
 			<</link>>
 			<br>
@@ -160,6 +160,7 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 		<br>
 
 		<<pillicon>><<link [[약국 (0:02)|Pharmacy]]>><<pass 2>><</link>>
+
 		<br><br>
 
 		<<getouticon>><<link [[밖으로 나간다 (0:01)->Hospital front]]>><<pass 1>><</link>>
@@ -371,7 +372,9 @@ You are in the recovery ward of the hospital. Several nurses go about their busi
 
 :: Hospital Bed Examination
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<unbind>>
+<<if $rightarm is "bound" and $leftarm is "bound">>
+	<<unbind>>
+<</if>>
 <<if $worn.face.type.includes("gag") or $worn.face.type.includes("blindfold")>>
 	<<set $worn.face.type.push("broken")>>
 	<<faceruined>>
@@ -1616,7 +1619,7 @@ You feel yourself being lifted onto a stretcher. You're holding onto something. 
 	<</if>>
 <</if>>
 <<set $player.virginity.temple to true>>
-<<set $NPCName[$NPCNameList.indexOf("Sydney")].virginity.temple to true>>
+<<set C.npc.Sydney.virginity.temple to true>>
 
 <<link [[잔다|Hospital Bed Sydney]]>><</link>>
 <br>

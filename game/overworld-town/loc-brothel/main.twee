@@ -49,7 +49,7 @@
 	<<link [[거절한다|Brothel Pay Refuse]]>><<npcincr Briar dom -1>><<def 1>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Leighton")].init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
+<<elseif C.npc.Leighton.init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
 	<<npc Leighton>><<person1>>
 	"내 학생 중 하나같은데," 당신의 오른쪽에서 흥미로운 듯한 목소리가 들린다. 레이턴이다.
 	<<if playerBellyVisible()>>
@@ -137,8 +137,20 @@
 당신은 창관의 분장실에 있다. 몇 개의 거울이 있고, 머리와 화장을 고치는 직원들이 앉아있다.
 <br><br>
 
+<<if $unbind is 1>>
+	<<unset $unbind>>
+	<<if $possessed>>
+		You stare down at your bindings. You pull, and they fall apart, unable to hold against you.
+		<br><br>
+	<<else>>
+		<span class="green">You rub your bindings against the corner of a table.</span> It takes some effort, but eventually the material yields, freeing your limbs.
+		<br><br>
+	<</if>>
+	<<unbind>>
+<</if>>
+
 <<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
-	<<undobindingsicon>><<link [[구속구를 푼다 (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+	<<undobindingsicon>><<link [[구속구를 푼다 (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><</link>>
 	<br><br>
 <</if>>
 
@@ -159,7 +171,9 @@
 			<<set _buyMore to []>>
 			<<set _productsAvailable to []>>
 			<<set _productsToPurchase to []>>
-			<<if $brothelVending.condoms lt 200>><<run _buyMore.push(`추가 콘돔을 <span class="gold">약국에서</span>`)>><</if>>
+			<<if $brothelVending.condoms lt 200 and $condomLvl gte 1>>
+				<<run _buyMore.push(`추가 콘돔을 <span class="gold">약국에서</span>`)>>
+			<</if>>
 			<<if $brothelVending.lube lt 200>><<run _buyMore.push(`추가 윤활제를 <span class="gold">성인용품점에서</span>`)>><</if>>
 
 			<<if $brothelVending.condoms is 0>>
@@ -181,10 +195,10 @@
 
 			<<condomicon "machine">> 당신은 자판기의 재고를 확인한다.
 			<<if _full.length gte 1>>
-				<<print _full.join("와 ")>>가 <span class="green">꽉 차 있다.</span>.
+				<<print _full.join("와 ")>>가 <span class="green">가득 차 있다</span>.
 			<</if>>
 			<<if _outOfStock.length gte 1>>
-				<<print _outOfStock.join("와 ")>>가 <span class="red">비어 있다.</span>.
+				<<print _outOfStock.join("와 ")>>가 <span class="red">비어 있다</span>. <<if _outOfStock.includes("condom dispenser") and $condomLvl lt 1>><mouse class="tooltip linkBlue">(?)<span>당신의 현재 설정 때문에 콘돔을 구매할 수 없습니다. 임신 설정을 변경하여 당신이나, 다른 사람이, 콘돔을 사용할 수 있게 하세요.</span></mouse><</if>>
 			<</if>>
 			<<if _productsAvailable.length gte 1>>
 				자판기 안에는 <<print _productsAvailable.join("과 ")>>이 남아있다. <<print _productsToPurchase.join("과 ")>>을 더 넣을 공간이 있다.
@@ -195,14 +209,23 @@
 			당신은 이번주 매상을 <<print $weekly.brothelVMCollect ? "이미 가져갔다" : "아직 가져가지 않았다">>.
 			<br>
 			<<if $brothelVending.products % 2 and $brothelVending.condoms gte 1>>
-				<<condomicon>><<link [[콘돔을 산다 (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 3개들이 콘돔 팩의 가격을 £80로 책정했지만, 약국에서는, £60이다. <i class="green">약국에서 사는 게 더 싸게 살 수 있을 것이다.</i></span></mouse>
+				<<condomicon>><<link [[콘돔을 산다 (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 3개들이 콘돔 팩의 가격을 £80로 책정했지만, 약국에서는, £60입니다. <i class="green">약국에서 사는 게 더 싸게 살 수 있을 것입니다.</i></span></mouse>
 				<br>
 			<</if>>
 			<<if $brothelVending.products gte 2 and $brothelVending.lube gte 1>>
-				<<sextoysicon "lube">><<link [[윤활제를 산다 (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 윤활제 가격을 £30로 책정했지만, 성인용품점에서는, £20이다. <i class="green">성인용품점에서 사는 게 더 싸게 살 수 있을 것이다.</i></span></mouse>
+				<<sextoysicon "lube">><<link [[윤활제를 산다 (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>> | <span class="red">비쌈</span> <mouse class="tooltip linkBlue">(?)<span>당신은 윤활제 가격을 £30로 책정했지만, 성인용품점에서는, £20입니다. <i class="green">성인용품점에서 사는 게 더 싸게 살 수 있을 것입니다.</i></span></mouse>
 				<br>
 			<</if>>
 			<br>
+		<<else>>
+			당신의 자판기가 설치되었다.
+			<<if $brothelVending and $brothelVending.status is "set" and $condomLvl gte 1 and !($brothelVending.products % 2)>>
+				<span class="gold">약국</span>에서 콘돔을 대량으로 구매할 수 있는지 알아보는 게 좋겠다.
+			<</if>>
+			<<if $brothelVending.products lt 2>>
+				<<= $adultshopunlocked is undefined ? "성인용품점이 개점하면, " : "">><span class="gold">시리스</span>가 당신에게 윤활제를 싸게 팔 지도 모른다.
+			<</if>>
+			<br><br>
 		<</if>>
 	<</if>>
 <</if>>
@@ -225,7 +248,7 @@
 
 <<getouticon>><<link [[클럽으로 돌아간다 (0:01)|Brothel]]>><<pass 1>><</link>>
 <br><br>
-<<link [[설정|Settings]]>><<set $settingsExitPassage to "Brothel Dressing Room">><</link>>
+<<link [[게임 설정|Settings]]>><<set $settingsExitPassage to "Brothel Dressing Room">><</link>>
 <br>
 <<attitudesControlCheck>>
 <<if $attitudesControl.showGoldLink is true>>
@@ -659,11 +682,11 @@
 <<effects>>
 
 <<if $speech_attitude is "meek">>
-	"다-당신은 이전에 젤을 다른 방법으로 얻었을 거에요," 당신이 말한다.
+	"다-당신은 이전에 젤을 다른 방법으로 얻었을 거예요," 당신이 말한다.
 <<elseif $speech_attitude is "bratty">>
 	"당신은 전에 기계를 사용했잖아요," 당신이 말한다. "그때도 그들은 팔지 않았을 것 같은데요, 그렇지 않나요?"
 <<else>>
-	"당신은 이전에 젤을 다른방법으로 얻었을 거에요," 당신이 말한다.
+	"당신은 이전에 젤을 다른방법으로 얻었을 거예요," 당신이 말한다.
 <</if>>
 <br><br>
 
@@ -1736,7 +1759,6 @@
 <<set $enemyhealth to ($enemyhealthmax / 5) * 4>><<set $enemyanger to ($enemyangermax / 5) * 2>>
 <<if $options.images is 1 and $options.combatImages is 1>>
 	<<timed 100ms>>
-		<br><br><br>
 		<<combatimg>>
 		<br>
 	<</timed>>
@@ -1780,9 +1802,9 @@
 <br><br>
 "여기에요!" 당신이 빈 방을 가리키며 말한다. "여기 숨어요. 그리고 문을 잠궈요."
 <br><br>
-"다-당신은요? 어떡할거에요?"
+"다-당신은요? 어떡할 거예요?"
 <br><br>
-"당신은 손님이에요," 당신은 단호하게 말한다. "내가 여기 서서 저녀석들이 당신에게 접근할 수 없게 막을 거에요."
+"당신은 손님이에요," 당신은 단호하게 말한다. "내가 여기 서서 저녀석들이 당신에게 접근할 수 없게 막을 거예요."
 <br><br>
 <<skulduggerycheck>>
 <br><br>
@@ -2412,8 +2434,11 @@ You ask Briar if <<he>> has already checked your vending machine's stock and col
 	<<set $brothelVending.lubeSold to 0>>
 	<<set $brothelVending.weeksRent to 0>>
 	<<set $weekly.brothelVMCollect to true>>
+<<else>>
+	And there wasn't anything there. Again. Your machine's been empty for $brothelVending.weeksEmpty weeks now. <span class="red">Keep it up, and I'm selling the damn thing off</span>." Briar reclines on the sofa. "I am a <<= $pronoun is "m" ? "man" : "woman">> of my word, after all. Now go buy some products."
 <</if>>
 <br><br>
+<<endevent>>
 <<link [[다음|"Briar's Office"]]>><</link>>
 
 :: Brothel VM ask
@@ -2424,7 +2449,7 @@ Briar's grin is somewhere between disgusted and amused. "I've already told you, 
 <br><br>
 <<link [[Insist (0:10)|Brothel VM insist]]>><<pass 10>><</link>>
 <br>
-<<link [[Walk away|Brothel VM desist]]>><<pass 1>><</link>>
+<<link [[물러난다|Brothel VM desist]]>><<pass 1>><</link>>
 
 :: Brothel VM insist
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
@@ -2785,7 +2810,7 @@ The <<person1>><<person>> grabs you by the chin and lifts your head to get a goo
 <<effects>>
 
 <<if $phase is 1>>
-	You meet <<his>> gaze with a lewd look. "P-please, give me more..." you say. <<He>> is clearly excited from your submissive behavior.
+	You meet <<his>> gaze with a lewd look. "P-please, give me more..." you say. <<He>> is clearly excited from your submissive behaviour.
 	<br><br>
 
 	"One day I will come and buy you!" <<he>> exclaims.
@@ -2959,7 +2984,7 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 <<if $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
 
 	<<if $enemyarousal gte $enemyarousalmax>>
-		<<ejaculate>>
+		<<ejaculation>>
 	<</if>>
 
 	You can push the two off for a moment, giving you enough room to make a mad dash for the exit.
@@ -2976,7 +3001,7 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 	You fall down to the ground, too bruised and battered to resist.
 	<br><br>
 
-	"You'll not ruin this party you ungrateful bitch," the <<person2>> spits in anger.
+	"You'll not ruin this party you ungrateful bitch," the <<person2>><<person>> spits in anger.
 	<br><br>
 
 	They start to rip the clothes off your body and shove you to the middle of the room.

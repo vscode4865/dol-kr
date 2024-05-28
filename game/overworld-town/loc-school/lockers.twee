@@ -1,27 +1,30 @@
 :: School Lockers
 <<set $outside to 0>><<schooleffects>><<effects>><<set $lock to 0>>
 
-학교 사물함은 믿기 힘들 정도로 따기 쉽다.
+학교 사물함은 따기 쉬운 걸로 악명높지만, 고맙게도, 아직까지 당신의 물건은 한 번도 누군가 훔쳐간 적이 없다.
+<<if ["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
+	학교 시간 중에는 다른 학생들의 사물함에 무언가 돈이 될 만한 것이 있을지도 모른다.
+<<elseif currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">이 자물쇠는 아주 따기 쉬워 보인다.</span>
+<<else>>
+	<span class="red">이 자물쇠는 당신의 자물쇠따기 능력으로는 딸 수 없다.</span><<skulduggeryrequired>>
+<</if>>
 <br><br>
 
-<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
-
-	<<if currentSkillValue('skulduggery') gte $lock>>
-		<span class="green">이 자물쇠는 아주 따기 쉬워 보인다.</span>
-		<br><br>
-
-		<<lockpickicon>><<link [[자물쇠를 딴다 (0:30)|School Lockers Sneak]]>><<pass 30>><<crimeUp 30 "petty">><</link>><<crime "petty">>
-		<br>
-	<<else>>
-		<span class="red">이 자물쇠는 당신의 자물쇠따기 능력으로는 딸 수 없다.</span><<skulduggeryrequired>>
-		<br><br>
-	<</if>>
-
-<<else>>
-	학교 시간 중간에는 안에 귀중품이 남아있을 수도 있다.
-	<br><br>
+<<if clothingInStorage("locker").length lt 1>>
+	<span class="blue">당신은 책가방이나 다른 들고다니는 물건들을 사물함에 보관할 수 있다.</span>
+	<br>
+	<<lockerclothes>>
+	<<lockerclothes2>>
+	/*kind of a hacky solution to allow players to swap out their current handheld item for the stored handheld item instead of sending it back to the wardrobe but hey, it's effective and doesn't fuck w how the other storage locations work.*/
 <</if>>
 
+<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
+	<<if currentSkillValue('skulduggery') gte $lock>>
+		<<lockpickicon>><<link [[사물함을 딴다 (0:30)|School Lockers Sneak]]>><<pass 30>><<crimeUp 30 "petty">><</link>><<crime "petty">>
+		<br>
+	<</if>>
+<</if>>
 <<getouticon>><<link [[떠난다 (0:01)|Hallways]]>><<pass 1>><</link>>
 <br>
 
@@ -249,3 +252,56 @@
 
 <<link [[다음|School Lockers]]>><</link>>
 <br>
+
+:: Widgets Locker [widget]
+
+<<widget "lockerclothes">>
+	<<if !$possessed>>
+		<<storeactions "lockers">>
+		<<wardrobeSelection true>>
+		<<set _store_location to "lockers">>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<<set _clothes to clothingInStorage(_store_location)>>
+			<<if _clothes.length gt 0>>
+				당신의 <<trSearchClothes _clothes[0].name "name" "은">>_trResult 안전하게 사물함 안에 들어있다.
+				<br><br>
+				<<if $worn.handheld.name is "naked">>
+					<<lockericon>>
+					<<link [[`${trChangePost(_trResult, "을")} 가져간다`|$passage]]>><<set $eventskip to 1>><<storeload "lockers">><</link>>
+				<<else>>
+					<<lockericon>>
+					<<trClothes "handheld" $worn.handheld.name "name" "과">><<link [[`${_trResult} 바꿔 가져간다`|$passage]]>><<set $eventskip to 1>><<handheldundress "lockers2">><<storeload "lockers">><</link>>
+				<</if>>
+				<br>
+			<</if>>
+		<</if>>
+		<<unset $wearoutfittext>>
+	<</if>>
+<</widget>>
+
+<<widget "lockerclothes2">>
+	<<if !$possessed>>
+		<<storeactions "lockers2">>
+		<<wardrobeSelection true>>
+		<<set _store_location to "lockers2">>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<<set _clothes to clothingInStorage(_store_location)>>
+			<<if _clothes.length gt 0>>
+				<br>
+				당신의 <<trSearchClothes _clothes[0].name "name" "은">>_trResult 안전하게 사물함 안에 들어있다.
+				<br><br>
+				<<if $worn.handheld.name is "naked">>
+					<<lockericon>>
+					<<link [[`${trChangePost(_trResult, "을")} 가져간다`|$passage]]>><<set $eventskip to 1>><<storeload "lockers2">><</link>>
+				<<else>>
+					<<lockericon>>
+					<<trClothes "handheld" $worn.handheld.name "name" "과">><<link [[`${_trResult} 바꿔 가져간다`|$passage]]>><<set $eventskip to 1>><<handheldundress "lockers">><<storeload "lockers2">><</link>>
+				<</if>>
+				<br>
+			<</if>>
+		<</if>>
+		<<unset $wearoutfittext>>
+	<</if>>
+<</widget>>

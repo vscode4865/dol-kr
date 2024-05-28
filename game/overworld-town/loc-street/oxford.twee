@@ -84,11 +84,30 @@
 	<<link [[다음|Oxford Street]]>><<endevent>><</link>>
 	<br>
 
-<<elseif $NPCName[$NPCNameList.indexOf("Avery")].state is "active" and $averyschoolpickup is 0 and Time.schoolDay and Time.hour is 15 and $exposed lte 0 and (($NPCName[$NPCNameList.indexOf("Avery")].love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or ($NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and Time.weekDay is 2))>>
+<<elseif C.npc.Avery.state is "active" and $averyschoolpickup is 0 and Time.schoolDay and Time.hour is 15 and $exposed lte 0 and ((C.npc.Avery.love gte random(20, 100) and ($rng gte 50 or $weather is "rain" or $weather is "snow")) or (C.npc.Avery.love gte 20 and Time.weekDay is 2))>>
 <<npc Avery>><<person1>>
 <<set $averyschoolpickup to 1>>
 
-	<<if $averyschoolpickupintro is 1 and $fame.business gte 400 and random(1,10) is 1 and $weather is "clear">>
+	<<if $averyschoolpickupintro is 1 and Time.season is "winter" and crimeSumCurrent() lt 1000 and random(1,5) is 1>>
+		As you exit the school, you notice pedestrians hastily walking by, trying to escape the cold wind. A car pulls up beside you. The window rolls down, revealing Avery inside. <<He>> smiles at you. "Hello there, <<pcpetname "Avery">>. It's a bit chilly today."
+		<br><br>
+
+		<<if $speech_attitude is "meek">>
+			"Y-Yeah, it sure is cold." You stop and greet Avery with a shy smile.
+		<<elseif $speech_attitude is "bratty">>
+			"Yeah, it's a bit nippy today." You stop and kick a small pebble off the side of the road. "I wish somebody would warm me up."
+		<<else>>
+			"It is quite cold, isn't it?" You stop and nod at Avery.
+		<</if>>
+		<br><br>
+
+		"Get in. I'll get you something warm to drink."
+		<br><br>
+
+		<<getinicon>><<link [[Get in (0:10)|Avery Pub Winter]]>><<pass 10>><</link>><br>
+		<<refuseicon>><<link [[거절한다|Avery School Pickup Refuse]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
+
+	<<elseif $averyschoolpickupintro is 1 and $fame.business gte 400 and random(1,10) is 1 and $weather is "clear">>
 		당신이 건물을 막 나가려고 하는데, 엄청난 소리가 들린다. 학생 몇십 명이 밖에 모여 학교 구역 내로 내려오는 헬리콥터를 보고 있다. 헬리콥터의 탑승구 중 하나가 활짝 열린다. 에이버리가 안쪽에서 손짓한다.
 		<br><br>
 
@@ -98,27 +117,54 @@
 		<<link [[헬리콥터에 올라탄다 (0:20)|Avery Helicopter]]>><<npcincr Avery love 2>><</link>><<gglove>>
 		<br>
 		<<link [[걸어서 떠나간다|Avery Helicopter Walk]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<garage>><<llove>>
-
 	<<else>>
+		<<npc Robin 2>><<person1>>
+		<<set _robin to statusCheck("Robin")>>
+		<<set $pickupRobinPresent to 0>>
+		<<if $robindebtevent lt 1 and _robin_location is "school" and random(1, 2) is 1>>
+			<<set $pickupRobinPresent to 1>>
+		<</if>>
 
 		<<if $averyschoolpickupintro is 1>>
 			차 한 대가 당신의 옆에 선다. 문이 열리고, <<if $pronoun is "m">>정장을 입은 남성<<else>>맵시 있는 드레스를 입은 여성<</if>>이 나타난다. 에이버리다. "내가 태워줄게." <<hePost "이">> 말한다. "타렴."
+		
+			<<if $pickupRobinPresent is 1>>
+				<br><br>
+
+				You catch a glimpse of Robin sheepishly moving next to you. <<person2>><<He>> looks at you, waiting for your answer.
+			<</if>>
 		<<else>>
 			<<set $averyschoolpickupintro to 1>>
 			비싸보이는 차가 당신의 앞에 선다. 당신 주위에 있는 대부분의 학생이 멈춰 서 경외심을 갖고 쳐다본다. 창문이 내려가자 당신은 운전자를 알아본다; 에이버리다. "거기 있었네," <<hePost "이">> 미소를 지으며 말한다. "퇴근하고 오는 길인데, 널 데리러 가야겠다고 생각이 들었어."
 			<br><br>
 
 			몇몇 학생들이 서로 속삭인다. 그들은 당신이 어떻게 그런 대우를 받을 수 있는지 놀라워한다.<<gcool>><<status 1>>
+
+			<<if $pickupRobinPresent is 1>>
+				<br><br>
+
+				Robin emerges from within the crowd.
+				<br><br>
+
+				"Is everything alright?" <<person2>><<He>> asks in a worried tone. "I thought there was a fight, why is everyone..." <<He>> stops as <<he>> recognises the vehicle and its owner.
+				<br><br>
+
+				Avery's enthusiasm dwindles when <<person1>><<he>> notices Robin standing next to you. "Your friend can come, too," <<he>> says. Robin turns to you, worried, waiting for your answer.
+			<</if>>
 		<</if>>
 		<br><br>
-
-		<<getinicon>><<link [[안에 탄다|Avery School Pickup Accept]]>><</link>>
-		<br>
-		<<refuseicon>><<link [[거절한다|Avery School Pickup Refuse]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
-		<br>
-
+		<<if $pickupRobinPresent is 1>>
+			<<getinicon>><<link [[올라탄다|Avery School Pickup Accept]]>><<set $phase to 0>><</link>>
+			<br>
+			<<refuseicon>><<link [[거절한다|Avery School Pickup Robin Refuse]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
+			<br>
+		<<else>>
+			<<getinicon>><<link [[올라탄다|Avery School Pickup Accept]]>><<set $phase to 1>><</link>>
+			<br>
+			<<refuseicon>><<link [[거절한다|Avery School Pickup Refuse]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
+			<br>
+		<</if>>
 	<</if>>
-
 <<else>>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>

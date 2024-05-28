@@ -46,11 +46,16 @@
 		<<elseif $whitneypantiescheck is 2>>
 			"내가 팬티를 입으라 했을 때, 진심이었어. 그러니 이제 전부 벗겨 가져가야겠어."
 		<</if>>
-		<<if $forcedcrossdressingdisable is "t" or $whitneyskirtcheck isnot 1>>
+		<<set _maleClothes to Object.keys($worn).filter((slot) => {
+			return $worn[slot].gender is "m" and !["genitals", "under_upper"].includes(slot);
+		})>>
+		<<if $forcedcrossdressingdisable is "t" or !$whitneyskirtcheck>>
+		<<elseif $whitneyCrossdressSchool and _maleClothes.length>>
+			<<He_ ga>> 조롱한다. "너는 확실하게 남자 옷만 입어야만<<if clothingData('lower', $worn.lower, "skirt") isnot 1>> 하고 치마 따위는 신경쓰지 말아야만<</if>> 해."
 		<<elseif clothingData('lower', $worn.lower, "skirt") isnot 1>>
-			<<He_ ga>> 조롱한다. "너는 스커트마저도 입을 수 없어."
-		<<elseif $worn.lower.reveal lt 200>>
-			<<He_ ga>> 조롱한다. "너는 짧은 스커트마저도 입을 수 없어."
+			<<He_ ga>> 조롱한다. "너는 치마마저도 입을 수 없어."
+		<<elseif $worn.lower.reveal lte 200>>
+			<<He_ ga>> 조롱한다. "그 치마는 충분히 짧지가 않아."
 		<</if>>
 		<br><br>
 
@@ -59,10 +64,25 @@
 		<<link [[싸운다|Bully Panties Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
 		<br>
 	<<elseif $whitneyskirtmaths>>
+		<<set _wearingSkirt to (clothingData('lower', $worn.lower, "skirt") is 1)>>
+		<<set _maleClothes to Object.keys($worn).filter((slot) => {
+			return $worn[slot].gender is "m" and !["genitals", "under_upper", "under_lower"].includes(slot);
+		})>>
+		<<set _whitneyMadAtSkirt to $whitneyskirtcheck gte 1 and (!_wearingSkirt or $worn.lower.reveal lte 200)>>
+		<<set _whitneyMadAtClothes to $whitneyCrossdressSchool gte 1 and _maleClothes.length>>
 		복도에 한 걸음 내디디자 마자 <<npc Whitney>><<person1>>휘트니와 <<hisPost "의">> 친구들이 당신을 둘러싼다. "넌 참 나쁜 <<girl_ iya>>," <<hePost "이">> 씩 웃는다. 친구들은 흥분한 것처럼 보인다.
 
-		"<<slutPost>>들은 그렇게 입고 다니지 않아. 내가 짧은 스커트를 입으라 했을 때, 진심이었어. 그러니 이제 전부 벗겨 가져가야겠어."
-		<br><br>
+		"<<slutPost>>들은 그렇게 입고 다니지 않아.
+		<<if _whitneyMadAtClothes>>
+			내가 남자 옷을 입지 말라고 했을 때, 진심이었어.
+			<<if _whitneyMatAtSkirt>>
+				내가 짧은 치마를 입으라고 했을 때, 그것도 진심이었어.
+			<</if>>
+		<<elseif _whitneyMadAtSkirt>>
+			내가 짧은 치마를 입으라고 했을 때, 진심이었어.
+		<</if>>
+        그러니 이제 전부 벗겨 가져가야겠어."
+        <br><br>
 
 		<<link [[내버려둔다|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
 		<br>
@@ -135,6 +155,8 @@
 		<<exiticon>><<link [[학교 앞마당 (0:02)|School Front Courtyard]]>><<pass 2>><</link>>
 		<br>
 		<<schoolicon "courtyard">><<link [[학교 뒷마당 (0:02)|School Rear Courtyard]]>><<pass 2>><</link>>
+		<br>
+		<<stairsicon "up">><<link [[옥상 (0:02)|School Roof]]>><<pass 2>><</link>>
 		<br><br>
 		시설
 		<br>
@@ -1539,7 +1561,6 @@
 	<br>
 <<else>>
 	<<set $rescued += 1>>
-	<<endcombat>>
 	<<if $rescue gte 2>>
 		복도 저편에서 고함 소리가 들려오자 학생들은 황급히 달려나간다. 당신이 똑같이 할 수 있게 되기 전에 당신은 뒤편에서 누군가에게 붙들리고는, 당신은 휘트니와 얼굴을 마주보고 있다는 걸 깨닫는다. <<nnpc_He_ nun "Whitney">> 머리 끝까지 화난 것으로 보인다.<<status 1>><<gcool>>
 		<br>
@@ -1553,6 +1574,8 @@
 
 		휘트니가 입을 딱 벌리고 도렌을 보다가, 조소한다. "뭐 그러죠, <<if $pronoun is "m">>늑대인간<<else>>털복숭이 고물 대걸레<</if>> 양반. <<phim_ un>> 알아서 하세요." <<nnpc_he_ ga "Whitney">> 당신을 도렌 쪽으로 밀치자, 도렌은 반사적으로 뒤로 물러난다. <<nnpc_He_ nun "Whitney">> 뒤돌아보지 않고 떠난다.
 		<<clotheson>>
+		<<endcombat>>
+		<<npc Doren>><<person1>>
 
 		<<link [[다음|Hallways Exposed Doren]]>><<set $phase to 1>><</link>>
 		<br>
@@ -1563,6 +1586,8 @@
 		<br><br>
 
 		<<clotheson>>
+		<<endcombat>>
+		<<npc Doren>><<person1>>
 		도렌은 당신을 보자 멈추고는, <<his_ yi>> 눈을 다른 곳으로 돌린다.
 		<br><br>
 
@@ -1688,7 +1713,7 @@
 	<br><br>
 	"설-설명할 수 있어요," <<person1>><<person_ i>> <<his_ yi>> 옷을 더듬어 찾으며 말한다. "우리는-"
 	<br><br>
-	레이턴은 <<him_ ul>> 무시한다. "나가," <<he_ ga>> 당신을 보며 말한다. <<tearful>> 당신은 발을 질질 끌며 <<person3>><<him_ ul>> 지나간다. <<person2>><<person_ i>> 뒤따르려 하나, 레이턴이 뻗은 팔에 가로막힌다. "너희 둘은 남아라."
+	레이턴은 <<him_ ul>> 무시한다. "나가," <<person3>><<he_ ga>> 당신을 보며 말한다. <<tearful>> 당신은 발을 질질 끌며 <<him_ ul>> 지나간다. <<person2>><<person_ i>> 뒤따르려 하나, 레이턴이 뻗은 팔에 가로막힌다. "너희 둘은 남아라."
 	<br><br>
 	당신의 뒤편에서 문이 쾅 닫힌다.
 	<br><br>
@@ -2015,7 +2040,16 @@
 
 :: Hallways Strip Locker Clothing
 <<effects>>
-<<if !$worn.lower.type.includes("naked")>>
+<<outfitChecks>>
+<<if _overOutfit>>
+	당신은 <<nervously>> 사물함에 끼인 당신의 <<worn_over_upper_ ul>> 벗어, 사물함에 매달린 채로 둔다. 주변에 있는 다른 많은 학생들은 당신을 자세히 지켜보고, 몇몇 학생들은 그 광경을 보고 휘파람을 분다.
+	<<overupperruined>><<overlowerruined>>
+	<<if $exposed gte 2>>
+		<<fameexhibitionism 40>>
+	<<else>>
+		<<fameexhibitionism 20>>
+	<</if>>
+<<elseif !$worn.lower.type.includes("naked")>>
 	당신은 <<nervously>> 사물함에 끼인 당신의 <<worn_lower_name_ ul>> 벗어, 사물함에 매달린 채로 둔다. 주변에 있는 다른 많은 학생들은 당신을 자세히 지켜보고, 몇몇 학생들은 그 광경을 보고 휘파람을 분다.
 	<<fameexhibitionism 20>><<exhibitionism1>>
 	<<lowerruined>>
@@ -2086,7 +2120,7 @@ You turn away from the group, making it clear that you'd rather be left alone. T
 <<if $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
 
-	"Fucking this bitch was so easy," the <<person3>> says. "No wonder she wound up pregnant!" You hear them laugh as they leave. <<tearful>> you gather yourself and get up.
+	"Fucking this bitch was so easy," the <<person3>><<person>> says. "No wonder she wound up pregnant!" You hear them laugh as they leave. <<tearful>> you gather yourself and get up.
 	<br><br>
 
 	<<clotheson>>
@@ -2103,7 +2137,6 @@ You turn away from the group, making it clear that you'd rather be left alone. T
 	<br>
 <<else>>
 	<<set $rescued += 1>>
-	<<endcombat>>
 	<<if $rescue gte 2>>
 		복도 저편에서 고함 소리가 들려오자 학생들은 황급히 달려나간다. 당신이 똑같이 할 수 있게 되기 전에 당신은 뒤편에서 누군가에게 붙들리고는, 당신은 휘트니와 얼굴을 마주보고 있다는 걸 깨닫는다. <<nnpc_He_ nun "Whitney">> 머리 끝까지 화난 것으로 보인다.<<status 1>><<gcool>>
 		<br>
@@ -2117,6 +2150,8 @@ You turn away from the group, making it clear that you'd rather be left alone. T
 
 		휘트니가 입을 딱 벌리고 도렌을 보다가, 조소한다. "뭐 그러죠, <<if $pronoun is "m">>늑대인간<<else>>털복숭이 고물 대걸레<</if>> 양반. <<phim_ un>> 알아서 하세요." <<nnpc_he_ ga "Whitney">> 당신을 도렌 쪽으로 밀치자, 도렌은 반사적으로 뒤로 물러난다. <<nnpc_He_ nun "Whitney">> 뒤돌아보지 않고 떠난다.
 		<<clotheson>>
+		<<endcombat>>
+		<<npc Doren>><<person1>>
 
 		<<link [[다음|Hallways Exposed Doren]]>><<set $phase to 1>><</link>>
 		<br>
@@ -2127,6 +2162,8 @@ You turn away from the group, making it clear that you'd rather be left alone. T
 		<br><br>
 
 		<<clotheson>>
+		<<endcombat>>
+		<<npc Doren>><<person1>>
 		도렌은 당신을 보자 멈추고는, <<his_ yi>> 눈을 다른 곳으로 돌린다.
 		<br><br>
 
@@ -2155,7 +2192,7 @@ The <<person>> grasps your collar tightly. "My parents took me to see a doc beca
 <<link [[거절한다|Hallways Pregnant Student Refuse]]>><<detention 50>><</link>><<gggdelinquency>>
 <br>
 <<if $submissive gte 1500>>
-	<<link [[Plead|Hallways PRegnant Student Plead]]>><<sub 1>><</link>><<submissivetext>>
+	<<link [[애원한다|Hallways Pregnant Student Plead]]>><<sub 1>><</link>><<submissivetext>>
 	<br>
 <</if>>
 
@@ -2178,7 +2215,7 @@ The <<person>> grasps your collar tightly. "My parents took me to see a doc beca
 <</if>>
 <br><br>
 
-The <<person1>> looks at you with incredulity. "Are you fucking kidding me!?" <<His>> face goes red in anger. "Fine! I'll go tell the principal, then we'll see how much you really care!" <<He>> marches towards Leighton's office, angrily shoving anyone who gets in <<his>> way.
+The <<person1>><<person>> looks at you with incredulity. "Are you fucking kidding me!?" <<His>> face goes red in anger. "Fine! I'll go tell the principal, then we'll see how much you really care!" <<He>> marches towards Leighton's office, angrily shoving anyone who gets in <<his>> way.
 <br><br>
 
 <<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
@@ -2190,7 +2227,7 @@ The <<person1>> looks at you with incredulity. "Are you fucking kidding me!?" <<
 "Please no!" you beg. "I... I'm an orphan! Our caretaker makes us pay a lot. <<nnpc_He "Bailey">>'s very scary and I can't afford to spend a single penny if I want to make it through the day. Please understand!" your voice begins to sound shaky and fearful.
 <br><br>
 
-The <<person1>> looks at you with concern, <<his>> anger begins to turn into sadness. "Just... just go" <<he>> mutters. "You make me sick..." <<he>> says as tears begin to well in <<his>> eyes. <<He>> shoves you back and leaves without saying anything else.
+The <<person1>><<person>> looks at you with concern, <<his>> anger begins to turn into sadness. "Just... just go" <<he>> mutters. "You make me sick..." <<he>> says as tears begin to well in <<his>> eyes. <<He>> shoves you back and leaves without saying anything else.
 <br><br>
 
 <<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
@@ -2426,7 +2463,7 @@ The <<person1>> looks at you with concern, <<his>> anger begins to turn into sad
 			The <<person1>><<person>> looks you up and down and then tries to shove you, but you grab onto <<him>>.<br>
 			There are a few a moments of scuffle, but you're stronger and able to overpower <<him>>.
 			<br><br>
-			With a frustrated yell, the <<person>> twists free, scowls at you frustrated and walks away.<<gpain>><<pain 2>><<gcool>><<status 1>>
+			With a frustrated yell, the <<person>> twists free, scowls at you, and walks away.<<gpain>><<pain 2>><<gcool>><<status 1>>
 		<<elseif (currentSkillValue('athletics') gte 500 or currentSkillValue('danceskill') gte 500)>>
 			The <<person1>><<person>> looks you up and down and then tries to grab you. However, with your speed and dexterity, you slip away.<br>
 			You smile. "Let's dance."
@@ -2460,7 +2497,7 @@ The <<person1>> looks at you with concern, <<his>> anger begins to turn into sad
 		<<link [[다음|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
 	<<elseif $delinquency gte 400>>
-		The teacher looks skeptical, given your reputation, but does go to help.
+		The teacher looks sceptical, given your reputation, but does go to help.
 		<br><br>
 		By the time you get back, the teacher is marching the <<person1>><<person>> down the hallway. <<lstress>><<stress -2>><<famegood 1>>
 		<br><br>
@@ -2713,7 +2750,7 @@ The group of students fight to pull down your <<if setup.clothes.lower[clothesIn
 	You turn around, letting everyone get a look at your fully naked butt and exposed <<genitals>>.<<ggarousal>><<arousal 1200>>
 	<br><br>
 
-	Several students have their phones out, recording your whole display. You realize that most of the school will see this soon. You are surrounded by your peers, seeing you in this state of undress.
+	Several students have their phones out, recording your whole display. You realise that most of the school will see this soon. You are surrounded by your peers, seeing you in this state of undress.
 	<br><br>
 
 

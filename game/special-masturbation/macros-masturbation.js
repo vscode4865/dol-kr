@@ -1,14 +1,13 @@
-/* eslint-disable no-undef */
-function getToyName(index, capitalise = false) {
-	const toy = T.playerToys[index];
+function getToyName(index, capitalise = false, post = undefined, sep = undefined) {
+	const toy = T.playerToys[index]; if (typeof (capitalise) === "string") {sep = post; post = capitalise; capitalise = false;}
 	if (toy == null) {
 		let msg = "Could not find the player's toy name.";
 		if (index === "none") msg = "An attempt to access a toy with the wrong hand was made.";
 		Errors.report(msg, { index });
-		return "toy duck";
+		return "장난감 오리";
 	}
-	const name = capitalise ? toy.namecap : toy.name;
-	return toy.colour ? toy.colour + " " + name : name;
+	const name = capitalise ? toy.name : toy.name;
+	return toy.colour ? trColour(toy.colour) + " " + sextoyPost(name, post, sep) : sextoyPost(name, post, sep);
 }
 window.getToyName = getToyName;
 DefineMacroS("toyName", getToyName);
@@ -22,9 +21,8 @@ function skipToOrgasm(modifiers = "") {
 	do {
 		count++;
 		if (T.corruptionMasturbation) masturbationSlimeControl();
-		masturbationeffects();
+		masturbationEffects();
 		masturbationActions();
-		/* if (count % 10 === 0) console.log(count, V.arousal); */
 		if (modifiers.includes("timer")) V.timer -= 1;
 
 		// Other scene modifiers
@@ -39,6 +37,8 @@ function skipToOrgasm(modifiers = "") {
 			if (modifiers.includes("officePhase")) V.masturbationPhase++;
 			if (modifiers.includes("detentionPaddle")) masturbationDetentionPaddle();
 			if (modifiers.includes("privateShow")) masturbationPrivateShow();
+			if (modifiers.includes("studentAudience")) masturbationAudienceSkip("student");
+			if (modifiers.includes("audience")) masturbationAudienceSkip();
 		}
 	} while (count < 100 && (V.arousal > startArousal || count <= 6) && V.arousal < V.arousalmax && (V.timer > 0 || !modifiers.includes("timer")));
 }
@@ -48,7 +48,7 @@ function masturbationRobinWatching() {
 	if (V.daily.robin.masturbation) {
 		if (V.timer > 0) V.timer -= 1;
 	} else if (
-		V.NPCName[V.NPCNameList.indexOf("Robin")].init === 1 &&
+		C.npc.Robin.init === 1 &&
 		!V.daily.robin.masturbation &&
 		random(0, 100) >= 91 &&
 		T.robin_location === "orphanage" &&
@@ -95,4 +95,23 @@ function masturbationPrivateShow() {
 	} else {
 		wikifier("arousal", 100);
 	}
+}
+
+function masturbationAudienceCalc() {
+	const rng = random(10, 500);
+	// eslint-disable-next-line prettier/prettier
+	const result = rng < ((V.masturbationAudience * 5) + (V.orgasmcurrent * 10));
+	return result;
+}
+window.masturbationAudienceCalc = masturbationAudienceCalc;
+
+function masturbationAudienceIncrement(type) {
+	V.masturbationAudience++;
+	const generateType = type === "student" ? "generatey" : "generate";
+	if (V.masturbationAudience <= 6) wikifier(generateType + V.masturbationAudience);
+}
+DefineMacro("masturbationAudienceIncrement", masturbationAudienceIncrement);
+
+function masturbationAudienceSkip(type) {
+	if (masturbationAudienceCalc()) masturbationAudienceIncrement(type);
 }

@@ -6,16 +6,17 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 아무것도 입지 않았다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 수영복만 입고 있다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 속옷만 입고 있다는 사실을 자각했다.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "수영복만 입고 있다는" : "속옷만 입고 있다는">>
+		<<else>>
+			<<set _naked to "아무것도 입지 않고 있다는">>
+		<</if>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+			당신이 <<print _middleOutfit ? "<<worn_over_upper_name_ ul>>" : "<<worn_over_upper.name_ gwa>> <<worn_over_lower_name_ ul>>">> 걸어놓으려고 가자마자, 당신은 외투 아래에 _naked 사실을 기억해 낸다.
 		<</if>>
 		<br><br>
 		<<npc Sirris>><<person1>>
-		당신이 우두커니 서 있는 동안 시리스가 당신을 쳐다본다. "허공은 뭐하러 보는 거니? 코트 아래에 아무것도 안 입고 있으면 안 되지. 교복을 찾는다면 교장 선생님이 여분을 갖고 있을 거야."
+		당신이 우두커니 서 있는 동안 시리스가 당신을 쳐다본다. "허공은 뭐하러 보는 거니? 코트 아래에 아무것도 안 입고 있으면 안 되지, 그렇지?" 당신은 아무 말도 하지 않고, 시리스는 <<his_ yi>> 목소리를 낮춰 말한다. "교복이 필요하다면 교장 선생님이 여분을 갖고 있을 거야."
 		<br><br>
 		<!--<<link [[Hang up coat|]]>><<endevent>><</link>>
 		<br><br> good starting point for when you can go to class naked-->
@@ -112,7 +113,8 @@
 
 	<<classgrades>>
 	<<schoolperiodtext>>
-	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
+	<<outfitChecks>>
+	<<if _overNaked and _middleNaked>>
 		<!-- Should be changed once naked classes are a thing -->
 		You don't think you should study while not being properly dressed.
 		<br>
@@ -138,7 +140,7 @@
 
 		<<npc Sirris>><<person1>>당신은 과학 교실의 문을 연다. 당신이 들어오는 것을 보자, 시리스는 말을 멈추고는 놀란 표정을 짓는다. "무슨 일이니?" 보아하니 당신이 수업을 방해한 모양이다.
 		<br><br>
-		<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+		<<if C.npc.Sydney.init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
 			당신은 시드니가 교실 맨 앞에 앉아 있는 것을 발견한다. <<nnpc_He_ nun "Sydney">> 당혹한 얼굴로 당신을 바라보고 있다.
 			<br><br>
 		<</if>>
@@ -184,7 +186,7 @@
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
 당신은 선생님을 조롱한다. "흰색 실험실 가운은 좋은 생각 같아요, 선생님. 얼룩을 가려줄 테니까요." 앉아있던 학생들이 웃음을 터트린다.
-<<if $NPCName[$NPCNameList.indexOf("Sydney")].init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
+<<if C.npc.Sydney.init is 1 and $schoolstate is "second" and $sydneyScience isnot 1>>
 	<<run statusCheck("Sydney")>>
 	<<if _sydneyStatus.includes("corrupt")>>
 		시드니조차도 웃음보를 터뜨리지 않으려 몸부림치고 있다.
@@ -372,6 +374,10 @@
 	<br>
 	<<daydreamicon>><<link [[몽상한다|Science Lesson Daydream]]>><</link>><<lstress>> <<lharass>>
 	<br>
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[책상에 엎드려 잔다|Science Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $exhibitionism gte 55>>
 		<<ind>><<link [[자위한다|Science Lesson Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
 		<br>
@@ -401,25 +407,9 @@
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure * 2))>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
 <</if>>
 
 :: Science Lesson Daydream
@@ -441,24 +431,9 @@
 <<stress _stress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - ($allure / 2))>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
 <</if>>
 
 :: Science Lesson Focus
@@ -474,22 +449,22 @@
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<set $phase to 0>>
-	종이 울리며 수업의 끝을 알린다. 당신은
-	<<storeon "scienceClassroom" "check">>
-	<<if _store_check is 1>>
-		<<storeon "scienceClassroom">>
-		코트를 집어들고는
-	<</if>>
-	교실에서 나온다.
-	<br><br>
-
-	<<link [[다음|Hallways]]>><<endevent>><</link>>
+	<<lessonEnd "scienceClassroom">>
 <<else>>
-	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
-	<<if $danger gte (8900 - $allure)>>
-		<<eventsscience>>
-	<<else>>
-		<<eventssciencesafe>>
-	<</if>>
+	<<lessonEvents "science">>
+<</if>>
+
+:: Science Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 시리스 선생님이 <<print either("해부학에 대해 강의하는", "인간의 생식에 대한 비디오를 보여주는", "자연에 대해 열정적으로 이야기하는", "학생 하나를 교실 앞으로 나오라고 하는")>> 동안 책상에 머리를 기댄다. 당신의 눈은 곧 감기고, 잠시 후, 눈을 뜬다. 당신은 깨어 있으려고 몸부림치지만, 책상은 너무나도 편안하다.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "scienceClassroom" "sleep">>
+<<else>>
+	<<eventssciencesleep>>
 <</if>>
