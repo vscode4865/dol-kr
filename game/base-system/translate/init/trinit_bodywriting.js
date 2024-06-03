@@ -1042,7 +1042,7 @@ function trBodyWriting_init()
 				{
 					name: "attractive_force",
 					writing: "Attractive force = 8.19 × 10-",
-					writing_ko: "매력적인 힘 = 8.19 × 10-",
+					writing_ko: "인력 = 8.19 × 10-",
 				},
 
 				{
