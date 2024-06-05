@@ -118,7 +118,7 @@
 	<<set _lenses to []>>
 	<<run $makeup.owned.eyelenses.forEach(colour => {
 		const colourClass = colour.replace(/ /g, '-')
-		trColourJS(colour);_lenses.push(`<span @class="'eye-${colourClass}'"><span class="left-iris" style="color:#6E4E11;">${T.trResult}</span></span>`);
+		_lenses.push(`<span @class="'eye-${colourClass}'"><span class="left-iris" style="color:#6E4E11;">${trColour(colour)}</span></span>`);
 	})>>
 	<<if ($makeup.owned.custom_eyelenses.length gt 0)>>
 		<<set _uniqueCustomLenses to [...new Set($makeup.owned.custom_eyelenses)]>> /* Filter out non-unique lenses */
@@ -126,7 +126,7 @@
 			const colour = window.colorNameTranslate(lens, "spaced name");
 			const colourClass = nullable(nullable($custom_eyecolours.find(c => c.name is colour)).canvasfilter).blend; /* nullable fix to be removed when we can use ?. again */
 			if (colourClass){
-				trColourJS(colour);_lenses.push(`<span class="eye-custom"><span @style="'color:${colourClass}'">${T.trResult}</span></span>`);
+				_lenses.push(`<span class="eye-custom"><span @style="'color:${colourClass}'">${trColour(colour)}</span></span>`);
 			}
 		})>>
 	<</if>>
@@ -165,7 +165,7 @@
 
 :: Pharmacy Ask Custom Lenses
 <<if $daily.pharm.impatient gt 2>>
-	"또 너구나," 간호사가 얼굴에 인상을 쓰며 말한다, "나가거라, 너는 이미 내 시간을 충분히 낭비했단다. 네 작은 게임을 끝내고 내일 다시 오거라."
+	"또 너구나," 간호사가 <<his_ yi>> 얼굴에 인상을 쓰며 말한다, "나가거라, 너는 이미 내 시간을 충분히 낭비했단다. 네 작은 게임을 끝내고 내일 다시 오거라."
 	<br><br><<getouticon>><<link [[떠난다|Pharmacy Lenses]]>><</link>>
 <<else>>
 	<<if $custom_lenses_already_ordered is 1>>
@@ -212,19 +212,19 @@
 <<link [[돌아간다|Pharmacy]]>><</link>>
 
 :: Pharmacy Order Custom Lenses
-"여기 영수증이란다," 간호사가 종이를 건네며 덧붙인다. "내일쯤 도착할 것 같구나. 영수증을 가지고 온다면 그날 근무하고 있는 사람이 건네줄 게다."
+"여기 영수증이란다," 간호사가 종이를 건네며 덧붙인다. "내일쯤 도착할 것 같으니, 영수증을 가지고 오면 그날 근무하고 있는 사람이 건네줄 게다."
 <br><br>
 <<link [[다음|Pharmacy]]>><</link>>
 
 :: Pharmacy Ask If Lenses Delivered
 <<if $daily.pharm.impatient is 1>>
-	"그래 내가 뭘 도-", <<he_ nun>> 눈살을 찌푸리며, "내가 지난 일을 잊었다고 생각하진 않았겠지. 택배를 찾으러 보내고 그냥 가버리는 건, 별로 멋진 일이 아니란다. 제발 다시는 그러지 말거라."
-	<br>당신이 사과하자, <<he_ nun>> 당신의 택배를 확인하러 간다.
+	"그래 내가 뭘 도-", <<he_ nun>> 눈살을 찌푸린다. "내가 지난 일을 잊었다고 생각하진 않았겠지. 택배를 찾으러 보내고 그냥 가버리는 건, 별로 멋진 일이 아니란다. 제발, 다시는 그러지 말거라."
+	<br>당신이 사과하자, <<he_ nun>> 당신의 택배가 왔는지 확인하러 간다.
 <<elseif $daily.pharm.impatient is 2>>
-	"또 너구나," 간호사가 얼굴에 인상을 쓰며 말한다, "나가거라, 너는 이미 내 시간을 충분히 낭비했단다. 네 작은 게임을 끝내고 내일 다시 오거라."
+	"이게 누구야?" 간호사가 <<his_ yi>> 얼굴에 인상을 쓰며 말한다, "나가거라, 너는 이미 내 시간을 충분히 낭비했단다. 네 작은 게임을 끝내고 내일 다시 오거라."
 	<<set $daily.pharm.impatient to 3>>
 <<else>>
-	"뭘 도와-", <<he_ ga>> 말을 멈춘다. "오, 콘택트 렌즈 주문한 사람이구나, 이미 받았는지 확인해 볼 테니 잠시만 기다리거라 얘야." 당신은 <<he_ ga>> 뒷방으로 사라지는 것을 본다.
+	"뭘 도와-", <<he_ ga>> 말을 멈춘다. "오, 콘택트 렌즈 주문한 사람이구나. 이미 받았는지 확인해 볼 테니, 잠시만 기다리거라 얘야." 당신은 <<he_ ga>> 뒷방으로 사라지는 것을 본다.
 <</if>>
 <br><br>
 <<if !($daily.pharm.impatient gte 2)>>
@@ -682,7 +682,6 @@
 		<br><br>
 		<<arousal -5000>>
 		<<stress -12>>
-		<<clamp>>
 		<<link [[돌아간다|Pharmacy]]>><</link>>
 	<<case "successful">>
 		당신은 의자에 앉아 효과가 나타나기를 기다린다. 배가 차가워지고 약간의 고통이 느껴진다. 몇 분 후, 간호사가 동공과 혈압을 측정한다. <<He _nun>> 당신의 얼굴에 떠오른 불편한 표정을 본다. "약이 효과가 있는 것 같구나. 약간의 고통이 있을 수 있지만, 금방 사라질 거다. 이제 가도 된다." <<lllarousal>> <<llstress>> <<gpain>>
@@ -690,7 +689,6 @@
 		<<arousal -5000>>
 		<<stress -12>>
 		<<pain 2>>
-		<<clamp>>
 		<<link [[돌아간다|Pharmacy]]>><</link>>
 	<<case "a little late">>
 		당신은 의자에 앉아 효과가 나타나기를 기다린다. 배에서 불쾌한 감각과 심한 통증을 느낀다. 간호사는 당신의 고통스러운 얼굴을 알아차리고 다가온다. <<He_ nun>> 당신의 동공과 혈압을 측정한다. "약은 효과가 있는 것 같은데, 시간이 아슬아슬했던 것 같구나. 이 약이 또다시 필요해지면, 너무 오래 기다리지 말거라. 지금 느끼는 고통은 시간이 지나면 사라질 거다. 이제 가도 된다." <<lllarousal>> <<llstress>> <<ggpain>>
@@ -698,7 +696,6 @@
 		<<arousal -5000>>
 		<<stress -12>>
 		<<pain 8>>
-		<<clamp>>
 		<<link [[돌아간다|Pharmacy]]>><</link>>
 	<<case "late">>
 		당신은 의자에 앉아 효과가 나타나기를 기다린다. 배에서 이상한 감각이 느껴지고 즉시 고통에 몸부림친다. 간호사가 달려와 동공과 혈압을 측정한다. <<He_ nun>> 당신의 얼굴에 떠오른 불편한 표정을 본다. "너무 늦은 것 같은데..." 당신은 배가 찌르는 듯한 고통을 느끼며 움찔거린다. 간호사는 당신의 고통스러운 얼굴을 알아차린다. "뭐, 어쨌든, 약은 효과가 있는 것 같구나. 한동안 고통이 느껴지겠지만, 정상적인 일이며, 지나갈 거란다. 이 약이 또다시 필요해지면, 너무 오래 기다리지 말거라. 이제 가도 된다." <<lllarousal>> <<ggtrauma>> <<ggpain>>
@@ -706,7 +703,6 @@
 		<<arousal -5000>>
 		<<trauma 20>>
 		<<pain 20>>
-		<<clamp>>
 		<<link [[돌아간다|Pharmacy]]>><</link>>
 	<<case "too late">>
 		당신은 의자에 앉아 효과가 나타나기를 기다린다. 배에서 불쾌한 감각이 느껴지고 즉시 고통에 몸부림친다. 간호사가 달려와 동공과 혈압을 측정한다. <<He_ nun>> 당신의 얼굴에 떠오른 불편한 표정을 본다. "너무 늦은 것 같은데..." 당신은 배에서 매우 심한 고통을 느끼며, 몸을 구부리고 의자에서 떨어진다. 시야가 흐려지고, 고통을 참을 수가 없다.<<lllarousal>> <<ggtrauma>> <<ggpain>>
@@ -714,7 +710,6 @@
 		<<set $arousal to 0>>
 		<<trauma 50>>
 		<<pain 200>>
-		<<clamp>>
 		<<link [[모든 것이 검게 변한다...|Pharmacy Morning After pill passout]]>><<pass 60>><<endevent>><</link>>
 	<<default>>
 		에러가 난 듯...
@@ -732,7 +727,6 @@
 <<trauma 50>>
 <<pain 200>>
 <<arousal -5000>>
-<<clamp>>
 <<link [[다음|Passout hospital]]>><<endevent>><<pass 60>><</link>>
 
 :: Pharmacy Buy Condoms in Bulk

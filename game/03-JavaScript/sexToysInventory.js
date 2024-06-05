@@ -97,20 +97,23 @@ function sexToysInventoryOnCarryClick(index, category) {
 	if (!toy.carried && countCarriedSextoys() >= maxCarried) return;
 	toy.carried = !toy.carried;
 
-	if (toy.worn && setupCategory !== "strap-on") delete V.worn[setupCategory];
-
 	// if player chose "Put back in the cupboard", also unwear the item
-	if (!toy.carried) toy.worn = false;
+	if (!toy.carried && toy.worn) {
+		toy.worn = false;
+		if (setupCategory === "strap-on") {
+			// this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
+			V.worn.under_lower = setup.clothes.under_lower[0];
+			Wikifier.wikifyEval(" <<updatesidebarimg>>");
+		} else {
+			delete V.worn[setupCategory];
+		}
+	}
+
 	document.getElementById("stiWearButton").textContent = toy.worn ? "벗는다" : "착용한다"; // update button text value
-	document.getElementById("stiCarryButton").textContent = toy.carried ? "가져간다" : "돌려놓는다"; // update button text value
+	document.getElementById("stiCarryButton").textContent = toy.carried ? "돌려놓는다" : "가져간다"; // update button text value
 	// update worn/carried tag on cell
 	document.getElementById("sti_already_owned_" + category.replace(/\s/g, "_") + "_" + index).textContent = toy.worn ? "착용중" : toy.carried ? "소지중" : "";
 
-	// this is an exception for strap-ons. Upon "wearing", also set them in under_lower as they don't have their own category yet.
-	if (setupCategory === "strap-on" && !toy.worn) {
-		V.worn.under_lower = setup.clothes.under_lower[0];
-		Wikifier.wikifyEval(" <<updatesidebarimg>>");
-	}
 	updateCarryCountUI();
 	greyButtonsIfCarryLimitReached(index, category);
 }

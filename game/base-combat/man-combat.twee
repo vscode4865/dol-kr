@@ -1607,6 +1607,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<<combat-reset-hand _args[0]>><<set $speechchastity to 1>><<bodypart_admire_chance pubic>>
 			<</if>>
 			<<set $worn.genitals.integrity -= 5>>
+		<<elseif $worn.genitals.origin is $NPCList[_n].fullDescription>>
+			<span class="lblue"><<He_ nun>> 놓아주기 전에 부드럽게 당신의 <<worn_genitals_name_ ul>> 잡고 있는다.</span>
+			<<combat-reset-hand _args[0]>><<set $speechchastity to 1>><<bodypart_admire_chance pubic>>
 		<<else>>
 			<span class="blue"><<He_ nun>> 당신의 <<worn_genitals_name_ ul>> 느슨하게 하려고 시도한다.</span> 
 			<<His_ yi>> 거친 손놀림으로 인해 당신은 더욱 불만족스럽게 느끼며 흥분한다. <<He_ nun>> 몇 분 후 쓸모없이 잡아당기는 것을 포기하였고, 실망한 듯 보인다.
@@ -1651,6 +1654,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 
 <<widget "combat-set-hand-start">>
 	<<rng>>
+	<<outfitChecks>>
 
 	<<combat-get-other-hand _args[0]>>
 
@@ -1825,7 +1829,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<neutral 2 _n>>
 		<<else>>
 			<<set $handtarget to 0>>
-			<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+			<<if _skirtExposed>>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_ nun>> <<his_ yi>> <<hand_ ro _args[0]>> 당신의 <<worn_under_lower_name_ ul>> 움켜잡는다.</span>
 					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
@@ -1871,7 +1875,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<neutral 2 _n>>
 		<<else>>
 			<<set $handtarget to 0>>
-			<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+			<<if _skirtExposed>>
 				<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 					<span class="purple"><<He_ nun>> <<his_ yi>> <<hand_ ro _args[0]>> 당신의 <<worn_under_lower_name_ ul>> 움켜잡는다.</span>
 					<<set $handtarget to "underlowerclothes">><<neutral 1 _n>>
@@ -2170,7 +2174,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<bodypart_admire_chance random_shoulder>>
 		<</if>>
 	<<elseif $enemyanger + $rng lte 125 and $walltype isnot "front">>
-		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+		<<if _skirtExposed>>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_ nun>> <<his_ yi>> <<hand_ ro _args[0]>> 당신의 <<worn_under_lower_name_ ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target _args[0] "underlowerclothes">><<neutral 1 "genitals" _n>>
@@ -2211,7 +2215,7 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 		<</if>>
 		<<bodypart_admire_chance random_bottom>>
 	<<elseif $enemyanger + $rng lte 130 and $walltype isnot "front">>
-		<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+		<<if _skirtExposed>>
 			<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.state isnot "totheside">>
 				<span class="purple"><<He_ nun>> <<his_ yi>> <<hand_ ro _args[0]>> 당신의 <<worn_under_lower_name_ ul>> 움켜잡는다.</span>
 				<<combat-set-hand-target _args[0] "underlowerclothes">><<neutral 1 "genitals" _n>>
@@ -2340,6 +2344,9 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 			<<He_ nun>> 당신의 얼굴 위에 침을 뱉는다.
 			<<neutral 5 _n>>
 		<<else>>
+			<<if $NPCList[_n].clothes and $NPCList[_n].clothes.set>>
+				<<set $_clothesSet to $NPCList[_n].clothes.set>>
+			<</if>>
 			<<if $worn.feet.cursed is 1>>
 				<<He_ nun>> 당신의 다리를 묶고 있는 구속구를 확인해본다.
 				<<neutral 5 _n>>
@@ -2347,7 +2354,8 @@ Hands are 'inverted': NPC holds PC's left hand with their right one, and vice ve
 				<span class="purple"><<He_ nun>> 당신의 <<worn_feet_name_ ul>> 잡는다.</span>
 				<<combat-set-hand-target _args[0] "shoes">>
 				<<neutral 3 _n>>
-			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed and !$robinmist and $role isnot "islander">>
+			<<elseif $enemytype is "man" and $NPCList[_n].fullDescription isnot "Ivory Wraith" and !$abomination and !$possessed and !$robinmist and $role isnot "islander" and
+				!["maleSchoolSwim", "maleSchoolSwimShirt", "femaleSchoolSwim", "maleSwim1", "maleSwim2", "femaleSwim1", "femaleSwim2", "neutralSwim"].includes($_clothesSet)>>
 				<span class="pink"><<He_ nun>> 위협적인 금속 족쇄를 꺼낸다.</span>
 				<<combat-set-hand-target _args[0] "shackle_entrance">>
 				<<neutral 4 _n>>

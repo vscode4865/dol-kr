@@ -164,20 +164,15 @@
 			<<ind>><<link [[일자리 제의를 받아들인다|Chef Work Accept]]>><</link>>
 			<br>
 		<<elseif $chef_state gte 1>>
-			<<ind>><<link [[셰프로 일한다 (1:00)|Chef Work]]>><</link>>
+			<<skinicon "chef">><<link [[셰프로 일한다 (1:00)|Chef Work]]>><</link>>
 			<br>
 		<</if>>
 		<<if $chef_state is 3>>
 			<<ind>><<link [["샘의 제의를 받아들인다"|Chef Photographer]]>><</link>>
 			<br>
 		<</if>>
-		<<if $player.gender_appearance is "m">>
-			<<ind>><<link [[웨이터로 일한다 (1:00)|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
-			<br>
-		<<else>>
-			<<ind>><<link [[웨이트리스로 일한다 (1:00)|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
-			<br>
-		<</if>>
+		<<skinicon "waiter">><<link [[`${$player.gender_appearance is "m" ? "웨이터" : "웨이트리스"}로 일한다 (1:00)`|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
+		<br>
 	<</if>>
 
 <<if $openinghours is 1 and $exposed lt 1 and $daily.cafeEaten isnot 1>>
@@ -325,9 +320,74 @@
 
 :: Ocean Breeze Work
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
-<<set $NPCName[$NPCNameList.indexOf("Sam")].love = Math.clamp($NPCName[$NPCNameList.indexOf("Sam")].love, -50, 50)>>
-<<rng 111>>
-<<if $rng gte 101>>
+<<set C.npc.Sam.love = Math.clamp(C.npc.Sam.love, -50, 50)>>
+<<rng 121>>
+
+<<if $rng gte 111 and !$weekly.robinCafeVisit and C.npc.Robin.init gte 1 and $robinmissing is 0 and getRobinLocation() isnot "school">>
+	<<set $weekly.robinCafeVisit to 1>>
+	<<npc "Robin">>
+
+	<<if C.npc.Robin.trauma gte 40>>
+		<<generateRole 1 0 "waiter/waitress">>
+
+		You are cleaning off a table after a previous customer when you see a familiar face in the corner of your eye. It's Robin. <<Hes>> sitting at a table all alone, being served by another <<person2>><<personsimple>>.
+		<br><br>
+
+		You overhear their conversation. "Sorry, but you're gonna have to buy something if you want a glass of water. It's company policy. We are running a business after all," the <<personsimple>> says.
+		<br><br>
+
+		Robin looks up at the <<personsimple>>. "I-I'm sorry... I don't think I can eat anything right now." <<person1>><<He>> stands up and walks out the door.<<gstress>><<stress 6>>
+		<br><br>
+
+		The <<person2>><<personsimple>> walks towards you and scoffs. "Bunch of freeloaders around here. They'll try and put on an act to make you feel bad, but don't let em." <<He>> continues walking past you and into the kitchen.
+		<br><br>
+
+		Before you can say anything Sam calls you to clean up another table. The rest of the shift passes uneventfully.
+		<br><br>
+
+		<<link [[다음|Ocean Breeze]]>><<pass 60>><<endevent>><</link>>
+
+	<<else>>
+		<<set _beverage to $weather is "winter" ? "eggnog" : "milkshake">>
+		You are cleaning off a table after a previous customer when you see a familiar face in the corner of your eye. It's Robin. <<Hes>> waiting near the front to be seated. You approach <<him>> and <<he>> smiles.
+		<br><br>
+
+		<<if $robinromance gte 1>>
+			<<if C.npc.Robin.dom gte 50>>
+				"Hello! How's work? You look really nice today. I hope the customers have been treating you well. If you get the time, we should go see a movie." <<He>> proceeds to tell you about the genres <<hes>> interested in.
+			<<else>>
+				"H-hey! I really wanted to see you and I heard you were working here today! There isn't a lot to do at the orphanage, I hope I'm not too much of a distraction," <<he>> says.
+			<</if>>
+
+		<<else>>
+			"Hello! I didn't know you were working today! I was just stopping by for a drink, it's nice to see you."
+
+		<</if>>
+		<br><br>
+
+		You gleefully chat with Robin for a few minutes before taking <<his>> order. <<He>> orders a  _beverage. You prepare <<his>> beverage and bring it to <<his>> table. <<He>> sips the _beverage and smiles. "It's really good!"
+		<br><br>
+
+		<<He>> finishes <<his>> drink, and then stands up. <<He>> <<if $robinromance gte 1>>kisses<<else>>hugs<</if>> you before leaving.
+		<br><br>
+
+		<<if $robinmoney gte 5>>
+			<<set $tip to 500>>
+			<<set $robinmoney -= 5>>
+			The rest of the shift passes uneventfully. Robin left you a tip.<<tipreceive>>
+
+		<<else>>
+			남은 업무 시간 동안에는 별다른 일이 없다.
+
+		<</if>>
+		<br><br>
+
+		<<link [[다음|Ocean Breeze]]>><<pass 60>><<endevent>><</link>>
+
+	<</if>>
+
+
+<<elseif $rng gte 101>>
 	샘이 커다란 테이블의 손님들에게 접시들을 날라 달라고 요청한다.
 	<br><br>
 	<<link [[여러 번 나누어 나른다|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
@@ -659,7 +719,7 @@
 <<elseif $rng gte 11 and $chef_state is undefined>>
 	<<npc Sam>><<person1>>샘이 허둥거리며 주방에서 달려나온다.
 
-	<<if $NPCName[$NPCNameList.indexOf("Sam")].love gte 10>>
+	<<if C.npc.Sam.love gte 10>>
 		<<HePost "은">> 당신 쪽을 바라보다가, <span class="green">이쪽으로 달려온다.</span> 
 		"지금 좀 상황이 곤란해져서 말이야." <<hePost "이">> 말한다. 
 		"셰프가 또 자리를 박차고 나갔지 뭐야. 대타를 뛰어줄 사람이 필요해. 걱정하진 마, 그렇게 어려운 일은 아니니까. 급료는 두 배를 줄게. 도와줄 수 있어?"
@@ -1323,7 +1383,14 @@
 		<br><br>
 
 		<<if !playerChastity("cage")>>그 바람에 당신은 발기한다. <</if>><<HePost "은">> 뒤로 물러나 그 광경을 감상한다.
-		<<if $player.virginity.penile is true or $player.virginity.vaginal is true>>
+		<<if ($parasite.penis.name and $parasite.penis.name isnot "parasite") or $worn.genitals.name is "chastity parasite">>
+			"I wonder if you're a virgin, having your penis protected like this," <<he>> whispers, gazing at your groin in awe.
+			<<if $player.virginity.vaginal is true>>
+				"That's so precious. It's not my place to take it. I need to be gentle."
+			<<else>>
+				"Though your vagina tells a different story." <<he>> whispers. <<He>> sounds satisfied.
+			<</if>>
+		<<elseif $player.virginity.penile is true or $player.virginity.vaginal is true>>
 			"너 동정이구나." <<hePost "이">> 경외심이 서린 눈으로 당신의 가랑이를 바라보며 속삭인다. "정말로 귀한 건데 말이야. 내가 가져서는 안되겠지. 조심스럽게 해야겠어."
 		<<else>>
 			"먹혀드네." <<hePost "이">> 속삭인다. 만족스러운 듯한 목소리다.
@@ -1336,7 +1403,9 @@
 
 		<<if $player.penisExist>>
 			<<if !playerChastity("cage")>>그 바람에 당신은 발기한다. <</if>><<HePost "은">> 뒤로 물러나 그 광경을 감상한다.
-			<<if $player.virginity.penile is true>>
+			<<if ($parasite.penis.name and $parasite.penis.name isnot "parasite") or $worn.genitals.name is "chastity parasite">>
+				"I wonder if you're a virgin, having it protected like this," <<he>> whispers, gazing at your groin in awe. "That's so precious. I need to be gentle."
+			<<elseif $player.virginity.penile is true>>
 				"너 동정이구나." <<hePost "이">> 경외심이 서린 눈으로 당신의 가랑이를 바라보며 속삭인다. "정말로 귀한 건데 말이야. 내가 가져서는 안되겠지. 조심스럽게 해야겠어."
 			<<else>>
 				"먹혀드네." <<hePost "이">> 속삭인다. 만족스러운 듯한 목소리다.
@@ -1360,11 +1429,13 @@
 
 	<<arousal 1000 "genitals">><<orgasm>>
 
-	<<if $player.penisExist>>
+	<<if !$player.penisExist or ($parasite.penis.name and $parasite.penis.name isnot "parasite") or $worn.genitals.name is "chastity parasite">>
+		<<HePost "은">> 당신이 몸을 떠는 걸 보며 미소 짓는다. "즐겨줄 거라고 생각했어." <<hePost "이">> 속삭인다.
+	<<elseif $orgasmcount gte 24 or $femaleclimax or _deniedOrgasm>>
+		<<He>> closes <<his>> eyes as you shudder, only to look at you confused, then smile. "I hope you enjoyed the treat," <<he>> whispers.
+	<<else>>
 		당신이 몸을 떨자 <<hePost "은">> 눈을 감고는 얼굴로 정액을 받아낸다. 
 		<<HePost "은">> 손가락으로 얼굴에 묻은 정액을 닦아내고는 입 안에 집어넣는다. "최고의 크림이지." <<hePost "이">> 속삭인다. 
-	<<else>>
-		<<HePost "은">> 당신이 몸을 떠는 걸 보며 미소 짓는다. "즐겨줄 거라고 생각했어." <<hePost "이">> 속삭인다.
 	<</if>>
 	<br><br>
 
@@ -1454,6 +1525,7 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 :: Cafe Coffee
 <<endevent>>
 <<set _coffee to ["모카를", "라떼를", "카라멜 라떼를", "화이트 초콜릿 모카를", "플랫 화이트를", "아이스 카라멜 라떼를"].pluck()>>
+<<wearProp "coffee">>
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	당신은 귓속의 슬라임의 말이 맞다고 결정하고
 <<else>>
@@ -1781,6 +1853,7 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 
 :: Cafe Pancakes
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
+<<wearProp "pancake">>
 
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	당신은 귓속의 슬라임의 말이 맞다고 결정하고
@@ -2045,7 +2118,7 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <</widget>>
 
 :: Cafe Cream Bun
-<<set $outside to 0>><<set $location to "cafe">><<effects>>
+<<set $outside to 0>><<set $location to "cafe">><<effects>><<wearProp "creambun">>
 
 <<if $daily.earSlimeOceanBreezeCafeEat>>
 	당신은 귓속의 슬라임의 말이 맞다고 결정하고
@@ -2083,7 +2156,7 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 	아무도 신경쓰지 않는다. 당신은 만족하여 뒤로 등을 기대고 앉는다.
 	<br><br>
 
-	<<link [[다음|Ocean Breeze]]>><</link>>
+	<<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
 	<br>
 
 <</if>>
@@ -2114,20 +2187,19 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 <<switch $phase>>
 	<<case "fruity ale">>
-		<<set _food to "과일 에일을 주문한다. 그것은 곧 평범한 맥주잔에 담겨 나온다. 그것은 매우 달콤하고 가볍다. 그것은 맛있다">>
+		<<wearProp "beermug">><<set _food to "과일 에일을 주문한다. 그것은 곧 평범한 맥주잔에 담겨 나온다. 그것은 매우 달콤하고 가볍다. 그것은 맛있다">>
 	<<case "winter ale">>
-		<<set _food to "윈터 에일을 주문한다.	그것은 곧 아름다운 곡선의 유리병에 담겨 나온다. 그것은 쓰기보다는 달콤하다. 그것은 맛있다">>
+		<<wearProp "beermug">><<set _food to "윈터 에일을 주문한다.	그것은 곧 아름다운 곡선의 유리병에 담겨 나온다. 그것은 쓰기보다는 달콤하다. 그것은 맛있다">>
 	<<case "shandy">>
-		<<set _food to "섄디를 주문한다. 그것은 곧 나온다. 맥주잔과 캔이 같이 나온 것을 보아 당신이 직접 따르도록 만들어졌음이 분명하다. 아주 상쾌한 레몬 맛이다">>
+		<<wearProp "beermug">><<set _food to "섄디를 주문한다. 그것은 곧 나온다. 맥주잔과 캔이 같이 나온 것을 보아 당신이 직접 따르도록 만들어졌음이 분명하다. 아주 상쾌한 레몬 맛이다">>
 	<<case "autumn ale">>
-		<<set _food to "어텀 에일을 주문한다. 그것은 곧 나온다. 그것은 달콤하고 약간의 카라멜 향이 난다. 그것은 맛있다">>
+		<<wearProp "beermug">><<set _food to "어텀 에일을 주문한다. 그것은 곧 나온다. 그것은 달콤하고 약간의 카라멜 향이 난다. 그것은 맛있다">>
 	<<case "fruit salad">>
-		<<set _food to "과일 샐러드를 주문한다. 그것은 곧 나온다. 그것에는 신선한 딸기, 블루베리, 키위와 파인애플 덩어리가 들어있다. 그것은 달콤하고 맛이 좋다">>
+		<<wearProp "salad">><<set _food to "과일 샐러드를 주문한다. 그것은 곧 나온다. 그것에는 신선한 딸기, 블루베리, 키위와 파인애플 덩어리가 들어있다. 그것은 달콤하고 맛이 좋다">>
 	<<case "gingerbread">>
-		<<set _food to "사람 모양 생강 쿠키를 주문한다. 그것은 곧 나와, 당으로 뒤덮인 친근한 미소를 당신에게 지어보인다. 그것은 달콤하고 맛이 좋으며, 당신에게 크리스마스를 상기시켜준다">>
-		<<wearProp "gingerbread">>
+		<<wearProp "gingerbread">><<set _food to "사람 모양 생강 쿠키를 주문한다. 그것은 곧 나와, 당으로 뒤덮인 친근한 미소를 당신에게 지어보인다. 그것은 달콤하고 맛이 좋으며, <<print $christmas is 1 and Time.monthDay is 25 ? `크리스마스 당일날 먹기에 완벽한 간식이다` : `당신에게 크리스마스를 상기시켜준다`>>">>
 	<<default>>
-		<<set _food to "음식을 주문한다. 그것은 곧 나오고, 당신은 빠르게 그것을 먹어치운다. 그것은 맛있다">>
+		<<wearProp "fork">><<set _food to "음식을 주문한다. 그것은 곧 나오고, 당신은 빠르게 그것을 먹어치운다. 그것은 맛있다">>
 <</switch>>
 
 <<print $daily.earSlimeOceanBreezeCafeEat ? "당신은 귓속의 슬라임이 옳다고 생각하며" : "당신은">> 자리에 앉아 _food.

@@ -8,12 +8,13 @@
 	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>>
 		<<outfitChecks>>
 		/*Check for when the pc is only wearing an overcoat*/
-		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 아무것도 입지 않았다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim"))>>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 수영복만 입고 있다는 사실을 자각했다.
-		<<elseif $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked" and $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
-			<<if _middleOutfit>><<worn_over_upper_name_ ul>><<else>><<worn_over_upper_name_ gwa>> <<worn_over_lower_name_ ul>><</if>> 벗자마자, 당신은 외투 아래에 속옷만 입고 있다는 사실을 자각했다.
+		<<if $worn.under_upper.name isnot "naked" and $worn.under_lower.name isnot "naked">>
+			<<set _naked to ($worn.under_upper.type.includes("swim") or $worn.under_lower.type.includes("swim")) ? "수영복만 입고 있다는" : "속옷만 입고 있다는">>
+		<<else>>
+			<<set _naked to "아무것도 입지 않고 있다는">>
+		<</if>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+			당신이 <<print _middleOutfit ? "<<worn_over_upper_name_ ul>>" : "<<worn_over_upper.name_ gwa>> <<worn_over_lower_name_ ul>>">> 걸어놓으려고 가자마자, 당신은 외투 아래에 _naked 사실을 기억해 낸다.
 		<</if>>
 		<br><br>
 		<<npc River>><<person1>>
@@ -177,11 +178,11 @@
 			<br>
 		<<elseif $whitneymaths is "seat">>
 			<<if $promiscuity gte 35>>
-				<<if $NPCName[$NPCNameList.indexOf("Whitney")].penis isnot "none">>
+				<<if C.npc.Whitney.penis isnot "none">>
 					<<link [[손으로 휘트니를 만족시킨다|Maths Exam]]>><<set $phase to 4>><<npcincr Whitney love 1>><<npcincr Whitney lust 1>><</link>><<skill_difficulty `currentSkillValue("handskill")` "Hand Skill" 1 1000>><<ghandskill>><<glove>><<glust>>
 					<br>
 				<</if>>
-				<<if $NPCName[$NPCNameList.indexOf("Whitney")].vagina isnot "none">>
+				<<if C.npc.Whitney.vagina isnot "none">>
 					<<link [[손가락으로 휘트니를 만족시킨다|Maths Exam]]>><<set $phase to 5>><<npcincr Whitney love 1>><<npcincr Whitney lust 1>><</link>><<skill_difficulty `currentSkillValue("handskill")` "Hand Skill" 1 1000>><<ghandskill>><<glove>><<glust>>
 					<br>
 				<</if>>
@@ -215,7 +216,10 @@
 	<</if>>
 	<<daydreamicon>><<link [[몽상한다|Maths Lesson Daydream]]>><</link>><<lstress>><<lharass>>
 	<br>
-
+	<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+		<<bedicon "zzz">><<link [[책상에 엎드려 잔다|Maths Lesson Sleep]]>><</link>><<ltiredness>>
+		<br>
+	<</if>>
 	<<if $whitneymaths is "seat" and $exhibitionism gte 75>>
 		<<ind>><<link [[자위한다|Maths Lesson Masturbate]]>><<set $masturbationstart to 1>><<npcincr Whitney lust 1>><</link>><<exhibitionist5>><<glust "Whitney">>
 		<br>
@@ -258,9 +262,9 @@
 <<stress _lesson_progress>>
 
 <<if $phase is 1>>
-	<<mathsLessonEnd>>
+	<<lessonEnd "mathsClassroom">>
 <<else>>
-	<<mathsLessonEvent>>
+	<<lessonEvents "maths">>
 <</if>>
 
 :: Maths Lesson Socialise
@@ -288,9 +292,9 @@
 <<trauma _trauma>>
 
 <<if $phase is 1>>
-	<<mathsLessonEnd>>
+	<<lessonEnd "mathsClassroom">>
 <<else>>
-	<<mathsLessonEvent 2>>
+	<<lessonEvents "maths" 2>>
 <</if>>
 
 :: Maths Lesson Daydream
@@ -316,7 +320,22 @@
 
 
 <<if $phase is 1>>
-	<<mathsLessonEnd>>
+	<<lessonEnd "mathsClassroom">>
 <<else>>
-	<<mathsLessonEvent 0.5>>
+	<<lessonEvents "maths" 0.5>>
+<</if>>
+
+:: Maths Lesson Sleep
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+당신은 리버 선생님이 <<print either("칠판에 방정식들을 쓰는", "한 학생을 교실 앞으로 나오라고 하는", "삼각법의 유용한 쓰임새에 대해 이야기하는", "교실 앞에서 강의하는", "무언가 중요한 공식에 대해 빠르게 설명하는")>> 동안 책상에 머리를 기댄다. 당신의 눈은 곧 감기고, 잠시 후, 눈을 뜬다. 당신은 깨어 있으려고 몸부림치지만, 책상은 너무나도 편안하다.
+<br><br>
+<<towelup>>
+<<tiredness -12>>
+<<advancelesson>>
+
+<<if $phase is 1>>
+	<<lessonEnd "mathsClassroom" "sleep">>
+<<else>>
+	<<eventsmathssleep>>
 <</if>>

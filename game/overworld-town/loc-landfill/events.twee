@@ -580,22 +580,37 @@
 <<generate1>><<person1>>"거기 당장 멈춰," 당신의 뒤에서 소리치는 목소리가 들린다. "여긴 사유지야. 여기서 씨발 뭐하는거야?"
 <br><br>
 
-당신이 뭐라 말할까 결정하기도 전에, 당신은 비정상적인 충동을 느낀다.
-<span class="lewd">당신의 안에서 무언가가 <<personPost>>에게 몸을 바치라고 압박한다.</span>
-당신은 어째선지 그 충동을 따른다면 아주 기분이 좋아질 것이라는 것을 알고 있다.
+Before you can assess your options,
+<<if numberOfEarSlime() gte 2>>
+	you feel the ear slime's influence. <span class="lewd">It's stronger now, redoubled. It commands you to give yourself to the <<person>>.</span> By now you know how good it will feel to comply.
+<<else>>
+	you feel an unnatural urge<<if $earSlimeDaysStat gte 100>>, one that you're already familiar with<<elseif $earSlimeDaysStat gte 2>>, one that you've felt before<</if>>.
+	<<if $earSlimeDaysStat gte 1>>
+		<span class="lewd">A new ear slime inside pressures you to give yourself to the <<person>>.</span> You know going along with the urges will feel very good.
+	<<else>>
+		<span class="lewd">Something inside pressures you to give yourself to the <<person>>.</span> Somehow you know going along with the urges will feel very good.
+	<</if>>
+<</if>>
 <br><br>
 
 <<if $promiscuity gte 55 and $submissive gte 1900>>
 	<<link [[기꺼이 따른다|Trash Slime Submit willingly]]>>
-		<<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><<set $earSlime.promiscuity to 4>><<set $earSlime.startedThreats to true>>
+		<<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>>
+		<<if $earSlime.promiscuity lt 4>><<set $earSlime.promiscuity to 4>><</if>>
+		<<set $earSlime.startedThreats to true>>
 	<</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 	<br>
 <</if>>
 <<link [[따른다|Trash Slime Obey]]>>
-	<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><<set $earSlime.promiscuity to 2>>
+	<<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>>
+	<<if $earSlime.promiscuity lt 2>><<set $earSlime.promiscuity to 2>><</if>>
 <</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
 <br>
-<<link [[무시한다|Trash Slime Defy]]>><</link>>
+<<if numberOfEarSlime() gte 2 and $earSlime.startedThreats>>
+	<<link [[반항한다|Trash Slime Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+<<else>>
+	<<link [[무시한다|Trash Slime Defy]]>><</link>>
+<</if>>
 <br>
 
 
@@ -629,18 +644,60 @@
 :: Trash Slime Defy
 <<set $location to "landfill">><<set $outside to 1>><<effects>>
 
-당신은 뒤로 돌아 도망친다. 그것이 당신에게 하게 한 약속을 기억하면서, 잠시 당신의 발걸음이 흔들린다.
-<br><br>
-<<tearful>> 당신은 당신이 방금 무엇을 느꼈는지 확신하지 못한 상태에서, 어떻게든 비틀거리며 도망쳐서, 낡은 차 뒤에 몸을 웅크리고 숨는다.
-<br><br>
+<<if numberOfEarSlime() gte 2 and $earSlime.startedThreats>>
+	<<if $earSlime.defyCooldown>>
+		<<if $earSlime.growth gte 100>>
+			<<set $earSlime.defyCooldown += 2>>
+			/* Likely unreachable, but included anyway */
+			You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+		<<else>>
+			You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force your steps in the opposite direction.
+		<</if>>
+		<br><br>
+		<<endevent>>
 
-<i>슬라임에게 순종하는 것은 이익을 제공해 주지만, 당신의 오염도를 증가시킵니다. 그것의 영향력이 커지면, 슬라임은 더욱 강력해지고, 반항하기 더욱 어려워질 것입니다.</i>
-<br><br>
+		<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+		<<if $promiscuity gte 55 and $earSlime.growth lt 100>>
+			<<set $earSlime.defyCooldown += 4>>
+		<<else>>
+			<<set $earSlime.defyCooldown += 8>>
+		<</if>>
+		You turn and run. You feel a jolt of pain as the slime punishes you for defiance. It tries to force you to stay still, <span class="red">and you fail</span> to resist its influence.
+		<<ggwillpower>><<willpower 3>>
+		<br><br>
+		당신은 <<personPost>> 앞에 무릎을 꿇는다. "씨-씨발," 당신이 말한다. "씨발 날 따먹어 줘." 반 정도만이 당신이 하려던 말이다.
+		<br><br>
 
-<<endevent>>
+		<<person_ 이>> 주위를 살피곤, 작게 미소짓는다. "내게 사람들이 이끌리는 경향이 있긴 하지," <<he_ 이>> 말하며, 천천히 다가온다.
+		<br><br>
+		<<link [[다음|Trash Slime Rape]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		You turn and run. You feel a jolt of pain as the slime punishes you for defiance, however, you feel it try, <span class="green">but fail,</span> to force your steps in the opposite direction.
+		<<gwillpower>><<willpower 1>>
+		<br><br>
+		<<endevent>>
 
-<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
-<br>
+		<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	당신은 뒤로 돌아 도망친다. 그것이 당신에게 하게 한 약속을 기억하면서, 잠시 당신의 발걸음이 흔들린다.
+	<br><br>
+	<<tearful>> 당신은 당신이 방금 무엇을 느꼈는지 확신하지 못한 상태에서, 어떻게든 비틀거리며 도망쳐서, 낡은 차 뒤에 몸을 웅크리고 숨는다.
+	<br><br>
+	<<if numberOfEarSlime() is 1>>
+		<i>슬라임에게 순종하는 것은 이익을 제공해 주지만, 당신의 오염도를 증가시킵니다. 그것의 영향력이 커지면, 슬라임은 더욱 강력해지고, 반항하기 더욱 어려워질 것입니다.</i>
+		<br><br>
+	<</if>>
+
+	<<endevent>>
+
+	<<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
 
 
 :: Trash Slime Rape
@@ -698,9 +755,12 @@
 
 <<clotheson>>
 <<endcombat>>
+<<endevent>>
 
-<i>슬라임에게 순종하는 것은 이익을 제공해 주지만, 당신의 오염도를 증가시킵니다. 오염도가 올라 슬라임이 더욱 강력해지면, 저항하기 더욱 힘들어집니다.</i>
-<br><br>
+<<if numberOfEarSlime() is 1>>
+	<i>슬라임에게 순종하는 것은 이익을 제공해 주지만, 당신의 오염도를 증가시킵니다. 오염도가 올라 슬라임이 더욱 강력해지면, 저항하기 더욱 힘들어집니다.</i>
+	<br><br>
+<</if>>
 
 <<link [[다음|Trash]]>><<set $eventskip to 1>><</link>>
 

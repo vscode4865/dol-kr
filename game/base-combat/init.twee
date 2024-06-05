@@ -1137,30 +1137,46 @@
 		<<set $_was to ($rightarm is "heldSexToy" and $leftarm is "heldSexToy" ? "were" : "was")>>
 
 		<<if $enemyno gte 2>>
-			/* if statements so we can fine tune the percentages for balance */
-			<<set _rng to random(0,99)>>
-			<<if _rng lt 20>>
-				당신의 $_sexToy은 뜻밖인게 확실했지만, 그들은 신경쓰지 않는 듯 하다.
-			<<elseif _rng lt 40>>
-				당신의 $_sexToy을 보고 그들의 숨소리가 빨라진다.
-				<<set $enemyarousal += 50>><<set $speechsextoyaroused to 1>>
-			<<elseif _rng lt 60>>
-				그들은 당신의 $_sexToy을 보고 기뻐하는 듯 하다.
-				<<set $speechsextoyaroused to 1>>
-			<<elseif _rng lt 70>>
-				그들은 당신의 $_sexToy을 보고 실망한 듯 하다. 그들은 그게 뜻밖인 것 같다.
-				<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechsextoydisappointed to 1>>
-			<<elseif _rng lt 80>>
-				그들의 눈은 당신의 $_sexToy을 본 충격으로 커진다.
-				<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechsextoyshocked to 1>>
-			<<elseif _rng lt 90>>
-				그들은 당신의 $_sexToy을 보고 혐오감에 움찔한다.
-				<<set $enemyanger += 75>><<set $enemytrust -= 75>><<set $speechsextoyangry to 1>>
-			<<else>>
-				그들은 당신의 $_sexToy을 보고 어리둥절한 듯 하지만, 또한 흥분한 것 같다.
-				<<set $speechsextoyaroused to 1>>
-			<</if>>
-
+			<<set $speechSextoyState to $speechSextoyState || either("aroused", "neutral", "disappointed", "shocked", "angry")>>
+			<<cleareventpool>>
+			<<switch $speechSextoyState>>
+				<<case "aroused">>
+					<<addinlineevent>>
+						당신의 $_sexToy을 보고 그들의 숨소리가 빨라진다.
+						<<set $enemyarousal += 50>>
+					<</addinlineevent>>
+					<<addinlineevent>>
+						그들은 당신의 $_sexToy을 보고 기뻐하는 듯 하다.
+					<</addinlineevent>>
+					<<addinlineevent>>
+						그들은 당신의 $_sexToy을 보고 어리둥절한 듯 하지만, 또한 흥분한 것 같다.
+					<</addinlineevent>>
+				<<case "neutral">>
+					<<addinlineevent>>
+						당신의 $_sexToy은 뜻밖인게 확실했지만, 그들은 신경쓰지 않는 듯 하다.
+					<</addinlineevent>>
+				<<case "disappointed">>
+					<<addinlineevent 0.5>>
+						그들은 당신의 $_sexToy을 보고 실망한 듯 하다. 그들은 그게 뜻밖인 것 같다.
+						<<set $enemyarousal -= 100>><<set $enemytrust -= 50>>
+					<</addinlineevent>>
+				<<case "shocked">>
+					<<addinlineevent 0.5>>
+						그들의 눈은 당신의 $_sexToy을 본 충격으로 커진다.
+						<<set $enemyanger -= 50>><<set $enemytrust -= 50>>
+					<</addinlineevent>>
+				<<case "angry">>
+					<<addinlineevent 0.5>>
+						그들은 당신의 $_sexToy을 보고 혐오감에 움찔한다.
+						<<set $enemyanger += 75>><<set $enemytrust -= 75>>
+					<</addinlineevent>>
+				<<default>>
+					<<addinlineevent>>
+						그들은 당신의 $_sexToy을 보고 어리둥절한 듯 하다. 당신의 $_sexToy을 어떻게 생각하는지는 잘 모르겠다.
+						<span class="blue">오류 같으니 Vrelnir에게 알려주는게 좋을 것 같다.</span>
+					<</addinlineevent>>
+			<</switch>>
+			<<runeventpool>>
 		<<else>>
 			<<switch $NPCList[0].fullDescription>>
 				<<case "Robin">>
@@ -1181,28 +1197,46 @@
 				<<case "Leighton">>
 					<<set $speechsextoy to 1>>
 				<<default>>
-					<<set _rng to random(0,99)>>
-					<<if _rng lt 20>>
-						당신의 $_sexToy을 보고 <<His_ yi>> 숨소리가 빨라진다.
-						<<set $enemyarousal += 50>><<set $speechsextoyaroused to 1>>
-					<<elseif _rng lt 40>>
-						<<He_ nun>> 당신의 $_sexToy을 보고 기뻐하는 듯 하다.
-						<<set $speechsextoyaroused to 1>>
-					<<elseif _rng lt 60>>
-						당신의 $_sexToy은 뜻밖인게 확실했지만, <<he_ nun>> 신경쓰지 않는 듯 하다.
-					<<elseif _rng lt 70>>
-						<<He_ nun>> 당신의 $_sexToy을 보고 실망한 듯 하다. <<he_ nun>> 그게 뜻밖인 것 같다.
-						<<set $enemyarousal -= 100>><<set $enemytrust -= 50>><<set $speechsextoydisappointed to 1>>
-					<<elseif _rng lt 80>>
-						<<His_ yi>> 눈은 당신의 $_sexToy을 본 충격으로 커진다.
-						<<set $enemyanger -= 50>><<set $enemytrust -= 50>><<set $speechsextoyshocked to 1>>
-					<<elseif _rng lt 90>>
-						<<He_ nun>> 당신의 $_sexToy을 보고 혐오감에 움찔한다.
-						<<set $enemyanger += 75>><<set $enemytrust -= 75>><<set $speechsextoyangry to 1>>
-					<<else>>
-						<<He_ nun>> 당신의 $_sexToy을 보고 어리둥절한 듯 하지만, 또한 흥분한 것 같다.
-						<<set $speechsextoyaroused to 1>>
-					<</if>>
+					<<set $speechSextoyState to $speechSextoyState || either("aroused", "neutral", "disappointed", "shocked", "angry")>>
+					<<cleareventpool>>
+					<<switch $speechSextoyState>>
+						<<case "aroused">>
+							<<addinlineevent>>
+								당신의 $_sexToy을 보고 <<His_ yi>> 숨소리가 빨라진다.
+								<<set $enemyarousal += 50>>
+							<</addinlineevent>>
+							<<addinlineevent>>
+								<<He_ nun>> 당신의 $_sexToy을 보고 기뻐하는 듯 하다.
+							<</addinlineevent>>
+							<<addinlineevent>>
+								<<He_ nun>> 당신의 $_sexToy을 보고 어리둥절한 듯 하지만, 또한 흥분한 것 같다.
+							<</addinlineevent>>
+						<<case "neutral">>
+							<<addinlineevent>>
+								당신의 $_sexToy은 뜻밖인게 확실했지만, <<he_ nun>> 신경쓰지 않는 듯 하다.
+							<</addinlineevent>>
+						<<case "disappointed">>
+							<<addinlineevent 0.5>>
+								<<He_ nun>> 당신의 $_sexToy을 보고 실망한 듯 하다. <<he_ nun>> 그게 뜻밖인 것 같다.
+								<<set $enemyarousal -= 100>><<set $enemytrust -= 50>>
+							<</addinlineevent>>
+						<<case "shocked">>
+							<<addinlineevent 0.5>>
+								<<His_ yi>> 눈은 당신의 $_sexToy을 본 충격으로 커진다.
+								<<set $enemyanger -= 50>><<set $enemytrust -= 50>>
+							<</addinlineevent>>
+						<<case "angry">>
+							<<addinlineevent 0.5>>
+								<<He_ nun>> 당신의 $_sexToy을 보고 혐오감에 움찔한다.
+								<<set $enemyanger += 75>><<set $enemytrust -= 75>>
+							<</addinlineevent>>
+						<<default>>
+							<<addinlineevent>>
+								<<He_ nun>> 당신의 $_sexToy을 보고 어리둥절한 듯 하다. 당신의 $_sexToy을 어떻게 생각하는지는 잘 모르겠다.
+								<span class="blue">오류 같으니 Vrelnir에게 알려주는게 좋을 것 같다.</span>
+							<</addinlineevent>>
+					<</switch>>
+					<<runeventpool>>
 			<</switch>>
 		<</if>>
 	<</if>>

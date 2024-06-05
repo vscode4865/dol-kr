@@ -1,4 +1,6 @@
-/* eslint-disable no-undef */
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/actions.twee?ref_type=0c2b0126
+*/
 function masturbationActions() {
 	const fragment = document.createDocumentFragment();
 
@@ -12,8 +14,8 @@ function masturbationActions() {
 		return toy;
 	};
 	const toyDisplay = (toy1, toy2, post, sep) => { if(typeof(toy2) === "string") { sep = post; post = toy2; toy2 = undefined; }
-		if (toy1 && toy2) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColourJS(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
-		if (toy1) return (toy1.colour ? trColourJS(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
+		if (toy1 && toy2) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, "과") + " " + (toy2.colour ? trColour(toy2.colour) + " " : "") + sextoyPost(toy2.name, post, sep);
+		if (toy1) return (toy1.colour ? trColour(toy1.colour) + " " : "") + sextoyPost(toy1.name, post, sep);
 		return "";
 	};
 	const genitalsExposed = () => V.worn.over_lower.vagina_exposed >= 1 && V.worn.lower.vagina_exposed >= 1 && V.worn.under_lower.vagina_exposed >= 1;
@@ -109,11 +111,13 @@ function masturbationActions() {
 		fragment.append(wikifier("orgasm"));
 		fragment.append(wikifier("promiscuity1"));
 		V.masturbationorgasmstat++;
+		V.masturbationOrgasmTimeStat = Time.date.timeStamp;
 		V.masturbationorgasm++;
 		if (V.femaleclimax !== 1 && !T.deniedOrgasm && V.worn.genitals.name !== "chastity parasite" && V.mouth !== "mpenis") {
 			V.masturbationorgasmsemen++;
 		}
 		fragment.append(wikifier("purity", -1));
+		if (V.corruptionMasturbation) V.corruptionMasturbationCount--;
 	}
 	fragment.append(wikifier("pass", 10, "seconds"));
 	V.secondsSpentMasturbating += 10;
@@ -194,7 +198,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 					});
 				} else {
 					result.options.push({
-						action: "mchastity",
+						action: "mpenischastity",
 						text:
 							V.player.gender === "f" && V.parasite.clit.name === "parasite" ? "기생충 자지를 애무하려 시도한다" : "자지를 애무하려 시도한다",
 						colour: "sub",
@@ -217,7 +221,7 @@ function masturbationActionsHands(arm, { playerToys, selectedToy, toyDisplay, ge
 					});
 				} else {
 					result.options.push({
-						action: "mchastity",
+						action: "mvaginachastity",
 						text: "보지를 애무하려 시도한다",
 						colour: "sub",
 					});

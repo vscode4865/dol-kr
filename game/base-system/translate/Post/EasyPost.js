@@ -442,11 +442,16 @@ const EasyPostMacroList = [
 	// <<girl_ ul>> = <<girl>>을 
 	{ name: "girl_", orig_name: "girlPost", is_print: 0},
 
+	{ name: "lady_", orig_name: "ladyPost", is_print: 0},
+	{ name: "gentleman_", orig_name: "gentlemanPost", is_print: 0},
+
 	// <<girls_ nun>> = <<girls>>는 
 	{ name: "girls_", orig_name: "girlsPost", is_print: 0},
 
 	// <<girlfriend_ nun>> = <<girlfriend>>는 
 	{ name: "girlfriend_", orig_name: "girlfriendPost", is_print: 0},
+
+	{ name: "friend_", orig_name: "friendPost", is_print: 0},
 
 	// <<wife_ nun>> = <<wife>>는 
 	{ name: "wife_", orig_name: "wifePost", is_print: 0},
@@ -612,6 +617,16 @@ const EasyPostMacroList = [
 	
 	{ name: "changingRoomGender_", orig_name: "changingRoomGenderPost", is_print: 0},
 
+	// outfitNamePost
+	{ name: "top_name", orig_name: "topNamePost", is_print: 0},
+	{ name: "top_name_", orig_name: "topNamePost", is_print: 0},
+	{ name: "topUnder_name", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "topUnder_name_", orig_name: "topUnderNamePost", is_print: 0},
+	{ name: "bottom_name", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottom_name_", orig_name: "bottomNamePost", is_print: 0},
+	{ name: "bottomUnder_name", orig_name: "bottomUnderNamePost", is_print: 0},
+	{ name: "bottomUnder_name_", orig_name: "bottomUnderNamePost", is_print: 0},
+
 	// personPost 
 	// <<person_ ul>> = <<person>>을 
 	{ name: "person_", orig_name: "personPost", is_print: 0},
@@ -746,6 +761,44 @@ const EasyPostMacroList = [
 	{ name: "scarred_inmate_", orig_name: "scarred_inmatePost", is_print: 0},
 ];
 
+/* argsSplit : this.args.raw 를 따옴표를 고려해 split 한다 */
+function argsSplit(rawArgs)
+{
+	const quotes = ['\'', '\"', '\`'];
+	let splitArgs = [];
+	let str = "", ch;
+	let quoteChar, isQuoted = false;
+	
+	for (let i = 0, len = rawArgs.length; i < len; i++)
+	{
+		ch = rawArgs.charAt(i);
+		if ((isQuoted && quoteChar == ch) || (!isQuoted && quotes.includes(ch)))
+		{
+			isQuoted = !isQuoted;
+			if (isQuoted)
+				quoteChar = ch;
+			str += ch;
+			if (!isQuoted)
+			{
+				splitArgs.push(str);
+				str = "";
+				quoteChar = "";
+			}
+		}
+		else if (!isQuoted && ch == ' ')
+		{
+			if (str.length > 0)
+				splitArgs.push(str);
+			str = "";
+		}
+		else
+			str += ch;
+	}
+	if (str.length > 0)
+		splitArgs.push(str);
+	return splitArgs;
+}
+
 /* ParseEasyPostParam : EasyPost 의 인자를 분류해 돌려준다 */
 function ParseEasyPostParam(args)
 {
@@ -754,10 +807,11 @@ function ParseEasyPostParam(args)
 	{
 		if (i == 0 && typeof(args[0]) === "string")
 		{
-			if (args[0].charCodeAt() >= 0x0AC00)
-				post = args[i];
+			let temparg = args[0].replaceAll(/[\'\"\`]/g, "");
+			if (temparg.charCodeAt() >= 0x0AC00)
+				post = temparg;
 			else
-				post = trEasyPostAliasList[args[0]];
+				post = trEasyPostAliasList[temparg];
 			
 			if (post === undefined)
 				param.push(args[0]);
@@ -769,8 +823,15 @@ function ParseEasyPostParam(args)
 	if (param.length > 0)
 	{
 		let i=param.length-1;
-		if (typeof(param[i]) === "string" && param[i] == "sep")
-			sep = param.pop();
+		if (typeof(param[i]) === "string")
+		{
+			let temparg = param[i].replaceAll(/[\'\"\`]/g, "");
+			if(temparg == "sep")
+			{
+				param.pop();
+				sep = temparg;
+			}
+		}
 	}
 	return [post, sep, param];
 }
@@ -788,34 +849,38 @@ function EasyPostAddMacro()
 		is_print =  EasyPostMacroList[i].is_print;
 		// macro_template : 실제 매크로를 불러오는 본체의 템플릿
 		let macro_template = `
-		function ${name}(...args)
-		{
-			if (!Macro.has("${orig_name}"))
-				return "<span class='red'>에러: ${name}: ${orig_name} 매크로가 존재하지 않음</span>";
-			let [post, sep, param] = ParseEasyPostParam(args);
-			let wikistr = "<<${orig_name}";
-			for(let i = 0; i < param.length; i++)
-			{
-				if (param[i] === undefined)
-					wikistr += " $_undefined";
-				else if (typeof(param[i]) === "number")
-					wikistr += " " + param[i].toString();
+		Macro.add('${name}', {
+			skipArgs : false,
+			handler : function() {
+				let wikistr;
+				if (!Macro.has("${orig_name}"))
+					wikistr = "<span class='red'>에러: ${name}: ${orig_name} 매크로가 존재하지 않음</span>";
 				else
-					wikistr += " '" + param[i] + "'";
+				{
+					let args = argsSplit(this.args.raw);
+					let [post, sep, param] = ParseEasyPostParam(args);
+					wikistr = "<<${orig_name}";
+					for(let i = 0; i < param.length; i++)
+					{
+						if (param[i] === undefined)
+							wikistr += " $_undefined";
+						else
+							wikistr += " " + param[i];
+					}
+					if (post)
+					{
+						wikistr += " '" + post + "'";
+						if (sep)
+							wikistr += " '" + sep + "'";
+					}
+					wikistr +=">>";
+					if(${is_print})
+						wikistr += "<<print _trResult>>";
+					$(this.output).wiki(wikistr);
+				}
 			}
-			if (post)
-			{
-				wikistr += " '" + post + "'";
-				if (sep)
-					wikistr += " '" + sep + "'";
-			}
-			wikistr +=">>";
-			if(${is_print})
-				wikistr += "<<print _trResult>>";
-			return wikistr;
-		}
-		DefineMacroS("${name}", ${name});
-		`;
+		});
+		`
 		eval(macro_template);
 	}
 }

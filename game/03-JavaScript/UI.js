@@ -33,75 +33,9 @@ function overlayMenu(elementId, type) {
 }
 window.overlayMenu = overlayMenu;
 
-/* Sidebar swipe */
-document.addEventListener("touchstart", handleTouchStart, false);
-document.addEventListener("touchmove", handleTouchMove, false);
-
-let xDown = null;
-let yDown = null;
-
-function getTouches(evt) {
-	return (
-		evt.touches || // browser API
-		evt.originalEvent.touches // jQuery
-	);
-}
-
-function handleTouchStart(evt) {
-	const firstTouch = getTouches(evt)[0];
-	xDown = firstTouch.clientX;
-	yDown = firstTouch.clientY;
-}
-
-function handleTouchMove(evt) {
-	if (!xDown || !yDown) {
-		return;
-	}
-
-	/**
-	 * Activate the swipe only when finger near the UI Bar.
-	 * 50px - +/- width of unstowed UI Bar
-	 * 280px - +/- width of unstowed UI bar
-	 */
-	if (UIBar.isStowed()) {
-		if (xDown > 50) {
-			return;
-		}
-	} else {
-		if (xDown > 280) {
-			return;
-		}
-	}
-
-	const xUp = evt.touches[0].clientX;
-	const yUp = evt.touches[0].clientY;
-
-	const xDiff = xDown - xUp;
-	const yDiff = yDown - yUp;
-
-	if (Math.abs(xDiff) > Math.abs(yDiff)) {
-		// most significant
-		if (xDiff > 0) {
-			UIBar.stow(); // left swipe
-		} else {
-			UIBar.unstow(); // right swipe
-		}
-	} else {
-		if (yDiff > 0) {
-			// up swipe
-		} else {
-			// down swipe
-		}
-	}
-	// reset values
-	xDown = null;
-	yDown = null;
-}
-
-//Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
+// Links.disableNumberifyInVisibleElements.push("#passage-testing-room");
 
 $(document).on(":passagerender", function (ev) {
-
 	if (passage() === "GiveBirth") {
 		$(ev.content)
 			.find("[type=checkbox]")
@@ -432,9 +366,17 @@ function settingsGenericGenders(id) {
 
 		if (id === "mlm" || id === "wlw" || id === "blw" || id === "blm") {
 			switch (val) {
-				case 100: text = `<span class='gold inline-colour'>0%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>100%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
-				case 0: text = `<span class='gold inline-colour'>100%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>0%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
-				default: text = `<span class='gold inline-colour'>${(100 - val)}%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>${val}%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`; break;
+				case 100:
+					text = `<span class='gold inline-colour'>0%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>100%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
+					break;
+				case 0:
+					text = `<span class='gold inline-colour'>100%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>0%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
+					break;
+				default:
+					text = `<span class='gold inline-colour'>${
+						100 - val
+					}%</span>의 <span class='pink inline-colour'>${women}</span>과 <span class='gold inline-colour'>${val}%</span>의 <span class='blue inline-colour'>${men}</span>이 ${attraction} 것입니다.`;
+					break;
 			}
 		} else {
 			if (val === 100) {
@@ -442,18 +384,24 @@ function settingsGenericGenders(id) {
 			} else if (val === 0) {
 				text = `<span class='gold inline-colour'>모든</span> ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
 			} else if (val === 50) {
-				text = `${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>과 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>으로 <span class='gold inline-colour'>동등하게</span> 나누어질 것입니다.`;
+				text =
+					trid[id] +
+					"은" +
+					` <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>과 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>으로 <span class='gold inline-colour'>동등하게</span> 나누어질 것입니다.`;
 			} else if (val > 50) {
 				text = `<span class='gold inline-colour'>${val}%</span>의 ${trid[id]}은 <span class='blue inline-colour'>${id === "beasts"? "수컷":"남성"}</span>일 것입니다.`;
 			} else {
-				text = `<span class='gold inline-colour'>${(100 - val)}%</span>의 ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
+				text = `<span class='gold inline-colour'>${100 - val}%</span>의 ${trid[id]}은 <span class='pink inline-colour'>${id === "beasts"? "암컷":"여성"}</span>일 것입니다.`;
 			}
 		}
 
-		jQuery("#numberslider-value-" + slider).text("").append(text).addClass("small-description");
-		};
+		jQuery("#numberslider-value-" + slider)
+			.text("")
+			.append(text)
+			.addClass("small-description");
+	};
 
-		$(() => {
+	$(() => {
 		updateText();
 		$("#numberslider-input-" + slider).on("input change", function (e) {
 			updateText();
@@ -469,16 +417,24 @@ function settingsMonsterChance() {
 		let text = null;
 
 		switch (val) {
-			case 100: text = "짐승들은 <span class='gold inline-colour'>항상</span> 몬스터 소년과 소녀로 나올 것입니다."; break;
-			case 0: text = "환각 중에 허용되지 않는다면, 짐승들은 <span class='gold inline-colour'>절대</span> 몬스터 소년과 소녀로 나오지 않을 것입니다."; break;
-			case 50: text = "모든 짐승들 중 <span class='gold inline-colour'>절반</span>은 몬스터 소년과 소녀로 대체될 것입니다."; break;
-			default: text = `모든 짐승들 중 <span class='gold inline-colour'>${val}%</span>는 몬스터 소년과 소녀로 대체될 것입니다.`; break;
+			case 100:
+				text = "짐승들은 <span class='gold inline-colour'>항상</span> 몬스터 소년과 소녀로 나올 것입니다.";
+				break;
+			case 0:
+				text = "환각 중에 허용되지 않는다면, 짐승들은 <span class='gold inline-colour'>절대</span> 몬스터 소년과 소녀로 나오지 않을 것입니다.";
+				break;
+			case 50:
+				text = "모든 짐승들 중 <span class='gold inline-colour'>절반</span>은 몬스터 소년과 소녀로 대체될 것입니다.";
+				break;
+			default:
+				text = `모든 짐승들 중 <span class='gold inline-colour'>${val}%</span>는 몬스터 소년과 소녀로 대체될 것입니다.`;
+				break;
 		}
 
 		jQuery("#numberslider-value-monsterchance").text("").append(text).addClass("small-description");
-		};
+	};
 
-		$(() => {
+	$(() => {
 		updateText();
 		$("#numberslider-input-monsterchance").on("input change", function (e) {
 			updateText();
@@ -683,13 +639,21 @@ function updatehistorycontrols() {
 	if (V.options.maxStates === undefined) V.options.maxStates = Config.history.maxStates;
 	else Config.history.maxStates = V.options.maxStates; // update engine config
 
-	// option to only save active state into sessionStorage, for better performance
-	if (V.options.sessionHistory) Config.history.maxSessionStates = V.options.maxStates;
-	else Config.history.maxSessionStates = 1;
+	// enable fast rng re-roll on "keypad *" for debug and testing
+	if (V.debug || V.cheatdisable === "f" || V.testing) Links.disableRNGReload = false;
+	else Links.disableRNGReload = true;
 
-	if (V.options.maxStates === 1) jQuery("#ui-bar-history").hide(); // hide nav panel when it's useless
-	else {
-		// or unhide it otherwise
+	// option to reduce the number of states going into sessionStorage, for better performance
+	if (V.options.maxSessionStates === undefined) V.options.maxSessionStates = Config.history.maxSessionStates;
+	else Config.history.maxSessionStates = V.options.maxSessionStates;
+
+	// option to still record history without showing the controls, for better debugging
+	if (V.options.maxStates === 1 || !V.options.historyControls || V.ironmanmode) {
+		// hide nav panel when it's useless or set to not be displayed
+		Config.history.controls = false;
+		jQuery("#ui-bar-history").hide();
+	} else if (Config.history.maxStates > 1) {
+		// or unhide it otherwise, if config allows
 		Config.history.controls = true;
 		jQuery("#ui-bar-history").show();
 	}
@@ -708,7 +672,7 @@ function updateOptions() {
 		const tmpButtons = T.buttons;
 		const tmpKey = T.key; /* numberify_enabled workaround */ T.optionsRefresh = false;
 
-		if (!State.restore()) return; // don't do anything if state couldn't be restored
+		if (!State.restore(true)) return; // don't do anything if state couldn't be restored
 		V.options = optionsData; /* numberify_enabled workaround */ Links.enabled=V.options.numberify_enabled?true:false;
 		tanned(0, "ignoreCoverage");
 		State.show();

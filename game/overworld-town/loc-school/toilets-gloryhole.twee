@@ -27,7 +27,22 @@
 	<br>
 	<<link [[가게를 차리고 가격은 £20로 한다 (0:10)|School Gloryhole]]>><<pass 10>><<set $school_gloryhole_price to 2000>><<set $phase to 1>><</link>><<promiscuous4>>
 	<br>
-	<<link [[생각이 바뀌었다. 화장실에서 나온다 (0:01)|Hallways]]>><<pass 1>><</link>>
+	<<if $janitor_check_decay gte 1>>
+		<span class="blue">
+		<<switch $janitor_check>>
+			<<case 1>>
+			관리인은 어디에도 보이지 않는다.
+			<<case 2>>
+			관리인은 바쁘다.
+			<<default>>
+			관리인이 당신 쪽으로 오고 있다.
+		<</switch>>
+		</span>
+	<<elseif $janitor_caught is 1>>
+		<<link [[관리인의 동향을 먼저 확인한다|School Gloryhole Check]]>><<pass 10>><<set $skulduggerydifficulty to 0>><</link>><<skulduggerydifficulty>>
+	<</if>>
+	<br>
+	<<link [[생각이 바뀌었다; 화장실에서 나온다 (0:01)|Hallways]]>><<pass 1>><<set $janitor_check_decay to 0>><</link>>
 	<br>
 
 <</if>>
@@ -75,8 +90,19 @@
 <</if>>
 
 <<if _busy gte 1>>
-	<<switch random(3)>>
-	<<case 0>><!-- 25% chance to happen. -->
+	<<set $rng to random(1,100)>>
+	<<set $rngmod to 0.05*$janitor_check*$janitor_check_sd*$janitor_check_decay>>
+	<<if $janitor_caught is undefined>>
+		<<set $rngmod to 0>>
+	<</if>>
+	<!-- base 25% chance to happen, reduced by modifiers -->
+	<<if $rng lte 25*(1-$rngmod)>>
+		<<if $janitor_caught is undefined>>
+			<<set $janitor_caught to 1>>
+		<</if>>
+		<<if $NPCList[0].role isnot "janitor">>
+			<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
+		<</if>>
 		밖이 갑자기 소란스러워지더니, 목소리가 들려온다. "여기서 지금 뭐하는 거냐?" <span class="pink">관리인이 손을 뻗어서 당신을 끌어낸다.</span>
 		<br><br>
 		<<if $historytrait gte 2 and $schooldrainintro is 1>>
@@ -84,9 +110,11 @@
 			<br>
 		<</if>>
 		<<link [[잡혔다!|School Gloryhole Janitor Catch]]>><<stress 1>><</link>><<gstress>>
-	<<default>>
+		<br>
+		<<link [[관리인을 더듬는다!|School Gloryhole Janitor Seduce]]>><</link>><<promiscuous2>>
+	<<else>>
 		<<if _rnd lte _prob>>
-			<<generatec1>><<person1>>
+			<<generatey1>><<person1>>
 			발소리가 다가오더니, 키득거리는 소리가 들려온다.
 			<<if $NPCList[0].penis isnot "none">>
 			<<trPenisdesc $NPCList[0].penisdesc "이">>_trResult 구멍으로 들어온다.
@@ -106,7 +134,7 @@
 			<<link [[몰래 나온다 (0:05)|Hallways]]>><<pass 5>><<unset $desperateaction>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<</switch>>
+	<</if>>
 <<else>>
 	밖은 쥐죽은듯 조용하고, 당신은 구멍 뒤에 그냥 앉아 있는다.
 	<br><br>
@@ -182,8 +210,6 @@
 
 :: School Gloryhole Janitor Catch
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
-<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
-
 <<personPost "이">> 당신을 노려본다. "내 화장실에서 네가 일으킨 난리를 좀 봐라, <<girl_ a>>! 이 정액을 다 치우는데 얼마나 오래 걸리는지 알기나 해?"
 <br><br>
 
@@ -218,6 +244,71 @@
 	<</switch>>
 <</if>>
 
+:: School Gloryhole Janitor Seduce
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>>
+	<span class="gold">You feel more confident in your powers of seduction.</span>
+<</if>>
+<<seductionskilluse>>
+Before the janitor grabs you, you reach out and place a firm hand on <<his>> <<if $pronoun is "m">>crotch<<else>>breasts<</if>>. <<promiscuity2>>
+<<if $seductionrating gte $seductionrequired>>
+	The janitor takes a sharp breath of surprise as you grope <<him>>. You whisper in <<his>> ear, "I'm sorry, I've been a bad <<girl>>. Am I going to be punished?"
+	<br><br>
+	<<He>> hesitates for just a moment before <<he>> is on top of you.
+	<br><br>
+	<<link [[다음|Janitor Closet Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<else>>
+	The janitor takes a sharp breath of surprise as you grope <<him>>. "Why are you so angry?" you ask. "I can show you a good time."
+	<br><br>
+	<<He>> clears <<his>> throat before glaring at you. "You've made a big enough mess already. Don't make things worse." <<He>> grabs you by the arm and drags you out. <span class="green">At least you are not in too much trouble this time.</span>
+	<<gdelinquency>>
+	<br><br>
+	<<detention 1>>
+	<br><br>
+	<<link [[다음|Hallways]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: School Gloryhole Check
+
+Before you write up your sign for service, you remember what happened last time. You take a moment to step outside the bathroom and casually cast your eyes up and down the hall looking for the janitor.
+<br><br>
+<<generateRole 0 0 "janitor">><<npcClothesType $NPCList[0] "worker">><<person1>>
+<<set $janitor_check_decay to 1>>
+<<if $skulduggery gte 1000 >>
+	<<set $janitor_check_sd to 6>>
+<<elseif $skulduggery gte 800>>
+	<<set $janitor_check_sd to 5>>
+<<elseif $skulduggery gte 600>>
+	<<set $janitor_check_sd to 4>>
+<<elseif $skulduggery gte 400>>
+	<<set $janitor_check_sd to 3>>
+<<elseif $skulduggery gte 200>>
+	<<set $janitor_check_sd to 2>>
+<<else>>
+	<<set $janitor_check_sd to 1>>
+<</if>>
+
+<<if $skulduggery lte $skulduggerydifficulty + 100>>
+	<<set $skulduggery += 3>>
+<</if>>
+<<switch random(2)>>
+	<<case 1>>
+	<<set $janitor_check to 1>>
+	You look up and down the hall a few times, but the janitor is nowhere in sight. You have no idea when <<he>> might return, but for the moment, the coast is clear. <<skulduggeryuse>>
+	<<case 2>>
+	<<set $janitor_check to 2>>
+	You see the janitor at the end of the hall. <<He>> appears to be grumbling to <<himself>> as <<he>> scrubs the floor. Apparently something was spilled, keeping <<him>> busy for a while. <<skulduggeryuse>>
+	<<default>>
+	<<set $janitor_check to 0>>
+	You see the janitor pushing a small cart with various cleaners on it. <<He>> is headed in your direction. It is likely <<he>> will notice you, but you could get lucky. <<skulduggeryuse>>
+<</switch>>
+<br><br>
+
+<<link [[다음|School Gloryhole Start]]>><</link>>
 :: Janitor Closet Rape
 
 <<if $molestationstart is 1>>
@@ -263,7 +354,7 @@
 	<<endcombat>>
 	<<link [[다음|Hallways]]>><</link>>
 <<elseif $enemyhealth lte 0>>
-	<<person1>><<HePost "은">> 고통에 몸을 움찔거리다가, <span class="green">대걸레 양동이와 빗자루가 쌓인 곳으로 넘어진다.</span> <<tearful>> 당신은 기회를 놓치지 않고, 문을 쾅 닫고는 도망친다.
+	<<person1>><<He>> recoils in pain, <span class="green">falling back into a pile of mop buckets and brooms.</span> <<tearful>> you use this as your chance to escape, slamming the door behind you.
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
@@ -283,3 +374,72 @@
 	<<link [[다음|Whitney Rescue 2]]>><<set $whitneyRescueExit to "hallways">><</link>>
 	<br>
 <</if>>
+
+:: Janitor Closet Sex
+
+<<if $sexstart is 1>>
+/*Consensual encounter*/
+    <<set $sexstart to 0>>
+    <<consensual>>
+    <<set $consensual to 1>>
+    <<neutral 1>>
+    <<maninit>>
+    <<set $enemyanger += 100>>
+	<<enableSchoolRescue "Whitney">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+
+<<if _combatend>>
+    <span id="next"><<link [[다음|Janitor Closet Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+    <span id="next"><<link [[다음|Janitor Closet Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Janitor Closet Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+    <<ejaculation>>
+    The janitor straightens <<his>> clothes and clears <<his>> throat. <<He>> tries to give you a stern look as <<he>> escorts you out. "You've made a big mess, and I don't have time to deal with you, so I'll let you off this time with a warning."
+    <<clotheson>>
+    <<endcombat>>
+
+	<<link [[다음|Hallways]]>><</link>>
+<<elseif $enemyhealth lte 0>>
+	<<person1>><<He>> recoils in pain, <span class="green">falling back into a pile of mop buckets and brooms.</span> <<tearful>> you use this as your chance to escape, slamming the door behind you.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[다음|Hallways]]>><</link>>
+
+<<elseif $finish is 1>>
+    The janitor looks dejected as <<he>> straightens <<his>> clothes and clears <<his>> throat. <<He>> tries to give you a stern look as <<he>> escorts you out. "You've made a big mess, and I don't have time to deal with you, so I'll let you off this time with a warning."
+    <br><br>
+
+    <<clotheson>>
+    <<endcombat>>
+
+	<<link [[다음|Hallways]]>><</link>>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<<set $rescued += 1>>
+	문이 벌컥 열린다. <<person_ yi>> 눈이 당황하여 휘둥그레진다. "젠장! 설-설명할 수 있어!" 그러나 휘트니가 <<nnpc_his_ yi "Whitney">> 친구들에 둘러싸인 채 문간에 서 있는 걸 확인하자, <<his_ yi>> 당황은 가라앉는다. "다행이군, 그냥 애새끼들이잖아."
+	<br><br>
+
+	휘트니는 <<his_ yi>> 얼굴에 주먹을 날려, <<him_ ul>> 선반에 자빠트리는 것으로 응수한다. 관리인이 몸을 추스리기 전에 <<nnpc_He_ ga "Whitney">> 당신을 붙잡는다. 당신은 <<nnpc_he_ ga "Whitney">> 숨을 헐떡이며 마침내 발걸음을 멈추기까지 복도를 따라 끌려간다.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Whitney>><<person1>>
+
+	<<link [[다음|Whitney Rescue 2]]>><<set $whitneyRescueExit to "hallways">><</link>>
+	<br>
+<</if>>
+<br><br>

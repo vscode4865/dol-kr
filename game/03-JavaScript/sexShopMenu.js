@@ -389,7 +389,7 @@ function sexShopOnItemClick(index) {
 			`
 			<div colour-name="${item.colour_options[index]}" onclick="window.sexShopOnColourClick(\`${item.colour_options[index]}\`)" class="colour-button div-link">
 				<div class="bg-${item.colour_options[index]}">
-					<span class="capitalize colour-name-span">${trColourJS(item.colour_options[index])}</span>
+					<span class="capitalize colour-name-span">${trColour(item.colour_options[index])}</span>
 					<a tabindex="0"></a>
 				</div>
 			</div>`;
