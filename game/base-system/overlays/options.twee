@@ -8,6 +8,7 @@ IMPORTANT:
 <<widget "setupOptions">>
 	<<if ndef _optionsRefresh>><<set _optionsRefresh to false>><</if>> /* numberify_enabled workaround */ 
 	<<script>>
+		initializeTooltips();
 		settingsDisableElement();
 		window.Theme.initControl();
 		onInputChanged(() => {
@@ -45,8 +46,8 @@ IMPORTANT:
 		<div class="settingsToggle">
 			<label data-disabledif="!StartConfig.enableLinkNumberify">
 				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> 숫자 링크 이동 활성화
-				<mouse class="tooltip linkBlue">(?)<span>키보드로 이동을 가능하게 합니다</span></mouse>
 			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Allows navigation with keyboard">(?)</span>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -82,29 +83,12 @@ IMPORTANT:
 		<div class="settingsToggle">
 			<label><<checkbox "$options.showCaptionText" false true autocheck>> 사이드바에서 캡션 텍스트 보기</label>
 		</div>
-		<!-- Old renderer should stop being supported very soon.
-		사이드바 캐릭터 렌더러:
-		<label><<radiovar "$options.sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> 구버전</label> |
-		<label><<radiovar "$options.sidebarRenderer" "canvas">><<updatesidebarimg>><</radiovar>> 신버전</label> |
-		<label><<radiovar "$options.sidebarRenderer" "both">><<updatesidebarimg>><</radiovar>> 둘 다</label>
-		<br>
-		-->
 		<div class="settingsToggle">
 			콘돔 표시:
 			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> 일반</label> |
 			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> 숨김</label>
 		</div>
 		<div class="settingsToggle">
-			후추 스프레이 표시:
-			<<listbox "$options.pepperSprayDisplay" autoselect>>
-				<<option "스프레이" "sprays">>
-				<<option "작게 (점으로)" "compact">>
-				<<option "표시하지 않음" "none">>
-			<</listbox>>
-		</div>
-		<div class="settingsToggle">
-			플레이어 이미지 오버라이드: <mouse class="tooltip linkBlue">(?)<span>게임 내 효과는 없음.</span></mouse>
-			<br>
 			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
 			<label><<radiobutton "$options.genderBody" "default" autocheck>> 기본</label> |
 			<label><<radiobutton "$options.genderBody" "m" autocheck>> 남성적</label> |
@@ -116,6 +100,17 @@ IMPORTANT:
 		</div>
 		<div class="settingsToggle">
 			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> 추가 에러 메세지 활성화</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.clothingCaption" false true autocheck>> Show clothing descriptions in sidebar <span class="tooltip-anchor linkBlue" tooltip="Still displays the description as a tooltip when hovering over the avatar when disabled.">(?)</span></label>
+		</div>
+		<div class="settingsToggle">
+			후추 스프레이 표시:
+			<<listbox "$options.pepperSprayDisplay" autoselect>>
+				<<option "스프레이" "sprays">>
+				<<option "작게 (점으로)" "compact">>
+				<<option "표시하지 않음" "none">>
+			<</listbox>>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -246,13 +241,24 @@ IMPORTANT:
 	<label><input type="radio" name="theme" value="zen" /> 젠번(Zenburn)</label> |
 	<label><input type="radio" name="theme" value="monokai" /> 모노카이(Monokai)</label> |
 	<label><input type="radio" name="theme" value="storm" /> 스톰(Storm)</label> |
+	<label><input type="radio" name="theme" value="latte" /> Catppuccin Latte</label> |
+	<label><input type="radio" name="theme" value="frappe" /> Catppuccin Frappé</label> |
+	<label><input type="radio" name="theme" value="macchiato" /> Catppuccin Macchiato</label> |
+	<label><input type="radio" name="theme" value="mocha" /> Catppuccin Mocha</label> |
 	<br><br>
 
 	<span class="gold">날짜 형식</span><<optionsThemeDefault "dateFormat">>
 	<br>
-	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label>
-	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label>
+	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
+	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
 	<label><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
+	<br><br>
+
+	<span class="gold">Temperature Format</span><<optionsThemeDefault "dateFormat">>
+	<br>
+	<div class="settingsToggle">
+		<<checkbox "$options.fahrenheit" false true autocheck>> Use fahrenheit for temperatures
+	</div>
 	<br><br>
 
 	<<if $debug is 1>>
@@ -397,9 +403,9 @@ IMPORTANT:
 
 <<widget "optionsperformance">>
 	<<setupOptions>>
-	<span class="gold">이미지</span>
-	<br>
 	<<if StartConfig.enableImages is true>>
+		<span class="gold">이미지</span>
+		<br>
 		<div>
 			<div class="settingsToggle">
 				<label><<checkbox "$options.images" 0 1 autocheck>> 이미지 활성화</label>
@@ -433,10 +439,26 @@ IMPORTANT:
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
 		<br>
+		<span class="gold">Rendering</span>
+		<br>
+		<div class="description">Close the options menu for the change to apply.</div>
+		<div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.weatherUpdate" false true autocheck>> Use new weather renderer for sidebar</label>
+			</div>
+		</div>
+		<div>
+			<div class="settingsToggle">
+				<label data-target='["options.images", "weatherupdate"]' data-disabledif="V.options.images===0||V.options.weatherUpdate===false"><<checkbox "$options.reflections" false true autocheck>> Render water reflections
+					<span class="linkBlue" tooltip="Could cause performance issues on old devices.">(?)</span>
+				</label>
+			</div>
+		</div>
+		<br><br><br>
 		<span class="gold">애니메이션</span>
 		<div>
 			<div class="settingsToggle">
-				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> 사이드바 애니메이션</label>
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Sidebar character animations</label>
 			</div>
 			<div class="settingsToggle">
 				<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.blinkingEnabled" false true autocheck>> 눈 깜박임 애니메이션</label>

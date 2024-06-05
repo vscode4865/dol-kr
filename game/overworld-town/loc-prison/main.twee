@@ -18,8 +18,8 @@
 	문은 잠겨있다.
 	<br><br>
 <</if>>
-<<if isPlayerNonparasitePregnancyEnding()>>
-	<<pregnancyWatersBrokenPassout "prisonCell">>
+<<if $stress gte $stressmax and isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyPassout "prisonCell">>
 <<elseif $prison.schedule is "hunt" and $prison.morning isnot 1>>
 	<<set $prison.schedule to "wake">>
 	<<generate_methodical_guard 0>><<person1>>
@@ -149,7 +149,7 @@
 	당신은 터널을 들여다본다. 끝쪽에 하늘이 보인다.
 	<br><br>
 
-	<<link [[끝쪽으로 기어간다 (0:03)|Prison Tunnel Edge]]>><<pass 3>><</link>>
+	<<ind>><<link [[Crawl to the edge (0:03)|Prison Tunnel Edge]]>><<pass 3>><</link>>
 	<br>
 <<else>>
 	<<if $prison.tunnel gte 80>>
@@ -317,7 +317,7 @@
 	<<set $phase to 0>>
 <<else>>
 	당신은 절벽으로 가서 가장자리를 들여다본다. 시야 밖으로 모래 사장이 펼쳐진다. 별로 멀지 않은 곳에서 파도가 거세게 몰아친다.
-	<<if $weather is "clear">>
+	<<if !Weather.isOvercast>>
 		당신은 달빛에 비친 주변 안개를 볼 수 있다.
 	<<else>>
 		당신은 멀리 볼 수 없다.
@@ -904,7 +904,9 @@
 <<effects>><<effects_prison>><<set $bus to "shower">>
 
 당신은 교도소 욕실에 있다.
-<<if $prison.schedule is "wake">>
+<<if isPlayerNonparasitePregnancyEnding() and $prison.schedule isnot "lockdown">>
+	<<pregnancyPassout "prisonShower">>
+<<elseif $prison.schedule is "wake">>
 	수감자들은 목욕을 하기 전 옷을 벗어 나무 벤치에 올려놓는다. 당신은 물이 흐르는 소리를 듣는다.
 	<<if $prison.kylar is "active">>
 		카일라가 당신을 보며 구석에 서있다.
@@ -1021,7 +1023,7 @@
 			<</if>>
 			중앙 타워를 계단이 둥글게 감싼다.
 			<br>
-			<<link [[아래 층으로|Prison Block]]>><</link>>
+			<<stairsicon "down" "prison">><<link [[Downstairs|Prison Block]]>><</link>>
 			<br><br>
 			<<prison_map walkway>>
 		<</if>>
@@ -1096,7 +1098,7 @@
 			<br><br>
 			중앙 타워를 계단이 둥글게 감싼다. 당신은 그걸 지나왔다.
 			<br>
-			<<stairsicon "up">><<link [[당신의 감옥으로 가는 계단을 오른다|Prison Walkway]]>><</link>>
+			<<stairsicon "up" "prison">><<link [[Climb the stairs towards your cell|Prison Walkway]]>><</link>>
 			<br><br>
 
 			<<prison_map block>>
@@ -1122,7 +1124,7 @@
 
 
 <<if isPlayerNonparasitePregnancyEnding()>>
-	<<pregnancyWatersBrokenPassout "prisonLaundry">>
+	<<pregnancyPassout "prisonLaundry">>
 <<elseif Time.hour is 20>>
 	당신은 벨소리를 듣는다. "폐쇄 시간이다." <<generate_relaxed_guard 0>><<relaxed_guard_ ga 0>> 소리친다. "감옥으로 돌아가."
 	<br><br>
@@ -1409,14 +1411,14 @@
 						<span class="blue">당신의 다리가 묶인채로 달릴 순 없다.</span>
 						<br>
 					<<else>>
-						<<prisonicon "run">><<link [[달린다 (0:30)|Prison Yard Run]]>><<endevent>><<tiredness 6>><<athletics 6>><<pass 30>><</link>><<gathletics>><<gphysique>>
+						<<prisonicon "run">><<link [[Run (0:30)|Prison Yard Run]]>><<endevent>><<tiredness 4>><</link>><<gathletics>><<gphysique>>
 						<br>
 					<</if>>
 					<<if $leftarm is "bound" or $rightarm is "bound">>
 						<span class="blue">당신의 팔이 묶인채로 바벨을 들 순 없다.</span>
 						<br>
 					<<else>>
-						<<prisonicon "lift">><<link [[바벨을 들어올린다 (0:30)|Prison Yard Exercise]]>><<endevent>><<pass 30>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
+						<<prisonicon "lift">><<link [[Lift weights (0:30)|Prison Yard Exercise]]>><<endevent>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
 						<br>
 					<</if>>
 				<</if>>
@@ -1488,7 +1490,7 @@
 					<br>
 				<</if>>
 				<br>
-				<<link [[감옥 구역|Prison Block]]>><<endevent>><</link>>
+				<<getinicon>><<link [[Prison block|Prison Block]]>><<endevent>><</link>>
 				<br>
 				<<prison_map yard>>
 			<</if>>
@@ -1793,7 +1795,7 @@
 당신은 섬으로부터 나와 안개를 너머 본토를 향해 날아간다.
 
 <<if Time.dayState is "night">>
-	<<if $weather is "clear">>
+	<<if !Weather.isOvercast>>
 		당신은 마을의 불빛이 수평선을 비추는 것을 본다.
 	<<else>>
 		어둠 속에선 멀리 볼 순 없지만 당신은 거기에 본토가 있을걸 안다.
@@ -2050,7 +2052,7 @@
 <<generate_relaxed_guard 1>>
 <<generate_anxious_guard 2>>
 <<generate_veteran_guard 3>>
-당신은 의료실 침대에서 일어난다. 몇몇 흐릿한 사람들이 돌아다닌다. 한 사람 가까이 다가온다. <<his_ yi>> 특징은 <<methodical_guard_ wa 0>> 많이 비슷하다. "진정해. 네가 까먹었을 수도 있으니 말해주는데 넌 지금 의료실이야. 넌 지금 분만 중이야."
+You awaken on a medical bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of <<methodical_guard 0>>. "Relax. <<if $prison.schedule is "lockdown">>You're lucky someone found you. I'll overlook you being out of your cell, given the circumstances. You're in medical.<<else>>In case you've forgotten, you're in medical. You're in labour.<</if>>"
 <br><br>
 
 당신은 팔에 가벼운 찌릿함을 느끼고 당신의 감각이 점점 희미해진다. "진정제의 효과가 곧 들거야..." <<his_ yi>> 다시 흐릿해진다. 고통이 점점 사라진다.

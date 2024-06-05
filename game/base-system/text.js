@@ -353,7 +353,7 @@ statDisplay.create("ggghunger", () => statDisplay.statChange("배고픔", 3, "re
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("수용", 1, "green"));
 statDisplay.create("ginsecurity", type => {
-	if (type === "breasts_tiny" && V.player.gender === "f") return "";
+	if (type === "breasts_tiny" && V.player.gender === "m") return "";
 	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("불안감", 1, "red");
 	return "";
 });
@@ -458,7 +458,7 @@ statDisplay.create("lllspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		result.append(statDisplay.statChange("시드니의 순결도", -3, "purple"));
 	} else {
-		result.append(statDisplay.statChange("시드니의 타락도", 3, "purple"));
+		result.append(statDisplay.statChange("Sydney's Corruption", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
 		result.append(statDisplay.statChange("욕정", 1, "lewd"));
@@ -592,17 +592,19 @@ statDisplay.create("ggghistory", () => {
 	return result;
 });
 
-statDisplay.create("ghousekeeping", amount => {
+statDisplay.create("ghousekeeping", (amount, silent = false) => {
 	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("정리정돈", 1, "green");
+	} else if (silent === "silent") {
+		return "";
 	} else if (V.housekeeping >= amount) {
 		return " 정리정돈 기술을 향상시키기에는 당신은 기술이 너무 좋다.";
 	}
 	return "";
 });
-statDisplay.create("gghousekeeping", amount => statDisplay.statChange("정리정돈", 2, "green", () => amount !== undefined || V.housekeeping < amount));
-statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("정리정돈", 3, "green", () => amount !== undefined || V.housekeeping < amount));
+statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount === undefined || V.housekeeping < amount));
 
 statDisplay.create("ldom", npc => {
 	let targetName = "";
