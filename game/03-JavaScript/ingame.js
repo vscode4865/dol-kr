@@ -1925,23 +1925,23 @@ function beastMaleChance(override) {
 window.beastMaleChance = beastMaleChance;
 
 function penisNames(override) {
-	const names = ["penis"];
+	const names = ["자지"];	// penis
 
 	if (V.player.penissize < 0 && !override) return names;
 
-	if ((V.awareness >= 100 && !override) || override >= 1) names.push("dick");
-	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("cock");
+	if ((V.awareness >= 100 && !override) || override >= 1) names.push("음경");	// dick
+	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("좆");	// cock
 
 	return names;
 }
 window.penisNames = penisNames;
 
 function pussyNames(override) {
-	const names = ["vagina"];
+	const names = ["보지"];	// vagina
 
-	if ((V.awareness >= 100 && !override) || override >= 1) names.push("pussy");
-	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("quim");
-	if ((V.awareness >= 300 && V.purity < 100 && !override) || override >= 3) names.push("slit");
+	if ((V.awareness >= 100 && !override) || override >= 1) names.push("질");	// pussy
+	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("보지");	// quim
+	if ((V.awareness >= 300 && V.purity < 100 && !override) || override >= 3) names.push("보짓구멍");	// slit
 
 	return names;
 }

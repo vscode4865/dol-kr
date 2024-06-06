@@ -458,7 +458,7 @@ statDisplay.create("lllspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		result.append(statDisplay.statChange("시드니의 순결도", -3, "purple"));
 	} else {
-		result.append(statDisplay.statChange("Sydney's Corruption", 3, "purple"));
+		result.append(statDisplay.statChange("시드니의 타락도", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
 		result.append(statDisplay.statChange("욕정", 1, "lewd"));
@@ -603,8 +603,8 @@ statDisplay.create("ghousekeeping", (amount, silent = false) => {
 	}
 	return "";
 });
-statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount === undefined || V.housekeeping < amount));
-statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("gghousekeeping", amount => statDisplay.statChange("정리정돈", 2, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("정리정돈", 3, "green", () => amount === undefined || V.housekeeping < amount));
 
 statDisplay.create("ldom", npc => {
 	let targetName = "";
