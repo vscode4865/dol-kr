@@ -1,6 +1,6 @@
-:: Widgets trFeet [widget nobr]
-<<widget "init_trFeet">>
-    <<set setup.trClothes.feet to [
+function init_trFeet()
+{
+    setup.trClothes.feet = [
         {
             index: 0,
             name: "naked",
@@ -308,12 +308,31 @@
         },
 
         {
-            index: 33,
+            index: 34,
             name: "platform mary janes",
             name_ko: "플랫폼 메리 제인",
             variable: "platformmaryjanes",
             description: "학교에서 신기 적합하지만, 반드시 착용할 필요는 없다.",
             post: 0
         },
-    ]>>
-<</widget>>
+
+        {
+            index: 35,
+            name: "geta",
+            name_ko: "게다",
+            variable: "geta",
+            description: "이국적이다.",
+            post: 1
+        },
+
+        {
+            index: 36,
+            name: "zori",
+            name_ko: "조리",
+            variable: "zori",
+            description: "이국적이다.",
+            post: 1
+        },
+    ];
+}
+window.init_trFeet = init_trFeet;

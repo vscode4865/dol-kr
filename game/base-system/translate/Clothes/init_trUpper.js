@@ -1,6 +1,6 @@
-:: Widgets trUpper [widget nobr]
-<<widget "init_trUpper">>
-    <<set setup.trClothes.upper to [
+function init_trUpper()
+{
+    setup.trClothes.upper = [
         {
             index: 0,
             name: "naked",
@@ -1413,5 +1413,6 @@
             description: "트렌디하고 복고풍이다.",
             post: 1
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trUpper = init_trUpper;

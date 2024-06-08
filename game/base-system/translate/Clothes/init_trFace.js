@@ -1,6 +1,6 @@
-:: Widgets trFace [widget nobr]
-<<widget "init_trFace">>
-    <<set setup.trClothes.face to [
+function init_trFace()
+{
+    setup.trClothes.face = [
         {
             index: 0,
             name: "naked",
@@ -346,10 +346,10 @@
         {
             index: 38,
             name: "islander mask",
-            name_ko: "섬주민 마스크",
+            name_ko: "섬사람 마스크",
             variable: "islander mask",
             post: 1,
-            description: "섬주민이 쓴다."
+            description: "섬사람이 쓴다."
         },
 
         {
@@ -378,5 +378,6 @@
             post: 1,
             description: "학교에서 평판이 빠르게 상승한다."
         },
-	]>>
-<</widget>>
+	];
+}
+window.init_trFace = init_trFace;

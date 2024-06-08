@@ -1,6 +1,6 @@
-:: Widgets trHands [widget nobr]
-<<widget "init_trHands">>
-    <<set setup.trClothes.hands to [
+function init_trHands()
+{
+    setup.trClothes.hands = [
         {
             index: 0,
             name: "naked",
@@ -108,5 +108,6 @@
             post: 1,
             description: "플레이보이 바니걸이 착용하면 충분히 섹시해 보이고, 집사가 착용하면 충분히 세련되어 보인다."
         },
-     ]>>
-<</widget>>
+     ];
+}
+window.init_trHands = init_trHands;

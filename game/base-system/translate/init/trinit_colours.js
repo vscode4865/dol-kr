@@ -6,6 +6,7 @@ function trinit_colorList()
 			/* 특수 색상 */
 			"twotoned" : "투톤 색조",
 			"ghost" : "유령같은 반투명색",
+			"no" : "빡빡",
 		
 			/* setup.colours.hair (04-Variables/colours.js) */
 			"random" : "랜덤",
@@ -13,6 +14,7 @@ function trinit_colorList()
 			"jetblack":"흑옥색",
 			"black" : "검은색",
 			"blond" : "금발",
+			"blonde" : "금발",
 			"softblond" : "부드러운 금발",
 			"platinumblond" : "백금색",
 			"golden" : "황금색",

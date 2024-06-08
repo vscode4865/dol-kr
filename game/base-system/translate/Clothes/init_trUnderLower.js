@@ -1,6 +1,6 @@
-:: Widgets trUnderLower [widget nobr]
-<<widget "init_trUnderLower">>
-    <<set setup.trClothes.under_lower to [
+function init_trUnderLower()
+{
+    setup.trClothes.under_lower = [
         {
             index: 0,
             name: "naked",
@@ -505,5 +505,7 @@
             variable: "swimsuit",
             description: "수영복",
             post: 1
-        },    ]>>
-<</widget>>
+        },
+	];
+}
+window.init_trUnderLower = init_trUnderLower;

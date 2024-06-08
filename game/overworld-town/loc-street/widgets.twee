@@ -359,6 +359,7 @@
 <</widget>>
 
 <<widget "streetrocks">>
+	<<outfitChecks>>
 	<<if $worn.feet.type.includes("naked")>>
 		당신의 맨발이 뭔가 뾰족한 것을 밟는다. 느슨한 돌멩이다.
 		<<gpain>><<pain 4>>
@@ -371,21 +372,11 @@
 			<span class="red">당신은 무릎부터 바닥에 닿도록 넘어진다.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				당신의 <<worn_over_lower_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				당신의 <<bottom_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					당신은 해진 옷을 한데 잡아두려고 하지만, 소용이 없다.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				당신의 <<worn_lower_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					당신은 해진 옷을 한데 잡아두려고 하지만, 소용이 없다.
@@ -402,21 +393,11 @@
 			당신은 돌멩이에 걸려 넘어져, <span class="red">무릎부터 바닥에 닿도록 넘어진다.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				당신의 <<worn_over_lower_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				당신의 <<bottom_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					당신은 해진 옷을 함께 잡아두려고 하지만, 소용이 없다.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				당신의 <<worn_lower_name_ i>> 바닥에 쓸린다. 당신은 찢어지는 소리를 들었다.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					당신은 해진 옷을 함께 잡아두려고 하지만, 소용이 없다.
@@ -614,7 +595,8 @@
 			<<link [[무시한다|Catcall Ignore]]>><</link>><<gstress>><<gtrauma>>
 			<br>
 		<</if>>
-		<<if (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.name is "naked") or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.name is "naked")>>
+		<<outfitChecks>>
+		<<if _skirtExposed>>
 			<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked")>>
 				<<link [[몸을 보여준다|Catcall Skirt]]>><</link>><<exhibitionist5>><<lstress>><<garousal>>
 				<br><br>
@@ -711,6 +693,10 @@
 				당신이 <<worn_under_upper_name_ ul>> 착용한 상태에서는 그럴 수 없다.
 				<br><br>
 			<<else>>
+				<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2>>
+					<span class="red">당신은 귓속의 슬라임이 당신 자신을 노출하지 않은 상태로 나가도록 허락하지 않으리라는 것을 안다.</span>
+					<<set _slimeNoExit to true>>
+				<</if>>
 				<<if $worn.under_lower.name is "naked">>
 					<<link [["속옷을 입고 있지 않다고 말한다"|Street Panties]]>><<set $phase to 2>><</link>><<exhibitionist2>>
 					<br>
@@ -723,9 +709,7 @@
 			<</if>>
 			<br>
 		<</if>>
-		<<if $earSlime.growth gte 200 and $worn.under_lower.name is "naked" and $earSlime.exhibitionism gte 2>>
-			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
-		<<else>>
+		<<if !_slimeNoExit>>
 			<<link [[거절한다|Street Panties]]>><<set $phase to 3>><</link>><<gstress>>
 		<</if>>
 		<br>
@@ -783,64 +767,27 @@
 <</widget>>
 
 <<widget "street6">>
-	<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
-		당신의 <<worn_over_lower_name_ i>> 지나가던 차에 걸려, <<set $worn.over_lower.integrity -= 10>>
-		<<outfitChecks>>
-		<<if $worn.over_lower.integrity lte 0>>
-			<<overlowerruined>><<clothesruinstat>><<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><</if>>
-			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져</span> 나<<if $worn.lower.exposed gte 1 and !_underBottoms>>가며, 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다.<<else>>간다.<</if>>
-		<<else>>
-			찢어지면서 옷 상태가 나빠졌다.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.over_upper.type.includes("naked")>>
-		당신의 <<worn_over_upper_name_ i>> 지나가던 차에 걸려, <<set $worn.over_upper.integrity -= 10>>
-		<<if $worn.over_upper.integrity lte 0>>
-			<<overupperruined>><<clothesruinstat>><<if $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
-			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져</span> 나<<if $worn.upper.exposed gte 1 and !_underTop>>가며, 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다.<<else>>간다.<</if>>
-		<<else>>
-			찢어지면서 옷 상태가 나빠졌다.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		당신의 <<worn_lower_name_ i>> 지나가던 차에 걸려, <<set $worn.lower.integrity -= 10>>
-		<<if $worn.lower.integrity lte 0>>
-			<<lowerruined>><<clothesruinstat>><<set $loweroff to 0>>
-			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져</span> 나<<if !_underBottoms>>가며, 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다.<<else>>간다.<</if>>
-		<<else>>
-			찢어지면서 옷 상태가 나빠졌다.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.upper.type.includes("naked")>>
-		당신의 <<worn_upper_name_ i>> 지나가던 차에 걸려, <<set $worn.upper.integrity -= 10>>
-		<<if $worn.upper.integrity lte 0>>
-			<<upperruined>><<clothesruinstat>><<set $upperoff to 0>>
-			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져</span> 나<<if !_underTop>>가며, 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다.<<else>>간다.<</if>>
-		<<else>>
-			찢어지면서 옷 상태가 나빠졌다.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.under_upper.type.includes("naked")>>
-		Your $worn.under_upper.name snag<<if $worn.under_upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.under_upper.integrity -= 10>>
-		<<if $worn.under_upper.integrity lte 0>>
-			<<underupperruined>><<clothesruinstat>><<set $underupperoff to 0>>
-			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져 나가며</span> 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다.
-		<<else>>
-			찢어지면서 옷 상태가 나빠졌다.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<else>>
+	<<outfitChecks>>
+	<<set $_tornItem to _bottomIsSkirt ? _bottom : !_shirtless ? _top : "none">><<set $_tornItem_name_i to _bottomIsSkirt ? bottomNamePost("이") : !_shirtless ? topNamePost("이") : "">>
+	<<if $_tornItem is "none">>
 		<<generate1>><<person1>>지나가던 차에서 <<person_ i>> 당신의 노출된 가슴을 음흉한 눈빛으로 보며 외친다. "스트립쇼 고마워." 당신은 <<his_ yi>> 시선에 부끄러움을 느낀다.
 		<<gtrauma>><<gstress>><<garousal>><<trauma 1>><<stress 1>><<arousal 100>>
 		<br><br>
 		<<endevent>>
 		<<destinationeventend>>
+	<<else>>
+		당신의 $_tornItem_name_i 지나가던 차에 걸려, <<set $_tornItem.integrity -= 10>>
+		<<if $_tornItem.integrity lte 0>>
+			<<integritycheck no_text>>
+			<<clothesruinstat>>
+			<<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><<elseif $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
+			<span class="lewd">당신의 몸에서 깔끔하게 찢겨져</span> 나<<outfitChecks>><<if _bottomExposed or _shirtless>>가며, 길 한복판에서 당신의 <<lewdness_ rul>> 드러낸다<<else>>간다<</if>>.
+		<<else>>
+			찢어지면서 옷 상태가 나빠졌다.
+		<</if>>
 	<</if>>
+	<br><br>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "street7">>
@@ -1457,14 +1404,15 @@
 <<widget "streettentacle">>
 	<<set $phase to 0>>
 	<<set _target to 'none'>>
+	<<outfitChecks>>
 
 	당신은 허벅지에 무언가가 닿는 걸 느낀다. 내려다보자 물컹한 촉수가 열려 있는 맨홀에서 뻗어나와 있는 것을 발견한다. 촉수는 당신의 
 
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	<<if _bottomIsSkirt and _skirtExposed>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
-			다리와 <<worn_lower_name_ ul>> 휘감아 오른다. 그것은 당신의 <<worn_lower_name_ ul>> 휘감는다.
+			다리와 <<bottom_name_ ul>> 휘감아 오른다. 그것은 당신의 <<worn_under_lower_name_ ul>> 휘감는다.
 		<<elseif $worn.under_lower.type.includes("naked")>>
-			다리와 <<worn_lower_name_ ul>> 휘감아 오른다. 그것은 천 안으로 파고들어 당신의
+			다리와 <<bottom_name_ ul>> 휘감아 오른다. 그것은 천 안으로 파고들어 당신의
 			<<set $phase to 1>>
 			<<rng>>
 			<<if $analdisable is "f" and $rng gte 60>>
@@ -1484,7 +1432,7 @@
 			<</if>>
 			당신은 촉수를 타고 흐르는 흥분된 떨림을 느낄 수 있다.
 		<<else>>
-			다리와 <<worn_lower_name_ ul>> 휘감아 오른다. 그것은 한데 뭉쳐 천 안으로 파고든다.
+			다리와 <<bottom_name_ ul>> 휘감아 오른다. 그것은 한데 뭉쳐 천 안으로 파고든다.
 		<</if>>
 	<<elseif $worn.lower.type.includes("naked")>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
@@ -1494,7 +1442,7 @@
 			<<set $phase to 2>>
 		<</if>>
 	<<else>>
-		다리를 휘감아 올라 당신의 <<worn_lower_name_ ul>> 휘감는다.
+		다리를 휘감아 올라 당신의 <<bottom_name_ ul>> 휘감는다.
 	<</if>>
 	<br><br>
 
@@ -1795,7 +1743,7 @@
 	<<if $exhibitionism gte 55 and ($uncomfortable.underwear is false or $uncomfortable.nude is false)>>
 		<<run _avaliableActions.push("flaunt")>>
 	<</if>>
-	<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<if _skirtExposed>>
 		<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked") and $uncomfortable.nude is false>>
 			<<run _avaliableActions.push("flashSkirt1")>>
 		<<elseif $exhibitionism gte 35 and playerChastity() and $uncomfortable.nude is false>>

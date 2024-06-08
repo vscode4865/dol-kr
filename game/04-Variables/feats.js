@@ -1552,7 +1552,7 @@ setup.feats = {
 	},
 	"Face of a Guardian": {
 		title: "수호자의 얼굴",
-		desc: "당신만의 섬주민 가면을 만들었다.",
+		desc: "당신만의 섬사람 가면을 만들었다.",
 		difficulty: 2,
 		series: "",
 		filter: ["All", "Discoveries"],
@@ -1570,7 +1570,7 @@ setup.feats = {
 	},
 	Naturalised: {
 		title: "귀화",
-		desc: "잡히지 않고, 섬주민의 성에 잠입했다.",
+		desc: "잡히지 않고, 섬사람의 성에 잠입했다.",
 		difficulty: 3,
 		series: "",
 		filter: ["All", "Discoveries"],
