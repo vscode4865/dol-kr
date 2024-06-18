@@ -1289,9 +1289,9 @@ function trinit_roleList()
 			"pirate":{ko : "해적", post : 0}, 
 			
 			/* island */
-			"islander":{ko : "섬사람", post : 1}, 
-			"old islander":{ko : "늙은 섬사람", post : 1}, 
-			"sleeper":{ko : "잠이 든 사람", post : 1}, 
+			"islander":{ko : "섬사람", post : 0}, 
+			"old islander":{ko : "늙은 섬사람", post : 0}, 
+			"sleeper":{ko : "잠이 든 사람", post : 0}, 
 		};
 	}
 }
