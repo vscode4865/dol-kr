@@ -316,7 +316,7 @@ function updateClothesItem(slot, item, debug) {
 		case "doggy muzzle":
 			item.name_cap = "Doggy muzzle";
 			break;
-		}
+	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
 
@@ -331,6 +331,14 @@ function updateClothes() {
 		updateClothesItem(slot, carried);
 
 		/* === $wardrobes section === */
+
+		// Check for empty wardrobe items - and remove them
+		Object.keys(V.wardrobe).forEach(key => {
+			if (Array.isArray(V.wardrobe[key])) {
+				V.wardrobe[key] = V.wardrobe[key].filter(item => item !== undefined && item !== null && item !== "");
+			}
+		});
+
 		if (V.wardrobe[slot]) {
 			for (const item of V.wardrobe[slot]) updateClothesItem(slot, item);
 		}

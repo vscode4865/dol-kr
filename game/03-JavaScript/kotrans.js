@@ -3,9 +3,9 @@ window.koTrans = {
 	"version": "0.1.2024.0614",
 	
 	"info": 
+		'<br>'+
 		'한국어 번역판<span class="blue"><<link "(?)">><<run koTrans.legal()>><</link>></span><br>'+
-		'v<<= koTrans.version>>'+
-		'<br><br>',
+		'v<<= koTrans.version>>',
 	"legal": function() 
 		{ 
 			Dialog.setup("번역본 저작권 정보"); 
