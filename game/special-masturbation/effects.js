@@ -1107,11 +1107,11 @@ function masturbationEffectsArms(
 							`당신은 <<hand_ ro '${arm}'>> ${altText.oneOfYour} 더듬으며 그것이 당신의 <<penisPost>> 밑둥에서 긴장하며 꽉 조이는 느낌을 즐긴다.`
 						);
 					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-						fragment.append(span(`You fondle ${altText.oneOfYour} with your ${arm} hand and enjoy the tickling feeling.`));
+						fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 애무하며 그 간지러운 느낌을 즐긴다.`));
 					} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-						fragment.append(span(`You jiggle ${altText.oneOfYour} in your ${arm} hand and enjoy the feeling of gravity on it.`));
+						fragment.append(span(`당신은 ${handPost(arm)} 안의 ${altText.oneOfYour} 이리저리 움직이며 그 무게감을 즐긴다.`));
 					} else {
-						fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm} hand.`));
+						fragment.append(span(`당신은 ${handPost(arm, '으로')} ${altText.oneOfYour} 쓰다듬는다.`));
 					}
 				}
 				additionalEffect.hands = "ballplayeffects";
@@ -2749,7 +2749,7 @@ function masturbationEffectsMouth({
 				}
 				if (genitalsExposed()) {
 					wikifier("arousal", 100, "masturbationGenital");
-					sWikifier(`<span class="blue">You get close enough to your chasitity parasite to reach out and lick it with your tongue.</span>`);
+					sWikifier(`<span class="blue">당신은 당신의 기생충 정조대 자지에 닿을 정도로 충분히 몸을 굽혀 당신의 혀로 그것을 핥는다.</span>`);
 				} else {
 					sWikifier(
 						`<span class="blue">당신은 혀를 당신의 기생충 정조대 자지 위로 움직${
