@@ -6,7 +6,7 @@ setup.WeatherDescriptions = {
 			day: "하늘은 밝고 햇빛이 내리쬐고 있다.",
 			dusk: "짙은 주황색이 하늘을 물들이고 있다.",
 			night: "어두운 지평선을 가로질러 별들이 밝게 빛나고 있다.",
-			bloodMoon: "The night sky glows ominously red under the blood moon.",
+			bloodMoon: "붉은 달 아래에서 밤하늘이 붉은색으로 불길하게 빛나고 있다.",
 			transition: () => Weather.isOvercast ? "구름 조각들이 치워져가며, 눈부신 하늘이 드러난다." : null,
 		},
 		lightClouds: {
@@ -84,27 +84,27 @@ setup.WeatherDescriptions = {
 		const extreme = Weather.genSettings.months[Time.month - 1].temperatureRange.extreme;
 
 		if (Weather.temperature <= -18) {
-			return `<span class="blue">It's frigid, likely one of the coldest days of the year.</span>`;
+			return `<span class="blue">날씨가 매우 춥다, 아마도 금년의 가장 추운 날 중 하나인 듯 하다.</span>`;
 		} else if (Weather.temperature > 30) {
-			return `<span class="red">It's sweltering. There might be a heatwave passing by.</span>`;
+			return `<span class="red">날씨가 매우 무덥다. 열파가 지나가고 있는 듯 하다.</span>`;
 		}
 
-		const warm = Weather.temperature > 20 ? "hot" : "warm";
-		const cool = Weather.temperature < 7 ? "cold" : "cool";
-		const frigid = Weather.temperature < -15 ? "frigid" : "cold";
+		const warm = Weather.temperature > 20 ? "덥다" : "따뜻하다";
+		const cool = Weather.temperature < 7 ? "춥다" : "시원하다";
+		const frigid = Weather.temperature < -15 ? "매우 춥다" : "춥다";
 
 		// 50% lower than average low
 		if (average[0] + ((extreme[0] - average[0]) * 0.5) > Weather.temperature) {
-			return `<span class="teal">It's unseasonably ${frigid}.</span>`;
+			return `<span class="teal">날씨가 계절에 맞지 않게 ${frigid}.</span>`;
 		} else if (average[0] > Weather.temperature) {
-			return `<span class="teal">It's ${cool} for this time of year.</span>`
+			return `<span class="teal">날씨가 평년의 이 시기보다 ${cool}.</span>`
 		}
 
 		// 50% higher than average high
 		if (average[1] + ((extreme[1] - average[1]) * 0.5) < Weather.temperature) {
-			return `<span class="orange">It's unseasonably ${warm}.</span>`
+			return `<span class="orange">날씨가 계절에 맞지 않게 ${warm}.</span>`
 		} else if (average[1] < Weather.temperature) {
-			return `<span class="orange">It's ${warm} for this time of year.</span>`
+			return `<span class="orange">날씨가 평년의 이 시기보다 ${warm}.</span>`
 		}
 
 		return "";
