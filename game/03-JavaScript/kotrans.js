@@ -1,11 +1,11 @@
 /* Korean translation information */
 window.koTrans = {
-	"version": "0.1.2024.0607",
+	"version": "0.1.2024.0621",
 	
 	"info": 
+		'<br>'+
 		'한국어 번역판<span class="blue"><<link "(?)">><<run koTrans.legal()>><</link>></span><br>'+
-		'v<<= koTrans.version>>'+
-		'<br><br>',
+		'v<<= koTrans.version>>',
 	"legal": function() 
 		{ 
 			Dialog.setup("번역본 저작권 정보"); 
@@ -13,8 +13,19 @@ window.koTrans = {
 				'원본의 [["CC-BY-NC-SA 라이센스"|"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko"]]에 의거 동일조건으로 아카라이브 텍스트게임 채널([["https://arca.live/b/textgame"]])에서 번역중입니다.'
 			); 
 			Dialog.open(); 
-		}
+		},
+	"linkinfo":
+		'<div class="m-2">'+
+		'<p class="gold m-0">한글 번역 채널</p>'+
+		'[[아카라이브 텍스트게임 채널|https://arca.live/b/textgame]]'+
+		'</div>'+
+		'<<if StartConfig.sourceLinkEnabled>><div class="m-2">'+
+		'<p class="gold m-0">한글 번역 소스코드</p>'+
+		'[[github dol-kr|https://github.com/uotalkie/dol-kr]]'+
+		'</div><</if>>',
 }
+DefineMacroS("koTransInfo", () => window.koTrans.info);
+DefineMacroS("koTransLinkinfo", () => window.koTrans.linkinfo);
 
 /* l10nStrings */
 l10nStrings.errorTitle = StartConfig.version + "-" + koTrans.version + " Error";
