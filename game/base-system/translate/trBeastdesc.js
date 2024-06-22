@@ -34,7 +34,7 @@ function trBeastdesc(beastdesc, post, sep)
 		}
         else
 		{
-            T.trResult = `<<span class="red">>trBeastdesc: ${beastdesc} is undefined: ${tempArray[i]}<</span>>`;
+            T.trResult = `<span class="red">trBeastdesc: ${beastdesc} is undefined: ${tempArray[i]}</span>`;
             break;
 		}
     }
