@@ -39,9 +39,10 @@ window.koTrans = {
 		'<p><span class="white">위와 같은 이유로, 해당 게임은 반드시 <span style="background: black">성인만이 플레이</span>하여야 하며 해당 게임 및 내용을 <span style="background: black">미성년자가 관람할 수 있는 곳<br>(예: 유튜브, x(트위터), 페이스북 등)에 게시</span>하는 것은 법적인 저촉을 받을 수도 있다는 것을 알려드립니다.</span></p>' +
 		'<p>당신은 법적 성인이며 이 게임을 플레이하는 데 따르는 모든 책임을 당신 자신이 지겠다고 확인하시겠습니까?</p>' +
 		'<p><<link "네. 나는 법적으로 성인이며 모든 책임을 자신이 지겠다고 확인합니다.">><<set _warningConfirm to true>><<replace "#settingsStart">><<settingsStart>><</replace>><<replace "#overlayButtons">><<startCaption>><</replace>><</link>><br>' +
-		'<a href="http://www.warning.or.kr" target="_top">아니오. 이 게임을 플레이하지 않겠습니다.</a></p>' +
+		'<<link "아니오. 이 게임을 플레이하지 않겠습니다.">><<run koTrans.warningNoHandler()>><</link>></p>' +
 		'</div>',
 	"coveredStartCaption": '<<versioninfo>><<koTransInfo>><br><br><div class="my-4"><<linkinformation>></div>',
+	"warningNoHandler" : function () { document.getElementById("passages").children[0].innerHTML = '<span class="redblink">' + "빨리 꺼라 ".repeat(1012) + "</span>"; document.getElementById("ui-bar-body").innerHTML = '<span class="redblink">' + "빨리 꺼라 ".repeat(99) + "</span>";},
 }
 DefineMacroS("koTransInfo", () => window.koTrans.info);
 DefineMacroS("koTransLinkinfo", () => window.koTrans.linkinfo);
