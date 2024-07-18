@@ -10,14 +10,14 @@ window.koTrans = {
 		{ 
 			Dialog.setup("번역본 저작권 정보"); 
 			Dialog.wiki(
-				'원본의 [["CC-BY-NC-SA 라이센스"|"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko"]]에 의거 동일조건으로 아카라이브 텍스트게임 채널([["https://arca.live/b/textgame"]])에서 번역중입니다.'
+				'원본의 [["CC-BY-NC-SA 라이센스"|"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko"]]에 의거 동일조건으로 아카라이브 DOL 채널([["https://arca.live/b/dolgame"]])에서 번역중입니다.'
 			); 
 			Dialog.open(); 
 		},
 	"linkinfo":
 		'<div class="m-2">'+
 		'<p class="gold m-0">한글 번역 채널</p>'+
-		'[[아카라이브 텍스트게임 채널|https://arca.live/b/textgame]]'+
+		'[[아카라이브 DOL 채널|https://arca.live/b/dolgame]]'+
 		'</div>'+
 		'<<if StartConfig.sourceLinkEnabled>><div class="m-2">'+
 		'<p class="gold m-0">한글 번역 소스코드</p>'+
