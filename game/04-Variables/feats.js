@@ -1643,7 +1643,7 @@ setup.feats = {
 		difficulty: 1,
 		series: "",
 		filter: ["All", "Discoveries"],
-		hint: "Hint: 도시의 상류층들과 데이트를 한다.",
+		hint: "Hint: 도시의 상류층과 데이트를 한다.",
 		softLockable: true,
 	},
 	"Max Those Shots": {
