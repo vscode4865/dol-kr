@@ -50,7 +50,7 @@
           Speed: this.calculateStat('Speed'),
         };
 
-
+        //주석
   
         if (this.regionalForm) {
           this.type = this.regionalForm.type;
