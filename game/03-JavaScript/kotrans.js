@@ -1,16 +1,16 @@
 /* Korean translation information */
 window.koTrans = {
-	"version": "0.1.2024.0726",
+	"version": "0.1.2024.0720",
 	
 	"info": 
 		'<br>'+
-		'한국어 번역판<span class="blue"><<link "(?)">><<run koTrans.legal()>><</link>></span><br>'+
+		'Degrees of Lewdity<br>한국어 번역본 기반<span class="blue"><<link "(?)">><<run koTrans.legal()>><</link>></span><br>'+
 		'v<<= koTrans.version>>',
 	"legal": function() 
 		{ 
-			Dialog.setup("번역본 저작권 정보"); 
+			Dialog.setup("개조본 저작권 정보"); 
 			Dialog.wiki(
-				'원본의 [["CC-BY-NC-SA 라이센스"|"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko"]]에 의거 동일조건으로 아카라이브 DOL 채널([["https://arca.live/b/dolgame"]])에서 번역중입니다.'
+				'원본의 [["CC-BY-NC-SA 라이센스"|"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.ko"]]에 의거 동일조건으로 아카라이브 DOL 채널([["https://arca.live/b/dolgame"]])에서 배포중입니다.'
 			); 
 			Dialog.open(); 
 		},

@@ -1041,7 +1041,7 @@ Renderer.CanvasModels["main"] = {
 			filters: ["body"],
 			zfn(options) {
 				if (options.arm_right === "cover" || options.arm_right === "hold") return ZIndices.arms_cover;
-				return options.zarms;
+				return options.zupperright + 1.1;
 			},
 			animation: "idle",
 		},
@@ -3144,7 +3144,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"upper_rightarm": genlayer_clothing_arm("right", "upper", {
 			zfn(options) {
-				return options.zupperright
+				return options.zupperright + 2;
 			}
 		}),
 		"upper_leftarm": genlayer_clothing_arm("left", "upper", {
@@ -3575,7 +3575,7 @@ Renderer.CanvasModels["main"] = {
 		"under_upper_back": genlayer_clothing_back_img('under_upper'),
 		"under_upper_rightarm": genlayer_clothing_arm("right", "under_upper", {
 			zfn(options) {
-				return (options.arm_right === "cover" || options.arm_right === "hold") ? ZIndices.under_upper_arms_cover : ZIndices.under_upper_arms;
+				return (options.arm_right === "cover" || options.arm_right === "hold") ? ZIndices.under_upper_arms_cover : options.zupperright + 1.2;
 			}
 		}),
 		"under_upper_leftarm": genlayer_clothing_arm("left", "under_upper", {
@@ -3668,7 +3668,7 @@ Renderer.CanvasModels["main"] = {
 					options.arm_right !== "none"
 			},
 			zfn(options) {
-				return (options.arm_right === "cover" || options.arm_right === "hold") ? ZIndices.hands : (options.zarms + 0.2);
+				return (options.arm_right === "cover" || options.arm_right === "hold") ? ZIndices.hands : (options.zupperright + 1.3);
 			},
 			filters: ["worn_hands"],
 			animation: "idle"

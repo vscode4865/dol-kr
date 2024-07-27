@@ -1,6 +1,7 @@
 :: Widgets Settings [widget]
 
 <<widget "initsettings">>
+	<<set $playername to "">>
 	<<set $player.gender to "f">>
 	<<set $player.sex to "f">>
 	<<set $player.gender_body to "a">>
@@ -95,13 +96,16 @@
 	<<set $notifyUpdate = true>>
 
 	<<startingPlayerImageReset>>
+	
+	/*임시. 나중에 게임 이벤트 감지하는 매크로로 대체하던가 해야 함*/
+	<<set $OakEventVisited = false>>
 <<init_customSetting>><</widget>>
 
 <<widget "displaySettings">>
 	<<if _args[0]>>
 		<<set $currentSettings to _args[0]>>
 	<</if>>
-	<<if $passage isnot "Start" and ["characterSettings", "featSettings"].includes($currentSettings)>>
+	<<if $passage isnot "StartScene" and ["characterSettings", "featSettings"].includes($currentSettings)>>
 		<<set $currentSettings to "gameSettings">>
 	<</if>>
 	<<switch $currentSettings>>
@@ -109,7 +113,7 @@
 		<<case "presetConfirmDetails">><<replace #settingsDiv>><<presetConfirmDetails>><</replace>>
 		<<case "characterSettings" "character">>
 			<<replace #settingsDiv>><<characterSettings>><</replace>>
-			<<if StartConfig.enableImages and $passage is "Start">><<startingPlayerImageUpdate>><<removeclass #startingPlayerImage "hidden">><</if>>
+			<<if StartConfig.enableImages and $passage is "StartScene">><<startingPlayerImageUpdate>><<removeclass #startingPlayerImage "hidden">><</if>>
 		<<case "featSettings" "feat">><<replace #settingsDiv>><<featSettings>><</replace>>
 		<<case "gameSettings" "game">><<replace #settingsDiv>><<gameSettings>><</replace>>
 		<<case "sizeLimitsSettings" "size">><<replace #settingsDiv>><<sizeLimitsSettings>><</replace>>
@@ -327,7 +331,7 @@
 <<widget "settingsExit">>
 	<<saveNameSection>>
 	<div style="margin-top:15px">
-	<<if $passage is "Start">>
+	<<if $passage is "StartScene">>
 		<<switch _selectedStart>>
 		<<case "default">>
 				<div><span class="gold bold">현재 설정:</span> <i style="color:var(--000);">기본</i></div>
@@ -735,7 +739,7 @@
 	<div class="solidBorderContainer settings-container">
 		<<quickStartOptions>>
 		<div class="settingsToggleIndent">
-		<<if $passage is "Start">>
+		<<if $passage is "StartScene">>
 			<i>개괄적으로 게임 설정을 변경합니다. 더 미세한 설정 변경을 위해서는, <span class="gold">고급 시작</span>을 선택하세요.</i>
 		<<else>>
 			<i>빠르게 게임 설정을 변경합니다. 더 미세한 설정은, <span class="gold">게임 설정</span>탭에서 할 수 있습니다.</i>
@@ -747,7 +751,7 @@
 				<<gameMode>>
 			</div>
 
-			<<if $passage is "Start">>
+			<<if $passage is "StartScene">>
 				<div class="settingsToggleItem">
 					<span class="gold">페티쉬 설정</span>
 					<br>
@@ -768,7 +772,7 @@
 				<label>
 					<span class="gold">임신 유형</span>
 					<br>
-					<<if $passage is "Start">>
+					<<if $passage is "StartScene">>
 						<label><<radiobutton "_pregnancytype" "realistic" `_pregnancytype ? "autocheck" : ($pregnancytype is "realistic" ? "checked": "")`>> <mouse class="tooltip green">사실적<span>임신은 즉각적으로 일어나지 않으며, 임신이 되었을 경우 당신은 바로 알 수가 없습니다. 당신은 임신테스트를 해 볼 필요가 있을 수 있으며, 아기 아빠는 처음부터 알 수 없을 수 있습니다.  당신 질 밖에 사정한 정액은, 이후 몇 시간 내에 닦아내지 않는다면 당신을 임신시킬 수도 있습니다.</span></mouse></label> |
 						<label><<radiobutton "_pregnancytype" "fetish" `_pregnancytype ? "autocheck" : ($pregnancytype is "fetish" ? "checked": "")`>> <mouse class="tooltip pink">페티쉬<span>정액이 당신 안에 들어가자 마자 임신이 일어날 수 있습니다. 임신이 되자마자 당신은 알 수 있으며, 아기 아빠도 즉시 알 수 있습니다.</span></mouse></label> |
 						<label><<radiobutton "_pregnancytype" "silly" `_pregnancytype ? "autocheck" : ($pregnancytype is "silly" ? "checked": "")`>> <mouse class="tooltip gold">말도 안됨<span>임신은 당신이 손을 잡거나 키스하자마자 일어날 수 있습니다, 특히 당신이 사랑하는 사람과는요. <i class="red none">이 모드에서는 스토리 내용과 관련된 문제가 있을 수 있습니다. 이 모드에서는 몇몇 도전과제가 비활성화됩니다.</i></span></mouse></label> |
@@ -788,7 +792,7 @@
 			</div>
 
 			<div class="settingsToggleItem">
-				<<if $passage is "Start">>
+				<<if $passage is "StartScene">>
 				<span class="gold">일반 NPC 성별</span>
 					<<numberslider "_malechance" `_malechance is undefined ? $malechance : _malechance` 0 100 25>>
 					<<run settingsNpcGenders()>>
@@ -799,7 +803,7 @@
 			</div>
 
 			<div class="settingsToggleItem">
-				<<if $passage is "Start">>
+				<<if $passage is "StartScene">>
 					<span class="gold">짐승 성별</span>
 					<<numberslider "_beastmalechance" `_beastmalechance is undefined ? $beastmalechance : _beastmalechance` 0 100 25>>
 					<<run settingsBeastGenders()>>
@@ -814,12 +818,12 @@
 				<br>
 				<<if _namedNpcPreset is undefined>><<set _namedNpcPreset to "namedNpcDefaultGender">><</if>>
 				<label>전부 남성 <<radiobutton "_namedNpcPreset" "namedNpcAllMaleGender" autocheck>></label> |
-				<label><<print $passage is "Start" ? "무작위 성별" : "현재 성별">> <<radiobutton "_namedNpcPreset" "namedNpcDefaultGender" autocheck>></label> |
+				<label><<print $passage is "StartScene" ? "무작위 성별" : "현재 성별">> <<radiobutton "_namedNpcPreset" "namedNpcDefaultGender" autocheck>></label> |
 				<label>전부 여성 <<radiobutton "_namedNpcPreset" "namedNpcAllFemaleGender" autocheck>></label>
 			</div>
 
 			<div class="settingsToggleItem">
-				<<if $passage is "Start">>
+				<<if $passage is "StartScene">>
 					<<if _monstersPreset is undefined>><<set _monstersPreset to "monstersDefault">><</if>>
 					<span class="gold">짐승을 몬스터 소년과 소녀로 대체</span>
 					<br>
@@ -899,6 +903,14 @@
 		</div>
 	</div>
 	<hr>
+
+	<div class="settingsGrid">
+		<div class="settingsHeader">
+			이름
+		</div>
+		<<textarea "$playername" "" autofocus>>
+	</div>
+
 	<div class="settingsGrid">
 		<div class="settingsHeader">
 			신체
@@ -940,19 +952,31 @@
 		<div class="settingsToggleItem">
 			<span data-target="player.gender" data-disabledif="V.player.gender==='f'">
 			<span class="gold">자지 크기 - 가능할 경우:</span><br>
-			<label>조그마함 <<radiobutton "$player.penissize" 0 autocheck>></label> |
-			<label>작음 <<radiobutton "$player.penissize" 1 autocheck>></label> |
-			<label>평범함 <<radiobutton "$player.penissize" 2 autocheck>></label>
+			<label>굉장히 작은 <<radiobutton "$player.penissize" -2 autocheck>></label> |
+			<label>아주 작은 <<radiobutton "$player.penissize" -1 autocheck>></label> |
+			<label>조그마한 <<radiobutton "$player.penissize" 0 autocheck>></label> |
+			<label>작은 <<radiobutton "$player.penissize" 1 autocheck>></label> |
+			<label>평범한 <<radiobutton "$player.penissize" 2 autocheck>></label> |
+			<label>큰 <<radiobutton "$player.penissize" 3 autocheck>></label> |
+			<label>거대한 <<radiobutton "$player.penissize" 4 autocheck>></label>
 			</span>
 		</div>
 
 		<div class="settingsToggleItem">
 			<span class="gold">가슴 크기:</span><br>
-			<label>평평함 <<radiobutton "$player.breastsize" 0 autocheck>></label> |
-			<label>약간 솟아오름 <<radiobutton "$player.breastsize" 1 autocheck>></label> |
-			<label>조그마함 <<radiobutton "$player.breastsize" 2 autocheck>></label> |
-			<label>작음 <<radiobutton "$player.breastsize" 3 autocheck>></label> |
-			<label>앙증맞음 <<radiobutton "$player.breastsize" 4 autocheck>></label>
+			<label>평평한 <<radiobutton "$player.breastsize" 0 autocheck>></label> |
+			<label>약간 솟아오른 <<radiobutton "$player.breastsize" 1 autocheck>></label> |
+			<label>조그마한 <<radiobutton "$player.breastsize" 2 autocheck>></label> |
+			<label>작은 <<radiobutton "$player.breastsize" 3 autocheck>></label> |
+			<label>앙증맞은 <<radiobutton "$player.breastsize" 4 autocheck>></label> |
+			<label>평범한 <<radiobutton "$player.breastsize" 5 autocheck>></label> |
+			<label>봉긋한 <<radiobutton "$player.breastsize" 6 autocheck>></label> |
+			<label>큰 <<radiobutton "$player.breastsize" 7 autocheck>></label> |
+			<label>풍만한 <<radiobutton "$player.breastsize" 8 autocheck>></label> |
+			<label>커다란 <<radiobutton "$player.breastsize" 9 autocheck>></label> |
+			<label>매우 큰 <<radiobutton "$player.breastsize" 10 autocheck>></label> |
+			<label>엄청난 <<radiobutton "$player.breastsize" 11 autocheck>></label> |
+			<label>거대한 <<radiobutton "$player.breastsize" 12 autocheck>></label> |
 		</div>
 
 		<div class="settingsToggleItem">
@@ -1255,7 +1279,7 @@
 	<span class="gold">게임 모드</span>
 	<br>
 	<label><mouse class="tooltip green">일반 모드<span>이 위험한 세상에서 살아남으세요.</span></mouse>
-		<<if ($ironmanmode is true and $gamemode is "hard") and $passage != "Start">>
+		<<if ($ironmanmode is true and $gamemode is "hard") and $passage != "StartScene">>
 			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
 		<<else>>
 			<<radiobutton "$gamemode" "normal" autocheck>>
@@ -1263,7 +1287,7 @@
 	</label>
 	<<ind>>
 	<label><mouse class = "tooltip blue">소프트 모드<span>가벼운 마음으로 야한 모험을 즐기고자 하는 이들을 위한 모드이지만, 그래도 게임에는 곳곳에 아직 어두움이 남아 있습니다.<br><i class="red normal">실험적인 기능으로, 게임 진행이 불가능할 정도의 버그가 존재할 수 있습니다. 이것은 미래에 수정되거나 빠질 예정입니다. 소프트 모드로 설정한다면 일반 모드로 설정하기 전까지는 도전과제를 달성할 수 없습니다. 이것을 하면 이 세이브에서 영구적으로 몇몇 도전과제를 달성할 수 없게 됩니다.</i></span></mouse>
-		<<if ($ironmanmode is true and ["hard","normal"].includes($gamemode) is true) and $passage != "Start">>
+		<<if ($ironmanmode is true and ["hard","normal"].includes($gamemode) is true) and $passage != "StartScene">>
 			<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
 		<<else>>
 			<<radiobutton "$gamemode" "soft" autocheck>>
@@ -1272,7 +1296,7 @@
 	<<ind>>
 	<<if $intro is 1 or $gamemode is "hard">>
 		<label><mouse class = "tooltip purple">하드 모드<span>야한 스텟 감소가 사라지며 (음란도, 노출도, 이상성욕), 트라우마와 통제력 관리가 점점 더 어려워집니다. 게임 시작에만 선택 가능하고, 정신병원에 감금되면 일반 모드로 바뀝니다. <br><i class="red normal">실험적인 기능으로, 미래에 수정되거나 빠질 예정입니다.</i></span></mouse>
-			<<if $ironmanmode is true and $passage != "Start">>
+			<<if $ironmanmode is true and $passage != "StartScene">>
 				<input id="radiobutton-gamemode-8" name="radiobutton-gamemode" type="radio" tabindex="0" class="macro-radiobutton" disabled>
 			<<else>>
 				<<radiobutton "$gamemode" "hard" autocheck>>
@@ -1280,10 +1304,10 @@
 		</label>
 	<</if>>
 	<br>
-	<<if $ironmanmode and $passage isnot "Start">>
+	<<if $ironmanmode and $passage isnot "StartScene">>
 		<span class="red">철인 모드에서는 치트를 활성화할 수 없습니다.</span>
 	<<else>>
-		<<if $passage is "Start">>
+		<<if $passage is "StartScene">>
 			<label data-target="cheatdisabletoggle" data-disabledif="V.cheatdisabletoggle==='f'">
 				<input id="checkbox-ironmanmode" onclick="IronMan.UI.checkBox()" name="checkbox-ironmanmode" type="checkbox" tabindex="0" class="macro-checkbox"> <mouse class="tooltip white">철인 모드<span>세이브 노가다와 다른 시도들을 막기 위한 조치<br><br>당신은 게임을 저장할 수 있지만, 저장 후 시작 화면으로 돌아갑니다. 당신은 그 세이브를 로드할 수 있지만, 세이브는 자동으로 삭제됩니다.<br><br>또한 다른 세이브가 잘못되었을 경우를 위해 추가적으로 게임 내 매 4-8 일마다 자동 저장됩니다.</span></mouse>&nbsp;<i class="ironman-clarify">(게임 시작 후 비활성화 할 수 없습니다)</i>
 				<<run IronMan.UI.checkBox(`init`)>>
@@ -1404,7 +1428,7 @@
 		<div id="settingsPregnancy">
 			<<subsectionSettingsTabButton "임신 설정" "pregnancy">>
 		</div>
-		<<if $passage isnot "Start">>
+		<<if $passage isnot "StartScene">>
 			<div id="settingsSizeLimits">
 				<<subsectionSettingsTabButton "신체 부위 크기 제한" "sizeLimits">>
 			</div>
@@ -2133,7 +2157,7 @@
 				</span>
 			<</for>>
 		</div>
-		<<if $passage is "Start" or $player.penisExist>>
+		<<if $passage is "StartScene" or $player.penisExist>>
 			<div class="settingsToggleItem">
 				<!-- Not applicable to the parasite penis -->
 				<span class="gold" data-target="player.gender" data-disabledif="V.player.gender==='f'">최소 자지 크기 - 해당되는 경우:</span> <mouse class="tooltip linkBlue">(?)<span>이미 이 이하로 작아진 자지는 자동으로 커지거나 하지 않습니다.</span></mouse>
@@ -2236,7 +2260,7 @@
 			<br>
 		<</if>>
 		<br>
-		<<if $passage isnot "Start">>
+		<<if $passage isnot "StartScene">>
 			<span class="bold">
 				<<link [[씬 뷰어|Scene Viewer]]>>
 					<<set $lastPassage to $passage>>
@@ -2326,7 +2350,7 @@
 			<<for $_i to 0; $_i lt $NPCNameList.length; $_i++>>
 				<<set $_name to $NPCNameList[$_i]>><<trNamedNPC $_name "name">><<set _npcList[_trResult] to clone($_i)>>
 			<</for>>
-			<<if $passage is "Start" or !$wraithIntro>>
+			<<if $passage is "StartScene" or !$wraithIntro>>
 				<<run delete _npcList["상아 유령"]>>
 			<</if>>
 		<</if>>
@@ -2337,6 +2361,8 @@
 			<<npcSettingsMenu>>
 		</div>
 
+
+		/*이건 StartScene로 수정 해야할지 안해야할지 모르겠음. 좀 더 알아보고 결정함 */
 		<<if $passage isnot "start" and $per_npc and Object.keys($per_npc).length gt 0>>
 			<<run
 				if (!T.perNPCLock) {

@@ -1,0 +1,126 @@
+:: battle widget [widget]
+
+<<widget "singleBattleSetting">>
+	<<set $battleStartScript to 0>>
+    <<set $pokeBattleEnd = 0>>
+    <<set $PlayerPokemon = $playerParty[0]>>
+    <<set $PlayerPokemonHP = $PlayerPokemon.stats.currentHP>>
+    <<set $OpponentPokemonHP = $OpponentPokemon.stats.currentHP>>
+    <<set $selectedMove = null>>
+    <<set $currentPlayerPokemonName = $PlayerPokemon.name>>
+    <<set $currentPlayerPokemonSpecies = $PlayerPokemon.species>>
+    <<set $currentPlayerPokemonEvolvesTo = $PlayerPokemon.species>>
+<</widget>>
+
+<<widget "opponentScript">>
+    <<switch $Battleopponent>>
+        <<case "green1">>
+            <<set $OpponentPokemon = $greenParty[0]>>
+            라이벌 그린이 승부를 걸어왔다!<br><br>
+            라이벌 그린은 <<print $OpponentPokemon.name>>을(를) 내보냈다!<br><br>
+        <<default>>
+            야생의 포켓몬이 튀어나왔다!
+    <</switch>>
+<</widget>>
+
+
+<<widget "printGender">>
+    <<switch $args[0].gender>>
+        <<case "여성">>
+            ♀
+        <<case "남성">>
+            ♂
+        <<default>>
+
+    <</switch>>
+<</widget>>
+
+
+<<widget "skillSelect">>
+
+    <<if $PlayerPokemon.knownSkills[0]>>
+        <label><<print $PlayerPokemon.knownSkills[0].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[0].name autocheck>></label>
+
+        /*
+        <<button "0번">>
+            <<replace "#battle-log">>
+                <<set $Imsi to $OpponentPokemonHP>>
+
+                <<print $Imsi>> 진화 전, 처음 HP <br><br>
+                
+                <<print $PlayerPokemon.useSkill("몸통박치기", $OpponentPokemon)>> 데미지
+                <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+                <<set $Imsi2 to $OpponentPokemonHP>>
+
+                <<print $Imsi2>>진화 전, 현재 HP<br><br>
+                <<print $OpponentPokemon.level>> 이전 레벨<br><br>
+                <<print $OpponentPokemon.gainExperience(1000000000)>><br><br>
+                <<print $OpponentPokemon.level>> 지금 레벨<br><br>
+                <<print $OpponentPokemon.experience>> 경험치<br><br>
+                <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+                <<print $OpponentPokemonHP>> 레벨업 후, 현재 HP <br><br>
+                
+                <<print $OpponentPokemon.stats.maxHP>> 레벨업 후, 최대 HP
+
+
+
+            <</replace>>
+        <</button>>
+        */
+    <</if>>
+    <<if $PlayerPokemon.knownSkills[1]>>
+        <label><<print $PlayerPokemon.knownSkills[1].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[1].name autocheck>></label>
+    <</if>> 
+    <<if $PlayerPokemon.knownSkills[2]>>
+        <label><<print $PlayerPokemon.knownSkills[2].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[2].name autocheck>></label>
+    <</if>>
+    <<if $PlayerPokemon.knownSkills[3]>>
+        <label><<print $PlayerPokemon.knownSkills[3].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[3].name autocheck>></label>
+    <</if>>
+
+<</widget>>
+
+
+<<widget "battle">>
+
+
+    
+    <<switch $selectedMove>>
+        <<case $PlayerPokemon.knownSkills[0].name>>
+            <<print $PlayerPokemon.name>>의 <<print $PlayerPokemon.knownSkills[0].name>>!
+            <<print $PlayerPokemon.useSkill($PlayerPokemon.knownSkills[0].name, $OpponentPokemon)>> 데미지
+            <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+        <<case $PlayerPokemon.knownSkills[1].name>>
+            <<print $PlayerPokemon.name>>의 <<print $PlayerPokemon.knownSkills[1].name>>!
+            <<print $PlayerPokemon.useSkill($PlayerPokemon.knownSkills[1].name, $OpponentPokemon)>> 데미지
+            <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+    <</switch>>
+
+    상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! <<print $PlayerPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>> 데미지
+    <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+    <<set $selectedMove to null>>
+
+<</widget>>
+
+<<widget "printState">>
+    <<if $currentPlayerPokemonSpecies != $PlayerPokemon.species>>
+
+        어라? <<print $currentPlayerPokemonName>>의 상태가...?<br>
+        .<br>
+        .<br>
+        .<br><br>
+        <<print $currentPlayerPokemonName>>은(는) <<print $PlayerPokemon.species>>(으)로 진화했다!<br><br>
+        <<set $currentPlayerPokemonSpecies = $PlayerPokemon.species>>
+        <<set $currentPlayerPokemonName = $PlayerPokemon.name>>
+    <</if>>
+
+
+    <상대><br>
+    <<print $OpponentPokemon.name>><<printGender $OpponentPokemon>> / Lv.<<print $OpponentPokemon.level>><br>
+    <<print $OpponentPokemon.stats.currentHP>>/<<print $OpponentPokemon.stats.maxHP>><br><br>
+
+    <자신><br>
+    <<print $PlayerPokemon.name>><<printGender $PlayerPokemon>> / Lv.<<print $PlayerPokemon.level>><br>
+    <<print $PlayerPokemon.stats.currentHP>>/<<print $PlayerPokemon.stats.maxHP>><br><br>
+<</widget>>
