@@ -165,7 +165,7 @@ function genderappearancecheck() {
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
 	const actingMultiplier = V.englishtrait + 1;
-	addfemininityfromfactor(T.femininity_multiplier * 100 * actingMultiplier, "Posture (x" + actingMultiplier + " effectiveness due to English skill)");
+	addfemininityfromfactor(T.femininity_multiplier * 100 * actingMultiplier, "태도 (영어 기술로 인해 효과 x" + actingMultiplier + ")");
 	/* Special handling for calculating topless gender */
 	T.over_lower_protected = V.worn.over_lower.exposed < 2;
 	T.lower_protected = V.worn.lower.exposed < 2;
