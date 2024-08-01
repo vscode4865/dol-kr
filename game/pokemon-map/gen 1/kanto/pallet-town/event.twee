@@ -85,31 +85,42 @@
 <<switch $PlayerStarting>>
     <<case "Bulbasaur">>
         당신은 오박사에게서 이상해씨를 받았다!<br><br>
-        <<set $Pokemon1 = SummonPokemon.summonPokemon3(1, "이상해씨", 5)>>
+        <<set $Pokemon1 = SummonPokemon.summonPokemon3(1, "이상해씨", 5, null, "심록")>>
         <<script>>
-            const jsPokemon1 = variables().Pokemon1;
-            addPokemonToParty(jsPokemon1, "player");
-            jsPokemon1.learnSkill("몸통박치기");
-            jsPokemon1.learnSkill("칼춤");
+            const Pokemon1 = variables().Pokemon1;
+            addPokemonToParty(Pokemon1, "player");
+            Pokemon1.learnSkill("몸통박치기");
+            Pokemon1.learnSkill("맹독");
         <</script>>
-        <<set $playerParty = setup.trainerParty.player>>
-        <<print $Pokemon1.knownSkills[0].name>>
+
+        <<print $Pokemon1.knownSkills[0].name>><br><br>
+        "자, 이것도 받으렴."<br>
+        당신은 오박사에게서 상처약을 5개 받았다!<br><br>
+        <<set $playerInventory = createInventory()>>
+        <<set $potion = createItem("상처약")>>
+        <<script>>
+            const inventory = variables().playerInventory;
+            const potion = variables().potion;
+            inventory.addItem(potion, 5);
+        <</script>>
+
+        <<print $playerInventory.printInventory()>>
     <<case "Squirtle">>
         당신은 오박사에게서 꼬부기를 받았다!<br><br>
-        <<set $Pokemon1 = SummonPokemon.summonPokemon3(7, "꼬부기", 5)>>
+        <<set $Pokemon1 = SummonPokemon.summonPokemon3(7, "꼬부기", 5, null, "급류")>>
         <<script>>
             let Pokemon1 = variables().Pokemon1;
             addPokemonToParty(Pokemon1, "player");
         <</script>>
     <<case "Charmander">>
         당신은 오박사에게서 파이리를 받았다!<br><br>
-        <<set $Pokemon1 = SummonPokemon.summonPokemon3(4, "파이리", 5)>>
+        <<set $Pokemon1 = SummonPokemon.summonPokemon3(4, "파이리", 5, null, "맹화")>>
         <<script>>
             let Pokemon1 = variables().Pokemon1;
             addPokemonToParty(Pokemon1, "player");
         <</script>>
 <</switch>>
-
+<<set $playerParty = setup.trainerParty.player>>
 
 /*파이리에게 별명을 붙일까? <- 미구현*/
 <<link[[다음|GreenSelectStarting]]>><</link>>
@@ -129,25 +140,50 @@
 <<switch $PlayerStarting>>
     <<case "Bulbasaur">>
         그린은 파이리를 고른다.
-        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(4, "파이리", 5)>>
+        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(4, "파이리", 5, null, "맹화", "남성")>>
+        <<script>>
+            const jsPokemon1 = State.variables.GreenPokemon1;
+            addPokemonToParty(jsPokemon1, "green");
+            jsPokemon1.learnSkill("할퀴기");
+            jsPokemon1.learnSkill("울음소리");
+            jsPokemon1.setTrainer("그린1");
+        <</script>>
+        <<set $greenParty = setup.trainerParty.green>>
+        <<print $GreenPokemon1.trait>>
+
+        <<set $GreenPokemon2 = SummonPokemon.summonPokemon3(65, "후딘", 80, null, "싱크로", "남성")>>
+        <<script>>
+            const jsPokemon2 = State.variables.GreenPokemon2;
+            addPokemonToParty(jsPokemon2, "green");
+            jsPokemon2.setTrainer("그린1");
+        <</script>>
+    <<case "Squirtle">>
+        그린은 이상해씨를 고른다.
+        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(1, "이상해씨", 5, null, "심록", "남성")>>
         <<script>>
             const jsPokemon1 = State.variables.GreenPokemon1;
             addPokemonToParty(jsPokemon1, "green");
             jsPokemon1.learnSkill("몸통박치기");
+            jsPokemon1.learnSkill("울음소리");
             jsPokemon1.setTrainer("그린1");
         <</script>>
-        <<set $greenParty = setup.trainerParty.green>>
-    <<case "Squirtle">>
-        그린은 이상해씨를 고른다.
-        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(1, "이상해씨", 5)>>
     <<case "Charmander">>
         그린은 꼬부기를 고른다.
-        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(7, "꼬부기", 5)>>
+        <<set $GreenPokemon1 = SummonPokemon.summonPokemon3(7, "꼬부기", 5, null, "급류", "남성")>>
+        <<script>>
+            const jsPokemon1 = State.variables.GreenPokemon1;
+            addPokemonToParty(jsPokemon1, "green");
+            jsPokemon1.learnSkill("몸통박치기");
+            jsPokemon1.learnSkill("꼬리흔들기");
+            jsPokemon1.setTrainer("그린1");
+        <</script>>
 <</switch>><br>
 당신이 다시 밖으로 나가려고 할 때, 그린이 뒤에서 소리친다.<br><br>
 "기다려! <<print $playername>>! 모처럼 할아버지한테 포켓몬을 받았잖아! 잠깐 내 상대좀 해줘!"<br><br>
 "뭐? 하지만 여긴 건물 안..."<br><br>
 당신이 말을 다 마치기도 전에, 그린이 몬스터볼을 던진다.<br><br>
+<<print $playerParty[0].useSkill("맹독", $playerParty[0])>>
+<<print $playerParty[0].statusCon>>
 <<generatey1>>
 <<link[[배틀!|Green First Battle]]>><<set $Battleopponent to "green1">><<set $battleStartScript to 1>><</link>>
 
@@ -178,7 +214,7 @@
 
     <<print $PlayerPokemon.name>>는 무엇을 할까?<br><br>
 
-    <<message "싸운다">><<skillSelect>><</message>><br><br><br><br><br><br><br><br><br><br><br><br>
+    <<moveSelect>><br><br><br><br><br><br><br><br><br><br><br><br>
 <</if>>
 
 

@@ -1,5 +1,5 @@
   class Pokemon {
-    constructor(pokemonData, name, level, region = null, traitInput) {
+    constructor(pokemonData, name, level, region = null, traitInput, genderInput) {
         this.id = Pokemon.generateId();
         this.name = name;
         this.species = pokemonData.name;
@@ -9,7 +9,7 @@
         this.experience = 0;
         this.personality = Pokemon.generatePersonality(); // 성격
         if (traitInput){this.trait = traitInput;} else {this.trait = Pokemon.generateTrait(pokemonData.possibleTraits, pokemonData.hiddenTrait);}
-        this.gender = this.determineGender(pokemonData.genderRatio); // 성별 결정
+        if (genderInput){this.gender = genderInput} else {this.gender = this.determineGender(pokemonData.genderRatio);} // 성별 결정
         this.experienceGroup = pokemonData.experienceGroup;
         this.regionalForm = this.determineRegionalForm(pokemonData, region);
         this.friendship = pokemonData.friendship;
@@ -21,6 +21,7 @@
         this.knownSkills = []; // 현재 알고 있는 기술 목록 초기화
         this.rank = {attackRank: 0, defenseRank: 0, specialAttackRank:0, specialDefenseRank: 0,speedRank: 0, criticalRank: 0, accuracyRank: 0, evasionRank: 0,}; // 공격력 및 방어력 랭크 추가
         this.trainer = null;
+        this.statusCon = [];
 
 
         this.effortValues = { HP: 0, Attack: 0, Defense: 0, SpecialAttack: 0, SpecialDefense: 0, Speed: 0 }; // 노력치
@@ -85,7 +86,7 @@
     }
 
     determineRegionalForm(pokemonData, region) {
-      if (!pokemonData.regionalForms || !region) return null;
+      if (!pokemonData.regionalForms || !region || region === null) return null;
       
       return pokemonData.regionalForms.find(form => form.region === region);
     }
@@ -430,19 +431,29 @@
       const skill = this.knownSkills.find(s => s.name === skillName);
       const skillName2 = skillName;
       if (!skill) {
-        return "이 포켓몬은 해당 기술을 사용할 수 없습니다.";
+        return `//////${this.knownSkills[0].name}, 이 포켓몬은 해당 기술을 사용할 수 없습니다.`;
       }
       else if (skill.PP <= 0) {
         return `${skillName}의 PP가 부족합니다!`;
       }
+
+
       if (skill.PP == 0) {
         skill.PP = 0;
       }
       else {
         skill.PP -= 1; // PP 감소
       }
+
+
       if (skill.category === "변화") {
-        return this.applyRankChange(skillName2, opponent2);
+        if (skill.rank) {
+          return this.applyRankChange(skillName2, opponent2);
+        }
+        if (skill.statusCon) {
+          opponent.statusCon = skill.statusCon;
+          return opponent.statusCon
+        }
       }
       // 기술 사용 로직
       let damage = this.calculateDamage(skillName2, opponent2);
@@ -623,9 +634,40 @@
           return Math.random() < 1
       }
     }
-    
-    
 
+    /*
+    statusConLoseHP(opponent, statusCon) {
+      if (this.statusCon.includes("맹독")){
+
+        const dotPoison = this.stats.maxHP / 8;
+        const _currentHP = this.stats.currentHP;
+        this.stats.currentHP = _currentHP - dotPoison;
+      }
+      for (; this.statusCon.includes("맹독"); ){
+
+      }
+    }
+    */
+    
+    
+    heal(amount) {
+      this.stats.currentHP += amount;
+      if (this.stats.currentHP > this.stats.maxHP) {
+        this.stats.currentHP = this.stats.maxHP; // 최대 체력을 초과하지 않도록 함
+      }
+      return (`${this.name}의 체력이 ${amount}만큼 회복되다.`);
+    }
+
+    // 상태 이상 회복 메서드
+    healStatus(conditions) {
+      conditions.forEach(condition => {
+        const index = this.statusCon.indexOf(condition);
+        if (index > -1) {
+          this.statusCon.splice(index, 1); // 상태 이상 제거
+          return (`${this.name}의 상태 이상 "${condition}"이(가) 회복되었다.`);
+        }
+      });
+    }
     
     setNickname(name){
       this.name = name;
@@ -652,7 +694,7 @@
       return;
     }
 
-    useItem(string) {
+    useItem(string, ) {
       this.usedItems = string;
       this.evolve();
       return;
@@ -832,8 +874,8 @@ window.Pokemon = Pokemon;
 
 class SummonPokemon {
   static summonPokemon3(summonTargetPokemon, name, level, region = null) {
-      const pokemonData = setup.pokemonData[summonTargetPokemon];
-      return new Pokemon(pokemonData, name, level, region);
+    const pokemonData = setup.pokemonData[summonTargetPokemon];
+    return new Pokemon(pokemonData, name, level, region);
   }
 }
 window.SummonPokemon = SummonPokemon;

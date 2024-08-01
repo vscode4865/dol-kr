@@ -10,18 +10,9 @@
     <<set $currentPlayerPokemonName = $PlayerPokemon.name>>
     <<set $currentPlayerPokemonSpecies = $PlayerPokemon.species>>
     <<set $currentPlayerPokemonEvolvesTo = $PlayerPokemon.species>>
+    <<set $healingItem = createItem("상처약")>>
 <</widget>>
 
-<<widget "opponentScript">>
-    <<switch $Battleopponent>>
-        <<case "green1">>
-            <<set $OpponentPokemon = $greenParty[0]>>
-            라이벌 그린이 승부를 걸어왔다!<br><br>
-            라이벌 그린은 <<print $OpponentPokemon.name>>을(를) 내보냈다!<br><br>
-        <<default>>
-            야생의 포켓몬이 튀어나왔다!
-    <</switch>>
-<</widget>>
 
 
 <<widget "printGender">>
@@ -36,37 +27,20 @@
 <</widget>>
 
 
+<<widget "moveSelect">>
+    <<message "싸운다">><<skillSelect>><</message>><br><br>
+
+    <<message "아이템">><<itemSelect>><</message>>
+<</widget>>
+
+
+
+
+
 <<widget "skillSelect">>
 
     <<if $PlayerPokemon.knownSkills[0]>>
         <label><<print $PlayerPokemon.knownSkills[0].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[0].name autocheck>></label>
-
-        /*
-        <<button "0번">>
-            <<replace "#battle-log">>
-                <<set $Imsi to $OpponentPokemonHP>>
-
-                <<print $Imsi>> 진화 전, 처음 HP <br><br>
-                
-                <<print $PlayerPokemon.useSkill("몸통박치기", $OpponentPokemon)>> 데미지
-                <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
-                <<set $Imsi2 to $OpponentPokemonHP>>
-
-                <<print $Imsi2>>진화 전, 현재 HP<br><br>
-                <<print $OpponentPokemon.level>> 이전 레벨<br><br>
-                <<print $OpponentPokemon.gainExperience(1000000000)>><br><br>
-                <<print $OpponentPokemon.level>> 지금 레벨<br><br>
-                <<print $OpponentPokemon.experience>> 경험치<br><br>
-                <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
-                <<print $OpponentPokemonHP>> 레벨업 후, 현재 HP <br><br>
-                
-                <<print $OpponentPokemon.stats.maxHP>> 레벨업 후, 최대 HP
-
-
-
-            <</replace>>
-        <</button>>
-        */
     <</if>>
     <<if $PlayerPokemon.knownSkills[1]>>
         <label><<print $PlayerPokemon.knownSkills[1].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[1].name autocheck>></label>
@@ -77,12 +51,83 @@
     <<if $PlayerPokemon.knownSkills[3]>>
         <label><<print $PlayerPokemon.knownSkills[3].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[3].name autocheck>></label>
     <</if>>
+<</widget>>
 
+<<widget "itemSelect">>
+    <<if $healingItem or $statBoostItem>>
+        <<if $healingItem>>
+            <<if $PlayerPokemon.stats.currentHP lt $PlayerPokemon.stats.maxHP>>
+                <label><<print $healingItem.name>> <<radiobutton "$selectedMove" $healingItem.name autocheck>></label>
+            <<else>>
+                회복 아이템은 지금 써도 효과가 없다!
+            <</if>>
+        <</if>>
+    <<else>>
+        당신은 아이템이 없다!
+    <</if>>
 <</widget>>
 
 
-<<widget "battle">>
 
+<<widget "changePokemon">>
+    <<switch $args[0]>>
+        <<case $OpponentPokemon>>
+            <<set $OpponentPokemon = $args[1]>>
+        <<case $PlayerPokemon>>
+            <<set $PlayerPokemon = $args[1]>>
+        <<default>>
+            오류.
+    <</switch>>
+<</widget>>
+
+<<widget "switchToOptimalPokemon">>
+    <<set $playerPokemonTemporaryHP = $PlayerPokemonHP>>
+
+    <<set $bestSkill = null>>  <!-- 최고의 기술을 저장할 변수 -->
+    <<set $bestDamage = -Infinity>>  <!-- 최고 데미지를 저장할 변수 -->
+    <<set $bestPokemon = null>>  <!-- 최고의 기술을 가진 포켓몬 저장할 변수 -->
+
+    <<for $i = 0; $i < $opponentParty.length; $i++>>  <!-- 모든 포켓몬에 대해 반복 -->
+        <<set $currentPokemon = $opponentParty[$i]>>
+        
+        <<for $j = 0; $j < $currentPokemon.knownSkills.length; $j++>>  <!-- 각 포켓몬의 기술에 대해 반복 -->
+            <<set $currentSkill = $currentPokemon.knownSkills[$j]>>
+            <<if $currentSkill>>
+                <<set $currentDamage = $currentPokemon.useSkill($currentSkill.name, $PlayerPokemon)>>  <!-- 기술 사용으로 인한 데미지 계산 -->
+
+                <<if $currentDamage > $bestDamage>>  <!-- 현재 데미지가 최고 데미지보다 큰 경우 -->
+                    <<set $bestDamage = $currentDamage>>  <!-- 최고 데미지 업데이트 -->
+                    <<set $bestSkill = $currentSkill>>  <!-- 최고의 기술 업데이트 -->
+                    <<set $bestPokemon = $currentPokemon>>  <!-- 최고의 기술을 가진 포켓몬 업데이트 -->
+                <</if>>
+            <</if>>
+        <</for>>
+    <</for>>
+    <<set $PlayerPokemon.stats.currentHP = $playerPokemonTemporaryHP>>
+
+    <!-- 결과 출력 -->
+    <<if $bestSkill>>
+        <<if $bestPokemon.id == $OpponentPokemon.id>>
+            교체 안해도 됨.
+        <<elseif $bestPokemon.id != $OpponentPokemon.id>>
+            포켓몬 교체됨!
+            <<changePokemon $OpponentPokemon $bestPokemon>>
+        <</if>>
+
+    <<else>>
+        포켓몬 교체 불가. 최적의 기술 없음.
+    <</if>>
+<</widget>>
+
+
+
+
+<<widget "battle">>
+    /*
+    <<statusCon $PlayerPokemon>>
+    <<statusCon $OpponentPokemon>>
+    */
+    <<switchToOptimalPokemon>>
 
     
     <<switch $selectedMove>>
@@ -96,8 +141,21 @@
             <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
     <</switch>>
 
-    상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! <<print $PlayerPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>> 데미지
+    
+
+    상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! <<print $OpponentPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>> 데미지
     <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+    <<statusCon $PlayerPokemon>>
+    <<statusCon $OpponentPokemon>>
+    <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+    <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+
+    <<switch $selectedMove>>
+        <<case $healingItem.name>>
+            <<print $healingItem.use($PlayerPokemon)>>
+    <</switch>>
 
     <<set $selectedMove to null>>
 
@@ -115,12 +173,28 @@
         <<set $currentPlayerPokemonName = $PlayerPokemon.name>>
     <</if>>
 
-
     <상대><br>
     <<print $OpponentPokemon.name>><<printGender $OpponentPokemon>> / Lv.<<print $OpponentPokemon.level>><br>
-    <<print $OpponentPokemon.stats.currentHP>>/<<print $OpponentPokemon.stats.maxHP>><br><br>
+    <<print $OpponentPokemon.stats.currentHP>>/<<print $OpponentPokemon.stats.maxHP>><br>
+    <<if $OpponentPokemon.statusCon>>
+        <<print $OpponentPokemon.statusCon>><br><br>
+    <</if>>
+
 
     <자신><br>
     <<print $PlayerPokemon.name>><<printGender $PlayerPokemon>> / Lv.<<print $PlayerPokemon.level>><br>
-    <<print $PlayerPokemon.stats.currentHP>>/<<print $PlayerPokemon.stats.maxHP>><br><br>
+    <<print $PlayerPokemon.stats.currentHP>>/<<print $PlayerPokemon.stats.maxHP>><br>
+    <<if $PlayerPokemon.statusCon>>
+        <<print $PlayerPokemon.statusCon>><br><br>
+    <</if>>
 <</widget>>
+
+
+<<widget "statusCon">>
+    <<if $args[0].statusCon == "독">>
+        <<set $dotPoison = $args[0].stats.maxHP / 8>>
+        <<set $args[0].stats.currentHP = $args[0].stats.currentHP - $dotPoison>>
+        <br><br>HP가 감소했습니다! 현재 HP: <<print $args[0].stats.currentHP>> <!-- 로그 출력 -->
+    <</if>>
+<</widget>>
+

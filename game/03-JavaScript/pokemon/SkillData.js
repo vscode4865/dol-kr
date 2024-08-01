@@ -115,7 +115,61 @@ setup.Skills = [
   {name: "빛의장막", number: 113, power: 0, type: "에스퍼", category: "변화", PP: 30, accuracy: 100, contact: false, priority: 0}, //5턴동안 특수공격 데미지 약하게, 미구현
   {name: "흑안개", number: 114, power: 0, type: "얼음", category: "변화", PP: 30, accuracy: 100, contact: false, priority: 0}, //랭크 변화 되돌리기, 미구현
   {name: "리플렉터", number: 115, power: 0, type: "에스퍼", category: "변화", PP: 20, accuracy: 100, contact: false, priority: 0}, //5턴동안 물리공격 데미지 약하게, 미구현
-  {name: "기충전", number: 116, power: 0, type: "노말", category: "변화", PP: 30, accuracy: 100, contact: false, priority: 0},
+  {name: "기충전", number: 116, power: 0, type: "노말", category: "변화", PP: 30, accuracy: 100, rank: "accuracyRank", rankChange: 2, contact: false, priority: 0},
+  {name: "참기", number: 117, power: 0, type: "노말", category: "물리", PP: 10, accuracy: 100, contact: true, priority: 1}, //2턴동안 받은 데미지의 2배 데미지 줌, 미구현
+  {name: "손가락흔들기", number: 118, power: 0, type: "노말", category: "변화", PP: 10, accuracy: 100, contact: true, priority: 0}, //기술 랜덤으로 나감, 미구현
+  {name: "따라하기", number: 119, power: 0, type: "비행", category: "변화", PP: 20, accuracy: 100, contact: true, priority: 0}, //기술 따라하기, 미구현
+  {name: "자폭", number: 120, power: 200, type: "노말", category: "물리", PP: 5, accuracy: 100, contact: false, priority: 0}, //본인 hp 0되는거 미구현
+  {name: "알폭탄", number: 121, power: 100, type: "노말", category: "물리", PP: 10, accuracy: 75, contact: false, priority: 0},
+  {name: "핥기", number: 122, power: 30, type: "고스트", category: "물리", PP: 30, accuracy: 100, statusCon: "마비", statusConProbability: 30, contact: true, priority: 0},
+  {name: "스모그", number: 123, power: 30, type: "독", category: "특수", PP: 20, accuracy: 70, statusCon: "독", statusConProbability: 40, contact: false, priority: 0},
+  {name: "오물공격", number: 124, power: 65, type: "독", category: "특수", PP: 20, accuracy: 100, statusCon: "독", statusConProbability: 30, contact: false, priority: 0},
+  {name: "뼈다귀치기", number: 125, power: 65, type: "땅", category: "물리", PP: 10, accuracy: 85, statusCon: "풀죽음", statusConProbability: 10, contact: false, priority: 0},
+  {name: "불대문자", number: 126, power: 110, type: "불꽃", category: "특수", PP: 5, accuracy: 85, statusCon: "화상", statusConProbability: 10, contact: false, priority: 0},
+  {name: "폭포오르기", number: 127, power: 80, type: "물", category: "물리", PP: 15, accuracy: 100, statusCon: "풀죽음", statusConProbability: 20, contact: true, priority: 0},
+  {name: "껍질끼우기", number: 128, power: 35, type: "물", category: "물리", PP: 15, accuracy: 85, bind: true, contact: true, priority: 0},
+  {name: "스피드스타", number: 129, power: 60, type: "노말", category: "특수", PP: 20, accuracy: 100, contact: false, priority: 0}, //필중기, 미구현
+  {name: "로켓박치기", number: 130, power: 130, type: "노말", category: "물리", PP: 10, accuracy: 100, charge: true, rank: "defenseRank", rankChange: 1, contact: true, priority: 0}, //랭크 업이랑 충전 동시에 되는거 미구현
+  {name: "가시대포", number: 131, power: 20, type: "노말", category: "물리", PP: 15, accuracy: 100, multiStrike: 5, contact: false, priority: 0},
+  {name: "휘감기", number: 132, power: 10, type: "노말", category: "물리", PP: 35, accuracy: 100, rank: "speedRank", rankChange: -1, rankChangeProbability: 10, contact: true, priority: 0},
+  {name: "망각술", number: 133, power: 0, type: "에스퍼", category: "변화", PP: 20, accuracy: 100, rank: "specialDefenseRank", rankChange: 2, contact: false, priority: 0},
+  {name: "숟가락휘기", number: 134, power: 0, type: "에스퍼", category: "변화", PP: 15, accuracy: 80, rank: "accuracyRank", rankChange: -1, contact: false, priority: 0},
+  {name: "알낳기", number: 135, power: 0, type: "노말", category: "변화", PP: 5, accuracy: 100, contact: false, priority: 0}, //회복기/더블배틀 기능 미구현
+  {name: "무릎차기", number: 136, power: 130, type: "격투", category: "물리", PP: 10, accuracy: 90, recoil: 1/2, contact: true, priority: 0}, //빗나갈 시 반동 미구현
+  {name: "뱀눈초리", number: 137, power: 0, type: "노말", category: "변화", PP: 30, accuracy: 100, statusCon: "마비", contact: false, priority: 0},
+  {name: "꿈먹기", number: 138, power: 100, type: "에스퍼", category: "특수", PP: 15, accuracy: 100, contact: false, priority: 0}, //준 데미지의 절반 만큼 hp 회복, 미구현
+  {name: "독가스", number: 139, power: 0, type: "독", category: "변화", PP: 40, accuracy: 90, statusCon: "독", contact: false, priority: 0},
+  {name: "구슬던지기", number: 140, power: 15, type: "노말", category: "물리", PP: 20, accuracy: 85, multiStrike: 5, contact: false, priority: 0},
+  {name: "흡혈", number: 141, power: 80, type: "벌레", category: "물리", PP: 10, accuracy: 100, contact: true, priority: 0}, //준 데미지의 절반 만큼 hp 회복, 미구현
+  {name: "악마의키스", number: 142, power: 0, type: "노말", category: "변화", PP: 10, accuracy: 75, statusCon: "잠듦", contact: false, priority: 0},
+  {name: "변신", number: 143, power: 0, type: "노말", category: "변화", PP: 10, accuracy: 100, contact: false, priority: 0}, //변신 기능 미구현
+  {name: "거품", number: 144, power: 40, type: "물", category: "특수", PP: 30, accuracy: 100, rank: "speedRank", rankChange: -1, rankChangeProbability: 10, contact: false, priority: 0},
+  {name: "잼잼펀치", number: 145, power: 70, type: "노말", category: "물리", PP: 10, accuracy: 100, statusCon: "혼란", statusConProbability: 20, contact: true, priority: 0},
+  {name: "버섯포자", number: 146, power: 0, type: "벌레", category: "변화", PP: 10, accuracy: 100, statusCon: "잠듦", contact: false, priority: 0},
+  {name: "플래시", number: 147, power: 0, type: "노말", category: "변화", PP: 20, accuracy: 100, rank: "accuracyRank", rankChange: -1, contact: false, priority: 0},
+  {name: "사이코웨이브", number: 148, power: 0, type: "에스퍼", category: "특수", PP: 15, accuracy: 100, contact: false, priority: 0}, // 데미지 = (X + 5) × ( (포켓몬의 레벨) / 10 ). 이때 X는 0~10까지의 숫자가 랜덤으로 들어가고, 오른쪽 나눗셈의 소수점은 버림.
+  {name: "튀어오르기", number: 149, power: 0, type: "노말", category: "변화", PP: 40, accuracy: 100, contact: false, priority: 0},
+  {name: "녹기", number: 150, power: 0, type: "독", category: "변화", PP: 20, accuracy: 100, rank: "defenseRank", rankChange: 2, contact: false, priority: 0},
+  {name: "집게해머", number: 151, power: 100, type: "물", category: "물리", PP: 10, accuracy: 90, contact: true, priority: 0}, //급소 확률 높음, 미구현
+  {name: "대폭발", number: 152, power: 250, type: "노말", category: "물리", PP: 5, accuracy: 90, contact: false, priority: 0}, //본인 hp 0되는거 미구현
+  {name: "마구할퀴기", number: 153, power: 18, type: "노말", category: "물리", PP: 15, accuracy: 80, multiStrike: 5, contact: true, priority: 0},
+  {name: "뼈다귀부메랑", number: 154, power: 50, type: "땅", category: "물리", PP: 10, accuracy: 90, multiStrike: 2, contact: false, priority: 0},
+  {name: "잠자기", number: 155, power: 0, type: "에스퍼", category: "변화", PP: 5, accuracy: 100, statusCon: "잠듦", contact: false, priority: 0}, //2턴동안 본인한테 잠듦 적용, hp 회복. 미구현
+  {name: "스톤샤워", number: 156, power: 75, type: "바위", category: "물리", PP: 10, accuracy: 90, statusCon: "풀죽음", statusConProbability: 30, contact: false, priority: 0},
+  {name: "필살앞니", number: 157, power: 80, type: "노말", category: "물리", PP: 15, accuracy: 90, statusCon: "풀죽음", statusConProbability: 10, contact: true, priority: 0},
+  {name: "각지기", number: 158, power: 0, type: "노말", category: "변화", PP: 30, accuracy: 100, rank: "attackRank", rankChange: 1, contact: false, priority: 0},
+  {name: "텍스처", number: 159, power: 0, type: "노말", category: "변화", PP: 30, accuracy: 100, contact: false, priority: 0}, //본인 타입을 기술배치 가장 위에 있는 기술의 타입으로 변경, 미구현
+  {name: "트라이어택", number: 160, power: 80, type: "노말", category: "특수", PP: 10, accuracy: 100, statusCon: ["마비", "화상", "얼음"], statusConProbability: 20, contact: false, priority: 0},
+  {name: "분노의앞니", number: 161, power: 0, type: "노말", category: "물리", PP: 10, accuracy: 90, contact: true, priority: 0}, //상대 hp의 절반 데미지, 미구현
+  {name: "베어가르기", number: 162, power: 70, type: "노말", category: "물리", PP: 20, accuracy: 100, contact: true, priority: 0}, //급소 맞을 확률 높음, 미구현
+  {name: "대타출동", number: 163, power: 0, type: "노말", category: "변화", PP: 10, accuracy: 100, contact: false, priority: 0}, //hp 1/4 깎아서 분신 만듬, 미구현
+  {name: "발버둥", number: 164, power: 50, type: "???", category: "물리", PP: 1, accuracy: 100, recoil: 1/4, contact: true, priority: 0}, //본인 최대 hp의 1/4 반동피해
+  
+  
+
+  
+  
+  
 
   
   
@@ -144,8 +198,10 @@ setup.Skills = [
 ];
 
 setup.LearnableSkills = {
-  "이상해씨": ["몸통박치기", "잎날가르기", "칼춤"],
-  "파이리": ["몸통박치기",]
+  "이상해씨": ["몸통박치기", "잎날가르기", "칼춤", "맹독"],
+  "파이리": ["몸통박치기", "할퀴기"],
+  "후딘": ["몸통박치기", "사이코키네시스", "돌떨구기"]
+  
 };
 
 setup.LevelUpSkills = {
