@@ -10,7 +10,7 @@
     <<set $currentPlayerPokemonName = $PlayerPokemon.name>>
     <<set $currentPlayerPokemonSpecies = $PlayerPokemon.species>>
     <<set $currentPlayerPokemonEvolvesTo = $PlayerPokemon.species>>
-    <<set $healingItem = createItem("상처약")>>
+    
 <</widget>>
 
 
@@ -54,6 +54,7 @@
 <</widget>>
 
 <<widget "itemSelect">>
+    /*
     <<if $healingItem or $statBoostItem>>
         <<if $healingItem>>
             <<if $PlayerPokemon.stats.currentHP lt $PlayerPokemon.stats.maxHP>>
@@ -65,7 +66,23 @@
     <<else>>
         당신은 아이템이 없다!
     <</if>>
+     */
+
+
+    <<if $playerInventory.checkItemInInventory() == false>>
+        당신은 아이템이 없다!
+    <<else>>
+        <<if $PlayerPokemon.stats.currentHP lt $PlayerPokemon.stats.maxHP>>
+            <<for _i = 0; _i < $playerInventory.items.length; _i++>>
+                <<set $itemSelect = $playerInventory.items[_i]>>
+                <label><<print $itemSelect.name>> <<radiobutton "$selectedMove" $itemSelect.name autocheck>></label><br>
+            <</for>>
+        <<else>>
+            회복 아이템은 지금 써도 효과가 없다!
+        <</if>>
+    <</if>>
 <</widget>>
+
 
 
 
@@ -153,9 +170,11 @@
 
 
     <<switch $selectedMove>>
-        <<case $healingItem.name>>
-            <<print $healingItem.use($PlayerPokemon)>>
+        <<case $playerInventory.items[0].name>>
+            <<print $playerInventory.items[0].use($PlayerPokemon)>>
     <</switch>>
+    <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+    <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
 
     <<set $selectedMove to null>>
 

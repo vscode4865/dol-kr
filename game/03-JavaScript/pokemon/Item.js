@@ -4,6 +4,7 @@ class Item {
         this.name = name;
         this.buyPrice = buyPrice;
         this.sellingPrice = sellingPrice;
+        this.quantity = 0;
     }
 
     // 아이템 사용 메서드 (기본 구현은 없음)
@@ -15,8 +16,8 @@ window.Item = Item;
 
 // 회복 아이템 클래스
 class HealingItem extends Item {
-    constructor(name, healAmount, healStatusCon, buyPrice, sellingPrice) {
-        super(name, buyPrice, sellingPrice);
+    constructor(name, healAmount, healStatusCon, buyPrice, sellingPrice, quantity) {
+        super(name, buyPrice, sellingPrice, quantity);
         this.healAmount = healAmount;
         this.healStatusCon = healStatusCon; // 상태 회복 조건
     }
@@ -25,8 +26,14 @@ class HealingItem extends Item {
     use(pokemon) {
         const currentHP = pokemon.stats.currentHP;
         const maxHP = pokemon.stats.maxHP;
-        pokemon.heal(this.healAmount);
-        pokemon.healStatus(this.healStatusCon); // 상태 회복 메서드 호출
+        if (this.healAmount){
+            pokemon.heal(this.healAmount);
+        }
+        if (this.healStatusCon) {
+            pokemon.healStatus(this.healStatusCon);
+        }
+        const playerInventory = variables().playerInventory;
+        playerInventory.removeItem(this.name);
         return (`${pokemon.name}의 체력이 ${maxHP - currentHP} 회복되었다!`);
     }
 }
@@ -34,8 +41,8 @@ window.HealingItem = HealingItem;
 
 // 능력치 증가 아이템 클래스
 class StatBoostItem extends Item {
-    constructor(name, boostAmount, buyPrice, sellingPrice) {
-        super(name, buyPrice, sellingPrice);
+    constructor(name, boostAmount, buyPrice, sellingPrice, quantity) {
+        super(name, buyPrice, sellingPrice, quantity);
         this.boostAmount = boostAmount;
     }
 
@@ -68,9 +75,9 @@ function createItem(itemName) {
     const itemClass = itemTypeMap[itemData.type[0]]; // 첫 번째 타입만 사용
     if (itemClass) {
         if (itemClass === HealingItem) {
-            return new HealingItem(itemData.name, itemData.healAmount || 0, itemData.healStatusCon, itemData.buyPrice, itemData.sellingPrice);
+            return new HealingItem(itemData.name, itemData.healAmount || 0, itemData.healStatusCon, itemData.buyPrice, itemData.sellingPrice, itemData.quantity);
         } else if (itemClass === StatBoostItem) {
-            return new StatBoostItem(itemData.name, itemData.attackUpAmount, itemData.buyPrice, itemData.sellingPrice);
+            return new StatBoostItem(itemData.name, itemData.attackUpAmount, itemData.buyPrice, itemData.sellingPrice, itemData.quantity);
         }
         // 다른 타입에 대한 추가 로직을 구현할 수 있습니다.
     }
@@ -82,44 +89,63 @@ window.createItem = createItem;
 // 인벤토리 클래스 정의
 class Inventory {
     constructor() {
-        this.items = {};
+        this.items = [];
     }
 
-    // 인벤토리에 아이템 추가
+
     addItem(item, quantity) {
-        if (this.items[item.name]) {
-            this.items[item.name].quantity += quantity; // 수량 증가
+        // 이미 존재하는 아이템인지 확인
+        const existingItemIndex = this.items.findIndex(i => i.name === item.name);
+        
+        if (existingItemIndex !== -1) {
+            this.items[existingItemIndex].quantity += quantity; // 아이템이 존재하면 수량 증가
+        } else {
+            // 새로운 아이템 추가
+            item.quantity = quantity; // 아이템의 수량 설정
+            this.items.push(item);
         }
-        else {
-            this.items[item.name] = { item: item, quantity: quantity }; // 새 아이템 추가
-        }
+
         return (`${item.name}이(가) 인벤토리에 추가되었습니다.`);
     }
 
     // 인벤토리에서 아이템 제거
     removeItem(itemName) {
-        if (this.items[itemName]) {
-            this.items[itemName].quantity -= 1; // 수량 감소
-            if (this.items[itemName].quantity === 0) {
-                delete this.items[itemName]; // 수량이 0이면 아이템 제거
+        // 아이템의 인덱스를 찾기
+        const existingItemIndex = this.items.findIndex(i => i.name === itemName);
+        
+        if (existingItemIndex !== -1) {
+            this.items[existingItemIndex].quantity -= 1; // 수량 감소
+            if (this.items[existingItemIndex].quantity === 0) {
+                this.items.splice(existingItemIndex, 1); // 수량이 0이면 아이템 제거
             }
             return (`${itemName}이(가) 인벤토리에서 제거되었습니다.`);
-        }
-        else {
+        } else {
             return (`아이템 "${itemName}"이(가) 인벤토리에 없습니다.`);
         }
     }
 
     // 인벤토리의 아이템 목록 출력
     printInventory() {
-        console.log("인벤토리:");
-        if (Object.keys(this.items).length === 0) {
-            console.log("인벤토리가 비어 있습니다.");
+        let inventoryList = "인벤토리:\n"; // 초기 메시지 설정
+    
+        if (this.items.length === 0) {
+            return "인벤토리가 비어 있습니다."; // 인벤토리가 비어있을 경우 반환
         }
         else {
-            for (const itemName in this.items) {
-                return (`- ${itemName} (수량: ${this.items[itemName].quantity})`);
-            }
+            this.items.forEach((itemEntry) => {
+                inventoryList += `- ${itemEntry.name} (수량: ${itemEntry.quantity})\n`; // 각 아이템 추가
+            });
+        }
+    
+        return inventoryList; // 모든 아이템을 포함한 문자열 반환
+    }
+
+    checkItemInInventory() {
+        if (Object.keys(this.items).length === 0) {
+            return false;
+        }
+        else {
+            return true;
         }
     }
 

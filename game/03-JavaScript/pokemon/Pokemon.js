@@ -873,9 +873,9 @@
 window.Pokemon = Pokemon;
 
 class SummonPokemon {
-  static summonPokemon3(summonTargetPokemon, name, level, region = null) {
+  static summonPokemon3(summonTargetPokemon, name, level, region = null, traitInput, genderInput) {
     const pokemonData = setup.pokemonData[summonTargetPokemon];
-    return new Pokemon(pokemonData, name, level, region);
+    return new Pokemon(pokemonData, name, level, region, traitInput, genderInput);
   }
 }
 window.SummonPokemon = SummonPokemon;
