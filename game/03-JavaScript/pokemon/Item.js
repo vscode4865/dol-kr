@@ -34,6 +34,7 @@ class HealingItem extends Item {
         }
         const playerInventory = variables().playerInventory;
         playerInventory.removeItem(this.name);
+        
         return (`${pokemon.name}의 체력이 ${maxHP - currentHP} 회복되었다!`);
     }
 }

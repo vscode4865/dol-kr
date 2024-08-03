@@ -1,5 +1,5 @@
 setup.Skills = [
-  {name: "0번 기술", number: 0, power: 40, type: "노말", category: "물리", PP: 35, accuracy: 100, contact: true, priority: 0},
+  {name: "혼란기술", number: 0, power: 40, type: "없음", category: "물리", PP: 999999, accuracy: 100, contact: true, priority: 0},
   {name: "막치기", number: 1, power: 40, type: "노말", category: "물리", PP: 35, accuracy: 100, contact: true, priority: 0},
   {name: "태권당수", number: 2, power: 50, type: "격투", category: "물리", PP: 25, accuracy: 100, contact: true, priority: 0},
   {name: "연속뺨치기", number: 3, power: 15, type: "노말", category: "물리", PP: 10, accuracy: 85, contact: true, multiStrike: 5, priority: 0}, //연속기 구현 안됨, 확률 구현 안됨
@@ -198,7 +198,7 @@ setup.Skills = [
 ];
 
 setup.LearnableSkills = {
-  "이상해씨": ["몸통박치기", "잎날가르기", "칼춤", "맹독"],
+  "이상해씨": ["몸통박치기", "잎날가르기", "칼춤", "맹독", "초음파"],
   "파이리": ["몸통박치기", "할퀴기"],
   "후딘": ["몸통박치기", "사이코키네시스", "돌떨구기"]
   

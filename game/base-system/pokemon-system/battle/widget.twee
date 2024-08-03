@@ -168,13 +168,31 @@
     <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
     <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
 
+    /*
+    <<if $selectedMove != null>>
+        <<set $selectedItem = $playerInventory.items.find(item => item.name == $selectedMove)>>
+        <<if $selectedItem>>
+            <<print $selectedItem.use($PlayerPokemon)>>
+        <<else>>
+            아이템 사용에 실패했습니다. 유효하지 않은 아이템입니다.
+        <</if>>
+    <</if>>
+    */
 
+    <<set $selectedItem = $playerInventory.items.find(item => item.name == $selectedMove)>>
     <<switch $selectedMove>>
-        <<case $playerInventory.items[0].name>>
-            <<print $playerInventory.items[0].use($PlayerPokemon)>>
+        <<case $selectedItem.name>>
+            <<print $selectedItem.use($PlayerPokemon)>>
     <</switch>>
     <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
     <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+    <<if $PlayerPokemon.statusConFlag == 1>>
+        <<set $PlayerPokemon.statusConFlag = 0>>
+    <</if>>
+    <<if $OpponentPokemon.statusConFlag == 1>>
+        <<set $OpponentPokemon.statusConFlag = 0>>
+    <</if>>
 
     <<set $selectedMove to null>>
 
@@ -210,10 +228,22 @@
 
 
 <<widget "statusCon">>
-    <<if $args[0].statusCon == "독">>
-        <<set $dotPoison = $args[0].stats.maxHP / 8>>
-        <<set $args[0].stats.currentHP = $args[0].stats.currentHP - $dotPoison>>
-        <br><br>HP가 감소했습니다! 현재 HP: <<print $args[0].stats.currentHP>> <!-- 로그 출력 -->
+    <<if $args[0].statusConFlag != 1>>
+        <<if $args[0].statusCon == "독">>
+            <<set $dotPoison = $args[0].stats.maxHP / 8>>
+            <<set $args[0].stats.currentHP = $args[0].stats.currentHP - $dotPoison>>
+            <br><br>HP가 감소했습니다! 현재 HP: <<print $args[0].stats.currentHP>>
+        <</if>>
     <</if>>
+
+    /*
+    <<if $args[0].statusCon == "혼란">>
+        <<set $args[0].confusionTurn>>
+        <<script>>
+            State.variables.args[0].confusionTurn = Math.floor(Math.random() * 3) + 2;
+        <</script>>
+        <<print $args[0].confusionTurn>>
+    <</if>>
+    */
 <</widget>>
 

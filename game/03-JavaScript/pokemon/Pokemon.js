@@ -22,6 +22,9 @@
         this.rank = {attackRank: 0, defenseRank: 0, specialAttackRank:0, specialDefenseRank: 0,speedRank: 0, criticalRank: 0, accuracyRank: 0, evasionRank: 0,}; // 공격력 및 방어력 랭크 추가
         this.trainer = null;
         this.statusCon = [];
+        this.statusConFlag = null;
+        this.confusionTurn = null;
+        this.statusConConfusionFlag = null;
 
 
         this.effortValues = { HP: 0, Attack: 0, Defense: 0, SpecialAttack: 0, SpecialDefense: 0, Speed: 0 }; // 노력치
@@ -434,8 +437,30 @@
         return `//////${this.knownSkills[0].name}, 이 포켓몬은 해당 기술을 사용할 수 없습니다.`;
       }
       else if (skill.PP <= 0) {
-        return `${skillName}의 PP가 부족합니다!`;
+        return (`${skillName}의 PP가 부족합니다!`);
       }
+
+      if (this.statusCon.includes("혼란")){
+        if (this.statusConConfusionFlag != 1) {
+          this.confusionTurn = Math.floor(Math.random() * 3) + 2;
+          this.statusConConfusionFlag = 1;
+        }
+        if (Math.random() < 0.333) {
+          let damage = this.calculateDamage("혼란기술", this);
+          if (damage < 0) damage = 0;
+          this.stats.currentHP -= damage;
+          this.confusionTurn -= 1;
+          return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다!`);
+        }
+        if (this.confusionTurn == 0) {
+          if (this.statusCon.findIndex(v => v === "혼란") !== -1) {
+            this.statusCon.splice("혼란", 1);
+          }
+          this.confusionTurn = null;
+          this.statusConConfusionFlag = null;
+        }
+      }
+
 
 
       if (skill.PP == 0) {
@@ -452,6 +477,9 @@
         }
         if (skill.statusCon) {
           opponent.statusCon = skill.statusCon;
+          if (skill.statusCon === "독" || skill.statusCon === "맹독") {
+            opponent.statusConFlag = 1;
+          }
           return opponent.statusCon
         }
       }
