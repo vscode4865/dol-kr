@@ -440,26 +440,35 @@
         return (`${skillName}의 PP가 부족합니다!`);
       }
 
+      if (this.statusCon.includes("마비")){
+        if (Math.random() < 0.25){
+          
+        }
+      }
+
       if (this.statusCon.includes("혼란")){
         if (this.statusConConfusionFlag != 1) {
           this.confusionTurn = Math.floor(Math.random() * 3) + 2;
           this.statusConConfusionFlag = 1;
         }
-        if (Math.random() < 0.333) {
-          let damage = this.calculateDamage("혼란기술", this);
-          if (damage < 0) damage = 0;
-          this.stats.currentHP -= damage;
-          this.confusionTurn -= 1;
-          return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다!`);
-        }
         if (this.confusionTurn == 0) {
-          if (this.statusCon.findIndex(v => v === "혼란") !== -1) {
-            this.statusCon.splice("혼란", 1);
-          }
+          this.statusCon.splice("혼란", 1);
           this.confusionTurn = null;
           this.statusConConfusionFlag = null;
+
+        }
+        else {
+          if (Math.random() < 0.333) {
+            let damage = this.calculateDamage("혼란기술", this);
+            if (damage < 0) damage = 0;
+            this.stats.currentHP -= damage;
+            this.confusionTurn -= 1;
+            return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다! ${damage}`);
+          }
         }
       }
+
+      
 
 
 
@@ -476,11 +485,15 @@
           return this.applyRankChange(skillName2, opponent2);
         }
         if (skill.statusCon) {
-          opponent.statusCon = skill.statusCon;
-          if (skill.statusCon === "독" || skill.statusCon === "맹독") {
-            opponent.statusConFlag = 1;
+          const shouldApplyStatus = !skill.statusConProbability || Math.random() < skill.statusConProbability;
+          
+          if (shouldApplyStatus) {
+            opponent.statusCon = skill.statusCon;
+            if (["독", "맹독"].includes(skill.statusCon)) {
+              opponent.statusConFlag = 1;
+            }
           }
-          return opponent.statusCon
+          return opponent.statusCon;
         }
       }
       // 기술 사용 로직
@@ -493,7 +506,7 @@
 
     calculateDamage(skillName, opponent) {
       const opponent3 = opponent;
-      const skill = this.knownSkills.find(s => s.name === skillName);
+      const skill = skillName === "혼란기술" ? setup.Skills.find(s => s.name === "혼란기술") : this.knownSkills.find(s => s.name === skillName);
       const skill2 = skillName;
       const trait = this.trait
       // 예시: 데미지 계산을 위한 파라미터 사용 예시
@@ -560,7 +573,7 @@
     }
 
     calculateType(skillName, opponent) {
-      const skill = this.knownSkills.find(s => s.name === skillName);
+      const skill = skillName === "혼란기술" ? setup.Skills.find(s => s.name === "혼란기술") : this.knownSkills.find(s => s.name === skillName);
       let typeEffectiveness = 1; // 기본 효과값 설정
     
       const effectiveness = setup.typeCompatibility;
