@@ -442,7 +442,7 @@
 
       if (this.statusCon.includes("마비")){
         if (Math.random() < 0.25){
-          
+          return (`${this.name}은 몸이 저려서 움직일 수 없다!`);
         }
       }
 
@@ -463,7 +463,7 @@
             if (damage < 0) damage = 0;
             this.stats.currentHP -= damage;
             this.confusionTurn -= 1;
-            return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다! ${damage}`);
+            return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다! ${damage} 데미지.`);
           }
         }
       }
@@ -485,8 +485,9 @@
           return this.applyRankChange(skillName2, opponent2);
         }
         if (skill.statusCon) {
-          const shouldApplyStatus = !skill.statusConProbability || Math.random() < skill.statusConProbability;
-          
+          const invalidStatusConditions = ["독", "맹독", "화상", "마비", "잠듦", "얼음"];
+          const shouldApplyStatus = (!skill.statusConProbability || Math.random() < skill.statusConProbability) && !invalidStatusConditions.includes(opponent.statusCon);
+        
           if (shouldApplyStatus) {
             opponent.statusCon = skill.statusCon;
             if (["독", "맹독"].includes(skill.statusCon)) {
@@ -501,7 +502,7 @@
       //let damage = (this.stats.Attack  + skill.power) - opponent.stats.Defense;
       if (damage < 0) damage = 0; // 최소 피해량 보장
       opponent.stats.currentHP -= damage;
-      return damage;
+      return (`${damage} 데미지`);
     }
 
     calculateDamage(skillName, opponent) {

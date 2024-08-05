@@ -40,16 +40,16 @@
 <<widget "skillSelect">>
 
     <<if $PlayerPokemon.knownSkills[0]>>
-        <label><<print $PlayerPokemon.knownSkills[0].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[0].name autocheck>></label>
+        <label><<print $PlayerPokemon.knownSkills[0].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[0] autocheck>></label>
     <</if>>
     <<if $PlayerPokemon.knownSkills[1]>>
-        <label><<print $PlayerPokemon.knownSkills[1].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[1].name autocheck>></label>
+        <label><<print $PlayerPokemon.knownSkills[1].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[1] autocheck>></label>
     <</if>> 
     <<if $PlayerPokemon.knownSkills[2]>>
-        <label><<print $PlayerPokemon.knownSkills[2].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[2].name autocheck>></label>
+        <label><<print $PlayerPokemon.knownSkills[2].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[2] autocheck>></label>
     <</if>>
     <<if $PlayerPokemon.knownSkills[3]>>
-        <label><<print $PlayerPokemon.knownSkills[3].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[3].name autocheck>></label>
+        <label><<print $PlayerPokemon.knownSkills[3].name>> <<radiobutton "$selectedMove" $PlayerPokemon.knownSkills[3] autocheck>></label>
     <</if>>
 <</widget>>
 
@@ -147,21 +147,57 @@
     <<switchToOptimalPokemon>>
 
     
-    <<switch $selectedMove>>
-        <<case $PlayerPokemon.knownSkills[0].name>>
-            <<print $PlayerPokemon.name>>의 <<print $PlayerPokemon.knownSkills[0].name>>!
-            <<print $PlayerPokemon.useSkill($PlayerPokemon.knownSkills[0].name, $OpponentPokemon)>> 데미지
-            <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
-        <<case $PlayerPokemon.knownSkills[1].name>>
-            <<print $PlayerPokemon.name>>의 <<print $PlayerPokemon.knownSkills[1].name>>!
-            <<print $PlayerPokemon.useSkill($PlayerPokemon.knownSkills[1].name, $OpponentPokemon)>> 데미지
-            <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
-    <</switch>>
+    <<set $playerSkillPriority to $selectedMove.priority>>
+    <<set $opponentSkillPriority to $OpponentPokemon.knownSkills[0].priority>>
+    <<set $playerSpeed to $PlayerPokemon.stats.Speed>>
+    <<set $opponentSpeed to $OpponentPokemon.stats.Speed>>
 
-    
+    <<set $firstAttacker to null>>
 
-    상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! <<print $OpponentPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>> 데미지
-    <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+    <<if $playerSkillPriority != 0 || $opponentSkillPriority != 0>>
+        <<if $playerSkillPriority > $opponentSkillPriority>>
+            <<set $firstAttacker to "player">>
+        <<elseif $opponentSkillPriority > $playerSkillPriority>>
+            <<set $firstAttacker to "opponent">>
+        <</if>>
+    <<else>>
+        <<if $playerSpeed > $opponentSpeed>>
+            <<set $firstAttacker to "player">>
+        <<elseif $playerSpeed < $opponentSpeed>>
+            <<set $firstAttacker to "opponent">>
+            <<print $firstAttacker>>
+        <<else>>
+            <<set $randomValue to <<random 0 1>>>> 
+            <<if $randomValue == 0>>
+                <<set $firstAttacker to "player">>
+            <<else>>
+                <<set $firstAttacker to "opponent">>
+            <</if>>
+        <</if>>
+    <</if>>
+
+
+
+    <<if $firstAttacker == "player">>
+        <<print $PlayerPokemon.name>>의 <<print $selectedMove.name>>!
+        <<print $PlayerPokemon.useSkill($selectedMove.name, $OpponentPokemon)>>
+        <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+
+        상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! 
+        <<print $OpponentPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>>
+        <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+    <<elseif $firstAttacker == "opponent">>
+        상대의 공격, <<print $OpponentPokemon.knownSkills[0].name>>! 
+        <<print $OpponentPokemon.useSkill($OpponentPokemon.knownSkills[0].name, $PlayerPokemon)>>
+        <<set $PlayerPokemonHP to $PlayerPokemon.stats.currentHP>><br><br>
+
+        <<print $PlayerPokemon.name>>의 <<print $selectedMove.name>>!
+        <<print $PlayerPokemon.useSkill($selectedMove.name, $OpponentPokemon)>>
+        <<set $OpponentPokemonHP to $OpponentPokemon.stats.currentHP>><br><br>
+    <</if>>
+
+
 
     <<statusCon $PlayerPokemon>>
     <<statusCon $OpponentPokemon>>
