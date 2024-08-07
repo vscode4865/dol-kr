@@ -446,6 +446,8 @@
         }
       }
 
+      
+
       if (this.statusCon.includes("혼란")){
         if (this.statusConConfusionFlag != 1) {
           this.confusionTurn = Math.floor(Math.random() * 3) + 2;
