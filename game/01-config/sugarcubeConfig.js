@@ -31,7 +31,7 @@ Config.saves.isAllowed = () => {
 	return true;
 };
 
-idb.footerHTML = `<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdity¸¦ ÁöÁö</a>ÇØ ÁÖ½Ã´Â ¸ğµç ºĞµé²² Æ¯º°È÷ °¨»çµå¸³´Ï´Ù`;
+idb.footerHTML = `<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdityë¥¼ ì§€ì§€</a>í•´ ì£¼ì‹œëŠ” ëª¨ë“  ë¶„ë“¤ê»˜ íŠ¹ë³„íˆ ê°ì‚¬ë“œë¦½ë‹ˆë‹¤`;
 
 function onLoad(save) {
 	$.event.trigger(":onloadsave", { save });
