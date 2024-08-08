@@ -663,7 +663,7 @@ setup.feats = {
 	},
 	"A Special Trait": {
 		title: "특수 도전과제",
-		desc: "특수 도전과제를 달성했다.",
+		desc: "특수 도전과제를 하나 달성했다.",
 		difficulty: 2,
 		series: "special trait",
 		hint: "Hint: 무언가 특별하다.",
