@@ -2371,6 +2371,28 @@
 		
 	```
 
+* trMuseumAntique
+    ```
+    <<trMuseumAntique>>
+        <<trMuseumAntique *name post "sep">>
+		trMuseumAntique(name, post, sep)
+
+        박물관 골동품을 번역한다.
+        
+        필수사항
+        - *name: 번역할 골동품의 이름
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trNamedNPC "River">>                          // '리버'
+        <<trNamedNPC "maths teacher">>                  // '수학 교사'
+        <<trNamedNPC "River" "title">>                  // '수학 교사' 
+        <<trNamedNPC "River" '을'>>                     // '리버를'    
+    ```
+
 * trNamedNPC
     ```
     <<trNamedNPC>>
