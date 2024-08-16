@@ -1352,13 +1352,22 @@
 
     ```
     <<bitchPost>>
-        <<bitch>>의 대체 위젯.
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
+        <<bitchPost "dog" post "sep">>
+
+        <<bitch>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        
+        선택사항
+			- dog: 진짜 "개" 를 의미할 때 "dog" 인수를 주면 수캐/암캐로 번역한다.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<charlesPost "을">>               // <<charles>>을
     ```
 
     ```
     <<bitch_piratePost>>
-        <<bitch_pirate>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        <<bitch_pirate>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
