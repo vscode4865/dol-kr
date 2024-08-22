@@ -2265,9 +2265,9 @@ function masturbationEffectsArms(
 						)
 					);
 				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-					fragment.append(span(`당신은 당신의 ${altText.toyDisplay} 클리토리스 끝을 희롱한다.`));
+					fragment.append(span(`당신은 당신의 ${toyDisplay(altText.selectedToy, '으로')} 클리토리스 끝을 희롱한다.`));
 				} else {
-					fragment.append(span(`당신은 당신의 ${altText.toyDisplay} 클리토리스를 비벼대며, 음란한 느낌을 키운다.`));
+					fragment.append(span(`당신은 당신의 ${toyDisplay(altText.selectedToy, '으로')} 클리토리스를 비벼대며, 음란한 느낌을 키운다.`));
 				}
 			}
 			break;
