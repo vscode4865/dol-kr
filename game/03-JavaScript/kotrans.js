@@ -1,6 +1,6 @@
 /* Korean translation information */
 window.koTrans = {
-	"version": "0.1.2024.0817",
+	"version": "0.1.2024.0823",
 	
 	"info": 
 		'<br>'+
