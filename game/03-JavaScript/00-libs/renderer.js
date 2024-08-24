@@ -456,14 +456,14 @@ var Renderer;
     }
     Renderer.adjustBrightness = adjustBrightness;
     function adjustLevels(image, 
-        /**
-         * scale factor, 1 - no change, >1 - higher contrast, <1 - lower contrast.
-         */
-        factor, 
-        /**
-         * shift, 0 - no change, >0 - brighter, <0 - darker
-         */
-        shift, resultCanvas) {
+    /**
+     * scale factor, 1 - no change, >1 - higher contrast, <1 - lower contrast.
+     */
+    factor, 
+    /**
+     * shift, 0 - no change, >0 - brighter, <0 - darker
+     */
+    shift, resultCanvas) {
         if (factor >= 1) {
             /*
              color-dodge ( color, X ) = color / (1 - X) ; 0..(1-X) -> 0..1, (1-X) and brighter become white
@@ -710,20 +710,20 @@ var Renderer;
         // Sort layers by z-index, then array index
         const layers = layerSpecs
             .filter(layer => layer.show !== false
-                && !(typeof layer.alpha === 'number' && layer.alpha <= 0.0))
+            && !(typeof layer.alpha === 'number' && layer.alpha <= 0.0))
             .map((layer, i) => {
-                if (isNaN(layer.z)) {
-                    console.error("Layer " + (layer.name || layer.src) + " has z-index NaN");
-                    layer.z = 0;
-                }
-                return [layer, i];
-            }) // map to pairs [element, index]
+            if (isNaN(layer.z)) {
+                console.error("Layer " + (layer.name || layer.src) + " has z-index NaN");
+                layer.z = 0;
+            }
+            return [layer, i];
+        }) // map to pairs [element, index]
             .sort((a, b) => {
-                if (a[0].z === b[0].z)
-                    return a[1] - b[1];
-                else
-                    return a[0].z - b[0].z;
-            })
+            if (a[0].z === b[0].z)
+                return a[1] - b[1];
+            else
+                return a[0].z - b[0].z;
+        })
             .map(e => e[0]); // unwrap values;
         if (listener && listener.composeLayers)
             listener.composeLayers(layers);

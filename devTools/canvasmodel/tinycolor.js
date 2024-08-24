@@ -4,7 +4,6 @@
 
 function _typeof(obj) {
 	"@babel/helpers - typeof";
-
 	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
 	  return typeof obj;
 	} : function (obj) {
@@ -20,7 +19,6 @@ function _typeof(obj) {
   function tinycolor(color, opts) {
 	color = color ? color : "";
 	opts = opts || {};
-
 	// If input is already a tinycolor, return itself
 	if (color instanceof tinycolor) {
 	  return color;
@@ -32,7 +30,6 @@ function _typeof(obj) {
 	var rgb = inputToRGB(color);
 	this._originalInput = color, this._r = rgb.r, this._g = rgb.g, this._b = rgb.b, this._a = rgb.a, this._roundA = Math.round(100 * this._a) / 100, this._format = opts.format || rgb.format;
 	this._gradientType = opts.gradientType;
-
 	// Don't let the range of [0,255] come back in [0,1].
 	// Potentially lose a little bit of precision here, but will fix issues where
 	// .5 gets interpreted as half of the total, instead of half of 1
@@ -269,7 +266,6 @@ function _typeof(obj) {
 	  return this._applyCombination(polyad, [4]);
 	}
   };
-
   // If input is an object, force 1 into "1.0" to handle ratios properly
   // String input requires "1.0" as input, so 1 will be treated as 1
   tinycolor.fromRatio = function (color, opts) {
@@ -288,7 +284,6 @@ function _typeof(obj) {
 	}
 	return tinycolor(color, opts);
   };
-
   // Given a string or object, convert that input to RGB
   // Possible string inputs:
   //
@@ -370,7 +365,6 @@ function _typeof(obj) {
 	  b: bound01(b, 255) * 255
 	};
   }
-
   // `rgbToHsl`
   // Converts an RGB color value to HSL.
   // *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
@@ -408,7 +402,6 @@ function _typeof(obj) {
 	  l: l
 	};
   }
-
   // `hslToRgb`
   // Converts an HSL color value to RGB.
   // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
@@ -441,7 +434,6 @@ function _typeof(obj) {
 	  b: b * 255
 	};
   }
-
   // `rgbToHsv`
   // Converts an RGB color value to HSV
   // *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
@@ -479,7 +471,6 @@ function _typeof(obj) {
 	  v: v
 	};
   }
-
   // `hsvToRgb`
   // Converts an HSV color value to RGB.
   // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
@@ -503,35 +494,30 @@ function _typeof(obj) {
 	  b: b * 255
 	};
   }
-
   // `rgbToHex`
   // Converts an RGB color to hex
   // Assumes r, g, and b are contained in the set [0, 255]
   // Returns a 3 or 6 character hex
   function rgbToHex(r, g, b, allow3Char) {
 	var hex = [pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16))];
-
 	// Return a 3 character hex if possible
 	if (allow3Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1)) {
 	  return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
 	}
 	return hex.join("");
   }
-
   // `rgbaToHex`
   // Converts an RGBA color plus alpha transparency to hex
   // Assumes r, g, b are contained in the set [0, 255] and
   // a in [0, 1]. Returns a 4 or 8 character rgba hex
   function rgbaToHex(r, g, b, a, allow4Char) {
 	var hex = [pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16)), pad2(convertDecimalToHex(a))];
-
 	// Return a 4 character hex if possible
 	if (allow4Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1) && hex[3].charAt(0) == hex[3].charAt(1)) {
 	  return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0) + hex[3].charAt(0);
 	}
 	return hex.join("");
   }
-
   // `rgbaToArgbHex`
   // Converts an RGBA color to an ARGB Hex8 string
   // Rarely used, but required for "toFilter()"
@@ -539,7 +525,6 @@ function _typeof(obj) {
 	var hex = [pad2(convertDecimalToHex(a)), pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16))];
 	return hex.join("");
   }
-
   // `equals`
   // Can be called with any tinycolor input
   tinycolor.equals = function (color1, color2) {
@@ -553,12 +538,10 @@ function _typeof(obj) {
 	  b: Math.random()
 	});
   };
-
   // Modification Functions
   // ----------------------
   // Thanks to less.js for some of the basics here
   // <https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js>
-
   function _desaturate(color, amount) {
 	amount = amount === 0 ? 0 : amount || 10;
 	var hsl = tinycolor(color).toHsl();
@@ -598,7 +581,6 @@ function _typeof(obj) {
 	hsl.l = clamp01(hsl.l);
 	return tinycolor(hsl);
   }
-
   // Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
   // Values outside of this range will be wrapped into this range.
   function _spin(color, amount) {
@@ -607,12 +589,10 @@ function _typeof(obj) {
 	hsl.h = hue < 0 ? 360 + hue : hue;
 	return tinycolor(hsl);
   }
-
   // Combination Functions
   // ---------------------
   // Thanks to jQuery xColor for some of the ideas behind these
   // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
-
   function _complement(color) {
 	var hsl = tinycolor(color).toHsl();
 	hsl.h = (hsl.h + 180) % 360;
@@ -706,14 +686,12 @@ function _typeof(obj) {
 	var c2 = tinycolor(color2);
 	return (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05);
   };
-
   // `isReadable`
   // Ensure that foreground and background color combinations meet WCAG2 guidelines.
   // The third argument is an optional Object.
   //      the 'level' property states 'AA' or 'AAA' - if missing or invalid, it defaults to 'AA';
   //      the 'size' property states 'large' or 'small' - if missing or invalid, it defaults to 'small'.
   // If the entire object is absent, isReadable defaults to {level:"AA",size:"small"}.
-
   // *Example*
   //    tinycolor.isReadable("#000", "#111") => false
   //    tinycolor.isReadable("#000", "#111",{level:"AA",size:"large"}) => false
@@ -736,7 +714,6 @@ function _typeof(obj) {
 	}
 	return out;
   };
-
   // `mostReadable`
   // Given a base color and a list of possible foreground or background
   // colors for that base, returns the most readable color.
@@ -772,7 +749,6 @@ function _typeof(obj) {
 	  return tinycolor.mostReadable(baseColor, ["#fff", "#000"], args);
 	}
   };
-
   // Big List of Colors
   // ------------------
   // <https://www.w3.org/TR/css-color-4/#named-colors>
@@ -944,7 +920,6 @@ function _typeof(obj) {
 	}
 	return flipped;
   }
-
   // Return a valid alpha value [0,1] with all invalid values being set to 1
   function boundAlpha(a) {
 	a = parseFloat(a);
@@ -953,18 +928,15 @@ function _typeof(obj) {
 	}
 	return a;
   }
-
   // Take input from [0, n] and return it as [0, 1]
   function bound01(n, max) {
 	if (isOnePointZero(n)) n = "100%";
 	var processPercent = isPercentage(n);
 	n = Math.min(max, Math.max(0, parseFloat(n)));
-
 	// Automatically convert percentage into number
 	if (processPercent) {
 	  n = parseInt(n * max, 10) / 100;
 	}
-
 	// Handle floating point rounding errors
 	if (Math.abs(n - max) < 0.000001) {
 	  return 1;
@@ -978,28 +950,23 @@ function _typeof(obj) {
   function clamp01(val) {
 	return Math.min(1, Math.max(0, val));
   }
-
   // Parse a base-16 hex value into a base-10 integer
   function parseIntFromHex(val) {
 	return parseInt(val, 16);
   }
-
   // Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
   // <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
   function isOnePointZero(n) {
 	return typeof n == "string" && n.indexOf(".") != -1 && parseFloat(n) === 1;
   }
-
   // Check to see if string passed in is a percentage
   function isPercentage(n) {
 	return typeof n === "string" && n.indexOf("%") != -1;
   }
-
   // Force a hex value to have 2 characters
   function pad2(c) {
 	return c.length == 1 ? "0" + c : "" + c;
   }
-
   // Replace a decimal with it's percentage value
   function convertToPercentage(n) {
 	if (n <= 1) {
@@ -1007,7 +974,6 @@ function _typeof(obj) {
 	}
 	return n;
   }
-
   // Converts a decimal to a hex value
   function convertDecimalToHex(d) {
 	return Math.round(parseFloat(d) * 255).toString(16);
@@ -1045,14 +1011,12 @@ function _typeof(obj) {
 	  hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
 	};
   }();
-
   // `isValidCSSUnit`
   // Take in a single string / number and check to see if it looks like a CSS unit
   // (see `matchers` above for definition).
   function isValidCSSUnit(color) {
 	return !!matchers.CSS_UNIT.exec(color);
   }
-
   // `stringInputToObject`
   // Permissive string parsing.  Take in a number of formats, and output an object
   // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
@@ -1071,7 +1035,6 @@ function _typeof(obj) {
 		format: "name"
 	  };
 	}
-
 	// Try to match string input using regular expressions.
 	// Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
 	// Just return an object and let the conversion functions handle that.

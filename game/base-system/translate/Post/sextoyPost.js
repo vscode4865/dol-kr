@@ -119,17 +119,17 @@ function sextoyPost(name, type, post, sep)
 		
 		// 없으면 handtoolList 에서 검색 (ex. riding crop 등)
 		if (!found)
+		{
+			trinit_handtoolList();
+			let handtool = setup.trHandtoolList[name];
+			if (handtool)
 			{
-				trinit_handtoolList();
-				let handtool = setup.trHandtoolList[name];
-				if (handtool)
-				{
-					found = {};
-					found.koname = handtool.ko;
-					found.post = handtool.post;
-				}
+				found = {};
+				found.koname = handtool.ko;
+				found.post = handtool.post;
 			}
-	
+		}
+		
 		if (found)
 		{
 			if (type && type[0] == 'd')

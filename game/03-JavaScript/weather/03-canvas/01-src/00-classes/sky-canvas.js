@@ -190,7 +190,6 @@ Weather.Renderer.Sky = class {
 		V.weatherObj.overcast = round(this.fadables.overcast.factor, 2);
 	}
 
-
 	get dayFactor() {
 		return this.orbitals.sun?.factor ?? 0;
 	}

@@ -1,5 +1,3 @@
-/// <reference path="model.d.ts" />
-/// <reference types="tinycolor2" />
 declare namespace Renderer {
     export interface LayerImageLoader {
         loadImage(src: string, layer: CompositeLayer, successCallback: (src: string, layer: CompositeLayer, image: HTMLImageElement | HTMLCanvasElement) => any, errorCallback: (src: string, layer: CompositeLayer, error: any) => any): any;

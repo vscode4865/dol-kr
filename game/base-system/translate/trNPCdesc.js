@@ -45,10 +45,10 @@ function trNPCdesc(npcinfo, post, sep)
 			trPost(T.postNum, post, sep);
 		}
 		else if (setup.trNPCnameList[tempArray[0]])
-			{
-				/* NPCName (the NPCRole) */
-				T.trResult = (tempArray[2]?trRole(tempArray[2]) + " ":"") + trNPCname(tempArray[0], post, sep);
-			}
+		{
+			/* NPCName (the NPCRole) */
+			T.trResult = (tempArray[2]?trRole(tempArray[2]) + " ":"") + trNPCname(tempArray[0], post, sep);
+		}
 		else
 		{
             for(let i = 0; i < tempArray.length; i++)
