@@ -92,7 +92,7 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 			<</if>>
 			<br>
 		<</if>>
-		<<if isPlayerNonparasitePregnancyEnding()>>
+		<<if isPregnancyEnding()>>
 			<<ind>><<link [[Say that your waters have broken|Pregnancy Birth Hospital]]>><</link>>
 			<br>
 		<</if>>
@@ -101,7 +101,7 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 			<br>
 		<</if>>
 
-		<<if C.npc.Alex.pregnancy.sample is true and playerIsPregnant() and !isPlayerNonparasitePregnancyEnding()>>
+		<<if C.npc.Alex.pregnancy.sample is true and playerIsPregnant() and !isPregnancyEnding()>>
 			<<procedureicon "paternity">><<link [[친자 확인 검사에 대해 문의한다 (0:10)|Hospital Paternity Test]]>><<pass 10>><</link>>
 			<br><br>
 		<</if>>
@@ -134,7 +134,7 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 			<br>
 		<</if>>
 		<<if $pregnancyStats.parasiteDoctorEvents is 3 or ((_aPregnancy.motherStatus is 2 or (_vPregnancy.motherStatus is 2 and !$worn.genitals.type.includes("hidden"))) and $pregnancyStats.parasiteDoctorEvents gt 3) or ($pregnancyStats.parasiteBook is 1 and $pregnancyStats.parasiteDoctorEvents gte 2) or $container.portable.value gt 0>>
-			<<if $deviancy gte 75>><<set $pregnancyStats.namesParasitesChild to true>><<else>><<set $pregnancyStats.namesParasitesChild to false>><</if>>
+			<<if hasSexStat("deviancy", 5)>><<set $pregnancyStats.namesParasitesChild to true>><<else>><<set $pregnancyStats.namesParasitesChild to false>><</if>>
 			<<if $pregnancyStats.namesParasitesChild is true>>
 				<<askicon>><<link [[당신의 임신과 아이들에 대해 문의한다 (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
 				<br>
@@ -160,6 +160,7 @@ You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to
 		<br>
 
 		<<pillicon>><<link [[약국 (0:02)|Pharmacy]]>><<pass 2>><</link>>
+
 		<br><br>
 
 		<<getouticon>><<link [[밖으로 나간다 (0:01)->Hospital front]]>><<pass 1>><</link>>
@@ -238,7 +239,7 @@ Through the door and to the left there is a precipitous drop. You peer down and 
 	당신은 시민 병원의 침대에서 깨어난다.
 
 	<<generate1>><<person1>>
-	The nurse explains that you have suffered a severe stress response, but you are otherwise physically healthy. <<He>> asks you to wait a moment while <<he>> fetches the doctor.
+	The nurse explains that you have suffered <<= $passoutReason || "a severe stress response">>, but you are otherwise physically healthy. <<He>> asks you to wait a moment while <<he>> fetches the doctor.
 	<br><br>
 	<<endevent>>
 
@@ -362,8 +363,8 @@ You are in the recovery ward of the hospital. Several nurses go about their busi
 
 :: Widgets Passout Hospital [widget]
 <<widget "passouthospital">>
-	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "hospital">>
+	<<if isPregnancyEnding()>>
+		<<pregnancyPassout "hospital">>
 	<<else>>
 		<<link [[모든 게 깜깜해진다...->Passout hospital]]>><</link>>
 	<</if>>
@@ -396,15 +397,57 @@ You are in the recovery ward of the hospital. Several nurses go about their busi
 	<</if>>
 <</if>>
 
-<<if $trauma lte ($traumamax / 10) * 2>>
+<<if $passoutReason>>
+	<<He_ ga>> 당신에게 <<putpost $passoutReason "이">> 일어난 경위를 부드럽게 물어보며, <<= $passoutReason is "hypothermia" ? "심각한 동상" : "열사병">>의 위험함에 대해 설교를 한다. <<He_ nun>> 당신에게 <<he_ ga>> 보기에 모든 것이 괜찮아 보인다고 알려주지만, 앞으로 옷을 어떻게 입고 다닐지를 조심하는 게 좋을 거라고 한다.
+	<<unset $passoutReason>>
+	<<wash>>
+	간호사가 당신이 일어서는 것을 도와주고, 당신은 곧 퇴원 수속을 밟는다.
+	<br><br>
+
+	<<if Weather.dayState is "night">>
+		밖은 캄캄하다. 아침까지 기다리는 게 좋을지도 모르겠다.
+		<br><br>
+
+		<<link [[기다린다 (0:10)|Hospital Wait]]>><<pass 10>><<endevent>><</link>><<ltiredness>>
+		<br>
+		<<if $renttime lte 0>>
+			<<link [[당장 떠난다 (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[당장 떠난다 (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[당장 떠난다 (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[당장 떠난다 (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $renttime lte 0>>
+			<<link [[다음 (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[다음 (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[다음 (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[다음 (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+
+<<elseif $trauma lte ($traumamax / 10) * 2>>
 	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. <<He>> informs you that everything is okay as far as <<he>> can tell, but you should be careful in the future.
 	<br><br>
 	<<wash>>
 	간호사가 당신이 일어서는 것을 도와주고, 당신은 곧 퇴원 수속을 밟는다.
 	<br><br>
 
-	<<if Time.dayState is "night">>
-		It's dark out. Maybe you should wait until morning.
+	<<if Weather.dayState is "night">>
+		밖은 캄캄하다. 아침까지 기다리는 게 좋을지도 모르겠다.
 		<br><br>
 
 		<<link [[기다린다 (0:10)|Hospital Wait]]>><<pass 10>><<endevent>><</link>><<ltiredness>>
@@ -456,8 +499,8 @@ You are in the recovery ward of the hospital. Several nurses go about their busi
 		<br><br>
 	<</if>>
 
-	<<if Time.dayState is "night">>
-		It's dark out. Maybe you should wait until morning.
+	<<if Weather.dayState is "night">>
+		밖은 캄캄하다. 아침까지 기다리는 게 좋을지도 모르겠다.
 		<br><br>
 
 		<<link [[기다린다 (0:10)|Hospital Wait]]>><<pass 10>><<endevent>><</link>><<ltiredness>>
@@ -555,8 +598,8 @@ You are in the recovery ward of the hospital. Several nurses go about their busi
 As you walk down an empty corridor a door beside you opens and a pair of arms drag you through. <span class="red">베일리다.</span>
 The heavy doors slam shut. You're at the top of a staircase leading down into darkness.
 <br><br>
-
-<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1)>>
+<<run statusCheck("Robin")>>
+<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1) and ["orphanage","bath","sleep"].includes(_robin_location)>>
 	<<rentduerobin 0>>
 <<else>>
 	<<rentdue 0>>

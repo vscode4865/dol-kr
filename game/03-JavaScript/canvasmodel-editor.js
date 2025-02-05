@@ -320,20 +320,26 @@ Macro.add("canvasLayersEditor", {
 									"a",
 									{
 										onclick() {
-											delete Renderer.ImageCaches[layer.src];
-											layer.src = layer.src.split("#")[0] + "#" + new Date().getTime();
-											redraw();
+											if (typeof layer.src === "string") {
+												delete Renderer.ImageCaches[layer.src];
+												layer.src = layer.src.split("#")[0] + "#" + new Date().getTime();
+												redraw();
+											}
 										},
+										disabled: typeof layer.src !== "string",
 									},
 									"↺"
 								),
 								eInput({
 									class: "editlayer-src",
-									value: layer.src.split("#")[0],
+									value: typeof layer.src === "string" ? layer.src.split("#")[0] : "",
 									set(value) {
-										layer.src = value;
-										redraw();
+										if (typeof value === "string") {
+											layer.src = value;
+											redraw();
+										}
 									},
+									disabled: typeof layer.src !== "string",
 								}),
 							]),
 							element(
@@ -478,7 +484,7 @@ Macro.add("canvasModelEditor", {
 		const options = model.options;
 
 		function redraw() {
-			let options = model.options;
+			const options = model.options;
 			model.reset();
 			model.options = options;
 			model.redraw();
@@ -823,9 +829,6 @@ Macro.add("canvasModelEditor", {
 						optionCategory("Misc"),
 						booleanOption("upper_tucked"),
 						booleanOption("hood_down"),
-						booleanOption("alt_position"),
-						booleanOption("alt_position_neck"),
-						booleanOption("alt_position_face"),
 						booleanOption("alt_sleeve"),
 						selectOption("facewear_layer", ["front", "back"]),
 					]),

@@ -3,14 +3,14 @@
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 당신은 오션 브리즈 카페에 있다.
 <<if $openinghours is 1>>
-	<<if $weather is "clear">>
-		대부분의 테이블이 차있다.
-	<<elseif $weather is "overcast">>
-		카페는 매우 바쁘고, 밖에서 강한 바람이 불고 있어도 몇몇 사람들은 바깥 자리에 앉아있다.
-	<<elseif $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		비가 오고 있기에 아무도 바깥 자리에는 앉지 않으나, 카페 자체는 매우 붐빈다.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isFreezing>>
 		추위 때문에 밖에 앉아 있는 사람은 없지만, 카페는 사람들로 붐빈다.
+	<<elseif !Weather.isOvercast>>
+		대부분의 테이블이 차있다.
+	<<else>>
+		카페는 매우 바쁘고, 밖에서 강한 바람이 불고 있어도 몇몇 사람들은 바깥 자리에 앉아있다.
 	<</if>>
 <</if>>
 <br><br>
@@ -256,7 +256,7 @@
 <</if>>
 
 :: Ocean Breeze Lock
-<<set $outside to 0>><<effects>><<set $lock to 200>>
+<<set $outside to 1>><<effects>><<set $lock to 200>>
 
 <<openinghours>>
 
@@ -323,7 +323,7 @@
 <<set C.npc.Sam.love = Math.clamp(C.npc.Sam.love, -50, 50)>>
 <<rng 121>>
 
-<<if $rng gte 111 and !$weekly.robinCafeVisit and C.npc.Robin.init gte 1 and $robinmissing is 0 and getRobinLocation() isnot "school">>
+<<if $rng gte 111 and !$weekly.robinCafeVisit and C.npc.Robin.init gte 1 and $robinmissing is 0 and !["school", "sleep"].includes(getRobinLocation())>>
 	<<set $weekly.robinCafeVisit to 1>>
 	<<npc "Robin">>
 
@@ -339,7 +339,7 @@
 		Robin looks up at the <<personsimple>>. "I-I'm sorry... I don't think I can eat anything right now." <<person1>><<He>> stands up and walks out the door.<<gstress>><<stress 6>>
 		<br><br>
 
-		The <<person2>><<personsimple>> walks towards you and scoffs. "Bunch of freeloaders around here. They'll try and put on an act to make you feel bad, but don't let em." <<He>> continues walking past you and into the kitchen
+		The <<person2>><<personsimple>> walks towards you and scoffs. "Bunch of freeloaders around here. They'll try and put on an act to make you feel bad, but don't let em." <<He>> continues walking past you and into the kitchen.
 		<br><br>
 
 		Before you can say anything Sam calls you to clean up another table. The rest of the shift passes uneventfully.
@@ -348,7 +348,7 @@
 		<<link [[다음|Ocean Breeze]]>><<pass 60>><<endevent>><</link>>
 
 	<<else>>
-		<<set _beverage to $weather is "winter" ? "eggnog" : "milkshake">>
+		<<set _beverage to Time.season is "winter" ? "eggnog" : "milkshake">>
 		You are cleaning off a table after a previous customer when you see a familiar face in the corner of your eye. It's Robin. <<Hes>> waiting near the front to be seated. You approach <<him>> and <<he>> smiles.
 		<br><br>
 
@@ -365,7 +365,7 @@
 		<</if>>
 		<br><br>
 
-		You gleefully chat with Robin for a few minutes before taking <<his>> order. <<He>> orders a  _beverage. You prepare <<his>> beverage and bring it to <<his>> table. <<He>> sips the _beverage and smiles. "It's really good!"
+		You gleefully chat with Robin for a few minutes before taking <<his>> order. <<He>> orders a _beverage. You prepare <<his>> beverage and bring it to <<his>> table. <<He>> sips the _beverage and smiles. "It's really good!"
 		<br><br>
 
 		<<He>> finishes <<his>> drink, and then stands up. <<He>> <<if $robinromance gte 1>>kisses<<else>>hugs<</if>> you before leaving.
@@ -393,7 +393,7 @@
 	<<link [[여러 번 나누어 나른다|Ocean Breeze Plates]]>><<set $phase to 0>><</link>>
 	<br>
 	<<link [[한 번에 전부 나른다|Ocean Breeze Plates]]>><<set $phase to 1>><</link>><<dancedifficulty 200 800>>
-<<elseif $rng gte 81 and $weather isnot "rain" and $weather isnot "snow">>
+<<elseif $rng gte 81 and Weather.precipitation is "none">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure)>>
 		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
@@ -404,7 +404,7 @@
 			<<if !$worn.under_lower.type.includes("naked")>>
 				<<link [[당당하게 군다|Ocean Breeze Own]]>><<set $phase to 0>><</link>><<exhibitionist1>>
 				<br>
-			<<elseif $exhibitionism gte 35>>
+			<<elseif hasSexStat("exhibitionism", 3)>>
 				<<link [[당당하게 군다|Ocean Breeze Own]]>><<set $phase to 1>><</link>><<exhibitionist3>>
 				<br>
 			<</if>>
@@ -493,14 +493,14 @@
 		<</if>>
 		<<garousal>><<arousal 200>>
 	<<elseif $awareness gte 200>>
-		<<if $weather is "clear">>
+		<<if !Weather.isOvercast>>
 			<<HePost "은">> 햇살을 받으면서 성적인 만족감을 얻는 것처럼 보인다.
 		<<else>>
 			리드미컬하게 꿈틀거리지 않았다면, 당신은 <<hePost "이">> 자고 있다고 생각할 뻔했다.
 		<</if>>
 		곧 <<hePost "은">> 오르가즘이라도 느끼는 것처럼 몸을 부르르 떤다.
 	<<else>>
-		<<if $weather is "clear">>
+		<<if !Weather.isOvercast>>
 			멋진 날씨다. - <<he_ nun>>
 		<<else>>
 			<<He_ nun>>
@@ -634,7 +634,7 @@
 		"우리 둘이 조용한 곳으로 가서 잠깐 노는 건 어때? 시간 낭비는 아닐 거야." <<HePost "이">> <<his_ yi>> <<wallet_ ul>> 톡톡 두들긴다. 
 		<<He_ ga>> 음란한 짓을 할 것이라는 건 너무나도 자명하다.
 		<br><br>
-		<<if $promiscuity gte 15>>
+		<<if hasSexStat("promiscuity", 2)>>
 			<<link [[제안을 받아들인다|Ocean Breeze Whore]]>><<set $sexstart to 1>><</link>><<promiscuous2>>
 			<br>
 		<<elseif $uncomfortable.prostituting is false>>
@@ -674,7 +674,7 @@
 			<<if $player.gender_appearance is "m" and $player.breastsize lte 2>>
 				<<link [[상의를 벗는다|Ocean Breeze Remove]]>><<npcincr Sam love 2>><</link>><<glove>>
 				<br>
-			<<elseif $exhibitionism gte 55>>
+			<<elseif hasSexStat("exhibitionism", 4)>>
 				<<link [[상의를 벗는다|Ocean Breeze Remove Lewd]]>><<npcincr Sam love 2>><</link>><<glove>><<exhibitionist4>>
 				<br>
 			<</if>>
@@ -1366,7 +1366,7 @@
 당신은 <<personPost "이">> 계속하게 놔둔다.
 
 <<if playerChastity("hidden")>>
-	<<HePost "은">> 당신의 <<worn_genitlas_name_ ul>> 보고는 눈을 크게 뜬다.
+	<<HePost "은">> 당신의 <<worn_genitals_name_ ul>> 보고는 눈을 크게 뜬다.
 	<<promiscuity1>>
 
 	"완전히 막혀있잖아." <<hePost "이">> 말한다. "맛 좀 보려고 했는데 말이야." <<HePost "은">> 다시 한 번 사라지더니, <<his_ yi>> 의자 옆으로 나온다. 
@@ -1534,10 +1534,10 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 창가의 약간 높은 자리에 앉아 메뉴판을 보고는 <<print _coffee>> 주문한다.
 주문한 음료는 곧바로 나와, 갓 추출한 커피의 기분 좋은 향기가 퍼져나와 코를 간질인다.
 
-<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $exhibitionism gte 55>>
+<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and hasSexStat("exhibitionism", 4)>>
 	커피를 한 모금 홀짝이니 짓궂은 생각이 떠오른다. 
 	지금 앉아있는 자리는 다리가 카페 옆을 지나가는 행인들의 눈높이에 위치한다. 그리고 당신은 지금 치마를 입고 있다.
-	<<if $exhibitionism gte 75 and $worn.under_lower.exposed>>
+	<<if hasSexStat("exhibitionism", 5) and $worn.under_lower.exposed>>
 		게다가 속옷도 안 입고 있다. <<arousal 500>><<garousal>>
 		<br><br>
 		<<link [[다리를 벌린다 (0:01)|Cafe Coffee Flash]]>><</link>><<exhibitionist4>>
@@ -1860,11 +1860,11 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <<else>>
 	당신은
 <</if>>
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	자리에 앉아 팬케이크를 주문한다. 주문한 메뉴는 커피 한 잔과 함께 곧 나온다.
 	여태까지 고아원에서 먹은 그 무엇보다도 맛있다. 유리창 안쪽에서 비가 내리는 길거리를 내다보고 있자니, 아늑한 기분이 든다.
 	<br><br>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	자리에 앉아 팬케이크를 주문한다. 주문한 메뉴는 커피 한 잔과 함께 곧 나온다.
 	여태까지 고아원에서 먹은 그 무엇보다도 맛있다. 당신은 창밖으로 눈 쌓인 거리를 바라보며, 편안함을 느낀다.
 	<br><br>
@@ -1885,14 +1885,14 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 	<</if>>
 	<br><br>
 	/* check if we meet the basic requirements to expose ourselves */
-	<<if $exhibitionism gte 15>>
+	<<if hasSexStat("exhibitionism", 2)>>
 		/* show our options depending on our possession of panties */
 		<<if $worn.under_lower.exposed>>
-			<<if $exhibitionism gte 75>>
+			<<if hasSexStat("exhibitionism", 5)>>
 				<<link [[다리를 더 벌리고는 윙크한다|Cafe Exhibitionism Legs Part Pantiless Wink]]>><</link>><<exhibitionist5>>
 				<br>
 			<</if>>
-			<<if $exhibitionism gte 55>>
+			<<if hasSexStat("exhibitionism", 4)>>
 				<<link [[눈치채지 못한 척 하며 다리를 더 벌린다|Cafe Exhibitionism Legs Part Pantiless]]>><</link>><<exhibitionist4>>
 				<br>
 				<<link [[변태는 무시하고 음식을 마저 먹는다|Ocean Breeze]]>><</link>>
@@ -2203,7 +2203,7 @@ You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, 
 <</switch>>
 
 <<print $daily.earSlimeOceanBreezeCafeEat ? "당신은 귓속의 슬라임이 옳다고 생각하며" : "당신은">> 자리에 앉아 _food.
-당신은 유리창 밖으로 <<print $weather is "rain" ? "빗줄기로 가득찬 거리를 쳐다보며, 아늑한 기분을 느낀다" : $weather is "snow" ? "눈 쌓인 거리를 쳐다보며, 아늑한 기분을 느낀다" : "바다를 내다보며, 산들바람을 즐긴다">>.
+당신은 유리창 밖으로 <<print Weather.precipitation is "rain" ? "빗줄기로 가득찬 거리를 쳐다보며, 아늑한 기분을 느낀다" : Weather.isSnow ? "눈 쌓인 거리를 쳐다보며, 아늑한 기분을 느낀다" : "바다를 내다보며, 산들바람을 즐긴다">>.
 <br><br>
 <<link [[다음|Ocean Breeze]]>><<endevent>><</link>>
 

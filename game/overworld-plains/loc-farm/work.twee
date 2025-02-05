@@ -121,7 +121,7 @@
 	<</if>>
 <</if>>
 
-<<if isPlayerNonparasitePregnancyEnding()>>
+<<if isPregnancyEnding()>>
 	<<pcFarmBirth>>
 
 <<elseif $fields_damaged gte 0>>
@@ -173,14 +173,14 @@
 <<elseif $exposed gte 2 and $farm_naked isnot 1 and $farm_stage lt 7>>
 	당신은 울타리 뒤에 숨어서, <<lewdness_ rul>> 감추고 있다.
 	<br><br>
-	<<if $exhibitionism gte 75>>
+	<<if hasSexStat("exhibitionism", 5)>>
 		<<ind>><<link [[어쨌든 일한다|Farm Work Naked]]>><<npcincr Alex lust 3>><<set $farm_naked to 1>><</link>><<exhibitionist5>><<gglust>>
 		<br>
 	<<elseif $slimeFarmNakedStored is true>>
-		<<if $exhibitionism gte 55>>
+		<<if hasSexStat("exhibitionism", 4)>>
 			<<set _stress to 10>>
 			<<set _trauma to 0>>
-		<<elseif $exhibitionism gte 35>>
+		<<elseif hasSexStat("exhibitionism", 3)>>
 			<<set _stress to 20>>
 			<<set _trauma to 10>>
 		<<else>>
@@ -194,7 +194,7 @@
 	<</if>>
 	<<if $farm_work.alex isnot undefined and $farm_work.alex isnot "shower" and Time.hour gte 6 and Time.hour lte 20 and $slimeFarmNakedStored is undefined>>
 		<<outfitChecks>>
-		<<if ($worn.upper.exposed gte 2 and !_underTop) or ($worn.lower.exposed gte 2 and !_underBottoms)>>
+		<<if (_shirtless and $player.gender_appearance is "f") or _bottomExposed>>
 			<<shopicon "clothing">><<link [[알렉스에게 옷을 달라고 한다 (0:05)|Farm Alex Clothes]]>><<pass 5>><<farm_yield -1>><<npcincr Alex dom 1>><<npcincr Alex lust 1>><</link>><<exhibitionist1>><<lfarm>><<gdom "Alex">><<glust>>
 			<br>
 		<<else>>
@@ -206,7 +206,7 @@
 	<<getouticon>><<link [[떠난다|Farmland]]>><</link>>
 	<br>
 
-<<elseif !npcIsPregnant("Alex") and Time.hour gte 6 and Time.hour lte 7 and !$weekly.alexHungOver and $rng gte 76>>
+<<elseif !npcIsPregnant("Alex") and Time.hour gte 6 and Time.hour lte 7 and !$weekly.alexHungOver and $rng gte 76 and !$daily.farmAlexShowerSpy>>
 	<<set $weekly.alexHungOver to 1>>
 
 	You notice that Alex isn't in the shower shed, like <<nnpc_he "Alex">> usually is at this hour. The animals are all in their holdings. Alex must still be in the farmhouse.
@@ -228,14 +228,8 @@
 	<<set $farm_countdown to 3>>
 	<<farmStage6>>
 <<elseif $farm_stage is 6 and ($farm_countdown lte 0 or $farm.clearing lte 50)>>
-	<<npc Alex>><<person1>>
-	알렉스가 <<his_ yi>> 창고에서 나온다. <<He_ nun>> 걱정스러운 표정을 짓는다. "너도 그 냄새가 나?" <<he_ ga>> 묻는다. 희미하지만, 무언가가 불타고 있다.
-	<br><br>
-	"이웃이 모닥불을 걷잡을 수 없게 피워뒀을지도 몰라," <<he_ nun>> 연기가 나는지 수평선을 훑어보며 말한다. "조심해서 나쁠 건 없지. 헛간 좀 확인해 줄래? 나는 농장을 둘러볼게."
-	<br><br>
-
-	<<link [[다음|Farm Stage 7]]>><<set $farm_countdown to 7>><<set $farm_stage to 7>><<set $alex_countdown to 3>><<set $wardrobes.alexFarm.unlocked to true>><</link>>
-<<elseif $farm_stage gte 7 and C.npc.Alex.love gte 50 and $alex_countdown lte 0>>
+	<<farmStage7>>
+<<elseif $farm_stage gte 7 and C.npc.Alex.love gte 50 and $alex_countdown lte 0 and Time.hour lt 21 and Time.hour gte 5>>
 	<<npc Alex>><<person1>>
 	당신은 집 앞뜰로 돌아간다. 빠르게 다가오는 발자국 소리가 들린다. 당신이 돌아서자, 때마침 알렉스가 보인다. <<he_ nun>> 당신의 발을 걸어서 당신을 넘어뜨린다.
 	<br><br>
@@ -250,86 +244,16 @@
 	<<link [[추파를 던진다|Farm Love Flirt]]>><<npcincr Alex love 1>><<npcincr Alex lust 5>><<unset $alex_countdown>><</link>><<promiscuous1>><<glove>><<gglust>>
 	<br>
 <<elseif $farm_stage is 7 and $farm.clearing lte 0>>
-	You observe the fifth field. It was a tangled mess not long ago.
-	<br><br>
-	<<npc Alex>><<person1>><<generate2>>
-	You hear an unfamiliar <<person2>><<personsimple>>.
-	<<if $panicattacks gte 1 and $controlled is 0>>
-		You feel a surge of panic. Then you hear Alex respond, and <<his>> relaxed voice calms you.
-	<<else>>
-		<<Hes>> speaking with Alex.
-	<</if>>
-	You walk over.
-	<br><br>
-
-	"It is expensive," the <<person>> nods. "But if it's security you want, you get what you pay for."
-	<br>
-	"Thanks," Alex replies. "I'll be in touch."
-	<br><br>
-
-	<<if $exposed gte 1>>
-		The <<person>> turns to leave, but stops when <<he>> sees you. <<covered>> <<He>> regains <<his>> composure, and pretends not to look at you as <<he>> leaves the farm.
-	<<else>>
-		The <<person>> nods at you on the way out.
-	<</if>>
-	<br><br>
-
-	<<link [[다음|Farm Stage 8]]>><<set $farm.clearing to 100>><<set $farm_stage to 8>><<add_plot farm earth 3 large>><</link>>
-	<br>
+	<<farmStage8>>
 <<elseif $farm_stage is 8 and $farm.clearing lte 0>>
-	You observe the sixth field. It was a tangled mess not long ago.
-	<br><br>
-	<<npc Alex>><<person1>>
-	You hear a bang from Alex's shed. The door flies open, and a strange, multi-limbed creature leaps out, surrounded by smoke. Alex runs out after it, holding a cage.
-	<br><br>
-
-	<<link [[Catch it|Farm Stage 9 Catch]]>><<set $farm_stage to 9>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><</link>><<dancedifficulty 1 1000>>
-	<br>
-	<<link [[Leave it to Alex|Farm Stage 9 Leave]]>><<set $farm_stage to 9>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><</link>>
-	<br>
+	<<farmStage9>>
 <<elseif $farm_stage is 9 and $farm.clearing lte 0>>
-	You observe the seventh field. It was a tangled mess not long ago.
-	<br><br>
-
-	<<npc Alex>><<person1>>
-	You hear a rustle. A strange leathery creature darts from beneath.
-	<br><br>
-	<span class="green">A net hurls from behind you,</span> landing on the creature. It tightens as the creature flails. There's a rope attached. You turn to see Alex. <<He>> pulls the creature closer.
-	<br><br>
-	"It works!" <<he>> exclaims as <<he>> holds up the squirming net. "These blighters are hard to catch."
-	<br><br>
-	<<link [[Be impressed|Farm Stage 10 Impressed]]>><<set $farm_stage to 10>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><<npcincr Alex love 1>><</link>><<glove>>
-	<br>
-	<<link [[Be dismissive|Farm Stage 10 Dismiss]]>><<set $farm_stage to 10>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><<npcincr Alex love -1>><<npcincr Alex love -3>><</link>><<llove>><<lldom>>
-	<br>
+	<<farmStage10>>
 <<elseif $farm_stage is 10 and $farm.clearing lte 0>>
-	You observe the eighth field. It was a tangled mess not long ago.
-	<br><br>
-
-	<<npc Alex>><<person1>>
-	You see Alex kneeling at the base of the <<farm_fence>>. <<He>> gazes at a strange purple flower. Seeds scatter into <<his>> palm when <<he>> prods it.
-	<br><br>
-
-	"Seen weeds like this before," <<he>> says. "Can't find them in any book, and never found one seeding." <<He>> rises. "Do you think we could get them to take? Remy grows them. They must have value."
-	<br><br>
-
-	<<link [[Be confident|Farm Stage 11 Confident]]>><<set $farm_stage to 11>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><</link>>
-	<br>
-	<<link [[Advise caution|Farm Stage 11 Caution]]>><<set $farm_stage to 11>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><</link>>
-	<br>
+	<<farmStage11>>
 <<elseif $farm_stage is 11 and $farm.clearing lte 0>>
 	<<earnFeat "Cultivator">>
-
-	You observe the ninth field. It was a tangled mess not long ago.
-	<br><br>
-	<<npc Alex>><<person1>>
-	Alex stands at your side.
-	<br><br>
-
-	<<link [[Hold hands|Farm Stage 12 Hands]]>><<set $farm_stage to 12>><<set $farm.clearing to 100>><<npcincr Alex love 1>><<add_plot farm earth 3 large>><</link>><<handholdingvirginitywarning>><<glove>>
-	<br>
-	<<link [[Pat back|Farm Stage 12 Pat]]>><<set $farm_stage to 12>><<set $farm.clearing to 100>><<add_plot farm earth 3 large>><</link>>
-	<br>
+	<<farmStage12>>
 <<elseif Time.hour is 21 and $farm_end is undefined and $farm_stage lt 7>>
 	<<set $farm_end to 1>>
 	<<npc Alex>><<person1>>
@@ -585,12 +509,12 @@
 	<<farm_guard_pay>>
 	<<link [[지금 당장은 그럴 여유가 없다고 말한다|Farm Guard Pay Refuse]]>><</link>><<lltrust>>
 	<br>
-	<<if $promiscuity gte 35>>
+	<<if hasSexStat("promiscuity", 3)>>
 		<<link [[유혹한다|Farm Guard Pay Seduce]]>><</link>><<promiscuous3>>
 		<br>
 	<</if>>
 <<else>>
-	<<if isPlayerNonparasitePregnancyEnding()>>
+	<<if isPregnancyEnding()>>
 		<<pcFarmBirth>>
 
 	<<elseif npcPregnancyEnding("Alex")>>
@@ -887,7 +811,7 @@
 :: Farm Slime Strip Defy
 <<effects>>
 <<if $earSlime.corruption gte (currentSkillValue('willpower') / 10) and !$earSlime.defyCooldown>>
-	<<if $exhibitionism gte 55 and $earSlime.growth lt 100>>
+	<<if hasSexStat("exhibitionism", 4) and $earSlime.growth lt 100>>
 		<<set $earSlime.defyCooldown += 4>>
 	<<else>>
 		<<set $earSlime.defyCooldown += 8>>
@@ -915,7 +839,7 @@
 :: Farm Work Naked
 <<effects>>
 
-<<if $farm_naked_alex is 1 and $exhibitionism gte 75>>
+<<if $farm_naked_alex is 1 and hasSexStat("exhibitionism", 5)>>
 	<<unset $farm_naked_alex>>
 
 	<<npc Alex>><<person1>>
@@ -1022,7 +946,7 @@ You follow <<him>> to the farmhouse. Alex need only turn to see your <<lewdness>
 
 A towel drops down the stairwell, and you dry yourself in the kitchen. You hear Alex come down the stairs. <<He>> asks if you're decent before entering.
 
-<<if $weather is "rain" and (!$worn.head.type.includes("rainproof") || !$worn.handheld.type.includes("rainproof"))>>
+<<if Weather.precipitation is "rain" and (!$worn.head.type.includes("rainproof") || !$worn.handheld.type.includes("rainproof"))>>
 	"Get yourself a Sou'wester's if the rain's bothering you," <<he>> says. "They work a treat. I'd best get back to work."
 <<else>>
 	"Did you fall in the river?" <<he>> laughs. "You go careful. I'd best get back to work."
@@ -1141,7 +1065,7 @@ A great hedge shields most of the fields from the forest beyond, though some are
 :: Farm Yard
 <<effects>>
 
-<<if $weather is "snow">>
+<<if Weather.isSnow>>
 	You grab a shovel and begin shovelling snow off the yard. It's hard work, but you manage to clear it in good time.
 <<else>>
 	You grab a broom and begin sweeping the yard of fallen leaves. It's hard work, but you manage to gather them into a neat pile before shovelling them into the compost.
@@ -1151,9 +1075,9 @@ A great hedge shields most of the fields from the forest beyond, though some are
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure)>>
 	<<if $bestialitydisable is "f" and $lurkerdisable is "f">>
-		You're just finishing up, when something leaps from the pile of <<if $weather is "snow">>snow<<else>>leaves<</if>>!<<gstress>><<stress 6>>
+		You're just finishing up, when something leaps from the pile of <<if Weather.isSnow>>snow<<else>>leaves<</if>>!<<gstress>><<stress 6>>
 		<br><br>
-		<<if $deviancy gte 55>>
+		<<if hasSexStat("deviancy", 4)>>
 			<<link [[가만히 서 있는다|Farm Yard Stand Still]]>><</link>><<deviant4>>
 			<br>
 		<</if>>
@@ -1168,7 +1092,7 @@ A great hedge shields most of the fields from the forest beyond, though some are
 			<br>
 		<</if>>
 	<<else>>
-		Something darts from the pile of <<if $weather is "snow">>snow<<else>>leaves<</if>>, startling you.<<gstress>><<stress 6>>
+		Something darts from the pile of <<if Weather.isSnow>>snow<<else>>leaves<</if>>, startling you.<<gstress>><<stress 6>>
 		<br><br>
 
 		<<link [[다음|Farm Work]]>><</link>>
@@ -1227,18 +1151,19 @@ You release the chickens from their coop, then enter to clean up. It's large eno
 
 :: Farm Chickens Feed
 <<effects>>
+<<outfitChecks>>
 
 The chickens follow as you retrieve a sack of grain from the shed beside the yard.
 
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure) and $exposed lte 0>>
-	<<if $worn.lower.outfitSecondary is undefined>>
+	<<if _bottom.outfitSecondary is undefined>>
 		<<set _broken to true>>
-	<<elseif $worn.lower.outfitSecondary[1] is "broken" or $worn.lower.outfitSecondary[1] is "split">>
+	<<elseif _bottom.outfitSecondary[1] is "broken" or _bottom.outfitSecondary[1] is "split">>
 		<<set _broken to true>>
 	<</if>>
 	<<if _broken>>
-		One jumps and latches onto your $worn.lower.name with its beak, <span class="purple">tugging it down your legs and revealing your <<undies>>.</span> You lean down to grab it, but this puts the heavy sack in range of the birds. Yet other chickens start pulling at your $worn.lower.name. You hear the fabric tear.<<gstress>><<stress 6>>
+		One jumps and latches onto your _bottom.name with its beak, <span class="purple">tugging it down your legs and revealing your <<undies>>.</span> You lean down to grab it, but this puts the heavy sack in range of the birds. Yet other chickens start pulling at your _bottom.name. You hear the fabric tear.<<gstress>><<stress 6>>
 		<br><br>
 		<<lowerstrip>>
 		<<link [[Risk the sack and retrieve your bottoms|Farm Chickens Retrieve]]>><</link>><<difficulty 50>>
@@ -1251,14 +1176,14 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 			<br>
 		<</if>>
 	<<else>>
-		<<set $worn.lower.integrity -= 15>>
-		<<if $worn.lower.integrity lte 0>>
-			One jumps and latches onto your $worn.lower.name with its beak. It hangs there for a moment, until gravity tears it free, your <span class="pink">$worn.lower.name still in its grasp.</span>
+		<<set _bottom.integrity -= 15>>
+		<<if _bottom.integrity lte 0>>
+			One jumps and latches onto your _bottom.name with its beak. It hangs there for a moment, until gravity tears it free, your <span class="pink">_bottom.name still in its grasp.</span>
 			<<integritycheck>><<exposure>><<gstress>><<stress 6>>
 			<br>
 			You almost drop the sack in your haste to cover your <<lewdness>>, but there's no one else around.
 			<br><br>
-			<<if $exposed gte 2 and $exhibitionism gte 15>>
+			<<if $exposed gte 2 and hasSexStat("exhibitionism", 2)>>
 				<<link [[Finish the job|Farm Chickens Finish]]>><</link>><<exhibitionist2>>
 				<br>
 			<<elseif $exposed is 1>>
@@ -1268,7 +1193,7 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 			<<link [[Find something to cover with (0:10)|Farm Chickens Cover]]>><<pass 10>><<farm_count 10>><</link>>
 			<br>
 		<<else>>
-			One jumps and latches onto your $worn.lower.name with its beak. You hear the fabric tear as you shake it free.
+			One jumps and latches onto your _bottom.name with its beak. You hear the fabric tear as you shake it free.
 			<br><br>
 
 			You finish feeding the chickens, and return the sack to the shed.
@@ -1286,9 +1211,6 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 	<br>
 <</if>>
 
-
-
-
 :: Farm Chickens In
 <<effects>>
 
@@ -1302,10 +1224,10 @@ The chickens follow as you retrieve a sack of grain from the shed beside the yar
 	<<link [[녀석을 찾아본다 (0:10)|Farm Chickens Look]]>><<pass 10>><<farm_count 10>><</link>>
 	<br>
 	<<if $cat gte 6>>
-		<<link [[녀석을 사냥한다|Farm Chickens Hunt]]>><</link>><<cat>>
+		<<link [[Hunt it|Farm Chickens Hunt]]>><<set $catbuild += 1>><</link>><<cat>>
 		<br>
 	<</if>>
-	<<link [[녀석은 괜찮을 것이다|Farm Chickens Fine]]>><<set $catbuild += 1>><<farm_yield -1>><</link>><<lfarm>>
+	<<link [[It'll be fine|Farm Chickens Fine]]>><<farm_yield -1>><</link>><<lfarm>>
 	<br>
 <<else>>
 	만족스럽게, 당신은 문을 닫고 잠근다.
@@ -1340,7 +1262,7 @@ You enter the sty, and release the <<farm_text_many pig>>. They walk down the ai
 		<br>
 		<<link [[견딘다|Farm Pigs Endure]]>><<trauma 6>><<stress 6>><<farm_pigs -1>><</link>><<lrespect>>
 		<br>
-		<<if $deviancy gte 35>>
+		<<if hasSexStat("deviancy", 3)>>
 			<<link [[손으로 해 준다|Farm Pigs Hand]]>><<set $sexstart to 1>><</link>><<deviant3>>
 			<br>
 		<</if>>
@@ -1361,6 +1283,8 @@ You enter the sty, and release the <<farm_text_many pig>>. They walk down the ai
 <<effects>>
 
 <<npc Alex>><<person1>>
+<<alexRemyTattoosCheck "chores">>
+
 당신은 알렉스가 양손에 무거운 양동이를 하나씩 들고 마당을 가로지르는 것을 발견한다.
 
 <<if $speech_attitude is "meek">>
@@ -1412,7 +1336,7 @@ You enter the sty, and release the <<farm_text_many pig>>. They walk down the ai
 	You pour feed into a couple of buckets, and traipse across the field. Your arms ache by the time you arrive at the sty.<<physique 2>>
 	<br><br>
 <</if>>
-
+<<pass 20>>
 
 
 You empty the buckets in the troughs.
@@ -1423,16 +1347,12 @@ You empty the buckets in the troughs.
 	<span class="blue">The <<farm_text_many pig>> devour the feed. Seems they're still hungry.</span>
 <</if>>
 <br><br>
-
+<<outfitChecks>>
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $worn.lower.name isnot "naked" and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
+<<if $danger gte (9900 - $allure) and _bottom and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
 <!-- Modified for Monster People -->
 	<<if $farm.beasts.pigs lte -20 and $rng gte 51>>
-		<<if $farm_work.pig.monster is true>>
-			Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. "You're not finished here," <<farm_he pig>> says. <<farm_He pig>> tries to pull you inside.
-		<<else>>
-			Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. It tries to pull you inside.
-		<</if>>
+		Something catches your hair as you turn away from the trough. One of the <<farm_text pig>>s has reached over the fence. <<if $farm_work.pig.monster is true>>"You're not finished here," <<farm_he pig>> says. <</if>><<farm_He pig>> tries to pull you inside.
 		<br><br>
 
 		<<link [[꾸짖는다|Farm Pigs Feed Extreme Scold]]>><</link>><<tendingdifficulty 1 1100>>
@@ -1440,11 +1360,7 @@ You empty the buckets in the troughs.
 		<<link [[도움을 요청한다|Farm Pigs Feed Extreme Help]]>><<npcincr Alex dom 1>><<farm_pigs -1>><</link>><<gdom "Alex">><<lrespect>>
 		<br>
 	<<else>>
-		<<if $farm_work.pig.monster is true>>
-			Something catches your $worn.lower.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck its head through the fence, and grasps your clothing in its mouth.
-		<<else>>
-			Something catches your $worn.lower.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck its snout through the fence, and grasps your clothing in its mouth.
-		<</if>>
+		Something catches your _bottom.name as you turn away from the trough. One of the <<farm_text pig>>s has stuck <<farm_his pig>> <<= $farm_work.pig.monster is true ? "head" : "snout">> through the fence, and grasps your clothing in <<farm_his pig>> mouth.
 		<br><br>
 
 		<<link [[꾸짖는다|Farm Pigs Feed Scold]]>><</link>><<tendingdifficulty 1 600>>
@@ -1456,7 +1372,6 @@ You empty the buckets in the troughs.
 
 	<<link [[다음|Farm Work]]>><</link>>
 	<br>
-
 <</if>>
 
 
@@ -1466,42 +1381,26 @@ You empty the buckets in the troughs.
 You herd the <<farm_text_many pig>> back into the sty. Some of them seem reluctant to move, and need cajoling.
 <<set $danger to random(1, 10000)>>
 <<if $danger gte (9900 - $allure) and ($bestialitydisable is "f" or $farm_work.pig.monster is true)>>
-<!-- Modified for Monster People -->
-		<<if $farm_work.pig.monster is true>>
-			You manage to get the last to stand. You're leading <<farm_him pig>> inside when <<farm_he pig>> grasps your arms and tries to force you to the ground.
-		<<else>>
-			You manage to get the last to stand. You're leading it inside when it rears on its hind legs and tries to force you to the ground.
-		<</if>>
-		<br><br>
+	You manage to get the last to stand. You're leading <<farm_him pig>> inside when <<farm_he pig>> <<= $farm_work.pig.monster is true ? "grasps your arms" : "rears on its hind legs">> and tries to force you to the ground.
+	<br><br>
 
-		<<link [[꾸짖는다|Farm Pigs Scold]]>><</link>><<tendingdifficulty 1 600>>
+	<<link [[꾸짖는다|Farm Pigs Scold]]>><</link>><<tendingdifficulty 1 600>>
+	<br>
+	<<link [[떨쳐낸다|Farm Pigs Shove]]>><</link>><<physiquedifficulty 1 12000>>
+	<br>
+	<<link [[견딘다|Farm Pigs Endure]]>><<trauma 6>><<stress 6>><<farm_pigs -1>><</link>><<lrespect>>
+	<br>
+	<<if hasSexStat("deviancy", 3)>>
+		<<link [[손으로 해 준다|Farm Pigs Hand]]>><<set $sexstart to 1>><</link>><<deviant3>>
 		<br>
-		<<link [[떨쳐낸다|Farm Pigs Shove]]>><</link>><<physiquedifficulty 1 12000>>
-		<br>
-		<<link [[견딘다|Farm Pigs Endure]]>><<trauma 6>><<stress 6>><<farm_pigs -1>><</link>><<lrespect>>
-		<br>
-		<<if $deviancy gte 35>>
-			<<link [[손으로 해 준다|Farm Pigs Hand]]>><<set $sexstart to 1>><</link>><<deviant3>>
-			<br>
-		<</if>>
-		<!-- The <<farm_text_many pig>> seems agitated. It's a little scary.<<gstress>><<stress 6>> -->
-		<!-- <br><br> -->
-
-		<!-- <<link [[다음|Farm Work]]>><</link>> -->
-		<!-- <br> -->
-<<else>>
-	<<if $farm_work.pig.monster is true>>
-		You manage to get the last to stand, and lead <<farm_him pig>> inside.
-	<<else>>
-		You manage to get the last to stand, and lead it inside.
 	<</if>>
+<<else>>
+	You manage to get the last to stand, and lead <<farm_him pig>> inside.
 	<br><br>
 
 	<<link [[다음|Farm Work]]>><</link>>
 	<br>
 <</if>>
-
-
 
 
 :: Farm Horses Out
@@ -1582,7 +1481,7 @@ You open each stall, releasing the <<farm_text_many horse>> within. They know wh
 	<<link [[쫓아간다|Farm Horses Chase]]>><<tiredness 2>><</link>><<athleticsdifficulty 1 1000>><<gtiredness>>
 	<br>
 	<!-- Modified for Monster People -->
-	<<if $deviancy gte 15 and $horsedisable is "f" and ($bestialitydisable is "f" or $farm_work.horse.monster is true)>>
+	<<if hasSexStat("deviancy", 2) and $horsedisable is "f" and ($bestialitydisable is "f" or $farm_work.horse.monster is true)>>
 		<<link [[유혹한다|Farm Horses Seduce]]>><</link>><<deviant2>>
 		<br>
 	<</if>>
@@ -1599,11 +1498,11 @@ You approach a <<farm_text horse>>. You take <<farm_his horse>> bridle in hand a
 
 <<link [[양손을 사용한다 (0:05)|Farm Horses Lewd Hands]]>><<pass 5>><<farm_count 5>><<farm_yield 1>><<set $farm_work.horses_satisfied += 1>><<handskill 5>><<set $handstat += 1>><<set $handejacstat += 1>><</link>><<deviant3>><<gfarm>><<ghandskill>>
 <br>
-<<if $deviancy gte 55>>
+<<if hasSexStat("deviancy", 4)>>
 	<<link [[입을 사용한다 (0:05)|Farm Horses Lewd Mouth]]>><<pass 5>><<farm_count 5>><<farm_yield 1>><<set $farm_work.horses_satisfied += 1>><<oralskill 5>><</link>><<deviant4>><<gfarm>><<goralskill>>
 	<br>
 <</if>>
-<<if $deviancy gte 75>>
+<<if hasSexStat("deviancy", 5)>>
 	<<link [[당신에게 올라타게 한다|Farm Horses Lewd Mount]]>><</link>><<deviant5>>
 	<br>
 <</if>>
@@ -1855,7 +1754,7 @@ You call the <<farm_text_many horse>>, and lead them from the field. They seem h
 	<<link [[알렉스를 부른다|Farm Horses In Alex]]>><<npcincr Alex dom 1>><<farm_horses -1>><</link>><<lrespect>><<gdom "Alex">>
 	<br>
 	<!-- Modified for Monster People -->
-	<<if $deviancy gte 15 and $horsedisable is "f" and ($bestialitydisable is "f" or $farm_work.horse.monster is true)>>
+	<<if hasSexStat("deviancy", 2) and $horsedisable is "f" and ($bestialitydisable is "f" or $farm_work.horse.monster is true)>>
 		<<link [[유혹한다|Farm Horses In Seduce]]>><</link>><<deviant2>>
 	<</if>>
 	<br>
@@ -1874,12 +1773,13 @@ You call the <<farm_text_many horse>>, and lead them from the field. They seem h
 
 You open the barn doors, and release the <<farm_text_many cattle>> from their pens. They trot to the field without prompting.
 <br><br>
+<<outfitChecks>>
 
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure) and $worn.over_upper.name isnot "naked">>
-	<<set $worn.over_upper.integrity -= 10>>
-	<<if $worn.over_upper.integrity lte 0>>
-		One snags your $worn.over_upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
+<<if $danger gte (9900 - $allure) and _top>>
+	<<set _top.integrity -= 10>>
+	<<if _top.integrity lte 0>>
+		One snags your _top.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
 		<<integritycheck no_text>><<exposure>>
 		<<covered>> The <<farm_text cattle>> continues with the tattered remains dangling over <<farm_his cattle>> face.
 		<br><br>
@@ -1887,24 +1787,7 @@ You open the barn doors, and release the <<farm_text_many cattle>> from their pe
 		<<link [[다음|Farm Work]]>><</link>>
 		<br>
 	<<else>>
-		One snags your $worn.over_upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
-		<br><br>
-
-		<<link [[다음|Farm Work]]>><</link>>
-		<br>
-	<</if>>
-<<elseif $danger gte (9900 - $allure) and $worn.upper.name isnot "naked">>
-	<<set $worn.upper.integrity -= 10>>
-	<<if $worn.upper.integrity lte 0>>
-		One snags your $worn.upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, <span class="pink">tearing it from your body.</span>
-		<<integritycheck no_text>><<exposure>>
-		<<covered>> The <<farm_text cattle>> continues with the tattered remains dangling over <<farm_his cattle>> face.
-		<br><br>
-
-		<<link [[다음|Farm Work]]>><</link>>
-		<br>
-	<<else>>
-		One snags your $worn.upper.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
+		One snags your _top.name with <<farm_his cattle>> horn as <<farm_he cattle>> passes, leaving it worse for wear.
 		<br><br>
 
 		<<link [[다음|Farm Work]]>><</link>>
@@ -1918,7 +1801,6 @@ You open the barn doors, and release the <<farm_text_many cattle>> from their pe
 :: Farm Cattle Milk
 <<effects>>
 
-
 You enter the cattle barn.
 <<if $farm.barn gte 1>>
 	크고, 반짝이는 착유기가 중앙에 놓여있다.
@@ -1928,18 +1810,13 @@ You enter the cattle barn.
 The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can milk six at once.
 <br><br>
 
-
 <<farm_milk_actions>>
-
-
 
 
 :: Farm Cattle Milk Machine
 <<effects>>
 
 당신은 <<farm_text_many_ rul cattle>> 헛간으로 이끌어, 녀석들을 기계에 맨다.
-
-<!-- Modified for Monster People -->
 
 <<if $bestialitydisable is "f" or $farm_work.cattle.monster is true>>
 	<<if $cattle_milked lte 6>>
@@ -2028,8 +1905,6 @@ The <<farm_text_many cattle>> prefer to be milked by hand, but the machine can m
 <br><br>
 착유기는 빠르게 작동하고, 곧 액체를 모으는 것을 끝낸다. 당신이 <<farm_text_many_ rul cattle>> 풀어주자 녀석들은 쏜살같이 달아난다.
 <br><br>
-
-
 
 <<farm_milk_actions>>
 
@@ -2285,23 +2160,33 @@ You sneak up to the shed, and push the door open.
 :: Farm Tending
 <<effects>>
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You endure the rain as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	<<if $rng gte 51>>
-		<<if Time.dayState is "night">>
-		The stars twinkle above you as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
-		<<else>>
-		The sun beats down as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
-		<</if>>
+		<<switch Time.dayState>>
+			<<case "night">>
+				The stars twinkle above you as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
+			<<case "dawn">>
+				The morning sun peers over the horizon illuminating the surrounding farms. The rising sun makes your search for invasive weeds easier, digging them up at the roots before they can strangle the crops.
+			<<case "dusk">>
+				The sun begins to beat down over the horizon casting a looming shadow over you and the farm as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
+			<<default>>
+				The sun beats down as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
+		<</switch>>
 	<<else>>
-		<<if Time.dayState is "night">>
-		The stars twinkle above you as you water the crops.
-		<<else>>
-		The sun beats down as you water the crops.
-		<</if>>
+		<<switch Time.dayState>>
+			<<case "night">>
+				The stars twinkle above you as you water the crops.
+			<<case "dawn">>
+				The rising sun shines in your face as you water the crops.
+			<<case "dusk">>
+				The sun lowers beneath the horizon casting a shadow over the farm as you water the crops.
+			<<default>>
+				The sun beats down as you water the crops.
+		<</switch>>
 	<</if>>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You endure the cold as you search for invasive weeds, digging them up at the roots before they can strangle the crops.
 <<else>>
 	<<if $rng gte 51>>
@@ -2340,9 +2225,9 @@ You sneak up to the shed, and push the door open.
 <<effects>>
 
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You endure the rain as you help Alex search for invasive weeds, digging them up at the roots before they can strangle the crops.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	<<if $rng gte 51>>
 		<<if Time.dayState is "night">>
 		The stars twinkle above you as you help Alex search for invasive weeds, digging them up at the roots before they can strangle the crops.
@@ -2356,7 +2241,7 @@ You sneak up to the shed, and push the door open.
 		The sun beats down as you help Alex water the crops.
 		<</if>>
 	<</if>>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You endure the cold as you help Alex search for invasive weeds, digging them up at the roots before they can strangle the crops.
 <<else>>
 	<<if $rng gte 51>>
@@ -2393,15 +2278,15 @@ You sneak up to the shed, and push the door open.
 :: Farm Clearing
 <<effects>>
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You endure the rain as you help Alex clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	<<if Time.dayState is "night">>
 	The stars twinkle above you as you help Alex clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 	<<else>>
 	The sun beats down as you help Alex clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 	<</if>>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You endure the cold as you help Alex clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 <<else>>
 	You help Alex clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
@@ -2438,15 +2323,15 @@ You sneak up to the shed, and push the door open.
 :: Farm Clearing Alone
 <<effects>>
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You endure the rain as you clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	<<if Time.dayState is "night">>
 	The stars twinkle in the night sky as you clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 	<<else>>
 	The sun beats down as you clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 	<</if>>
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You endure the cold as you clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
 <<else>>
 	You clear the invasive weeds, digging them up at the roots and freeing the land for cultivation.
@@ -2505,12 +2390,14 @@ You sneak up to the shed, and push the door open.
 
 <<if $phase is 1>>
 	<<npc Alex>><<person1>>
+	<<alexRemyTattoosCheck "rest">>
+
 	당신은 알렉스에게 다가간다.
-	<<if $weather is "clear">>
+	<<if !Weather.isOvercast>>
 		<<He_ 는>> 나무 그늘 아래에 몸을 기대고 있다.
-	<<elseif $weather is "rain">>
+	<<elseif Weather.precipitation is "rain">>
 		<<He_ 는>> 나무 그늘 아래에서 비를 피하고 있다.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.precipitation is "snow">>
 		<<He_ 는>> 나무 그늘 아래에서 눈을 피하고 있다.
 	<<else>>
 		<<He_ 는>> 나무 아래에 몸을 기대고 있다.
@@ -2551,17 +2438,26 @@ You sneak up to the shed, and push the door open.
 	<<farm_work_update>>
 <</if>>
 
-	<<if isLoveInterest("Alex")>>
-		<<if Time.season is "winter">>
-			당신과 알렉스는 꼭 붙어서 온기를 나눈다.
-		<<elseif _alex.dom lte -10>>
-			<<He_ 는>> 당신에게 몸을 기댄다.
-		<<else>>
-			당신은 <<HimPost>>에게 기대앉는다.
-		<</if>>
+<<if isLoveInterest("Alex")>>
+	<<if Time.season is "winter">>
+		당신과 알렉스는 꼭 붙어서 온기를 나눈다.
+	<<elseif _alex.dom lte -10>>
+		<<He_ 는>> 당신에게 몸을 기댄다.
 	<<else>>
-		당신은 나무에 기대앉는다.
+		당신은 <<HimPost>>에게 기대앉는다.
 	<</if>>
+	<<if $phase is 1>>
+		<<if npcIsPregnant("Alex") and talkedAboutPregnancy("Alex","pc")>>
+			You put your hand on Alex's <<bellyDescription "Alex">>, and <<he>> kisses your temple. As <<he>> does so, you feel the baby kick - and naturally, so does <<he>>.
+			"Strong little bugger in there," <<he>> chuckles. "Reminds me of someone I know." <<He>> smiles at you.
+		<<elseif playerIsPregnant() and playerAwareTheyArePregnant() and playerBellyVisible() and getPregnancyObject().fetus[0].father is "Alex" and talkedAboutPregnancy("pc","Alex")>>
+			Alex puts <<his>> hand on your <<bellyDescription "pc">> and kisses your temple. As <<he>> does so, you feel the baby kick - and evidently, so does <<he>>.
+			"Strong little bugger in there," <<he>> chuckles. "Reminds me of someone I know." <<He>> smiles at you.
+		<</if>>
+	<</if>>
+<<else>>
+	당신은 나무에 기대앉는다.
+<</if>>
 
 <<rng 2>>
 <<if $rng is 1 and $farm_stage gte 4>>
@@ -2593,7 +2489,7 @@ You sneak up to the shed, and push the door open.
 	<<link [[거절한다|Farm Rest Refuse]]>><</link>>
 	<br>
 
-<<elseif C.npc.Alex.love gte 60 and $phase isnot 5 and $weather isnot "rain" and $rng gte 81 and $exposed lte 0>>
+<<elseif C.npc.Alex.love gte 60 and $phase isnot 5 and Weather.precipitation isnot "rain" and $rng gte 81 and $exposed lte 0>>
 	"Want to go out somewhere today? Might be good to stretch our legs."
 	<br><br>
 
@@ -2625,7 +2521,7 @@ You sneak up to the shed, and push the door open.
 알렉스는 당신에게서 음료를 받아들고, 20분 동안 홀짝거리며 잡담을 나누고, 당신이 떠날 때 <<his_ yi>> 모자를 벗어 인사한다.
 <br><br>
 
-<<link [[다음|Farm Work]]>><<handheldon>><</link>>
+<<link [[다음|Farm Work]]>><<handheldon>><<endevent>><</link>>
 
 :: Alex Share Milkshake
 <<effects>>
@@ -2645,31 +2541,45 @@ You sneak up to the shed, and push the door open.
 "당분 보충 고맙다," <<he_ 가>> 씨근거리며, 눈물을 훔친다. 호흡을 가다듬고 나서, 두 사람은 헤어진다.
 <br><br>
 
-<<link [[다음|Farm Work]]>><<handheldon>><</link>>
+<<link [[다음|Farm Work]]>><<handheldon>><<endevent>><</link>>
 
 :: Farm Stables Rest
 <<set $outside to 0>><<effects>>
+<<farm_work_update>>
+
+<<npc Alex>><<person1>>
 
 You relax on the hammock next to the stables.
-<<if $weather is "rain" or $weather is "snow">>You're glad to have some cover from the <<print ($weather is "rain"?'rain':'snow')>>.<</if>>
+<<if Weather.precipitation isnot "none">>You're glad to have some cover from the <<print Weather.precipitation>>.<</if>>
 
 <<if $rng gte 75 and Time.dayState isnot "night" and C.npc.Alex.love gte 80 and $farm_work.alex isnot "still" and $alex_countdown is undefined and $farm_stage gte 7>>
-	당신에게 손을 흔들며, 알렉스가 다가오는 것이 보인다.
-	"이봐, 파트너," <<nnpc_he_ ga "Alex">> 웃으며 당신의 무릎 위에 눕는다. "그냥 잠깐 들러볼까 하고."
+	당신에게 손을 흔들며, 알렉스가 다가오는 것이 보인다. "이봐, 파트너," <<He_ ga>> 웃으며 당신의 무릎 위에 눕는다. "그냥 잠깐 들러볼까 하고."
 	<br><br>
 
-	당신은 <<nnpc_him_ 과 "Alex">> 함께 기댄 채, 이따금씩 불어오는 산들바람에 몸을 맡긴다. <<nnpc_He_ 는 "Alex">> 어느 순간 한숨을 쉬며 마지못해 일어난다.
-	"난 다시 일하러 가 봐야 해. 근데 너랑 함께 있고 싶은 것에 저항할 수가 없네."
+	<<if (npcIsPregnant("Alex") and C.npc.Alex.pregnancy.selfKnowledge and npcBellySize("Alex") gte 4) or (playerIsPregnant() and C.npc.Alex.pregnancy.pcKnowledge and playerBellySize() gte 4)>>
+		<<if C.npc.Alex.pregnancy.pcKnowledge>>
+			<<He>> rests <<his>> head on your chest, just above the swell of your pregnancy. In the peaceful quiet of your shared repose, you can occasionally hear <<him>> humming snatches of a lullaby.
+		<<else>>
+			<<He>> lies down beside you, and you rest your head on <<his>> chest, just above the swell of <<his>> pregnancy. In the peaceful quiet of your shared repose, you can occasionally hear <<him>> humming snatches of a lullaby.
+		<</if>>
+		<br><br>
+	<</if>>
+
+	당신은 <<him_ 과>> 함께 기댄 채, 이따금씩 불어오는 산들바람에 몸을 맡긴다. <<He_ 는>> 어느 순간 한숨을 쉬며 마지못해 일어난다. "난 다시 일하러 가 봐야 해. 근데 너랑 함께 있고 싶은 것에 저항할 수가 없네."
+
 <<elseif Time.dayState is "night">>
-	말들은 잠을 자고 있기에, 당신은 평화롭고 고요한 시간을 보낼 수 있었다.
+	With the <<farm_text_many "horse">> sleeping, you're able to enjoy the peace and quiet.
+
 <<elseif $farm_work.horses_out is 1>>
-	들판에서 말들이 뛰어놀고, 당신은 평화롭고 고요한 시간을 보낼 수 있었다.
+	With the <<farm_text_many "horse">> out running in the fields, you're able to enjoy the peace and quiet.
+
 <<else>>
-	말들은 실내에 있다. 안에서 돌아다니는 소리가 들린다.
+	The <<farm_text_many "horse">> are inside. You hear them move around.
+
 <</if>>
 <br><br>
 
-<<link [[다음|Farm Work]]>><</link>>
+<<link [[다음|Farm Work]]>><<endevent>><</link>>
 
 :: Farm Perimeter
 <<effects>>
@@ -2694,6 +2604,7 @@ You relax on the hammock next to the stables.
 <<effects>>
 
 <<npc Alex>><<person1>>
+<<alexRemyTattoosCheck "chores">>
 
 <<if $rng gte 51 or $farm.wall is 1>>
 	You help Alex follow the farm perimeter, picking up stones from the ground and returning them to the old wall. <<He>> suggests you split up to cover more ground.
@@ -2742,7 +2653,7 @@ You carry the feed to the field. Some of the younger <<farm_text_many dog>> beg 
 	<br>
 	<<link [[견딘다|Farm Dogs Endure]]>><<sub 1>><<farm_dogs -1>><<trauma 6>><<stress 6>><</link>><<lrespect>><<gtrauma>><<gstress>>
 	<br>
-	<<if $deviancy gte 15>>
+	<<if hasSexStat("deviancy", 2)>>
 		<<link [[Drop to your knees|Farm Dogs Drop]]>><</link>><<deviant2>>
 		<br>
 	<</if>>
@@ -2772,37 +2683,39 @@ You are in the barn. The <<farm_text_many cattle>> sleep sound.
 <<else>>
 	A large milking machine stands in the centre.
 <</if>>
-<br><br>
 
 <<if $stress gte $stressmax>>
+	<br><br>
 	<<passoutfarmroad>>
 <<else>>
 	<<if Time.hour gte 6 and Time.hour lte 20>>
+		<br><br>
 		The sun breaks through the high windows, and the <<farm_text_many cattle>> stir. You sneak from the building.
 		<br><br>
 
 		<<link [[다음|Farm Work]]>><</link>>
 		<br>
 	<<else>>
-		<<if $deviancy gte 15>>
+		<<if hasSexStat("deviancy", 2)>>
+			<br>
 			<<if $breastfeedingdisable is "f" and $milk_amount gte 1>>
-				<<link [[Milk yourself (0:30)|Farm Barn Breasts]]>>
+				<br>
+				<<ind>><<link [[Milk yourself (0:30)|Farm Barn Breasts]]>>
 					<<if $cow gte 6>>
 						<<transform cow 1>>
 					<</if>>
 				<</link>><<deviant2>>
-				<br>
 			<</if>>
 			<<if $player.penisExist and $semen_amount gte 1 and !playerChastity("penis")>>
-				<<link [[Milk your penis (0:30)|Farm Barn Penis]]>>
+				<br>
+				<<ind>><<link [[Milk your penis (0:30)|Farm Barn Penis]]>>
 					<<if $cow gte 6>>
 						<<transform cow 1>>
 					<</if>>
 				<</link>><<deviant2>>
-				<br>
 			<</if>>
+			<br>
 		<</if>>
-		<br>
 		<<getouticon>><<link [[떠난다|Farm Work]]>><</link>>
 		<br>
 	<</if>>
@@ -2816,19 +2729,12 @@ You are in the barn. The <<farm_text_many cattle>> sleep sound.
 	<<transform cow 1>>
 <</if>>
 <<milkvolume 5>>
+<<outfitChecks>>
 
-<<if $worn.upper.name isnot "naked">>
-	<<if $worn.under_upper.name isnot "naked">>
-		You remove your $worn.upper.name and $worn.under_upper.name, and drop to all fours in front of the machine.<<upperstrip>><<underupperstrip>>
-	<<else>>
-		You remove your $worn.upper.name, and drop to all fours in front of the machine.<<upperstrip>>
-	<</if>>
+<<if _top>>
+	You remove your <<allTopsUnderwear>> and drop to all fours in front of the machine. <<overupperstrip>><<upperstrip>><<underupperstrip>>
 <<else>>
-	<<if $worn.under_upper.name isnot "naked">>
-		You remove your $worn.under_upper.name, and drop to all fours in front of the machine.<<underupperstrip>>
-	<<else>>
-		You drop to all fours in front of the machine.
-	<</if>>
+	You drop to all fours in front of the machine.
 <</if>>
 You take two of the suction tubes, and attach them to your <<breasts>>.
 <br><br>
@@ -2839,7 +2745,6 @@ You take two of the suction tubes, and attach them to your <<breasts>>.
 	The machine comes alive, and sucks your chest. You <<if $cow gte 6>>moo<<else>>gasp<</if>> at the sensation, causing one of the <<farm_text cattle>> to turn their head in your direction<<if $cow gte 6>> and moo back<</if>>.<<gggarousal>><<arousal 2000 "breasts">>
 	<br><br>
 <</if>>
-
 
 <<link [[다음|Farm Barn Breasts 2]]>><</link>>
 <br>
@@ -2852,8 +2757,6 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <<orgasm>>
 <br>
 <<if $lactating is 1>>
-
-
 	Milk leaks from your buds as your body shakes. Your fluid is sucked into the machine, where it drips into a glass tank.
 	<br><br>
 
@@ -2937,19 +2840,11 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <<if $cow gte 6>>
 	<<transform cow 1>>
 <</if>>
-
-<<if $worn.lower.name isnot "naked">>
-	<<if $worn.under_lower.name isnot "naked">>
-		You remove your <<bottoms>> and <<underbottoms>>, and drop to all fours in front of the machine.<<lowerstrip>><<underlowerstrip>>
-	<<else>>
-		You remove your <<bottoms>>, and drop to all fours in front of the machine.<<lowerstrip>>
-	<</if>>
+<<outfitChecks>>
+<<if _bottom>>
+	You remove your <<allBottomsUnderwear>> and drop to all fours in front of the machine.<<overlowerstrip>><<lowerstrip>><<underlowerstrip>>
 <<else>>
-	<<if $worn.under_lower.name isnot "naked">>
-		You remove your <<underbottoms>>, and drop to all fours in front of the machine.<<underlowerstrip>>
-	<<else>>
-		You drop to all fours in front of the machine.
-	<</if>>
+	You drop to all fours in front of the machine.
 <</if>>
 You take one of the suction tubes, and attach it to your <<penis>>.
 <br><br>
@@ -2964,7 +2859,6 @@ You take one of the suction tubes, and attach it to your <<penis>>.
 
 <<link [[다음|Farm Barn Penis 2]]>><</link>>
 <br>
-
 
 
 :: Farm Barn Penis 2
@@ -3094,7 +2988,7 @@ The machine continues its devilish work, sucking with more intensity. You feel a
 <br><br>
 "우유가 추가로 남던 이유가 여기 있었군," <<he_ 가>> 얼굴을 붉힌 채로 말한다. "내가 너한테 도와달라고는 했지만, 이렇게까지 해줄 줄은 몰랐어." <<npcincr Alex love 1>><<glove>><<npcincr Alex lust 1>><<glust>>
 <br><br>
-<<He_ 는>> 나가려고 몸을 돌렸다가, 잠시 멈춘다, "소들에게 소홀해지지만 않는다면, 난 괜찮아."
+<<He>> turns to leave, but pauses. "As long as the cattle aren't neglected, I don't mind."
 <br><br>
 <<link [[다음|Farm Barn]]>><<clotheson>><<endevent>><</link>>
 
@@ -3220,22 +3114,22 @@ It takes a few minutes, but Alex finally gives up, opening <<his>> eyes to look 
 <<effects>>
 
 <<if $farm_stage gte 7>>
-	"Mooorning parrtnerrr…I think I drank a little too much last night," Alex slurs, giving you a lazy smile.
+	"Mooorning parrtnerrr... I think I drank a little too much last night," Alex slurs, giving you a lazy smile.
 
 <<else>>
-	"Heyyyyy parrtnerrr…How did you get in? Did I leave the door unlocked? Alex slurs, rubbing <<his>> face. You nod.
+	"Heyyyyy parrtnerrr... How did you get in? Did I leave the door unlocked? Alex slurs, rubbing <<his>> face. You nod.
 
 <</if>>
 <br><br>
 
 <<if $speech_attitude is "meek">>
-	You gently brush  <<his>> fringe from <<his>> eyes before stroking <<his>> head. "I'm just glad you are alright... I was worried something happened."
+	You gently brush <<his>> fringe from <<his>> eyes before stroking <<his>> head. "I'm just glad you are alright... I was worried something happened."
 	<br><br>
 
 	<<He>> blushes at the gesture.
 
-	<<set _action to "<<He>> runs <<his>> hand over your <<genitals>>">>
-	<<set _dialogue to "How about I make it up to you">>
+	<<set _action to "<<He>> runs <<his>> hand over your <<genitals>>.">>
+	<<set _dialogue to "How about I make it up to you?">>
 
 
 <<elseif $speech_attitude is "bratty">>
@@ -3247,9 +3141,9 @@ It takes a few minutes, but Alex finally gives up, opening <<his>> eyes to look 
 	<<set _action to "<<He>> moves <<his>> hand to your <<bottom>>, giving it a squeeze.">>
 
 	<<if C.npc.Alex.penis isnot "none">>
-		<<set _dialogue to "How about I bust your ass instead">>
+		<<set _dialogue to "How about I bust your ass instead?">>
 	<<else>>
-		<<set _dialogue to "How about you bust my ass for me">>
+		<<set _dialogue to "How about you bust my ass for me?">>
 	<</if>>
 
 <<else>>
@@ -3257,7 +3151,7 @@ It takes a few minutes, but Alex finally gives up, opening <<his>> eyes to look 
 	<br><br>
 
 	<<He>> gives a lazy nod.
-	<<set _action to "<<He>> tries to pull you down into bed with <<him>>">>
+	<<set _action to "<<He>> tries to pull you down into bed with <<him>>.">>
 
 <</if>>
 <br><br>
@@ -3313,7 +3207,7 @@ Without sitting up, <<he>> gropes for your face.
 		<<if C.npc.Alex.penis isnot "none">>
 			You lift up the covers as Alex guides you to straddle <<his>> lap. You kiss <<his>> forehead.
 		<<else>>
-			You lift up the covers as Alex starts to straddle your lap. <<He>> kiss your forehead.
+			You lift up the covers as Alex starts to straddle your lap. <<He>> kisses your forehead.
 		<</if>>
 	<</if>>
 <</if>>
@@ -3377,7 +3271,7 @@ Without sitting up, <<he>> gropes for your face.
 
 	<<if $arousal gte 6000>>
 		<<if $speech_attitude is "meek">>
-			"W-we can mess around later," you say
+			"W-we can mess around later," you say.
 			<br><br>
 
 			Alex chuckles before sitting up in bed. "Alrighty, partner. Best you keep your word." Alex smirks. "Now let's get going."

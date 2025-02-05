@@ -7,14 +7,17 @@ Config.history.maxStates = 5;
 /* debug will enable or disable the feature only for new games */
 /* sneaky will enable the Sneaky notice banner on the opening screen and save display */
 /* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
-window.StartConfig = {
+const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.6.7",
-	versionName: "",
+	version: "0.5.1.3",
+	versionName: `"Head in the Clouds" edition`,
 	sneaky: false,
+	socialMediaEnabled: true,
+	sourceLinkEnabled: false,
 };
+window.StartConfig = StartConfig;
 
 State.prng.init();
 
@@ -28,23 +31,11 @@ Config.saves.isAllowed = () => {
 	return true;
 };
 
-idb.footerHTML = `
-	<div class="savesListRow">
-		<div class="saveGroup">
-			<span style="margin: 0;">
-				<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdity를 지지</a>해 주시는 모든 분들께 특별히 감사드립니다
-			</span>
-			<div class="saveId"></div>
-			<div class="saveButton"></div>
-			<div class="saveName"></div>
-			<div class="saveDetails"></div>
-		</div>
-		<div class="saveButton">
-			<input type="button" class="saveMenuButton right" value="전부 삭제" onclick="idb.saveList('confirm clear')">
-		</div>
-	</div>`;
+idb.footerHTML = `<a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Degrees of Lewdity를 지지</a>해 주시는 모든 분들께 특별히 감사드립니다`;
 
 function onLoad(save) {
+	$.event.trigger(":onloadsave", { save });
+
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
 	pageLoading = true;
 	window.onLoadUpdateCheck = true;
@@ -127,6 +118,10 @@ function onSave(save, details) {
 		State.setSessionState(session);
 	}
 
+	// Save time and weather to localStorage
+	localStorage.setItem("weather", Packer.packWeatherData());
+	localStorage.setItem("time", Time.date.timeStamp.toString(36));
+
 	// * legacy code for old saves system * //
 	if (!(window.idb && window.idb.active)) {
 		// eslint-disable-next-line no-undef
@@ -145,13 +140,6 @@ window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + t
 
 Config.saves.autosave = "autosave";
 
-Config.saves.isAllowed = function () {
-	if (tags().includes("nosave")) {
-		return false;
-	}
-	return true;
-};
-
 importStyles("style.css")
 	.then(function () {
 		console.log("External Style Sheet Active");
@@ -167,20 +155,6 @@ l10nStrings.errorTitle = StartConfig.version + " Error";
 // delete parser that adds unneeded line breaks -ng
 Wikifier.Parser.delete("lineBreak");
 Wikifier.Parser.delete("emdash");
-
-/* ToDo: implement the dolls system, uncomment during and when its setup
-importScripts([
-	"img/dolls/NameValueMaps.js",
-	"img/dolls/dollUpdater.js",
-	"img/dolls/dollLoader.js",
-	"img/dolls/DollHouse.js",
-	"img/dolls/FDoll.js",
-]).then(function () {
-	console.log("Dolls scripts running");
-})
-.catch(function (err) {
-	console.log(err);
-}); */
 
 // Runs before a passage load, returning a string redirects to the new passage name.
 Config.navigation.override = function (dest) {
@@ -599,6 +573,61 @@ Config.navigation.override = function (dest) {
 			case "Livestock Field Horse Lewd Female Sex Finish":
 				return "Livestock Field Deviancy Sex";
 
+			case "Beach Cave Tentacle Under Top":
+				return "Beach Cave Tentacle Top";
+
+			case "Beach Cave Rope Under Top":
+			case "Beach Cave Rope Over Top":
+				return "Beach Cave Rope Top";
+
+			case "Prison Wren Intro Met":
+				return "Prison Wren Intro";
+
+			case "Museum Box":
+				return "Museum Waterlogged Ivory Box";
+			case "Museum Silver Ring":
+				return "Museum Worn Silver Ring";
+			case "Museum Gold Necklace":
+				return "Museum Ornate Gold Necklace";
+			case "Museum Gold Chastity Belt":
+				return "Museum Golden Chastity Belt";
+			case "Museum Ivory Necklace":
+				return "Museum Immaculate Ivory Necklace";
+			case "Museum Crystal":
+				return "Museum Arousing Crystal";
+			case "Museum Horn":
+				return "Museum Hunting Horn";
+			case "Museum Watch":
+				return "Museum Old Watch";
+			case "Museum Dildo":
+				return "Museum Odd Medical Aid";
+			case "Museum Candlestick":
+				return "Museum Noble Candle Stick";
+			case "Museum Arrow":
+				return "Museum Mossy Forest Arrow";
+			case "Museum Dagger":
+				return "Museum Rusted Forest Dagger";
+			case "Museum Gem":
+				return "Museum Pulsing Forest Gem";
+			case "Museum Hourglass":
+				return "Museum Inscribed Hourglass";
+			case "Museum Cup":
+				return "Museum Discarded Cup";
+			case "Museum Burner":
+				return "Museum Incense Burner";
+			case "Museum Brass Statuette":
+				return "Museum Forgotten Brass Statuette";
+			case "Museum Grenade":
+				return "Museum Old Grenade";
+			case "Museum Bell":
+				return "Museum Sonorous Bell";
+			case "Museum Shell":
+				return "Museum Artillery Shell";
+			case "Museum Mine Sign":
+				return "Museum Bailey Sign";
+			case "Museum Island Arrow":
+				return "Museum Islander Arrow";
+
 			default:
 				return false;
 		}
@@ -610,6 +639,20 @@ Config.navigation.override = function (dest) {
 	if (passageArgs.name !== dest) {
 		/* Return new passage dest. Will divert the processed passage to this. */
 		return passageArgs.name;
+	}
+
+	// Scene viewer redirect
+	if (V.replayScene) {
+		if (passageArgs.name === V.replayScene.startPassage) {
+			return false;
+		}
+		if (passageArgs.name === "Scene Viewer End") {
+			delete V.replayScene.startPassage;
+			return false;
+		}
+		if (!V.replayScene.passages.includes(passageArgs.name)) {
+			return "Scene Viewer End";
+		}
 	}
 
 	if (pageLoading) {

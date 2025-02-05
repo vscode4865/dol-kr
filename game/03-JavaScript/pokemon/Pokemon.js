@@ -1,14 +1,15 @@
   class Pokemon {
-    constructor(pokemonData, name, level, region = null) {
+    constructor(pokemonData, name, level, region = null, traitInput, genderInput) {
         this.id = Pokemon.generateId();
         this.name = name;
         this.species = pokemonData.name;
+        this.isNickname = false;
         this.type = pokemonData.type; // 타입
         this.level = level;
         this.experience = 0;
         this.personality = Pokemon.generatePersonality(); // 성격
-        this.trait = Pokemon.generateTrait(pokemonData.possibleTraits, pokemonData.hiddenTrait); // 특성
-        this.gender = this.determineGender(pokemonData.genderRatio); // 성별 결정
+        if (traitInput){this.trait = traitInput;} else {this.trait = Pokemon.generateTrait(pokemonData.possibleTraits, pokemonData.hiddenTrait);}
+        if (genderInput){this.gender = genderInput} else {this.gender = this.determineGender(pokemonData.genderRatio);} // 성별 결정
         this.experienceGroup = pokemonData.experienceGroup;
         this.regionalForm = this.determineRegionalForm(pokemonData, region);
         this.friendship = pokemonData.friendship;
@@ -17,9 +18,13 @@
         this.usedItems = null;
         this.traded = false;
         this.learnableSkills = setup.LearnableSkills[this.name]; // 배울 수 있는 기술 목록 설정
-        this.knownSkills = {}; // 현재 알고 있는 기술 목록 초기화
-        this.rank = {attackRank: 0, defenseRank: 0, specialAttackRank:0, specialDefenseRank: 0,speedRank: 0, criticalRank: 0,}; // 공격력 및 방어력 랭크 추가
-
+        this.knownSkills = []; // 현재 알고 있는 기술 목록 초기화
+        this.rank = {attackRank: 0, defenseRank: 0, specialAttackRank:0, specialDefenseRank: 0,speedRank: 0, criticalRank: 0, accuracyRank: 0, evasionRank: 0,}; // 공격력 및 방어력 랭크 추가
+        this.trainer = null;
+        this.statusCon = [];
+        this.statusConFlag = null;
+        this.confusionTurn = null;
+        this.statusConConfusionFlag = null;
 
 
         this.effortValues = { HP: 0, Attack: 0, Defense: 0, SpecialAttack: 0, SpecialDefense: 0, Speed: 0 }; // 노력치
@@ -40,7 +45,8 @@
   
         // 스탯 추가
         this.stats = {
-          HP: this.calculateHP(),
+          maxHP: this.calculateHP(),
+          currentHP: this.calculateHP(),
           Attack: this.calculateStat('Attack'),
           Defense: this.calculateStat('Defense'),
           SpecialAttack: this.calculateStat('SpecialAttack'),
@@ -48,7 +54,7 @@
           Speed: this.calculateStat('Speed'),
         };
 
-
+        //주석
   
         if (this.regionalForm) {
           this.type = this.regionalForm.type;
@@ -72,6 +78,10 @@
         else {
           this.evolvesTo = pokemonData.evolvesTo;
         }
+
+        if (pokemonData.megaEvolvesTo) {
+          this.megaEvolvesTo = pokemonData.megaEvolvesTo;
+        }
     }
 
     static generateId() {
@@ -79,7 +89,7 @@
     }
 
     determineRegionalForm(pokemonData, region) {
-      if (!pokemonData.regionalForms || !region) return null;
+      if (!pokemonData.regionalForms || !region || region === null) return null;
       
       return pokemonData.regionalForms.find(form => form.region === region);
     }
@@ -213,7 +223,7 @@
 
     static generateDefaultBaseStats() {
       // 포켓몬의 기본 종족치를 반환.
-      return { HP: 50, Attack: 50, Defense: 50, SpecialAttack: 50, SpecialDefense: 50, Speed: 50 };
+      return { maxHP: 50, currentHP: 50, Attack: 50, Defense: 50, SpecialAttack: 50, SpecialDefense: 50, Speed: 50 };
     }
 
     // 위치 (지방)
@@ -254,10 +264,44 @@
       }
     }
 
+    static updateTrait(thisaa, nowTrait, possibleTraits, hiddenTrait, region){
+
+      if (thisaa.isHiddenTrait === true){
+        return hiddenTrait;
+      }
+      else {
+        // 기존 특성 선택 로직
+        if (!Array.isArray(possibleTraits) || possibleTraits.length === 0) {
+          console.log('possibleTraits는 유효한 배열이어야 합니다.');
+          return null; // 또는 기본값을 반환
+        }
+        else if (thisaa.isMegaEvolution === true){
+          return thisaa.originalTarit;
+        }
+        else if(thisaa.trait === nowTrait[0]){
+          console.log("0번");
+          return possibleTraits[0];
+        }
+        else if(thisaa.trait === nowTrait[1]){
+          console.log("1번");
+          return possibleTraits[1];
+        }
+      }
+    }
+
+    static updateMegaTrait(possibleTraits, region){
+      return possibleTraits[0];
+    }
+
     gainExperience(amount) {
-      this.experience += amount;
-      console.log(`${this.name}은(는) ${amount}만큼의 경험치를 얻었다!`)
-      this.checkLevelUp();
+      if (this.level == 100){
+        this.experience += 0;
+      }
+      else{
+        this.experience += amount;
+        this.checkLevelUp();
+        return(`${amount}만큼의 경험치를 얻었다!`);
+      }
     }
 
     // 레벨업 필요 경험치 계산
@@ -307,12 +351,16 @@
     checkLevelUp() {
       let leveledUp = false;
       while (this.experience >= this.calculateExperienceForNextLevel()) {
+        if (this.level == 100){
+          this.experience = 0;
+          break;
+        }
         this.experience -= this.calculateExperienceForNextLevel();
         this.level++;
         console.log(`${this.name}은(는) 레벨 ${this.level}로 레벨업했다!`);
         leveledUp = true;
-        this.checkLevelUpSkills();
         this.evolve(); // 레벨업 후 진화 확인
+        this.checkLevelUpSkills();
       }
       // 레벨업이 있었다면 스탯을 업데이트합니다.
       if (leveledUp) {
@@ -325,20 +373,23 @@
       if (levelSkills && levelSkills[this.level]) {
           const skillName = levelSkills[this.level];
           if (this.learnSkill(skillName)) {
-            console.log(`${this.name}이(가) 레벨 ${this.level}에 ${skillName}을(를) 배웠습니다.`);
+            return(`${this.name}이(가) 레벨 ${this.level}에 ${skillName}을(를) 배웠습니다.`);
           }
       }
     }
 
     // 스탯 업데이트 메서드
     updateStats() {
-      this.stats.HP = this.calculateHP();
+      const temporaryHP = this.stats.maxHP;
+      const temporaryHP2 = temporaryHP - this.stats.currentHP
+      this.stats.maxHP = this.calculateHP();
+      this.stats.currentHP = this.stats.maxHP - temporaryHP2;
       this.stats.Attack = this.calculateStat('Attack');
       this.stats.Defense = this.calculateStat('Defense');
       this.stats.SpecialAttack = this.calculateStat('SpecialAttack');
       this.stats.SpecialDefense = this.calculateStat('SpecialDefense');
       this.stats.Speed = this.calculateStat('Speed');
-      console.log(`${this.name}의 스탯이 업데이트되었습니다.`);
+      return(`${this.name}의 스탯이 업데이트되었습니다.`);
     }
 
     // HP 스탯 계산
@@ -362,40 +413,103 @@
     }
 
     learnSkill(skillName) {
-      if (this.learnableSkills.includes(skillName) && !this.knownSkills[skillName]) {
-        this.knownSkills[skillName] = setup.Skills[skillName];
-        console.log(`${this.name}이(가) ${skillName}을(를) 배웠습니다.`);
+      const skill = setup.Skills.find(s => s.name === skillName);
+      if (this.learnableSkills.includes(skillName) && !this.knownSkills.some(s => s.name === skillName)) {
+        this.knownSkills.push(skill);
+        return(`${this.name}이(가) ${skillName}을(를) 배웠습니다.`);
       }
       else {
-        console.log(`${this.name}은(는) ${skillName}을(를) 배울 수 없습니다.`);
+        return(`${this.name}은(는) ${skillName}을(를) 배울 수 없습니다.`);
       }
     }
 
+    movescoreThreshold() {
+      const minSkill = Math.min(this.trainer.skill, 100);
+      return 0.6 + (0.35 * Math.pow(minSkill / 100.0, 0.5)); // 0.635 to 0.95
+    }
+
+
     useSkill(skillName, opponent) {
       const opponent2 = opponent;
-      const skill = this.knownSkills[skillName];
+      const skill = this.knownSkills.find(s => s.name === skillName);
       const skillName2 = skillName;
       if (!skill) {
-        return "이 포켓몬은 해당 기술을 사용할 수 없습니다.";
+        return `//////${this.knownSkills[0].name}, 이 포켓몬은 해당 기술을 사용할 수 없습니다.`;
       }
       else if (skill.PP <= 0) {
-        return `${skillName}의 PP가 부족합니다!`;
+        return (`${skillName}의 PP가 부족합니다!`);
       }
-      skill.PP -= 1; // PP 감소
+
+      if (this.statusCon.includes("마비")){
+        if (Math.random() < 0.25){
+          return (`${this.name}은 몸이 저려서 움직일 수 없다!`);
+        }
+      }
+
+      
+
+      if (this.statusCon.includes("혼란")){
+        if (this.statusConConfusionFlag != 1) {
+          this.confusionTurn = Math.floor(Math.random() * 3) + 2;
+          this.statusConConfusionFlag = 1;
+        }
+        if (this.confusionTurn == 0) {
+          this.statusCon.splice("혼란", 1);
+          this.confusionTurn = null;
+          this.statusConConfusionFlag = null;
+
+        }
+        else {
+          if (Math.random() < 0.333) {
+            let damage = this.calculateDamage("혼란기술", this);
+            if (damage < 0) damage = 0;
+            this.stats.currentHP -= damage;
+            this.confusionTurn -= 1;
+            return (`${this.name}은(는) 혼란에 빠져 영문도 모른 채 자신을 공격했다! ${damage} 데미지.`);
+          }
+        }
+      }
+
+      
+
+
+
+      if (skill.PP == 0) {
+        skill.PP = 0;
+      }
+      else {
+        skill.PP -= 1; // PP 감소
+      }
+
+
       if (skill.category === "변화") {
-        return this.applyRankChange(skillName2, opponent2);
+        if (skill.rank) {
+          return this.applyRankChange(skillName2, opponent2);
+        }
+        if (skill.statusCon) {
+          const invalidStatusConditions = ["독", "맹독", "화상", "마비", "잠듦", "얼음"];
+          const shouldApplyStatus = (!skill.statusConProbability || Math.random() < skill.statusConProbability) && !invalidStatusConditions.includes(opponent.statusCon);
+        
+          if (shouldApplyStatus) {
+            opponent.statusCon = skill.statusCon;
+            if (["독", "맹독"].includes(skill.statusCon)) {
+              opponent.statusConFlag = 1;
+            }
+          }
+          return opponent.statusCon;
+        }
       }
       // 기술 사용 로직
       let damage = this.calculateDamage(skillName2, opponent2);
       //let damage = (this.stats.Attack  + skill.power) - opponent.stats.Defense;
       if (damage < 0) damage = 0; // 최소 피해량 보장
-      opponent.stats.HP -= damage;
-      return damage;
+      opponent.stats.currentHP -= damage;
+      return (`${damage} 데미지`);
     }
 
     calculateDamage(skillName, opponent) {
       const opponent3 = opponent;
-      const skill = this.knownSkills[skillName];
+      const skill = skillName === "혼란기술" ? setup.Skills.find(s => s.name === "혼란기술") : this.knownSkills.find(s => s.name === skillName);
       const skill2 = skillName;
       const trait = this.trait
       // 예시: 데미지 계산을 위한 파라미터 사용 예시
@@ -462,7 +576,7 @@
     }
 
     calculateType(skillName, opponent) {
-      const skill = this.knownSkills[skillName];
+      const skill = skillName === "혼란기술" ? setup.Skills.find(s => s.name === "혼란기술") : this.knownSkills.find(s => s.name === skillName);
       let typeEffectiveness = 1; // 기본 효과값 설정
     
       const effectiveness = setup.typeCompatibility;
@@ -521,12 +635,14 @@
     applyRankChange(skill, opponent) {
       let target = skill.target === 0 ? this : opponent;
       const rankTypes = {
-        "attackrank": "공격력",
-        "defencerank": "방어력",
+        "attackRank": "공격력",
+        "defenceRank": "방어력",
         "specialAttackRank": "특수공격력",
         "specialDefenseRank": "특수방어력",
         "speedRank": "스피드",
-        "criticalRank": "크리티컬" // 치명타 랭크 추가
+        "criticalRank": "크리티컬",
+        "accuracyRank": "명중률",
+        "evasionRank": "회피율"
       };
       const rankType = rankTypes[skill.rank];
     
@@ -562,11 +678,45 @@
           return Math.random() < 1
       }
     }
-    
-    
 
-    
+    /*
+    statusConLoseHP(opponent, statusCon) {
+      if (this.statusCon.includes("맹독")){
 
+        const dotPoison = this.stats.maxHP / 8;
+        const _currentHP = this.stats.currentHP;
+        this.stats.currentHP = _currentHP - dotPoison;
+      }
+      for (; this.statusCon.includes("맹독"); ){
+
+      }
+    }
+    */
+    
+    
+    heal(amount) {
+      this.stats.currentHP += amount;
+      if (this.stats.currentHP > this.stats.maxHP) {
+        this.stats.currentHP = this.stats.maxHP; // 최대 체력을 초과하지 않도록 함
+      }
+      return (`${this.name}의 체력이 ${amount}만큼 회복되다.`);
+    }
+
+    // 상태 이상 회복 메서드
+    healStatus(conditions) {
+      conditions.forEach(condition => {
+        const index = this.statusCon.indexOf(condition);
+        if (index > -1) {
+          this.statusCon.splice(index, 1); // 상태 이상 제거
+          return (`${this.name}의 상태 이상 "${condition}"이(가) 회복되었다.`);
+        }
+      });
+    }
+    
+    setNickname(name){
+      this.name = name;
+      this.isNickname = true;
+    }
 
 
     checkPP(skillName) {
@@ -585,13 +735,19 @@
     // 아이템
     hasItem(string) {
       this.items = string;
-      return
+      return;
     }
 
-    useItem(string) {
+    useItem(string, ) {
       this.usedItems = string;
       this.evolve();
-      return
+      return;
+    }
+
+    setTrainer(trainer) {
+      const settrainer = setup.Battler.find(s => s.name === trainer);
+      this.trainer = settrainer;
+      return;
     }
 
     evolve() {
@@ -606,14 +762,19 @@
         const canEvolve = this.checkEvolutionCondition(evolveTo);
         // 진화 조건을 충족하는 첫 번째 경우에 대해서만 진화 처리
         if (canEvolve) {
+          const thisPokemon = this;
+          const thisPokemonName = setup.pokemonData.find(pokemon => pokemon.name === this.species);
           const evolvedPokemonData = setup.pokemonData.find(pokemon => pokemon.name === evolveTo.name);
           
           if (!evolvedPokemonData) continue; // 진화 대상 정보가 없으면 건너뜀
           const updatePokemonData = (data) => {
             this.species = data.name;
+            if(this.isNickname == false){
+              this.name = data.name;
+            }
             this.type = data.type;
             this.baseStats = data.baseStats;
-            this.trait = Pokemon.generateTrait(data.possibleTraits, data.hiddenTrait);
+            this.trait = Pokemon.updateTrait(thisPokemon, thisPokemonName.possibleTraits, data.possibleTraits, data.hiddenTrait);
             this.evolvesTo = data.evolvesTo;
             this.updateStats();
             
@@ -625,9 +786,12 @@
             const updateRegionalPokemonData = (data) => {
               this.regionalForm = data.regionalForms;
               this.species = regionalEvolution.name || data.name;
+              if(this.isNickname == false){
+                this.name = regionalEvolution.name || data.name;
+              }
               this.type = regionalEvolution.type || data.type;
               this.baseStats = regionalEvolution.baseStats || data.baseStats;
-              this.trait = Pokemon.generateTrait(regionalEvolution.possibleTraits, regionalEvolution.hiddenTrait || data.possibleTraits, data.hiddenTrait);
+              this.trait = Pokemon.updateTrait(thisPokemon, thisPokemonName.possibleTraits, regionalEvolution.possibleTraits, regionalEvolution.hiddenTrait || thisPokemon, thisPokemon.possibleTraits, data.possibleTraits, data.hiddenTrait);
               this.evolvesTo = regionalEvolution.evolvesTo || data.evolvesTo;
               
             };
@@ -648,9 +812,19 @@
               updatePokemonData(evolvedPokemonData);
             }
           }
+          else if (this.isMegaEvolution === true){
+            console.log(`${this.species}은(는) ${evolveTo.name}(으)로 되돌아왔다!`);
+            this.species = data.name;
+            this.type = data.type;
+            this.baseStats = data.baseStats;
+            this.trait = this.originalTarit;
+            this.originalTarit = null;
+            this.evolvesTo = data.evolvesTo;
+            this.updateStats();
+          }
           else {
-            console.log(`${this.name}은(는) ${evolveTo.name}(으)로 진화했다!`);
             updatePokemonData(evolvedPokemonData);
+            return(`${this.name}은(는) ${evolveTo.name}(으)로 진화했다!`);
           }
           
           break; // 조건을 만족하는 첫 번째 진화 대상으로 처리 후 반복 중단
@@ -671,10 +845,14 @@
         }
         // 'day'와 같은 다른 시간 조건 추가
       }
+
+      if (evolutionData.traded && evolutionData.hasItem) {
+        conditionsMet = conditionsMet && this.traded == evolutionData.traded && this.items == evolutionData.hasItem;
+        this.items = null;
+      }
     
       if (evolutionData.hasItem) {
         conditionsMet = conditionsMet && this.items == evolutionData.hasItem;
-        this.items = null;
       }
 
       if (evolutionData.usediItem) {
@@ -701,32 +879,65 @@
       return conditionsMet;
     }
 
+    megaEvolve(){
+      if (!this.megaEvolvesTo) return;
+
+      const megaEvolvesToArray = Array.isArray(this.megaEvolvesTo) ? this.megaEvolvesTo : [this.megaEvolvesTo];
+
+      for (const megaEvolvesTo of megaEvolvesToArray) {
+        const canMegaEvolve = this.checkEvolutionCondition(megaEvolvesTo);
+        // 진화 조건을 충족하는 첫 번째 경우에 대해서만 진화 처리
+        if (canMegaEvolve) {
+          const thisPokemon = this;
+          const thisPokemonName = setup.pokemonData.find(pokemon => pokemon.name === this.species);
+          const evolvedPokemonData = setup.megaEvolutionData.find(pokemon => pokemon.name === megaEvolvesTo.name);
+          
+          if (!evolvedPokemonData) continue; // 진화 대상 정보가 없으면 건너뜀
+          const updatePokemonData = (data) => {
+            this.isMegaEvolution = true;
+            this.originalTarit = this.trait;
+            this.species = data.name;
+            this.type = data.type;
+            this.baseStats = data.baseStats;
+            this.trait = Pokemon.updateMegaTrait(data.possibleTraits);
+            this.evolvesTo = data.evolvesTo;
+            this.updateStats();
+            
+          };
+          console.log(`${this.name}은(는) ${evolveTo.name}(으)로 메가진화했다!`);
+          updatePokemonData(evolvedPokemonData);
+          
+          break; // 조건을 만족하는 첫 번째 진화 대상으로 처리 후 반복 중단
+        }
+      }
+
+    }
+
   }
 window.Pokemon = Pokemon;
 
 class SummonPokemon {
-  static summonPokemon3(summonTargetPokemon, name, level, region = null) {
-      const pokemonData = setup.pokemonData[summonTargetPokemon];
-      return new Pokemon(pokemonData, name, level, region);
+  static summonPokemon3(summonTargetPokemon, name, level, region = null, traitInput, genderInput) {
+    const pokemonData = setup.pokemonData[summonTargetPokemon];
+    return new Pokemon(pokemonData, name, level, region, traitInput, genderInput);
   }
 }
 window.SummonPokemon = SummonPokemon;
 
 var pokemonStorage = [];
 
-var playerParty = [];
-window.playerParty = playerParty;
-
 function addPokemonToStorage(pokemon) {
     pokemonStorage[pokemon.id] = pokemon;
 }
 
-function addPokemonToParty(pokemon) {
-    if (playerParty.length < 6) {
-      playerParty.push(pokemon);
-    } else {
-      console.log("파티에 더 이상 포켓몬을 추가할 수 없습니다.");
-    }
+
+// 파티에 포켓몬 추가 함수 수정
+function addPokemonToParty(pokemon, trainer) {
+  if (setup.trainerParty[trainer].length < 6) {
+    setup.trainerParty[trainer].push(pokemon);
+  } else {
+    console.log(`${trainer} 파티에 더 이상 포켓몬을 추가할 수 없습니다.`);
+  }
 }
 window.addPokemonToParty = addPokemonToParty;
 

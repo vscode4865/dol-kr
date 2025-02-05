@@ -469,6 +469,13 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Social"],
 	},
+	"Feather Trick": {
+		title: "깃털 마법",
+		desc: "거대 매와 사냥할 때 한번의 하강으로 럴커 셋을 잡았다.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Social"],
+	},
 	"Wren the Sly": {
 		title: "밀수꾼 렌",
 		desc: "렌에게 순결을 바쳤다.",
@@ -656,7 +663,7 @@ setup.feats = {
 	},
 	"A Special Trait": {
 		title: "특수 도전과제",
-		desc: "특수 도전과제를 달성했다.",
+		desc: "특수 도전과제를 하나 달성했다.",
 		difficulty: 2,
 		series: "special trait",
 		hint: "Hint: 무언가 특별하다.",
@@ -872,6 +879,23 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: 수렁에서 길을 잃는다.",
+	},
+	"Terror's Equal": {
+		title: "두려운 존재와 동급",
+		desc: "탑을 인상적인 사냥 전리품들로 채웠다.",
+		difficulty: 3,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: 하늘의 두려운 존재에 걸맞는 허영심을 부린다.",
+		softLockable: true,
+	},
+	"Birds of a Feather": {
+		title: "같은 깃털을 가진 새들은...",
+		desc: "...같은 곳에 모인다.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: 다른 종의 고아를 구출한다.",
 	},
 	"Head of the Pack": {
 		title: "무리의 우두머리",
@@ -1552,7 +1576,7 @@ setup.feats = {
 	},
 	"Face of a Guardian": {
 		title: "수호자의 얼굴",
-		desc: "당신만의 섬주민 가면을 만들었다.",
+		desc: "당신만의 섬사람 가면을 만들었다.",
 		difficulty: 2,
 		series: "",
 		filter: ["All", "Discoveries"],
@@ -1570,7 +1594,7 @@ setup.feats = {
 	},
 	Naturalised: {
 		title: "귀화",
-		desc: "잡히지 않고, 섬주민의 성에 잠입했다.",
+		desc: "잡히지 않고, 섬사람의 성에 잠입했다.",
 		difficulty: 3,
 		series: "",
 		filter: ["All", "Discoveries"],
@@ -1613,6 +1637,15 @@ setup.feats = {
 		hint: "Hint: 해외에서 잃어버린 것이 있다.",
 		softLockable: true,
 	},
+	"Backroom Deals": {
+		title: "밀실 거래",
+		desc: "고위급 인물들간의 게임을 목격했다.",
+		difficulty: 1,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: 도시의 상류층과 데이트를 한다.",
+		softLockable: true,
+	},
 	"Max Those Shots": {
 		title: "다다익선",
 		desc: "정말 많은 수의 후추 스프레이를 갖고 있다.",
@@ -1630,14 +1663,6 @@ setup.feats = {
 		filter: ["All", "Discoveries"],
 		hint: "Hint: 장난감 상자를 열 필요가 있을까?",
 	},
-	"Brothel Provider": {
-		title: "창관 공급자",
-		desc: "성인용품을 팔기 위한 자동판매기를 설치하였다.",
-		difficulty: 2,
-		series: "",
-		filter: ["All", "Discoveries"],
-		hint: "Hint: 장사를 할 수 있도록 브라이어를 설득한다.",
-	},
 	"Opened Pandoras Cocks": {
 		title: "열린 판도라의 꼭지",
 		desc: "당신이 없었으면 성인용품점은 존재하지 않았을 것이다.",
@@ -1645,6 +1670,14 @@ setup.feats = {
 		series: "Adult Shop",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: 장난감 상자를 그렇게 빨리 열 필요가 있었을까?",
+	},
+	"Brothel Provider": {
+		title: "창관 공급자",
+		desc: "성인용품을 팔기 위한 자동판매기를 설치하였다.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: 장사를 할 수 있도록 브라이어를 설득한다.",
 	},
 	"Ear Slime Lover": {
 		title: "귀 슬라임 성애자",
@@ -2039,7 +2072,7 @@ function earnHourlyFeats() {
 	if (V.seductionskill >= 1000) earnFeat("Seductress");
 	if (V.tending >= 1000) earnFeat("Green Fingered");
 	if (V.housekeeping >= 1000) earnFeat("Majordomo");
-	if (V.baseAllure >= 7000 && V.outside === 1 && V.moonstate === 0) earnFeat("Alluring");
+	if (V.baseAllure >= 7000 && V.outside === 1 && !Time.isBloodMoon()) earnFeat("Alluring");
 	if (V.science >= 1000 && V.maths >= 1000 && V.english >= 1000 && V.history >= 1000) earnFeat("Perfect Record");
 	if (V.earSlime.corruption >= 100) earnFeat("Ear Slime Lover");
 	if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 200) earnFeat("Ear Slime Amalgam");

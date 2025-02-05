@@ -1,5 +1,5 @@
 :: Photo Entrance
-<<effects>>
+<<effects>><<set $location to "studio">>
 
 당신은 병원 맞은편에 있는, 높고 오래된 건물인 사진 스튜디오에 다가간다. 문으로 통하는 짧은 계단이 있다. "니키의 사진관. 모델 모집 중."
 <br><br>
@@ -10,7 +10,7 @@
 <br>
 
 :: Photo Intro
-<<effects>>
+<<effects>><<set $location to "studio">>
 <<set $photo_known to 2>>
 <<set $photo to {}>>
 <<set $photo.refused to 0>>
@@ -102,7 +102,7 @@
 <br>
 
 :: Photo
-<<set $outside to 0>><<effects>>
+<<set $outside to 0>><<set $location to "studio">><<effects>>
 
 <<if $photo.niki_event is undefined and C.npc.Niki.love gte 10 and $brothelintro gte 1>>
 	<<set $photo.niki_event to 1>>
@@ -137,84 +137,88 @@
 
 	<<if $fame.model gte 100 and $fame.model lt 400>>
 		<br>
-		<span class="purple">There is even a small one of you.</span>
+		<span class="purple">그중에는 작긴 하지만 당신의 사진도 하나 있다.</span>
 
 	<<elseif $fame.model gte 400 and $fame.model lt 1000>>
 		<br>
-		<span class="lblue">You even see a good one of yours.</span>
+		<span class="lblue">그중에는 잘 나온 당신의 사진도 하나 있다.</span>
+
+	<<elseif $fame.model gte 1000 and $trauma gte (($traumamax / 10) * 7) and $daily.photo is true>>
+		<br>
+		<span class="red">당신을 찍은 전신사진이 중앙 맨 앞에 걸려 있다. 텅 빈 눈과 무표정한 얼굴이 당신을 응시한다.</span>
+
+	<<elseif $fame.model gte 1000 and $trauma gte (($traumamax / 10) * 7)>>
+		<br>
+		<span class="red">당신을 찍은 전신사진이 중앙 맨 앞에 걸려 있다. 텅 빈 눈과 무표정한 얼굴이 당신을 응시한다.</span>
+		<<stress -3>><<lstress>>
+		<<if $daily.photo is undefined >>
+			<<set $daily.photo to true>>
+		<</if>>
+
+	<<elseif $fame.model gte 1000 and $daily.photo is true >>
+		<<if $rng gte 21>>
+			<<rngWraith>>
+			<<if _wraithEvent>>
+				<span class="wraith">창백한 형체를 찍은 전신사진이 중앙 맨 앞에 걸려 있고, 당신을 향해 미소 짓는다.</span>
+				<<trauma 6>><<gtrauma>>
+			<<else>>
+				<br>
+				<span class="green">당신을 찍은 전신사진이 중앙 맨 앞에 걸려 있고, 당신을 향해 미소 짓는다.</span>	
+			<</if>>
+		<<else>>
+			<br>
+			<span class="green">당신을 찍은 전신사진이 중앙 맨 앞에 걸려 있고, 당신을 향해 미소 짓는다.</span>
+		<</if>>
 
 	<<elseif $fame.model gte 1000>>
 		<br>
-		<span class="green">A full-size picture of you hangs front and centre, smiling back at you.</span>
+		<span class="green">당신을 찍은 전신사진이 중앙 맨 앞에 걸려 있고, 당신을 향해 미소 짓는다.</span>
 		<<stress -3>><<lstress>>
 		<<trauma -3>><<ltrauma>>
 		<<if $daily.photo is undefined >>
 			<<set $daily.photo to true>>
 		<</if>>
-		
-	<<elseif $fame.model gte 1000 and $daily.photo is true >>
-		<<if $rng gte 21>>
-			<<rngWraith>>
-			<<if _wraithEvent>>
-				<span class="wraith">A full-size picture of a pale figure hangs front and centre, smiling at you.</span>
-				<<trauma 6>><<gtrauma>>
-			<<else>>
-				<br>
-				<span class="green">A full-size picture of you hangs front and centre, smiling back at you.</span>	
-			<</if>>
-		<<else>>
-			<br>
-			<span class="green">A full-size picture of you hangs front and centre, smiling back at you.</span>
-		<</if>>
-		
-	<<elseif $fame.model gte 1000 and $trauma gte (($traumamax / 10) * 7)>>
-		<br>
-		<span class="red">A full-size picture of you hangs front and centre, empty eyes and a blank face stare back at you.</span>
-		<<stress -3>><<lstress>>
-		<<if $daily.photo is undefined >>
-			<<set $daily.photo to true>>
-		<</if>>
-
-	<<elseif $fame.model gte 1000 and $trauma gte (($traumamax / 10) * 7) and $daily.photo is true>>
-		<br>
-		<span class="red">A full-size picture of you hangs front and centre, empty eyes and a blank face stare back at you.</span>
 	<</if>>
 	<br><br>
 
-	<<if isPubfameTaskAccepted("niki")>>
-		<<if $pubfame.niki.examined>>
-			미키의 지인 사진이 벽에 붙어 있다.
-			<br>
-			<<ind>><<link [[훔친다|Photo Examine Steal]]>><<loadNPC 1 "pubfame_model">><</link>>
-			<br>
-			<<askicon>><<link [[가져갈 수 있는지 물어본다|Photo Examine Ask]]>><<loadNPC 1 "pubfame_model">><</link>>
-		<<else>>
-			미키의 지인 사진이 사진으로 가득한 벽 어디인가에 있을 것이다.
-			<br>
-			<<investigateicon>><<link [[조사한다 (0:05)|Photo Examine]]>><<pass 5>><<set $pubfame.niki.examined to true>><</link>>
-		<</if>>
-		<br><br>
-	<</if>>
-
-	<<if $photo.shoot is 1>>
-		<span class="blue">당신은 이미 이번 주에 모델로 일했다.</span>
-		<br>
+	<<if $stress gte $stressmax and isPregnancyEnding()>>
+		<<pregnancyPassout "photo">>
 	<<else>>
-		<<ind>><<link [[모델 일을 한다 (최대 3:00)|Photo Model]]>><<set $photo.shoot to 1>><</link>><<exhibitionist1>>
-		<br>
-	<</if>>
-	/*
-	<<link [[다른 일이 없는지 묻는다|Photo Ask]]>><</link>>
-	<br>
-	<<if $photo.silly is "done">>
-		<<link [[가게 홍보를 하고 온 댓가를 받는다|Photo Street Paid]]>><<set $photo.silly to "paid">><</link>>
-		<br>
-	<</if>>
-	*/
-	<<nightingaleicon>><<link [[떠난다|Nightingale Street]]>><<endevent>><</link>>
-	<br>
+		<<if isPubfameTaskAccepted("niki")>>
+			<<if $pubfame.niki.examined>>
+				미키의 지인 사진이 벽에 붙어 있다.
+				<br>
+				<<ind>><<link [[훔친다|Photo Examine Steal]]>><<loadNPC 1 "pubfame_model">><</link>>
+				<br>
+				<<askicon>><<link [[가져갈 수 있는지 물어본다|Photo Examine Ask]]>><<loadNPC 1 "pubfame_model">><</link>>
+			<<else>>
+				미키의 지인 사진이 사진으로 가득한 벽 어디인가에 있을 것이다.
+				<br>
+				<<investigateicon>><<link [[조사한다 (0:05)|Photo Examine]]>><<pass 5>><<set $pubfame.niki.examined to true>><</link>>
+			<</if>>
+			<br><br>
+		<</if>>
 
-	<<set $niki_seen to "photo">>
+		<<if $photo.shoot is 1>>
+			<span class="blue">당신은 이미 이번 주에 모델로 일했다.</span>
+			<br>
+		<<else>>
+			<<ind>><<link [[모델 일을 한다 (최대 3:00)|Photo Model]]>><<set $photo.shoot to 1>><</link>><<exhibitionist1>>
+			<br>
+		<</if>>
+		/*
+		<<link [[다른 일이 없는지 묻는다|Photo Ask]]>><</link>>
+		<br>
+		<<if $photo.silly is "done">>
+			<<link [[가게 홍보를 하고 온 댓가를 받는다|Photo Street Paid]]>><<set $photo.silly to "paid">><</link>>
+			<br>
+		<</if>>
+		*/
+		<<nightingaleicon>><<link [[떠난다|Nightingale Street]]>><<endevent>><</link>>
+		<br>
+
+		<<set $niki_seen to "photo">>
+	<</if>>
 <</if>>
 
 :: Photo Ask
@@ -381,7 +385,7 @@
 "하지만 보고 싶어요,"라고 당신은 <<him_ ul>> 무시하며 말한다. 당신은 오븐에 다가가, 몸을 굽혀 안을 들여다 본다. "내가 말했지-" <<person_ un>> 뭔가를 말하려 하나, 당신이 당신의 <<bottomPost "을">> 움직이기 시작하자 그는 말을 끊는다. 다른 사람들도 일을 멈춘다. 당신은 그들의 시선이 당신에게 쏠리는 것을 느낄 수 있다.
 <<exhibitionism1>><<fameexhibitionism 6>>
 
-<<if $promiscuity gte 55>>
+<<if hasSexStat("promiscuity", 4)>>
 	<span class="lewd">어떤 생각이 머리를 스친다.</span>
 	<br><br>
 
@@ -413,14 +417,14 @@
 	<<if $NPCList[0].penis isnot "none">>
 		당신은 <<persons_ yi>> 하의를 잡고 아래로 끌어내린다. <<His_ yi>> 자지가 튀어나온다. <<He_ nun>> 당신을 노려보며 분노와 충격이 뒤섞인 표정을 짓는다. 그러나 <<He_ nun>> 몸을 가리려고 하지 않는다. 다른 사람들은 웃음을 터뜨린다.
 		<br><br>
-		당신은 <<his>> 자지를 움켜잡고, 문지르기 시작한다. <<He_ nun>> 당신을 멈추지 않는다. <<His_ yi>> 표정은 당신이 움직일수록 부드러워진다. <<His_ yi>> 눈이 감긴다.
+		당신은 <<his_ yi>> 자지를 움켜잡고, 문지르기 시작한다. <<He_ nun>> 당신을 멈추지 않는다. <<His_ yi>> 표정은 당신이 움직일수록 부드러워진다. <<His_ yi>> 눈이 감긴다.
 		<br><br>
 		당신은 <<his_ yi>> 몸이 긴장할 때까지, 마사지를 계속한다. 당신은 "완벽해,"라고 말하며, 근처의 냄비를 재빨리 움켜쥔다. 당신은 한손으로 <<his_ yi>> 밑에 그것을 가져다 대면서, 다른 손으로는 계속 문지른다. <<He_ nun>> 경련을 일으키며, 준비되어 있던 냄비에 대고 사정한다. 다른 사람들은 경외심을 가지고 지켜본다.
 
 	<<else>>
 		당신은 <<persons_ yi>> 바지를 잡고, 아래로 끌어내려서, <<his_ yi>> 보지를 드러내게 했다. <<He_ nun>> 당신을 노려보며 분노와 충격이 뒤섞인 표정을 짓는다. 그러나 <<He_ nun>> 몸을 가리려고 하지 않는다. 다른 사람들은 웃음을 터뜨린다.
 		<br><br>
-		당신은 <<his>> 보지를 잡고, 문지르기 시작한다. <<He_ nun>> 당신을 멈추지 않는다. <<His_ yi>> 표정은 당신이 움직일수록 부드러워진다. <<His_ yi>> 눈이 감긴다.
+		당신은 <<his_ yi>> 보지를 잡고, 문지르기 시작한다. <<He_ nun>> 당신을 멈추지 않는다. <<His_ yi>> 표정은 당신이 움직일수록 부드러워진다. <<His_ yi>> 눈이 감긴다.
 		<br><br>
 		당신은 <<his_ yi>> 몸이 긴장할 때까지, 마사지를 계속한다. 당신은 "완벽해,"라고 말하며, 근처의 냄비를 재빨리 움켜쥔다. 당신은 한손으로 <<his_ yi>> 밑에 그것을 가져다 대면서, 다른 손으로는 계속 문지른다. <<He_ nun>> 경련을 일으키며, 애액을 준비되어 있던 냄비에 쏟아낸다. 다른 사람들은 경외심을 가지고 지켜본다.
 	<</if>>
@@ -483,7 +487,7 @@
 <<He_ nun>> 걸어가서, 크림 한 냄비를 오븐에 놓는다.
 <br><br>
 
-<<if $exhibitionism gte 15 and $chef_picture is "lewd">>
+<<if hasSexStat("exhibitionism", 2) and $chef_picture is "lewd">>
 	<span class="lewd">또 다른 음란한 생각이 떠오른다.</span>
 	<br><br>
 	<<link [[당신이 모은 음란한 액체를 사용한다|Photography Chef Lewd Cream]]>><<set $chef_picture to "lewd">><</link>><<exhibitionist2>>

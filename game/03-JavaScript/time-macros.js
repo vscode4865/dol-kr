@@ -19,6 +19,7 @@ function ampm(hour, minute) {
 	}
 	return !ampm ? ("0" + getTimeString(hour, minute)).slice(-5) :  ampm + getTimeString(hour, minute);
 }
+window.ampm = ampm;
 DefineMacroS("ampm", ampm);
 
 function advanceToHour() {
@@ -114,11 +115,10 @@ function schoolTerm() {
 		if (date.year === Time.year && date.month === Time.month && date.day === Time.monthDay) {
 			if (date.timeStamp > Time.date.timeStamp) return "학기는 오늘 끝난다.";
 		} else {
-			return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  끝난다";
+			return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  끝난다.";
 		}
 	}
 	const date = Time.nextSchoolTermStartDate; trMonth(date.monthName); const month = T.trResult; trDaysOfWeek(date.weekDayName); const weekDayName = T.trResult;
-	return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  시작한다";
+	return "학기는 " + month + " " + date.day +"일 " + weekDayName + "에  시작한다.";
 }
-
 DefineMacroS("schoolterm", schoolTerm);

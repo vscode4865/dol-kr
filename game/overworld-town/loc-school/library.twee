@@ -174,7 +174,7 @@
 <<sydneySchedule>>
 <<if $stress gte $stressmax>>
 	<<link [[모든 것이 암흑 속으로 사라져간다...|School Passout]]>><</link>>
-<<elseif _sydney_location is "library" and ($sydneyLeightonConfront is 1 or $leightonAssaulted is 1) and $exposed lte 0 and C.npc.Leighton.init is 1 and $pillory_tenant.special.name isnot "Leighton" and !$sydneyLeightonConfrontTimer>>
+<<elseif _sydney_location is "library" and ($sydneyLeightonConfront is 1 or $leightonAssaulted is 1) and $exposed lte 0 and C.npc.Leighton.init is 1 and $pillory.tenant.special.name isnot "Leighton" and !$sydneyLeightonConfrontTimer>>
 	<<unset $sydneyLeightonConfront>><<set $sydneyLeightonConfrontTimer to 7>><<set $corruptionEvent to 1>>
 	<<if ($bookStolenKnown isnot undefined and $bookStolenKnown gte 3) or $libraryMoneyStolen gte 1000 or $leightonAssaulted is 1>>
 		<<if $leightonAssaulted is 1>>
@@ -303,26 +303,15 @@
 		<<link [[다음|School Library]]>><<endevent>><</link>>
 		<br>
 	<<else>>
-		<<if !$worn.over_lower.type.includes("naked")>>
-			<<set $worn.over_lower.integrity -= 10>>
-			<<if $worn.over_lower.integrity lte 0>>
-				의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. 당신의 <<worn_over_lower_name_ i>> 책상에 걸렸다. 당신은 빼내려고 하나, <<overloweritisPost "이">> 되려 깔끔하게 뜯겨나<<if !$worn.lower.type.includes("naked")>>가 <<undiesPost "이">> 노출된다.<<else>>간다.<</if>>
-				<<overlowerruined>><<trauma 3>>
-				<br><br>
-			<<elseif $worn.over_lower.integrity gte 0>>
-				의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. 당신의 <<worn_over_lower_name_ i>> 책상에 걸렸다.
-				<br><br>
-			<</if>>
+		<<outfitChecks>>
+		<<set _bottom.integrity -= 10>>
+		<<if _bottom.integrity lte 0>>
+			의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. 당신의 <<bottoms_ ga>> 책상에 걸렸다. 당신은 빼내려고 하나, 그것은 깔끔하게 뜯겨나가, 당신의 <<= bottomUnderNamePost("이") || "<<undies_ ga>>">> 노출된다.
+			<<integritycheck no_text>>
+			<br><br>
 		<<else>>
-			<<set $worn.lower.integrity -= 10>>
-			<<if $worn.lower.integrity lte 0>>
-				의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상에 걸렸다. 빼내려고 하나, 되려 깔끔하게 뜯겨나가며 <<undiesPost "이">> 노출된다.
-				<<lowerruined>><<trauma 3>>
-				<br><br>
-			<<elseif $worn.lower.integrity gte 0>>
-				의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 책상에 걸렸다.
-				<br><br>
-			<</if>>
+			의자에서 일어나자, 뭔가 찢어지는 소리가 들린다. 당신의  <<bottoms_ ga>> 책상에 걸렸다.
+			<br><br>
 		<</if>>
 		<<link [[다음|School Library]]>><<endevent>><</link>>
 		<br>
@@ -364,12 +353,12 @@
 			<br>
 		<<else>>
 			<<if $exposed gte 2>>
-				<<if $exhibitionism gte 75>>
+				<<if hasSexStat("exhibitionism", 5)>>
 					<<link [[나온다|Library Study Show]]>><<set $phase to 0>><</link>><<exhibitionist5>>
 					<br>
 				<</if>>
 			<<elseif $exposed is 1>>
-				<<if $exhibitionism gte 15>>
+				<<if hasSexStat("exhibitionism", 2)>>
 					<<link [[나온다|Library Study Show]]>><<set $phase to 1>><</link>><<exhibitionist2>>
 					<br>
 				<</if>>
@@ -604,10 +593,15 @@ You feel a jolt of pain as the slime punishes you for your defiance. However, <s
 	사서가 말을 자른다. "나가랬지." 둘은 그 말을 따르며, 당신을 내버려둔다.
 	<br><br>
 
-	<<person3>>사서는 당신에게 괜찮냐고 묻고, 당신은 고개를 끄덕인다. 당신이 괜찬하는 것을 확인한 뒤, 사서는 하던 일로 돌아간다.
-	<br><br>
+	<<person3>>사서는 당신에게 괜찮냐고 묻고, 당신은 고개를 <<= isPregnancyEnding() ? "가로젓는다" : "끄덕인다">>.
+	<<if isPregnancyEnding()>>
+		<<pregnancyPassout "schoolLibrarian">>
+	<<else>>
+		당신이 괜찮다는 것을 확인한 뒤, <<he_ nun>> 하던 일로 돌아간다.
+		<br><br>
 
-	<<link [[다음|School Library]]>><<endevent>><</link>>
+		<<link [[다음|School Library]]>><<endevent>><</link>>
+	<</if>>
 <<elseif $phase is 2>>
 	<<run statusCheck("Sydney")>>
 	당신은 시드니를 향해 외친다. <<person2>><<person_ i>> 비웃는다. "오 이럴 수가, 시드니는 안돼, <<nnpc_he_ ga "Sydney">> 우리에게 낙서를 할 거야, 이제 어쩐담?" 두 명은 웃기 시작한다.
@@ -715,8 +709,8 @@ You feel a jolt of pain as the slime punishes you for your defiance. However, <s
 		하지만 당신의 의식은 이미 멀어져가고 있었다.
 		<br><br>
 		<<endevent>>
-		<<if isPlayerNonparasitePregnancyEnding()>>
-			<<pregnancyWatersBrokenPassout "schoolLibrarian">>
+		<<if isPregnancyEnding()>>
+			<<pregnancyPassout "schoolLibrarian">>
 		<<else>>
 			<<ambulance>>
 		<</if>>
@@ -724,8 +718,8 @@ You feel a jolt of pain as the slime punishes you for your defiance. However, <s
 		당신은 뭔가 말하려 하나, 대신 눈물이 터져나온다. 정신이 흐려져가며 사서의 팔이 몸을 감싸는 것만이 느껴진다.
 		<br><br>
 		<<endevent>>
-		<<if isPlayerNonparasitePregnancyEnding()>>
-			<<pregnancyWatersBrokenPassout "schoolLibrarian">>
+		<<if isPregnancyEnding()>>
+			<<pregnancyPassout "schoolLibrarian">>
 		<<else>>
 			<<ambulance>>
 		<</if>>

@@ -1,6 +1,9 @@
 :: Moor Widgets [widget]
 <<widget "eventsmoorlow">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 3>>
 		<<if $rng is 3>>
@@ -58,12 +61,12 @@
 				<br>
 
 				<<if $exposed gte 2>>
-					<<if $exhibitionism gte 55>>
+					<<if hasSexStat("exhibitionism", 4)>>
 						<<link [[계속 걷는다|Moor Exposed Naked]]>><</link>><<exhibitionist4>>
 						<br>
 					<</if>>
 				<<else>>
-					<<if $exhibitionism gte 15>>
+					<<if hasSexStat("exhibitionism", 2)>>
 						<<link [[계속 걷는다|Moor Exposed Undies]]>><</link>><<exhibitionist2>>
 						<br>
 					<</if>>
@@ -124,7 +127,7 @@
 			<</if>>
 			당신은 달콤한 향기를 맡는다. <<if $moorFlower is "flower">>분홍색 꽃이<<else>>특이한 식물이<</if>> 헤더 사이에서 자라고 있다.
 			<<if $earSlime.corruption gte 80 and random(1, 4) gte 5 - numberOfEarSlime()>>
-				<span class="red">귓속의 슬라임이 그것의 매력에 저항하는 당신의 능력을 약화시킨다.</span>
+				<span class="red">The ear slimes weaken your ability to resist its allure.</span>
 				<<if numberOfEarSlime() gte 2>>
 					<<set $moorFlowerMod to 400>>
 				<<else>>
@@ -167,10 +170,10 @@
 				<<set $skulduggerydifficulty to 600>>
 				<<link [[그들이 지나갈 때 까지 숨는다|Moor Youths Hide]]>><</link>><<skulduggerydifficulty>>
 				<br>
-				<<if $exposed gte 2 and $exhibitionism gte 75>>
+				<<if $exposed gte 2 and hasSexStat("exhibitionism", 5)>>
 					<<link [[그들을 지나쳐 걸어간다|Moor Youths Exhibitionism]]>><</link>><<exhibitionist5>>
 					<br>
-				<<elseif $exhibitionism gte 35>>
+				<<elseif hasSexStat("exhibitionism", 3)>>
 					<<link [[그들을 지나쳐 걸어간다|Moor Youths Exhibitionism]]>><</link>><<exhibitionist3>>
 					<br>
 				<</if>>
@@ -200,7 +203,7 @@
 		<<rng 6>>
 		<<switch $rng>>
 		<<case 1>>
-			<<if $weather is "rain">>
+			<<if Weather.precipitation is "rain">>
 				산들바람이 당신에게 불어오자 헤더 꽃들이 당신에게 고개를 숙이며, 빗방울이 당신의 피부를 때린다.
 			<<else>>
 				산들바람이 당신의 피부를 어루만지며 당신을 향해 불어올 때, 헤더가 흔들린다.<<lstress>><<stress -6>>
@@ -257,6 +260,9 @@
 
 <<widget "eventsmoormid">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 2>>
 		<<if $rng is 2>>
@@ -290,7 +296,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 10>>
+		<<rng 11>>
 		<<switch $rng>>
 		<<case 1>>
 			<<beastNEWinit 1 cat>>
@@ -389,7 +395,7 @@
 				"내가 여기 있어서 다행이었네," <<person_ i>> 말한다. "너를 이런 사소한 것들의 피해자로 전락시키고 싶지 않았거든. 그러니까..." <<He_ nun>> 몸을 앞으로 숙이고, <<his_ yi>> 입술을 핥는다. "너를 구해준 나는 보상을 받을 자격이 있지 않을까?"
 				<br><br>
 
-				<<if $deviancy gte 35 or $backgroundTraits.includes("plantlover")>>
+				<<if hasSexStat("deviancy", 3) or $backgroundTraits.includes("plantlover")>>
 					<<link [[보상을 준다|Moor Plant Sex]]>><<set $sexstart to 1>><</link>><<deviant3>>
 				<<else>>
 					<span class="blue">당신은 <<himPost>>에게 "보상"을 줄 수 있을 정도로 음란하지 않다</span>.
@@ -416,31 +422,28 @@
 			<</if>>
 			<<link [[무시한다|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
-		<<case 9>>
-			<<moor_hunt_start>>
-		<<case 10>>
+		<<case 9 10>>
+			<<if $bird and $bird.injured gt 1>>
+				<<moor_fox>>
+			<<else>>
+				<<moor_hunt_start>>
+			<</if>>
+		<<case 11>>
 			<<moor_fox>>
 		<</switch>>
 	<<else>>
+		<<outfitChecks>>
 		<<rng 7>>
 		<<switch $rng>>
 		<<case 1>>
 			<<if random(1, 2) is 2>>
-				<<if !$worn.upper.type.includes("naked")>>
-					당신의 <<trClothes "upper" $worn.upper.name "name" "이">>_trResult 가시덤불에 걸린다.
+				<<if _top>>
+					Your _top.name <<= _top.plural is 1 ? "snag" : "snags">> on a thorny bush.
 					<br><br>
 
 					<<link [[그냥 찢어버린다|Moor Tear]]>><<set $phase to 1>><</link>>
 					<br>
 					<<link [[조심스럽게 풀어낸다 (0:05)|Moor Careful]]>><<set $phase to 1>><<pain 4>><<pass 5>><</link>><<gpain>>
-					<br>
-				<<elseif !$worn.under_upper.type.includes("naked")>>
-					당신의 <<trClothes "under_upper" $worn.under_upper.name "name" "이">>_trResult 가시덤불에 걸린다.
-					<br><br>
-
-					<<link [[그냥 찢어버린다|Moor Tear]]>><<set $phase to 2>><</link>>
-					<br>
-					<<link [[조심스럽게 풀어낸다 (0:05)|Moor Careful]]>><<set $phase to 2>><<pain 4>><<pass 5>><</link>><<gpain>>
 					<br>
 				<<else>>
 					가시덤불이 바람을 타고 날아와, 당신의 노출된 피부를 긁는다.<<gpain>><<gstress>><<pain 4>><<stress 6>>
@@ -450,21 +453,13 @@
 					<br>
 				<</if>>
 			<<else>>
-				<<if !$worn.lower.type.includes("naked")>>
-					당신의 <<trClothes "lower" $worn.lower.name "name" "이">>_trResult 가시덤불에 걸린다.
+				<<if _bottom>>
+					Your _bottom.name <<= _bottom.plural is 1 ? "snag" : "snags">> on a thorny bush.
 					<br><br>
 
 					<<link [[그냥 찢어버린다|Moor Tear]]>><<set $phase to 3>><</link>>
 					<br>
 					<<link [[조심스럽게 풀어낸다 (0:05)|Moor Careful]]>><<set $phase to 3>><<pain 4>><<pass 5>><</link>><<gpain>>
-					<br>
-				<<elseif !$worn.under_lower.type.includes("naked")>>
-					당신의 <<trClothes "under_lower" $worn.under_lower.name "name" "이">>_trResult 가시덤불에 걸린다.
-					<br><br>
-
-					<<link [[그냥 찢어버린다|Moor Tear]]>><<set $phase to 4>><</link>>
-					<br>
-					<<link [[조심스럽게 풀어낸다 (0:05)|Moor Careful]]>><<set $phase to 4>><<pain 4>><<pass 5>><</link>><<gpain>>
 					<br>
 				<<else>>
 					가시덤불이 바람을 타고 날아와, 당신의 노출된 피부를 긁는다.<<gpain>><<gstress>><<pain 4>><<stress 6>>
@@ -550,6 +545,9 @@
 
 <<widget "eventsmoorhigh">>
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $moorLessDangerAll>>
+		<<set $danger -= $moorLessDangerAll>>
+	<</if>>
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 2>>
 		<<if $rng is 2>>
@@ -576,7 +574,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 9>>
+		<<rng 10>>
 		<<switch $rng>>
 		<<case 1>>
 			땅이 흔들려서, 당신은 비틀거린다. 아래쪽에 균열이 생기며, 엄청난 속도로 넓어진다.
@@ -600,7 +598,7 @@
 			<</if>>
 		<<case 2>>
 			당신은 두 연못 사이의 오솔길을 따라간다.
-			<<if $weather is "clear">>
+			<<if !Weather.isOvercast>>
 				<<if Time.dayState is "night">>
 					그것들은 달빛을 반사하지 않는다.
 				<<else>>
@@ -675,7 +673,7 @@
 			<</if>>
 		<<case 7>>
 			<<set $plantMoney to 10*random(20,100)>>
-			<<if $weather is "clear">>
+			<<if !Weather.isOvercast>>
 				반짝이는 빛이
 			<<else>>
 				반짝이는 무언가가
@@ -699,9 +697,13 @@
 				<<set $money += $plantMoney>><<unset $plantMoney>>
 				<<link [[다음|Moor]]>><<set $eventskip to 1>><</link>>
 			<</if>>
-		<<case 8>>
-			<<moor_hunt_start>>
-		<<case 9>>
+		<<case 8 9>>
+			<<if $bird and $bird.injured gt 1>>
+				<<moor_fox>>
+			<<else>>
+				<<moor_hunt_start>>
+			<</if>>
+		<<case 10>>
 			<<moor_fox>>
 		<</switch>>
 	<<else>>
@@ -711,7 +713,7 @@
 			당신은 주변 웅덩이 위로 솟아 있는 맑은 샘을 발견한다. 물은 깨끗해 보인다.
 			<br><br>
 
-			<<ind>><<link [[씻는다 (0:20)|Moor Wash]]>><<pass 20>><<strip>><<stress -2>><<if $moor_hunt gte 1>><<set $moor_hunt += 1.5>><</if>><</link>><<lstress>>
+			<<skinicon "wash">><<link [[씻는다 (0:20)|Moor Wash]]>><<pass 20>><<strip>><<stress -2>><<if $moor_hunt gte 1>><<set $moor_hunt += 1.5>><</if>><</link>><<lstress>>
 			<br>
 			<<getouticon>><<link [[떠난다|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
@@ -809,6 +811,7 @@
 	<<unset $quicksand_depth>>
 	<<unset $quicksand_learn>>
 	<<unset $quicksandWraith>>
+	<<unset $quicksand_escape>>
 <</widget>>
 
 <<widget "quicksand_pull">>
@@ -860,8 +863,8 @@
 <</widget>>
 
 <<widget "passout_moor">>
-	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "moor">>
+	<<if isPregnancyEnding()>>
+		<<pregnancyPassout "moor">>
 	<<else>>
 		<<passout>>
 		<<set $danger to random(1, 10000)>>
@@ -876,6 +879,9 @@
 		<<else>>
 			<<ambulance>>
 		<</if>>
+	<</if>>
+	<<if $bird.hunts>>
+		<<flight_hunt_end>>
 	<</if>>
 <</widget>>
 
@@ -938,10 +944,10 @@
 <</widget>>
 
 <<widget "moor_hunt_start">>
-	<<if $weather is "clear">>
+	<<if !Weather.isOvercast>>
 		그림자가 당신 위를 지나간다.
 	<<else>>
-		끔찍한 울음 소리가 들린다.
+		<<hawkScreechDesc "이">> 들린다.
 	<</if>>
 	<<if $syndromebird is 1>>
 		<<npc "Great Hawk">>
@@ -956,12 +962,20 @@
 		<<link [[계속 나아간다|Moor]]>><<set $eventskip to 1>><</link>>
 		<br>
 	<<else>>
-		두려운 존재가 머리 위에서 빙글빙글 돌고 있다.
+		<<if $birdescaped gte 1>>
+			<<npc "Great Hawk">>
+			낯익은 <<beasttype_ i>> 머리 위에서 빙글빙글 돌고 있다.
+			<<endevent>>
+		<<else>>
+			두려운 존재가 머리 위에서 빙글빙글 돌고 있다.
+		<</if>>
 		<<if $moor_hunt is undefined>>
 			<span class="red">당신은 쫓기고 있다.</span><<ggstress>><<stress 12>>
 			<<set $moor_hunt to 1>>
+		<<else>>
+			<span class="red">당신을 추격하는 자가 빠르게 다가오고 있다.</span><<gstress>><<stress 6>>
+			<<set $moor_hunt += 3>>
 		<</if>>
-
 		<br><br>
 
 		<<link [[다음|Moor]]>><<set $eventskip to 1>><</link>>
@@ -971,15 +985,26 @@
 
 <<widget "moor_hunt">>
 	<<npc "Great Hawk">>
-	<span class="red">또 다른 울음 소리가 들린다.</span> 당신 뒤에서다. 가까이 있다.
-	<<if $monster is 1>>
-		당신은 고개를 돌려, 발 대신 발톱을 가진, 날개 달린 <<nnpc_gendery_ rul "Great Hawk">> 본다. <<bHe_ nun>> 발톱을 쭉 뻗은 채, 당신을 향해 달려든다.
+	<span class="red">또 다른 울음 소리가 들린다.</span> 이번에는 당신 뒤에서다. 가까이 있다. 당신이 뒤로 돌자,
+	<<if $birdescaped gte 1>>
+		그 <<beasttype_ i>>
+	<<elseif $monster is 1>>
+		깃털 날개가 달리고 발이 있을 자리에 발톱이 달린 <<nnpc_gendery_ ga "Great Hawk">> <<bhis_ yi>> 몸을 수그리고
 	<<else>>
-		당신은 고개를 돌려, 거대한 매가 발톱을 뻗고, 당신에게 달려드는 것을 본다.
+		거대한 <<beasttypePost>> 하나가
 	<</if>>
-	<<bHis_ yi>> 시선이 당신의 눈을 꿰뚫는다. 공포는 당신을 그 자리에 멈춰서게 만든다.
+	하늘에서 급강하해 당신에게 내려오며, 당신을 잡으려 발톱을 뻗는다.
+	<<if $birdescaped gte 1>>
+		당신의 눈이 <<bhis_ yi>> 눈과 마주치고, 공포가 당신의 팔다리를 붙잡는다.
+		<<if $monster is 1 or understandsBirdBehaviour()>>
+			<<bhis_ yi>> 강렬한 응시에도 불구하고, 당신은 그 아래에서 배려심을 볼 수 있다.
+		<</if>>
+	<<else>>
+		<<bHis_ yi>> 응시가 당신을 공포에 질려 그 자리에서 움직이지 못하게 한다.
+	<</if>>
 	<br><br>
-	<<link [[가만히 있는다|Moor Bird Still]]>><</link>>
+
+	<<link [[가만히 있는다|Moor Bird Still]]>><<sub 1>><<unset $phase>><</link>>
 	<br>
 	<<link [[저항한다|Moor Bird Resist]]>><</link>><<willpowerdifficulty 1 300>>
 	<br>

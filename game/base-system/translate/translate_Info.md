@@ -21,6 +21,7 @@
         <<trClothes *part *clothes_name>>
         <<trClothes *part *clothes_name *name post "sep">>
         <<trClothes *part *clothes_name *[desc | description]>>
+		trClothes(*part, *clothes_name, *mode, post, sep)
 
         옷의 이름이나 설명을 번역한다.
 		butt_plug 도 여기서 번역될 수 있다. (내부적으로 sextoyPost 를 불러옴)
@@ -46,6 +47,7 @@
         <<trSearchClothes *clothes_name>>
         <<trSearchClothes *clothes_name *name post "sep">>
         <<trSearchClothes *clothes_name *[desc | description]>>
+		trSearchClothes(*clothes_name, *mode, post, sep)
 
         
         옷 타입의 지정 없이 번역한다.
@@ -70,6 +72,7 @@
     <<trNpcClothes>>
         <<trNpcClothes *part *[clothes_name|npcnum]>>
         <<trNpcClothes *part *[clothes_name|npcnum] post "sep">>
+		trNpcClothes(*part, *clothes_name, post, sep)
 
         trClothes 의 NPC 버전. 옷의 이름이나 설명을 번역한다.
 
@@ -621,6 +624,12 @@
     ```
 
    ```
+    <<childhimselfPost>>
+        <<childhimself>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
     <<childHersPost>>
         <<childHers>>의 대체 위젯. <<childhersPost>>로도 쓸 수 있다.
         + <<childnamePost>>와 용도 및 방식 같음. 생략
@@ -630,6 +639,44 @@
     <<childherselfPost>>
         <<childherself>>의 대체 위젯.
         + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childsiblingPost>>
+        <<childsibling>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childsiblingsPost>>
+        <<childsiblingsPost (*childIds|*childId [childId...]) post "sep">>
+
+        <<childsiblings>>의 대체 위젯. 조사를 붙일 수 있다.
+
+        필수사항
+		- *childIds: 아이 이름 배열. 원본 매크로에 사용되는 인수값. 혹은
+		- *childId: 아이의 id. 원본 매크로에 사용되는 인수값. 여러 개가 올 수 있다.
+
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<childsiblingsPost $childIds "을">>
+		<<childsiblingsPost _child1 _child2 "을">>
+    ```
+
+   ```
+    <<childsonPost>>
+        <<childson>>의 대체 위젯.
+        + <<childnamePost>>와 용도 및 방식 같음. 생략
+    ```
+
+   ```
+    <<childsonsPost>>
+        <<childsons>>의 대체 위젯.
+        + <<childsiblingsPost>>와 용도 및 방식 같음. 생략
     ```
 
    ```
@@ -1305,13 +1352,22 @@
 
     ```
     <<bitchPost>>
-        <<bitch>>의 대체 위젯.
-        + <<charlesPost>>와 용도 및 방식 같음. 생략
+        <<bitchPost "dog" post "sep">>
+
+        <<bitch>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        
+        선택사항
+			- dog: 진짜 "개" 를 의미할 때 "dog" 인수를 주면 수캐/암캐로 번역한다.
+            - post: 번역결과의 뒤에 조사를 붙인다.
+            - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<charlesPost "을">>               // <<charles>>을
     ```
 
     ```
     <<bitch_piratePost>>
-        <<bitch_pirate>>의 대체 위젯. <<whorePost>> 로도 사용가능.
+        <<bitch_pirate>>의 대체 위젯.
         + <<charlesPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -1726,6 +1782,41 @@
         <<changingRoomGenderPost "을">>               // 남학생들을
     ```
 
+* outfitNamePost
+    ```
+    <<topNamePost>>
+        <<topNamePost post "sep">>
+		topNamePost(post,sep)
+
+        <<outfitCheck>> 이후 확인 가능한 _top.name 을 번역한다.
+		* 주의: <<topPost>>, <<bottomPost>> 와 혼동하지 말 것 (서로 다른 위젯임)
+		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 JS 함수를 사용할것 (topUnderNamePost() 등)
+		
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+        
+        e.g.
+        <<topNamePost "을">>               // <<SearchClothes _top.name "을">> 과 비슷하게 동작함
+    ```
+	
+    ```
+    <<topUnderNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _topUnder.name 을 번역한다. 주의도 동일.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
+	
+    ```
+    <<bottomNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _bottom.name 을 번역한다. 주의도 동일.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
+	
+    ```
+    <<bottomUnderNamePost>>
+        <<outfitCheck>> 이후 확인 가능한 _bottomUnder.name 을 번역한다. 주의도 동일.
+        + <<topNamePost>>와 용도 및 방식 같음. 생략
+    ```
 
 * personPost
     ```
@@ -1775,6 +1866,12 @@
     ```
     <<peopleyPost>>
          <<peopley>>의 대체 위젯.
+       + <<personPost>>와 용도 및 방식 같음. 생략
+    ```
+
+    ```
+    <<peopleyvPost>>
+         <<peopleyv>>의 대체 위젯.
        + <<personPost>>와 용도 및 방식 같음. 생략
     ```
 
@@ -2282,6 +2379,28 @@
 			인 경우 그냥 앞의 "이름"만 번역하면 되므로 trListboxItemsFromArray 를 사용할 필요가 없음.
 		
 	```
+
+* trMuseumAntique
+    ```
+    <<trMuseumAntique>>
+        <<trMuseumAntique *name post "sep">>
+		trMuseumAntique(name, post, sep)
+
+        박물관 골동품을 번역한다.
+        
+        필수사항
+        - *name: 번역할 골동품의 이름
+
+        선택사항
+        - post: 번역결과의 뒤에 조사를 붙인다.
+        - sep: 조사를 분리하여 저장한다.
+
+        e.g.
+        <<trNamedNPC "River">>                          // '리버'
+        <<trNamedNPC "maths teacher">>                  // '수학 교사'
+        <<trNamedNPC "River" "title">>                  // '수학 교사' 
+        <<trNamedNPC "River" '을'>>                     // '리버를'    
+    ```
 
 * trNamedNPC
     ```
@@ -3046,8 +3165,9 @@
 		```
 	- childPost 계열
 		```
-		<<childname_ (조사)>>, <<childrenNames_ (조사)>>, <<childHe_ (조사)>>, <<childhe_ (조사)>>, <<childHis_ (조사)>>, <<childhis_ (조사)>>, <<childHim_ (조사)>>, <<childhim_ (조사)>>,
-		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childherself_ (조사)>>, <<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
+		<<childname_ (조사)>>, <<childrenNames_ (조사)>>, <<childHe_ (조사)>>, <<childhe_ (조사)>>, <<childHis_ (조사)>>, <<childhis_ (조사)>>, <<childHim_ (조사)>>, <<childhim_ (조사)>>, <<childhimself_ (조사)>>,
+		<<childHers_ (조사)>>, <<childhers_ (조사)>>, <<childherself_ (조사)>>, <<childsibling_ (조사)>>, <<childsiblings_ (조사)>>, <<childson_ (조사)>>, <<childsons_ (조사)>>,
+		<<childhand_ (조사)>>, <<childhands_ (조사)>>, <<childhair_ (조사)>>, <<childtype_ (조사)>>, <<childtoy_ (조사)>>,
 		<<pregnancyBabyText_ (조사)>>
 		```
 	- clothesPost 계열
@@ -3086,10 +3206,19 @@
 		<<kylar_pet_name_ (조사)>>, <<virgin_ (조사)>>, <<getfluidsfromgroup_ (조사)>>, <<condomDesc_ (조사)>>, <<office_manager_ (조사)>>, <<temple_title_ (조사)>>, <<temple_Title_ (조사)>>, <<changingRoomGender_ (조사)>>,
 		<<someones_ (조사)>>,  <<their_ (조사)>>, 
 		```
+	
+	- outfitNamePost 계열
+		```
+		* _top.name 을 <<top_name_ (조사)>> 형식으로 사용
+		* 주의: <<top_ (조사)>>, <<bottom_ (조사)>>와 혼동하지 말 것
+		* 주의: _topUnder || <<breasts>> 등으로 사용되는 경우 해당하는 JS 함수를 사용할것 (topUnderNamePost() 등)
+		<<top_name (조사)>>, <<top_name_ (조사)>>, <<topUnder_name (조사)>>,  <<topUnder_name_ (조사)>>, <<bottom_name (조사)>>, <<bottom_name_ (조사)>>, <<bottomUnder_name (조사)>>,  <<bottomUnder_name_ (조사)>>,
+		```
+		
 	- personPost 계열
 		```
-		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<personname_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<persony_ (조사)>>, <<group_ (조사)>>,
-		<<fullGroup_ (조사)>>,<<enumeratedGroup_ (조사)>>,
+		<<person_ (조사)>>, <<personsimple_ (조사)>>, <<personname_ (조사)>>, <<combatperson_ (조사)>>, <<combatPerson_ (조사)>>,<<people_ (조사)>>, <<peopley_ (조사)>>, <<peopleyv_ (조사)>>, <<persony_ (조사)>>, 
+		<<group_ (조사)>>, <<fullGroup_ (조사)>>,<<enumeratedGroup_ (조사)>>,
 		<<persons_ (조사)>>, <<combatpersons_ (조사)>>, <<combatPersons_ (조사)>>
 		```
 	- putpost 계열

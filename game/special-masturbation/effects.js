@@ -1,4 +1,6 @@
-// eslint-disable-next-line no-unused-vars
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/effects.twee?ref_type=7f47147b
+*/
 function masturbationEffects() {
 	const fragment = document.createDocumentFragment();
 	const br = () => document.createElement("br");
@@ -1654,7 +1656,7 @@ function masturbationEffectsArms(
 			} else {
 				altText.toys = `당신은 <<breastsPost>>에 있는 ${toyDisplay(altText.selectedToy, '을')} 사용`;
 			}
-			if (V.lactating === 1 && V.breastfeedingdisable === "f") {
+			if (V.lactating === 1) {
 				if (V.milk_amount >= 1 && V.earSlime.focus === "pregnancy" && V.earSlime.growth >= 100 && !V.earSlime.defyCooldown) {
 					wikifier("arousal", 100 * handsOn, "masturbationNipples");
 					sWikifier(`${altText.toys}하고, <span class="lewd">모유가 젖꼭지에서 터져나와, 빠르게 병을 채운다.</span>`);
@@ -2263,9 +2265,9 @@ function masturbationEffectsArms(
 						)
 					);
 				} else if (V.arousal >= (V.arousalmax / 5) * 3) {
-					fragment.append(span(`당신은 당신의 ${altText.toyDisplay} 클리토리스 끝을 희롱한다.`));
+					fragment.append(span(`당신은 당신의 ${toyDisplay(altText.selectedToy, '으로')} 클리토리스 끝을 희롱한다.`));
 				} else {
-					fragment.append(span(`당신은 당신의 ${altText.toyDisplay} 클리토리스를 비벼대며, 음란한 느낌을 키운다.`));
+					fragment.append(span(`당신은 당신의 ${toyDisplay(altText.selectedToy, '으로')} 클리토리스를 비벼대며, 음란한 느낌을 키운다.`));
 				}
 			}
 			break;
@@ -2747,7 +2749,7 @@ function masturbationEffectsMouth({
 				}
 				if (genitalsExposed()) {
 					wikifier("arousal", 100, "masturbationGenital");
-					sWikifier(`<span class="blue">당신은 당신의 기생충 정조대 자지에 닿을 정도로 충분히 몸을 굽혀 당신의 혀로 그 끝을 핥는다.</span>`);
+					sWikifier(`<span class="blue">당신은 당신의 기생충 정조대 자지에 닿을 정도로 충분히 몸을 굽혀 당신의 혀로 그것을 핥는다.</span>`);
 				} else {
 					sWikifier(
 						`<span class="blue">당신은 혀를 당신의 기생충 정조대 자지 위로 움직${
@@ -3309,7 +3311,7 @@ function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			clearAction("vagina");
 			V.vaginause = "mpenisflowerrub";
 			V.moorPhallusPlant = 2;
-			if (genitalsExposed()) {
+			if (!genitalsExposed()) {
 				wikifier("arousal", 100, "anal");
 				fragment.append(span("당신의 옷이 그 사이에 있기는 하지만, 당신은 사타구니를 그 식물에 비벼댄다."));
 			} else {
@@ -3406,7 +3408,7 @@ function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			clearAction("anus");
 			V.anususe = "mpenisflowerrub";
 			V.moorPhallusPlant = 2;
-			if (genitalsExposed()) {
+			if (!genitalsExposed()) {
 				wikifier("arousal", 100, "anal");
 				fragment.append(span("당신의 옷이 그 사이에 있기는 하지만, 당신은 엉덩이를 그 식물에 비벼댄다."));
 			} else {

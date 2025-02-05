@@ -10,6 +10,10 @@ const nameWardrobes = {
 	"schools girl's" : "여학생 탈의실",
 	"prison" : "감옥",
 	"prison locker" : "감옥 사물함",
+	"temple" : "사원",
+	"pirate ship" : "해적선",
+	"office agency changing room" : "사무 인력 탈의실",
+	"great hawk's tower" : "거대 매의 탑",
 };
 
 function trWardrobeName(wardrobeName, post, sep)

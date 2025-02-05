@@ -16,7 +16,7 @@
 			어두워서 분간하기는 힘들지만, 샘이 완성되었다.
 		<</if>>
 	<<else>>
-		<<if $weather is "rain">>
+		<<if Weather.precipitation is "rain">>
 			<<if $mason_pond_timer gte 7>>
 				비가 와서 작업을 개시하지 못한다.
 			<<elseif $mason_pond_timer gte 4>>
@@ -24,7 +24,7 @@
 			<<elseif $mason_pond_timer gte 1>>
 				연못은 모양을 갖춰가고 있다. 일꾼들이 샘을 뚫기까지 얼마 안 남은 게 분명하다. 지금은 빗물로 차 있다.
 			<</if>>
-		<<elseif $weather is "snow">>
+		<<elseif Weather.precipitation is "snow">>
 			<<if $mason_pond_timer gte 7>>
 				눈이 와서 작업을 개시하지 못한다.
 			<<elseif $mason_pond_timer gte 4>>
@@ -70,7 +70,7 @@
 			온실은 완성된 걸로 보인다.
 		<</if>>
 	<<else>>
-		<<if $weather is "rain">>
+		<<if Weather.precipitation is "rain">>
 			<<if $alex_greenhouse_timer gte 6>>
 				흙은 파헤쳐져 있지만, 일꾼들은 작업을 계속하기 전에 비가 그치기를 기다리고 있다.
 			<<elseif $alex_greenhouse_timer gte 3>>
@@ -80,7 +80,7 @@
 			<<else>>
 				온실은 완성된 걸로 보인다.
 			<</if>>
-		<<elseif $weather is "snow">>
+		<<elseif Weather.precipitation is "snow">>
 			<<if $alex_greenhouse_timer gte 6>>
 				흙은 파헤쳐져 있지만, 일꾼들은 작업을 계속하기 전에 눈이 그치기를 기다리고 있다.
 			<<elseif $alex_greenhouse_timer gte 3>>
@@ -129,7 +129,7 @@
 <<link [[무시한다|Garden Voyeurism Ignore]]>><</link>>
 <<else>>
 
-	<<if Time.hour gte 7 and Time.hour lt 20 and $weather is "rain">>
+	<<if Time.hour gte 7 and Time.hour lt 20 and Weather.precipitation is "rain">>
 		고아 몇 명이 놀고 있다.
 		<br><br>
 	<</if>>
@@ -142,31 +142,32 @@
 		<br>
 	<</if>>
 
-	<<if $weather is "clear" and Time.dayState is "day">>
-		<<baskicon>><<link [[햇빛을 쬔다 (0:10)|Bask]]>><<pass 10>><<tanned 10>><<set $stress -= 20>><</link>><<lstress>><<gtanned>>
+	<<if !Weather.isOvercast and Time.dayState is "day">>
+		<<set _tanning to Weather.getTanningFactor()>>
+		<<baskicon>><<link [[햇빛을 쬔다 (0:10)|Bask]]>><<pass 10>><<set $stress -= 5>><</link>><<lstress>><<tanningGainOutput _tanning.result 10>>
 		<br>
 	<</if>>
 
 	<<if $exposed gte 2>>
 		<<if Time.dayState is "night">>
-			<<if $exhibitionism gte 55>>
+			<<if hasSexStat("exhibitionism", 4)>>
 				<<fenceicon>><<link [[울타리를 넘는다 (0:05)|Garden Fence Naked Night]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist4>><</if>>
 				<br>
 			<</if>>
 		<<else>>
-			<<if $exhibitionism gte 75>>
+			<<if hasSexStat("exhibitionism", 5)>>
 				<<fenceicon>><<link [[울타리를 넘는다 (0:05)|Garden Fence Naked Day]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist5>><</if>>
 				<br>
 			<</if>>
 		<</if>>
 	<<elseif $exposed gte 1>>
 		<<if Time.dayState is "night">>
-			<<if $exhibitionism gte 15>>
+			<<if hasSexStat("exhibitionism", 2)>>
 				<<fenceicon>><<link [[울타리를 넘는다 (0:05)|Garden Fence Undies Night]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist2>><</if>>
 				<br>
 			<</if>>
 		<<else>>
-			<<if $exhibitionism gte 35>>
+			<<if hasSexStat("exhibitionism", 3)>>
 				<<fenceicon>><<link [[울타리를 넘는다 (0:05)|Garden Fence Undies Day]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist3>><</if>>
 				<br>
 			<</if>>
@@ -209,7 +210,7 @@ You watch the couple hump away with reckless abandon. Their panting and stifled 
 <<link [[Keep watching|Garden Voyeurism Keep]]>><</link>>
 <br>
 
-<<if $exhibitionism gte 55>>
+<<if hasSexStat("exhibitionism", 4)>>
 		<<link [[자위한다|Garden Voyeurism Masturbate]]>><<set $masturbationstart to 1>><</link>><<exhibitionist4>>
 		<br>
 	<</if>>
@@ -280,7 +281,7 @@ You watch the couple hump away with reckless abandon. Their panting and stifled 
     The orphans start up and scan the surroundings.
     <br><br>
 
-    "Did you hear something?," the <<person1>><<person>> asks. "I think I did," the <<person2>><<person>> answers. "We'd better dip."
+    "Did you hear something?" the <<person1>><<person>> asks. "I think I did," the <<person2>><<person>> answers. "We'd better dip."
     <br><br>
 
     With that, the orphans hastily pull up their clothes and scramble inside.
@@ -655,7 +656,7 @@ You decide not to investigate the source of the noise; you have your own things 
 <<set $outside to 1>><<set $location to "home">><<effects>>
 <<fameexhibitionism 10 "pic">>
 
-당신은 당신의 옷이 걸린 나뭇가지를 손과 무릎으로 잡고 기어 건너간다. <<person_ i>> 돌아와, <<his_ yi>> 카메라를 당신에게 똑바로 겨눈다. 이제 당신은 나뭇잎들에게서 빠져나와 있고, 그 사람은 당신 <<bottom_ yi>> 꺠끗한 사진을 찍는다. "젠장할 <<girlPost>> 같으니, 네가 여기 안에 있으면 내가 무슨 짓을 했을지 모르겠군."
+당신은 당신의 옷이 걸린 나뭇가지를 손과 무릎으로 잡고 기어 건너간다. <<person_ i>> 돌아와, <<his_ yi>> 카메라를 당신에게 똑바로 겨눈다. 이제 당신은 나뭇잎들에게서 빠져나와 있고, 그 사람은 당신 <<bottom_ yi>> 깨끗한 사진을 찍는다. "젠장할 <<girlPost>> 같으니, 네가 여기 안에 있으면 내가 무슨 짓을 했을지 모르겠군."
 <br><br>
 
 그 나뭇가지는 당신이 목표에 다가가자 살짝 구부러지지만, 당신은 어떻게든 당신의 옷가지를 가지고 뒤로 돈다. 당신은 나뭇기둥으로 기어 돌아와, 앞으로 기대어 <<person_ gwa>> <<his_ yi>> 카메라에서 가능한 많이 몸을 숨긴다. 당신은 나뭇잎이 몸을 가리는 안전한 곳으로 들어와 기어내려온다.

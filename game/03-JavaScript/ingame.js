@@ -1,3 +1,5 @@
+/* global ClothesItem, ClothedSlots */
+
 function mapMove(moveTo) {
 	const currentPassage = V.passage;
 	const destinationTable = [];
@@ -632,16 +634,16 @@ function isInPark(name) {
 		case "kylar":
 			// prettier-ignore
 			return C.npc.Kylar.state === "active"
-				&& !["rain", "snow"].includes(V.weather)
+				&& Weather.precipitation === "none"
 				&& Time.dayState === "day" && V.kylarwatched !== 1;
 		case "robin":
 			return getRobinLocation() === "park";
 		case "whitney":
 			// prettier-ignore
 			return ["active", "rescued"].includes(C.npc.Whitney.state)
-				&& C.npc.Whitney.init === 1 && ["snow", "rain"].includes(V.weather)
+				&& C.npc.Whitney.init === 1 && Weather.precipitation !== "none"
 				&& Time.dayState === "day" && !Time.schoolTime
-				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
+				&& V.daily.whitney.park === undefined && V.pillory.tenant.special.name !== "Whitney";
 		default:
 			return false;
 	}
@@ -834,8 +836,13 @@ window.DefaultActions = {
 	},
 };
 
-function selectWardrobe(targetLocation = V.wardrobe_location) {
-	return !targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation] ? V.wardrobe : V.wardrobes[targetLocation];
+function selectWardrobe(targetLocation = V.wardrobe_location, type) {
+	let wardrobe = V.wardrobes[targetLocation];
+	if (type !== "return" && wardrobe?.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
+		V.wardrobe_location = "wardrobe";
+		wardrobe = V.wardrobe;
+	}
+	return !targetLocation || targetLocation === "wardrobe" || !V.wardrobes[targetLocation] ? V.wardrobe : wardrobe;
 }
 window.selectWardrobe = selectWardrobe;
 
@@ -864,6 +871,16 @@ function clothingData(slot, item, data) {
 	return setup.clothes[slot][clothesIndex(slot, item)][data];
 }
 window.clothingData = clothingData;
+
+/**
+ * @param {ClothedSlots} slot
+ * @param {ClothesItem} item
+ * @returns {ClothesItem}
+ */
+function getSetupClothing(slot, item) {
+	return setup.clothes[slot][clothesIndex(slot, item)];
+}
+window.getSetupClothing = getSetupClothing;
 
 function clothesDataTrimmerLoop() {
 	if (!V.passage || V.passage === "Start") return;
@@ -1300,30 +1317,84 @@ function currentSkillValue(skill, disableModifiers = 0) {
 }
 window.currentSkillValue = currentSkillValue;
 
+/**
+ * @param {string} input
+ */
+function hasSexStatMapper(input) {
+	switch (input) {
+		case "p":
+		case "promiscuity":
+		case "promiscuous":
+			return "promiscuity";
+		case "e":
+		case "exhibitionism":
+		case "exhibition":
+		case "exhibitionist":
+			return "exhibitionism";
+		case "d":
+		case "deviancy":
+		case "deviant":
+			return "deviancy";
+	}
+	return null;
+}
+window.hasSexStatMapper = hasSexStatMapper;
+
+/**
+ * @param {string} input
+ * @param {number} required
+ */
+function hasSexStat(input, required) {
+	const stat = hasSexStatMapper(input);
+	if (stat == null) {
+		Errors.report(`[hasSexStat]: input '${stat}' null.`, {
+			Stacktrace: Utils.GetStack(),
+			stat,
+		});
+		return false;
+	}
+	const statValue = V[stat];
+	if (!Number.isFinite(statValue)) {
+		Errors.report(`[hasSexStat]: sex stat '${stat}' unknown.`, {
+			Stacktrace: Utils.GetStack(),
+			stat,
+		});
+		return false;
+	}
+	switch (required) {
+		case 6:
+			/* self-destructive, extreme actions, like leglocking a rapist unprotected or provoking a group for no sane benefit. */
+			return statValue >= 95;
+		case 5:
+			/* Extremely lewd actions, like full nude exposure and inciting gangbangs. */
+			return statValue >= 75;
+		case 4:
+			/* Very lewd actions, like giving oral, using your body to get your way, and accepting lecherous propositions. */
+			return statValue >= 55;
+		case 3:
+			/* Moderately lewd actions, like giving handjobs, more lewd exposure/flaunting, and most prostitution. */
+			return statValue >= 35;
+		case 2:
+			/* Modestly lewd actions, like flashing underwear or light coercion. Many seduction checks fall under this level. */
+			return statValue >= 15;
+		case 1:
+			/* Do not use for events or checks, only for checking if value is above level 0. Level 1 actions should always be available. */
+			return statValue >= 1;
+		default:
+			Errors.report(`[hasSexStat]: sex stat requirement outside of possible value range: '${required}' (must be between 1 and 6!).`, {
+				Stacktrace: Utils.GetStack(),
+				stat,
+				required,
+			});
+			return false;
+	}
+}
+window.hasSexStat = hasSexStat;
+
 function playerIsPenetrated() {
 	return [V.mouthstate, V.vaginastate, V.anusstate].some(s => ["penetrated", "doublepenetrated", "tentacle", "tentacledeep"].includes(s));
 }
 window.playerIsPenetrated = playerIsPenetrated;
-
-/**
- * Overloads:
- *
- * 	 (minutes)
- * 	getTimeString(hours, minutes)
- * Examples:
- *
- * 	getTimeString(20) returns "0:20"
- * 	getTimeString(1,5) returns "1:05".
- *
- * @param {...any} args
- */
-function getTimeString(...args) {
-	if (args[0] == null) return;
-	const hours = args[1] != null ? args[0] : 0;
-	const minutes = Math.max(args[1] != null ? args[1] : args[0], 0) + hours * 60;
-	return Math.clamp(Math.trunc(minutes / 60), 0, 23) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
-}
-window.getTimeString = getTimeString;
 
 function npcAssignClothesToSet(upper, lower) {
 	return { upper: T.npcClothesItems.upper[upper], lower: T.npcClothesItems.lower[lower] };
@@ -1413,39 +1484,8 @@ function isLoveInterest(name) {
 }
 window.isLoveInterest = isLoveInterest;
 
-/** This function will determine if the date is right for a blood moon, and which part of the night it will happen in. */
-function getTodaysMoonState() {
-	const todaysMoonState = 0;
-	if (Time.monthDay === Time.lastDayOfMonth) {
-		// blood moon happens on the last night of the month
-		T.todaysMoonState = "evening";
-	} else if (Time.monthDay === 1) {
-		// blood moon happens on the first morning of the month
-		T.todaysMoonState = "morning";
-	}
-	return todaysMoonState;
-}
-
-function getMoonState() {
-	let moonstate = 0;
-	T.todaysMoonState = getTodaysMoonState();
-
-	if (Time.nightState === T.todaysMoonState) {
-		// if the current time of night matches the time a blood moon will happen, set moonstate
-		moonstate = T.todaysMoonState;
-	}
-	// V.moonstate = moonstate; //commenting this out to make sure this function doesn't modify save variables
-	return moonstate;
-}
-window.getMoonState = getMoonState;
-
-function isBloodmoon() {
-	return Time.dayState === "night" && V.moonstate === Time.nightState; // it's only a blood moon if it's night, and the current moon state matches the current night state
-}
-window.isBloodmoon = isBloodmoon;
-
 function wraithCanHunt() {
-	return isBloodmoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
+	return Time.isBloodMoon() && Time.hour !== 5; // wraith events can't start at 5 AM.
 }
 window.wraithCanHunt = wraithCanHunt;
 
@@ -1970,6 +2010,29 @@ function beastMaleChance(override) {
 }
 window.beastMaleChance = beastMaleChance;
 
+function penisNames(override) {
+	const names = ["자지"];	// penis
+
+	if (V.player.penissize < 0 && !override) return names;
+
+	if ((V.awareness >= 100 && !override) || override >= 1) names.push("음경");	// dick
+	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("좆");	// cock
+
+	return names;
+}
+window.penisNames = penisNames;
+
+function pussyNames(override) {
+	const names = ["보지"];	// vagina
+
+	if ((V.awareness >= 100 && !override) || override >= 1) names.push("질");	// pussy
+	if ((V.awareness >= 200 && V.purity < 900 && !override) || override >= 2) names.push("보지");	// quim
+	if ((V.awareness >= 300 && V.purity < 100 && !override) || override >= 3) names.push("보짓구멍");	// slit
+
+	return names;
+}
+window.pussyNames = pussyNames;
+
 const crimeSum = (prop, ...crimeTypes) => {
 	if (crimeTypes.length === 0) {
 		crimeTypes = Object.keys(setup.crimeNames);
@@ -2026,36 +2089,44 @@ function earSlimeMakingMundaneRequests() {
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
 
-function minArousal() {
-	let result = playerHeatMinArousal() + playerRutMinArousal();
-
-	result += Object.values(V.worn).reduce((prev, curr) => {
-		if (curr.type.includes("fetish")) return prev + 150;
-		return prev;
-	}, 0);
-
-	return Math.clamp(result, 0, 5000);
-}
-window.minArousal = minArousal;
-
-function minPain() {
-	let result = 0;
-
-	if (V.lactating && V.breastfeedingdisable === "f" && V.milkFullPain > 200) {
-		result += Math.ceil((V.milkFullPain - 200) / 5);
-		if (!V.daily.milkFullPainMessage) {
-			V.milkFullPainMessage = 1;
-			V.effectsmessage = 1;
+function fixIntegrityUpdater() {
+	Object.entries(V.worn).forEach(([slot, item]) => fixIntegrityMax(slot, item));
+	Object.entries(V.store).forEach(([slot, items]) => items.forEach(item => fixIntegrityMax(slot, item)));
+	setup.clothes_all_slots.forEach(slot => {
+		const category = V.wardrobe[slot];
+		if (!Array.isArray(category)) {
+			console.warn("Category:", slot, "doesn't exist in wardrobe.");
+			return;
 		}
+		category.forEach(item => fixIntegrityMax(slot, item));
+	});
+	const wardrobes = Object.entries(V.wardrobes).filter(([name, wardrobe]) => !["shopReturn", "wardrobe"].includes(name));
+	if (Array.isArray(wardrobes)) {
+		wardrobes.forEach(([name, wardrobe]) => {
+			setup.clothes_all_slots.forEach(slot => {
+				const category = wardrobe[slot];
+				if (!Array.isArray(category)) {
+					console.warn("Category:", slot, "doesn't exist in wardrobe:", name);
+					return;
+				}
+				category.forEach(item => fixIntegrityMax(slot, item));
+			});
+		});
 	}
-
-	if (
-		V.earSlime.defyCooldown &&
-		(V.worn.genitals.name === "chastity parasite" || V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite")
-	) {
-		result += 25;
-	}
-
-	return Math.clamp(result, 0, 50);
+	Object.entries(V.carried).forEach(([slot, item]) => fixIntegrityMax(slot, item));
 }
-window.minPain = minPain;
+window.fixIntegrityUpdater = fixIntegrityUpdater;
+
+/**
+ * @param {string} slot
+ * @param {ClothesItem} value
+ * @returns {void}
+ */
+function fixIntegrityMax(slot, value) {
+	if (value.integrity_max !== 0) {
+		return; // Integrity is fine
+	}
+	const setupClothing = getSetupClothing(slot, value);
+	value.integrity_max = setupClothing.integrity_max;
+}
+window.fixIntegrityMax = fixIntegrityMax;

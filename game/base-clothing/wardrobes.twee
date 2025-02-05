@@ -298,7 +298,6 @@
 	<div id="action-popup">여기를 보지 마세요.</div>
 	<<unset $tempDisable>>
 
-	<<temperature>>
 	<hr>
 	<span>따뜻함:</span>
 	<<warmthscale>>
@@ -306,7 +305,6 @@
 		<<warmth_description>>
 	</div>
 	<br>
-	<hr>
 	<div id="clotheson"><<clotheson>></div> /*Fixes perma pulled aside clothes introduced by 0.2.3.0 bug.*/
 	<<if $upperwet gte 1 or $lowerwet gte 1 or $underlowerwet gte 1 or $underupperwet gte 1>>
 		<div class="wardrobe-dry">
@@ -423,14 +421,8 @@
 	__옷__
 	<br>
 
-	<<if $options.newWardrobeStyle>>
-		<<dynamic "wardrobeLinks" "wardrobeLinks">>
-		<<dynamic "wardrobeContents" "wardrobeList">>
-	<<else>>
-		<div id="oldWardrobeListDisplay">
-			<<oldWardrobeListDisplay>>
-		</div>
-	<</if>>
+	<<dynamic "wardrobeLinks" "wardrobeLinks">>
+	<<dynamic "wardrobeContents" "wardrobeList">>
 
 	<br>
 
@@ -702,8 +694,8 @@
 <</widget>>
 
 <<widget "toggleUpperTuck">>
-	<<set _linkOption1 to _args[0] || "밖으로 뺀다">>
-	<<set _linkOption2 to _args[1] || "안으로 집어넣는다">>
+	<<set _linkOption1 to _args[0] || `${trClothes("lower", $worn.lower.name, "name")} 밖으로 뺀다`>>
+	<<set _linkOption2 to _args[1] || `${trClothes("lower", $worn.lower.name, "name")} 안으로 집어넣는다`>>
 	<div class="toggleUpperTuck">
 		<<link `($upperTucked ? _linkOption1 : _linkOption2)`>>
 			<<set $upperTucked to +!$upperTucked>>
@@ -715,8 +707,8 @@
 <</widget>>
 
 <<widget "toggleLowerTuck">>
-	<<set _linkOption1 to _args[0] || "밖으로 뺀다">>
-	<<set _linkOption2 to _args[1] || "안으로 집어넣는다">>
+	<<set _linkOption1 to _args[0] || `${trClothes("feet", $worn.feet.name, "name")} 밖으로 뺀다`>>
+	<<set _linkOption2 to _args[1] || `${trClothes("feet", $worn.feet.name, "name")} 안으로 집어넣는다`>>
 	<div class="toggleLowerTuck">
 		<<link `($lowerTucked ? _linkOption1 : _linkOption2)`>>
 			<<set $lowerTucked to +!$lowerTucked>>
@@ -748,9 +740,10 @@
 		<<case "upper">>
 			<<switch $worn.upper.variable>>
 				<<case "schoolcardigan">><<set _altLink to ["카디건을 허리 둘레에 묶는다", "카디건을 평소대로 입는다"]>>
-				<<case "brownleather" "blackleather" "leathercropjacket">><<set _altLink to ["자켓의 지퍼를 닫는다", "자켓의 지퍼를 연다"]>>
+				<<case "brownleather" "blackleather" "leathercropjacket" "winterjacket">><<set _altLink to ["자켓의 지퍼를 닫는다", "자켓의 지퍼를 연다"]>>
 				<<case "waistcoat" "waistcoatlapel" "blazershirt">><<set _altLink to ["안으로 집어넣는다", "밖으로 뺀다"]>>
-				<<case "dress">><<set _altLink to ["셔츠의 버튼을 푼다", "셔츠의 버튼을 잠근다"]>>
+				<<case "dress" "buttondown" "oversizedbuttondown">><<set _altLink to ["셔츠의 버튼을 푼다", "셔츠의 버튼을 잠근다"]>>
+				<<case "kimono" "kimonomini">><<set _altLink to ["느슨하게 한다", "꽉 조인다"]>>
 				<<default>><<exit>>
 			<</switch>>
 		<<case "neck">>
@@ -952,7 +945,7 @@
 				<</if>>
 				<<trClothes _wardrobe_list _wornItemData.name "desc">>_trResult
 				<br>
-				<<warmth _wornItem.warmth>>
+				<<print setup.WeatherDescriptions.clothingWarmth(getTrueWarmth(_wornItem))>>
 				<br><br>
 				<<set _temp_choice to $worn[_wardrobe_list]>>
 				<<shoptraits>>
@@ -961,9 +954,8 @@
 			<<if isConnectedToHood(_wardrobe_list)>>
 				<!-- If selected item is a hood or selected item has a secondary hood piece -->
 				<div class="no-numberify"><<toggleHoodLink>></div>
-				<br>
 			<</if>>
-			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and !_wornItemData.notuck>>
+			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and !_wornItemData.notuck and V.worn.upper.outfitPrimary is undefined>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
 			<<elseif _wardrobe_list is "lower" and $worn.feet.name isnot "naked" and !_wornItemData.notuck and !setup.clothes.feet[clothesIndex("feet",$worn.feet)].notuck>>
 				<div class="no-numberify"><<toggleLowerTuck>></div>
@@ -999,52 +991,51 @@
 				<</if>>
 			<</if>>
 			<div class="wardrobeItem wardrobe-action no-numberify">
-			<<clothingicon _item _wardrobe_list>>
-			<<trClothes _wardrobe_list _itemData.name>><<wearlink_norefresh _trResult _i>>
-			<<if _item.gender is "m">>
-				<span class="blue">♂</span>
-			<<elseif _item.gender is "f">>
-				<span class="pink">♀</span>
-			<<else>>
+				<<clothingicon _item _wardrobe_list>>
+				<<trClothes _wardrobe_list _itemData.name>><<wearlink_norefresh _trResult _i>>
+				<<if _item.gender is "m">>
+					<span class="blue">♂</span>
+				<<elseif _item.gender is "f">>
+					<span class="pink">♀</span>
+				<<else>>
 
-			<</if>>
-			<<if _item.colour isnot 0>>
-				<span @class="_selectedWardrobe[_wardrobe_list][_i].colour"><<trColour _item.colour>>(_trResult)</span>
-			<</if>>
-			<<if _item.outfitPrimary isnot undefined>>
-				<<set _keys to Object.keys(_item.outfitPrimary)>>
-				<<set _broken to 0>>
-				<<for _j to 0; _j lt _keys.length; _j++>>
-					<<if _item.outfitPrimary[_keys[_j]] is "broken">>
-						<<set _broken++>>
+				<</if>>
+				<<if _item.colour isnot 0>>
+					<span @class="_selectedWardrobe[_wardrobe_list][_i].colour"><<trColour _item.colour>>(_trResult)</span>
+				<</if>>
+				<<if _item.outfitPrimary isnot undefined>>
+					<<set _keys to Object.keys(_item.outfitPrimary)>>
+					<<set _broken to 0>>
+					<<for _j to 0; _j lt _keys.length; _j++>>
+						<<if _item.outfitPrimary[_keys[_j]] is "broken">>
+							<<set _broken++>>
+						<</if>>
+					<</for>>
+					<<if _broken is 0>>
+						<span class="gold">(원피스)</span>
+					<<elseif _broken lt _keys.length>>
+						<span class="red">(일부 파손)</span>
+					<<else>>
+						<span class="red">(망가짐)</span>
 					<</if>>
-				<</for>>
-				<<if _broken is 0>>
-					<span class="gold">(원피스)</span>
-				<<elseif _broken lt _keys.length>>
-					<span class="red">(일부 파손)</span>
-				<<else>>
-					<span class="red">(망가짐)</span>
+					<<if _item.one_piece is "split">>
+						<span class="separated-indicator">(분리됨)</span>
+					<</if>>
 				<</if>>
-				<<if _item.one_piece is "split">>
-					<span class="separated-indicator">(분리됨)</span>
+				<<if _item.outfitSecondary isnot undefined>>
+					<<if _item.one_piece is "split">>
+						<span class="separated-indicator">(분리됨)</span>
+					<<else>>
+						<span class="red">(망가짐)</span>
+					<</if>>
 				<</if>>
-			<</if>>
-			<<if _item.outfitSecondary isnot undefined>>
-				<<if _item.one_piece is "split">>
-					<span class="separated-indicator">(분리됨)</span>
-				<<else>>
-					<span class="red">(망가짐)</span>
-				<</if>>
-			<</if>>
-			<<wardrobeintegrity _item _wardrobe_list>>
+				<<wardrobeintegrity _item _wardrobe_list>>
 				<<reveal _item.reveal>>
-				</div>
-			<</for>>
-			<div style="clear:both;"></div>
-		<</if>>
-
-	<<temperature>>
+				| <span class="cold-resist-icon noDivider"><<print getTrueWarmth(_item)>></span>
+			</div>
+		<</for>>
+		<div style="clear:both;"></div>
+	<</if>>
 <</widget>>
 
 <<widget "wearlink_norefresh">>
@@ -1483,22 +1474,24 @@
 <</widget>>
 
 <<widget "warmth_description">>
-	<<switch $body_temperature_outside>>
-	<<case "hot">>
-		<span class="red">바깥은 매우 더울 것이다.</span>
-	<<case "warm">>
-		<span class="purple">바깥은 매우 따뜻할 것이다.</span>
-	<<case "cold">>
-		<span class="red">바깥은 추울 것이다.</span>
-	<<case "chilly">>
-		<span class="purple">바깥은 좀 쌀쌀할 것이다.</span>
-	<<default>>
-		<span class="green">바깥의 온도는 적당하다.</span>
-	<</switch>>
+	<<print setup.WeatherDescriptions.shop()>>
 	<br>
-	$warmth 따뜻함 | $chill 추움
+	당신 옷의 따뜻함은 현재 <span class="orange"><<print Weather.BodyTemperature.getWarmth()>></span>이다.
 	<br>
-	온열 범위: <<print ($chill + 1)>> - <<print Math.trunc(($chill * 1.3) + 69)>>
+
+	<<set $_minWarmth to getTargetWarmth(36.4)>>
+	<<set $_maxWarmth to getTargetWarmth(37.6)>>
+	쾌적해지기 위해 당신은
+	<<if $_minWarmth and $_maxWarmth>>
+		<span class="orange"><<print getTargetWarmth(36.5)>></span>와 <span class="orange"><<print getTargetWarmth(37.5)>></span> 사이의 따뜻함을 가진 옷이 필요하다.
+	<<elseif $_minWarmth>>
+		최소 <span class="orange"><<print getTargetWarmth(36.5)>></span> 이상의 따뜻함을 가진 옷이 필요하다.
+	<<elseif $_maxWarmth>>
+		최대 <span class="orange"><<print getTargetWarmth(37.5)>></span> 이하의 따뜻함을 가진 옷이 필요하다.
+	<<else>>
+		실내에 있을 필요가 있다.
+	<</if>>
+	<hr />
 <</widget>>
 
 <<widget "wardrobeSelection">>
@@ -1537,7 +1530,7 @@
 		<<case "Changing Room">>
 			<<if $exposed lte 1>>
 				<<getouticon>><<link [[떠난다|Beach]]>><<cleanupOnWardrobeExit>><</link>>
-			<<elseif $exhibitionism gte 75>>
+			<<elseif hasSexStat("exhibitionism", 5)>>
 				<<sneakicon>><<link [[몰래 나간다|Beach Changing Room Sneak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist5>>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
@@ -1559,37 +1552,37 @@
 				이 꼴로는 나갈 수 없다!
 			<</if>>
 		<<case "Eden Wardrobe">>
-			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
+			<<if isLoveInterest("Eden") or hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
 				<<link [[마친다|Eden Cabin]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				지금처럼 아무 것도 안 입고 있을 순 없다!
 			<</if>>
 		<<case "Eden Night Wardrobe">>
-			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
+			<<if isLoveInterest("Eden") or hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
 				<<link [[마친다|Eden Cabin Bed]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				지금처럼 아무 것도 안 입고 있을 순 없다!
 			<</if>>
 		<<case "Asylum Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
 				<<link [[마친다|Asylum Cell]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				지금처럼 아무 것도 안 입고 있을 순 없다!
 			<</if>>
 		<<case "Farm Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
 				<<link [[마친다|Farm Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				지금처럼 아무 것도 안 입고 있을 순 없다!
 			<</if>>
 		<<case "Strip Club Wardrobe">>
-			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
+			<<if hasSexStat("exhibitionism", 4) or $exposed lte 0 or (hasSexStat("exhibitionism", 2) and $exposed lte 1)>>
 				<<link [[물러난다|Strip Club Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
 			<</if>>
 		<<case "Brothel Wardrobe">>
-			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
+			<<if hasSexStat("exhibitionism", 4) or $exposed lte 0 or (hasSexStat("exhibitionism", 2) and $exposed lte 1)>>
 				<<link [[물러난다|Brothel Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
@@ -1601,7 +1594,7 @@
 				<<getouticon>><<link [[떠난다|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<</if>>
 		<<case "Farm Assault Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
 				<<link [[마친다|Farm Assault Intro]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				지금처럼 아무 것도 안 입고 있을 순 없다!
@@ -1615,11 +1608,13 @@
 		<<case "Office Agency Changing Room">>
 			<<if $exposed lte 1>>
 				<<getouticon>><<link [[떠난다|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
-			<<elseif $exhibitionism gte 55>>
+			<<elseif hasSexStat("exhibitionism", 4)>>
 				<<sneakicon>><<link [[몰래 나간다|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
 			<<else>>
 				이 꼴로는 나갈 수 없다!
 			<</if>>
+		<<case "Bird Tower Wardrobe">>
+			<<link [[닫는다|Bird Tower]]>><<cleanupOnWardrobeExit>><</link>>
 	<</switch>>
 	<br><br>
 <</widget>>
@@ -1633,7 +1628,7 @@
 	<<else>>
 		<<set $_text_output to "속옷">><<trPost 0 _args[0] _args[1]>><<set $_text_output to _trResult>>
 	<</if>>
-<</silently>><<if $_text_output>><</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
 
 :: Wardrobe [exitCheckBypass]
@@ -1753,6 +1748,19 @@
 <br><br>
 <div id="wardrobewear"><<wardrobewear>></div>
 <div id="wardrobeExits"><<wardrobeExits>></div>
+
+<<wardrobe>>
+
+:: Bird Tower Wardrobe [exitCheckBypass]
+
+<<effects>>
+당신은 당신이 만든 옷장 안을 들여다본다.
+<br><br>
+<<set $wardrobe_location to "birdTower">>
+<<wardrobeSelection>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
 <<wardrobe>>
 
 :: Wardrobe Sale Crate

@@ -40,6 +40,7 @@ setup.pokemonData = [
         "baseStats": { "HP": 80, "Attack": 82, "Defense": 83, "SpecialAttack": 100, "SpecialDefense": 100, "Speed": 80 },
         "genderRatio": 0.125,
         "evolvesTo": null,
+        "megaEvolvesTo": {"name": "메가이상해꽃", "hasItem": "이상해꽃나이트"},
         "friendship": 50
     },
     { 
